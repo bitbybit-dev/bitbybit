@@ -1,29 +1,32 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, axesToMatrix } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { add3, cross3, dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { WORLD_AXES, axesToMatrix, vectorToLocal } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { add3, length3, scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
 import { wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
 import { PARALLEL_TOLERANCE } from "../build/constants";
-import { axisPlacementFrame, directionOf, pointOf } from "../build/placement";
+import { axisPlacementFrame, directionOf } from "../build/placement";
 import type { ModelSnapshot } from "../model/snapshot";
-import type { IfcValue } from "../step/step-types";
 import { isEnumeration, isList, isReference } from "../step/values";
 import { CurveSampler } from "./curves";
 import { UnsupportedGeometryError } from "./errors";
 import { INWARD, MeshCollector, OUTWARD, UNORIENTED, concatenated } from "./faceted";
 import { itemColour } from "./colours";
-import type { PartEntry, PartGroup, RecipePart, TriangleMesh } from "./geometry-types";
+import type { PartEntry, PartGroup, ProfileRegion, RecipePart, TriangleMesh } from "./geometry-types";
+import { operatorMatrix } from "./operators";
 import { profileRegion } from "./profiles";
+import { regionSolid } from "./regions";
+import { SweptSolids } from "./swept-solids";
 import type { RecipeBuilder } from "./recipe-builder";
 
 const IDENTITY = axesToMatrix(WORLD_AXES);
-const X_AXIS: Base.Vector3 = [1, 0, 0];
-const Y_AXIS: Base.Vector3 = [0, 1, 0];
 const Z_AXIS: Base.Vector3 = [0, 0, 1];
-const SPATIAL_OPERATOR = "IfcCartesianTransformationOperator3D";
+const PLAIN_HALF_SPACES: ReadonlySet<string> = new Set(["IfcHalfSpaceSolid", "IfcBoxedHalfSpace"]);
 const CLOSED_SHELL = "IfcClosedShell";
 const MAPPED_ITEM = "IfcMappedItem";
 const SURFACE_MODEL_FACES: Readonly<Record<string, string>> = { IfcFaceBasedSurfaceModel: "FbsmFaces", IfcShellBasedSurfaceModel: "SbsmBoundary" };
-const MESH_ITEMS: ReadonlySet<string> = new Set(["IfcTriangulatedFaceSet", "IfcPolygonalFaceSet", "IfcFacetedBrep", "IfcFacetedBrepWithVoids", "IfcFaceBasedSurfaceModel", "IfcShellBasedSurfaceModel"]);
+const MESH_ITEMS: ReadonlySet<string> = new Set([
+    "IfcTriangulatedFaceSet", "IfcPolygonalFaceSet", "IfcFacetedBrep", "IfcFacetedBrepWithVoids", "IfcAdvancedBrep", "IfcAdvancedBrepWithVoids", "IfcFaceBasedSurfaceModel", "IfcShellBasedSurfaceModel",
+]);
+const BREPS_WITH_VOIDS: ReadonlySet<string> = new Set(["IfcFacetedBrepWithVoids", "IfcAdvancedBrepWithVoids"]);
 
 function isIdentity(matrix: readonly number[]): boolean {
     return matrix.every((value, index) => value === IDENTITY[index]);
@@ -31,68 +34,6 @@ function isIdentity(matrix: readonly number[]): boolean {
 
 function flat(points: readonly Base.Point2[]): number[] {
     return points.flatMap(([x, y]) => [x, y]);
-}
-
-function optionalAttribute(model: ModelSnapshot, id: number, name: string): IfcValue {
-    return model.schema.entity(model.entity(id).type).positions.has(name) ? model.attribute(id, name) : null;
-}
-
-function operatorAxis(model: ModelSnapshot, operator: number, name: string): Base.Vector3 | undefined {
-    const value = optionalAttribute(model, operator, name);
-    if (!isReference(value)) {
-        return undefined;
-    }
-    const direction = directionOf(model, value, Z_AXIS);
-    const length = length3(direction);
-    if (!(length > 0)) {
-        throw new UnsupportedGeometryError(`#${operator} has an ${name} of zero length`);
-    }
-    return scale3(direction, 1 / length);
-}
-
-function operatorScale(model: ModelSnapshot, operator: number, name: string, fallback: number): number {
-    const value = optionalAttribute(model, operator, name);
-    if (value === null) {
-        return fallback;
-    }
-    if (typeof value !== "number" || !Number.isFinite(value) || !(value > 0)) {
-        throw new UnsupportedGeometryError(`#${operator} has a ${name} that is not a number above zero`);
-    }
-    return value;
-}
-
-function spaceAxes(operator: number, axis1: Base.Vector3 | undefined, axis2: Base.Vector3 | undefined, axis3: Base.Vector3 | undefined): [Base.Vector3, Base.Vector3, Base.Vector3] {
-    const z = axis3 ?? Z_AXIS;
-    const hint = axis1 ?? (length3(cross3(z, X_AXIS)) > PARALLEL_TOLERANCE ? X_AXIS : Y_AXIS);
-    const across = subtract3(hint, scale3(z, dot3(hint, z)));
-    const length = length3(across);
-    if (!(length > PARALLEL_TOLERANCE)) {
-        throw new UnsupportedGeometryError(`#${operator} has its Axis1 along its Axis3`);
-    }
-    const x = scale3(across, 1 / length);
-    const y = cross3(z, x);
-    return [x, dot3(axis2 ?? Y_AXIS, y) < -PARALLEL_TOLERANCE ? cross3(x, z) : y, z];
-}
-
-function planeAxes(axis1: Base.Vector3 | undefined, axis2: Base.Vector3 | undefined): [Base.Vector3, Base.Vector3, Base.Vector3] {
-    if (axis1 !== undefined) {
-        const y = cross3(Z_AXIS, axis1);
-        return [axis1, axis2 !== undefined && dot3(axis2, y) < -PARALLEL_TOLERANCE ? cross3(axis1, Z_AXIS) : y, Z_AXIS];
-    }
-    return axis2 === undefined ? [X_AXIS, Y_AXIS, Z_AXIS] : [cross3(axis2, Z_AXIS), axis2, Z_AXIS];
-}
-
-function operatorMatrix(model: ModelSnapshot, operator: number): Base.TransformMatrix {
-    const origin = pointOf(model, model.attribute(operator, "LocalOrigin"));
-    const axis1 = operatorAxis(model, operator, "Axis1");
-    const axis2 = operatorAxis(model, operator, "Axis2");
-    const [x, y, z] = model.schema.isSubtypeOf(model.entity(operator).type, SPATIAL_OPERATOR)
-        ? spaceAxes(operator, axis1, axis2, operatorAxis(model, operator, "Axis3"))
-        : planeAxes(axis1, axis2);
-    const scale = operatorScale(model, operator, "Scale", 1);
-    const scaleY = operatorScale(model, operator, "Scale2", scale);
-    const scaleZ = operatorScale(model, operator, "Scale3", scale);
-    return [...scale3(x, scale), 0, ...scale3(y, scaleY), 0, ...scale3(z, scaleZ), 0, ...origin, 1];
 }
 
 export class ItemConverter {
@@ -104,12 +45,14 @@ export class ItemConverter {
     private readonly maps = new Map<number, readonly RecipePart[]>();
     private readonly representations = new Map<number, readonly RecipePart[]>();
     private readonly itemColours = new Map<number, number[] | undefined>();
+    private readonly solids: SweptSolids;
 
     constructor(model: ModelSnapshot, builder: RecipeBuilder, reach: number) {
         this.model = model;
         this.builder = builder;
         this.curves = new CurveSampler(model);
         this.reach = reach;
+        this.solids = new SweptSolids(model, builder, this.curves);
     }
 
     representation(representation: number): number {
@@ -169,10 +112,35 @@ export class ItemConverter {
                 return this.boolean(item);
             case "IfcMappedItem":
                 return this.mapped(item);
+            case "IfcRevolvedAreaSolid":
+                return this.solids.revolved(item);
+            case "IfcExtrudedAreaSolidTapered":
+                return this.solids.tapered(item);
+            case "IfcSweptDiskSolid":
+            case "IfcSweptDiskSolidPolygonal":
+                return this.solids.sweptDisk(item, type === "IfcSweptDiskSolidPolygonal");
+            case "IfcSurfaceCurveSweptAreaSolid":
+            case "IfcFixedReferenceSweptAreaSolid":
+                return this.solids.areaSweep(item, type === "IfcFixedReferenceSweptAreaSolid");
+            case "IfcBlock":
+            case "IfcRightCircularCylinder":
+            case "IfcRightCircularCone":
+            case "IfcSphere":
+            case "IfcRectangularPyramid":
+                return this.solids.primitive(item, type);
+            case "IfcCsgSolid": {
+                const root = this.model.attribute(item, "TreeRootExpression");
+                if (!isReference(root)) {
+                    throw new UnsupportedGeometryError(`#${item} has no tree root expression`);
+                }
+                return this.item(root.ref);
+            }
             case "IfcTriangulatedFaceSet":
             case "IfcPolygonalFaceSet":
             case "IfcFacetedBrep":
             case "IfcFacetedBrepWithVoids":
+            case "IfcAdvancedBrep":
+            case "IfcAdvancedBrepWithVoids":
             case "IfcFaceBasedSurfaceModel":
             case "IfcShellBasedSurfaceModel":
                 return this.meshNode(item, this.meshOf(item));
@@ -195,31 +163,57 @@ export class ItemConverter {
             throw new UnsupportedGeometryError(`#${item} has no swept area`);
         }
         const region = profileRegion(this.model, area.ref, this.curves);
-        const profile = region.kind === "circle"
-            ? this.builder.node({ op: "circle", center: region.center, radius: region.radius })
-            : this.builder.node({ op: "polygon", points: this.builder.numbers(flat(region.outer)), holes: region.holes.map((hole) => this.builder.numbers(flat(hole))) });
         const direction = directionOf(this.model, this.model.attribute(item, "ExtrudedDirection"), Z_AXIS);
         const depth = this.model.attribute(item, "Depth");
-        if (typeof depth !== "number" || !(depth > 0)) {
-            throw new UnsupportedGeometryError(`#${item} has no positive depth`);
+        if (typeof depth !== "number" || !Number.isFinite(depth) || depth === 0) {
+            throw new UnsupportedGeometryError(`#${item} has no depth`);
         }
-        const unit = scale3(direction, 1 / length3(direction));
-        const solid = this.builder.node({ op: "extrude", profile, direction: unit, depth });
+        const solid = this.extruded(region, scale3(direction, Math.sign(depth) / length3(direction)), Math.abs(depth));
         const position = this.model.attribute(item, "Position");
         return this.placedBy(solid, isReference(position) ? position.ref : undefined);
     }
 
+    private extruded(region: ProfileRegion, direction: Base.Vector3, depth: number): number {
+        return regionSolid(this.builder, region, (profile, part) => {
+            if (part.kind !== "polygon" || part.plane === undefined) {
+                return this.builder.node({ op: "extrude", profile, direction, depth });
+            }
+            const across = vectorToLocal(part.plane, direction);
+            if (!(Math.abs(across[2]) > PARALLEL_TOLERANCE)) {
+                throw new UnsupportedGeometryError("An extrusion runs along the plane of its outline");
+            }
+            const solid = this.builder.node({ op: "extrude", profile, direction: across, depth });
+            return this.builder.node({ op: "transform", of: solid, matrix: axesToMatrix(part.plane) });
+        });
+    }
+
     private boolean(item: number): number {
         const operator = this.model.attribute(item, "Operator");
-        if (!isEnumeration(operator) || operator.enum !== "DIFFERENCE") {
-            throw new UnsupportedGeometryError("Only boolean differences are supported yet");
-        }
         const first = this.model.attribute(item, "FirstOperand");
         const second = this.model.attribute(item, "SecondOperand");
         if (!isReference(first) || !isReference(second)) {
             throw new UnsupportedGeometryError(`#${item} lacks an operand`);
         }
-        return this.builder.node({ op: "difference", of: this.item(first.ref), tools: [this.tool(second.ref)] });
+        const solid = this.item(first.ref);
+        const plain = PLAIN_HALF_SPACES.has(this.model.typeOf(second.ref) ?? "");
+        switch (isEnumeration(operator) ? operator.enum : undefined) {
+            case "DIFFERENCE":
+                return this.builder.node({ op: "difference", of: solid, tools: [this.tool(second.ref)] });
+            case "UNION":
+                if (plain) {
+                    throw new UnsupportedGeometryError(`#${item} unites a solid with a half-space, which has no bounds`);
+                }
+                return this.builder.node({ op: "union", of: [solid, this.tool(second.ref)] });
+            case "INTERSECTION": {
+                if (plain) {
+                    const space = this.halfSpace(second.ref);
+                    return this.builder.node({ op: "difference", of: solid, tools: [this.builder.node({ ...space, normal: scale3(space.normal, -1) })] });
+                }
+                return this.builder.node({ op: "intersection", of: [solid, this.tool(second.ref)] });
+            }
+            default:
+                throw new UnsupportedGeometryError(`#${item} has no boolean operator`);
+        }
     }
 
     private tool(operand: number): number {
@@ -335,7 +329,7 @@ export class ItemConverter {
             throw new UnsupportedGeometryError(`#${item} has no outer shell`);
         }
         collector.shell(outer.ref, OUTWARD);
-        const voids = type === "IfcFacetedBrepWithVoids" ? this.model.attribute(item, "Voids") : null;
+        const voids = BREPS_WITH_VOIDS.has(type) ? this.model.attribute(item, "Voids") : null;
         for (const shell of (isList(voids) ? voids : []).filter(isReference)) {
             collector.shell(shell.ref, INWARD);
         }

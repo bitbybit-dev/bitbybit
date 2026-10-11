@@ -9,6 +9,7 @@ export * from "@bitbybit-dev/base/lib/api/resolved-inputs";
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace IFC {
+    export type AddAssemblyDto<T> = WithDefaults<Inputs.IFC.AddAssemblyDto<T>, "predefinedType">;
     export type AddBeamDto<T> = WithDefaults<Inputs.IFC.AddBeamDto<T>, "profile" | "rotation">;
     export type AddColumnDto<T> = WithDefaults<Inputs.IFC.AddColumnDto<T>, "position" | "baseOffset" | "profile" | "rotation">;
     export type AddDoorDto<T> = WithDefaults<Inputs.IFC.AddDoorDto<T>, "sill">;
@@ -39,8 +40,13 @@ export namespace IFC {
     export type ElementDto<T> = Inputs.IFC.ElementDto<T>;
     export type ElementInfoDto = WithDefaults<Inputs.IFC.ElementInfoDto, "globalId" | "type" | "name" | "storey">;
     export type ElementsDto<T> = WithDefaults<Inputs.IFC.ElementsDto<T>, "type">;
-    export type GeometryDto<T> = Inputs.IFC.GeometryDto<T>;
+    export type GeometryDto<T> = WithDefaults<Inputs.IFC.GeometryDto<T>, "groupByClass">;
+    export type GeometryElementsDto<T> = Inputs.IFC.GeometryElementsDto<T>;
     export type GeometryProblemDto = WithDefaults<Inputs.IFC.GeometryProblemDto, "globalId" | "type" | "message">;
+    export type GeometryToDocumentDto<T> = WithDefaults<Inputs.IFC.GeometryToDocumentDto<T>, "name" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "groupByClass">;
+    export type GeometryToShapesDto<T> = WithDefaults<Inputs.IFC.GeometryToShapesDto<T>, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
+    export type GeometryToStepDto<T> = WithDefaults<Inputs.IFC.GeometryToStepDto<T>, "name" | "fileName" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "compress" | "tryDownload" | "groupByClass">;
+    export type GeoreferenceDto = WithDefaults<Inputs.IFC.GeoreferenceDto, "mapped" | "crs" | "eastings" | "northings" | "orthogonalHeight" | "xAxisAbscissa" | "xAxisOrdinate" | "scale" | "located" | "latitude" | "longitude" | "elevation">;
     export type GetAttributeDto<T> = WithDefaults<Inputs.IFC.GetAttributeDto<T>, "attribute">;
     export type GlobalIdOfDto<T> = Inputs.IFC.GlobalIdOfDto<T>;
     export type MaterialLayerDto = Inputs.IFC.MaterialLayerDto;

@@ -257,6 +257,18 @@ body {
   font-size: 11px;
 }
 
+.panel-logo {
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 10px;
+}
+
+.downloads {
+  display: grid;
+  gap: 8px;
+}
+
 .download {
   width: 100%;
   padding: 12px 16px;

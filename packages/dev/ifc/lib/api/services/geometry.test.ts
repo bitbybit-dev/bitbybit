@@ -5,6 +5,7 @@ import { modelRecipe } from "../../geometry/elements";
 import { IFCService } from "../ifc-service";
 import * as Inputs from "../inputs";
 import type { IfcModel } from "../../model/model-types";
+import { oneWall, TIME_STAMP } from "../../__test__/build-setup";
 import { OTHER_TOOL_FILE, WALL_A, WALL_B } from "../../__test__/other-tool-file";
 
 vi.mock("../../geometry/elements", async () => {
@@ -65,6 +66,82 @@ describe("IFCGeometry.recipe", () => {
         expect(recipe.roots.map((root) => root.tag["type"])).toEqual(["IfcWall", "IfcWall", "IfcDoor", "IfcDoor", "IfcSlab", "IfcColumn"]);
         expect(recipe.millimetresPerUnit).toBe(1);
         expect(recipe.tolerance).toBe(0.01);
+    });
+
+    it("should group each root by the site, building and storey it stands in, then by its IFC class there", () => {
+        // Arrange
+        const model = house();
+
+        // Act
+        const recipe = ifc.geometry.recipe({ model });
+
+        // Assert
+        expect(checkRecipe(recipe)).toEqual([]);
+        expect(recipe.groups!.map((group) => [group.name, group.parent, group.tag["type"]])).toEqual([
+            ["Site", undefined, "IfcSite"],
+            ["Building", 0, "IfcBuilding"],
+            ["Storey", 1, "IfcBuildingStorey"],
+            ["Walls", 2, "IfcWall"],
+            ["Doors", 2, "IfcDoor"],
+            ["Slabs", 2, "IfcSlab"],
+            ["Columns", 2, "IfcColumn"],
+        ]);
+        expect(recipe.groups![2]!.tag["globalId"]).toBe(ifc.model.globalIdOf({ model, id: "ground" }));
+        expect(recipe.roots.map((root) => recipe.groups![root.group!]!.name)).toEqual(["Walls", "Walls", "Doors", "Doors", "Slabs", "Columns"]);
+    });
+
+    it("should gather the parts of an aggregate in a group named after it, under its own class", () => {
+        // Arrange
+        const roofed = ifc.roofs.add({ model: house(), storey: "ground", id: "roof", name: "Main roof", outline: [[0, 0], [6000, 0], [6000, 4000], [0, 4000]], kind: Inputs.IFC.roofKindEnum.gable, pitch: 30, baseOffset: 3000 });
+
+        // Act
+        const recipe = ifc.geometry.recipe({ model: roofed });
+
+        // Assert
+        const slabs = recipe.roots.filter((root) => root.tag["type"] === "IfcSlab" && root.tag["globalId"] !== ifc.model.globalIdOf({ model: roofed, id: "slab" }));
+        expect(slabs).toHaveLength(2);
+        const roof = recipe.groups![slabs[0]!.group!]!;
+        expect(slabs.every((slab) => slab.group === slabs[0]!.group)).toBe(true);
+        expect(roof).toEqual({ name: "Main roof", parent: recipe.groups!.findIndex((group) => group.name === "Roofs"), tag: { globalId: ifc.model.globalIdOf({ model: roofed, id: "roof" }), type: "IfcRoof", name: "Main roof" } });
+        expect(recipe.groups![roof.parent!]!.parent).toBe(2);
+    });
+
+    it("should describe one model with and without class groups when asked for both", () => {
+        // Arrange
+        const model = house();
+
+        // Act
+        const grouped = ifc.geometry.recipe({ model });
+        const ungrouped = ifc.geometry.recipe({ model, groupByClass: false });
+
+        // Assert
+        expect(grouped.groups).toHaveLength(7);
+        expect(ungrouped.groups!.map((group) => group.name)).toEqual(["Site", "Building", "Storey"]);
+    });
+
+    it("should group an element another tool aggregated straight into a storey with the elements the storey contains", () => {
+        // Arrange
+        const model = ifc.model.read({ data: OTHER_TOOL_FILE.replace("(#42,#56),#24);", "(#42),#24);\r\n#99=IFCRELAGGREGATES('0Aggregates000000000001',$,$,$,#24,(#56));") });
+
+        // Act
+        const recipe = ifc.geometry.recipe({ model });
+
+        // Assert
+        const [first, second] = [WALL_A, WALL_B].map((wall) => recipe.roots.find((root) => root.tag["globalId"] === wall)!.group);
+        expect(second).toBe(first);
+        expect(recipe.groups!.filter((group) => group.tag["type"] === "IfcBuildingStorey")).toHaveLength(1);
+    });
+
+    it("should leave the classes out when asked not to group by them, an aggregate's parts still gathered under it", () => {
+        // Arrange
+        const roofed = ifc.roofs.add({ model: house(), storey: "ground", id: "roof", name: "Main roof", outline: [[0, 0], [6000, 0], [6000, 4000], [0, 4000]], kind: Inputs.IFC.roofKindEnum.gable, pitch: 30, baseOffset: 3000 });
+
+        // Act
+        const recipe = ifc.geometry.recipe({ model: roofed, groupByClass: false });
+
+        // Assert
+        expect(recipe.groups!.map((group) => [group.name, group.parent])).toEqual([["Site", undefined], ["Building", 0], ["Storey", 1], ["Main roof", 2]]);
+        expect(recipe.roots.map((root) => root.group)).toEqual([2, 2, 2, 2, 2, 2, 3, 3]);
     });
 
     it("should tag each root with its element's GlobalId, name and material colour", () => {
@@ -205,6 +282,21 @@ describe("IFCGeometry.recipe", () => {
         const notAList: unknown = "south";
         expect(() => ifc.geometry.recipe({ model, elements: notAList as string[] })).toThrow(TypeError);
         expect(() => ifc.geometry.recipe({ model, elements: ["missing"] })).toThrow("The model has no element 'missing'");
+    });
+
+    it("should build every element that shares a GlobalId the file gives to more than one, when asked for it", () => {
+        // Arrange
+        const { ifc, model } = oneWall();
+        const text = ifc.model.write({ model, timeStamp: TIME_STAMP });
+        const wallRow = text.split("\n").find((row) => /^#\d+=IFCWALL\(/.test(row))!;
+        const globalId = /^#\d+=IFCWALL\('([^']+)'/.exec(wallRow)![1]!;
+        const shared = ifc.model.read({ data: text.replace(wallRow, `${wallRow}\n${wallRow.replace(/^#\d+=/, "#9999=")}`) });
+
+        // Act
+        const recipe = ifc.geometry.recipe({ model: shared, elements: [globalId] });
+
+        // Assert
+        expect(recipe.roots.map((root) => root.tag["globalId"])).toEqual([globalId, globalId]);
     });
 
     it("should refuse something that is not a model", () => {

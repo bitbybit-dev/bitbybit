@@ -72,7 +72,7 @@ export function createWallOpening(tx: IfcTransaction, writer: EntityWriter, spec
 
 export function openingsOf(reader: ModelReader, element: number): number[] {
     return reader.referencesTo(element).flatMap((user) => {
-        const relating = reader.get(user)?.type === VOIDING.relationship ? reader.attribute(user, VOIDING.relating) : null;
+        const relating = reader.typeOf(user) === VOIDING.relationship ? reader.attribute(user, VOIDING.relating) : null;
         const opening = isReference(relating) && relating.ref === element ? reader.attribute(user, VOIDING.related) : null;
         return isReference(opening) ? [opening.ref] : [];
     });
@@ -80,7 +80,7 @@ export function openingsOf(reader: ModelReader, element: number): number[] {
 
 export function fillingsOf(reader: ModelReader, opening: number): number[] {
     return reader.referencesTo(opening).flatMap((user) => {
-        const relating = reader.get(user)?.type === FILLING.relationship ? reader.attribute(user, FILLING.relating) : null;
+        const relating = reader.typeOf(user) === FILLING.relationship ? reader.attribute(user, FILLING.relating) : null;
         const filling = isReference(relating) && relating.ref === opening ? reader.attribute(user, FILLING.related) : null;
         return isReference(filling) ? [filling.ref] : [];
     });

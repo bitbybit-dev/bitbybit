@@ -84,6 +84,11 @@
             "types": "./dist/lib/api/bitbybit/index.d.ts",
             "default": "./dist/lib/api/bitbybit/index.js"
         },
+        "./lib/api/bitbybit/ifc": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/ifc/index.ts",
+            "types": "./dist/lib/api/bitbybit/ifc/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/ifc/index.js"
+        },
         "./lib/api/bitbybit/occt": {
             "@bitbybit-dev/source": "./lib/api/bitbybit/occt/index.ts",
             "types": "./dist/lib/api/bitbybit/occt/index.d.ts",

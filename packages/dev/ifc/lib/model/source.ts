@@ -155,8 +155,12 @@ export class IfcSource {
         const targetRows = (row: number, stamp: number): number => {
             const start = this.index.argStart[row]!;
             const end = this.index.argEnd[row]!;
-            if (scratch.length < referenceCapacity(start, end)) {
-                scratch = new Int32Array(2 * referenceCapacity(start, end));
+            const capacity = referenceCapacity(this.index.bytes, start, end);
+            if (capacity === 0) {
+                return 0;
+            }
+            if (scratch.length < capacity) {
+                scratch = new Int32Array(Math.max(capacity, 2 * scratch.length));
             }
             const found = referencesInto(this.index.bytes, start, end, scratch);
             let kept = 0;

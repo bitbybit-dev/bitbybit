@@ -237,6 +237,20 @@ function membersAndMoves(): IfcModel {
     return ifc.model.move({ model, element: "screen", translation: [500, 500, 0], rotation: -15 });
 }
 
+function assemblies(): IfcModel {
+    const ifc = new IFCService();
+    let model = ifc.model.create({ name: "Assemblies", seed: "validation-assemblies" });
+    model = ifc.spatial.addStorey({ model, id: "ground", elevation: 0 });
+    const boards = Array.from({ length: 5 }, (_, index) => `board-${index}`);
+    boards.forEach((board, index) => {
+        model = ifc.members.add({ model, storey: "ground", id: board, name: "Cladding board", start: [index * 160, 0, 0], end: [index * 160, 0, 2400], width: 140, depth: 20, predefinedType: IFC.memberPredefinedTypeEnum.plate });
+    });
+    model = ifc.assemblies.add({ model, parts: boards, id: "cladding", name: "South cladding", predefinedType: IFC.elementAssemblyPredefinedTypeEnum.userDefined, objectType: "Cladding" });
+    model = ifc.members.add({ model, storey: "ground", id: "chord", start: [0, 2000, 2000], end: [4000, 2000, 2000], width: 100, depth: 150, predefinedType: IFC.memberPredefinedTypeEnum.chord });
+    model = ifc.members.add({ model, storey: "ground", id: "strut", start: [0, 2000, 2000], end: [2000, 2000, 3000], width: 100, depth: 100, predefinedType: IFC.memberPredefinedTypeEnum.strut });
+    return ifc.assemblies.add({ model, parts: ["chord", "strut"], id: "truss", name: "Truss", predefinedType: IFC.elementAssemblyPredefinedTypeEnum.truss });
+}
+
 function roofedHouse(kind: IFC.roofKindEnum): () => IfcModel {
     return () => {
         const ifc = new IFCService();
@@ -275,6 +289,7 @@ export const VALIDATION_FIXTURES: readonly ValidationFixture[] = [
     { name: "edited-properties", build: editedProperties },
     { name: "spaces-and-storeys", build: spacesAndStoreys },
     { name: "members-and-moves", build: membersAndMoves },
+    { name: "assemblies", build: assemblies },
     { name: "site-and-door-hardware", build: siteAndDoorHardware },
     { name: "gable-roof", build: roofedHouse(IFC.roofKindEnum.gable) },
     { name: "hip-roof", build: roofedHouse(IFC.roofKindEnum.hip) },

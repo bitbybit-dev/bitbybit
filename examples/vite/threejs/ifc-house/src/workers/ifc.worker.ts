@@ -1,4 +1,7 @@
-import { initializationComplete, onMessageInput } from "@bitbybit-dev/ifc-worker";
+import { initializationComplete, onMessageInput, type DataInput } from "@bitbybit-dev/ifc-worker";
 
 initializationComplete();
-addEventListener("message", ({ data }) => onMessageInput(data, postMessage));
+
+addEventListener("message", ({ data }: MessageEvent<DataInput>) => {
+    onMessageInput(data, postMessage);
+});

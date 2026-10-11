@@ -32,9 +32,11 @@ export class RoomLabels {
             const element = document.createElement("div");
             element.className = "room-label";
             const area = areas.get(room.number);
-            element.innerHTML = `<span class="room-number">${room.number}</span><span class="room-name"></span><span class="room-area"></span>`;
-            element.querySelector(".room-name")!.textContent = room.name;
-            element.querySelector(".room-area")!.textContent = area === undefined ? "" : `${area.toFixed(1)} m²`;
+            element.append(
+                textSpan("room-number", room.number),
+                textSpan("room-name", room.name),
+                textSpan("room-area", area === undefined ? "" : `${area.toFixed(1)} m²`),
+            );
             host.appendChild(element);
             return { room, anchor: centreOf(room), element };
         });
@@ -63,4 +65,11 @@ export class RoomLabels {
             }
         }
     }
+}
+
+function textSpan(className: string, text: string): HTMLSpanElement {
+    const span = document.createElement("span");
+    span.className = className;
+    span.textContent = text;
+    return span;
 }

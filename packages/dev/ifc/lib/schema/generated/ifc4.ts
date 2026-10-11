@@ -21,6 +21,7 @@
 //
 // Issue date:
 // Sunday, October 29, 2017
+
 import type { CompactSchema } from "../schema-types";
 
 export const IFC4_SCHEMA: CompactSchema = {

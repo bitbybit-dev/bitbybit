@@ -1,7 +1,7 @@
 import type { Color, Dates, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
 import type { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import type { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import type { IFCBitByBit, IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
+import type { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
 import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import type { Tag } from "./bitbybit/tag";
 import type { Time } from "./bitbybit/time";
@@ -10,6 +10,7 @@ import type { JSONBitByBit } from "./bitbybit/json";
 import type { CSVBitByBit } from "./bitbybit/csv";
 import type { Verb } from "./bitbybit/verb/verb";
 import type { OCCTW } from "./bitbybit/occt/occt";
+import type { IFCW } from "./bitbybit/ifc/ifc";
 
 export interface SharedServices {
     jscadWorkerManager: JSCADWorkerManager;
@@ -18,7 +19,7 @@ export interface SharedServices {
     ifcWorkerManager: IFCWorkerManager;
     jscad: JSCAD;
     manifold: ManifoldBitByBit;
-    ifc: IFCBitByBit;
+    ifc: IFCW;
     lists: Lists;
     math: MathBitByBit;
     vector: Vector;

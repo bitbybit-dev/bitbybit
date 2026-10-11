@@ -30,3 +30,5 @@ export const LINE_BREAK = "\n";
 export const WINDOWS_LINE_BREAK = "\r\n";
 export const LINE_FEED = 0x0a;
 export const CARRIAGE_RETURN = 0x0d;
+export const IFC_EXTENSION = ".ifc";
+export const ARCHIVE_RESOURCE_FOLDER = "__MACOSX/";

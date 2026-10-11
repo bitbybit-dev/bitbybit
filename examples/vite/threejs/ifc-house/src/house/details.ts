@@ -1,11 +1,11 @@
-import { Inputs } from "@bitbybit-dev/threejs";
+import { IFC, type Base } from "@bitbybit-dev/ifc/lib/api/inputs";
 import {
     BOARD, CANTILEVER_DRIP, CARPORT, CARPORT_DECK_BOTTOM, CAVITY, COPING, DECK_TOP, GLASS_RAIL, RAILS, STUDY_GLAZING, DOOR_TYPES, DOORS, FACADE_DEPTH, FIRST_FLOOR_ELEVATION, FIRST_FLOOR_EAST_FACE, FIRST_FLOOR_WALL_TOP, FIRST_INTERIOR,
     GROUND_INTERIOR, PARAPET_INSET, PARAPET_TOP, ROOF_DEPTH, SILLED_WINDOWS, SLAB_DEPTH, STAIR, SURROUNDED_WINDOWS, TIMBER_WALL, WALL_RUNS, WINDOW_TYPES, WINDOWS, railLine, thicknessOf,
 } from "./house-plan";
-import type { DetailSpec, FacadeLine, FacadeOpening, FacadeSide, FillingSpec, WallSide } from "./house-types";
+import type { AssemblySpec, DetailSpec, FacadeLine, FacadeOpening, FacadeSide, FillingSpec, WallSide } from "./house-types";
 
-const { memberPredefinedTypeEnum } = Inputs.IFC;
+const { memberPredefinedTypeEnum } = IFC;
 const BOARD_PLANE = TIMBER_WALL + CAVITY + BOARD.thickness / 2;
 const FLASHING = { height: 0.06, projection: 0.03 };
 const ABOVE_FLASHING = -SLAB_DEPTH + FLASHING.height;
@@ -29,6 +29,8 @@ const CANOPY = {
     lights: [6.665, 7.915], light: { radius: 0.035, depth: 0.01, out: 0.7 },
 };
 
+const SOLAR_ARRAY = "solar-array";
+
 const FIRST_SIDES: FacadeSide[] = [
     { wall: "ff-south", along: "x", line: FIRST_INTERIOR.y0, outward: -1, from: -FACADE_DEPTH, to: FIRST_INTERIOR.x1 + FACADE_DEPTH, start: FIRST_INTERIOR.x0, direction: 1 },
     { wall: "ff-north", along: "x", line: FIRST_INTERIOR.y1, outward: 1, from: -FACADE_DEPTH, to: FIRST_INTERIOR.x1 + FACADE_DEPTH, start: FIRST_INTERIOR.x1, direction: -1 },
@@ -44,10 +46,11 @@ function sideOfWall(wall: string): WallSide {
     }
     const along = spec.start[1] === spec.end[1] ? "x" : "y";
     const axis = along === "x" ? 0 : 1;
+    const across = along === "x" ? 1 : 0;
     const direction = spec.end[axis] > spec.start[axis] ? 1 : -1;
     const outward = along === "x" ? -direction as 1 | -1 : direction;
     const thickness = run.layerSet === "Timber frame wall" ? TIMBER_WALL : FACADE_DEPTH;
-    return { wall, along, line: spec.start[1 - axis], outward, start: spec.start[axis], direction, thickness, baseOffset: run.baseOffset };
+    return { wall, along, line: spec.start[across], outward, start: spec.start[axis], direction, thickness, baseOffset: run.baseOffset };
 }
 
 function sizeOf(filling: FillingSpec): { width: number; height: number } {
@@ -65,7 +68,7 @@ function openingOf(filling: FillingSpec, side: FacadeLine & { baseOffset?: numbe
     return { id: filling.id, from, to: from + width, bottom, top: bottom + height };
 }
 
-function point(side: FacadeLine, u: number, depth: number, z: number): Inputs.Base.Point3 {
+function point(side: FacadeLine, u: number, depth: number, z: number): Base.Point3 {
     const across = side.line + side.outward * depth;
     return side.along === "x" ? [u, across, z] : [across, u, z];
 }
@@ -105,6 +108,15 @@ function facadeOpenings(side: FacadeSide): FacadeOpening[] {
     return [...WINDOWS, ...DOORS].filter((filling) => filling.wall === side.wall).map((filling) => openingOf(filling, side));
 }
 
+function claddingOf(side: FacadeSide): string {
+    return `${side.wall}-cladding`;
+}
+
+function facingOf(side: FacadeSide): string {
+    const facing = side.wall.replace(/^ff-/, "");
+    return facing.charAt(0).toUpperCase() + facing.slice(1);
+}
+
 function claddingBoards(): DetailSpec[] {
     const boards: DetailSpec[] = [];
     const pitch = BOARD.width + BOARD.gap;
@@ -118,7 +130,7 @@ function claddingBoards(): DetailSpec[] {
             const middle = (from + to) / 2;
             cutAround(boardBottom(side, to), PARAPET_TOP, from, to, openings).forEach(([bottom, top], piece) => {
                 boards.push({
-                    id: `${side.wall}-board-${index}-${piece}`, name: "Cladding board", storey: "first", layer: "first", material: "Charred larch",
+                    id: `${side.wall}-board-${index}-${piece}`, name: "Cladding board", storey: "first", layer: "first", material: "Charred larch", assembly: claddingOf(side),
                     start: point(side, middle, BOARD_PLANE, bottom), end: point(side, middle, BOARD_PLANE, top),
                     width: BOARD.width, depth: BOARD.thickness, rotation: side.along === "y" ? 90 : 0, kind: memberPredefinedTypeEnum.plate,
                 });
@@ -134,7 +146,7 @@ function flashings(): DetailSpec[] {
     const width = outer - TIMBER_WALL;
     const z = -SLAB_DEPTH + FLASHING.height / 2;
     const [, north, west] = FIRST_SIDES as [FacadeSide, FacadeSide, FacadeSide, FacadeSide];
-    const flashing = (id: string, start: Inputs.Base.Point3, end: Inputs.Base.Point3): DetailSpec => ({
+    const flashing = (id: string, start: Base.Point3, end: Base.Point3): DetailSpec => ({
         id, name: "Floor line flashing", storey: "first", layer: "first", material: "Anthracite aluminium", start, end, width, depth: FLASHING.height,
     });
     return [
@@ -152,7 +164,7 @@ function windowSurrounds(): DetailSpec[] {
     const [side] = FIRST_SIDES as [FacadeSide];
     return WINDOWS.filter((window) => SURROUNDED_WINDOWS.includes(window.id)).flatMap((window) => {
         const opening = openingOf(window, side);
-        const plate = (suffix: string, start: Inputs.Base.Point3, end: Inputs.Base.Point3, horizontal: boolean): DetailSpec => ({
+        const plate = (suffix: string, start: Base.Point3, end: Base.Point3, horizontal: boolean): DetailSpec => ({
             id: `${window.id}-surround-${suffix}`, name: "Window surround", storey: "first", layer: "first", material: "Anthracite aluminium",
             start, end, width: horizontal ? width : t, depth: horizontal ? t : width,
         });
@@ -207,14 +219,14 @@ function solarArray(): DetailSpec[] {
             const top = base + (near - y) * slope - halfDepth - SOLAR_RAIL.clearance;
             const middle = near + SOLAR_RAIL.width / 2;
             return {
-                id, name: "Mounting rail", storey: "first", layer: "roof", material: "Anthracite aluminium",
+                id, name: "Mounting rail", storey: "first", layer: "roof", material: "Anthracite aluminium", assembly: SOLAR_ARRAY,
                 start: [left, middle, (ROOF_TOP + top) / 2], end: [right, middle, (ROOF_TOP + top) / 2], width: SOLAR_RAIL.width, depth: top - ROOF_TOP,
             };
         };
         const panels = Array.from({ length: SOLAR.columns }, (_, column): DetailSpec => {
             const x = SOLAR.firstColumn + column * (SOLAR.width + SOLAR.gap);
             return {
-                id: `solar-panel-${row}-${column}`, name: "Solar panel", storey: "first", layer: "roof", material: "Solar module",
+                id: `solar-panel-${row}-${column}`, name: "Solar panel", storey: "first", layer: "roof", material: "Solar module", assembly: SOLAR_ARRAY,
                 start: [x, y, base], end: [x, y + run, base + run * slope], width: SOLAR.width, depth: SOLAR.thickness, kind: memberPredefinedTypeEnum.plate,
             };
         });
@@ -341,11 +353,18 @@ function glassRails(): DetailSpec[] {
 function studyGlazing(): DetailSpec[] {
     const { wall, line, x0, panes, frame } = STUDY_GLAZING;
     const w = frame.width;
-    const door = openingOf(DOORS.find((filling) => filling.wall === wall)!, { wall, along: "x", line, outward: 1, start: x0, direction: 1, baseOffset: 0 });
+    const studyDoor = DOORS.find((filling) => filling.wall === wall);
+    if (!studyDoor) {
+        throw new Error(`The plan has no door in '${wall}'`);
+    }
+    const door = openingOf(studyDoor, { wall, along: "x", line, outward: 1, start: x0, direction: 1, baseOffset: 0 });
     const pane = (door.from - w - (x0 + w) - (panes - 1) * w) / panes;
     const mullions = Array.from({ length: panes - 1 }, (_, index) => x0 + w + (index + 1) * pane + index * w);
     const verticals = [x0, ...mullions, door.from - w, door.to];
-    const bays = verticals.slice(0, -1).map((left, index) => ({ from: left + w, to: verticals[index + 1]!, door: left + w === door.from }));
+    const bays = verticals.flatMap((left, index) => {
+        const right = verticals[index + 1];
+        return right === undefined ? [] : [{ from: left + w, to: right, door: left + w === door.from }];
+    });
     const faces = [line - thicknessOf("Glass partition") / 2 - frame.depth / 2, line + thicknessOf("Glass partition") / 2 + frame.depth / 2];
     const steel = { storey: "first", layer: "first", material: "Blackened steel" } as const;
     return faces.flatMap((y, face): DetailSpec[] => [
@@ -360,6 +379,13 @@ function studyGlazing(): DetailSpec[] {
             }));
         }),
     ]);
+}
+
+export function houseAssemblies(): AssemblySpec[] {
+    return [
+        ...FIRST_SIDES.map((side) => ({ id: claddingOf(side), name: `${facingOf(side)} cladding`, objectType: "Cladding" })),
+        { id: SOLAR_ARRAY, name: "Solar array", objectType: "Solar array" },
+    ];
 }
 
 export function houseDetails(): DetailSpec[] {

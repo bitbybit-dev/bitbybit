@@ -36,14 +36,17 @@ are asked for, from the bytes and without decoding an entity: a GlobalId is the 
 whose type is an IfcRoot, read straight from its bytes when it needs no unescaping, and a back-reference
 is a `#` followed by digits outside comments and strings. The back-references are built in two passes
 over typed arrays, counting and then filling (offsets per row and the ids that refer), so a file of
-millions of rows costs two arrays rather than a map of sets. A 677 MB file of 10.9 million rows reads
+millions of rows costs two arrays rather than a map of sets. Each row's `#` signs are counted first
+with the native byte search: a row with none, such as a coordinate list that can run to tens of
+megabytes, is passed over without walking its bytes, and the scratch for a row's references is sized
+by that count rather than by the row's length. A 677 MB file of 10.9 million rows reads
 in under 4 s and builds both lookups in about 4 s more, with half a gigabyte of JavaScript heap beside
 its bytes.
 
 An IFC2X3 file is read through the IFC4 table. IFC4 kept almost every IFC2X3 entity, renamed few
 attributes in place and appended most new ones, so a row decodes by IFC4's positions and a missing
-trailing attribute reads as unset; two production files of 1.5 and 10.4 million rows decoded in full
-but for one row, and built the same geometry as through an IFC2X3 table. Such a model names its own
+trailing attribute reads as unset; large IFC2X3 exports of millions of rows
+decode in full and build the same geometry as through an IFC2X3 table. Such a model names its own
 schema (`schemaName` is `IFC2X3`) and is not `editable`: a change would be written in IFC4's shape into
 a file that says IFC2X3, so `IfcTransaction` refuses to start. `upgradeToIfc4` makes it an IFC4 model:
 every row is checked against IFC4, attributes IFC4 added are left unset, a newly required enumeration
@@ -80,6 +83,18 @@ and its errors. A changed or deleted entity is always read from the model's chan
 
 Placement chains are walked with a cycle guard and a depth limit (`absoluteFrame`), because a file can
 make a placement relative to itself.
+
+An `.ifczip` archive is known by its first bytes, a zip local header, and read from the one `.ifc` file
+it holds; folders and macOS resource forks (`__MACOSX/`) are passed over, and an archive with no `.ifc`
+file or several is refused, naming what it holds. The archive is read by `base`'s zip helper, which
+inflates synchronously, so `model.read` stays one synchronous call, and checks every entry's size and
+CRC-32; a ZIP64 archive and an encrypted entry are refused. The model is the inflated file's, so it
+writes back as a plain `.ifc` file.
+
+A file may hold rows of types its schema does not define - an IFC2X3 file read through IFC4 keeps
+`IfcRelOccupiesSpaces`, for one. Such a row is kept and written back as it was, but decoding it throws,
+so every walk over the rows that refer to an object compares their types with `typeOf`, which reads the
+type code without decoding the row.
 
 ## Writing a file
 
@@ -148,6 +163,12 @@ GlobalId for different objects. Creating always derives from the key, even a key
 GlobalId; looking up (`resolveObject`) takes a GlobalId the model holds as itself and anything else as a
 key. A transaction refuses a GlobalId the model or the transaction already holds, and the encoder
 refuses one that is not 22 characters of the alphabet.
+
+Files from other tools do not always keep GlobalIds unique: an export may give one GlobalId to
+several entities, such as two copies of one rebar. Such a file reads and builds as it is, each
+copy its own entity; `resolveObject` refuses a GlobalId that several entities own and names them,
+since whichever it picked could be the wrong one to read or change. A geometry selection is the one
+place it is not refused: `geometry.recipe` asked for such a GlobalId builds every product that owns it.
 
 ## Lengths and defaults
 
@@ -271,6 +292,19 @@ slab's body: an outline extruded straight up or down, whichever way another tool
 slab's outline can be read (an arbitrary profile over a polyline), the opening's outline must lie inside
 it or on its edge. A slab opening is related to the slab alone, not to its storey.
 
+## Assemblies
+
+`assemblies.add` makes elements the parts of an `IfcElementAssembly` (`IfcRelAggregates`), which IFC4
+documents as the element made of other elements, with members, plates and the like as parts. A
+covering (`IfcCovering` of type CLADDING) would name a cladding more closely, but IFC documents no
+decomposition of a covering into parts, so boards gathered into one are an assembly whose `ObjectType`
+says `Cladding`. As IFC asks, the parts leave the spatial structure: their
+`IfcRelContainedInSpatialStructure` lets go of them, and the assembly is contained where they stood,
+placed at that structure's origin. The parts keep their own placements, so nothing moves.
+`model.elements` and `model.element` give a part the structure its whole stands in (`standingIn`),
+nested wholes included, so a board still lists under its storey; `storeyOf` already looked through
+aggregates. Removing an assembly removes its parts, as removing any aggregate does.
+
 ## Moving
 
 `model.move` turns an element's absolute frame about the vertical through its origin, moves it, and
@@ -304,6 +338,14 @@ rippled so it does not read as a ball, and a tapering trunk from base's `frustum
 crown is at most 45 percent of the tree's height, so every tree has a trunk. Each part takes its material
 the way a door or window part does: a styled item and a constituent of the element's constituent set.
 
+`model.georeference` reads where a model sits on the Earth and changes nothing. IFC4 places a model's
+coordinates on a map with an `IfcMapConversion` from a representation context to an `IfcProjectedCRS`;
+when a file holds several, the one from the 'Model' context is read, else the first. Its eastings,
+northings and height are in the map's unit, which is why they are given as written and not converted.
+The site's reference latitude and longitude are compound angles - degrees, minutes, seconds and
+millionths, all negative to the south and west - read into decimal degrees. An IFC2X3 file has no map
+conversion and often places its site kilometres from the origin instead; such a model reads as unmapped.
+
 ## Slabs
 
 A slab is placed at its storey, raised by its top offset, and extruded down from that reference plane:
@@ -320,7 +362,9 @@ the rectangle, and a hip's ridge runs along the longer sides, as long as the lon
 shorter, coming to a point over a square. The overhang widens the rectangle on every side and lowers the eaves along the slope,
 which leaves the ridge where it was. Each plane is an `IfcSlab` ROOF placed on the plane, its outline in
 the plane's coordinates (X level along the eaves, Y up the slope), extruded up through the thickness, so
-its underside is the plane; the slabs are placed on the `IfcRoof` and aggregated into it, so moving or
+its underside is the plane. Its `IfcMaterialLayerSetUsage` runs along AXIS3, NEGATIVE, offset by the
+thickness, so the first layer is at the top as a slab's is, and a layer set reads the same on both;
+the slabs are placed on the `IfcRoof` and aggregated into it, so moving or
 removing the roof moves or removes them.
 
 `walls.clipByRoof` reads each part's underside back from its body and clips the wall by every plane that
@@ -406,8 +450,69 @@ project's plane angle unit, preferred over the trim point only when `MasterRepre
 and trims that meet take the whole turn, as IfcOpenShell takes them.
 
 A polygonal bounded half-space is the prism of its boundary, reaching `REACH_MILLIMETRES` (a kilometre)
-either side of its position, less the side of its plane the half-space leaves out; the recipe has no
-intersection, and that difference is one. A boxed half-space cuts as its plane.
+either side of its position, less the side of its plane the half-space leaves out. A boxed half-space
+cuts as its plane.
+
+A boolean result's difference is a `difference`, its union a `union` and its intersection an
+`intersection`, so both lanes join or intersect the solids exactly. An intersection with a plane's
+half-space is a cut by the other side of the plane, since a half-space is not a solid; a union with a
+half-space has no bounds and is refused.
+
+Solids other than extrusions are built from the recipe's generic steps, and every decision IFC makes
+about them is taken here, so an executor only places what it is given (`SweptSolids`,
+`lib/geometry/swept-solids.ts`; a region becomes a solid through `regionSolid`, which joins a composite
+profile's parts and hollows a hollow circle the same way for every step).
+- A revolved area solid is a `revolve` about its axis, which must lie in the profile's plane; a negative
+  angle turns the other way.
+- A tapered extrusion is a `loft` of its two profiles, at its start and at its depth along the
+  direction, so they must have as many corners each; hollow circles taper as their outer loft less
+  their inner one.
+- A swept disk is a `loft` of a circle through a frame at every point of its directrix, sampled as an
+  outline is; a polygonal one has its corners rounded by its fillet radius first (base's
+  `roundedPath3`).
+- A fixed-reference sweep turns its profile so the x axis follows the reference across the directrix,
+  and a surface-curve sweep so it follows the reference surface's normal: a plane's, or across a surface
+  of linear extrusion the directrix's tangent crossed with the extrusion direction. A centred circle
+  needs no such axis, so it sweeps on any surface; another profile on a surface no rule reads is
+  refused.
+- The frames come from base's `paths.ts`: the profile square to the tangent (at a corner the bisector,
+  at the ends the curve's own tangent when it is a circle, an ellipse or made of them), its axes carried
+  along without twisting by double reflection, and a corner's section stretched across the bend so a
+  tube keeps its width.
+- `StartParam` and `EndParam` are honoured when they span the whole directrix, read as IFC defines
+  them or from the trimmed curve's start as Revit writes them; a sweep along part of its directrix is
+  refused for now.
+- CSG primitives are a block's extruded rectangle, a cylinder's extruded circle, a cone's and a sphere's
+  turned half sections and a pyramid's closed mesh; a CSG solid is its tree.
+
+Advanced breps are meshes in the mesh lane: one `triangles` node, as faceted breps are, built face by
+face (`AdvancedFaces`, `lib/geometry/advanced.ts`).
+- Every edge is sampled once, from its start vertex to its end along its curve (`EdgeSampler`,
+  `lib/geometry/edges.ts`): a line, a polyline, a circle or an ellipse in the edge's sense, the whole
+  way round when its vertices are one, a B-spline between the parameters nearest its vertices, a curve
+  on a surface through its curve in space. Two faces that share an edge share its points exactly, so
+  the collector welds them and the shell closes.
+- A face's surface gives a point for two parameters and the parameters of a point
+  (`parametricSurface`, `lib/geometry/surfaces.ts`): planes, cylinders, spheres, tori, surfaces of
+  revolution and of linear extrusion, and B-spline surfaces, a rectangular trimmed or curve bounded
+  surface through its basis. Each is parametrised as ISO 10303-42 parametrises it, so the surface's
+  normal is the one the face's `SameSense` refers to; a revolution's or an extrusion's curve is
+  sampled eight times as finely as an outline, so the normal's kinks at its points stay small. A
+  B-spline surface is inverted by damped Newton steps from the previous point, restarted from a grid
+  when it misses, and closed where its flags say.
+- The loops go into parameter space, angles unwrapped along each loop. A face whose two loops wrap
+  around its surface (a band of a cylinder without a seam edge) is cut open along a seam between them,
+  and one whose single loop wraps (half a sphere) is closed over the pole; the cut and the pole's edge
+  are sampled along the surface as finely as its normal turns, the same points on both sides of the
+  cut. `refinedSurfaceMesh` (base) then meshes the face, and its triangles are turned to face along
+  the surface's normal, or against it when `SameSense` is false.
+- A rational spline whose ends meet their vertices only once its control points are divided by their
+  weights is read divided, and a rational surface its boundary misses is tried the same way: one
+  exporter writes its control points multiplied by their weights.
+
+IfcOpenShell 0.9 builds no polygonal swept disk with a fillet and no CSG cylinder or cone, and gives an
+open shell for a tapered rectangle; those rest on the executors' own tests of the same steps, which
+compare turns and lofts with volumes worked out by hand.
 
 An element gives one root for each surface style its items carry (`ItemConverter.parts`), so a window
 is an opaque frame and see-through glass rather than one colour. An item's own style comes from the
@@ -421,7 +526,46 @@ its layer set. The colours of every material and item are read once per recipe.
 The recipe's `millimetresPerUnit` is the model's unit and its `tolerance` the 'Model' context's
 precision, or the length tolerance when the context gives none. `geometry.recipe` and
 `geometry.unsupported` share one build: the service keeps the last description per model, with the
-`elements` it was made for, so asking for both describes the model once.
+`elements` and `groupByClass` it was made for, so asking for both describes the model once.
+
+Every root belongs to a group of the recipe (`RecipeGroups`, `lib/geometry/groups.ts`), made the first
+time an element needs it, after the group it lies in. An element that is a part of another element (a
+roof's slab, an assembly's member) belongs to a group of its whole, named after it and placed where the
+whole would be; any other element belongs to its spatial structure, the site, building, storey or space
+holding it, each a group in the one that aggregates it, up to but not including the project. With
+`groupByClass` an element's group is a class group inside its structure, named after the IFC class as
+a plural (`Walls`, `Element assemblies`), and the parts of a whole sit in the whole's group without
+one. An element finds its group through the relationships, never by geometry, so a group is right
+however the elements overlap.
+
+A parameterized profile is outlined in its own frame, centred on its bounding box, and its corner radii
+are drawn as arcs as finely as curves are (`arcSegments`, 32 segments a turn) by base's
+`roundedCorners2`: an I, asymmetric I, U, T, L, C or Z section's fillets and edges, a hollow or rounded
+rectangle's corners. Where IFC leaves a convention open, the outline is IfcOpenShell's: a C section's
+outer corners are rounded by its inner radius plus its wall, a Z section's lower flange runs to the right
+of the web and its upper one to the left, and an asymmetric I section without a top flange thickness takes
+the bottom one's. An IFC2X3 asymmetric I section is read without edge radii or slopes, since the IFC4
+table reads its centre of gravity where IFC4 put the bottom edge radius. A trapezium is placed by its top's
+offset from its bottom's left corner, and an ellipse is a polygon divided as a circle is.
+Sloped flanges follow IfcOpenShell's reading, which differs by section: an I section keeps its stated
+flange thickness at the flange tip, a U section at the profile's centre line; a sloped L leg or T web or
+flange is refused for now, as no file in the corpus has one. A slope is an angle in the model's plane
+angle unit. A hollow circle stays exact: its outer circle's extrusion less its inner one's, so the
+exact lane keeps true cylinders.
+
+Two things IFC forbids are read as other readers read them, since exporters write both. A negative
+extrusion depth extrudes the other way, which is how a plate extruded both ways from its middle comes
+out whole. An arbitrary profile whose polyline has points off the profile's plane is built in the plane
+those points lie in (`CurveSampler.planeOf`), and the extrusion is turned into that plane; points that
+lie in no one plane are refused.
+
+A composite profile is a region of regions, each part extruded on its own and the extrusions taken
+together as one compound. A derived profile is its parent, placed by the parent's own position, then
+moved, turned and scaled by its operator; a circle stays a circle under an operator that keeps its shape
+and is outlined under one that stretches it. A mirrored profile is a derived one whose operator, as the
+schema derives it, mirrors about the y axis, so a parent placed off the axis lands on its other side.
+IfcOpenShell 0.9 reads both differently: it mirrors a placed parent in the parent's own frame, which
+leaves it where it was, and it neither turns nor scales a derived profile as its operator says.
 
 ## The schema generator
 
@@ -431,7 +575,17 @@ attributes, `DERIVE` redeclarations of inherited attributes (written `*` in a fi
 attributes. It skips `WHERE`, `FUNCTION` and `RULE` blocks, which only full validation needs. It fails
 on any type it cannot read and on any name the schema does not define, so a schema it misreads cannot
 produce a table. Its suite checks buildingSMART's own counts for IFC4: 776 entities and 397 types, 207
-of them enumerations and 60 selects.
+of them enumerations and 60 selects; and IFC4X3 ADD2's: 876 entities and 436 types, 243 of them
+enumerations and 61 selects.
+
+IFC 4.3 keeps 736 of the 760 entities it shares with IFC4 attribute for attribute; seven append
+attributes, the rest mostly rename one in place (a property's `Description` became `Specification`),
+and the building element supertype is `IfcBuiltElement` where IFC4 has `IfcBuildingElement`. Code that
+names an IFC4-only type (`IfcPresentationStyleAssignment`) asks through `isSubtypeOf` and `byType`, which
+answer no and nothing for a name the schema does not define, so it reads an IFC4X3 model unchanged.
+The IFC4X3 file's notice is not in the file, so the generator reads it from `IFC4X3_ADD2.notice.txt`,
+the publication's copyright and warranty text, verbatim. Each table is about 30 KB gzipped (the IFC4X3 one 34 KB
+minified); both are loaded with the package, which the worker that hosts it loads only on first use.
 
 ## Checked by an outside tool
 
@@ -450,3 +604,15 @@ runs on every file it writes. For each file it reports:
 
 The suite runs only on request, since it needs a Python with IfcOpenShell 0.9 (`IFC_PYTHON`, or
 `python3`). A new verb adds the fixture that uses it.
+
+## Measured against real files
+
+The fixtures are files this library wrote. `npm run ifc:corpus` at the repository root
+(`scripts/README.md`) measures files other tools wrote: the ones `corpus/corpus.json` lists - authoring
+tools' exports, viewers' sample sets and buildingSMART's own examples, each with its licence and SHA-256 -
+downloaded on request and never committed. For each file it times reading, querying and the recipe,
+builds every element with Manifold (and with `--exact`, as OpenCascade shapes), counts the elements the
+recipe reports unsupported and the roots that build empty, checks that writing the model back leaves its
+DATA section byte for byte the same, and compares every element's volume and bounding box to the ones
+IfcOpenShell measures (`corpus/oracle.py`). A change to reading or to the recipes is measured
+before and after it.

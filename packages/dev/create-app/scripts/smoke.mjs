@@ -18,8 +18,12 @@ const cases = [
     ...["threejs", "babylonjs", "playcanvas"].map((engine) => ({ name: `frontend-${engine}`, args: ["-t", "frontend", "-e", engine, "-o", "32"], npm: ["."], dotnet: [] })),
     ...["hono-sdk", "hono-rest", "nodejs-sdk", "nodejs-rest"].map((backend) => ({ name: `cloud-${backend}`, args: ["-t", "cloud", "-b", backend], npm: ["frontend", "backend"], dotnet: [] })),
     { name: "cloud-dotnet-rest", args: ["-t", "cloud", "-b", "dotnet-rest"], npm: ["frontend"], dotnet: ["backend"] },
-    ...["product-configurator", "laser-cut-box", "sheet-metal-unfold", "step-to-gltf-cli", "drone-assembly"].map((template) => ({ name: `app-${template}`, args: ["-t", "app", "-T", template], npm: ["."], dotnet: [] })),
+    ...["product-configurator", "laser-cut-box", "sheet-metal-unfold", "step-to-gltf-cli", "drone-assembly", "ifc-house"].map((template) => ({ name: `app-${template}`, args: ["-t", "app", "-T", template], npm: ["."], dotnet: [] })),
 ].filter((c) => c.name.includes(only));
+
+const UNTIL_PUBLISHED = {
+    "app-ifc-house": "uses @bitbybit-dev/ifc and @bitbybit-dev/ifc-worker, which reach the registry with the release that first publishes them; remove this entry with that release (npm run smoke:local covers it meanwhile)",
+};
 
 const work = keep ? chosenDir : mkdtempSync(path.join(tmpdir(), "create-app-smoke-"));
 if (keep) {
@@ -40,6 +44,10 @@ function step(label, cmd, args, cwd) {
     return r.status === 0;
 }
 for (const c of cases) {
+    if (UNTIL_PUBLISHED[c.name]) {
+        console.log(`skip  ${c.name}: ${UNTIL_PUBLISHED[c.name]}`);
+        continue;
+    }
     if (!step(`scaffold ${c.name}`, "node", [CLI, c.name, ...c.args], work)) {
         continue;
     }

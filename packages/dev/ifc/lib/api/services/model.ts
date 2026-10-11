@@ -2,7 +2,7 @@ import { resolveDto } from "@bitbybit-dev/base";
 import { WORLD_AXES, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
 import { textValue } from "../../step/values";
 import { createProject, DESIGN_TRANSFER_VIEW, millimetresPerUnit, projectOf, SCHEMA_FOR_NEW_MODELS } from "../../build/project";
-import { isGlobalId, keyGlobalId } from "../../model/guid";
+import { keyGlobalId } from "../../model/guid";
 import type { IfcModel } from "../../model/model-types";
 import type { ModelSnapshot } from "../../model/snapshot";
 import type { IfcFileHeader } from "../../step/step-types";
@@ -17,24 +17,36 @@ import { PARALLEL_TOLERANCE, POINT3_SIZE } from "../../build/constants";
 import { moveElement } from "../../build/moving";
 import { removeObject } from "../../build/removal";
 import { requireFinite, requirePoint } from "../../build/checks";
-import { containerOf, storeyFrame, storeyOf, storeysOf } from "../../build/spatial";
+import { standingIn, storeyFrame, storeyOf, storeysOf } from "../../build/spatial";
+import { georeferenceOf } from "../../build/georeference";
 
 const LIBRARY = "@bitbybit-dev/ifc";
 const ISO_SECONDS = 19;
+const MAX_PART_DEPTH = 32;
 
 function headerFor(model: ModelSnapshot, resolved: Resolved.IFC.WriteModelDto<IfcModel>): IfcFileHeader {
     return { ...model.header, name: resolved.fileName, timeStamp: resolved.timeStamp ?? new Date().toISOString().slice(0, ISO_SECONDS) };
 }
 
-function containers(model: IfcModel): Map<number, number> {
-    const container = new Map<number, number>();
-    for (const rel of model.byType("IfcRelContainedInSpatialStructure")) {
-        const structure = model.attribute(rel.id, "RelatingStructure");
-        const elements = model.attribute(rel.id, "RelatedElements");
-        for (const element of isList(elements) ? elements : []) {
-            if (isReference(element) && isReference(structure)) {
-                container.set(element.ref, structure.ref);
+function relatedPairs(model: ModelSnapshot, relationship: string, relating: string, related: string): [number, number][] {
+    return model.byType(relationship).flatMap((rel) => {
+        const whole = model.attribute(rel.id, relating);
+        const parts = model.attribute(rel.id, related);
+        return isReference(whole) ? (isList(parts) ? parts : []).filter(isReference).map((part): [number, number] => [part.ref, whole.ref]) : [];
+    });
+}
+
+function containers(model: ModelSnapshot): Map<number, number> {
+    const container = new Map(relatedPairs(model, "IfcRelContainedInSpatialStructure", "RelatingStructure", "RelatedElements"));
+    const wholeOf = new Map(relatedPairs(model, "IfcRelAggregates", "RelatingObject", "RelatedObjects"));
+    for (const part of wholeOf.keys()) {
+        let whole = wholeOf.get(part);
+        for (let step = 0; whole !== undefined && !container.has(part) && step < MAX_PART_DEPTH; step++) {
+            const holder = container.get(whole);
+            if (holder !== undefined && !model.schema.isSubtypeOf(model.typeOf(whole) ?? "", "IfcSpatialElement")) {
+                container.set(part, holder);
             }
+            whole = wholeOf.get(whole);
         }
     }
     return container;
@@ -103,11 +115,11 @@ export class IFCModels {
     }
 
     /**
-     * Reads an IFC file into a model, which can then be inspected, changed and written back.
+     * Reads an IFC file into a model to inspect, change and write back.
      *
-     * Entities are decoded only when something asks for them, and those left unchanged are written
-     * back character for character as they were read. An IFC2X3 file is read through IFC4, to be
-     * shown and queried; `upgradeToIfc4` makes it editable.
+     * Entities are decoded only when asked for, and unchanged ones are written back exactly as read.
+     * An IFC2X3 file is read through IFC4, to be shown and queried; `upgradeToIfc4` makes it
+     * editable. An `.ifczip` archive is read from the `.ifc` file it holds.
      * @param inputs - The file's text or bytes
      * @returns The model the file holds
      * @group io
@@ -225,13 +237,32 @@ export class IFCModels {
     }
 
     /**
-     * Lists the objects of one IFC type, its subtypes included, optionally only those one storey
-     * contains.
+     * Reads where a model sits on the Earth: the map conversion that places its coordinates in a
+     * projected coordinate reference system, and its site's reference latitude, longitude and
+     * elevation. A file without them gives the defaults, with `mapped` and `located` false.
+     * @param inputs - The model
+     * @returns The model's georeference
+     * @group query
+     * @shortname georeference
+     * @drawable false
+     * @example
+     * ```typescript
+     * const georeference = await bitbybit.ifc.model.georeference({ model });
+     * console.log(georeference.crs, georeference.eastings, georeference.northings);
+     * ```
+     */
+    georeference(inputs: Inputs.IFC.ModelDto<IfcModel>): Inputs.IFC.GeoreferenceDto {
+        return georeferenceOf(modelOf(inputs.model));
+    }
+
+    /**
+     * Lists the objects of one IFC type, its subtypes included, optionally only those standing in
+     * one storey or other spatial element. An aggregate's part stands where its whole stands.
      *
      * `type` is any type with a GlobalId, such as `IfcWall`, `IfcDoor` or `IfcElement` for every
      * building element. The list is in the order the model holds them.
      * @param inputs - The model, the type and an optional storey
-     * @returns Each object's GlobalId, type, name and storey
+     * @returns Each object's GlobalId, type, name and the spatial element it stands in
      * @group query
      * @shortname elements
      * @drawable false
@@ -254,9 +285,10 @@ export class IFCModels {
     }
 
     /**
-     * Describes one object of a model: its GlobalId, its type, its name and its storey.
+     * Describes one object of a model: its GlobalId, its type, its name and the spatial element it
+     * stands in.
      * @param inputs - The model and the object
-     * @returns The object's GlobalId, type, name and storey
+     * @returns The object's GlobalId, type, name and the spatial element it stands in
      * @group query
      * @shortname element
      * @drawable false
@@ -268,7 +300,7 @@ export class IFCModels {
     element(inputs: Inputs.IFC.ElementDto<IfcModel>): Inputs.IFC.ElementInfoDto {
         const model = modelOf(inputs.model);
         const element = resolveId(model, inputs.element, "IfcRoot", "object");
-        return infoOf(model, element, containerOf(model, element));
+        return infoOf(model, element, standingIn(model, element));
     }
 
     /**
@@ -391,6 +423,6 @@ export class IFCModels {
         if (typeof inputs.id !== "string" || inputs.id.length === 0) {
             throw new TypeError("Expected an id as a text");
         }
-        return isGlobalId(inputs.id) && model.byGlobalId(inputs.id) !== undefined ? inputs.id : keyGlobalId(model.keySeed, inputs.id);
+        return model.byGlobalId(inputs.id) !== undefined ? inputs.id : keyGlobalId(model.keySeed, inputs.id);
     }
 }

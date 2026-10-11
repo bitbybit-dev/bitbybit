@@ -229,17 +229,18 @@ namespace Base {
     type Polyline2 = {
         points: Base.Point2[];
         isClosed?: boolean;
-        color?: number[];
+        color?: string | number[];
     };
     type Polyline3 = {
         points: Base.Point3[];
         isClosed?: boolean;
-        color?: number[];
+        color?: string | number[];
     };
     // @beta
     interface Recipe {
         buffers: RecipeBuffers;
         format: "bitbybit.recipe";
+        groups?: RecipeGroup[] | undefined;
         millimetresPerUnit: number;
         nodes: RecipeNode[];
         roots: RecipeRoot[];
@@ -276,13 +277,30 @@ namespace Base {
         profile: number;
     }
     // @beta
+    interface RecipeGroup {
+        name: string;
+        parent?: number | undefined;
+        tag: Record<string, RecipeTagValue>;
+    }
+    // @beta
     interface RecipeHalfSpaceNode {
         normal: Vector3;
         op: "halfSpace";
         origin: Point3;
     }
     // @beta
-    type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode;
+    interface RecipeIntersectionNode {
+        of: number[];
+        op: "intersection";
+    }
+    // @beta
+    interface RecipeLoftNode {
+        frames: RecipeRange;
+        op: "loft";
+        profiles: number[];
+    }
+    // @beta
+    type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode;
     // @beta
     interface RecipePolygonNode {
         holes: RecipeRange[];
@@ -292,7 +310,16 @@ namespace Base {
     // @beta
     type RecipeRange = [number, number];
     // @beta
+    interface RecipeRevolveNode {
+        angle: number;
+        direction: Vector2;
+        op: "revolve";
+        origin: Point2;
+        profile: number;
+    }
+    // @beta
     interface RecipeRoot {
+        group?: number | undefined;
         matrix: TransformMatrix;
         node: number;
         tag: Record<string, RecipeTagValue>;
@@ -310,6 +337,11 @@ namespace Base {
         indices: RecipeRange;
         op: "triangles";
         positions: RecipeRange;
+    }
+    // @beta
+    interface RecipeUnionNode {
+        of: number[];
+        op: "union";
     }
     // @beta
     interface RecipeVoidsNode {
@@ -2047,6 +2079,14 @@ interface DesignAsset extends DesignExtensible {
 }
 
 // @public
+interface DesignAxis {
+    // (undocumented)
+    direction: DesignPoint;
+    // (undocumented)
+    origin: DesignPoint;
+}
+
+// @public
 interface DesignBomLine {
     // (undocumented)
     name: string;
@@ -2336,6 +2376,8 @@ interface DesignComponent extends DesignExtensible {
     // (undocumented)
     name?: string;
     // (undocumented)
+    pattern?: DesignComponentPattern;
+    // (undocumented)
     properties?: DesignProperties;
     // (undocumented)
     replicate?: DesignReplicate;
@@ -2344,6 +2386,13 @@ interface DesignComponent extends DesignExtensible {
     // (undocumented)
     suppressed?: boolean | DesignNumber;
 }
+
+// @public
+type DesignComponentPattern = {
+    polar: DesignPolarComponentPattern;
+} | {
+    linear: DesignLinearComponentPattern;
+};
 
 // @public
 interface DesignComponentSource {
@@ -2705,6 +2754,16 @@ type DesignJointType = "fastened" | "revolute" | "slider" | "cylindrical";
 type DesignLabel = string | Record<string, string>;
 
 // @public
+interface DesignLinearComponentPattern {
+    // (undocumented)
+    count: DesignNumber;
+    // (undocumented)
+    direction: DesignPoint;
+    // (undocumented)
+    spacing: DesignNumber;
+}
+
+// @public
 interface DesignLinearPatternFeature extends DesignFeatureBase {
     // (undocumented)
     body: string;
@@ -2913,6 +2972,18 @@ interface DesignPocketFeature extends DesignFeatureBase {
 
 // @public
 type DesignPoint = [DesignNumber, DesignNumber, DesignNumber];
+
+// @public
+interface DesignPolarComponentPattern {
+    // (undocumented)
+    angle?: DesignNumber;
+    // (undocumented)
+    axis: DesignAxis;
+    // (undocumented)
+    count: DesignNumber;
+    // (undocumented)
+    start?: DesignNumber;
+}
 
 // @public
 interface DesignPolarPatternFeature extends DesignFeatureBase {
@@ -3656,6 +3727,8 @@ export interface EmbindModule {
     // (undocumented)
     BuildAssemblyDocument(_0: EmbindString, _1: any, _2: any, _3: any): Handle_TDocStd_Document;
     // (undocumented)
+    BuildRecipes(_0: EmbindString, _1: Float64Array, _2: Int32Array, _3: boolean, _4: boolean, _5: number): { shapes: (TopoDS_Shape | null)[]; report: string };
+    // (undocumented)
     BuildShapesFromSegments(_0: VectorInt, _1: VectorDouble, _2: VectorDouble, _3: VectorInt, _4: VectorInt, _5: VectorInt, _6: VectorInt, _7: number, _8: boolean, _9: number): TopoDS_Compound;
     // (undocumented)
     CastToCompound(_0: TopoDS_Shape): TopoDS_Compound;
@@ -3843,6 +3916,8 @@ export interface EmbindModule {
     FaceNormalsAtUV(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array | null;
     // (undocumented)
     FacePointsAtUV(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array | null;
+    // (undocumented)
+    FacesFromOutline(_0: gp_Pnt, _1: gp_Dir, _2: gp_Dir, _3: ArrayLike<number>, _4: ArrayLike<number>): TopoDS_Shape;
     // (undocumented)
     FacesInsideWires(_0: TopoDS_Face, _1: TopoDS_Wire[]): TopoDS_Face[];
     // (undocumented)
@@ -4477,6 +4552,8 @@ export interface EmbindModule {
         new(): PropertiesResult;
     };
     // (undocumented)
+    PurgeInternalEdges(_0: TopoDS_Shape): TopoDS_Shape;
+    // (undocumented)
     PushPullFaces(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): TopoDS_Shape;
     // (undocumented)
     PushPullFacesWithHistory(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): { shape: TopoDS_Shape; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
@@ -4812,6 +4889,8 @@ export interface EmbindModule {
     TopTools_ListOfShape: {
         new(): TopTools_ListOfShape;
     };
+    // (undocumented)
+    TransformByMatrix(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Shape;
     // (undocumented)
     TrimEdgeToParams(_0: TopoDS_Edge, _1: number, _2: number): TopoDS_Edge;
     // (undocumented)
@@ -7712,6 +7791,25 @@ namespace OCCT {
         existingDocument?: D | undefined;
         sourceDocuments?: D[] | undefined;
         structure: Models_2.OCCT.AssemblyStructureDef<T>;
+    }
+    // @beta
+    class BuildRecipeDocumentDto {
+        constructor(recipe?: Base.Recipe, name?: string, groupBy?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number);
+        emptyWhenFailed?: boolean | undefined;
+        facetedMeshes?: boolean | undefined;
+        groupBy?: string | undefined;
+        maxTriangles?: number | undefined;
+        name?: string | undefined;
+        recipe: Base.Recipe;
+    }
+    // @beta
+    class BuildRecipeDto {
+        constructor(recipe?: Base.Recipe, adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number);
+        adjustZtoY?: boolean | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        facetedMeshes?: boolean | undefined;
+        maxTriangles?: number | undefined;
+        recipe: Base.Recipe;
     }
     class Chamfer2dVertexDto<T> {
         constructor(shape?: T, distance?: number, angle?: number, indexes?: number[]);
@@ -10944,6 +11042,10 @@ declare namespace OCCT_2 {
         DesignJointLimits,
         DesignJoint,
         DesignReplicate,
+        DesignAxis,
+        DesignPolarComponentPattern,
+        DesignLinearComponentPattern,
+        DesignComponentPattern,
         DesignComponent,
         DesignAssemblyDocument,
         DesignAssemblyConnector,
@@ -11027,6 +11129,10 @@ namespace OCCT_3 {
     type BSplinesDto = WithDefaults<Inputs_2.OCCT.BSplinesDto, "returnCompound">;
     // (undocumented)
     type BuildAssemblyDocumentDto<T, D> = Inputs_2.OCCT.BuildAssemblyDocumentDto<T, D>;
+    // (undocumented)
+    type BuildRecipeDocumentDto = WithDefaults<Inputs_2.OCCT.BuildRecipeDocumentDto, "name" | "groupBy" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
+    // (undocumented)
+    type BuildRecipeDto = WithDefaults<Inputs_2.OCCT.BuildRecipeDto, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
     // (undocumented)
     type Chamfer2dVertexDto<T> = WithDefaults<Inputs_2.OCCT.Chamfer2dVertexDto<T>, "distance" | "angle">;
     // (undocumented)
@@ -12037,6 +12143,7 @@ export type OcctFailureCode = keyof OcctFailureDetails;
 export type OcctFailureDetails = {
     "occt.boolean.failed": undefined;
     "occt.boolean.mixedDimensions": undefined;
+    "occt.boolean.tessellated": undefined;
     "occt.fillet.failed": undefined;
     "occt.fillet.failedOnEdges": {
         readonly edges: readonly number[];
@@ -12054,6 +12161,7 @@ export type OcctFailureDetails = {
         readonly trihedron: string;
     };
     "occt.design.crashed": DesignCrashDetails;
+    "occt.recipe.failed": RecipeFailureDetails;
 };
 
 // @public
@@ -12237,6 +12345,10 @@ export class OCCTService {
         };
         [key: string]: unknown;
     };
+    // Warning: (ae-forgotten-export) The symbol "OCCTRecipes" needs to be exported by the entry point index.d.ts
+    //
+    // @beta
+    readonly recipes: OCCTRecipes;
     // Warning: (ae-forgotten-export) The symbol "OCCTSelect" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -13008,6 +13120,13 @@ export interface Quantity_TypeOfColorValue<T extends number> {
 
 // @public
 export function readKernelException(kernel: KernelExceptionReader, thrown: unknown): unknown;
+
+// @public
+export type RecipeFailureDetails = {
+    readonly node: number;
+    readonly root: number;
+    readonly reason: string;
+};
 
 declare namespace Resolved {
     export {

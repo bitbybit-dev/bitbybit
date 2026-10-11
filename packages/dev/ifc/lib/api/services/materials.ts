@@ -58,11 +58,11 @@ export class IFCMaterials {
     }
 
     /**
-     * Adds a layer set: materials stacked in order, each with its thickness, which walls, wall types
-     * and slabs are then made of.
+     * Adds a layer set: materials stacked in order, each with its thickness, which walls, wall types,
+     * slabs and roofs are then made of.
      *
-     * A wall's first layer is on its right face, looking from its start to its end; a slab's first
-     * layer is at its top. A layer's material must have been added before, by name.
+     * A wall's first layer is on its right face, looking from its start to its end; a slab's or a
+     * roof's first layer is at its top. A layer's material must have been added before, by name.
      * @param inputs - The model, the layer set's name and its layers
      * @returns A new model with the layer set
      * @group materials

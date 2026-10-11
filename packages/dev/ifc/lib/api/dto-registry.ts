@@ -2,6 +2,7 @@
 import { constraintKinds as k, DtoConstraints, DtoRegistry } from "@bitbybit-dev/base";
 import * as Inputs from "./inputs";
 
+const IFC_AddAssemblyDto: DtoConstraints = { model: k.required(k.opaque), parts: k.required(k.list(k.string)), id: k.string, name: k.string, predefinedType: k.oneOf(["ACCESSORY_ASSEMBLY", "ARCH", "BEAM_GRID", "BRACED_FRAME", "GIRDER", "REINFORCEMENT_UNIT", "RIGID_FRAME", "SLAB_FIELD", "TRUSS", "USERDEFINED", "NOTDEFINED"]), objectType: k.string };
 const IFC_AddBeamDto: DtoConstraints = { start: k.required(k.point3), end: k.required(k.point3), model: k.required(k.opaque), storey: k.required(k.string), id: k.string, name: k.string, profile: k.oneOf(["rectangle", "circle", "iShape"]), width: k.between(k.number, { min: 0, exclusiveMin: true }), depth: k.between(k.number, { min: 0, exclusiveMin: true }), radius: k.between(k.number, { min: 0, exclusiveMin: true }), webThickness: k.between(k.number, { min: 0, exclusiveMin: true }), flangeThickness: k.between(k.number, { min: 0, exclusiveMin: true }), rotation: k.number, material: k.string };
 const IFC_AddColumnDto: DtoConstraints = { position: k.point2, height: k.between(k.number, { min: 0, exclusiveMin: true }), baseOffset: k.number, model: k.required(k.opaque), storey: k.required(k.string), id: k.string, name: k.string, profile: k.oneOf(["rectangle", "circle", "iShape"]), width: k.between(k.number, { min: 0, exclusiveMin: true }), depth: k.between(k.number, { min: 0, exclusiveMin: true }), radius: k.between(k.number, { min: 0, exclusiveMin: true }), webThickness: k.between(k.number, { min: 0, exclusiveMin: true }), flangeThickness: k.between(k.number, { min: 0, exclusiveMin: true }), rotation: k.number, material: k.string };
 const IFC_AddDoorDto: DtoConstraints = { model: k.required(k.opaque), wall: k.required(k.string), doorType: k.required(k.string), id: k.string, name: k.string, offset: k.between(k.number, { min: 0 }), sill: k.number };
@@ -31,7 +32,8 @@ const IFC_EditOpeningDto: DtoConstraints = { model: k.required(k.opaque), openin
 const IFC_EditWallDto: DtoConstraints = { model: k.required(k.opaque), wall: k.required(k.string), start: k.point2, end: k.point2, height: k.between(k.number, { min: 0, exclusiveMin: true }), baseOffset: k.number, thickness: k.between(k.number, { min: 0, exclusiveMin: true }), layerSet: k.string, alignment: k.oneOf(["center", "left", "right"]) };
 const IFC_ElementDto: DtoConstraints = { model: k.required(k.opaque), element: k.required(k.string) };
 const IFC_ElementsDto: DtoConstraints = { model: k.required(k.opaque), type: k.string, storey: k.string };
-const IFC_GeometryDto: DtoConstraints = { model: k.required(k.opaque), elements: k.list(k.string) };
+const IFC_GeometryDto: DtoConstraints = { model: k.required(k.opaque), elements: k.list(k.string), groupByClass: k.boolean };
+const IFC_GeometryElementsDto: DtoConstraints = { model: k.required(k.opaque), elements: k.list(k.string) };
 const IFC_GetAttributeDto: DtoConstraints = { model: k.required(k.opaque), element: k.required(k.string), attribute: k.string };
 const IFC_GlobalIdOfDto: DtoConstraints = { model: k.required(k.opaque), id: k.required(k.string) };
 const IFC_ModelDto: DtoConstraints = { model: k.required(k.opaque) };
@@ -53,18 +55,20 @@ const IFC_WriteModelDto: DtoConstraints = { model: k.required(k.opaque), fileNam
  * `validateInputs` to check what the call was given.
  */
 export const ifcDtoRegistry: DtoRegistry = {
+    "assemblies.add": { dto: Inputs.IFC.AddAssemblyDto, constraints: IFC_AddAssemblyDto },
     "beams.add": { dto: Inputs.IFC.AddBeamDto, constraints: IFC_AddBeamDto },
     "columns.add": { dto: Inputs.IFC.AddColumnDto, constraints: IFC_AddColumnDto },
     "doors.add": { dto: Inputs.IFC.AddDoorDto, constraints: IFC_AddDoorDto },
     "doors.addType": { dto: Inputs.IFC.AddDoorTypeDto, constraints: IFC_AddDoorTypeDto },
     "geometry.recipe": { dto: Inputs.IFC.GeometryDto, constraints: IFC_GeometryDto },
-    "geometry.unsupported": { dto: Inputs.IFC.GeometryDto, constraints: IFC_GeometryDto },
+    "geometry.unsupported": { dto: Inputs.IFC.GeometryElementsDto, constraints: IFC_GeometryElementsDto },
     "materials.add": { dto: Inputs.IFC.AddMaterialDto, constraints: IFC_AddMaterialDto },
     "materials.addLayerSet": { dto: Inputs.IFC.AddLayerSetDto, constraints: IFC_AddLayerSetDto },
     "members.add": { dto: Inputs.IFC.AddMemberDto, constraints: IFC_AddMemberDto },
     "model.create": { dto: Inputs.IFC.CreateModelDto, constraints: IFC_CreateModelDto },
     "model.element": { dto: Inputs.IFC.ElementDto, constraints: IFC_ElementDto },
     "model.elements": { dto: Inputs.IFC.ElementsDto, constraints: IFC_ElementsDto },
+    "model.georeference": { dto: Inputs.IFC.ModelDto, constraints: IFC_ModelDto },
     "model.getAttribute": { dto: Inputs.IFC.GetAttributeDto, constraints: IFC_GetAttributeDto },
     "model.globalIdOf": { dto: Inputs.IFC.GlobalIdOfDto, constraints: IFC_GlobalIdOfDto },
     "model.move": { dto: Inputs.IFC.MoveElementDto, constraints: IFC_MoveElementDto },

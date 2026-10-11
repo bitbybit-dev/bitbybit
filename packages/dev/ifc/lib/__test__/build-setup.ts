@@ -3,7 +3,7 @@ import { IFCService } from "../api/ifc-service";
 import * as Inputs from "../api/inputs";
 import { EntityWriter } from "../build/entity-writer";
 import { modelOf } from "../api/services/service-support";
-import { isGlobalId, keyGlobalId } from "../model/guid";
+import { keyGlobalId } from "../model/guid";
 import type { IfcModel } from "../model/model-types";
 import { IfcTransaction } from "../model/transaction";
 import type { Fixture, Writing } from "./fixture-types";
@@ -59,7 +59,7 @@ export function oneWallWithMaterials(): Fixture {
 
 export function expressIdOf(model: IfcModel, id: string): number {
     const snapshot = modelOf(model);
-    const found = isGlobalId(id) && snapshot.byGlobalId(id) !== undefined ? snapshot.byGlobalId(id) : snapshot.byGlobalId(keyGlobalId(snapshot.keySeed, id));
+    const found = snapshot.byGlobalId(id) ?? snapshot.byGlobalId(keyGlobalId(snapshot.keySeed, id));
     if (found === undefined) {
         throw new Error(`The model has no object '${id}'`);
     }

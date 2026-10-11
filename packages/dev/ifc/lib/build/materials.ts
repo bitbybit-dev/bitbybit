@@ -46,7 +46,7 @@ function surfaceStyle(writer: EntityWriter, name: string, colour: SurfaceColour)
 
 export function materialStyle(reader: ModelReader, material: number): number | undefined {
     for (const user of reader.referencesTo(material)) {
-        if (reader.get(user)?.type !== MATERIAL_REPRESENTATION) {
+        if (reader.typeOf(user) !== MATERIAL_REPRESENTATION) {
             continue;
         }
         const representations = reader.attribute(user, "Representations");

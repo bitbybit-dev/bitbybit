@@ -1,28 +1,40 @@
 import { textValue } from "../../step/values";
 import type { Base } from "@bitbybit-dev/base";
+import { resolveDto } from "@bitbybit-dev/base";
 import { millimetresPerUnit } from "../../build/project";
 import { modelRecipe } from "../../geometry/elements";
 import type { DescribedModel, ModelRecipe } from "../../geometry/geometry-types";
 import type { IfcModel } from "../../model/model-types";
 import type { ModelSnapshot } from "../../model/snapshot";
-import type * as Inputs from "../inputs";
+import * as Inputs from "../inputs";
+import type * as Resolved from "../resolved-inputs";
 import { lengthTolerance, modelOf, resolveId } from "./service-support";
 
-function described(memo: WeakMap<ModelSnapshot, DescribedModel>, inputs: Inputs.IFC.GeometryDto<IfcModel>): ModelRecipe {
+function described(memo: WeakMap<ModelSnapshot, DescribedModel>, inputs: Resolved.IFC.GeometryDto<IfcModel>): ModelRecipe {
     const model = modelOf(inputs.model);
     const elements: unknown = inputs.elements;
     if (elements !== undefined && !Array.isArray(elements)) {
         throw new TypeError("Expected the elements as a list of GlobalIds or ids");
     }
-    const key = JSON.stringify(elements ?? null);
+    const key = JSON.stringify([elements ?? null, inputs.groupByClass]);
     const last = memo.get(model);
     if (last?.key === key) {
         return last.described;
     }
-    const globalIds = inputs.elements?.map((element) => textValue(model.attribute(resolveId(model, element, "IfcProduct", "element"), "GlobalId")) ?? "");
-    const result = modelRecipe(model, globalIds, millimetresPerUnit(model), lengthTolerance(model));
+    const globalIds = inputs.elements?.map((element) => selectedGlobalId(model, element));
+    const result = modelRecipe(model, globalIds, millimetresPerUnit(model), lengthTolerance(model), inputs.groupByClass);
     memo.set(model, { key, described: result });
     return result;
+}
+
+const PRODUCT = "IfcProduct";
+
+function selectedGlobalId(model: ModelSnapshot, element: string): string {
+    const owners = model.globalIdOwners(element);
+    if (owners.length > 1 && owners.every((owner) => model.schema.isSubtypeOf(model.typeOf(owner) ?? "", PRODUCT))) {
+        return element;
+    }
+    return textValue(model.attribute(resolveId(model, element, PRODUCT, "element"), "GlobalId")) ?? "";
 }
 
 /**
@@ -55,7 +67,8 @@ export class IFCGeometry {
      * ```
      */
     recipe(inputs: Inputs.IFC.GeometryDto<IfcModel>): Base.Recipe {
-        return described(this.lastDescribed, inputs).recipe;
+        const resolved = resolveDto(Inputs.IFC.GeometryDto, inputs) as Resolved.IFC.GeometryDto<IfcModel>;
+        return described(this.lastDescribed, resolved).recipe;
     }
 
     /**
@@ -75,7 +88,7 @@ export class IFCGeometry {
      * problems.forEach((problem) => console.log(problem.type, problem.message));
      * ```
      */
-    unsupported(inputs: Inputs.IFC.GeometryDto<IfcModel>): Inputs.IFC.GeometryProblemDto[] {
-        return described(this.lastDescribed, inputs).problems;
+    unsupported(inputs: Inputs.IFC.GeometryElementsDto<IfcModel>): Inputs.IFC.GeometryProblemDto[] {
+        return described(this.lastDescribed, { ...inputs, groupByClass: true }).problems;
     }
 }

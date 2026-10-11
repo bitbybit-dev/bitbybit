@@ -1,7 +1,7 @@
-import { Inputs } from "@bitbybit-dev/threejs";
+import { IFC } from "@bitbybit-dev/ifc/lib/api/inputs";
 import type { DoorTypeSpec, FillingSpec, LayerSetSpec, MaterialSpec, PassageSpec, Point, PropertySetSpec, RailRun, RailSpec, RoomSpec, SlabSpec, TreeSpec, WallRun, WindowTypeSpec } from "./house-types";
 
-const { wallAlignmentEnum, doorOperationEnum, doorHandleEnum, slabPredefinedTypeEnum } = Inputs.IFC;
+const { wallAlignmentEnum, doorOperationEnum, doorHandleEnum, slabPredefinedTypeEnum } = IFC;
 
 export const FIRST_FLOOR_ELEVATION = 3.2;
 export const SLAB_DEPTH = 0.3;
@@ -130,16 +130,19 @@ export const DOOR_TYPES: DoorTypeSpec[] = [
 ];
 
 function closedRun(prefix: string, outline: Point[], names: string[], name?: string): WallRun["walls"] {
-    return outline.map((start, index) => ({
-        id: `${prefix}-${names[index]}`,
-        name: name ?? `${names[index][0].toUpperCase()}${names[index].slice(1)} wall`,
-        start,
-        end: outline[(index + 1) % outline.length],
-    }));
+    return outline.map((start, index) => {
+        const side = names[index] ?? String(index);
+        return {
+            id: `${prefix}-${side}`,
+            name: name ?? `${side.charAt(0).toUpperCase()}${side.slice(1)} wall`,
+            start,
+            end: outline[(index + 1) % outline.length] ?? start,
+        };
+    });
 }
 
 function loopJoins(walls: WallRun["walls"]): [string, string][] {
-    return walls.map((wall, index) => [wall.id, walls[(index + 1) % walls.length].id]);
+    return walls.map((wall, index) => [wall.id, (walls[(index + 1) % walls.length] ?? wall).id]);
 }
 
 const SIDES = ["south", "east", "north", "west"];

@@ -1,6 +1,7 @@
-import type { Inputs } from "@bitbybit-dev/threejs";
+import type { Base, IFC } from "@bitbybit-dev/ifc/lib/api/inputs";
+import type { BitByBitBase } from "@bitbybit-dev/threejs";
 
-export type Point = Inputs.Base.Point2;
+export type Point = Base.Point2;
 
 export type StoreyKey = "ground" | "first";
 
@@ -31,7 +32,7 @@ export interface WallRun {
     layerSet: string;
     height: number;
     baseOffset: number;
-    alignment: Inputs.IFC.wallAlignmentEnum;
+    alignment: IFC.wallAlignmentEnum;
     walls: WallSpec[];
     joins: [string, string][];
     external: boolean;
@@ -51,8 +52,8 @@ export interface DoorTypeSpec {
     height: number;
     lining: string;
     panel: string;
-    operation: Inputs.IFC.doorOperationEnum;
-    handle: Inputs.IFC.doorHandleEnum;
+    operation: IFC.doorOperationEnum;
+    handle: IFC.doorHandleEnum;
     handleMaterial: string;
 }
 
@@ -82,7 +83,7 @@ export interface SlabSpec {
     holes?: Point[][];
     layerSet: string;
     topOffset: number;
-    kind: Inputs.IFC.slabPredefinedTypeEnum;
+    kind: IFC.slabPredefinedTypeEnum;
     layer: Layer;
 }
 
@@ -101,16 +102,23 @@ export interface DetailSpec {
     id: string;
     name: string;
     storey: StoreyKey;
-    start: Inputs.Base.Point3;
-    end: Inputs.Base.Point3;
+    start: Base.Point3;
+    end: Base.Point3;
     material: string;
     layer: Layer;
     width?: number;
     depth?: number;
     radius?: number;
     rotation?: number;
-    kind?: Inputs.IFC.memberPredefinedTypeEnum;
+    kind?: IFC.memberPredefinedTypeEnum;
     beam?: boolean;
+    assembly?: string;
+}
+
+export interface AssemblySpec {
+    id: string;
+    name: string;
+    objectType: string;
 }
 
 export interface FacadeLine {
@@ -143,7 +151,7 @@ export interface FacadeOpening {
 export interface PropertySetSpec {
     name: string;
     elements: string[];
-    properties: Inputs.IFC.PropertyDto[];
+    properties: IFC.PropertyDto[];
 }
 
 export type RailEnd = "flush" | "butt" | "lap";
@@ -176,7 +184,9 @@ export interface RoomSpec {
 }
 
 export interface HouseModel {
-    model: Inputs.IFC.IfcModelPointer;
+    model: IFC.IfcModelPointer;
     layers: Map<string, Layer>;
     rooms: RoomSpec[];
 }
+
+export type HouseIfc = BitByBitBase["ifc"];

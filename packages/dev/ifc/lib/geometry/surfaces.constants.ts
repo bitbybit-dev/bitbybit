@@ -1,0 +1,17 @@
+export const FULL_TURN = 2 * Math.PI;
+export const CLOSED_CURVE_RATIO = 1e-9;
+export const NEWTON_STEPS = 30;
+export const NEWTON_TOLERANCE = 1e-12;
+export const SEED_STEPS = 16;
+export const NEWTON_DAMPING = 0.25;
+export const FIT_RATIO = 1e-7;
+export const SPLINE_STEP = 1e-6;
+export const NORMAL_STEP = 1e-6;
+export const MIN_LOOP_POINTS = 3;
+export const TRIANGLE_CORNERS = 3;
+export const PROFILE_DENSITY = 8;
+export const FIT_PROBES = 8;
+export const FIT_TOLERANCE = 1e-6;
+export const CUT_SAMPLES = 64;
+export const CUT_TURN = (2 * Math.PI) / 32;
+export const POLE_RATIO = 1e-9;

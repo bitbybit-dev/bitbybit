@@ -205,6 +205,56 @@ export namespace IFC {
     }
 
     /**
+     * What kind of assembly it is, as IFC classifies elements made of other elements.
+     */
+    export enum elementAssemblyPredefinedTypeEnum {
+        /**
+         * Parts that support or connect others, such as a bracket with its fixings.
+         */
+        accessoryAssembly = "ACCESSORY_ASSEMBLY",
+        /**
+         * An arch.
+         */
+        arch = "ARCH",
+        /**
+         * Beams laid in a grid.
+         */
+        beamGrid = "BEAM_GRID",
+        /**
+         * A frame stiffened by diagonal braces.
+         */
+        bracedFrame = "BRACED_FRAME",
+        /**
+         * A girder built up of plates and members.
+         */
+        girder = "GIRDER",
+        /**
+         * A cage of reinforcing bars placed as one.
+         */
+        reinforcementUnit = "REINFORCEMENT_UNIT",
+        /**
+         * A frame whose joints hold it rigid without braces.
+         */
+        rigidFrame = "RIGID_FRAME",
+        /**
+         * A field of slabs laid together.
+         */
+        slabField = "SLAB_FIELD",
+        /**
+         * A truss.
+         */
+        truss = "TRUSS",
+        /**
+         * A kind IFC does not name, such as a cladding of boards; `objectType` says what it is.
+         */
+        userDefined = "USERDEFINED",
+        /**
+         * An assembly of no particular kind.
+         */
+        notDefined = "NOTDEFINED",
+    }
+
+    /**
      * What kind of space it is, as IFC classifies spaces.
      */
     export enum spacePredefinedTypeEnum {
@@ -262,7 +312,10 @@ export namespace IFC {
 
     /**
      * How a single-panel door opens, as IFC names its operation types. The door's geometry is the same
-     * panel for each; the operation is what other tools read to draw its swing.
+     * panel for each; the operation is what other tools read to draw its swing. Left and right are as IFC
+     * defines them, seen looking along the door's Y axis, which points to its wall's left: standing on the
+     * wall's right side, with the wall's start on your left, a left door is hinged toward the wall's start
+     * and a right door toward its end. The handle is on the other edge.
      */
     export enum doorOperationEnum {
         /**
@@ -422,8 +475,8 @@ export namespace IFC {
             if (data !== undefined) { this.data = data; }
         }
         /**
-         * The file's contents: the text of an `.ifc` file, or its bytes, such as what
-         * `await file.arrayBuffer()` gives for a file a user picked.
+         * The file's contents: the text of an `.ifc` file, or the bytes of an `.ifc` or `.ifczip`
+         * file, such as what `await file.arrayBuffer()` gives for a file a user picked.
          * @default undefined
          */
         data!: string | Uint8Array | ArrayBuffer;
@@ -477,8 +530,8 @@ export namespace IFC {
          */
         type?: string | undefined = "IfcElement";
         /**
-         * Only the elements this storey contains, by GlobalId or by the id it was added with. Leave it
-         * out for every storey.
+         * Only the elements standing in this storey or other spatial element, by GlobalId or by the id
+         * it was added with. Leave it out for every one.
          * @default undefined
          * @optional true
          */
@@ -725,9 +778,9 @@ export namespace IFC {
         name?: string | undefined;
     }
     /**
-     * A named stack of material layers for `materials.addLayerSet`, which walls and slabs are then made
-     * of; a wall's first layer is on its right face, looking from its start to its end, and a slab's
-     * is at its top.
+     * A named stack of material layers for `materials.addLayerSet`, which walls, slabs and roofs are made
+     * of; a wall's first layer is on its right face, looking from start to end, a slab's or roof's at its
+     * top.
      */
     export class AddLayerSetDto<T> {
         constructor(model?: T, name?: string, layers?: MaterialLayerDto[]) {
@@ -916,8 +969,8 @@ export namespace IFC {
          */
         storey = "";
         /**
-         * The area of its outline, in the square of the model's length unit; 0 when its body is not an
-         * outline extruded up.
+         * The area of its outline, in the square of the model's length unit, so square millimetres in a
+         * millimetre model; 0 when its body is not an outline extruded up.
          * @default 0
          */
         area = 0;
@@ -947,10 +1000,78 @@ export namespace IFC {
          */
         name = "";
         /**
-         * The GlobalId of the storey that contains it, or an empty text when none does.
+         * The GlobalId of the spatial element it stands in: its storey, or a space, road, bridge or
+         * other facility part; an empty text when none contains it.
          * @default ""
          */
         storey = "";
+    }
+    /**
+     * Where a model sits on the Earth, as `model.georeference` reads it: its map conversion and its
+     * site's reference latitude, longitude and elevation.
+     */
+    export class GeoreferenceDto {
+        /**
+         * Whether the model holds a map conversion; when it does not, the map fields keep their defaults.
+         * @default false
+         */
+        mapped = false;
+        /**
+         * The name of the projected coordinate reference system the map conversion targets, such as
+         * `EPSG:3301`.
+         * @default ""
+         */
+        crs = "";
+        /**
+         * How far east of the map's origin the model's origin lies, in the map's unit.
+         * @default 0
+         */
+        eastings = 0;
+        /**
+         * How far north of the map's origin the model's origin lies, in the map's unit.
+         * @default 0
+         */
+        northings = 0;
+        /**
+         * The height of the model's origin above the vertical datum, in the map's unit.
+         * @default 0
+         */
+        orthogonalHeight = 0;
+        /**
+         * The first map coordinate of the direction the model's X axis points in.
+         * @default 1
+         */
+        xAxisAbscissa = 1;
+        /**
+         * The second map coordinate of the direction the model's X axis points in.
+         * @default 0
+         */
+        xAxisOrdinate = 0;
+        /**
+         * The scale from the model's lengths to the map's.
+         * @default 1
+         */
+        scale = 1;
+        /**
+         * Whether the site records a latitude and a longitude.
+         * @default false
+         */
+        located = false;
+        /**
+         * The site's reference latitude in decimal degrees, negative to the south.
+         * @default 0
+         */
+        latitude = 0;
+        /**
+         * The site's reference longitude in decimal degrees, negative to the west.
+         * @default 0
+         */
+        longitude = 0;
+        /**
+         * The site's reference elevation above sea level, in the model's length unit.
+         * @default 0
+         */
+        elevation = 0;
     }
     /**
      * What a model holds, as `model.summary` describes it.
@@ -2272,7 +2393,8 @@ export namespace IFC {
          */
         thickness?: number | undefined;
         /**
-         * The name of the layer set the roof is made of; its layers set the thickness.
+         * The name of the layer set the roof is made of, its first layer at the top, as a slab's is; its
+         * layers set the thickness.
          * @default undefined
          * @optional true
          */
@@ -2292,6 +2414,56 @@ export namespace IFC {
          * @maximum Infinity
          */
         baseOffset?: number | undefined = 0;
+    }
+    /**
+     * An assembly to make for `assemblies.add`: an element made of other elements of the model, such as
+     * a facade's cladding boards or a truss's members, which then stand in the model through it.
+     */
+    export class AddAssemblyDto<T> {
+        constructor(model?: T, parts?: string[], id?: string, name?: string, predefinedType?: elementAssemblyPredefinedTypeEnum, objectType?: string) {
+            if (model !== undefined) { this.model = model; }
+            if (parts !== undefined) { this.parts = parts; }
+            if (id !== undefined) { this.id = id; }
+            if (name !== undefined) { this.name = name; }
+            if (predefinedType !== undefined) { this.predefinedType = predefinedType; }
+            if (objectType !== undefined) { this.objectType = objectType; }
+        }
+        /**
+         * The model to change; it stays as it was, and the call returns the changed model.
+         * @default undefined
+         */
+        model!: T;
+        /**
+         * The elements the assembly is made of, by GlobalId or id. They must stand in one storey, or
+         * other part of the structure, and belong to no other assembly.
+         * @default undefined
+         */
+        parts!: string[];
+        /**
+         * An id of your own for the assembly. Leave it out for a generated one.
+         * @default undefined
+         * @optional true
+         */
+        id?: string | undefined;
+        /**
+         * A name for the assembly, which other tools show; it need not be unique.
+         * @default undefined
+         * @optional true
+         */
+        name?: string | undefined;
+        /**
+         * The kind of assembly, as IFC classifies them; `userDefined` for a kind it does not name, which
+         * `objectType` then says.
+         * @default notDefined
+         */
+        predefinedType?: elementAssemblyPredefinedTypeEnum | undefined = elementAssemblyPredefinedTypeEnum.notDefined;
+        /**
+         * What kind of assembly it is, in words, such as `Cladding`. Required when `predefinedType` is
+         * `userDefined`.
+         * @default undefined
+         * @optional true
+         */
+        objectType?: string | undefined;
     }
     /**
      * Terrain to add for `site.addTerrain`: the ground of the site as an outline in the site's plan, with
@@ -2450,7 +2622,8 @@ export namespace IFC {
     }
     /**
      * One property of a property set: its name, its value and, when the value needs one, its IFC type.
-     * Used by `properties.addSet` and `properties.setValues`.
+     * Used by `properties.addSet` and `properties.setValues`. A type outside `IfcValue`, or a value it
+     * cannot hold, is refused.
      */
     export class PropertyDto {
         constructor(name?: string, value?: string | number | boolean, type?: string) {
@@ -2469,8 +2642,8 @@ export namespace IFC {
          */
         value!: string | number | boolean;
         /**
-         * The IFC type to write the value as, such as `IfcLengthMeasure`. Left out, it follows the value:
-         * a label, an integer, a real or a boolean.
+         * The IFC type of the value, any in IFC4's `IfcValue` select, such as `IfcText` or
+         * `IfcThermalTransmittanceMeasure`. Left out, a label, boolean, integer or real, as the value is.
          * @default undefined
          * @optional true
          */
@@ -2635,6 +2808,8 @@ export namespace IFC {
     }
     /**
      * A quantity set as `quantities.get` reads it back: its name and each quantity's value by name.
+     * Areas and volumes are in the model's area and volume units, square and cubic metres in a model
+     * `model.create` made.
      */
     export class QuantitySetInfoDto {
         /**
@@ -2650,12 +2825,13 @@ export namespace IFC {
         quantities: Record<string, number> = {};
     }
     /**
-     * A model and the elements to describe for `geometry.recipe` and `geometry.unsupported`.
+     * A model, the elements to describe and how to group them for `geometry.recipe`.
      */
     export class GeometryDto<T> {
-        constructor(model?: T, elements?: string[]) {
+        constructor(model?: T, elements?: string[], groupByClass?: boolean) {
             if (model !== undefined) { this.model = model; }
             if (elements !== undefined) { this.elements = elements; }
+            if (groupByClass !== undefined) { this.groupByClass = groupByClass; }
         }
         /**
          * The model whose elements are described.
@@ -2669,6 +2845,223 @@ export namespace IFC {
          * @optional true
          */
         elements?: string[] | undefined;
+        /**
+         * When true, the elements of each storey, or other part of the structure, are grouped by IFC
+         * class, such as `Walls`; when false they lie in the structure's group.
+         * @default true
+         */
+        groupByClass?: boolean | undefined = true;
+    }
+    /**
+     * A model and the elements to check for `geometry.unsupported`.
+     */
+    export class GeometryElementsDto<T> {
+        constructor(model?: T, elements?: string[]) {
+            if (model !== undefined) { this.model = model; }
+            if (elements !== undefined) { this.elements = elements; }
+        }
+        /**
+         * The model whose elements are checked.
+         * @default undefined
+         */
+        model!: T;
+        /**
+         * The elements to check, each by GlobalId or by the id it was added with. Leave it out for
+         * every element with a body.
+         * @default undefined
+         * @optional true
+         */
+        elements?: string[] | undefined;
+    }
+    /**
+     * A model, the elements to build, and how to build them for `geometry.toShapes`, which builds the
+     * model's recipe as OpenCascade shapes.
+     */
+    export class GeometryToShapesDto<T> {
+        constructor(model?: T, elements?: string[], adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number) {
+            if (model !== undefined) { this.model = model; }
+            if (elements !== undefined) { this.elements = elements; }
+            if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+            if (emptyWhenFailed !== undefined) { this.emptyWhenFailed = emptyWhenFailed; }
+            if (facetedMeshes !== undefined) { this.facetedMeshes = facetedMeshes; }
+            if (maxTriangles !== undefined) { this.maxTriangles = maxTriangles; }
+        }
+        /**
+         * The model whose elements are built.
+         * @default undefined
+         */
+        model!: T;
+        /**
+         * The elements to build, each by GlobalId or by the id it was added with. Leave it out for
+         * every element with a body.
+         * @default undefined
+         * @optional true
+         */
+        elements?: string[] | undefined;
+        /**
+         * When true, the shapes turn a quarter turn about X so the model's Z points along Y, which is up
+         * when drawn: `(x, y, z)` becomes `(x, z, -y)`.
+         * @default true
+         */
+        adjustZtoY?: boolean | undefined = true;
+        /**
+         * When true, an element that cannot be built comes back as an empty compound and the others are
+         * built; when false, it stops the build.
+         * @default true
+         */
+        emptyWhenFailed?: boolean | undefined = true;
+        /**
+         * When true, elements stored as triangle meshes become faceted solids that cut and fillet like
+         * any shape; when false they keep their triangles, which draw and export faster.
+         * @default false
+         */
+        facetedMeshes?: boolean | undefined = false;
+        /**
+         * The most triangles a mesh built as a faceted solid may hold; a larger one is not built and
+         * counts as an element that failed.
+         * @default 100000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10000
+         */
+        maxTriangles?: number | undefined = 100000;
+    }
+    /**
+     * A model, the elements to build, and how to build them for `geometry.toDocument`, which builds the
+     * model's recipe into an OpenCascade assembly document.
+     */
+    export class GeometryToDocumentDto<T> {
+        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean) {
+            if (model !== undefined) { this.model = model; }
+            if (elements !== undefined) { this.elements = elements; }
+            if (name !== undefined) { this.name = name; }
+            if (emptyWhenFailed !== undefined) { this.emptyWhenFailed = emptyWhenFailed; }
+            if (facetedMeshes !== undefined) { this.facetedMeshes = facetedMeshes; }
+            if (maxTriangles !== undefined) { this.maxTriangles = maxTriangles; }
+            if (groupByClass !== undefined) { this.groupByClass = groupByClass; }
+        }
+        /**
+         * The model whose elements are built.
+         * @default undefined
+         */
+        model!: T;
+        /**
+         * The elements to build, each by GlobalId or by the id it was added with. Leave it out for
+         * every element with a body.
+         * @default undefined
+         * @optional true
+         */
+        elements?: string[] | undefined;
+        /**
+         * The name of the assembly at the top of the document, which holds every element.
+         * @default Model
+         */
+        name?: string | undefined = "Model";
+        /**
+         * When true, an element that cannot be built is left out of the document and the others are
+         * built; when false, it stops the build.
+         * @default true
+         */
+        emptyWhenFailed?: boolean | undefined = true;
+        /**
+         * When true, elements stored as triangle meshes become faceted solids that cut and fillet like
+         * any shape; when false STEP carries their triangles as tessellated geometry, smaller and faster.
+         * @default false
+         */
+        facetedMeshes?: boolean | undefined = false;
+        /**
+         * The most triangles a mesh built as a faceted solid may hold; a larger one is not built and
+         * counts as an element that failed.
+         * @default 100000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10000
+         */
+        maxTriangles?: number | undefined = 100000;
+        /**
+         * When true, each storey's elements are gathered in assemblies by IFC class, such as `Walls`
+         * and `Slabs`; when false they lie in the storey's assembly directly.
+         * @default true
+         */
+        groupByClass?: boolean | undefined = true;
+    }
+    /**
+     * A model, the elements to write, and the file options for `geometry.toStep`, which writes the
+     * model's elements as a STEP file of OpenCascade shapes.
+     */
+    export class GeometryToStepDto<T> {
+        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean) {
+            if (model !== undefined) { this.model = model; }
+            if (elements !== undefined) { this.elements = elements; }
+            if (name !== undefined) { this.name = name; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (emptyWhenFailed !== undefined) { this.emptyWhenFailed = emptyWhenFailed; }
+            if (facetedMeshes !== undefined) { this.facetedMeshes = facetedMeshes; }
+            if (maxTriangles !== undefined) { this.maxTriangles = maxTriangles; }
+            if (compress !== undefined) { this.compress = compress; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+            if (groupByClass !== undefined) { this.groupByClass = groupByClass; }
+        }
+        /**
+         * The model whose elements are written.
+         * @default undefined
+         */
+        model!: T;
+        /**
+         * The elements to write, each by GlobalId or by the id it was added with. Leave it out for
+         * every element with a body.
+         * @default undefined
+         * @optional true
+         */
+        elements?: string[] | undefined;
+        /**
+         * The name of the assembly at the top of the file, which holds every element.
+         * @default Model
+         */
+        name?: string | undefined = "Model";
+        /**
+         * The file name, used for the download and written into the file's header.
+         * @default model.step
+         */
+        fileName?: string | undefined = "model.step";
+        /**
+         * When true, an element that cannot be built is left out of the file and the others are
+         * written; when false, it stops the export.
+         * @default true
+         */
+        emptyWhenFailed?: boolean | undefined = true;
+        /**
+         * When true, elements stored as triangle meshes are written as faceted solids; when false they
+         * are written as tessellated geometry, which is faster and smaller.
+         * @default false
+         */
+        facetedMeshes?: boolean | undefined = false;
+        /**
+         * The most triangles a mesh built as a faceted solid may hold; a larger one is not built and
+         * counts as an element that failed.
+         * @default 100000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10000
+         */
+        maxTriangles?: number | undefined = 100000;
+        /**
+         * When true, the file is written as gzip-compressed STEP-Z.
+         * @default false
+         */
+        compress?: boolean | undefined = false;
+        /**
+         * When true, a browser download of the file is started where that is possible; the bytes are
+         * returned either way.
+         * @default false
+         */
+        tryDownload?: boolean | undefined = false;
+        /**
+         * When true, each storey's elements are gathered in assemblies by IFC class, such as `Walls`
+         * and `Slabs`; when false they lie in the storey's assembly directly.
+         * @default true
+         */
+        groupByClass?: boolean | undefined = true;
     }
     /**
      * An element `geometry.recipe` had to leave out, as `geometry.unsupported` lists it.

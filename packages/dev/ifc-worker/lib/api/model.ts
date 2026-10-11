@@ -39,11 +39,11 @@ export class IFCModels {
     }
 
     /**
-     * Reads an IFC file into a model, which can then be inspected, changed and written back.
+     * Reads an IFC file into a model to inspect, change and write back.
      *
-     * Entities are decoded only when something asks for them, and those left unchanged are written
-     * back character for character as they were read. An IFC2X3 file is read through IFC4, to be
-     * shown and queried; `upgradeToIfc4` makes it editable.
+     * Entities are decoded only when asked for, and unchanged ones are written back exactly as read.
+     * An IFC2X3 file is read through IFC4, to be shown and queried; `upgradeToIfc4` makes it
+     * editable. An `.ifczip` archive is read from the `.ifc` file it holds.
      * @param inputs - The file's text or bytes
      * @returns The model the file holds
      * @group io
@@ -140,13 +140,32 @@ export class IFCModels {
     }
 
     /**
-     * Lists the objects of one IFC type, its subtypes included, optionally only those one storey
-     * contains.
+     * Reads where a model sits on the Earth: the map conversion that places its coordinates in a
+     * projected coordinate reference system, and its site's reference latitude, longitude and
+     * elevation. A file without them gives the defaults, with `mapped` and `located` false.
+     * @param inputs - The model
+     * @returns The model's georeference
+     * @group query
+     * @shortname georeference
+     * @drawable false
+     * @example
+     * ```typescript
+     * const georeference = await bitbybit.ifc.model.georeference({ model });
+     * console.log(georeference.crs, georeference.eastings, georeference.northings);
+     * ```
+     */
+    georeference(inputs: Inputs.IFC.ModelDto<Inputs.IFC.IfcModelPointer>): Promise<Inputs.IFC.GeoreferenceDto> {
+        return this.ifcWorkerManager.genericCallToWorkerPromise("model.georeference", inputs);
+    }
+
+    /**
+     * Lists the objects of one IFC type, its subtypes included, optionally only those standing in
+     * one storey or other spatial element. An aggregate's part stands where its whole stands.
      *
      * `type` is any type with a GlobalId, such as `IfcWall`, `IfcDoor` or `IfcElement` for every
      * building element. The list is in the order the model holds them.
      * @param inputs - The model, the type and an optional storey
-     * @returns Each object's GlobalId, type, name and storey
+     * @returns Each object's GlobalId, type, name and the spatial element it stands in
      * @group query
      * @shortname elements
      * @drawable false
@@ -160,9 +179,10 @@ export class IFCModels {
     }
 
     /**
-     * Describes one object of a model: its GlobalId, its type, its name and its storey.
+     * Describes one object of a model: its GlobalId, its type, its name and the spatial element it
+     * stands in.
      * @param inputs - The model and the object
-     * @returns The object's GlobalId, type, name and storey
+     * @returns The object's GlobalId, type, name and the spatial element it stands in
      * @group query
      * @shortname element
      * @drawable false

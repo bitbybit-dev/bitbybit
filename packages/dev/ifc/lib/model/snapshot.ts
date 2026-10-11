@@ -1,3 +1,4 @@
+import { isEditableSchema } from "../schema/registry";
 import type { IfcSchema } from "../schema/schema";
 import type { IfcEntity, IfcFileHeader } from "../step/step-types";
 import { EntityLookup } from "./entity-lookup";
@@ -39,7 +40,7 @@ export class ModelSnapshot extends EntityLookup implements IfcModel {
     }
 
     get editable(): boolean {
-        return this.schemaName === this.schema.name;
+        return this.schemaName === this.schema.name && isEditableSchema(this.schema.name);
     }
 
     get size(): number {

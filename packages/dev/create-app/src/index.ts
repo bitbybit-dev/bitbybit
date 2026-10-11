@@ -42,7 +42,7 @@ interface CloudProjectOptions {
 
 type AppType = "frontend" | "cloud" | "app";
 
-type AppTemplateId = "product-configurator" | "laser-cut-box" | "sheet-metal-unfold" | "step-to-gltf-cli" | "drone-assembly";
+type AppTemplateId = "product-configurator" | "laser-cut-box" | "sheet-metal-unfold" | "step-to-gltf-cli" | "drone-assembly" | "ifc-house";
 
 interface AppTemplate {
     name: string;
@@ -74,6 +74,11 @@ const APP_TEMPLATES: Record<AppTemplateId, AppTemplate> = {
     "drone-assembly": {
         name: "Drone assembly",
         description: "A multirotor built as a real assembly: twenty-seven parts placed through sub-assemblies, physically based materials, spinning propellers, a bill of materials, STEP and GLB exports that keep the tree",
+        cloud: false,
+    },
+    "ifc-house": {
+        name: "IFC family house",
+        description: "A two-storey house written as an IFC4 building model: layered walls, windows and doors, rooms, a roof, terrain and trees, every element clickable, IFC and STEP downloads",
         cloud: false,
     },
 };

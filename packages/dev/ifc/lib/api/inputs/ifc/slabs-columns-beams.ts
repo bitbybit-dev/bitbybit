@@ -1,5 +1,5 @@
 import type { Base } from "../base-inputs";
-import { memberPredefinedTypeEnum, profileKindEnum, roofKindEnum, slabPredefinedTypeEnum } from "./pointers-and-enums";
+import { elementAssemblyPredefinedTypeEnum, memberPredefinedTypeEnum, profileKindEnum, roofKindEnum, slabPredefinedTypeEnum } from "./pointers-and-enums";
 
 /**
  * A slab to add for `slabs.add`: an outline in a storey's plan, with optional holes, extruded down
@@ -359,7 +359,8 @@ export class AddRoofDto<T> {
      */
     thickness?: number | undefined;
     /**
-     * The name of the layer set the roof is made of; its layers set the thickness.
+     * The name of the layer set the roof is made of, its first layer at the top, as a slab's is; its
+     * layers set the thickness.
      * @default undefined
      * @optional true
      */
@@ -379,4 +380,54 @@ export class AddRoofDto<T> {
      * @maximum Infinity
      */
     baseOffset?: number | undefined = 0;
+}
+/**
+ * An assembly to make for `assemblies.add`: an element made of other elements of the model, such as
+ * a facade's cladding boards or a truss's members, which then stand in the model through it.
+ */
+export class AddAssemblyDto<T> {
+    constructor(model?: T, parts?: string[], id?: string, name?: string, predefinedType?: elementAssemblyPredefinedTypeEnum, objectType?: string) {
+        if (model !== undefined) { this.model = model; }
+        if (parts !== undefined) { this.parts = parts; }
+        if (id !== undefined) { this.id = id; }
+        if (name !== undefined) { this.name = name; }
+        if (predefinedType !== undefined) { this.predefinedType = predefinedType; }
+        if (objectType !== undefined) { this.objectType = objectType; }
+    }
+    /**
+     * The model to change; it stays as it was, and the call returns the changed model.
+     * @default undefined
+     */
+    model!: T;
+    /**
+     * The elements the assembly is made of, by GlobalId or id. They must stand in one storey, or
+     * other part of the structure, and belong to no other assembly.
+     * @default undefined
+     */
+    parts!: string[];
+    /**
+     * An id of your own for the assembly. Leave it out for a generated one.
+     * @default undefined
+     * @optional true
+     */
+    id?: string | undefined;
+    /**
+     * A name for the assembly, which other tools show; it need not be unique.
+     * @default undefined
+     * @optional true
+     */
+    name?: string | undefined;
+    /**
+     * The kind of assembly, as IFC classifies them; `userDefined` for a kind it does not name, which
+     * `objectType` then says.
+     * @default notDefined
+     */
+    predefinedType?: elementAssemblyPredefinedTypeEnum | undefined = elementAssemblyPredefinedTypeEnum.notDefined;
+    /**
+     * What kind of assembly it is, in words, such as `Cladding`. Required when `predefinedType` is
+     * `userDefined`.
+     * @default undefined
+     * @optional true
+     */
+    objectType?: string | undefined;
 }

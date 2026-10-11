@@ -137,8 +137,12 @@ export function closingParenthesis(bytes: Uint8Array, open: number, end: number)
     throw new StepSyntaxError("A parenthesis is never closed", open);
 }
 
-export function referenceCapacity(start: number, end: number): number {
-    return ((end - start) >> 1) + 1;
+export function referenceCapacity(bytes: Uint8Array, start: number, end: number): number {
+    let count = 0;
+    for (let at = bytes.indexOf(CHAR_HASH, start); at >= 0 && at < end; at = bytes.indexOf(CHAR_HASH, at + 1)) {
+        count++;
+    }
+    return count;
 }
 
 export function referencesInto(bytes: Uint8Array, start: number, end: number, into: Int32Array): number {

@@ -111,7 +111,7 @@ export function movePlacement(tx: IfcTransaction, writer: EntityWriter, placemen
 
 export function productsPlacedBy(reader: ModelReader, placement: number): number[] {
     return reader.referencesTo(placement).filter((user) => {
-        if (!reader.schema.isSubtypeOf(reader.entity(user).type, PRODUCT)) {
+        if (!reader.schema.isSubtypeOf(reader.typeOf(user) ?? "", PRODUCT)) {
             return false;
         }
         const placed = reader.attribute(user, "ObjectPlacement");

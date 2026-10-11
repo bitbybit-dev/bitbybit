@@ -853,6 +853,7 @@ export class DrawCore {
     detectPolyline(entity: unknown): boolean;
     // (undocumented)
     detectPolylines(entity: unknown): boolean;
+    detectRecipeMeshes(entity: unknown): entity is Inputs_7.Manifold.RecipeMeshesDto;
     // (undocumented)
     detectShapesWithAppearance(entity: unknown): entity is ShapeWithAppearance[];
     detectShapeWithAppearance(entity: unknown): entity is ShapeWithAppearance;
@@ -1242,6 +1243,15 @@ export function getOrCreateWorkers(options: InitBitByBitOptions): WorkerInstance
 
 // @beta
 namespace IFC {
+    class AddAssemblyDto<T> {
+        constructor(model?: T, parts?: string[], id?: string, name?: string, predefinedType?: elementAssemblyPredefinedTypeEnum, objectType?: string);
+        id?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        objectType?: string | undefined;
+        parts: string[];
+        predefinedType?: elementAssemblyPredefinedTypeEnum | undefined;
+    }
     class AddBeamDto<T> extends MemberSharedDto<T> {
         constructor(model?: T, storey?: string, start?: Base_2.Point3, end?: Base_2.Point3, id?: string, name?: string, profile?: profileKindEnum, width?: number, depth?: number, radius?: number, webThickness?: number, flangeThickness?: number, rotation?: number, material?: string);
         end: Base_2.Point3;
@@ -1516,6 +1526,19 @@ namespace IFC {
         thickness?: number | undefined;
         wall: string;
     }
+    enum elementAssemblyPredefinedTypeEnum {
+        accessoryAssembly = "ACCESSORY_ASSEMBLY",
+        arch = "ARCH",
+        beamGrid = "BEAM_GRID",
+        bracedFrame = "BRACED_FRAME",
+        girder = "GIRDER",
+        notDefined = "NOTDEFINED",
+        reinforcementUnit = "REINFORCEMENT_UNIT",
+        rigidFrame = "RIGID_FRAME",
+        slabField = "SLAB_FIELD",
+        truss = "TRUSS",
+        userDefined = "USERDEFINED"
+    }
     class ElementDto<T> {
         constructor(model?: T, element?: string);
         element: string;
@@ -1534,6 +1557,12 @@ namespace IFC {
         type?: string | undefined;
     }
     class GeometryDto<T> {
+        constructor(model?: T, elements?: string[], groupByClass?: boolean);
+        elements?: string[] | undefined;
+        groupByClass?: boolean | undefined;
+        model: T;
+    }
+    class GeometryElementsDto<T> {
         constructor(model?: T, elements?: string[]);
         elements?: string[] | undefined;
         model: T;
@@ -1542,6 +1571,52 @@ namespace IFC {
         globalId: string;
         message: string;
         type: string;
+    }
+    class GeometryToDocumentDto<T> {
+        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean);
+        elements?: string[] | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        facetedMeshes?: boolean | undefined;
+        groupByClass?: boolean | undefined;
+        maxTriangles?: number | undefined;
+        model: T;
+        name?: string | undefined;
+    }
+    class GeometryToShapesDto<T> {
+        constructor(model?: T, elements?: string[], adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number);
+        adjustZtoY?: boolean | undefined;
+        elements?: string[] | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        facetedMeshes?: boolean | undefined;
+        maxTriangles?: number | undefined;
+        model: T;
+    }
+    class GeometryToStepDto<T> {
+        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean);
+        compress?: boolean | undefined;
+        elements?: string[] | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        facetedMeshes?: boolean | undefined;
+        fileName?: string | undefined;
+        groupByClass?: boolean | undefined;
+        maxTriangles?: number | undefined;
+        model: T;
+        name?: string | undefined;
+        tryDownload?: boolean | undefined;
+    }
+    class GeoreferenceDto {
+        crs: string;
+        eastings: number;
+        elevation: number;
+        latitude: number;
+        located: boolean;
+        longitude: number;
+        mapped: boolean;
+        northings: number;
+        orthogonalHeight: number;
+        scale: number;
+        xAxisAbscissa: number;
+        xAxisOrdinate: number;
     }
     class GetAttributeDto<T> {
         constructor(model?: T, element?: string, attribute?: string);
@@ -1775,6 +1850,8 @@ namespace IFC_2 {
     // Warning: (ae-forgotten-export) The symbol "Inputs_4" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
+    type AddAssemblyDto<T> = WithDefaults<Inputs_4.IFC.AddAssemblyDto<T>, "predefinedType">;
+    // (undocumented)
     type AddBeamDto<T> = WithDefaults<Inputs_4.IFC.AddBeamDto<T>, "profile" | "rotation">;
     // (undocumented)
     type AddColumnDto<T> = WithDefaults<Inputs_4.IFC.AddColumnDto<T>, "position" | "baseOffset" | "profile" | "rotation">;
@@ -1835,9 +1912,19 @@ namespace IFC_2 {
     // (undocumented)
     type ElementsDto<T> = WithDefaults<Inputs_4.IFC.ElementsDto<T>, "type">;
     // (undocumented)
-    type GeometryDto<T> = Inputs_4.IFC.GeometryDto<T>;
+    type GeometryDto<T> = WithDefaults<Inputs_4.IFC.GeometryDto<T>, "groupByClass">;
+    // (undocumented)
+    type GeometryElementsDto<T> = Inputs_4.IFC.GeometryElementsDto<T>;
     // (undocumented)
     type GeometryProblemDto = WithDefaults<Inputs_4.IFC.GeometryProblemDto, "globalId" | "type" | "message">;
+    // (undocumented)
+    type GeometryToDocumentDto<T> = WithDefaults<Inputs_4.IFC.GeometryToDocumentDto<T>, "name" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "groupByClass">;
+    // (undocumented)
+    type GeometryToShapesDto<T> = WithDefaults<Inputs_4.IFC.GeometryToShapesDto<T>, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
+    // (undocumented)
+    type GeometryToStepDto<T> = WithDefaults<Inputs_4.IFC.GeometryToStepDto<T>, "name" | "fileName" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "compress" | "tryDownload" | "groupByClass">;
+    // (undocumented)
+    type GeoreferenceDto = WithDefaults<Inputs_4.IFC.GeoreferenceDto, "mapped" | "crs" | "eastings" | "northings" | "orthogonalHeight" | "xAxisAbscissa" | "xAxisOrdinate" | "scale" | "located" | "latitude" | "longitude" | "elevation">;
     // (undocumented)
     type GetAttributeDto<T> = WithDefaults<Inputs_4.IFC.GetAttributeDto<T>, "attribute">;
     // (undocumented)
@@ -1884,6 +1971,26 @@ namespace IFC_2 {
     type WallParametersDto = WithDefaults<Inputs_4.IFC.WallParametersDto, "globalId" | "name" | "storey" | "start" | "end" | "height" | "baseOffset" | "thickness" | "offset" | "alignment" | "layerSet" | "wallType" | "joins" | "openings" | "clippings">;
     // (undocumented)
     type WriteModelDto<T> = WithDefaults<Inputs_4.IFC.WriteModelDto<T>, "fileName">;
+}
+
+// Warning: (ae-forgotten-export) The symbol "IFCBitByBit" needs to be exported by the entry point index.d.ts
+//
+// @beta
+export class IFCW extends IFCBitByBit {
+    // Warning: (ae-forgotten-export) The symbol "OCCT_4" needs to be exported by the entry point index.d.ts
+    constructor(ifcWorkerManager: IFCWorkerManager, occt: OCCT_4);
+    // (undocumented)
+    readonly geometry: IFCWGeometry;
+}
+
+// Warning: (ae-forgotten-export) The symbol "IFCGeometry" needs to be exported by the entry point index.d.ts
+//
+// @beta
+export class IFCWGeometry extends IFCGeometry {
+    constructor(ifcWorkerManager: IFCWorkerManager, occt: OCCT_4);
+    toDocument(inputs: Inputs_7.IFC.GeometryToDocumentDto<Inputs_7.IFC.IfcModelPointer>): Promise<Inputs_7.OCCT.TDocStdDocumentPointer>;
+    toShapes(inputs: Inputs_7.IFC.GeometryToShapesDto<Inputs_7.IFC.IfcModelPointer>): Promise<Inputs_7.OCCT.TopoDSShapePointer[]>;
+    toStep(inputs: Inputs_7.IFC.GeometryToStepDto<Inputs_7.IFC.IfcModelPointer>): Promise<Uint8Array>;
 }
 
 // @public
@@ -3217,6 +3324,15 @@ namespace Manifold {
         emptyWhenFailed?: boolean | undefined;
         recipe: Base_2.Recipe;
     }
+    // @beta
+    class BuildRecipeMeshesDto {
+        constructor(recipe?: Base_2.Recipe, circularSegments?: number, adjustZtoY?: boolean, emptyWhenFailed?: boolean, minSharpAngle?: number);
+        adjustZtoY?: boolean | undefined;
+        circularSegments?: number | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        minSharpAngle?: number | undefined;
+        recipe: Base_2.Recipe;
+    }
     class CalculateCurvatureDto<T> {
         constructor(manifold?: T);
         gaussianIdx?: number | undefined;
@@ -3377,6 +3493,11 @@ namespace Manifold {
         constructor(points?: T);
         points: T;
     }
+    class LoftDto<T> {
+        constructor(crossSections?: T[], frames?: Base_2.TransformMatrix[]);
+        crossSections: T[];
+        frames: Base_2.TransformMatrix[];
+    }
     class ManifoldDto<T> {
         constructor(manifold?: T);
         manifold: T;
@@ -3524,6 +3645,18 @@ namespace Manifold {
         normal: Base_2.Vector3;
     };
     // @beta
+    class RecipeMeshesDto {
+        meshes: DecomposedManifoldMeshDto[];
+        placements: RecipeMeshPlacementDto[];
+    }
+    // @beta
+    class RecipeMeshPlacementDto {
+        group?: number | undefined;
+        matrix: Base_2.TransformMatrix;
+        mesh: number;
+        tag: Record<string, Base_2.RecipeTagValue>;
+    }
+    // @beta
     class RecipeSurfaceMeshesDto {
         constructor(recipe?: Base_2.Recipe, roots?: number[], adjustZtoY?: boolean);
         adjustZtoY?: boolean | undefined;
@@ -3617,6 +3750,14 @@ namespace Manifold {
         center?: boolean | undefined;
         size?: number | undefined;
     }
+    class SweepDto<T> {
+        constructor(crossSection?: T, path?: Base_2.Point3[], cornerRadius?: number, circularSegments?: number, xDirection?: Base_2.Vector3);
+        circularSegments?: number | undefined;
+        cornerRadius?: number | undefined;
+        crossSection: T;
+        path: Base_2.Point3[];
+        xDirection?: Base_2.Vector3 | undefined;
+    }
     class TransformCrossSectionDto<T> {
         constructor(crossSection?: T, transform?: Base_2.TransformMatrix3x3);
         crossSection: T;
@@ -3685,6 +3826,8 @@ namespace Manifold_2 {
     // (undocumented)
     type BuildRecipeDto = WithDefaults<Inputs_3.Manifold.BuildRecipeDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed">;
     // (undocumented)
+    type BuildRecipeMeshesDto = WithDefaults<Inputs_3.Manifold.BuildRecipeMeshesDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed" | "minSharpAngle">;
+    // (undocumented)
     type CalculateCurvatureDto<T> = WithDefaults<Inputs_3.Manifold.CalculateCurvatureDto<T>, "gaussianIdx" | "meanIdx">;
     // (undocumented)
     type CalculateNormalsDto<T> = WithDefaults<Inputs_3.Manifold.CalculateNormalsDto<T>, "normalIdx" | "minSharpAngle">;
@@ -3728,6 +3871,8 @@ namespace Manifold_2 {
     type FromPolygonPointsDto = Inputs_3.Manifold.FromPolygonPointsDto;
     // (undocumented)
     type HullPointsDto<T> = Inputs_3.Manifold.HullPointsDto<T>;
+    // (undocumented)
+    type LoftDto<T> = Inputs_3.Manifold.LoftDto<T>;
     // (undocumented)
     type ManifoldDto<T> = Inputs_3.Manifold.ManifoldDto<T>;
     // (undocumented)
@@ -3777,6 +3922,10 @@ namespace Manifold_2 {
     // (undocumented)
     type RayCastDto<T> = WithDefaults<Inputs_3.Manifold.RayCastDto<T>, "origin" | "endpoint">;
     // (undocumented)
+    type RecipeMeshesDto = Inputs_3.Manifold.RecipeMeshesDto;
+    // (undocumented)
+    type RecipeMeshPlacementDto = Inputs_3.Manifold.RecipeMeshPlacementDto;
+    // (undocumented)
     type RecipeSurfaceMeshesDto = WithDefaults<Inputs_3.Manifold.RecipeSurfaceMeshesDto, "adjustZtoY">;
     // (undocumented)
     type RectangleDto = WithDefaults<Inputs_3.Manifold.RectangleDto, "length" | "height" | "center">;
@@ -3810,6 +3959,8 @@ namespace Manifold_2 {
     type SplitManifoldsDto<T> = Inputs_3.Manifold.SplitManifoldsDto<T>;
     // (undocumented)
     type SquareDto = WithDefaults<Inputs_3.Manifold.SquareDto, "center" | "size">;
+    // (undocumented)
+    type SweepDto<T> = WithDefaults<Inputs_3.Manifold.SweepDto<T>, "cornerRadius" | "circularSegments">;
     // (undocumented)
     type TransformCrossSectionDto<T> = Inputs_3.Manifold.TransformCrossSectionDto<T>;
     // (undocumented)
@@ -4440,6 +4591,25 @@ namespace OCCT {
         existingDocument?: D | undefined;
         sourceDocuments?: D[] | undefined;
         structure: Models.OCCT.AssemblyStructureDef<T>;
+    }
+    // @beta
+    class BuildRecipeDocumentDto {
+        constructor(recipe?: Base_2.Recipe, name?: string, groupBy?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number);
+        emptyWhenFailed?: boolean | undefined;
+        facetedMeshes?: boolean | undefined;
+        groupBy?: string | undefined;
+        maxTriangles?: number | undefined;
+        name?: string | undefined;
+        recipe: Base_2.Recipe;
+    }
+    // @beta
+    class BuildRecipeDto {
+        constructor(recipe?: Base_2.Recipe, adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number);
+        adjustZtoY?: boolean | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        facetedMeshes?: boolean | undefined;
+        maxTriangles?: number | undefined;
+        recipe: Base_2.Recipe;
     }
     class Chamfer2dVertexDto<T> {
         constructor(shape?: T, distance?: number, angle?: number, indexes?: number[]);
@@ -7554,6 +7724,10 @@ namespace OCCT_3 {
     // (undocumented)
     type BuildAssemblyDocumentDto<T, D> = Inputs_5.OCCT.BuildAssemblyDocumentDto<T, D>;
     // (undocumented)
+    type BuildRecipeDocumentDto = WithDefaults<Inputs_5.OCCT.BuildRecipeDocumentDto, "name" | "groupBy" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
+    // (undocumented)
+    type BuildRecipeDto = WithDefaults<Inputs_5.OCCT.BuildRecipeDto, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
+    // (undocumented)
     type Chamfer2dVertexDto<T> = WithDefaults<Inputs_5.OCCT.Chamfer2dVertexDto<T>, "distance" | "angle">;
     // (undocumented)
     type ChamferCornerByPointDto<T> = WithDefaults<Inputs_5.OCCT.ChamferCornerByPointDto<T>, "points" | "distance" | "angle" | "snapTolerance" | "mode">;
@@ -8297,8 +8471,6 @@ namespace OCCT_3 {
     type ZigZagBetweenTwoWiresDto<T> = WithDefaults<Inputs_5.OCCT.ZigZagBetweenTwoWiresDto<T>, "nrZigZags" | "inverse" | "divideByEqualDistance" | "zigZagsPerEdge">;
 }
 
-// Warning: (ae-forgotten-export) The symbol "OCCT_4" needs to be exported by the entry point index.d.ts
-//
 // @public
 export class OCCTW extends OCCT_4 {
     constructor(context: ContextBase, occWorkerManager: OCCTWorkerManager);
@@ -8724,6 +8896,89 @@ export interface PrintSaveInterface {
     // (undocumented)
     text: unknown;
 }
+
+// @public
+export interface RecipeDrawBatch {
+    colors: Float32Array;
+    indices: Uint32Array;
+    normals: Float32Array;
+    origin: Base_2.Point3;
+    positions: Float32Array;
+    ranges: RecipeDrawRange[];
+    transparent: boolean;
+}
+
+// @public
+export interface RecipeDrawElement {
+    group?: number | undefined;
+    key: string;
+    parts: RecipeDrawPart[];
+    tag: Record<string, Base_2.RecipeTagValue>;
+}
+
+// @public
+export function recipeDrawElementAt(batch: RecipeDrawBatch, triangle: number): number | undefined;
+
+// @public
+export interface RecipeDrawInstances {
+    colors: Float32Array;
+    elements: Uint32Array;
+    matrices: Float32Array;
+    mesh: number;
+    origin: Base_2.Point3;
+    transparent: boolean;
+}
+
+// @public
+export interface RecipeDrawMesh {
+    indices: Uint32Array;
+    normals: Float32Array;
+    positions: Float32Array;
+}
+
+// @public
+export interface RecipeDrawOptions {
+    defaultColor: Base_2.ColorRGBA;
+    elementKey: string;
+    instancing: boolean;
+    maxBatchVertices: number;
+    minInstances: number;
+    reverseWinding: boolean;
+}
+
+// @public
+export interface RecipeDrawPart {
+    batch?: number | undefined;
+    instance?: number | undefined;
+    instances?: number | undefined;
+    range?: number | undefined;
+}
+
+// @public
+export interface RecipeDrawPlan {
+    batches: RecipeDrawBatch[];
+    elements: RecipeDrawElement[];
+    instances: RecipeDrawInstances[];
+    meshes: RecipeDrawMesh[];
+}
+
+// @public
+export function recipeDrawPlanOf(meshes: Inputs_7.Manifold.RecipeMeshesDto, options?: Partial<RecipeDrawOptions>): RecipeDrawPlan;
+
+// @public
+export interface RecipeDrawRange {
+    element: number;
+    firstTriangle: number;
+    firstVertex: number;
+    triangles: number;
+    vertices: number;
+}
+
+// @public
+export function recipeDrawRangeColors(range: RecipeDrawRange, color: Base_2.ColorRGBA): Float32Array;
+
+// @public
+export function recipeDrawRangeIndices(batch: RecipeDrawBatch, range: RecipeDrawRange, visible: boolean): Uint32Array;
 
 declare namespace Resolved {
     export {

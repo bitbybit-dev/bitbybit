@@ -20,6 +20,7 @@ export interface EntityReader {
 export interface ModelReader extends EntityReader {
     readonly schema: IfcSchema;
     get(id: number): IfcEntity | undefined;
+    typeOf(id: number): string | undefined;
     byType(type: string): IfcEntity[];
     referencesTo(id: number): readonly number[];
 }
@@ -219,6 +220,14 @@ export interface TerrainSpec {
     readonly depth: number;
     readonly elevation: number;
     readonly material: string | undefined;
+}
+
+export interface AssemblySpec {
+    readonly parts: readonly number[];
+    readonly id: string | undefined;
+    readonly name: string | undefined;
+    readonly predefinedType: string;
+    readonly objectType: string | undefined;
 }
 
 export interface TreeSpec {

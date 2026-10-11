@@ -8,6 +8,7 @@ import { isList, isReference } from "../step/values";
 import { colourOf } from "./colours";
 import type { ModelRecipe } from "./geometry-types";
 import { ItemConverter } from "./items";
+import { RecipeGroups } from "./groups";
 import { RecipeBuilder } from "./recipe-builder";
 
 const BODY = "Body";
@@ -108,8 +109,9 @@ function precisionOf(model: ModelSnapshot, fallback: number): number {
     return fallback;
 }
 
-export function modelRecipe(model: ModelSnapshot, globalIds: readonly string[] | undefined, millimetresPerUnit: number, fallbackTolerance: number): ModelRecipe {
+export function modelRecipe(model: ModelSnapshot, globalIds: readonly string[] | undefined, millimetresPerUnit: number, fallbackTolerance: number, isGroupedByClass = true): ModelRecipe {
     const builder = new RecipeBuilder();
+    const groups = new RecipeGroups(model, isGroupedByClass);
     const converter = new ItemConverter(model, builder, REACH_MILLIMETRES / millimetresPerUnit);
     const colours = new Map<number, number[] | undefined>();
     const frames = new Map<number, Frame3>();
@@ -149,17 +151,19 @@ export function modelRecipe(model: ModelSnapshot, globalIds: readonly string[] |
             });
             const name = model.attribute(product.id, "Name");
             const material = parts.some((part) => !part.rgba) ? colourOf(model, colours, product.id) : undefined;
+            const group = groups.groupOf(product.id);
             for (const part of parts) {
                 const rgba = part.rgba ?? material;
                 builder.root({
                     node: cuts.length ? builder.node({ op: "voids", host: part.node, openings: cuts }) : part.node,
                     matrix: axesToMatrix(frame),
                     tag: { globalId, type: product.type, name: typeof name === "string" ? name : "", ...(rgba ? { rgba: [...rgba] } : {}) },
+                    ...(group === undefined ? {} : { group }),
                 });
             }
         } catch (error) {
             problems.push({ globalId, type: product.type, message: error instanceof Error ? error.message : String(error) });
         }
     }
-    return { recipe: builder.build(millimetresPerUnit, precisionOf(model, fallbackTolerance)), problems };
+    return { recipe: builder.build(millimetresPerUnit, precisionOf(model, fallbackTolerance), groups.list()), problems };
 }

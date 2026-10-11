@@ -1,6 +1,7 @@
 import "./style.css";
 import * as THREE from "three";
-import { BitByBitBase, Inputs, initBitByBit } from "@bitbybit-dev/threejs";
+import { BitByBitBase, initBitByBit } from "@bitbybit-dev/threejs";
+import { houseStep } from "./export/step-export";
 import { HouseAuthor } from "./house/build-house";
 import type { Layer, StoreyKey } from "./house/house-types";
 import { drawHouse } from "./scene/draw-house";
@@ -14,7 +15,9 @@ const CLICK_TOLERANCE_PX = 4;
 const HIGHLIGHT = new THREE.MeshStandardMaterial({ color: "#e9b44c", emissive: "#3d2700", roughness: 0.5 });
 
 const status = document.getElementById("status") as HTMLElement;
-start().catch((error: unknown) => showStatus(status, `The house could not be built: ${error instanceof Error ? error.message : String(error)}`));
+start().catch((error: unknown) => {
+    showStatus(status, `The house could not be built: ${error instanceof Error ? error.message : String(error)}`);
+});
 
 async function start(): Promise<void> {
     const stage = createStage("three-canvas");
@@ -30,7 +33,9 @@ async function start(): Promise<void> {
     });
 
     const started = performance.now();
-    const house = await new HouseAuthor(bitbybit, (message) => showStatus(status, message)).build();
+    const house = await new HouseAuthor(bitbybit.ifc, (message) => {
+        showStatus(status, message);
+    }).build();
     showStatus(status, "Building the geometry with Manifold");
     const drawn = await drawHouse(bitbybit, house);
     const seconds = (performance.now() - started) / 1000;
@@ -54,9 +59,22 @@ async function start(): Promise<void> {
             }
             labels.show(labelledStorey(panel));
         },
-        onDownload: () => download(bitbybit, house.model),
+        onDownload: async () => {
+            saveFile(await bitbybit.ifc.model.write({ model: house.model, fileName: "house.ifc" }), "house.ifc", "application/x-step");
+        },
+        onDownloadStep: async () => {
+            showStatus(status, "Starting OpenCascade and writing house.step");
+            try {
+                saveFile((await houseStep(bitbybit, house.model)).slice(), "house.step", "model/step");
+                showStatus(status, undefined);
+            } catch (error) {
+                showStatus(status, `The STEP file could not be written: ${error instanceof Error ? error.message : String(error)}`);
+            }
+        },
     });
-    enablePicking(stage, drawn, (info) => panel.select(info));
+    enablePicking(stage, drawn, (info) => {
+        panel.select(info);
+    });
     showStatus(status, undefined);
 }
 
@@ -94,7 +112,7 @@ function enablePicking(stage: Stage, drawn: DrawnElement[], onPick: (info: Eleme
         if (hit && info) {
             const owner = drawn.find((item) => item.info === info);
             owner?.object.traverse((part) => {
-                if (part instanceof THREE.Mesh) {
+                if (isMesh(part)) {
                     restore.set(part, part.material);
                     part.material = HIGHLIGHT;
                 }
@@ -104,12 +122,17 @@ function enablePicking(stage: Stage, drawn: DrawnElement[], onPick: (info: Eleme
     });
 }
 
-async function download(bitbybit: BitByBitBase, model: Inputs.IFC.IfcModelPointer): Promise<void> {
-    const text = await bitbybit.ifc.model.write({ model, fileName: "house.ifc" });
-    const url = URL.createObjectURL(new Blob([text], { type: "application/x-step" }));
+function isMesh(object: THREE.Object3D): object is THREE.Mesh {
+    return object instanceof THREE.Mesh;
+}
+
+function saveFile(data: BlobPart, fileName: string, type: string): void {
+    const url = URL.createObjectURL(new Blob([data], { type }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = "house.ifc";
+    link.download = fileName;
     link.click();
-    setTimeout(() => URL.revokeObjectURL(url), DOWNLOAD_URL_LIFETIME_MS);
+    setTimeout(() => {
+        URL.revokeObjectURL(url);
+    }, DOWNLOAD_URL_LIFETIME_MS);
 }

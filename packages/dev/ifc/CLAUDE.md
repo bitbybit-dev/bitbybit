@@ -16,14 +16,17 @@ them, and a caller (or a worker cache) may still hold the older one.
 `isIfcModel`, the value types and `StepSyntaxError`/`IfcValueError` are exported; the snapshot, the
 source, the index and the schema classes stay internal. A deliberate change runs `npm run api:update`.
 
-**The schema table is generated.** `lib/schema/generated/ifc4.ts` is written by
-`scripts/gen-ifc-schema.mjs` from `schema/IFC4_ADD2_TC1.exp`, buildingSMART's EXPRESS file, which is
-kept exactly as published (changing it would need buildingSMART's consent). Never edit either by hand;
-`npm run gen:ifc-schema` rewrites the table and `npm run check:ifc-schema` (part of `npm test`) fails
-on a stale one. The table carries buildingSMART's notice, and the package's `NOTICE` the attribution.
-There is no IFC2X3 table: an IFC2X3 file is read through the IFC4 one (`readingSchemaFor`), which keeps
-most of its entities and appended most of its new attributes, so the model can be shown and queried
-but refuses every change (`editable` is false) until `upgradeToIfc4` turns it into an IFC4 model.
+**The schema tables are generated.** `lib/schema/generated/ifc4.ts` and `ifc4x3.ts` are written by
+`scripts/gen-ifc-schema.mjs` from `schema/IFC4_ADD2_TC1.exp` and `schema/IFC4X3_ADD2.exp`,
+buildingSMART's EXPRESS files, kept exactly as published (changing one would need buildingSMART's
+consent). Never edit any of them by hand; `npm run gen:ifc-schema` rewrites the tables and
+`npm run check:ifc-schema` (part of `npm test`) fails on a stale one. Each table carries buildingSMART's
+notice - IFC4X3_ADD2.exp has none in it, so `schema/IFC4X3_ADD2.notice.txt` holds the publication's -
+and the package's `NOTICE` the attribution. Only IFC4 models are editable (`isEditableSchema`): an
+IFC4X3 model is read with its own table and shown and queried, and refuses every change until edits
+are proven on IFC4X3 files. There is no IFC2X3 table: an IFC2X3 file is read through the IFC4 one
+(`readingSchemaFor`), which keeps most of its entities and appended most of its new attributes, so the
+model can be shown and queried but refuses every change until `upgradeToIfc4` makes it an IFC4 model.
 
 **Values are written by the schema, not by their JavaScript type.** An attribute value is a plain
 JavaScript value (`IfcValue`): a number is written as a real or an integer as the attribute's type
@@ -35,8 +38,9 @@ commit then checks the references of every changed entity, and GlobalIds that ar
 **Ids and GlobalIds.** A service method's `id` is a key of the caller's: `keyGlobalId(model.keySeed,
 key)` derives the object's GlobalId from the project's, even when the key looks like a GlobalId.
 `resolveObject` finds an object by a GlobalId the model holds or by its key, and refuses one of the
-wrong type. Keys, the library's automatic ids and the site and building ids are derived in separate
-domains (`lib/model/guid.ts`); keep any new kind of derived id in a domain of its own.
+wrong type or a GlobalId several entities share. Keys, the library's automatic ids and the site and
+building ids are derived in separate domains (`lib/model/guid.ts`); keep any new kind of derived id in
+a domain of its own.
 
 **Standard elements keep their parameters in IFC.** A wall is read back from its own entities
 (`readWall`: placement, 'Axis' representation, layer set usage, body depth) whenever it is joined,
@@ -46,7 +50,9 @@ nothing else refers to it. Pruning only ever removes representations and their i
 placements, profiles, material usages, property and quantity sets and their properties and
 quantities; the styled item that styles a pruned item goes with it, and a presentation layer lets go
 of what is pruned. Find relationships through `referencesTo` of the object they name
-(`lib/build/relationships.ts`), never by listing every relationship of a type.
+(`lib/build/relationships.ts`), never by listing every relationship of a type, and compare a user's
+type with `typeOf`, never by decoding it: a file may hold rows of types its schema does not define, as
+an IFC2X3 file read through IFC4 does, and decoding one throws.
 
 **Lengths and frames.** All lengths are in the model's length unit (`millimetresPerUnit`). A DTO length
 whose default is a size has no initializer (`@default undefined`, `@optional true`); the service fills
@@ -79,4 +85,6 @@ too) times eight workloads, a file of 40 copies of a block among them, through t
 budgets about three times their measured time, so a change that makes one grow out of proportion
 fails; each must give the same fingerprint every run. Measure a large file with the built `dist` in
 plain Node as well: under the test runner every imported constant is a getter call, which makes the
-byte scans several times slower than they run for users.
+byte scans several times slower than they run for users. Files from other tools are measured by
+`npm run ifc:corpus` at the repository root (`corpus/`, downloaded on request, never committed),
+with every element's volume compared to IfcOpenShell's.

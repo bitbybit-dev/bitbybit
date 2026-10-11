@@ -76,7 +76,7 @@ function representedColour(model: ModelSnapshot, definition: number): number[] |
 
 function colourOfMaterial(model: ModelSnapshot, material: number): number[] | undefined {
     for (const user of model.referencesTo(material)) {
-        const represented = model.entity(user).type === MATERIAL_REPRESENTATION ? model.attribute(user, "RepresentedMaterial") : null;
+        const represented = model.typeOf(user) === MATERIAL_REPRESENTATION ? model.attribute(user, "RepresentedMaterial") : null;
         const colour = isReference(represented) && represented.ref === material ? representedColour(model, user) : undefined;
         if (colour) {
             return colour;

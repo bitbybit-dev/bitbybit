@@ -86,17 +86,18 @@ export namespace Base {
     export type Polyline2 = {
         points: Base.Point2[];
         isClosed?: boolean;
-        color?: number[];
+        color?: string | number[];
     };
     export type Polyline3 = {
         points: Base.Point3[];
         isClosed?: boolean;
-        color?: number[];
+        color?: string | number[];
     };
     // @beta
     export interface Recipe {
         buffers: RecipeBuffers;
         format: "bitbybit.recipe";
+        groups?: RecipeGroup[] | undefined;
         millimetresPerUnit: number;
         nodes: RecipeNode[];
         roots: RecipeRoot[];
@@ -133,13 +134,30 @@ export namespace Base {
         profile: number;
     }
     // @beta
+    export interface RecipeGroup {
+        name: string;
+        parent?: number | undefined;
+        tag: Record<string, RecipeTagValue>;
+    }
+    // @beta
     export interface RecipeHalfSpaceNode {
         normal: Vector3;
         op: "halfSpace";
         origin: Point3;
     }
     // @beta
-    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode;
+    export interface RecipeIntersectionNode {
+        of: number[];
+        op: "intersection";
+    }
+    // @beta
+    export interface RecipeLoftNode {
+        frames: RecipeRange;
+        op: "loft";
+        profiles: number[];
+    }
+    // @beta
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode;
     // @beta
     export interface RecipePolygonNode {
         holes: RecipeRange[];
@@ -149,7 +167,16 @@ export namespace Base {
     // @beta
     export type RecipeRange = [number, number];
     // @beta
+    export interface RecipeRevolveNode {
+        angle: number;
+        direction: Vector2;
+        op: "revolve";
+        origin: Point2;
+        profile: number;
+    }
+    // @beta
     export interface RecipeRoot {
+        group?: number | undefined;
         matrix: TransformMatrix;
         node: number;
         tag: Record<string, RecipeTagValue>;
@@ -167,6 +194,11 @@ export namespace Base {
         indices: RecipeRange;
         op: "triangles";
         positions: RecipeRange;
+    }
+    // @beta
+    export interface RecipeUnionNode {
+        of: number[];
+        op: "union";
     }
     // @beta
     export interface RecipeVoidsNode {
@@ -1114,6 +1146,15 @@ export namespace Manifold {
         emptyWhenFailed?: boolean | undefined;
         recipe: Base.Recipe;
     }
+    // @beta
+    export class BuildRecipeMeshesDto {
+        constructor(recipe?: Base.Recipe, circularSegments?: number, adjustZtoY?: boolean, emptyWhenFailed?: boolean, minSharpAngle?: number);
+        adjustZtoY?: boolean | undefined;
+        circularSegments?: number | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        minSharpAngle?: number | undefined;
+        recipe: Base.Recipe;
+    }
     export class CalculateCurvatureDto<T> {
         constructor(manifold?: T);
         gaussianIdx?: number | undefined;
@@ -1274,6 +1315,11 @@ export namespace Manifold {
         constructor(points?: T);
         points: T;
     }
+    export class LoftDto<T> {
+        constructor(crossSections?: T[], frames?: Base.TransformMatrix[]);
+        crossSections: T[];
+        frames: Base.TransformMatrix[];
+    }
     export class ManifoldDto<T> {
         constructor(manifold?: T);
         manifold: T;
@@ -1421,6 +1467,18 @@ export namespace Manifold {
         normal: Base.Vector3;
     };
     // @beta
+    export class RecipeMeshesDto {
+        meshes: DecomposedManifoldMeshDto[];
+        placements: RecipeMeshPlacementDto[];
+    }
+    // @beta
+    export class RecipeMeshPlacementDto {
+        group?: number | undefined;
+        matrix: Base.TransformMatrix;
+        mesh: number;
+        tag: Record<string, Base.RecipeTagValue>;
+    }
+    // @beta
     export class RecipeSurfaceMeshesDto {
         constructor(recipe?: Base.Recipe, roots?: number[], adjustZtoY?: boolean);
         adjustZtoY?: boolean | undefined;
@@ -1514,6 +1572,14 @@ export namespace Manifold {
         center?: boolean | undefined;
         size?: number | undefined;
     }
+    export class SweepDto<T> {
+        constructor(crossSection?: T, path?: Base.Point3[], cornerRadius?: number, circularSegments?: number, xDirection?: Base.Vector3);
+        circularSegments?: number | undefined;
+        cornerRadius?: number | undefined;
+        crossSection: T;
+        path: Base.Point3[];
+        xDirection?: Base.Vector3 | undefined;
+    }
     export class TransformCrossSectionDto<T> {
         constructor(crossSection?: T, transform?: Base.TransformMatrix3x3);
         crossSection: T;
@@ -1582,6 +1648,8 @@ namespace Manifold_2 {
     // (undocumented)
     type BuildRecipeDto = WithDefaults<Inputs.Manifold.BuildRecipeDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed">;
     // (undocumented)
+    type BuildRecipeMeshesDto = WithDefaults<Inputs.Manifold.BuildRecipeMeshesDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed" | "minSharpAngle">;
+    // (undocumented)
     type CalculateCurvatureDto<T> = WithDefaults<Inputs.Manifold.CalculateCurvatureDto<T>, "gaussianIdx" | "meanIdx">;
     // (undocumented)
     type CalculateNormalsDto<T> = WithDefaults<Inputs.Manifold.CalculateNormalsDto<T>, "normalIdx" | "minSharpAngle">;
@@ -1625,6 +1693,8 @@ namespace Manifold_2 {
     type FromPolygonPointsDto = Inputs.Manifold.FromPolygonPointsDto;
     // (undocumented)
     type HullPointsDto<T> = Inputs.Manifold.HullPointsDto<T>;
+    // (undocumented)
+    type LoftDto<T> = Inputs.Manifold.LoftDto<T>;
     // (undocumented)
     type ManifoldDto<T> = Inputs.Manifold.ManifoldDto<T>;
     // (undocumented)
@@ -1674,6 +1744,10 @@ namespace Manifold_2 {
     // (undocumented)
     type RayCastDto<T> = WithDefaults<Inputs.Manifold.RayCastDto<T>, "origin" | "endpoint">;
     // (undocumented)
+    type RecipeMeshesDto = Inputs.Manifold.RecipeMeshesDto;
+    // (undocumented)
+    type RecipeMeshPlacementDto = Inputs.Manifold.RecipeMeshPlacementDto;
+    // (undocumented)
     type RecipeSurfaceMeshesDto = WithDefaults<Inputs.Manifold.RecipeSurfaceMeshesDto, "adjustZtoY">;
     // (undocumented)
     type RectangleDto = WithDefaults<Inputs.Manifold.RectangleDto, "length" | "height" | "center">;
@@ -1707,6 +1781,8 @@ namespace Manifold_2 {
     type SplitManifoldsDto<T> = Inputs.Manifold.SplitManifoldsDto<T>;
     // (undocumented)
     type SquareDto = WithDefaults<Inputs.Manifold.SquareDto, "center" | "size">;
+    // (undocumented)
+    type SweepDto<T> = WithDefaults<Inputs.Manifold.SweepDto<T>, "cornerRadius" | "circularSegments">;
     // (undocumented)
     type TransformCrossSectionDto<T> = Inputs.Manifold.TransformCrossSectionDto<T>;
     // (undocumented)

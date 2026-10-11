@@ -25,7 +25,7 @@ function refersTo(reader: ModelReader, relationship: number, attribute: string, 
 }
 
 function relationshipsWhere(reader: ModelReader, roles: RelationshipRoles, attribute: string, id: number): number[] {
-    return reader.referencesTo(id).filter((user) => reader.get(user)?.type === roles.relationship && refersTo(reader, user, attribute, id));
+    return reader.referencesTo(id).filter((user) => reader.typeOf(user) === roles.relationship && refersTo(reader, user, attribute, id));
 }
 
 export function relatingOf(reader: ModelReader, roles: RelationshipRoles, part: number): number | undefined {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -24,6 +24,36 @@ function publishedDir(name) {
     return Array.isArray(files) ? dir : path.join(dir, "dist");
 }
 
+const published = new Map();
+function onRegistry(name, version) {
+    const key = `${name}@${version}`;
+    if (!published.has(key)) {
+        const r = spawnSync("npm", ["view", key, "version"], { encoding: "utf8" });
+        published.set(key, r.status === 0 && r.stdout.trim() === version);
+    }
+    return published.get(key);
+}
+
+function installUnpublishedFromWorkspace(projectDir) {
+    const file = path.join(projectDir, "package.json");
+    const manifest = JSON.parse(readFileSync(file, "utf8"));
+    const local = {};
+    for (const field of ["dependencies", "devDependencies"]) {
+        for (const [name, version] of Object.entries(manifest[field] ?? {})) {
+            const source = name.startsWith("@bitbybit-dev/") ? publishedDir(name.slice("@bitbybit-dev/".length)) : null;
+            if (source && existsSync(path.join(source, "package.json")) && !onRegistry(name, version)) {
+                local[name] = `file:${source}`;
+                manifest[field][name] = local[name];
+            }
+        }
+    }
+    if (Object.keys(local).length) {
+        manifest.overrides = { ...manifest.overrides, ...local };
+        writeFileSync(file, `${JSON.stringify(manifest, null, 2)}\n`);
+    }
+    return Object.keys(local);
+}
+
 function replaceWithWorkspace(projectDir) {
     const scope = path.join(projectDir, "node_modules", "@bitbybit-dev");
     if (!existsSync(scope)) {
@@ -44,7 +74,7 @@ function replaceWithWorkspace(projectDir) {
 const cases = [
     ...["threejs", "babylonjs", "playcanvas"].map((engine) => ({ name: `frontend-${engine}`, args: ["-t", "frontend", "-e", engine, "-o", "32"], npm: ["."] })),
     ...["hono-sdk", "hono-rest", "nodejs-sdk", "nodejs-rest"].map((backend) => ({ name: `cloud-${backend}`, args: ["-t", "cloud", "-b", backend], npm: ["frontend", "backend"] })),
-    ...["product-configurator", "laser-cut-box", "sheet-metal-unfold", "step-to-gltf-cli"].map((template) => ({ name: `app-${template}`, args: ["-t", "app", "-T", template], npm: ["."] })),
+    ...["product-configurator", "laser-cut-box", "sheet-metal-unfold", "step-to-gltf-cli", "drone-assembly", "ifc-house"].map((template) => ({ name: `app-${template}`, args: ["-t", "app", "-T", template], npm: ["."] })),
 ].filter((c) => c.name.includes(only));
 
 const work = keep ? chosenDir : mkdtempSync(path.join(tmpdir(), "create-app-smoke-local-"));
@@ -71,7 +101,11 @@ for (const c of cases) {
     }
     for (const dir of c.npm) {
         const target = path.join(work, c.name, dir);
-        if (!step(`install  ${c.name}/${dir}`, "npm", ["install", "--no-audit", "--no-fund"], target)) {
+        const unpublished = installUnpublishedFromWorkspace(target);
+        if (unpublished.length) {
+            console.log(`local ${c.name}/${dir}: ${unpublished.join(", ")} not on the registry yet, installed from the workspace`);
+        }
+        if (!step(`install  ${c.name}/${dir}`, "npm", ["install", "--no-audit", "--no-fund", "--install-links"], target)) {
             continue;
         }
         const replaced = [...replaceWithWorkspace(target), ...readdirSync(target).filter((d) => existsSync(path.join(target, d, "node_modules"))).flatMap((d) => replaceWithWorkspace(path.join(target, d)))];

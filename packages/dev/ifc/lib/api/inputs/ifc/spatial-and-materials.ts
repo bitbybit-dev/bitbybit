@@ -112,9 +112,9 @@ export class MaterialLayerDto {
     name?: string | undefined;
 }
 /**
- * A named stack of material layers for `materials.addLayerSet`, which walls and slabs are then made
- * of; a wall's first layer is on its right face, looking from its start to its end, and a slab's
- * is at its top.
+ * A named stack of material layers for `materials.addLayerSet`, which walls, slabs and roofs are made
+ * of; a wall's first layer is on its right face, looking from start to end, a slab's or roof's at its
+ * top.
  */
 export class AddLayerSetDto<T> {
     constructor(model?: T, name?: string, layers?: MaterialLayerDto[]) {
@@ -303,8 +303,8 @@ export class SpaceInfoDto {
      */
     storey = "";
     /**
-     * The area of its outline, in the square of the model's length unit; 0 when its body is not an
-     * outline extruded up.
+     * The area of its outline, in the square of the model's length unit, so square millimetres in a
+     * millimetre model; 0 when its body is not an outline extruded up.
      * @default 0
      */
     area = 0;
@@ -334,10 +334,78 @@ export class ElementInfoDto {
      */
     name = "";
     /**
-     * The GlobalId of the storey that contains it, or an empty text when none does.
+     * The GlobalId of the spatial element it stands in: its storey, or a space, road, bridge or
+     * other facility part; an empty text when none contains it.
      * @default ""
      */
     storey = "";
+}
+/**
+ * Where a model sits on the Earth, as `model.georeference` reads it: its map conversion and its
+ * site's reference latitude, longitude and elevation.
+ */
+export class GeoreferenceDto {
+    /**
+     * Whether the model holds a map conversion; when it does not, the map fields keep their defaults.
+     * @default false
+     */
+    mapped = false;
+    /**
+     * The name of the projected coordinate reference system the map conversion targets, such as
+     * `EPSG:3301`.
+     * @default ""
+     */
+    crs = "";
+    /**
+     * How far east of the map's origin the model's origin lies, in the map's unit.
+     * @default 0
+     */
+    eastings = 0;
+    /**
+     * How far north of the map's origin the model's origin lies, in the map's unit.
+     * @default 0
+     */
+    northings = 0;
+    /**
+     * The height of the model's origin above the vertical datum, in the map's unit.
+     * @default 0
+     */
+    orthogonalHeight = 0;
+    /**
+     * The first map coordinate of the direction the model's X axis points in.
+     * @default 1
+     */
+    xAxisAbscissa = 1;
+    /**
+     * The second map coordinate of the direction the model's X axis points in.
+     * @default 0
+     */
+    xAxisOrdinate = 0;
+    /**
+     * The scale from the model's lengths to the map's.
+     * @default 1
+     */
+    scale = 1;
+    /**
+     * Whether the site records a latitude and a longitude.
+     * @default false
+     */
+    located = false;
+    /**
+     * The site's reference latitude in decimal degrees, negative to the south.
+     * @default 0
+     */
+    latitude = 0;
+    /**
+     * The site's reference longitude in decimal degrees, negative to the west.
+     * @default 0
+     */
+    longitude = 0;
+    /**
+     * The site's reference elevation above sea level, in the model's length unit.
+     * @default 0
+     */
+    elevation = 0;
 }
 /**
  * What a model holds, as `model.summary` describes it.

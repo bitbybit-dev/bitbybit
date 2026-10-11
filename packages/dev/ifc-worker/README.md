@@ -46,6 +46,8 @@ await bitbybit.draw.drawAnyAsync({ entity: solids });
 
 `ifcWorkerManager.ifcWorkerState$` reports the worker's state: `loading` once it is handed over, `initialised` once it has started, then `computing` and `loaded` as calls come and go. A worker whose script cannot load reports `failed`, and every call waiting on it is rejected.
 
+To load the worker only when it is first needed, hand over a factory instead: `ifcWorkerManager.setIfcWorkerFactory(() => new Worker(...))` makes the worker on the first IFC call, so a page that never calls the IFC library never downloads it. Until then the state is `loaded`, and `startedTheRun` and `cleanAllCache` answer at once, since there is nothing to clean.
+
 `IFCWorkerMock` runs the library on the same thread through the same messages, each mock with models of its own and every message copied as a worker's would be, for tests and for scripts that need no worker.
 
 ## Links
@@ -56,3 +58,4 @@ await bitbybit.draw.drawAnyAsync({ entity: solids });
 | **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/ifc-worker |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/ifc |
+| **Example** | https://learn.bitbybit.dev/learn/code/common/ifc/family-house |

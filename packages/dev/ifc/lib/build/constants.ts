@@ -40,3 +40,7 @@ export const VOIDING: RelationshipRoles = { relationship: "IfcRelVoidsElement", 
 export const FILLING: RelationshipRoles = { relationship: "IfcRelFillsElement", relating: "RelatingOpeningElement", related: "RelatedBuildingElement" };
 export const WALL_CONNECTION = "IfcRelConnectsPathElements";
 export const WALL_ENDS = ["ATSTART", "ATEND", "ATPATH"] as const;
+export const MINUTES_PER_DEGREE = 60;
+export const SECONDS_PER_DEGREE = 3600;
+export const MILLIONTHS_PER_SECOND = 1e6;
+export const COMPOUND_ANGLE_PARTS = 3;

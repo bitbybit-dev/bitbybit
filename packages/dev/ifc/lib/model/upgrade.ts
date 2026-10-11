@@ -66,7 +66,7 @@ export function upgradeToIfc4(model: ModelSnapshot): ModelSnapshot {
         return model;
     }
     if (model.schema.name !== IFC4) {
-        throw new Error(`A ${model.schemaName} model is read through ${model.schema.name}, which is not IFC4`);
+        throw new Error(`Only an IFC2X3 model is upgraded to IFC4, and this one is ${model.schemaName}`);
     }
     const encoder = encoderFor(model.schema);
     const changes: [number, IfcEntity][] = [];

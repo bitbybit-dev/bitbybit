@@ -190,6 +190,56 @@ export enum memberPredefinedTypeEnum {
 }
 
 /**
+ * What kind of assembly it is, as IFC classifies elements made of other elements.
+ */
+export enum elementAssemblyPredefinedTypeEnum {
+    /**
+     * Parts that support or connect others, such as a bracket with its fixings.
+     */
+    accessoryAssembly = "ACCESSORY_ASSEMBLY",
+    /**
+     * An arch.
+     */
+    arch = "ARCH",
+    /**
+     * Beams laid in a grid.
+     */
+    beamGrid = "BEAM_GRID",
+    /**
+     * A frame stiffened by diagonal braces.
+     */
+    bracedFrame = "BRACED_FRAME",
+    /**
+     * A girder built up of plates and members.
+     */
+    girder = "GIRDER",
+    /**
+     * A cage of reinforcing bars placed as one.
+     */
+    reinforcementUnit = "REINFORCEMENT_UNIT",
+    /**
+     * A frame whose joints hold it rigid without braces.
+     */
+    rigidFrame = "RIGID_FRAME",
+    /**
+     * A field of slabs laid together.
+     */
+    slabField = "SLAB_FIELD",
+    /**
+     * A truss.
+     */
+    truss = "TRUSS",
+    /**
+     * A kind IFC does not name, such as a cladding of boards; `objectType` says what it is.
+     */
+    userDefined = "USERDEFINED",
+    /**
+     * An assembly of no particular kind.
+     */
+    notDefined = "NOTDEFINED",
+}
+
+/**
  * What kind of space it is, as IFC classifies spaces.
  */
 export enum spacePredefinedTypeEnum {
@@ -247,7 +297,10 @@ export enum slabPredefinedTypeEnum {
 
 /**
  * How a single-panel door opens, as IFC names its operation types. The door's geometry is the same
- * panel for each; the operation is what other tools read to draw its swing.
+ * panel for each; the operation is what other tools read to draw its swing. Left and right are as IFC
+ * defines them, seen looking along the door's Y axis, which points to its wall's left: standing on the
+ * wall's right side, with the wall's start on your left, a left door is hinged toward the wall's start
+ * and a right door toward its end. The handle is on the other edge.
  */
 export enum doorOperationEnum {
     /**

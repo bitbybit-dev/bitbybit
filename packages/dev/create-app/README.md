@@ -38,6 +38,7 @@ npm run smoke    # builds the geometry headlessly in Node and prints a JSON summ
 | `sheet-metal-unfold` | A channel built in the browser and unfolded on CAD Cloud, a Pro algorithm; flat pattern with bend lines and a bend table; a forty-line backend keeps the key | DXF, STEP | yes, for the unfold only |
 | `step-to-gltf-cli` | Batch STEP and IGES to GLB and STL in-process, with a JSON of facts per file; `--cloud` for serverless or volume | GLB, STL, JSON | optional |
 | `drone-assembly` | A multirotor as a real assembly: twenty-seven parts placed through sub-assemblies (four, six or eight arms change only the placements), physically based materials, spinning propellers, a bill of materials | STEP assembly, GLB | no |
+| `ifc-house` | A two-storey house written as an IFC4 building model: layered walls, windows and doors, rooms, a roof, terrain and trees, every element clickable, `house.ifc` and `house.step` downloads | IFC, STEP assembly | not needed |
 
 Every scaffold ships bitbybit.dev's favicon and logo in `public/`, linked from its page; replace them with your own. Every app template is MIT code you own. Its `README.md` explains the product, its `AGENTS.md` explains it to an agent, and its smoke pins facts about the geometry (face counts, volumes, extents, that a box's joints close) so an agent has something to iterate against. `--engine` and `--occt-architecture` do not apply to app templates: each ships its own engine (Three.js) and kernel.
 

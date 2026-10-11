@@ -10,4 +10,5 @@ export interface PanelFacts {
 export interface PanelHandlers {
     onToggle(key: Layer | "labels", on: boolean): void;
     onDownload(): Promise<void>;
+    onDownloadStep(): Promise<void>;
 }

@@ -84,7 +84,7 @@ export function createWall(tx: IfcTransaction, writer: EntityWriter, spec: WallS
 export function joinsOf(reader: ModelReader, wall: number): WallJoin[] {
     const joins: WallJoin[] = [];
     for (const user of reader.referencesTo(wall)) {
-        if (reader.get(user)?.type !== WALL_CONNECTION) {
+        if (reader.typeOf(user) !== WALL_CONNECTION) {
             continue;
         }
         const relating = reader.attribute(user, "RelatingElement");

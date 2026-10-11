@@ -1,6 +1,6 @@
 import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
 import type * as Inputs from "../api/inputs";
-import { isGlobalId, keyGlobalId } from "../model/guid";
+import { keyGlobalId } from "../model/guid";
 import type { ModelSnapshot } from "../model/snapshot";
 import type { IfcTransaction } from "../model/transaction";
 import { enumValue, ref, textValue } from "../step/values";
@@ -12,6 +12,7 @@ import { absoluteFrame, movePlacement, objectPlacementOf, productsPlacedBy, rela
 import { appendToRelationship, relatingOf } from "./relationships";
 
 const STOREY = "IfcBuildingStorey";
+const SPATIAL_ELEMENT = "IfcSpatialElement";
 const MAX_STRUCTURE_DEPTH = 32;
 
 function article(word: string): string {
@@ -19,7 +20,11 @@ function article(word: string): string {
 }
 
 export function resolveObject(model: ModelSnapshot, idOrGlobalId: string, type: string, what: string): number {
-    const held = isGlobalId(idOrGlobalId) ? model.byGlobalId(idOrGlobalId) : undefined;
+    const owners = model.globalIdOwners(idOrGlobalId);
+    if (owners.length > 1) {
+        throw new Error(`The GlobalId '${idOrGlobalId}' belongs to ${owners.length} entities (${owners.map((owner) => `#${owner}`).join(", ")}), so it names no single ${what}`);
+    }
+    const held = owners[0];
     const id = held ?? model.byGlobalId(keyGlobalId(model.keySeed, idOrGlobalId));
     if (id === undefined) {
         throw new Error(`The model has no ${what} '${idOrGlobalId}'`);
@@ -52,6 +57,19 @@ export function containIn(tx: IfcTransaction, writer: EntityWriter, structure: n
 
 export function containerOf(reader: ModelReader, element: number): number | undefined {
     return relatingOf(reader, CONTAINMENT, element);
+}
+
+export function standingIn(reader: ModelReader, element: number): number | undefined {
+    let current: number | undefined = element;
+    for (let step = 0; current !== undefined && step < MAX_STRUCTURE_DEPTH; step++) {
+        const container = containerOf(reader, current);
+        if (container !== undefined) {
+            return container;
+        }
+        const whole = relatingOf(reader, AGGREGATION, current);
+        current = whole !== undefined && !reader.schema.isSubtypeOf(reader.entity(whole).type, SPATIAL_ELEMENT) ? whole : undefined;
+    }
+    return undefined;
 }
 
 export function storeysOf(model: ModelSnapshot): Inputs.IFC.StoreyInfoDto[] {

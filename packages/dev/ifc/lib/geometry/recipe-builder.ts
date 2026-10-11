@@ -48,7 +48,7 @@ export class RecipeBuilder {
         this.roots.push(root);
     }
 
-    build(millimetresPerUnit: number, tolerance: number): Base.Recipe {
+    build(millimetresPerUnit: number, tolerance: number, groups: readonly Base.RecipeGroup[] = []): Base.Recipe {
         return {
             format: "bitbybit.recipe",
             version: 1,
@@ -57,6 +57,7 @@ export class RecipeBuilder {
             buffers: { f64: this.f64.slice(0, this.f64Length), i32: this.i32.slice(0, this.i32Length) },
             nodes: this.nodes,
             roots: this.roots,
+            ...(groups.length ? { groups: [...groups] } : {}),
         };
     }
 }

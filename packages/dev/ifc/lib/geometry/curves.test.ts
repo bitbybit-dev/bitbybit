@@ -33,6 +33,137 @@ function near(point: readonly number[]): unknown[] {
     return point.map((value) => expect.closeTo(value, 9));
 }
 
+describe("CurveSampler and outlines off the plane", () => {
+    it("should find the plane of a polyline written with points off its profile's plane, and read its outline in that plane", () => {
+        // Arrange
+        const model = withContext([
+            "#10=IFCCARTESIANPOINT((0.,0.,10.));",
+            "#11=IFCCARTESIANPOINT((4.,0.,10.));",
+            "#12=IFCCARTESIANPOINT((4.,3.,13.));",
+            "#13=IFCPOLYLINE((#10,#11,#12,#10));",
+        ]);
+        const sampler = new CurveSampler(modelOf(model));
+
+        // Act
+        const plane = sampler.planeOf(13);
+        const points = sampler.outline(13, plane);
+
+        // Assert
+        expect(plane?.origin).toEqual([0, 0, 10]);
+        expect(plane?.z).toEqual(near([0, -Math.SQRT1_2, Math.SQRT1_2]));
+        expect(points).toEqual([near([0, 0]), near([4, 0]), near([4, 3 * Math.SQRT2])]);
+    });
+
+    it("should find no plane for an outline in its profile's plane or of another curve, and refuse one whose points do not lie in one plane", () => {
+        // Arrange
+        const model = withContext([
+            "#10=IFCCARTESIANPOINT((0.,0.));",
+            "#11=IFCCARTESIANPOINT((4.,0.));",
+            "#12=IFCCARTESIANPOINT((4.,3.));",
+            "#13=IFCPOLYLINE((#10,#11,#12,#10));",
+            "#14=IFCCARTESIANPOINT((0.,0.,1.));",
+            "#15=IFCCARTESIANPOINT((4.,0.,0.));",
+            "#16=IFCCARTESIANPOINT((4.,3.,1.));",
+            "#17=IFCCARTESIANPOINT((0.,3.,0.));",
+            "#18=IFCPOLYLINE((#14,#15,#16,#17,#14));",
+            ...UNIT_CIRCLE_ROWS,
+        ]);
+        const sampler = new CurveSampler(modelOf(model));
+
+        // Act & Assert
+        expect([sampler.planeOf(13), sampler.planeOf(22)]).toEqual([undefined, undefined]);
+        expect(() => sampler.planeOf(18)).toThrow("#18 is an outline whose points do not lie in one plane");
+        expect(() => sampler.outline(22, { origin: [0, 0, 0], x: [1, 0, 0], y: [0, 1, 0], z: [0, 0, 1] })).toThrow("#22 lies outside its profile's plane, which only a polyline may");
+    });
+});
+
+describe("CurveSampler and what sweeps read from curves", () => {
+    const PROJECT = ["#80=IFCSIUNIT(*,.PLANEANGLEUNIT.,$,.RADIAN.);", "#81=IFCUNITASSIGNMENT((#80));", "#82=IFCPROJECT('0YvctVUKr0kugbFTf53O9L',$,'Project',$,$,$,$,(#3),#81);"];
+
+    function samplerOf(rows: readonly string[]): CurveSampler {
+        return new CurveSampler(modelOf(withContext([...PROJECT, ...rows])));
+    }
+
+    it("should give a circle's, a trimmed arc's and a composite's tangents at their ends, turned back for a segment against its sense", () => {
+        // Arrange
+        const sampler = samplerOf([
+            ...UNIT_CIRCLE_ROWS,
+            "#23=IFCTRIMMEDCURVE(#22,(IFCPARAMETERVALUE(0.)),(IFCPARAMETERVALUE(1.5707963267948966)),.T.,.PARAMETER.);",
+            "#24=IFCCOMPOSITECURVESEGMENT(.CONTINUOUS.,.F.,#23);",
+            "#25=IFCCOMPOSITECURVE((#24),.F.);",
+            "#26=IFCCARTESIANPOINT((0.,0.));",
+            "#27=IFCPOLYLINE((#26,#26));",
+        ]);
+
+        // Act
+        const [circle, arc, composite, polyline] = [22, 23, 25, 27].map((curve) => sampler.endTangents(curve));
+
+        // Assert
+        expect(circle).toEqual([near([0, 1, 0]), near([0, 1, 0])]);
+        expect(arc).toEqual([near([0, 1, 0]), near([-1, 0, 0])]);
+        expect(composite).toEqual([near([1, 0, 0]), near([0, -1, 0])]);
+        expect(polyline).toEqual([undefined, undefined]);
+    });
+
+    it("should give the parameter span of a polyline, a trimmed line and a trimmed circle, and none of a curve it cannot measure", () => {
+        // Arrange
+        const sampler = samplerOf([
+            ...UNIT_CIRCLE_ROWS,
+            "#23=IFCTRIMMEDCURVE(#22,(IFCPARAMETERVALUE(1.)),(IFCPARAMETERVALUE(0.5)),.F.,.PARAMETER.);",
+            "#24=IFCCARTESIANPOINT((0.,0.));",
+            "#25=IFCDIRECTION((1.,0.));",
+            "#26=IFCVECTOR(#25,1.);",
+            "#27=IFCLINE(#24,#26);",
+            "#28=IFCTRIMMEDCURVE(#27,(IFCPARAMETERVALUE(2.)),(IFCPARAMETERVALUE(5.)),.T.,.PARAMETER.);",
+            "#29=IFCCARTESIANPOINT((3.,0.));",
+            "#30=IFCPOLYLINE((#24,#29,#24));",
+            "#31=IFCTRIMMEDCURVE(#22,(#24),(#29),.T.,.CARTESIAN.);",
+        ]);
+
+        // Act
+        const spans = [23, 28, 30, 22, 31].map((curve) => sampler.parameterSpan(curve));
+
+        // Assert
+        expect(spans).toEqual([expect.closeTo(0.5, 12), 3, 2, undefined, undefined]);
+    });
+
+    it("should outline a B-spline curve through its domain, and refuse one whose knots do not fit its points", () => {
+        // Arrange
+        const sampler = samplerOf([
+            "#20=IFCCARTESIANPOINT((0.,0.));",
+            "#21=IFCCARTESIANPOINT((2.,2.));",
+            "#22=IFCCARTESIANPOINT((4.,0.));",
+            "#23=IFCBSPLINECURVEWITHKNOTS(2,(#20,#21,#22),.UNSPECIFIED.,.F.,.F.,(3,3),(0.,1.),.UNSPECIFIED.);",
+            "#24=IFCBSPLINECURVEWITHKNOTS(2,(#20,#21,#22),.UNSPECIFIED.,.F.,.F.,(2,2),(0.,1.),.UNSPECIFIED.);",
+            "#25=IFCBSPLINECURVEWITHKNOTS(0,(#20,#21,#22),.UNSPECIFIED.,.F.,.F.,(3,3),(0.,1.),.UNSPECIFIED.);",
+            "#26=IFCBSPLINECURVEWITHKNOTS($,(#20,#21,#22),.UNSPECIFIED.,.F.,.F.,(3,3),(0.,1.),.UNSPECIFIED.);",
+            "#27=IFCBSPLINECURVEWITHKNOTS(2,$,.UNSPECIFIED.,.F.,.F.,(3,3),(0.,1.),.UNSPECIFIED.);",
+            "#28=IFCBSPLINECURVEWITHKNOTS(2,(#20,#21,#22),.UNSPECIFIED.,.F.,.F.,$,(0.,1.),.UNSPECIFIED.);",
+            "#29=IFCBSPLINECURVEWITHKNOTS(2,(#20,#21,#22),.UNSPECIFIED.,.F.,.F.,(3,3),$,.UNSPECIFIED.);",
+        ]);
+
+        // Act
+        const points = sampler.path(23);
+
+        // Assert
+        expect(points[0]).toEqual([0, 0, 0]);
+        expect(points[points.length >> 1]).toEqual(near([2, 1, 0]));
+        expect(points[points.length - 1]).toEqual([4, 0, 0]);
+        expect(() => sampler.path(24)).toThrow("#24 has 4 knots for 3 control points of degree 2");
+        for (const malformed of [25, 26, 27, 28, 29]) {
+            expect(() => sampler.path(malformed)).toThrow(`#${malformed} is not a B-spline curve it can read`);
+        }
+    });
+
+    it("should refuse an outline off its profile's plane whose points cover no area", () => {
+        // Arrange
+        const sampler = samplerOf(["#20=IFCCARTESIANPOINT((0.,0.,1.));", "#21=IFCCARTESIANPOINT((1.,0.,1.));", "#22=IFCPOLYLINE((#20,#21));"]);
+
+        // Act & Assert
+        expect(() => sampler.planeOf(22)).toThrow("#22 is an outline with no area");
+    });
+});
+
 describe("CurveSampler", () => {
     it("should read a polyline's points and drop a closing point that repeats the first", () => {
         // Arrange
@@ -185,6 +316,52 @@ describe("CurveSampler", () => {
         expect(points[0]).toEqual(near([0, 1]));
         expect(points[4]).toEqual(near([Math.SQRT1_2, Math.SQRT1_2]));
         expect(points[8]).toEqual(near([1, 0]));
+    });
+
+    it("should trim a line at its points unless it prefers parameters that it gives, measured along a direction of any length", () => {
+        // Arrange
+        const sampler = new CurveSampler(modelOf(withContext([
+            "#24=IFCCARTESIANPOINT((0.,0.));",
+            "#25=IFCDIRECTION((1.,0.));",
+            "#26=IFCVECTOR(#25,2.);",
+            "#27=IFCLINE(#24,#26);",
+            "#28=IFCCARTESIANPOINT((1.,0.));",
+            "#29=IFCCARTESIANPOINT((7.,0.));",
+            "#30=IFCTRIMMEDCURVE(#27,(#28,IFCPARAMETERVALUE(2.)),(#29,IFCPARAMETERVALUE(3.)),.T.,.CARTESIAN.);",
+            "#31=IFCTRIMMEDCURVE(#27,(#28,IFCPARAMETERVALUE(2.)),(#29,IFCPARAMETERVALUE(3.)),.T.,.PARAMETER.);",
+            "#32=IFCTRIMMEDCURVE(#27,(#28),(#29),.T.,.PARAMETER.);",
+        ])));
+
+        // Act
+        const [byPoint, byParameter, onlyPoints] = [30, 31, 32].map((curve) => sampler.path(curve));
+
+        // Assert
+        expect(byPoint).toEqual([[1, 0, 0], [7, 0, 0]]);
+        expect(byParameter).toEqual([[4, 0, 0], [6, 0, 0]]);
+        expect(onlyPoints).toEqual([[1, 0, 0], [7, 0, 0]]);
+    });
+
+    it("should divide a B-spline into segments by its spans and degree, but never into more than the cap", () => {
+        // Arrange
+        const count = 200;
+        const points = Array.from({ length: count }, (_, at) => `#${100 + at}=IFCCARTESIANPOINT((${at}.,${at % 2}.,0.));`);
+        const knots = Array.from({ length: count - 2 }, (_, at) => `${at}.`).join(",");
+        const multiplicities = ["4", ...Array.from({ length: count - 4 }, () => "1"), "4"].join(",");
+        const sampler = new CurveSampler(modelOf(withContext([
+            ...points,
+            `#20=IFCBSPLINECURVEWITHKNOTS(3,(${points.map((_, at) => `#${100 + at}`).join(",")}),.UNSPECIFIED.,.F.,.F.,(${multiplicities}),(${knots}),.UNSPECIFIED.);`,
+            "#21=IFCCARTESIANPOINT((0.,0.,0.));",
+            "#22=IFCCARTESIANPOINT((2.,2.,0.));",
+            "#23=IFCCARTESIANPOINT((4.,0.,0.));",
+            "#24=IFCBSPLINECURVEWITHKNOTS(2,(#21,#22,#23),.UNSPECIFIED.,.F.,.F.,(3,3),(0.,1.),.UNSPECIFIED.);",
+        ])));
+
+        // Act
+        const [long, short] = [sampler.bspline(20), sampler.bspline(24)];
+
+        // Assert
+        expect(sampler.splinePoints(long, 0, count - 3)).toHaveLength(513);
+        expect(sampler.splinePoints(short, 0, 1).length).toBeLessThan(513);
     });
 
     it("should prefer the trim parameter over the point when the curve says so, and the point otherwise", () => {

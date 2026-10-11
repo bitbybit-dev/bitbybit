@@ -86,17 +86,18 @@ export namespace Base {
     export type Polyline2 = {
         points: Base.Point2[];
         isClosed?: boolean;
-        color?: number[];
+        color?: string | number[];
     };
     export type Polyline3 = {
         points: Base.Point3[];
         isClosed?: boolean;
-        color?: number[];
+        color?: string | number[];
     };
     // @beta
     export interface Recipe {
         buffers: RecipeBuffers;
         format: "bitbybit.recipe";
+        groups?: RecipeGroup[] | undefined;
         millimetresPerUnit: number;
         nodes: RecipeNode[];
         roots: RecipeRoot[];
@@ -133,13 +134,30 @@ export namespace Base {
         profile: number;
     }
     // @beta
+    export interface RecipeGroup {
+        name: string;
+        parent?: number | undefined;
+        tag: Record<string, RecipeTagValue>;
+    }
+    // @beta
     export interface RecipeHalfSpaceNode {
         normal: Vector3;
         op: "halfSpace";
         origin: Point3;
     }
     // @beta
-    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode;
+    export interface RecipeIntersectionNode {
+        of: number[];
+        op: "intersection";
+    }
+    // @beta
+    export interface RecipeLoftNode {
+        frames: RecipeRange;
+        op: "loft";
+        profiles: number[];
+    }
+    // @beta
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode;
     // @beta
     export interface RecipePolygonNode {
         holes: RecipeRange[];
@@ -149,7 +167,16 @@ export namespace Base {
     // @beta
     export type RecipeRange = [number, number];
     // @beta
+    export interface RecipeRevolveNode {
+        angle: number;
+        direction: Vector2;
+        op: "revolve";
+        origin: Point2;
+        profile: number;
+    }
+    // @beta
     export interface RecipeRoot {
+        group?: number | undefined;
         matrix: TransformMatrix;
         node: number;
         tag: Record<string, RecipeTagValue>;
@@ -167,6 +194,11 @@ export namespace Base {
         indices: RecipeRange;
         op: "triangles";
         positions: RecipeRange;
+    }
+    // @beta
+    export interface RecipeUnionNode {
+        of: number[];
+        op: "union";
     }
     // @beta
     export interface RecipeVoidsNode {

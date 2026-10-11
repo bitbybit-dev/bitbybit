@@ -77,8 +77,8 @@ export class ReadModelDto {
         if (data !== undefined) { this.data = data; }
     }
     /**
-     * The file's contents: the text of an `.ifc` file, or its bytes, such as what
-     * `await file.arrayBuffer()` gives for a file a user picked.
+     * The file's contents: the text of an `.ifc` file, or the bytes of an `.ifc` or `.ifczip`
+     * file, such as what `await file.arrayBuffer()` gives for a file a user picked.
      * @default undefined
      */
     data!: string | Uint8Array | ArrayBuffer;
@@ -132,8 +132,8 @@ export class ElementsDto<T> {
      */
     type?: string | undefined = "IfcElement";
     /**
-     * Only the elements this storey contains, by GlobalId or by the id it was added with. Leave it
-     * out for every storey.
+     * Only the elements standing in this storey or other spatial element, by GlobalId or by the id
+     * it was added with. Leave it out for every one.
      * @default undefined
      * @optional true
      */

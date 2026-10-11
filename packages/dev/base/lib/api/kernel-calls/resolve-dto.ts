@@ -33,7 +33,9 @@ export type WithDefaults<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: Excl
  * Builds the DTO a service reads from what a caller passed: the defaults a new `Dto` holds, with the
  * caller's properties laid over them. A property the caller set to undefined keeps its default, and
  * so does one the caller set to null when the DTO has a default for it - a form or a JSON
- * payload spells "not set" as null - while null on a property with no default stays null. A caller
+ * payload spells "not set" as null - while null on a property with no default stays null. An empty
+ * text on a property with no default is left out, since an empty text there means "not set", while an empty
+ * text in place of a default stays, since the caller chose it over the default. A caller
  * that passed nothing gets the defaults alone. The result is a new plain object - a DTO carries data
  * and no behaviour, and a plain object is what crosses a worker boundary and what a walk over the
  * inputs treats as data - and the caller's object is never changed. Properties named in `nested`
@@ -47,9 +49,12 @@ export function resolveDto<T extends object>(Dto: DtoConstructor<T>, inputs: unk
     const resolved: Record<string, unknown> = {};
     Object.assign(resolved, new Dto());
     const hasDefault = (key: string): boolean => Object.prototype.hasOwnProperty.call(resolved, key) && resolved[key] !== undefined;
+    const isUnset = (key: string, value: unknown): boolean => value === undefined
+        || (value === null && hasDefault(key))
+        || (value === "" && !hasDefault(key));
     if (isRecord(inputs)) {
         for (const [key, value] of Object.entries(inputs)) {
-            if (value !== undefined && !(value === null && hasDefault(key))) {
+            if (!isUnset(key, value)) {
                 resolved[key] = value;
             }
         }

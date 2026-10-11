@@ -1,4 +1,5 @@
 export * from "./occt";
+export * from "./ifc";
 export * from "./verb";
 export * from "./asset";
 export * from "./base-types";

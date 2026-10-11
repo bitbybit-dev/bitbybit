@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { SCHEMAS, checkReferences, emit, noticeOf, readSchema, typeSpecOf } from "./gen-ifc-schema.mjs";
+import { SCHEMAS, checkReferences, emit, noticeFromFile, noticeOf, readSchema, typeSpecOf } from "./gen-ifc-schema.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const NOTICE = "(*\nCopyright by:\nbuildingSMART International Limited, 1996-2020\n*)\n";
@@ -143,6 +143,49 @@ describe("the IFC4 ADD2 TC1 table", () => {
 
         // Assert
         assert.equal(output, readFileSync(path.join(ROOT, target.out), "utf8"));
+    });
+});
+
+describe("the IFC4X3 ADD2 table", () => {
+    const target = SCHEMAS[1];
+    const text = readFileSync(path.join(ROOT, target.source), "latin1");
+    const schema = readSchema(text);
+
+    it("should hold the schema's counts: 876 entities and 436 types, 243 of them enumerations and 61 selects", () => {
+        // Act
+        const types = Object.values(schema.types);
+
+        // Assert
+        assert.equal(schema.name, "IFC4X3_ADD2");
+        assert.equal(Object.keys(schema.entities).length, 876);
+        assert.equal(types.length, 436);
+        assert.equal(types.filter((t) => t.e).length, 243);
+        assert.equal(types.filter((t) => t.s).length, 61);
+    });
+
+    it("should place IfcWall under IfcBuiltElement, which IFC 4.3 named so, with IFC4's attributes in IFC4's order", () => {
+        // Act
+        const attributes = flatAttributes(schema, "IfcWall");
+
+        // Assert
+        assert.equal(schema.entities.IfcWall.p, "IfcBuiltElement");
+        assert.deepEqual(attributes, ["GlobalId", "OwnerHistory", "Name", "Description", "ObjectType", "ObjectPlacement", "Representation", "Tag", "PredefinedType"]);
+    });
+
+    it("should match the committed table, its notice read from the file beside the schema", () => {
+        // Act
+        const output = emit(schema, noticeFromFile(readFileSync(path.join(ROOT, target.notice), "utf8")), target);
+
+        // Assert
+        assert.equal(output, readFileSync(path.join(ROOT, target.out), "utf8"));
+        assert.match(output, /Creative Commons Attribution-NoDerivatives 4\.0 International/);
+    });
+});
+
+describe("noticeFromFile", () => {
+    it("should refuse a notice file that no longer holds buildingSMART's notice", () => {
+        // Act & Assert
+        assert.throws(() => noticeFromFile("Copyright someone else"), /buildingSMART's copyright notice/);
     });
 });
 

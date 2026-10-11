@@ -1,3 +1,4 @@
+import { IFCAssemblies } from "./services/assemblies";
 import { IFCBeams } from "./services/beams";
 import { IFCColumns } from "./services/columns";
 import { IFCDoors } from "./services/doors";
@@ -20,7 +21,7 @@ import { IFCWindows } from "./services/windows";
  * The entry point to IFC, the open BIM exchange format: `model` creates, reads, writes and edits
  * models; `spatial`, `spaces`, `materials` and `site` add storeys, rooms, materials and the terrain;
  * `walls`, `openings`, `doors`, `windows`, `slabs`, `roofs`, `columns`, `beams` and `members` add
- * elements; `properties` attaches property sets, `quantities` measures, and `geometry` describes
+ * elements, `assemblies` groups them; `properties` attaches property sets, `quantities` measures, and `geometry` describes
  * elements as a recipe a kernel builds.
  *
  * A model is a value: every method that changes one returns a new model and leaves the one it was
@@ -87,6 +88,10 @@ export class IFCService {
      */
     readonly members: IFCMembers;
     /**
+     * Makes elements of the model the parts of an assembly, such as a facade's cladding boards.
+     */
+    readonly assemblies: IFCAssemblies;
+    /**
      * Attaches property sets to objects and types, sets and removes their values, and reads them back.
      */
     readonly properties: IFCProperties;
@@ -117,6 +122,7 @@ export class IFCService {
         this.columns = new IFCColumns();
         this.beams = new IFCBeams();
         this.members = new IFCMembers();
+        this.assemblies = new IFCAssemblies();
         this.properties = new IFCProperties();
         this.quantities = new IFCQuantities();
         this.geometry = new IFCGeometry();

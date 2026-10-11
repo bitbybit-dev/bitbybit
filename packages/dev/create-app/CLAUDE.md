@@ -24,7 +24,11 @@ built dist, so a breaking change in `packages/dev/*` fails before publish instea
 machine; a copy rather than a link, so nothing resolves through this repository's node_modules.
 Both lanes take `--keep`, which scaffolds into `.local/` inside this package (ignored by git,
 npm and the linter) and leaves every project installed there to be started by hand, and `--dir`
-for any other place. `verify.yml` runs build and test only, with no installs.
+for any other place. `verify.yml` runs build and test only, with no installs. A template that pins a
+package the registry does not carry yet - a new package before the release that first publishes it -
+is skipped by `smoke` with the reason in `UNTIL_PUBLISHED`, an entry removed with that release, while
+`smoke:local` installs such a package from the workspace's built dist through a `file:` dependency
+and an override (`--install-links`, so nothing in the workspace is linked or written to).
 
 ## Three kinds of project
 
@@ -37,6 +41,14 @@ app template that needs a secret ships `_dot-env.example` beside the code that r
 scaffold gets an `.env` copied from every `.env.example` it contains. A template that spans a
 frontend and a backend is one npm workspace (`sheet-metal-unfold`), so `npm install` and
 `npm run smoke` at its root cover both.
+
+**`ifc-house` is copied from an example.** Its `src/`, `index.html` and `public/` are the
+`examples/vite/threejs/ifc-house` example's, copied by `npm run sync:templates` at the repository root
+and held equal to it by `npm run check:templates` in `npm test`, so the example and the template grow
+together. Edit the example and sync; the template keeps only what a template owns: its manifest,
+tsconfig, lint config, smoke runner, README and `AGENTS.section.md`. The example therefore carries the
+templates' strict compiler flags and lint-clean code, and the template's Manifold worker is a version
+site of its own.
 
 ## Template contracts
 

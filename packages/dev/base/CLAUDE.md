@@ -31,7 +31,9 @@ and the kernels, the workers and the code that dispatches to a kernel from outsi
 `resolveDto` and `resolveInputs` lay a caller's inputs over a DTO's defaults and return a new plain
 object, never the caller's and never a class instance - a walk over the inputs treats a class instance
 as opaque. A property left out, set to undefined, or set to null where the DTO has a default gets the
-default; null on a property with no default stays null. `withDefaults` does the same for a kernel
+default; null on a property with no default stays null. An empty text on a property with no default is
+left out, since an empty text there means "not set"; one in place of a default stays.
+`withDefaults` does the same for a kernel
 used in the same thread, wrapping only the objects on the way to a registered operation.
 `callByPath`, `rehydrateReferences` and `describeKernelFailure`
 are the three pieces every worker used to keep its own copy of. A caller can tell three errors apart:
@@ -39,10 +41,10 @@ are the three pieces every worker used to keep its own copy of. A caller can tel
 and could not complete the operation, named by a `code` such as `occt.fillet.failedOnEdges` that
 keeps its meaning across releases and languages, with the `details` its message names, such as
 `{ edges: [3, 7] }`) and `KernelCallError`, the rejection a worker's caller receives, which carries
-the kind, the code and the details across the thread boundary. A host translates a failure by its
+the kind, the code and the details across the thread boundary. A caller translates a failure by its
 code and fills its template with `fillFailureMessage(template, details, formatList)`: `{name}`
 placeholders, a list written by the formatter it passes (English by default, since the packages
-compile against ES2020 and `Intl.ListFormat` is the host's to bring). Details are plain strings,
+compile against ES2020 and `Intl.ListFormat` is the caller's to bring). Details are plain strings,
 numbers, booleans and lists of one of them; `describeKernelFailure` drops anything else, since it
 must cross to another thread. `describeKernelFailure` never throws, and gives binary data
 at any depth by its kind and size and a long input only up to its cut, so describing a failure never

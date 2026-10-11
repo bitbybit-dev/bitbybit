@@ -151,7 +151,19 @@ describe("IFCMaterials.add", () => {
         expect(countOf(changed, "IfcMaterialDefinitionRepresentation")).toBe(0);
     });
 
-    it.each(["orange", "#ff80", "#gg0000", "#ff800000", ""])("should refuse the colour '%s'", (color) => {
+    it("should add no style to a material whose colour is an empty text", () => {
+        // Arrange
+        const { ifc, model } = groundFloor();
+
+        // Act
+        const changed = ifc.materials.add({ model, name: "Plain", color: "" });
+
+        // Assert
+        expect(countOf(changed, "IfcSurfaceStyle")).toBe(0);
+        expect(countOf(changed, "IfcMaterialDefinitionRepresentation")).toBe(0);
+    });
+
+    it.each(["orange", "#ff80", "#gg0000", "#ff800000", " "])("should refuse the colour '%s'", (color) => {
         // Arrange
         const { ifc, model } = groundFloor();
 

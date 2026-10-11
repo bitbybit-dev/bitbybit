@@ -326,6 +326,15 @@ from buildingSMART's EXPRESS files in `packages/dev/ifc/schema/`; `npm run check
 - The generator fails on a type it cannot read and on a name the schema does not define, rather than
   writing a table that would decode files wrongly.
 
+## sync-templates.mjs
+
+`npm run sync:templates` copies the files a create-app template shares with an example from the example
+into the template, and removes the template's copies of files the example no longer has;
+`npm run check:templates` (part of `npm test`) writes nothing and fails, naming each file, when a copy
+differs. `TEMPLATE_SOURCES` names each example, its template and the paths they share; everything else in
+the template (its manifest, tsconfig, lint config, smoke runner, README and agent section) is the
+template's own. Edit the example, never the template's copy.
+
 ## check-strict-baselines.mjs
 
 `npm run check:strict-baselines` (`verify.yml`) holds every package at zero strict errors. Each package
@@ -494,6 +503,57 @@ and a mismatch means the manifest was not updated), and a missing file is downlo
 renamed into place. The glue must name the manifest's file. An entry without a url was built but not
 published - the build writes the entry and publishing fills in the url - which is fine where the file is
 present and a hard stop naming the file anywhere else.
+
+## ifc-corpus.mjs and ifc-corpus-measure.mjs
+
+`npm run ifc:corpus -- fetch | check | manifest | run [--only <id part>] [--exact] [--no-oracle]`, run
+by hand and twice a week by `ifc.yml`, never by `npm test`: the files are large and served by other
+people. The helpers' suite, `ifc-corpus.test.mjs`, runs in `test:scripts`.
+
+The IFC corpus is the set of files from other tools the `ifc` package is measured against, kept the way
+the OCCT kernels are: `packages/dev/ifc/corpus/corpus.json` records each file's id, url, size, SHA-256,
+schema, exporter, source, licence, attribution and the features it exercises. A file is listed only
+under a licence that allows this use. The files download into the gitignored `corpus/files/` and are
+never committed, whatever the licence allows. `fetch` downloads what is missing and verifies what is
+present, and as with the kernels a file whose hash differs is an error and is never overwritten; `check`
+only verifies; `manifest` checks the manifest's fields.
+
+`run` measures every file present, and every `.ifc` file in the folder `IFC_PRIVATE_CORPUS` names. Each
+file is measured by `ifc-corpus-measure.mjs` in a Node process of its own, so its peak memory is its own,
+on the built dists through `lib/dist-resolve.mjs`: the test runner makes the byte scans several times
+slower than users see them. It times reading, the summary, an element query, a property-set read and the
+recipe; builds the recipe with Manifold in batches of 2000 elements (an in-process build cannot select
+roots, and one call over a large file would hold every solid at once), and with `--exact` builds it again
+as OpenCascade shapes; writes the model back and checks that its DATA section is byte for byte the one it
+read; and records the peak resident memory. Each element's volume and bounding box, over the roots tagged
+with its GlobalId and in metres, are compared to the ones IfcOpenShell measures (`corpus/oracle.py`, with
+`IFC_PYTHON` as `npm run validate` reads it). A volume agrees within 1 %, or within 1e-6 m³ for a tiny
+part; a box agrees when no corner is further from IfcOpenShell's than 1 % of its diagonal, or 1 mm. The
+box is what catches an element in the wrong place, which keeps its volume. The model is compared too: the
+number of elements of each type, the storey or other spatial element each element stands in, and for a
+sample of up to 5,000 elements the property sets `properties.getSets` reads, by name and number of single
+values, all against what IfcOpenShell's own parser finds. The store's own memory - heap and external
+memory after those queries, before any geometry, against the same just before the file is read, each
+taken after a garbage collection has settled (the process runs with `--expose-gc`) - is recorded beside
+the peak. A root Manifold cannot build as a solid, such as an open shell, is asked of
+`recipes.surfaceMeshes`; one that comes back as a surface counts as drawn and its box is compared, so
+what neither builds is what is really lost. The oracle takes IfcOpenShell's geometry in the file's own
+units and scales it with IfcOpenShell's unit reader, because its geometry iterator has been seen to
+ignore a file's length unit, and it reports every entity apart: a file can give one GlobalId to several,
+and both sides then measure them together. It measures a volume in the element's own frame and places
+only the box: a volume summed over coordinates far from the origin, as a georeferenced model's are, keeps
+little of its precision. A volume is compared only where IfcOpenShell's shape is closed, every edge
+shared by two triangles, since the volume of an open shell means nothing. The oracle's output is cached
+by the file's hash in `corpus/.cache/oracle/`, so IfcOpenShell measures a file once. The report is
+written to `corpus/.cache/report.json`, with one line per file in the terminal.
+
+A file in `IFC_PRIVATE_CORPUS` may not be yours to share. It is named by an id that does not name it (`private-1`, in name
+order), its oracle is cached in a `.bitbybit-oracle/` folder beside it rather than in the repository, and
+its report row keeps counts and timings only, never the GlobalIds of the elements that disagree.
+
+`lib/dist-resolve.mjs` registers the resolve hook in `lib/dist-resolve-hooks.mjs`, which maps
+`@bitbybit-dev/<package>` imports to `packages/dev/<package>/dist` and completes the extensionless
+relative imports the dists make, so a script can import the built packages without installing them.
 
 ## publish-packages.mjs
 

@@ -12,6 +12,8 @@ IFC (Industry Foundation Classes, ISO 16739) is the open exchange format for bui
 
 Works in **Node.js** and in the **browser**. It depends only on [@bitbybit-dev/base](https://www.npmjs.com/package/@bitbybit-dev/base).
 
+See it build a whole two-storey family house, drawn live in the browser with its source to read: **[A Family House in IFC](https://learn.bitbybit.dev/learn/code/common/ifc/family-house)**.
+
 ## Quick start
 
 ```bash
@@ -54,7 +56,7 @@ Run it with `npx tsx house.ts`. Compiled to JavaScript, run it as `node --import
 - **Units and axes.** Lengths are in the model's unit: millimetres unless the model was created with another `lengthUnit`. A length left out takes its default in that unit, so a wall is 3000 mm high in a model in millimetres and 3 m high in one in metres. Positions on a storey are given in its plan, `[x, y]`, with Z up from the storey's floor, as IFC has it.
 - **Standard elements.** Walls keep their axis (`Plan/Axis`), layer set usage and a swept-solid body, and joins are recorded as `IfcRelConnectsPathElements`, so tools that edit IFC walls edit them as walls. Joins and roof clippings are worked out again from those whenever a wall changes.
 - **Reading and writing.** `model.read` takes the file's text, a `Uint8Array` or an `ArrayBuffer`, indexes it without decoding it and decodes an entity only when asked, so a file of hundreds of megabytes opens in seconds. Entities left unchanged are written back as they were, with the line breaks and comments between them: `model.writeBytes` copies them byte for byte at any size, and `model.write` gives the same file as text, up to the length one JavaScript string holds. A file that breaks the encoding, holds an entity id twice or names a type or schema this library does not read fails with a `StepSyntaxError` naming the byte offset, when the broken part is first read. A value given to a model that its schema does not accept fails at once with an `IfcValueError` naming the entity and the attribute.
-- **Geometry as data.** `geometry.recipe` describes the elements' solids as a recipe (`Base.Recipe`): polygons, extrusions, cuts by planes, openings and shared type geometry, every number resolved. `manifold.recipes.build` in [@bitbybit-dev/manifold](https://www.npmjs.com/package/@bitbybit-dev/manifold) builds it into one solid per element, which the renderer packages draw; `geometry.unsupported` says which elements it could not describe, and why. In a browser, [@bitbybit-dev/ifc-worker](https://www.npmjs.com/package/@bitbybit-dev/ifc-worker) runs this library in a web worker.
+- **Geometry as data.** `geometry.recipe` describes the elements' solids as a recipe (`Base.Recipe`): polygons, extrusions, cuts by planes, openings and shared type geometry, every number resolved. `manifold.recipes.build` in [@bitbybit-dev/manifold](https://www.npmjs.com/package/@bitbybit-dev/manifold) builds it into one solid per element, which the renderer packages draw, and `occt.recipes.build` in [@bitbybit-dev/occt](https://www.npmjs.com/package/@bitbybit-dev/occt) builds it exactly, to measure or export to STEP; `geometry.unsupported` says which elements it could not describe, and why. In a browser, [@bitbybit-dev/ifc-worker](https://www.npmjs.com/package/@bitbybit-dev/ifc-worker) runs this library in a web worker.
 
 ## What version 1 covers
 
@@ -88,3 +90,4 @@ The package is MIT-licensed. Its schema table is a translation of buildingSMART 
 | **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/ifc |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/ifc |
+| **Example** | https://learn.bitbybit.dev/learn/code/common/ifc/family-house |

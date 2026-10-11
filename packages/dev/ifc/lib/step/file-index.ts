@@ -231,6 +231,7 @@ export function indexStep(bytes: Uint8Array): StepIndex {
         rowEnd: rows.rowEnd.subarray(0, rows.count),
         header,
         headerEnd,
+        afterHeader,
         sectionStarts,
     };
 }

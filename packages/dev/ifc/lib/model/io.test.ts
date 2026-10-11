@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BLANK_HEADER, BLANK_HEADER_LINES, NAMED_HEADER, PLACED_WALL_IDS, PLACED_WALL_ROWS, WALL_GLOBAL_ID, emptyIfc4Model, ifcFile, placedWallModel, stepFile } from "../__test__/model-fixtures";
 import { errorThrownBy } from "../__test__/thrown";
+import { zipOf } from "../__test__/zip-fixture";
 import { StepSyntaxError } from "../step/errors";
 import type { IfcEntity } from "../step/step-types";
 import { enumValue, ref } from "../step/values";
@@ -30,6 +31,28 @@ function entitiesOf(model: ModelSnapshot): IfcEntity[] {
 }
 
 describe("readModel", () => {
+    it("should read the one .ifc file of an .ifczip archive, past folders and macOS resource forks, and write it back plain", () => {
+        // Arrange
+        const text = ifcFile(PLACED_WALL_ROWS);
+        const archive = zipOf({ "__MACOSX/._house.ifc": "resource fork", "project/": "", "project/house.ifc": text, "project/readme.txt": "notes" });
+
+        // Act
+        const model = readModel(archive);
+
+        // Assert
+        expect([model.header, writeModel(model)]).toEqual([NAMED_HEADER, text]);
+    });
+
+    it("should refuse an .ifczip archive without an .ifc file, or with more than one, naming what it holds", () => {
+        // Arrange
+        const none = zipOf({ "house.ifcxml": "<ifc/>", "readme.txt": "notes" });
+        const two = zipOf({ "a.ifc": ifcFile([]), "b.IFC": ifcFile([]) });
+
+        // Act & Assert
+        expect(() => readModel(none)).toThrow("The .ifczip archive holds no .ifc file, only house.ifcxml, readme.txt");
+        expect(() => readModel(two.slice().buffer)).toThrow("The .ifczip archive holds 2 .ifc files (a.ifc, b.IFC), not one");
+    });
+
     it("should read the header", () => {
         // Act
         const model = readModel(ifcFile(PLACED_WALL_ROWS));
@@ -99,15 +122,15 @@ describe("readModel", () => {
 
     it("should refuse a schema it does not support, at its FILE_SCHEMA", () => {
         // Arrange
-        const text = withSchemaLine("FILE_SCHEMA(('IFC4X3_ADD2'));");
+        const text = withSchemaLine("FILE_SCHEMA(('IFC4X3_RC4'));");
 
         // Act
         const error = errorThrownBy(StepSyntaxError, () => readModel(text));
 
         // Assert
         expect([error.message, error.offset]).toEqual([
-            `The file's schema IFC4X3_ADD2 is not supported; supported: IFC4, and IFC2X3 read through IFC4 at byte ${text.indexOf("FILE_SCHEMA(('IFC4X3_ADD2'))")}`,
-            text.indexOf("FILE_SCHEMA(('IFC4X3_ADD2'))"),
+            `The file's schema IFC4X3_RC4 is not supported; supported: IFC4 and IFC4X3_ADD2, with IFC2X3 through IFC4 and IFC4X3 through IFC4X3_ADD2 at byte ${text.indexOf("FILE_SCHEMA(('IFC4X3_RC4'))")}`,
+            text.indexOf("FILE_SCHEMA(('IFC4X3_RC4'))"),
         ]);
     });
 
@@ -460,6 +483,18 @@ describe("writing a file back as the tool that wrote it laid it out", () => {
 
         // Assert
         expect(written.startsWith(OWN_LAYOUT.slice(0, OWN_LAYOUT.indexOf("#"))) && written.includes("\r\n#5=IFCCARTESIANPOINT((1.,1.,1.));\r\n")).toBe(true);
+    });
+
+    it("should keep the DATA section's opening and the comments before its first row when the header is written anew", () => {
+        // Arrange
+        const commented = OWN_LAYOUT.replace("DATA;\r\n", "DATA;\r\n/* ---------- */\r\n/* the context of the exchange */\r\n\r\n");
+        const dataOf = (text: string): string => text.slice(text.indexOf("\r\nDATA;"));
+
+        // Act
+        const written = writeModel(readModel(commented), { ...readModel(commented).header, name: "renamed.ifc" });
+
+        // Assert
+        expect([written.includes("'renamed.ifc'"), dataOf(written)]).toEqual([true, dataOf(commented)]);
     });
 
     it("should lay out the rows created in a file that held none as it lays out a new file", () => {

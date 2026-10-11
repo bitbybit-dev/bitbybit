@@ -160,4 +160,103 @@ describe("IFCWorkerManager", () => {
         expect(whileWaiting).toBe(IFCStateEnum.computing);
         expect(states.at(-1)?.state).toBe(IFCStateEnum.loaded);
     });
+
+    it("should make the worker with the first call, not before, and report itself idle until then", async () => {
+        // Arrange
+        const manager = new IFCWorkerManager();
+        const mock = new IFCWorkerMock();
+        mock.initializationComplete(true);
+        const create = vi.fn(() => mock);
+        const states: IFCInfo[] = [];
+        manager.ifcWorkerState$.subscribe((info) => states.push(info));
+
+        // Act
+        manager.setIfcWorkerFactory(create);
+        const before = [create.mock.calls.length, manager.ifcWorkerAlreadyInitialised()];
+        await manager.genericCallToWorkerPromise("cleanAllCache", {});
+
+        // Assert
+        expect(before).toEqual([0, false]);
+        expect([create.mock.calls.length, manager.ifcWorkerAlreadyInitialised(), manager.ifcWorkerStarted()]).toEqual([1, true, true]);
+        expect(states.map((info) => info.state).slice(0, 2)).toEqual([IFCStateEnum.loaded, IFCStateEnum.loading]);
+        expect(states.at(-1)?.state).toBe(IFCStateEnum.loaded);
+    });
+
+    it("should make the worker once for calls made together", async () => {
+        // Arrange
+        const manager = new IFCWorkerManager();
+        const mock = new IFCWorkerMock();
+        mock.initializationComplete(true);
+        const create = vi.fn(() => mock);
+        manager.setIfcWorkerFactory(create);
+
+        // Act
+        await Promise.all([manager.genericCallToWorkerPromise("cleanAllCache", {}), manager.genericCallToWorkerPromise("cleanAllCache", {})]);
+
+        // Assert
+        expect(create).toHaveBeenCalledTimes(1);
+    });
+
+    it("should answer the start of a run and a cache clear without making the worker, since there is nothing to clear", async () => {
+        // Arrange
+        const manager = new IFCWorkerManager();
+        const create = vi.fn(() => new IFCWorkerMock());
+        manager.setIfcWorkerFactory(create);
+
+        // Act
+        await manager.startedTheRun();
+        await manager.cleanAllCache();
+
+        // Assert
+        expect(create).not.toHaveBeenCalled();
+        expect(manager.ifcWorkerAlreadyInitialised()).toBe(false);
+    });
+
+    it("should reject the first call with the factory's error, report the failure, and give later calls the same reason", async () => {
+        // Arrange
+        const manager = new IFCWorkerManager();
+        const errors: string[] = [];
+        manager.errorCallback = (error: string): void => { errors.push(error); };
+        const states: IFCInfo[] = [];
+        manager.ifcWorkerState$.subscribe((info) => states.push(info));
+        manager.setIfcWorkerFactory(() => { throw new Error("blocked by the page's policy"); });
+
+        // Act
+        const first = await manager.genericCallToWorkerPromise("model.create", {}).catch((error: unknown) => error);
+        const second = await manager.genericCallToWorkerPromise("model.read", {}).catch((error: unknown) => error);
+
+        // Assert
+        const reason = "The IFC worker could not be created: blocked by the page's policy";
+        expect(first).toBeInstanceOf(KernelCallError);
+        expect([(first as KernelCallError).message, (second as KernelCallError).message]).toEqual([`model.create: ${reason}`, `model.read: ${reason}`]);
+        expect(errors).toEqual([reason]);
+        expect(states.map((info) => info.state)).toEqual([IFCStateEnum.loaded, IFCStateEnum.failed]);
+    });
+
+    it("should say only that the worker could not be created when the factory throws something other than an error", async () => {
+        // Arrange
+        const manager = new IFCWorkerManager();
+        const notAnError: unknown = "no workers here";
+        manager.setIfcWorkerFactory(() => { throw notAnError; });
+
+        // Act
+        const failure = await manager.genericCallToWorkerPromise("model.create", {}).catch((error: unknown) => error);
+
+        // Assert
+        expect((failure as KernelCallError).message).toBe("model.create: The IFC worker could not be created");
+    });
+
+    it("should keep a worker it was handed over a factory given afterwards", () => {
+        // Arrange
+        const [manager, , states] = managerWithMock();
+        const create = vi.fn(() => new IFCWorkerMock());
+        const before = states.length;
+
+        // Act
+        manager.setIfcWorkerFactory(create);
+
+        // Assert
+        expect(states.length).toBe(before);
+        expect(create).not.toHaveBeenCalled();
+    });
 });

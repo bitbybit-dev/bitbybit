@@ -28,7 +28,9 @@ export class IfcTransaction extends EntityLookup {
     constructor(base: ModelSnapshot, keySeed: string = base.keySeed) {
         super();
         if (!base.editable) {
-            throw new Error(`This ${base.schemaName} file is read through the ${base.schema.name} schema, so it can be shown and queried but not changed`);
+            throw new Error(base.schemaName === base.schema.name
+                ? `This ${base.schemaName} model can be shown and queried but not changed; changes are made to IFC4 models`
+                : `This ${base.schemaName} file is read through the ${base.schema.name} schema, so it can be shown and queried but not changed`);
         }
         this.base = base;
         this.nextId = base.nextId;
@@ -44,6 +46,13 @@ export class IfcTransaction extends EntityLookup {
             return this.changes.get(id) ?? undefined;
         }
         return this.base.get(id);
+    }
+
+    typeOf(id: number): string | undefined {
+        if (this.changes.has(id)) {
+            return this.changes.get(id)?.type;
+        }
+        return this.base.typeOf(id);
     }
 
     byType(type: string): IfcEntity[] {

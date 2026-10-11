@@ -84,17 +84,18 @@ export namespace Base {
     export type Polyline2 = {
         points: Base.Point2[];
         isClosed?: boolean;
-        color?: number[];
+        color?: string | number[];
     };
     export type Polyline3 = {
         points: Base.Point3[];
         isClosed?: boolean;
-        color?: number[];
+        color?: string | number[];
     };
     // @beta
     export interface Recipe {
         buffers: RecipeBuffers;
         format: "bitbybit.recipe";
+        groups?: RecipeGroup[] | undefined;
         millimetresPerUnit: number;
         nodes: RecipeNode[];
         roots: RecipeRoot[];
@@ -131,13 +132,30 @@ export namespace Base {
         profile: number;
     }
     // @beta
+    export interface RecipeGroup {
+        name: string;
+        parent?: number | undefined;
+        tag: Record<string, RecipeTagValue>;
+    }
+    // @beta
     export interface RecipeHalfSpaceNode {
         normal: Vector3;
         op: "halfSpace";
         origin: Point3;
     }
     // @beta
-    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode;
+    export interface RecipeIntersectionNode {
+        of: number[];
+        op: "intersection";
+    }
+    // @beta
+    export interface RecipeLoftNode {
+        frames: RecipeRange;
+        op: "loft";
+        profiles: number[];
+    }
+    // @beta
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode;
     // @beta
     export interface RecipePolygonNode {
         holes: RecipeRange[];
@@ -147,7 +165,16 @@ export namespace Base {
     // @beta
     export type RecipeRange = [number, number];
     // @beta
+    export interface RecipeRevolveNode {
+        angle: number;
+        direction: Vector2;
+        op: "revolve";
+        origin: Point2;
+        profile: number;
+    }
+    // @beta
     export interface RecipeRoot {
+        group?: number | undefined;
         matrix: TransformMatrix;
         node: number;
         tag: Record<string, RecipeTagValue>;
@@ -165,6 +192,11 @@ export namespace Base {
         indices: RecipeRange;
         op: "triangles";
         positions: RecipeRange;
+    }
+    // @beta
+    export interface RecipeUnionNode {
+        of: number[];
+        op: "union";
     }
     // @beta
     export interface RecipeVoidsNode {
@@ -609,6 +641,15 @@ namespace Frame_2 {
 
 // @beta
 export namespace IFC {
+    export class AddAssemblyDto<T> {
+        constructor(model?: T, parts?: string[], id?: string, name?: string, predefinedType?: elementAssemblyPredefinedTypeEnum, objectType?: string);
+        id?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        objectType?: string | undefined;
+        parts: string[];
+        predefinedType?: elementAssemblyPredefinedTypeEnum | undefined;
+    }
     export class AddBeamDto<T> extends MemberSharedDto<T> {
         constructor(model?: T, storey?: string, start?: Base.Point3, end?: Base.Point3, id?: string, name?: string, profile?: profileKindEnum, width?: number, depth?: number, radius?: number, webThickness?: number, flangeThickness?: number, rotation?: number, material?: string);
         end: Base.Point3;
@@ -883,6 +924,19 @@ export namespace IFC {
         thickness?: number | undefined;
         wall: string;
     }
+    export enum elementAssemblyPredefinedTypeEnum {
+        accessoryAssembly = "ACCESSORY_ASSEMBLY",
+        arch = "ARCH",
+        beamGrid = "BEAM_GRID",
+        bracedFrame = "BRACED_FRAME",
+        girder = "GIRDER",
+        notDefined = "NOTDEFINED",
+        reinforcementUnit = "REINFORCEMENT_UNIT",
+        rigidFrame = "RIGID_FRAME",
+        slabField = "SLAB_FIELD",
+        truss = "TRUSS",
+        userDefined = "USERDEFINED"
+    }
     export class ElementDto<T> {
         constructor(model?: T, element?: string);
         element: string;
@@ -901,6 +955,12 @@ export namespace IFC {
         type?: string | undefined;
     }
     export class GeometryDto<T> {
+        constructor(model?: T, elements?: string[], groupByClass?: boolean);
+        elements?: string[] | undefined;
+        groupByClass?: boolean | undefined;
+        model: T;
+    }
+    export class GeometryElementsDto<T> {
         constructor(model?: T, elements?: string[]);
         elements?: string[] | undefined;
         model: T;
@@ -909,6 +969,52 @@ export namespace IFC {
         globalId: string;
         message: string;
         type: string;
+    }
+    export class GeometryToDocumentDto<T> {
+        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean);
+        elements?: string[] | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        facetedMeshes?: boolean | undefined;
+        groupByClass?: boolean | undefined;
+        maxTriangles?: number | undefined;
+        model: T;
+        name?: string | undefined;
+    }
+    export class GeometryToShapesDto<T> {
+        constructor(model?: T, elements?: string[], adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number);
+        adjustZtoY?: boolean | undefined;
+        elements?: string[] | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        facetedMeshes?: boolean | undefined;
+        maxTriangles?: number | undefined;
+        model: T;
+    }
+    export class GeometryToStepDto<T> {
+        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean);
+        compress?: boolean | undefined;
+        elements?: string[] | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        facetedMeshes?: boolean | undefined;
+        fileName?: string | undefined;
+        groupByClass?: boolean | undefined;
+        maxTriangles?: number | undefined;
+        model: T;
+        name?: string | undefined;
+        tryDownload?: boolean | undefined;
+    }
+    export class GeoreferenceDto {
+        crs: string;
+        eastings: number;
+        elevation: number;
+        latitude: number;
+        located: boolean;
+        longitude: number;
+        mapped: boolean;
+        northings: number;
+        orthogonalHeight: number;
+        scale: number;
+        xAxisAbscissa: number;
+        xAxisOrdinate: number;
     }
     export class GetAttributeDto<T> {
         constructor(model?: T, element?: string, attribute?: string);
@@ -1141,6 +1247,8 @@ namespace IFC_2 {
     // Warning: (ae-forgotten-export) The symbol "Inputs" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
+    type AddAssemblyDto<T> = WithDefaults<Inputs.IFC.AddAssemblyDto<T>, "predefinedType">;
+    // (undocumented)
     type AddBeamDto<T> = WithDefaults<Inputs.IFC.AddBeamDto<T>, "profile" | "rotation">;
     // (undocumented)
     type AddColumnDto<T> = WithDefaults<Inputs.IFC.AddColumnDto<T>, "position" | "baseOffset" | "profile" | "rotation">;
@@ -1201,9 +1309,19 @@ namespace IFC_2 {
     // (undocumented)
     type ElementsDto<T> = WithDefaults<Inputs.IFC.ElementsDto<T>, "type">;
     // (undocumented)
-    type GeometryDto<T> = Inputs.IFC.GeometryDto<T>;
+    type GeometryDto<T> = WithDefaults<Inputs.IFC.GeometryDto<T>, "groupByClass">;
+    // (undocumented)
+    type GeometryElementsDto<T> = Inputs.IFC.GeometryElementsDto<T>;
     // (undocumented)
     type GeometryProblemDto = WithDefaults<Inputs.IFC.GeometryProblemDto, "globalId" | "type" | "message">;
+    // (undocumented)
+    type GeometryToDocumentDto<T> = WithDefaults<Inputs.IFC.GeometryToDocumentDto<T>, "name" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "groupByClass">;
+    // (undocumented)
+    type GeometryToShapesDto<T> = WithDefaults<Inputs.IFC.GeometryToShapesDto<T>, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
+    // (undocumented)
+    type GeometryToStepDto<T> = WithDefaults<Inputs.IFC.GeometryToStepDto<T>, "name" | "fileName" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "compress" | "tryDownload" | "groupByClass">;
+    // (undocumented)
+    type GeoreferenceDto = WithDefaults<Inputs.IFC.GeoreferenceDto, "mapped" | "crs" | "eastings" | "northings" | "orthogonalHeight" | "xAxisAbscissa" | "xAxisOrdinate" | "scale" | "located" | "latitude" | "longitude" | "elevation">;
     // (undocumented)
     type GetAttributeDto<T> = WithDefaults<Inputs.IFC.GetAttributeDto<T>, "attribute">;
     // (undocumented)
@@ -1312,7 +1430,7 @@ export interface IfcFileHeader {
 // @beta
 export class IFCGeometry {
     recipe(inputs: Inputs.IFC.GeometryDto<IfcModel>): Base.Recipe;
-    unsupported(inputs: Inputs.IFC.GeometryDto<IfcModel>): Inputs.IFC.GeometryProblemDto[];
+    unsupported(inputs: Inputs.IFC.GeometryElementsDto<IfcModel>): Inputs.IFC.GeometryProblemDto[];
 }
 
 // @beta
@@ -1348,6 +1466,7 @@ export class IFCModels {
     create(inputs: Inputs.IFC.CreateModelDto): IfcModel;
     element(inputs: Inputs.IFC.ElementDto<IfcModel>): Inputs.IFC.ElementInfoDto;
     elements(inputs: Inputs.IFC.ElementsDto<IfcModel>): Inputs.IFC.ElementInfoDto[];
+    georeference(inputs: Inputs.IFC.ModelDto<IfcModel>): Inputs.IFC.GeoreferenceDto;
     getAttribute(inputs: Inputs.IFC.GetAttributeDto<IfcModel>): Inputs.IFC.IfcAttributeValue;
     globalIdOf(inputs: Inputs.IFC.GlobalIdOfDto<IfcModel>): string;
     move(inputs: Inputs.IFC.MoveElementDto<IfcModel>): IfcModel;
@@ -1395,6 +1514,8 @@ export class IFCRoofs {
 // @beta
 export class IFCService {
     constructor();
+    // Warning: (ae-forgotten-export) The symbol "IFCAssemblies" needs to be exported by the entry point index.d.ts
+    readonly assemblies: IFCAssemblies;
     readonly beams: IFCBeams;
     readonly columns: IFCColumns;
     readonly doors: IFCDoors;

@@ -8,7 +8,7 @@ const BOX_ROWS = [
     "#10=IFCRECTANGLEPROFILEDEF(.AREA.,$,$,2.,2.);",
     "#11=IFCDIRECTION((0.,0.,1.));",
     "#12=IFCEXTRUDEDAREASOLID(#10,$,#11,3.);",
-    "#13=IFCSWEPTDISKSOLID(#12,1.,$,$,$);",
+    "#13=IFCSECTIONEDSPINE(#12,(),());",
 ];
 
 const MODEL_BODY_REPRESENTATION_ROWS = [
@@ -71,7 +71,7 @@ describe("modelRecipe", () => {
 
         // Assert
         expect(recipe.roots.map((root) => root.tag["globalId"])).toEqual(["0000000000000000000001"]);
-        expect(problems).toEqual([{ globalId: "0000000000000000000002", type: "IfcBuildingElementProxy", message: "An IfcSweptDiskSolid is not supported yet" }]);
+        expect(problems).toEqual([{ globalId: "0000000000000000000002", type: "IfcBuildingElementProxy", message: "An IfcSectionedSpine is not supported yet" }]);
     });
 
     it("should report an element without a placement", () => {
@@ -299,6 +299,29 @@ describe("modelRecipe", () => {
         expect(recipe.roots.map((root) => root.tag["rgba"])).toEqual([[0.2, 0.4, 0.6, 1], [0.2, 0.4, 0.6, 1]]);
     });
 
+    it("should build and colour an element that a row of a type the schema does not define names, as IFC2X3's IfcRelOccupiesSpaces is to IFC4", () => {
+        // Arrange
+        const model = withContext([
+            ...BOX_ROWS,
+            "#60=IFCCOLOURRGB($,0.2,0.4,0.6);",
+            "#61=IFCSURFACESTYLERENDERING(#60,0.,$,$,$,$,$,$,.NOTDEFINED.);",
+            "#62=IFCSURFACESTYLE('Painted',.BOTH.,(#61));",
+            "#65=IFCSTYLEDITEM($,(#62),$);",
+            "#66=IFCSTYLEDREPRESENTATION(#4,'Style','Material',(#65));",
+            "#67=IFCMATERIAL('Painted',$,$);",
+            "#68=IFCMATERIALDEFINITIONREPRESENTATION($,$,(#66),#67);",
+            ...productRows(30, "0000000000000000000002", "#12"),
+            "#89=IFCRELOCCUPIESSPACES('0000000000000000000008',$,$,$,(#32),$,$,$);",
+            "#90=IFCRELASSOCIATESMATERIAL('0000000000000000000009',$,$,$,(#32),#67);",
+        ]);
+
+        // Act
+        const { recipe, problems } = modelRecipe(modelOf(model), undefined, 1, 0.5);
+
+        // Assert
+        expect([problems, recipe.roots.map((root) => root.tag["rgba"])]).toEqual([[], [[0.2, 0.4, 0.6, 1]]]);
+    });
+
     it("should colour mapped geometry by its own items' styles before the mapped item's, and unstyled parts by the material", () => {
         // Arrange
         const model = withContext([
@@ -354,5 +377,36 @@ describe("modelRecipe", () => {
         expect(voids.map((node) => node?.op)).toEqual(["voids", "voids"]);
         expect(openings[0]).toHaveLength(1);
         expect(openings[1]).toEqual(openings[0]);
+    });
+
+    it("should never cut by an opening's 'Reference' representation, which a Reference View host already shows voided, and cut by its 'Body' beside it", () => {
+        // Arrange
+        const openingRows = (id: number, globalId: string, representations: string): string[] => [
+            `#${id}=IFCSHAPEREPRESENTATION(#4,'Reference','SweptSolid',(#41));`,
+            `#${id + 1}=IFCSHAPEREPRESENTATION(#4,'Body','SweptSolid',(#41));`,
+            `#${id + 2}=IFCPRODUCTDEFINITIONSHAPE($,$,(${representations}));`,
+            `#${id + 3}=IFCOPENINGELEMENT('${globalId}',$,$,$,$,#5,#${id + 2},$,$);`,
+        ];
+        const model = withContext([
+            ...BOX_ROWS,
+            ...productRows(20, "0000000000000000000001", "#12"),
+            ...productRows(24, "0000000000000000000002", "#12"),
+            "#40=IFCRECTANGLEPROFILEDEF(.AREA.,$,$,0.5,0.5);",
+            "#41=IFCEXTRUDEDAREASOLID(#40,$,#11,5.);",
+            ...openingRows(50, "0000000000000000000003", "#50"),
+            ...openingRows(60, "0000000000000000000004", "#60,#61"),
+            "#70=IFCRELVOIDSELEMENT('0000000000000000000007',$,$,$,#22,#53);",
+            "#71=IFCRELVOIDSELEMENT('0000000000000000000008',$,$,$,#26,#63);",
+        ]);
+
+        // Act
+        const { recipe, problems } = modelRecipe(modelOf(model), undefined, 1, 0.5);
+        const [referenceOnly, withBody] = recipe.roots.map((root) => recipe.nodes[root.node]);
+
+        // Assert
+        expect(problems).toEqual([]);
+        expect(referenceOnly?.op).toBe("extrude");
+        expect(withBody?.op).toBe("voids");
+        expect(withBody?.op === "voids" ? withBody.openings : []).toHaveLength(1);
     });
 });

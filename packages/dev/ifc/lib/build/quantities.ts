@@ -224,7 +224,7 @@ function scales(model: ModelSnapshot): Readonly<Record<QuantityKind, number>> {
 
 function replaceSet(tx: IfcTransaction, writer: EntityWriter, element: number, set: MeasuredSet, scale: Readonly<Record<QuantityKind, number>>): void {
     for (const user of tx.referencesTo(element)) {
-        const relating = tx.get(user)?.type === PROPERTY_DEFINITION.relationship ? tx.attribute(user, PROPERTY_DEFINITION.relating) : null;
+        const relating = tx.typeOf(user) === PROPERTY_DEFINITION.relationship ? tx.attribute(user, PROPERTY_DEFINITION.relating) : null;
         if (!isReference(relating) || tx.entity(relating.ref).type !== ELEMENT_QUANTITY || tx.attribute(relating.ref, "Name") !== set.name) {
             continue;
         }

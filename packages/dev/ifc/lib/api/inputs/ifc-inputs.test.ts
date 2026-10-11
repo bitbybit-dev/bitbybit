@@ -24,6 +24,7 @@ const DTOS: [string, AnyDto][] = [
     ["SpacesDto", Inputs.IFC.SpacesDto<unknown>],
     ["SpaceInfoDto", Inputs.IFC.SpaceInfoDto],
     ["ElementInfoDto", Inputs.IFC.ElementInfoDto],
+    ["GeoreferenceDto", Inputs.IFC.GeoreferenceDto],
     ["ModelSummaryDto", Inputs.IFC.ModelSummaryDto],
     ["AddWallDto", Inputs.IFC.AddWallDto<unknown>],
     ["ConnectWallsDto", Inputs.IFC.ConnectWallsDto<unknown>],
@@ -46,6 +47,7 @@ const DTOS: [string, AnyDto][] = [
     ["AddColumnDto", Inputs.IFC.AddColumnDto<unknown>],
     ["AddBeamDto", Inputs.IFC.AddBeamDto<unknown>],
     ["AddMemberDto", Inputs.IFC.AddMemberDto<unknown>],
+    ["AddAssemblyDto", Inputs.IFC.AddAssemblyDto<unknown>],
     ["AddTerrainDto", Inputs.IFC.AddTerrainDto<unknown>],
     ["AddTreeDto", Inputs.IFC.AddTreeDto<unknown>],
     ["PropertyDto", Inputs.IFC.PropertyDto],
@@ -57,6 +59,10 @@ const DTOS: [string, AnyDto][] = [
     ["ComputeQuantitiesDto", Inputs.IFC.ComputeQuantitiesDto<unknown>],
     ["QuantitySetInfoDto", Inputs.IFC.QuantitySetInfoDto],
     ["GeometryDto", Inputs.IFC.GeometryDto<unknown>],
+    ["GeometryElementsDto", Inputs.IFC.GeometryElementsDto<unknown>],
+    ["GeometryToShapesDto", Inputs.IFC.GeometryToShapesDto<unknown>],
+    ["GeometryToDocumentDto", Inputs.IFC.GeometryToDocumentDto<unknown>],
+    ["GeometryToStepDto", Inputs.IFC.GeometryToStepDto<unknown>],
     ["GeometryProblemDto", Inputs.IFC.GeometryProblemDto],
 ];
 

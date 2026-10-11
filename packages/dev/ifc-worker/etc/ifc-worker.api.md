@@ -29,6 +29,10 @@ export interface DataInput {
 // @beta
 export class IFCBitByBit {
     constructor(ifcWorkerManager: IFCWorkerManager);
+    // Warning: (ae-forgotten-export) The symbol "IFCAssemblies" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly assemblies: IFCAssemblies;
     // Warning: (ae-forgotten-export) The symbol "IFCBeams" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -142,6 +146,7 @@ export class IFCWorkerManager {
     ifcWorkerStarted(): boolean;
     ifcWorkerState$: Subject<IFCInfo>;
     setIfcWorker(worker: Worker | IFCWorkerMock): void;
+    setIfcWorkerFactory(create: () => Worker | IFCWorkerMock): void;
     startedTheRun(): Promise<void>;
 }
 

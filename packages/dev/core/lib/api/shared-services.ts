@@ -1,7 +1,7 @@
 import { Color, Dates, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
 import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import { IFCBitByBit, IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
+import { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import type { ContextBase } from "./context";
 import type { SharedServices } from "./shared-services-types";
@@ -12,6 +12,7 @@ import { JSONBitByBit } from "./bitbybit/json";
 import { CSVBitByBit } from "./bitbybit/csv";
 import { Verb } from "./bitbybit/verb/verb";
 import { OCCTW } from "./bitbybit/occt/occt";
+import { IFCW } from "./bitbybit/ifc/ifc";
 
 
 /**
@@ -28,7 +29,8 @@ export function createSharedServices(context: ContextBase): SharedServices {
     const jscad = new JSCAD(jscadWorkerManager);
     const manifold = new ManifoldBitByBit(manifoldWorkerManager);
     const ifcWorkerManager = new IFCWorkerManager();
-    const ifc = new IFCBitByBit(ifcWorkerManager);
+    const occt = new OCCTW(context, occtWorkerManager);
+    const ifc = new IFCW(ifcWorkerManager, occt);
 
     const geometryHelper = new GeometryHelper();
     const lists = new Lists();
@@ -47,7 +49,7 @@ export function createSharedServices(context: ContextBase): SharedServices {
         color: new Color(math),
         verb: new Verb(context, geometryHelper, math),
         time: new Time(context),
-        occt: new OCCTW(context, occtWorkerManager),
+        occt,
         asset: new Asset(),
         logic: new Logic(),
         json: new JSONBitByBit(context),

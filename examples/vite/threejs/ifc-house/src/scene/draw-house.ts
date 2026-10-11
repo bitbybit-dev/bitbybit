@@ -62,24 +62,25 @@ export async function drawHouse(bitbybit: BitByBitBase, house: HouseModel): Prom
     const meshes = await bitbybit.manifold.decomposeManifoldsOrCrossSections({ manifoldsOrCrossSections: solids, minSharpAngle: SHARP_ANGLE });
     const materials = new Materials();
     const drawn: DrawnElement[] = [];
-    for (let index = 0; index < recipe.roots.length; index++) {
-        const tag = recipe.roots[index].tag;
-        const rgba = Array.isArray(tag.rgba) ? tag.rgba : undefined;
+    for (const [index, root] of recipe.roots.entries()) {
+        const mesh = meshes[index];
+        if (!mesh) {
+            continue;
+        }
+        const tag = root.tag;
+        const rgba = Array.isArray(tag["rgba"]) ? tag["rgba"] : undefined;
         const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
         options.faceMaterial = materials.of(rgba);
         options.drawTwoSided = false;
         options.minSharpAngle = SHARP_ANGLE;
-        const object = await bitbybit.draw.drawAnyAsync({ entity: meshes[index] as Inputs.Manifold.DecomposedManifoldMeshDto, options });
-        if (!object) {
-            continue;
-        }
+        const object = await bitbybit.draw.drawAnyAsync({ entity: mesh as Inputs.Manifold.DecomposedManifoldMeshDto, options });
         const info: ElementInfo = {
-            globalId: String(tag.globalId),
-            type: String(tag.type),
-            name: String(tag.name ?? ""),
-            layer: house.layers.get(String(tag.globalId)) ?? LAYERS_BY_NAME[String(tag.name)] ?? "ground",
+            globalId: String(tag["globalId"]),
+            type: String(tag["type"]),
+            name: String(tag["name"] ?? ""),
+            layer: house.layers.get(String(tag["globalId"])) ?? LAYERS_BY_NAME[String(tag["name"])] ?? "ground",
         };
-        const seeThrough = rgba !== undefined && rgba[3] < 1;
+        const seeThrough = rgba !== undefined && (rgba[3] ?? 1) < 1;
         object.traverse((part) => {
             part.userData = { ...part.userData, element: info };
             part.castShadow = !seeThrough;

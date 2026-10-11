@@ -22,7 +22,7 @@ const BACKEND_MANIFEST: Record<(typeof CLOUD_BACKENDS)[number], string> = {
 const BACKEND_SECRET: Record<(typeof CLOUD_BACKENDS)[number], string> = {
     "hono-sdk": ".dev.vars", "hono-rest": ".dev.vars", "nodejs-sdk": ".env", "nodejs-rest": ".env", "dotnet-rest": "appsettings.Development.json",
 };
-const APP_TEMPLATES = ["product-configurator", "laser-cut-box", "sheet-metal-unfold", "step-to-gltf-cli", "drone-assembly"] as const;
+const APP_TEMPLATES = ["product-configurator", "laser-cut-box", "sheet-metal-unfold", "step-to-gltf-cli", "drone-assembly", "ifc-house"] as const;
 const SINGLE_APP_FILES = ["package.json", ...TOOLCHAIN_FILES, "index.html", "README.md", "src/main.ts", "src/model.ts", "src/style.css", "scripts/smoke.ts", ".gitignore", ...BRAND_FILES, ...AGENT_FILES];
 const APP_FILES: Record<(typeof APP_TEMPLATES)[number], string[]> = {
     "product-configurator": SINGLE_APP_FILES,
@@ -34,6 +34,11 @@ const APP_FILES: Record<(typeof APP_TEMPLATES)[number], string[]> = {
     ],
     "step-to-gltf-cli": ["package.json", ...TOOLCHAIN_FILES, "README.md", ".gitignore", "src/cli.ts", "src/convert.ts", "src/cloud.ts", "src/kernel.ts", "samples/bracket.step", "scripts/smoke.ts", ...AGENT_FILES],
     "drone-assembly": [...SINGLE_APP_FILES, "src/parts.ts", "src/assembly.ts", "src/materials.ts", "src/kernel.ts", "src/ui.ts"],
+    "ifc-house": [
+        "package.json", ...TOOLCHAIN_FILES, "index.html", "README.md", "src/main.ts", "src/style.css", "scripts/smoke.ts", ".gitignore", ...BRAND_FILES, ...AGENT_FILES,
+        "src/house/build-house.ts", "src/house/house-plan.ts", "src/house/details.ts", "src/house/house-types.ts", "src/scene/draw-house.ts", "src/scene/stage.ts", "src/ui/panel.ts", "src/export/step-export.ts",
+        "src/workers/ifc.worker.ts", "src/workers/manifold.worker.ts", "src/workers/occt.worker.ts",
+    ],
 };
 const CLOUD_APP_TEMPLATES = ["sheet-metal-unfold"] as const;
 const MCP_URL = "https://mcp.bitbybit.dev/mcp";
@@ -472,6 +477,17 @@ describe("create-app", () => {
             // Assert
             expect(listed).toEqual(shipped);
             expect(shipped).toEqual([...APP_TEMPLATES].sort());
+        });
+
+        it("should have both smoke lanes scaffold every app template", () => {
+            // Arrange
+            const lanes = ["smoke.mjs", "smoke-local.mjs"].map((file) => readFileSync(path.join(ROOT, "scripts", file), "utf8"));
+
+            // Act
+            const listed = lanes.map((text) => (/\[("product-configurator"[^\]]*)\]/.exec(text)?.[1] ?? "").split(",").map((id) => id.trim().replace(/"/g, "")).sort());
+
+            // Assert
+            expect(listed).toEqual([[...APP_TEMPLATES].sort(), [...APP_TEMPLATES].sort()]);
         });
     });
 

@@ -63,7 +63,8 @@ export class IFCProperties {
     /**
      * Reads the property sets attached to an object, with each single value by name.
      *
-     * Values of other kinds of property, such as lists and tables, are left out.
+     * Values of other kinds of property, such as lists and tables, and logical values that are
+     * unknown are left out.
      * @param inputs - The model and the object
      * @returns The object's property sets
      * @group properties

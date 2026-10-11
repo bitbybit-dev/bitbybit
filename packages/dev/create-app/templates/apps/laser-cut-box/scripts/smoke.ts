@@ -45,6 +45,7 @@ async function check(name: string, params: BoxParams): Promise<BoxCheck> {
     const dxfPaths: Record<string, number> = {};
     for (const part of model.parts) {
         if (await occt.shapes.shape.getShapeType({ shape: part.face }) !== Inputs.OCCT.shapeTypeEnum.face) problems.push(`${name}: part ${part.id} is not one planar face`);
+        if (!(await occt.shapeFix.isValid({ shape: part.assembled }))) problems.push(`${name}: part ${part.id} is not a valid solid`);
         const paths = await occt.io.shapeToDxfPaths({ shape: part.flat, angularDeflection: 0.1, curvatureDeflection: 0.1, minimumOfPoints: 2, uTolerance: 1e-9, minimumLength: 1e-7 });
         dxfPaths[part.id] = paths.length;
         if (paths.length === 0) problems.push(`${name}: part ${part.id} produced no DXF path`);
@@ -55,7 +56,7 @@ async function check(name: string, params: BoxParams): Promise<BoxCheck> {
     }
 
     const assembled = await occt.shapes.compound.makeCompound({ shapes: model.parts.map((part) => part.assembled) });
-    const bbox = await occt.operations.boundingBoxOfShape({ shape: assembled });
+    const bbox = await occt.analysis.measure.tightBoundingBox({ shape: assembled });
     const expectedMin: [number, number, number] = [-p.length / 2, 0, -p.width / 2];
     const expectedMax: [number, number, number] = [p.length / 2, p.height, p.width / 2];
     const slack = p.kerf / 2 + 0.001;

@@ -213,6 +213,33 @@ describe("IFCProperties.addSet", () => {
         expect(ifc.properties.getSets({ model, element: "south" })).toEqual([]);
     });
 
+    it("should find an object by a GlobalId its file writes in another form, such as a UUID", () => {
+        // Arrange
+        const { ifc, model } = oneWall();
+        const text = ifc.model.write({ model, timeStamp: TIME_STAMP });
+        const wallRow = text.split("\n").find((row) => /^#\d+=IFCWALL\(/.test(row))!;
+        const uuid = "1ba3db3f-7757-11f0-83aa-2c9811a1aa1f";
+        const odd = ifc.model.read({ data: text.replace(wallRow, wallRow.replace(/^(#\d+=IFCWALL\()'[^']+'/, `$1'${uuid}'`)) });
+
+        // Act
+        const wall = ifc.model.element({ model: odd, element: uuid });
+
+        // Assert
+        expect([wall.globalId, wall.type, ifc.properties.getSets({ model: odd, element: uuid })]).toEqual([uuid, "IfcWall", []]);
+    });
+
+    it("should refuse a GlobalId its file gives to more than one entity, naming them", () => {
+        // Arrange
+        const { ifc, model } = oneWall();
+        const text = ifc.model.write({ model, timeStamp: TIME_STAMP });
+        const wallRow = text.split("\n").find((row) => /^#\d+=IFCWALL\(/.test(row))!;
+        const [, wallId, globalId] = /^#(\d+)=IFCWALL\('([^']+)'/.exec(wallRow)!;
+        const shared = ifc.model.read({ data: text.replace(wallRow, `${wallRow}\n${wallRow.replace(/^#\d+=/, "#9999=")}`) });
+
+        // Act & Assert
+        expect(() => ifc.properties.getSets({ model: shared, element: globalId! })).toThrow(`The GlobalId '${globalId!}' belongs to 2 entities (#${wallId!}, #9999), so it names no single object`);
+    });
+
     it("should refuse an input that is not a model with a TypeError", () => {
         // Arrange
         const { ifc } = groundFloor();

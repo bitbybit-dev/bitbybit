@@ -5,6 +5,11 @@ import { numbersOf } from "../build/placement";
 import type { ModelSnapshot } from "../model/snapshot";
 import type { IfcEntity, IfcValue } from "../step/step-types";
 import { isList, isReference } from "../step/values";
+import type { RefinedSurfaceMesh } from "@bitbybit-dev/base/lib/api/services/helpers/helper-types";
+import { AdvancedFaces, faceBounds } from "./advanced";
+import { CurveSampler } from "./curves";
+import { EdgeSampler } from "./edges";
+import { referencesIn, referencesOf } from "./references";
 import { UnsupportedGeometryError } from "./errors";
 import type { TriangleMesh } from "./geometry-types";
 
@@ -16,18 +21,7 @@ const TRIANGLE_CORNERS = 3;
 const OUTER_BOUND = "IfcFaceOuterBound";
 const POLY_LOOP = "IfcPolyLoop";
 const FACE_WITH_VOIDS = "IfcIndexedPolygonalFaceWithVoids";
-
-function referencesOf(value: IfcValue, what: string): number[] {
-    if (!isList(value)) {
-        throw new UnsupportedGeometryError(`${what} is not a list`);
-    }
-    return value.map((item) => {
-        if (!isReference(item)) {
-            throw new UnsupportedGeometryError(`${what} holds something other than a reference`);
-        }
-        return item.ref;
-    });
-}
+const SURFACE_FACES: ReadonlySet<string> = new Set(["IfcAdvancedFace", "IfcFaceSurface"]);
 
 export function zeroBased(value: IfcValue, count: number, what: string, of: string): number[] {
     if (!isList(value) || !value.every((index): index is number => typeof index === "number" && Number.isSafeInteger(index))) {
@@ -56,12 +50,17 @@ export function concatenated(meshes: readonly TriangleMesh[]): TriangleMesh {
     return { positions, indices };
 }
 
+function isPointIndex(value: IfcValue): value is IfcValue[] {
+    return isList(value) && value.length > 0 && !value.some(isList);
+}
+
 export class MeshCollector {
     private readonly model: ModelSnapshot;
     private readonly positions: number[] = [];
     private readonly indices: number[] = [];
     private readonly vertexOfPoint = new Map<number, number>();
     private readonly vertexAt = new Map<number, Map<number, Map<number, number>>>();
+    private advanced: AdvancedFaces | undefined;
 
     constructor(model: ModelSnapshot) {
         this.model = model;
@@ -122,20 +121,29 @@ export class MeshCollector {
             this.positions.push(numbers[0] ?? 0, numbers[1] ?? 0, numbers[2] ?? 0);
         });
         const pointIndex = this.model.valueOf(entity, "PnIndex");
-        const lookup = isList(pointIndex) ? zeroBased(pointIndex, points.length, `#${item} PnIndex`, "points") : undefined;
+        const lookup = isPointIndex(pointIndex) ? zeroBased(pointIndex, points.length, `#${item} PnIndex`, "points") : undefined;
         return (value, what) => (lookup
             ? zeroBased(value, lookup.length, what, "entries of PnIndex").map((entry) => lookup[entry]! + offset)
             : zeroBased(value, points.length, what, "points").map((index) => index + offset));
     }
 
     private references(id: number, attribute: string): readonly number[] {
-        return this.model.referenceList(id) ?? referencesOf(this.model.valueOf(this.model.peek(id), attribute), `#${id} ${attribute}`);
+        return referencesIn(this.model, id, attribute);
     }
 
     private face(face: number): void {
+        const bounds = faceBounds(this.model, face);
+        if (SURFACE_FACES.has(this.model.typeOf(face) ?? "") || bounds.some((bound) => this.loopTypeOf(bound) !== POLY_LOOP)) {
+            if (!this.advanced) {
+                const curves = new CurveSampler(this.model);
+                this.advanced = new AdvancedFaces(this.model, curves, new EdgeSampler(this.model, curves));
+            }
+            this.surfaceMesh(this.advanced.face(face, bounds));
+            return;
+        }
         const loops: number[][] = [];
         let outer = -1;
-        for (const bound of this.references(face, "Bounds")) {
+        for (const bound of bounds) {
             const boundEntity = this.model.peek(bound);
             const loop = this.model.valueOf(boundEntity, "Bound");
             if (!isReference(loop)) {
@@ -157,6 +165,21 @@ export class MeshCollector {
         this.add(triangulateFace(this.positions, [loops[outer] ?? [], ...loops.filter((_, at) => at !== outer)]));
     }
 
+    private loopTypeOf(bound: number): string | undefined {
+        const loop = this.model.valueOf(this.model.peek(bound), "Bound");
+        return isReference(loop) ? this.model.typeOf(loop.ref) : undefined;
+    }
+
+    private surfaceMesh(mesh: RefinedSurfaceMesh): void {
+        const vertices = mesh.positions.map(([x, y, z]) => this.welded(x, y, z));
+        for (let at = 0; at + 2 < mesh.triangles.length; at += TRIANGLE_CORNERS) {
+            const [a, b, c] = [vertices[mesh.triangles[at]!]!, vertices[mesh.triangles[at + 1]!]!, vertices[mesh.triangles[at + 2]!]!];
+            if (a !== b && b !== c && c !== a) {
+                this.indices.push(a, b, c);
+            }
+        }
+    }
+
     private loop(loop: number): number[] {
         const type = this.model.typeOf(loop);
         if (type !== POLY_LOOP) {
@@ -171,9 +194,12 @@ export class MeshCollector {
             return known;
         }
         const coordinates = numbersOf(this.model.valueOf(this.model.peek(point), "Coordinates"), `#${point} Coordinates`);
-        const x = coordinates[0] ?? 0;
-        const y = coordinates[1] ?? 0;
-        const z = coordinates[2] ?? 0;
+        const vertex = this.welded(coordinates[0] ?? 0, coordinates[1] ?? 0, coordinates[2] ?? 0);
+        this.vertexOfPoint.set(point, vertex);
+        return vertex;
+    }
+
+    private welded(x: number, y: number, z: number): number {
         let byY = this.vertexAt.get(x);
         if (!byY) {
             byY = new Map();
@@ -190,7 +216,6 @@ export class MeshCollector {
             this.positions.push(x, y, z);
             byZ.set(z, vertex);
         }
-        this.vertexOfPoint.set(point, vertex);
         return vertex;
     }
 

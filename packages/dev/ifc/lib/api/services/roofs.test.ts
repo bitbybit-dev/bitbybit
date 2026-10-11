@@ -126,7 +126,7 @@ describe("IFCRoofs.add", () => {
         expect(partsOf(model, "roof").map((part) => round(upwardOf(model, part)))).toEqual([round(Math.SQRT1_2), round(Math.SQRT1_2)]);
     });
 
-    it("should extrude every part square to its slope through the roof's layers, laid up from the underside, a single layer as thick as a slab by default", () => {
+    it("should extrude every part square to its slope through the roof's layers, laid down from the top as a slab's are, a single layer as thick as a slab by default", () => {
         // Act
         const { model } = roofOver(HOUSE, Inputs.IFC.roofKindEnum.hip);
 
@@ -134,7 +134,7 @@ describe("IFCRoofs.add", () => {
         const parts = partsOf(model, "roof");
         const usage = materialOf(model, parts[0]!);
         expect(parts.map((part) => [extrusionOf(model, part).depth, round(upwardOf(model, part)), materialOf(model, part)])).toEqual(Array(4).fill([200, round(Math.SQRT1_2), usage]));
-        expect([enumOf(model.attribute(usage, "LayerSetDirection")), enumOf(model.attribute(usage, "DirectionSense")), model.attribute(usage, "OffsetFromReferenceLine")]).toEqual(["AXIS3", "POSITIVE", 0]);
+        expect([enumOf(model.attribute(usage, "LayerSetDirection")), enumOf(model.attribute(usage, "DirectionSense")), model.attribute(usage, "OffsetFromReferenceLine")]).toEqual(["AXIS3", "NEGATIVE", 200]);
         expect(layerThicknessesOf(model, refOf(model.attribute(usage, "ForLayerSet")))).toEqual([200]);
     });
 

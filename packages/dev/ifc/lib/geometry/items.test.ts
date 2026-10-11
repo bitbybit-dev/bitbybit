@@ -100,6 +100,56 @@ describe("ItemConverter", () => {
         expect(recipe.nodes[1]).toEqual({ op: "extrude", profile: 0, direction: [0, 0, 1], depth: 3 });
     });
 
+    it("should describe a hollow circle's extrusion as its outer circle's less its inner one's, both exact", () => {
+        // Arrange
+        const rows = ["#10=IFCCIRCLEHOLLOWPROFILEDEF(.AREA.,$,$,50.,5.);", "#11=IFCDIRECTION((0.,0.,1.));", "#12=IFCEXTRUDEDAREASOLID(#10,$,#11,300.);"];
+
+        // Act
+        const recipe = converted(rows, 12);
+
+        // Assert
+        expect(recipe.nodes).toEqual([
+            { op: "circle", center: [0, 0], radius: 50 },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: 300 },
+            { op: "circle", center: [0, 0], radius: 45 },
+            { op: "extrude", profile: 2, direction: [0, 0, 1], depth: 300 },
+            { op: "difference", of: 1, tools: [3] },
+        ]);
+    });
+
+    it("should extrude a negative depth the other way, as other readers do, though IFC asks for a positive one", () => {
+        // Arrange
+        const rows = [...BOX_ROWS.slice(0, 2), "#12=IFCEXTRUDEDAREASOLID(#10,$,#11,-3.);"];
+
+        // Act
+        const recipe = converted(rows, 12);
+
+        // Assert
+        expect(recipe.nodes[1]).toEqual({ op: "extrude", profile: 0, direction: [-0, -0, -1], depth: 3 });
+    });
+
+    it("should extrude an outline written with points off its profile's plane in the plane those points lie in", () => {
+        // Arrange
+        const rows = [
+            "#10=IFCCARTESIANPOINT((0.,0.,10.));",
+            "#11=IFCCARTESIANPOINT((4.,0.,10.));",
+            "#12=IFCCARTESIANPOINT((4.,3.,13.));",
+            "#13=IFCPOLYLINE((#10,#11,#12,#10));",
+            "#14=IFCARBITRARYCLOSEDPROFILEDEF(.AREA.,$,#13);",
+            "#15=IFCDIRECTION((0.,0.,1.));",
+            "#16=IFCEXTRUDEDAREASOLID(#14,$,#15,2.);",
+        ];
+
+        // Act
+        const recipe = converted(rows, 16);
+        const [, extrusion, placed] = recipe.nodes;
+
+        // Assert
+        expect(recipe.nodes.map((node) => node.op)).toEqual(["polygon", "extrude", "transform"]);
+        expect(extrusion?.op === "extrude" && extrusion.direction).toEqual(near([0, Math.SQRT1_2, Math.SQRT1_2]));
+        expect(placed?.op === "transform" && placed.matrix).toEqual(near([1, 0, 0, 0, 0, Math.SQRT1_2, Math.SQRT1_2, 0, 0, -Math.SQRT1_2, Math.SQRT1_2, 0, 0, 0, 10, 1]));
+    });
+
     it("should normalise a slanted extrusion direction", () => {
         // Arrange
         const rows = [...BOX_ROWS.slice(0, 1), "#11=IFCDIRECTION((0.,3.,4.));", "#12=IFCEXTRUDEDAREASOLID(#10,$,#11,5.);"];
@@ -141,14 +191,79 @@ describe("ItemConverter", () => {
         expect(recipe.nodes.at(-1)).toEqual({ op: "difference", of: 1, tools: [1] });
     });
 
-    it("should refuse booleans other than a difference, and a half-space bounded by something other than a plane", () => {
+    it("should refuse a union with a half-space, a boolean without its operator or an operand, and a half-space bounded by something other than a plane", () => {
         // Arrange
-        const rows = [...BOX_ROWS, "#13=IFCBOOLEANRESULT(.UNION.,#12,#12);", "#14=IFCHALFSPACESOLID(#12,.F.);", "#15=IFCBOOLEANCLIPPINGRESULT(.DIFFERENCE.,#12,#14);", "#16=IFCBOOLEANRESULT(.DIFFERENCE.,#12,$);"];
+        const rows = [
+            ...BOX_ROWS,
+            "#13=IFCDIRECTION((0.,0.,1.));",
+            "#14=IFCCARTESIANPOINT((0.,0.,2.));",
+            "#15=IFCAXIS2PLACEMENT3D(#14,#13,$);",
+            "#16=IFCPLANE(#15);",
+            "#17=IFCHALFSPACESOLID(#16,.F.);",
+            "#18=IFCBOOLEANRESULT(.UNION.,#12,#17);",
+            "#19=IFCBOOLEANRESULT($,#12,#12);",
+            "#20=IFCBOOLEANRESULT(.DIFFERENCE.,#12,$);",
+            "#21=IFCHALFSPACESOLID(#12,.F.);",
+            "#22=IFCBOOLEANCLIPPINGRESULT(.DIFFERENCE.,#12,#21);",
+        ];
 
         // Act & Assert
-        expect(attempt(rows, 13)).toThrow("Only boolean differences are supported yet");
-        expect(attempt(rows, 15)).toThrow("Only half-spaces bounded by a plane are supported yet");
-        expect(attempt(rows, 16)).toThrow("#16 lacks an operand");
+        expect(attempt(rows, 18)).toThrow("#18 unites a solid with a half-space, which has no bounds");
+        expect(attempt(rows, 19)).toThrow("#19 has no boolean operator");
+        expect(attempt(rows, 20)).toThrow("#20 lacks an operand");
+        expect(attempt(rows, 22)).toThrow("Only half-spaces bounded by a plane are supported yet");
+    });
+
+    it("should describe a union as a union of its operands", () => {
+        // Arrange
+        const rows = [...BOX_ROWS, "#13=IFCRECTANGLEPROFILEDEF(.AREA.,$,$,1.,4.);", "#14=IFCEXTRUDEDAREASOLID(#13,$,#11,2.);", "#15=IFCBOOLEANRESULT(.UNION.,#12,#14);"];
+
+        // Act
+        const recipe = converted(rows, 15);
+
+        // Assert
+        expect(recipe.nodes.map((node) => node.op)).toEqual(["polygon", "extrude", "polygon", "extrude", "union"]);
+        expect(recipe.nodes.at(-1)).toEqual({ op: "union", of: [1, 3] });
+    });
+
+    it("should describe an intersection with a solid as the intersection of its operands", () => {
+        // Arrange
+        const rows = [...BOX_ROWS, "#13=IFCRECTANGLEPROFILEDEF(.AREA.,$,$,1.,4.);", "#14=IFCEXTRUDEDAREASOLID(#13,$,#11,2.);", "#15=IFCBOOLEANRESULT(.INTERSECTION.,#12,#14);"];
+
+        // Act
+        const recipe = converted(rows, 15);
+
+        // Assert
+        expect(recipe.nodes.slice(4)).toEqual([{ op: "intersection", of: [1, 3] }]);
+    });
+
+    it("should describe an intersection with a half-space as a cut by the half-space beyond it, its normal turned around", () => {
+        // Arrange
+        const rows = [...BOX_ROWS, "#13=IFCDIRECTION((0.,0.,1.));", "#14=IFCCARTESIANPOINT((0.,0.,2.));", "#15=IFCAXIS2PLACEMENT3D(#14,#13,$);", "#16=IFCPLANE(#15);", "#17=IFCHALFSPACESOLID(#16,.F.);", "#18=IFCBOOLEANRESULT(.INTERSECTION.,#12,#17);"];
+
+        // Act
+        const recipe = converted(rows, 18);
+
+        // Assert
+        expect(recipe.nodes.slice(2)).toEqual([{ op: "halfSpace", origin: [0, 0, 2], normal: [-0, -0, -1] }, { op: "difference", of: 1, tools: [2] }]);
+    });
+
+    it("should extrude each part of a composite profile and take them together", () => {
+        // Arrange
+        const rows = [
+            "#10=IFCRECTANGLEPROFILEDEF(.AREA.,$,$,2.,2.);",
+            "#11=IFCCIRCLEPROFILEDEF(.AREA.,$,$,1.);",
+            "#12=IFCCOMPOSITEPROFILEDEF(.AREA.,$,(#10,#11),$);",
+            "#13=IFCDIRECTION((0.,0.,1.));",
+            "#14=IFCEXTRUDEDAREASOLID(#12,$,#13,3.);",
+        ];
+
+        // Act
+        const recipe = converted(rows, 14);
+
+        // Assert
+        expect(recipe.nodes.map((node) => node.op)).toEqual(["polygon", "extrude", "circle", "extrude", "compound"]);
+        expect(recipe.nodes.at(-1)).toEqual({ op: "compound", of: [1, 3] });
     });
 
     it("should describe a mapped item's shared geometry once, moved by its target", () => {
@@ -361,6 +476,17 @@ describe("ItemConverter", () => {
         expect(Array.from(recipe.buffers.i32)).toEqual([3, 2, 1, 2, 1, 0]);
     });
 
+    it("should take an empty PnIndex, and the NormalIndex IFC4's first edition kept in its place, as no PnIndex", () => {
+        // Arrange
+        const rows = [POINT_LIST_ROW, "#11=IFCTRIANGULATEDFACESET(#10,$,$,((1,2,3),(2,3,4)),());", "#12=IFCTRIANGULATEDFACESET(#10,$,$,((1,2,3),(2,3,4)),((1,1,1),(1,1,1)));"];
+
+        // Act
+        const indices = [11, 12].map((item) => Array.from(converted(rows, item).buffers.i32));
+
+        // Assert
+        expect(indices).toEqual([[0, 1, 2, 1, 2, 3], [0, 1, 2, 1, 2, 3]]);
+    });
+
     it("should refuse a triangle naming a corner its PnIndex or point list lacks, a PnIndex naming a missing point and a triangle of four corners", () => {
         // Arrange
         const rows = [
@@ -382,11 +508,11 @@ describe("ItemConverter", () => {
 
     it("should refuse an item type it does not describe and an extrusion without depth", () => {
         // Arrange
-        const rows = [...BOX_ROWS, "#13=IFCSWEPTDISKSOLID(#12,1.,$,$,$);", "#14=IFCEXTRUDEDAREASOLID(#10,$,#11,-1.);", "#15=IFCEXTRUDEDAREASOLID($,$,#11,1.);"];
+        const rows = [...BOX_ROWS, "#13=IFCSECTIONEDSPINE(#12,(),());", "#14=IFCEXTRUDEDAREASOLID(#10,$,#11,0.);", "#15=IFCEXTRUDEDAREASOLID($,$,#11,1.);"];
 
         // Act & Assert
-        expect(attempt(rows, 13)).toThrow("An IfcSweptDiskSolid is not supported yet");
-        expect(attempt(rows, 14)).toThrow("#14 has no positive depth");
+        expect(attempt(rows, 13)).toThrow("An IfcSectionedSpine is not supported yet");
+        expect(attempt(rows, 14)).toThrow("#14 has no depth");
         expect(attempt(rows, 15)).toThrow("#15 has no swept area");
     });
 

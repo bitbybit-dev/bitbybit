@@ -30,7 +30,7 @@ export class HousePanel {
         panel.append(this.header(), this.facts(facts), this.toggles(), this.schedule(rooms, areas));
         this.selection = element("section", "selection");
         this.select(undefined);
-        panel.append(this.selection, this.download());
+        panel.append(this.selection, this.downloads());
         host.appendChild(panel);
     }
 
@@ -57,7 +57,11 @@ export class HousePanel {
 
     private header(): HTMLElement {
         const header = element("header", "panel-header");
+        const logo = element("img", "panel-logo");
+        logo.src = "/logo.png";
+        logo.alt = "";
         header.append(
+            logo,
             element("div", "eyebrow", "IFC4 model, authored in your browser"),
             element("h1", "title", "Family house"),
             element("p", "lede", "Two storeys for a cold climate: insulated rendered masonry below, a timber frame clad in charred larch boards above, cantilevered over the garden terrace, under a warm flat roof with a parapet and solar array. The ground, trees, wall build-ups, U-values, rooms and quantities are all in the open BIM file."),
@@ -89,7 +93,9 @@ export class HousePanel {
             const input = element("input", "switch-input");
             input.type = "checkbox";
             input.checked = toggle.on;
-            input.addEventListener("change", () => this.handlers.onToggle(toggle.key, input.checked));
+            input.addEventListener("change", () => {
+                this.handlers.onToggle(toggle.key, input.checked);
+            });
             this.switches.set(toggle.key, input);
             row.append(input, element("span", "switch-track"), element("span", "switch-label", toggle.label));
             section.append(row);
@@ -111,11 +117,20 @@ export class HousePanel {
         return section;
     }
 
-    private download(): HTMLElement {
-        const button = element("button", "download", "Download house.ifc");
+    private downloads(): HTMLElement {
+        const section = element("section", "downloads");
+        section.append(
+            this.downloadButton("Download house.ifc", () => this.handlers.onDownload()),
+            this.downloadButton("Download house.step", () => this.handlers.onDownloadStep()),
+        );
+        return section;
+    }
+
+    private downloadButton(label: string, run: () => Promise<void>): HTMLButtonElement {
+        const button = element("button", "download", label);
         button.addEventListener("click", () => {
             button.disabled = true;
-            this.handlers.onDownload().finally(() => {
+            void run().finally(() => {
                 button.disabled = false;
             });
         });

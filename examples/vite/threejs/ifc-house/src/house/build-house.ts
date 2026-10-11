@@ -1,11 +1,11 @@
-import { Inputs, type BitByBitBase } from "@bitbybit-dev/threejs";
+import { IFC, type Base } from "@bitbybit-dev/ifc/lib/api/inputs";
 import {
     CARPORT, CARPORT_DECK_BOTTOM, DOOR_TYPES, DOORS, FIRST_FLOOR_ELEVATION, HARD_SURFACES, LAYER_SETS, MATERIALS, PASSAGES, PROPERTY_SETS, ROOF, ROOMS, SLABS, TERRAIN_OUTLINE, TREES, WALL_RUNS, WINDOW_TYPES, WINDOWS, rect,
 } from "./house-plan";
-import { houseDetails } from "./details";
-import type { DetailSpec, HouseModel, Layer } from "./house-types";
+import { houseAssemblies, houseDetails } from "./details";
+import type { DetailSpec, HouseIfc, HouseModel, Layer } from "./house-types";
 
-type Model = Inputs.IFC.IfcModelPointer;
+type Model = IFC.IfcModelPointer;
 
 const FRAME = { frameMaterial: "Anthracite aluminium", glassMaterial: "Clear glass", frameThickness: 0.07, frameDepth: 0.09, glassThickness: 0.03 };
 const LINING = { liningThickness: 0.06, liningDepth: 0.12, panelThickness: 0.05 };
@@ -13,18 +13,18 @@ const LINING = { liningThickness: 0.06, liningDepth: 0.12, panelThickness: 0.05 
 export class HouseAuthor {
     private model!: Model;
     private readonly layers = new Map<string, Layer>();
-    private readonly bitbybit: BitByBitBase;
+    private readonly ifc: HouseIfc;
     private readonly progress: (message: string) => void;
 
-    constructor(bitbybit: BitByBitBase, progress: (message: string) => void) {
-        this.bitbybit = bitbybit;
+    constructor(ifc: HouseIfc, progress: (message: string) => void) {
+        this.ifc = ifc;
         this.progress = progress;
     }
 
     async build(): Promise<HouseModel> {
-        const ifc = this.bitbybit.ifc;
+        const ifc = this.ifc;
         this.progress("Setting up the project");
-        this.model = await ifc.model.create({ name: "Family house", lengthUnit: Inputs.IFC.lengthUnitEnum.metre, seed: "ifc-family-house" });
+        this.model = await ifc.model.create({ name: "Family house", lengthUnit: IFC.lengthUnitEnum.metre, seed: "ifc-family-house" });
         this.model = await ifc.spatial.addStorey({ model: this.model, id: "ground", name: "Ground floor", elevation: 0 });
         this.model = await ifc.spatial.addStorey({ model: this.model, id: "first", name: "First floor", elevation: FIRST_FLOOR_ELEVATION });
         await this.addMaterials();
@@ -38,7 +38,9 @@ export class HouseAuthor {
         await this.addRoof();
         await this.addCarport();
         this.progress("Cladding, flashings, the stair and the solar array");
-        await this.addDetails(houseDetails());
+        const details = houseDetails();
+        await this.addDetails(details);
+        await this.addAssemblies(details);
         this.progress("Shaping the garden");
         await this.addSite();
         this.progress("Naming the rooms");
@@ -55,12 +57,12 @@ export class HouseAuthor {
     }
 
     private async layersByGlobalId(): Promise<Map<string, Layer>> {
-        const entries = await Promise.all([...this.layers].map(async ([id, layer]) => [await this.bitbybit.ifc.model.globalIdOf({ model: this.model, id }), layer] as const));
+        const entries = await Promise.all([...this.layers].map(async ([id, layer]) => [await this.ifc.model.globalIdOf({ model: this.model, id }), layer] as const));
         return new Map(entries);
     }
 
     private async addMaterials(): Promise<void> {
-        const ifc = this.bitbybit.ifc;
+        const ifc = this.ifc;
         for (const material of MATERIALS) {
             this.model = await ifc.materials.add({ model: this.model, ...material });
         }
@@ -79,14 +81,14 @@ export class HouseAuthor {
     }
 
     private async addWalls(): Promise<void> {
-        const ifc = this.bitbybit.ifc;
+        const ifc = this.ifc;
         for (const run of WALL_RUNS) {
             const layer: Layer = run.storey === "ground" ? "ground" : "first";
             for (const wall of run.walls) {
                 this.model = await ifc.walls.add({
                     model: this.model, storey: run.storey, id: this.remember(wall.id, layer), name: wall.name, start: wall.start, end: wall.end,
                     height: wall.height ?? run.height, baseOffset: run.baseOffset, layerSet: run.layerSet, alignment: run.alignment,
-                    predefinedType: run.external ? Inputs.IFC.wallPredefinedTypeEnum.standard : Inputs.IFC.wallPredefinedTypeEnum.partitioning,
+                    predefinedType: run.external ? IFC.wallPredefinedTypeEnum.standard : IFC.wallPredefinedTypeEnum.partitioning,
                 });
             }
             for (const [wall, other] of run.joins) {
@@ -97,7 +99,7 @@ export class HouseAuthor {
 
     private async addSlabs(): Promise<void> {
         for (const slab of SLABS) {
-            this.model = await this.bitbybit.ifc.slabs.add({
+            this.model = await this.ifc.slabs.add({
                 model: this.model, storey: slab.storey, id: this.remember(slab.id, slab.layer), name: slab.name,
                 outline: slab.outline, holes: slab.holes, layerSet: slab.layerSet, topOffset: slab.topOffset, predefinedType: slab.kind,
             });
@@ -109,7 +111,7 @@ export class HouseAuthor {
     }
 
     private async addWindowsAndDoors(): Promise<void> {
-        const ifc = this.bitbybit.ifc;
+        const ifc = this.ifc;
         for (const window of WINDOWS) {
             this.model = await ifc.windows.add({ model: this.model, wall: window.wall, windowType: window.type, id: this.remember(window.id, this.layerOfWall(window.wall)), name: window.name, offset: window.offset, sill: window.sill });
         }
@@ -122,20 +124,20 @@ export class HouseAuthor {
     }
 
     private async addRoof(): Promise<void> {
-        this.model = await this.bitbybit.ifc.roofs.add({
+        this.model = await this.ifc.roofs.add({
             model: this.model, storey: "first", id: this.remember(ROOF.id, "roof"), name: ROOF.name,
-            outline: ROOF.outline, kind: Inputs.IFC.roofKindEnum.flat, layerSet: ROOF.layerSet, baseOffset: ROOF.baseOffset,
+            outline: ROOF.outline, kind: IFC.roofKindEnum.flat, layerSet: ROOF.layerSet, baseOffset: ROOF.baseOffset,
         });
     }
 
     private async addCarport(): Promise<void> {
-        const ifc = this.bitbybit.ifc;
+        const ifc = this.ifc;
         const { x0, x1, y0, y1, beam, post } = CARPORT;
         this.model = await ifc.roofs.add({
             model: this.model, storey: "ground", id: this.remember("carport-roof", "garden"), name: "Carport roof",
-            outline: rect(x0 + beam.width, y0 + beam.width, x1, y1 - beam.width), kind: Inputs.IFC.roofKindEnum.flat, layerSet: "Carport roof", baseOffset: CARPORT_DECK_BOTTOM,
+            outline: rect(x0 + beam.width, y0 + beam.width, x1, y1 - beam.width), kind: IFC.roofKindEnum.flat, layerSet: "Carport roof", baseOffset: CARPORT_DECK_BOTTOM,
         });
-        const corners: Inputs.Base.Point2[] = [[x0 + post / 2, y0 + post / 2], [x0 + post / 2, y1 - post / 2]];
+        const corners: Base.Point2[] = [[x0 + post / 2, y0 + post / 2], [x0 + post / 2, y1 - post / 2]];
         for (const [index, position] of corners.entries()) {
             this.model = await ifc.columns.add({
                 model: this.model, storey: "ground", id: this.remember(`carport-post-${index + 1}`, "garden"), name: "Carport post",
@@ -145,20 +147,30 @@ export class HouseAuthor {
     }
 
     private async addDetails(details: DetailSpec[]): Promise<void> {
-        const { profileKindEnum, memberPredefinedTypeEnum } = Inputs.IFC;
+        const { profileKindEnum, memberPredefinedTypeEnum } = IFC;
         for (const detail of details) {
             const common = {
                 model: this.model, storey: detail.storey, id: this.remember(detail.id, detail.layer), name: detail.name, start: detail.start, end: detail.end, material: detail.material,
                 profile: detail.radius === undefined ? profileKindEnum.rectangle : profileKindEnum.circle, width: detail.width, depth: detail.depth, radius: detail.radius, rotation: detail.rotation ?? 0,
             };
             this.model = detail.beam
-                ? await this.bitbybit.ifc.beams.add(common)
-                : await this.bitbybit.ifc.members.add({ ...common, predefinedType: detail.kind ?? memberPredefinedTypeEnum.member });
+                ? await this.ifc.beams.add(common)
+                : await this.ifc.members.add({ ...common, predefinedType: detail.kind ?? memberPredefinedTypeEnum.member });
+        }
+    }
+
+    private async addAssemblies(details: DetailSpec[]): Promise<void> {
+        const { elementAssemblyPredefinedTypeEnum } = IFC;
+        for (const assembly of houseAssemblies()) {
+            this.model = await this.ifc.assemblies.add({
+                model: this.model, id: assembly.id, name: assembly.name, parts: details.filter((detail) => detail.assembly === assembly.id).map((detail) => detail.id),
+                predefinedType: elementAssemblyPredefinedTypeEnum.userDefined, objectType: assembly.objectType,
+            });
         }
     }
 
     private async addSite(): Promise<void> {
-        const site = this.bitbybit.ifc.site;
+        const site = this.ifc.site;
         this.model = await site.addTerrain({ model: this.model, id: this.remember("terrain", "garden"), name: "Garden", outline: TERRAIN_OUTLINE, holes: [HARD_SURFACES], material: "Lawn" });
         for (const tree of TREES) {
             this.model = await site.addTree({
@@ -170,13 +182,13 @@ export class HouseAuthor {
 
     private async addRooms(): Promise<void> {
         for (const room of ROOMS) {
-            this.model = await this.bitbybit.ifc.spaces.add({ model: this.model, storey: room.storey, id: room.id, name: room.number, longName: room.name, outline: room.outline, height: room.height });
+            this.model = await this.ifc.spaces.add({ model: this.model, storey: room.storey, id: room.id, name: room.number, longName: room.name, outline: room.outline, height: room.height });
         }
     }
 
     private async addProperties(): Promise<void> {
         for (const set of PROPERTY_SETS) {
-            this.model = await this.bitbybit.ifc.properties.addSet({ model: this.model, elements: set.elements, name: set.name, properties: set.properties });
+            this.model = await this.ifc.properties.addSet({ model: this.model, elements: set.elements, name: set.name, properties: set.properties });
         }
     }
 }

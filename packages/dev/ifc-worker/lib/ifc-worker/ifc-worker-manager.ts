@@ -23,6 +23,8 @@ export class IFCWorkerManager {
      */
     errorCallback: ((error: string) => void) | undefined;
     private ifcWorker: Worker | IFCWorkerMock | undefined;
+    private createWorker: (() => Worker | IFCWorkerMock) | undefined;
+    private creationFailure: string | undefined;
     private readonly pending = new Map<string, PendingCall>();
     private calls = 0;
     private started = false;
@@ -61,6 +63,20 @@ export class IFCWorkerManager {
     }
 
     /**
+     * Hands the manager a way to make the worker instead of the worker itself. The worker is made by
+     * the first call, so a page that never calls the IFC library never loads it; until then the
+     * state is `loaded`, as for a worker with nothing to answer.
+     * @param create - Makes the worker, or a stand-in that runs the library on the same thread
+     */
+    setIfcWorkerFactory(create: () => Worker | IFCWorkerMock): void {
+        if (this.ifcWorker !== undefined) {
+            return;
+        }
+        this.createWorker = create;
+        this.ifcWorkerState$.next({ state: IFCStateEnum.loaded });
+    }
+
+    /**
      * Forgets every call still waiting for an answer, without settling them.
      */
     cleanPromisesMade(): void {
@@ -78,9 +94,11 @@ export class IFCWorkerManager {
         this.calls++;
         const uid = `ifc-call-${this.calls}`;
         return new Promise<T>((resolve, reject) => {
-            const worker = this.ifcWorker;
+            const worker = this.ifcWorker ?? this.workerFromFactory();
             if (!worker) {
-                reject(new KernelCallError(`${functionName}: no IFC worker was set up`, functionName, "input"));
+                reject(this.creationFailure === undefined
+                    ? new KernelCallError(`${functionName}: no IFC worker was set up`, functionName, "input")
+                    : new KernelCallError(`${functionName}: ${this.creationFailure}`, functionName, "kernel"));
                 return;
             }
             this.pending.set(uid, { functionName, resolve: (value: unknown) => resolve(value as T), reject });
@@ -100,7 +118,7 @@ export class IFCWorkerManager {
      * @returns Settles when the worker has answered
      */
     startedTheRun(): Promise<void> {
-        return this.genericCallToWorkerPromise("startedTheRun", {});
+        return this.waitingForFirstCall() ? Promise.resolve() : this.genericCallToWorkerPromise("startedTheRun", {});
     }
 
     /**
@@ -109,7 +127,27 @@ export class IFCWorkerManager {
      * @returns Settles when the worker has answered
      */
     cleanAllCache(): Promise<void> {
-        return this.genericCallToWorkerPromise("cleanAllCache", {});
+        return this.waitingForFirstCall() ? Promise.resolve() : this.genericCallToWorkerPromise("cleanAllCache", {});
+    }
+
+    private waitingForFirstCall(): boolean {
+        return this.ifcWorker === undefined && this.createWorker !== undefined;
+    }
+
+    private workerFromFactory(): Worker | IFCWorkerMock | undefined {
+        const create = this.createWorker;
+        if (create === undefined) {
+            return undefined;
+        }
+        this.createWorker = undefined;
+        try {
+            this.setIfcWorker(create());
+        } catch (error) {
+            this.creationFailure = `The IFC worker could not be created${error instanceof Error ? `: ${error.message}` : ""}`;
+            this.notifyError(this.creationFailure);
+            this.ifcWorkerState$.next({ state: IFCStateEnum.failed });
+        }
+        return this.ifcWorker;
     }
 
     private markStarted(): void {

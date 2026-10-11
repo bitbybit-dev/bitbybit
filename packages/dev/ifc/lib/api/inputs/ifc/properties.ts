@@ -1,6 +1,7 @@
 /**
  * One property of a property set: its name, its value and, when the value needs one, its IFC type.
- * Used by `properties.addSet` and `properties.setValues`.
+ * Used by `properties.addSet` and `properties.setValues`. A type outside `IfcValue`, or a value it
+ * cannot hold, is refused.
  */
 export class PropertyDto {
     constructor(name?: string, value?: string | number | boolean, type?: string) {
@@ -19,8 +20,8 @@ export class PropertyDto {
      */
     value!: string | number | boolean;
     /**
-     * The IFC type to write the value as, such as `IfcLengthMeasure`. Left out, it follows the value:
-     * a label, an integer, a real or a boolean.
+     * The IFC type of the value, any in IFC4's `IfcValue` select, such as `IfcText` or
+     * `IfcThermalTransmittanceMeasure`. Left out, a label, boolean, integer or real, as the value is.
      * @default undefined
      * @optional true
      */
@@ -185,6 +186,8 @@ export class ComputeQuantitiesDto<T> {
 }
 /**
  * A quantity set as `quantities.get` reads it back: its name and each quantity's value by name.
+ * Areas and volumes are in the model's area and volume units, square and cubic metres in a model
+ * `model.create` made.
  */
 export class QuantitySetInfoDto {
     /**

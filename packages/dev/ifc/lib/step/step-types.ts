@@ -152,6 +152,7 @@ export interface StepIndex {
     readonly rowEnd: Uint32Array;
     readonly header: readonly StepHeaderEntity[];
     readonly headerEnd: number;
+    readonly afterHeader: number;
     readonly sectionStarts: readonly number[];
 }
 

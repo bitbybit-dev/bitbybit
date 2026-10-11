@@ -818,6 +818,7 @@
     "toPolygonPoints"
   ],
   "ifc": [
+    "assemblies.add",
     "beams.add",
     "columns.add",
     "doors.add",
@@ -830,6 +831,7 @@
     "model.create",
     "model.element",
     "model.elements",
+    "model.georeference",
     "model.getAttribute",
     "model.globalIdOf",
     "model.move",

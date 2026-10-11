@@ -138,6 +138,6 @@ export function createRoof(tx: IfcTransaction, writer: EntityWriter, spec: RoofS
         });
     });
     relate(tx, writer, AGGREGATION, roof, parts);
-    associateNewMaterial(tx, writer, parts, layerSetUsage(writer, spec.layerSet, "AXIS3", "POSITIVE", 0));
+    associateNewMaterial(tx, writer, parts, layerSetUsage(writer, spec.layerSet, "AXIS3", "NEGATIVE", thickness));
     return roof;
 }

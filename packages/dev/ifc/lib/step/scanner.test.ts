@@ -59,7 +59,7 @@ describe("plainText", () => {
 
 function referencesIn(text: string): number[] {
     const bytes = bytesOf(text);
-    const into = new Int32Array(referenceCapacity(0, bytes.length));
+    const into = new Int32Array(referenceCapacity(bytes, 0, bytes.length));
     return Array.from(into.subarray(0, referencesInto(bytes, 0, bytes.length, into)));
 }
 
@@ -156,5 +156,16 @@ describe("firstStringIn", () => {
         // Assert
         expect(span && new TextDecoder().decode(named.subarray(span[0], span[1]))).toBe("abc");
         expect(firstStringIn(unnamed, 0, unnamed.length)).toBeUndefined();
+    });
+});
+
+describe("referenceCapacity", () => {
+    it("should bound a row's references by its hash signs, giving a list of numbers none", () => {
+        // Arrange
+        const points = bytesOf("((0.,0.,0.),(1.,2.,3.),(4.,5.,6.))");
+        const mixed = bytesOf("#9=IFCFOO(#1,(#22,#333),'#4 in a string');");
+
+        // Assert
+        expect([referenceCapacity(points, 0, points.length), referenceCapacity(mixed, 0, mixed.length), referenceCapacity(mixed, 3, 15)]).toEqual([0, 5, 2]);
     });
 });

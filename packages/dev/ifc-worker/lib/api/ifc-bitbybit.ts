@@ -14,6 +14,7 @@ import { IFCSite } from "./site";
 import { IFCColumns } from "./columns";
 import { IFCBeams } from "./beams";
 import { IFCMembers } from "./members";
+import { IFCAssemblies } from "./assemblies";
 import { IFCProperties } from "./properties";
 import { IFCQuantities } from "./quantities";
 import { IFCGeometry } from "./geometry";
@@ -22,7 +23,7 @@ import { IFCGeometry } from "./geometry";
  * The entry point to IFC, the open BIM exchange format: `model` creates, reads, writes and edits
  * models; `spatial`, `spaces`, `materials` and `site` add storeys, rooms, materials and the terrain;
  * `walls`, `openings`, `doors`, `windows`, `slabs`, `roofs`, `columns`, `beams` and `members` add
- * elements; `properties` attaches property sets, `quantities` measures, and `geometry` describes
+ * elements, `assemblies` groups them; `properties` attaches property sets, `quantities` measures, and `geometry` describes
  * elements as a recipe a kernel builds.
  *
  * A model is a value: every method that changes one returns a new model and leaves the one it was
@@ -45,6 +46,7 @@ export class IFCBitByBit {
     public readonly columns: IFCColumns;
     public readonly beams: IFCBeams;
     public readonly members: IFCMembers;
+    public readonly assemblies: IFCAssemblies;
     public readonly properties: IFCProperties;
     public readonly quantities: IFCQuantities;
     public readonly geometry: IFCGeometry;
@@ -66,6 +68,7 @@ export class IFCBitByBit {
         this.columns = new IFCColumns(ifcWorkerManager);
         this.beams = new IFCBeams(ifcWorkerManager);
         this.members = new IFCMembers(ifcWorkerManager);
+        this.assemblies = new IFCAssemblies(ifcWorkerManager);
         this.properties = new IFCProperties(ifcWorkerManager);
         this.quantities = new IFCQuantities(ifcWorkerManager);
         this.geometry = new IFCGeometry(ifcWorkerManager);

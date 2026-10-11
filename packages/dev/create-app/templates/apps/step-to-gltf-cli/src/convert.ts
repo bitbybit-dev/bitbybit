@@ -36,9 +36,9 @@ export function convertFile(occt: OCCTService, file: string, text: string, optio
     const faces = occt.shapes.face.getFaces({ shape }).length;
     const edges = occt.shapes.edge.getEdges({ shape }).length;
     const volume = occt.shapes.solid.getSolidsVolumes({ shapes: solids }).reduce((sum, v) => sum + v, 0);
-    const bbox = occt.operations.boundingBoxOfShape({ shape });
+    const bbox = occt.analysis.measure.tightBoundingBox({ shape });
     const glb = occt.io.convertStepToGltf({ stepData: text, meshPrecision: options.meshPrecision, meshAngle: 0.5, meshRelative: true, internalVerticesMode: false, controlSurfaceDeflection: false });
-    const stl = options.stl ? occt.io.saveShapeStl({ shape, fileName: file, precision: options.stlPrecision, adjustYtoZ: true, tryDownload: false, binary: false }) : null;
+    const stl = options.stl ? asciiStl(occt.io.saveShapeStl({ shape, fileName: file, precision: options.stlPrecision, adjustYtoZ: true, tryDownload: false, binary: false })) : null;
     return {
         glb,
         stl,
@@ -58,6 +58,11 @@ export function convertFile(occt: OCCTService, file: string, text: string, optio
 
 export function isGlb(bytes: Uint8Array): boolean {
     return bytes.byteLength > 12 && String.fromCharCode(...bytes.subarray(0, 4)) === GLB_MAGIC;
+}
+
+function asciiStl(stl: string | Uint8Array): string {
+    if (typeof stl !== "string") throw new Error("the kernel wrote a binary STL where an ASCII one was asked for");
+    return stl;
 }
 
 function round(value: number): number {

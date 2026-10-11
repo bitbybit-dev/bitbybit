@@ -206,9 +206,11 @@ export type OperationPath =
     | "manifold.crossSection.operations.decompose"
     | "manifold.crossSection.operations.extrude"
     | "manifold.crossSection.operations.hull"
+    | "manifold.crossSection.operations.loft"
     | "manifold.crossSection.operations.offset"
     | "manifold.crossSection.operations.revolve"
     | "manifold.crossSection.operations.simplify"
+    | "manifold.crossSection.operations.sweep"
     | "manifold.crossSection.shapes.circle"
     | "manifold.crossSection.shapes.create"
     | "manifold.crossSection.shapes.rectangle"
@@ -303,6 +305,8 @@ export type OperationPath =
     | "manifold.mesh.evaluate.verts"
     | "manifold.mesh.operations.merge"
     | "manifold.recipes.build"
+    | "manifold.recipes.meshes"
+    | "manifold.recipes.surfaceMeshes"
     | "manifold.toPolygonPoints"
     | "math.abs"
     | "math.acos"
@@ -564,6 +568,8 @@ export type OperationPath =
     | "occt.operations.splitShapeWithShapes"
     | "occt.operations.sweepEvolved"
     | "occt.path.shapeFromPath"
+    | "occt.recipes.build"
+    | "occt.recipes.buildDocument"
     | "occt.select.edges.along"
     | "occt.select.edges.between"
     | "occt.select.edges.byLength"
@@ -973,6 +979,7 @@ export type OperationPath =
     | "occtPro.sheetMetal.unfoldFaceToFlat"
     | "occtPro.sheetMetal.unfoldSolidReport"
     | "occtPro.sheetMetal.unfoldSolidToFlat"
+    | "point.arcThroughThreePoints"
     | "point.averagePoint"
     | "point.boundingBoxOfPoints"
     | "point.closestPointFromPoints"
@@ -1011,6 +1018,8 @@ export type OperationPath =
     | "polyline.getPoints"
     | "polyline.length"
     | "polyline.maxFilletsHalfLine"
+    | "polyline.polygonArea"
+    | "polyline.polygonNormal"
     | "polyline.polylineSelfIntersection"
     | "polyline.polylineToLines"
     | "polyline.polylineToSegments"
@@ -4030,6 +4039,26 @@ export interface OperationParams {
         crossSection: unknown | PipelineRef;
     };
     /**
+     * Joins cross-sections placed by frames into a solid, each section to the next by straight
+     * sides, closed at both ends: a taper from one outline to another, or one outline through many
+     * frames.
+     *
+     * Corner `i` of a section joins corner `i` of the next, so differing sections need matching loops;
+     * frames move the sections apart, mirroring all or none.
+     */
+    "manifold.crossSection.operations.loft": {
+        /**
+         * One cross-section, placed by every frame, or one for each frame. Cross-sections that differ
+         * need as many loops with as many corners each, as a moved or scaled copy has.
+         */
+        crossSections: unknown[] | PipelineRef;
+        /**
+         * Where each section stands, at least two: sixteen numbers in column-major order that place the
+         * cross-section's XY plane, with 0, 0, 0, 1 as the bottom row.
+         */
+        frames: unknown[] | PipelineRef;
+    };
+    /**
      * Moves the outline of a cross-section outward by `delta`, or inward for a negative delta, so
      * an outer contour grows and a hole shrinks.
      *
@@ -4088,6 +4117,31 @@ export interface OperationParams {
         crossSection: unknown | PipelineRef;
         /** Points closer than this, in model units, to the line between their neighbors are dropped. */
         epsilon?: number | PipelineRef;
+    };
+    /**
+     * Carries a cross-section along a path of points into a solid, square to the path at every
+     * point and turning with it without twisting, like a pipe, a rail or a cable.
+     *
+     * Sharp corners are mitred so the solid keeps its width; `cornerRadius` rounds them instead.
+     * `xDirection` sets where the profile's X axis points at the start.
+     */
+    "manifold.crossSection.operations.sweep": {
+        /** The profile to carry, drawn around the origin of its XY plane, which follows the path. */
+        crossSection: unknown | PipelineRef;
+        /** The points the path runs through, at least two. */
+        path: [number, number, number][] | PipelineRef;
+        /**
+         * How much the path's corners are rounded; 0 keeps them sharp, mitred so the solid keeps its
+         * width.
+         */
+        cornerRadius?: number | PipelineRef;
+        /** How many segments a whole turn of a rounded corner is divided into; more is rounder. */
+        circularSegments?: number | PipelineRef;
+        /**
+         * Where the profile's X axis points at the start of the path, turned square to it; left out,
+         * one is chosen. The profile then follows the path's turns without twisting.
+         */
+        xDirection?: [number, number, number] | PipelineRef;
     };
     /**
      * Creates a circular cross-section of the given radius, centered on the origin and drawn with
@@ -4201,14 +4255,19 @@ export interface OperationParams {
      * Turns a solid into plain mesh data, or a cross-section into its polygons, ready for drawing
      * or export.
      *
-     * `normalIdx` names the vertex property channel that holds normals, when the solid carries
-     * them.
+     * `normalIdx` names the channel holding normals the solid carries. With `minSharpAngle`, normals
+     * follow each position, smooth across flatter edges and split across sharper ones.
      */
     "manifold.decomposeManifoldOrCrossSection": {
         /** The solid or cross-section to turn into plain data. */
         manifoldOrCrossSection: unknown | PipelineRef;
         /** The property channel holding the normals of a solid, when it carries them. */
         normalIdx?: number | PipelineRef;
+        /**
+         * When given, a solid's mesh carries normals after its positions, and edges sharper than this,
+         * in degrees, keep a normal on each side; 0 shades every face flat.
+         */
+        minSharpAngle?: number | PipelineRef;
     };
     /**
      * Turns several solids into mesh data, or cross-sections into polygons, as
@@ -4221,6 +4280,11 @@ export interface OperationParams {
         manifoldsOrCrossSections: unknown[] | PipelineRef;
         /** One normal channel per shape, for the solids that carry normals. */
         normalIdx?: number[] | PipelineRef;
+        /**
+         * When given, each solid's mesh carries normals after its positions, and edges sharper than
+         * this, in degrees, keep a normal on each side; 0 shades every face flat.
+         */
+        minSharpAngle?: number | PipelineRef;
     };
     /**
      * Frees the memory a solid or a cross-section holds inside the kernel; the object cannot be
@@ -5053,9 +5117,9 @@ export interface OperationParams {
     /**
      * Builds each root of a recipe as a solid placed by its matrix, in root order.
      *
-     * A node several roots share is built once. An invalid recipe throws before anything is built;
-     * an open mesh or a root the kernel cannot build throws naming its node. Circles get
-     * `circularSegments` sides; `tolerance` and `millimetresPerUnit` are not applied.
+     * Shared nodes are built once. An invalid recipe throws before anything is built; a root the
+     * kernel cannot build, such as an open mesh, throws naming its node unless `emptyWhenFailed` is
+     * set. Circles get `circularSegments` sides; `tolerance` and `millimetresPerUnit` are not applied.
      */
     "manifold.recipes.build": {
         /**
@@ -5071,6 +5135,63 @@ export interface OperationParams {
         /**
          * When true, each solid turns a quarter turn about X so the recipe's Z points along Y, which is
          * up when drawn: `(x, y, z)` becomes `(x, z, -y)`.
+         */
+        adjustZtoY?: boolean | PipelineRef;
+        /**
+         * When true, a root that cannot be built, such as an open mesh, comes back empty, and an
+         * opening that cannot is left uncut; when false, both stop the build.
+         */
+        emptyWhenFailed?: boolean | PipelineRef;
+    };
+    /**
+     * Builds a recipe into the meshes its roots draw, each step several roots place meshed once in
+     * its own coordinates, and gives every root a placement: its mesh, its matrix and its tag.
+     *
+     * Turns and moves fold into the placements, so a door type placed a hundred times is one mesh;
+     * normals split at edges sharper than `minSharpAngle`.
+     */
+    "manifold.recipes.meshes": {
+        /**
+         * The recipe: steps such as polygons, extrusions and cuts, and the roots to draw from them, as
+         * a package that describes geometry as data writes it.
+         */
+        recipe: unknown | PipelineRef;
+        /** How many flat sides each circle of the recipe is divided into; more is rounder. */
+        circularSegments?: number | PipelineRef;
+        /**
+         * When true, every placement turns a quarter turn about X so the recipe's Z points along Y,
+         * which is up when drawn: `(x, y, z)` becomes `(x, z, -y)`.
+         */
+        adjustZtoY?: boolean | PipelineRef;
+        /**
+         * When true, a root that cannot be built draws as its surface if it is triangles alone, else
+         * draws nothing; when false, it stops the build.
+         */
+        emptyWhenFailed?: boolean | PipelineRef;
+        /** Edges sharper than this, in degrees, keep a normal on each side; 0 shades every face flat. */
+        minSharpAngle?: number | PipelineRef;
+    };
+    /**
+     * Gives the roots of a recipe made of triangle meshes alone as meshes, placed as `build` places
+     * its solids, without building anything.
+     *
+     * `build` gives an open mesh back empty, since it cannot be a solid; this gives it as the surface
+     * it is, its openings left uncut. A root holding any other step comes back as an empty mesh.
+     */
+    "manifold.recipes.surfaceMeshes": {
+        /**
+         * The recipe: steps such as polygons, extrusions and triangle meshes, and the roots to build
+         * from them, as a package that describes geometry as data writes it.
+         */
+        recipe: unknown | PipelineRef;
+        /**
+         * The positions of the roots to read, such as the ones `recipes.build` gave back empty; every
+         * root when left out.
+         */
+        roots?: number[] | PipelineRef;
+        /**
+         * When true, each mesh turns a quarter turn about X so the recipe's Z points along Y, as
+         * `recipes.build` turns its solids: `(x, y, z)` becomes `(x, z, -y)`.
          */
         adjustZtoY?: boolean | PipelineRef;
     };
@@ -8168,9 +8289,9 @@ export interface OperationParams {
     /**
      * Rounds the corners of a flat wire or face with arcs of a given radius.
      *
-     * Without `indexes` every corner is rounded with `radius`. With `indexes`, counted from 1 along
-     * the outline, only those corners are rounded, each with `radius` or the matching entry of
-     * `radiusList`, as long as `indexes`. Wires with free-form edges use `fillet3DWire`.
+     * Without `indexes` every corner is rounded with `radius`. With `indexes`, counted from 1, only
+     * those corners are rounded, each with `radius` or the matching entry of `radiusList`, as long
+     * as `indexes`. Straight corners stay; free-form wires use `fillet3DWire`.
      */
     "occt.fillets.fillet2d": {
         /** The shape whose edges, or whose corners for a flat wire or face, are rounded. */
@@ -9018,9 +9139,9 @@ export interface OperationParams {
      * Triangulates a shape, writes it as OBJ, the mesh format most 3D programs read, and starts a
      * browser download of the file.
      *
-     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up. The
-     * file name may hold no spaces or slashes; `tryDownload` false skips the download, and
-     * `saveShapeObjAndReturn` gives the text instead.
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape. The file name may hold no spaces or slashes; `tryDownload` false skips the
+     * download, and `saveShapeObjAndReturn` gives the text instead.
      */
     "occt.io.saveShapeObj": {
         /** The shape written to the file. */
@@ -9035,7 +9156,10 @@ export interface OperationParams {
          * and makes a bigger file.
          */
         precision?: number | PipelineRef;
-        /** When true, the shape is turned so this library's Y-up becomes Z-up. */
+        /**
+         * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
+         * turn it 90 degrees about X with `transforms.rotate` instead.
+         */
         adjustYtoZ?: boolean | PipelineRef;
         /**
          * When true, a browser download of the OBJ file and of any material library is started where
@@ -9047,9 +9171,9 @@ export interface OperationParams {
      * Triangulates a shape and writes it as OBJ, the mesh format most 3D programs read, returning
      * the file's text.
      *
-     * `precision` is the meshing tolerance in model units, `adjustYtoZ` turns Y-up into Z-up, and
-     * coordinates keep six decimals. `mtl` stays empty, since a shape carries no colors;
-     * `assembly.manager.exportDocumentToObj` writes colored parts.
+     * `precision` is the meshing tolerance in model units, `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape, and coordinates keep six decimals. `mtl` stays empty, since a shape
+     * carries no colors; `assembly.manager.exportDocumentToObj` writes colored parts.
      */
     "occt.io.saveShapeObjAndReturn": {
         /** The shape written to the file. */
@@ -9064,7 +9188,10 @@ export interface OperationParams {
          * and makes a bigger file.
          */
         precision?: number | PipelineRef;
-        /** When true, the shape is turned so this library's Y-up becomes Z-up. */
+        /**
+         * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
+         * turn it 90 degrees about X with `transforms.rotate` instead.
+         */
         adjustYtoZ?: boolean | PipelineRef;
         /**
          * When true, a browser download of the OBJ file and of any material library is started where
@@ -9076,9 +9203,9 @@ export interface OperationParams {
      * Triangulates a shape, writes it as ASCII PLY with a normal per vertex, and starts a browser
      * download of the file.
      *
-     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up.
-     * `fileName` names the download and `tryDownload` false skips it; `saveShapePlyAndReturn` gives
-     * the text instead.
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape. `fileName` names the download and `tryDownload` false skips it;
+     * `saveShapePlyAndReturn` gives the text instead.
      */
     "occt.io.saveShapePly": {
         /** The shape written to the file. */
@@ -9090,7 +9217,10 @@ export interface OperationParams {
          * and makes a bigger file.
          */
         precision?: number | PipelineRef;
-        /** When true, the shape is turned so this library's Y-up becomes Z-up. */
+        /**
+         * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
+         * turn it 90 degrees about X with `transforms.rotate` instead.
+         */
         adjustYtoZ?: boolean | PipelineRef;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
@@ -9103,7 +9233,8 @@ export interface OperationParams {
      * scanning tools read, returning the file's text.
      *
      * Coordinates keep six significant digits, so past 1000 units they keep two decimals.
-     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up.
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape.
      */
     "occt.io.saveShapePlyAndReturn": {
         /** The shape written to the file. */
@@ -9115,7 +9246,10 @@ export interface OperationParams {
          * and makes a bigger file.
          */
         precision?: number | PipelineRef;
-        /** When true, the shape is turned so this library's Y-up becomes Z-up. */
+        /**
+         * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
+         * turn it 90 degrees about X with `transforms.rotate` instead.
+         */
         adjustYtoZ?: boolean | PipelineRef;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
@@ -9127,20 +9261,23 @@ export interface OperationParams {
      * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and starts a
      * browser download of the file.
      *
-     * With `adjustYtoZ` true the shape is turned so this library's Y-up becomes STEP's Z-up;
-     * `fromRightHanded` skips the mirror that swap otherwise includes. `fileName` names the download
-     * and `tryDownload` false skips it. `saveShapeSTEPAndReturn` gives the file's text instead.
+     * With `adjustYtoZ` true, Y and Z swap, which mirrors the shape; to keep it as built, turn it 90
+     * degrees about X with `transforms.rotate` first. `fileName` names the download, `tryDownload`
+     * false skips it, and `saveShapeSTEPAndReturn` gives the text instead.
      */
     "occt.io.saveShapeSTEP": {
         /** The shape written to the file. */
         shape: unknown | PipelineRef;
         /** The name the downloaded file gets; `.step` is appended when missing. */
         fileName?: string | PipelineRef;
-        /** When true, the shape is turned so this library's Y-up becomes STEP's Z-up. */
+        /**
+         * When true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape. To keep it as
+         * built, turn it 90 degrees about X with `transforms.rotate` instead.
+         */
         adjustYtoZ?: boolean | PipelineRef;
         /**
-         * When true, the axis swap skips its mirror step, for shapes that were built in a right-handed
-         * system.
+         * When true, the swap of `adjustYtoZ` becomes a turn of -90 degrees about X: the shape is not
+         * mirrored but stands upside down in a Z-up tool.
          */
         fromRightHanded?: boolean | PipelineRef;
         /**
@@ -9153,20 +9290,23 @@ export interface OperationParams {
      * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and returns the
      * file's text.
      *
-     * With `adjustYtoZ` true the shape is turned so this library's Y-up becomes STEP's Z-up;
-     * `fromRightHanded` skips the mirror that swap otherwise includes. `fileName` and `tryDownload`
-     * matter only where a browser download can be started.
+     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape;
+     * turn it 90 degrees about X with `transforms.rotate` first to keep it as built. `fileName` and
+     * `tryDownload` matter only where a browser download can be started.
      */
     "occt.io.saveShapeSTEPAndReturn": {
         /** The shape written to the file. */
         shape: unknown | PipelineRef;
         /** The name the downloaded file gets; `.step` is appended when missing. */
         fileName?: string | PipelineRef;
-        /** When true, the shape is turned so this library's Y-up becomes STEP's Z-up. */
+        /**
+         * When true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape. To keep it as
+         * built, turn it 90 degrees about X with `transforms.rotate` instead.
+         */
         adjustYtoZ?: boolean | PipelineRef;
         /**
-         * When true, the axis swap skips its mirror step, for shapes that were built in a right-handed
-         * system.
+         * When true, the swap of `adjustYtoZ` becomes a turn of -90 degrees about X: the shape is not
+         * mirrored but stands upside down in a Z-up tool.
          */
         fromRightHanded?: boolean | PipelineRef;
         /**
@@ -9179,9 +9319,9 @@ export interface OperationParams {
      * Triangulates a shape, writes it as STL, the mesh format 3D printers read, and starts a browser
      * download of the file.
      *
-     * `precision` is the meshing tolerance in model units, `adjustYtoZ` turns Y-up into Z-up and
-     * `binary` writes the smaller binary form. `fileName` names the download, `tryDownload` false
-     * skips it. `saveShapeStlAndReturn` gives the file instead.
+     * `precision` is the meshing tolerance in model units, `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape, and `binary` writes the smaller binary form. `fileName` names the
+     * download, `tryDownload` false skips it. `saveShapeStlAndReturn` gives the file instead.
      */
     "occt.io.saveShapeStl": {
         /** The shape written to the file. */
@@ -9193,7 +9333,10 @@ export interface OperationParams {
          * and makes a bigger file.
          */
         precision?: number | PipelineRef;
-        /** When true, the shape is turned so this library's Y-up becomes Z-up. */
+        /**
+         * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
+         * turn it 90 degrees about X with `transforms.rotate` instead.
+         */
         adjustYtoZ?: boolean | PipelineRef;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
@@ -9211,8 +9354,8 @@ export interface OperationParams {
      * returning the file's text, or its bytes when `binary` is true.
      *
      * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
-     * more closely. `adjustYtoZ` turns Y-up into Z-up. `fileName` and `tryDownload` only matter
-     * where a download can start.
+     * more closely. `adjustYtoZ` swaps Y and Z, which mirrors the shape. `fileName` and
+     * `tryDownload` matter only for a download.
      */
     "occt.io.saveShapeStlAndReturn": {
         /** The shape written to the file. */
@@ -9224,7 +9367,10 @@ export interface OperationParams {
          * and makes a bigger file.
          */
         precision?: number | PipelineRef;
-        /** When true, the shape is turned so this library's Y-up becomes Z-up. */
+        /**
+         * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
+         * turn it 90 degrees about X with `transforms.rotate` instead.
+         */
         adjustYtoZ?: boolean | PipelineRef;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
@@ -10200,6 +10346,76 @@ export interface OperationParams {
         flipY?: boolean | PipelineRef;
         /** The point the scaled and flipped drawing is moved to. */
         origin?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Builds each root of a recipe as a shape placed by its matrix, in root order.
+     *
+     * Shared steps are built once. A mesh keeps its triangles unless `facetedMeshes` is set or a
+     * boolean needs it. A root that failed, or whose opening failed, throws naming the step; with
+     * `emptyWhenFailed` it comes back empty, or cut by the openings built.
+     */
+    "occt.recipes.build": {
+        /**
+         * The recipe: steps such as polygons, extrusions and cuts, and the roots to build from them, as
+         * a package that describes geometry as data writes it.
+         */
+        recipe: unknown | PipelineRef;
+        /**
+         * When true, each shape turns a quarter turn about X so the recipe's Z points along Y, which is
+         * up when drawn: `(x, y, z)` becomes `(x, z, -y)`.
+         */
+        adjustZtoY?: boolean | PipelineRef;
+        /**
+         * When true, a root that cannot be built comes back as an empty compound and an opening that
+         * cannot is left uncut; when false, either stops the build.
+         */
+        emptyWhenFailed?: boolean | PipelineRef;
+        /**
+         * When true, triangle meshes become faceted solids, flat faces that cut and fillet like any
+         * shape; when false they keep their triangles, which draw, measure and export to STEP faster.
+         */
+        facetedMeshes?: boolean | PipelineRef;
+        /**
+         * The most triangles a mesh built as a faceted solid may hold; a larger one is not built and
+         * counts as a step that failed.
+         */
+        maxTriangles?: number | PipelineRef;
+    };
+    /**
+     * Builds the roots of a recipe into an assembly document, ready to export to STEP.
+     *
+     * Roots sharing the `groupBy` tag form one product named by its `name` tag, with its tags as
+     * properties and its parts coloured by `rgba`. A step only moved and turned is one part placed
+     * by each root. Failures are handled as in `build`.
+     */
+    "occt.recipes.buildDocument": {
+        /**
+         * The recipe: steps such as polygons, extrusions and cuts, and the roots to build from them, as
+         * a package that describes geometry as data writes it.
+         */
+        recipe: unknown | PipelineRef;
+        /** The name of the assembly at the top of the document, which holds every product. */
+        name?: string | PipelineRef;
+        /**
+         * The tag whose value gathers roots into one product, such as the pieces of one element in
+         * different colours. Roots without it are each a product of their own.
+         */
+        groupBy?: string | PipelineRef;
+        /**
+         * When true, a root that cannot be built is left out of the document and an opening that cannot
+         * is left uncut; when false, either stops the build.
+         */
+        emptyWhenFailed?: boolean | PipelineRef;
+        /**
+         * When true, triangle meshes become faceted solids, flat faces that cut and fillet like any
+         * shape; when false they keep their triangles, which draw, measure and export to STEP faster.
+         */
+        facetedMeshes?: boolean | PipelineRef;
+        /**
+         * The most triangles a mesh built as a faceted solid may hold; a larger one is not built and
+         * counts as a step that failed.
+         */
+        maxTriangles?: number | PipelineRef;
     };
     /**
      * Chooses the straight edges that run within `angle` degrees of `direction`, either way along
@@ -13395,8 +13611,11 @@ export interface OperationParams {
         otherShape: unknown | PipelineRef;
     };
     /**
-     * Returns the shape as it is; the internal-edge purge is not applied in this version, so the
-     * result is the input.
+     * Removes the edges that lie inside a face without bounding it, such as the segment a split
+     * leaves on a face, and rebuilds the faces around them.
+     *
+     * An edge that bounds any face of the shape stays, and a shape with nothing to remove comes
+     * back as it was.
      */
     "occt.shapes.shape.purgeInternalEdges": {
         /** The shape to work on; it is not changed. */
@@ -13888,11 +14107,11 @@ export interface OperationParams {
         extrusionLengthBack?: number | PipelineRef;
     };
     /**
-     * Collects diagnostic facts about a solid: whether it is valid, how many faces and edges it
-     * has, its surface area and volume, and for every face the surface type, degrees, control point
-     * counts, bounds and area.
+     * Collects diagnostic facts about a solid: how many faces and edges it has, its surface area and
+     * volume, and for every face the surface type, degrees, control point counts, bounds and area.
      *
-     * An empty or null shape gives a report marked invalid with zero counts.
+     * `valid` is false only for an empty or null shape, which gives zero counts; it does not check
+     * the geometry, which `shapeFix.isValid` does.
      */
     "occt.shapes.solid.debugInfo": {
         /** The shape to work on; it is not changed. */
@@ -15182,13 +15401,19 @@ export interface OperationParams {
          * cusps and overshoot with uneven points, or `uniform`.
          */
         parametrization?: "uniform" | "chordLength" | "centripetal" | PipelineRef;
-        /** A direction the curve must leave the first point in; only for open curves. */
+        /**
+         * A direction the curve must leave the first point in, for open curves and with `endTangent` only.
+         * Shorter than `tolerance`, such as `[0, 0, 0]`, it counts as not given.
+         */
         startTangent?: [number, number, number] | PipelineRef;
-        /** A direction the curve must arrive at the last point in; only for open curves. */
+        /**
+         * A direction the curve must arrive at the last point in; only for open curves, and only together
+         * with `startTangent`. A tangent shorter than `tolerance` counts as not given.
+         */
         endTangent?: [number, number, number] | PipelineRef;
         /**
-         * One direction per point that the curve must follow there, with undefined entries left free;
-         * when given, the start and end tangents are ignored.
+         * One direction per point that the curve must follow there, with undefined entries, and entries
+         * shorter than `tolerance`, left free; when given, the start and end tangents are ignored.
          */
         tangents?: [number, number, number][] | PipelineRef;
     };
@@ -16782,6 +17007,24 @@ export interface OperationParams {
         thicknessOverride?: number | PipelineRef;
     };
     /**
+     * Lays out points along the circular arc through three points, from the first through the
+     * second to the third.
+     *
+     * The arc is divided into `segments` equal steps between the given ends. Points on one line fix
+     * no arc and come back as they are.
+     * Example: [1,0,0], [0,1,0] and [-1,0,0] in 2 segments -> [[1,0,0], [0,1,0], [-1,0,0]]
+     */
+    "point.arcThroughThreePoints": {
+        /** Where the arc starts. */
+        start: [number, number, number] | PipelineRef;
+        /** A point the arc passes through on its way, which decides the side it bulges to. */
+        middle: [number, number, number] | PipelineRef;
+        /** Where the arc ends. */
+        end: [number, number, number] | PipelineRef;
+        /** How many equal steps the arc is divided into; more steps follow the circle more closely. */
+        segments?: number | PipelineRef;
+    };
+    /**
      * Finds the average of the points, which is their center of mass when they weigh the same.
      *
      * Example: [[0,0,0], [10,0,0], [10,10,0]] -> [6.67,3.33,0]
@@ -17343,6 +17586,28 @@ export interface OperationParams {
         polyline: unknown | PipelineRef;
         /** Distance, in model units, below which two points count as the same. */
         tolerance?: number | PipelineRef;
+    };
+    /**
+     * Measures the area a polyline encloses, read as a closed outline in its own plane.
+     *
+     * The polyline need not repeat its first point at its end. An outline that is not quite flat
+     * gives the area of its outline seen along its normal.
+     * Example: [[0,0,0], [4,0,0], [4,4,0], [0,4,0]] -> 16
+     */
+    "polyline.polygonArea": {
+        /** The polyline object with its points. */
+        polyline: unknown | PipelineRef;
+    };
+    /**
+     * Finds the unit normal of the plane a polyline encloses, read as a closed outline.
+     *
+     * Newell's method makes it hold for an outline that is not convex or not quite flat. It points
+     * the way the outline turns by the right-hand rule; an outline with no area gives undefined.
+     * Example: [[0,0,0], [4,0,0], [4,4,0], [0,4,0]] -> [0, 0, 1]
+     */
+    "polyline.polygonNormal": {
+        /** The polyline object with its points. */
+        polyline: unknown | PipelineRef;
     };
     /**
      * Finds the points where the polyline crosses itself.

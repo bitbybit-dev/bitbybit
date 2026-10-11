@@ -1,11 +1,12 @@
-import { READ_THROUGH_SCHEMAS, SUPPORTED_SCHEMAS, readingSchemaFor, schemaNamed } from "../schema/registry";
+import { isZip, zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/services/helpers/zip";
+import { describeSupportedSchemas, readingSchemaFor, schemaNamed } from "../schema/registry";
 import { StepSyntaxError } from "../step/errors";
 import { encoderFor } from "../step/encoder";
 import { indexStep } from "../step/file-index";
 import { encodeHeader, headerFromEntities, otherHeaderEntities } from "../step/header";
 import { textOf } from "../step/scanner";
 import type { IfcFileHeader } from "../step/step-types";
-import { CARRIAGE_RETURN, LINE_BREAK, LINE_FEED, LONGEST_STRING, TEXT_PER_CHUNK, WINDOWS_LINE_BREAK } from "./constants";
+import { ARCHIVE_RESOURCE_FOLDER, CARRIAGE_RETURN, IFC_EXTENSION, LINE_BREAK, LINE_FEED, LONGEST_STRING, TEXT_PER_CHUNK, WINDOWS_LINE_BREAK } from "./constants";
 import { IdMap } from "./id-map";
 import type { FilePart } from "./model-types";
 import { ModelSnapshot } from "./snapshot";
@@ -14,11 +15,22 @@ import { IfcSource } from "./source";
 const encoder = new TextEncoder();
 const FILE_SCHEMA = "FILE_SCHEMA";
 
+function ifcInArchive(archive: Uint8Array): Uint8Array {
+    const files = zipEntries(archive).filter((entry) => !entry.name.endsWith("/") && !entry.name.startsWith(ARCHIVE_RESOURCE_FOLDER));
+    const models = files.filter((entry) => entry.name.toLowerCase().endsWith(IFC_EXTENSION));
+    if (models.length !== 1) {
+        const held = (models.length ? models : files).map((entry) => entry.name).join(", ");
+        throw new StepSyntaxError(models.length ? `The .ifczip archive holds ${models.length} .ifc files (${held}), not one` : `The .ifczip archive holds no .ifc file${held ? `, only ${held}` : ""}`, 0);
+    }
+    return zipEntryData(archive, models[0]!);
+}
+
 function bytesOf(input: Uint8Array | ArrayBuffer | string): Uint8Array {
     if (typeof input === "string") {
         return encoder.encode(input);
     }
-    return input instanceof Uint8Array ? input : new Uint8Array(input);
+    const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+    return isZip(bytes) ? ifcInArchive(bytes) : bytes;
 }
 
 export function readModel(input: Uint8Array | ArrayBuffer | string): ModelSnapshot {
@@ -31,7 +43,7 @@ export function readModel(input: Uint8Array | ArrayBuffer | string): ModelSnapsh
     }
     const schema = readingSchemaFor(schemaName);
     if (schema === undefined) {
-        throw new StepSyntaxError(`The file's schema ${schemaName} is not supported; supported: ${SUPPORTED_SCHEMAS.join(", ")}, and ${READ_THROUGH_SCHEMAS.join(", ")} read through ${SUPPORTED_SCHEMAS.join(", ")}`, named);
+        throw new StepSyntaxError(`The file's schema ${schemaName} is not supported; supported: ${describeSupportedSchemas()}`, named);
     }
     const source = new IfcSource(index, schema);
     return new ModelSnapshot({ schema, header, headerExtras: otherHeaderEntities(index.header), source, overlay: IdMap.empty(), nextId: source.maxId + 1, seededIds: false });
@@ -90,11 +102,14 @@ function partsOf(model: ModelSnapshot, header: IfcFileHeader): FilePart[] {
     const lineBreak = source ? lineBreakOf(source.index.bytes) : LINE_BREAK;
     const rows = rowsOf(model);
     const sameHeader = source !== undefined && JSON.stringify(header) === JSON.stringify(headerFromEntities(source.index.header));
-    const head: FilePart = index && sameHeader
-        ? index.bytes.subarray(0, index.rowStart[0])
-        : `${encodeHeader(header, model.headerExtras).split(LINE_BREAK).join(lineBreak)}${lineBreak}DATA;${lineBreak}`;
+    const encodedHeader = (): string => encodeHeader(header, model.headerExtras).split(LINE_BREAK).join(lineBreak);
+    const head: FilePart[] = !index
+        ? [`${encodedHeader()}${lineBreak}DATA;${lineBreak}`]
+        : sameHeader
+            ? [index.bytes.subarray(0, index.rowStart[0])]
+            : [encodedHeader(), index.bytes.subarray(index.afterHeader, index.rowStart[0])];
     const tail: FilePart = index ? index.bytes.subarray(index.rowEnd[index.count - 1]) : `${rows.length ? lineBreak : ""}ENDSEC;${lineBreak}END-ISO-10303-21;${lineBreak}`;
-    return [head, ...rows.flatMap((row, at) => (at === 0 ? [row] : [lineBreak, row])), tail];
+    return [...head, ...rows.flatMap((row, at) => (at === 0 ? [row] : [lineBreak, row])), tail];
 }
 
 export function writeModel(model: ModelSnapshot, header: IfcFileHeader = model.header, longest: number = LONGEST_STRING): string {

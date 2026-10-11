@@ -55,7 +55,7 @@ export class IFCGeometry {
      * problems.forEach((problem) => console.log(problem.type, problem.message));
      * ```
      */
-    unsupported(inputs: Inputs.IFC.GeometryDto<Inputs.IFC.IfcModelPointer>): Promise<Inputs.IFC.GeometryProblemDto[]> {
+    unsupported(inputs: Inputs.IFC.GeometryElementsDto<Inputs.IFC.IfcModelPointer>): Promise<Inputs.IFC.GeometryProblemDto[]> {
         return this.ifcWorkerManager.genericCallToWorkerPromise("geometry.unsupported", inputs);
     }
 }

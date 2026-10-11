@@ -72,7 +72,7 @@ export function definitionsOf(reader: ModelReader, object: number): number[] {
         return referencesOf(reader.attribute(object, "HasPropertySets"));
     }
     return reader.referencesTo(object)
-        .filter((user) => reader.get(user)?.type === PROPERTY_DEFINITION.relationship && referencesOf(reader.attribute(user, PROPERTY_DEFINITION.related)).includes(object))
+        .filter((user) => reader.typeOf(user) === PROPERTY_DEFINITION.relationship && referencesOf(reader.attribute(user, PROPERTY_DEFINITION.related)).includes(object))
         .flatMap((user) => referencesOf(reader.attribute(user, PROPERTY_DEFINITION.relating)));
 }
 
@@ -120,7 +120,7 @@ function namedSet(reader: ModelReader, object: number, name: string): number {
 
 function holdersOf(reader: ModelReader, set: number): number {
     return reader.referencesTo(set).reduce((count, user) => {
-        if (reader.get(user)?.type === PROPERTY_DEFINITION.relationship) {
+        if (reader.typeOf(user) === PROPERTY_DEFINITION.relationship) {
             return count + referencesOf(reader.attribute(user, PROPERTY_DEFINITION.related)).length;
         }
         return count + (isType(reader, user) ? 1 : 0);
@@ -134,7 +134,7 @@ function detachSet(tx: IfcTransaction, writer: EntityWriter, object: number, set
         return;
     }
     for (const user of tx.referencesTo(set)) {
-        const related = tx.get(user)?.type === PROPERTY_DEFINITION.relationship ? referencesOf(tx.attribute(user, PROPERTY_DEFINITION.related)) : [];
+        const related = tx.typeOf(user) === PROPERTY_DEFINITION.relationship ? referencesOf(tx.attribute(user, PROPERTY_DEFINITION.related)) : [];
         if (!related.includes(object)) {
             continue;
         }

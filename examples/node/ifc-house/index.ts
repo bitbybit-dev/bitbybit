@@ -2,8 +2,10 @@ import { writeFileSync } from "node:fs";
 import { Base, IFC, IFCService } from "@bitbybit-dev/ifc";
 
 const FOOTPRINT: Base.Point2[] = [[0, 0], [10000, 0], [10000, 8000], [0, 8000]];
+const INSIDE: Base.Point2[] = [[250, 250], [9750, 250], [9750, 7750], [250, 7750]];
 const STOREY_HEIGHT = 3000;
 const GABLE_WALL_HEIGHT = 6500;
+const EAVES_WALL_HEIGHT = 3400;
 const STOREYS = ["ground", "first"];
 
 const ifc = new IFCService();
@@ -23,18 +25,17 @@ model = ifc.windows.addType({ model, id: "window", name: "Window 1200", width: 1
 
 for (const storey of STOREYS) {
     for (let i = 0; i < FOOTPRINT.length; i++) {
-        const shortSide = i % 2 === 1;
-        const gable = storey === "first" && shortSide;
+        const underRoof = i % 2 === 1 ? GABLE_WALL_HEIGHT : EAVES_WALL_HEIGHT;
         model = ifc.walls.add({
             model, storey, id: `${storey}-wall-${i}`, name: `Wall ${i + 1}`,
             start: FOOTPRINT[i], end: FOOTPRINT[(i + 1) % FOOTPRINT.length],
-            height: gable ? GABLE_WALL_HEIGHT : STOREY_HEIGHT, layerSet: "Exterior wall", alignment: IFC.wallAlignmentEnum.left,
+            height: storey === "first" ? underRoof : STOREY_HEIGHT, layerSet: "Exterior wall", alignment: IFC.wallAlignmentEnum.left,
         });
     }
     for (let i = 0; i < FOOTPRINT.length; i++) {
         model = ifc.walls.connect({ model, wall: `${storey}-wall-${i}`, other: `${storey}-wall-${(i + 1) % FOOTPRINT.length}` });
     }
-    model = ifc.slabs.add({ model, storey, id: `${storey}-floor`, name: "Floor", outline: FOOTPRINT, layerSet: "Floor" });
+    model = ifc.slabs.add({ model, storey, id: `${storey}-floor`, name: "Floor", outline: storey === "ground" ? FOOTPRINT : INSIDE, layerSet: "Floor" });
     for (const [wall, offset] of [[0, 2000], [0, 6800], [2, 3000], [1, 3400]] as const) {
         model = ifc.windows.add({ model, wall: `${storey}-wall-${wall}`, windowType: "window", offset });
     }

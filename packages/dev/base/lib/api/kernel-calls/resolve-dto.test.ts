@@ -134,6 +134,24 @@ describe("resolveDto", () => {
         expect(resolved).toEqual({ shape: null, width: 1, center: [0, 0, 0], tag: null, extra: null });
     });
 
+    it("should leave out an empty text on a property with no default, since an empty text means not set", () => {
+        // Act
+        const resolved = resolveDto(BoxDto, { tag: "", extra: "" });
+
+        // Assert
+        expect(resolved).toEqual({ width: 1, center: [0, 0, 0] });
+        expect(Object.prototype.hasOwnProperty.call(resolved, "tag")).toBe(false);
+    });
+
+    it("should keep an empty text a caller put in place of a default, and a text of spaces anywhere", () => {
+        // Act
+        const resolved = resolveDto(BoxDto, { tag: " ", label: { text: "" } }, { label: LabelDto });
+
+        // Assert
+        expect(resolved.tag).toBe(" ");
+        expect(resolved.label).toEqual({ text: "", size: 12 });
+    });
+
     it("should give a property of a nested DTO the caller set to null its default", () => {
         // Act
         const resolved = resolveDto(BoxDto, { label: { text: null } }, { label: LabelDto });

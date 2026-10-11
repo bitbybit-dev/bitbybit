@@ -2,7 +2,7 @@
 
 - `src/model.ts` is the geometry. `buildModel(occt, params)` builds the OCCT shape from `ModelParams` and returns it. It knows nothing about rendering, and every kernel call is awaited, so the same function runs in the browser (through the OCCT worker, whose calls return promises) and in Node (in-process, whose calls return values). Put new geometry here, and new parameters in `ModelParams` with a default in `defaultParams`.
 - `src/main.ts` is the wiring: it starts the Three.js scene, initialises Bitbybit, calls `buildModel` and draws the result. The Manifold and JSCAD demonstrations live here as well. Keep geometry out of this file.
-- `scripts/smoke.ts` loads the OCCT kernel in Node, runs `buildModel` with `defaultParams` and prints one JSON line with the field names `template`, `params`, `valid`, `faces`, `edges`, `volume`, `area` and `bbox`. It exits 1 when the shape is not a valid solid or has no volume. Add an assertion here when a change to the model has a fact worth pinning, such as a face count or a bounding box.
+- `scripts/smoke.ts` loads the OCCT kernel in Node, runs `buildModel` with `defaultParams` and prints one JSON line with the field names `template`, `params`, `valid`, `faces`, `edges`, `volume`, `area` and `bbox`, the box that just holds the exact geometry (`analysis.measure.tightBoundingBox`). It exits 1 when `shapeFix.isValid` finds the shape malformed or it has no volume; `debugInfo`'s own `valid` only says the shape is not empty. Add an assertion here when a change to the model has a fact worth pinning, such as a face count or a bounding box.
 
 Commands:
 
