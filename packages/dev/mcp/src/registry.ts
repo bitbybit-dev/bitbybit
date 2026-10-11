@@ -47,7 +47,9 @@ export class Registry<TContext> {
     private readonly tools = new Map<string, AnyToolDefinition<TContext>>();
 
     register<TInput extends ToolInput>(definition: ToolDefinition<TInput, TContext>): this {
-        if (this.tools.has(definition.name)) throw new Error(`Tool ${definition.name} is already registered`);
+        if (this.tools.has(definition.name)) {
+            throw new Error(`Tool ${definition.name} is already registered`);
+        }
         const { handler } = definition;
         const erased: AnyToolDefinition<TContext> = handler
             ? { ...definition, handler: (args, context) => handler(args as z.output<TInput>, context) }
@@ -82,7 +84,9 @@ const JSON_SCHEMAS = new WeakMap<ToolInput, Record<string, unknown>>();
 
 export function inputJsonSchema(input: ToolInput): Record<string, unknown> {
     const known = JSON_SCHEMAS.get(input);
-    if (known) return known;
+    if (known) {
+        return known;
+    }
     const rendered = inlineJsonSchemaReferences(z.toJSONSchema(input, { target: "draft-2020-12", io: "input" }));
     JSON_SCHEMAS.set(input, rendered);
     return rendered;
@@ -120,7 +124,9 @@ export function toHttp<TContext>(
     const tools: HttpTool[] = [];
     for (const definition of registry.list()) {
         const { handler } = definition;
-        if (!handler || (filter && !filter(definition))) continue;
+        if (!handler || (filter && !filter(definition))) {
+            continue;
+        }
         tools.push({
             name: definition.name,
             description: definition.description,

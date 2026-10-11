@@ -1,6 +1,6 @@
 import * as Inputs from "../../../inputs";
 import { DxfGenerator } from "./dxf-generator";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 import { resolveDto } from "../../../kernel-calls";
 
 export class Dxf {

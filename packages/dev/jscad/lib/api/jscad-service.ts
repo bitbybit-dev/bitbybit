@@ -9,11 +9,11 @@ import { JSCADPolygon } from "./services/jscad-polygon";
 import { JSCADShapes } from "./services/jscad-shapes";
 import { JSCADText } from "./services/jscad-text";
 import * as Inputs from "./inputs/jscad-inputs";
-import { Base } from "./inputs/base-inputs";
+import type { Base } from "./inputs/base-inputs";
 import { JSCADHulls } from "./services/jscad-hulls";
 import { JSCADColors } from "./services/jscad-colors";
-import * as JSCAD from "@jscad/modeling";
-import * as Resolved from "./resolved-inputs";
+import type * as JSCAD from "@jscad/modeling";
+import type * as Resolved from "./resolved-inputs";
 
 type JscadSerializer = { serialize: (options: object, ...objects: unknown[]) => BlobPart[] };
 type JscadWithSerializers = typeof JSCAD & {
@@ -353,21 +353,11 @@ export class Jscad {
         return { blob: madeBlob };
     }
 
-    /**
-     * JSCAD v1 handed back objects that carried their own `toPolygons()`; a v2 geometry is plain
-     * data and the equivalent is a free function. Anything still arriving in the old shape is read
-     * the old way, which is why this asks the value rather than trusting the type.
-     */
     private legacyPolygons(entity: Inputs.JSCAD.JSCADEntity): (() => Inputs.JSCAD.JSCADPoly3[]) | undefined {
         const candidate = (entity as { toPolygons?: unknown }).toPolygons;
         return typeof candidate === "function" ? (candidate as () => Inputs.JSCAD.JSCADPoly3[]).bind(entity) : undefined;
     }
 
-    /**
-     * Narrows an entity to the solid an operation needs, and says which operation wanted one. The
-     * kernel's own failure for a 2D shape here is a property access on undefined, several frames
-     * deep, which tells a script author nothing.
-     */
     private asSolid(entity: Inputs.JSCAD.JSCADEntity, operation: string): Inputs.JSCAD.JSCADGeom3 {
         if (!("polygons" in entity)) {
             throw new Error(`${operation} needs a 3D solid, but was given a 2D geometry or a path.`);

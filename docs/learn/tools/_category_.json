@@ -1,0 +1,10 @@
+{
+    "label": "Tools",
+    "position": 14,
+    "link": {
+        "type": "generated-index",
+        "title": "Tools on bitbybit.dev",
+        "description": "Two tools on bitbybit.dev for files that come from elsewhere: the converter turns STEP models into glTF in your browser, and the 3D inspector opens glTF, GLB and STL files to see what is inside them. Both are part of the Silver and Gold plans, and neither sends your files anywhere.",
+        "slug": "/tools"
+    }
+}

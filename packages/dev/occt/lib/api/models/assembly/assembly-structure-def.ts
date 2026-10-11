@@ -1,7 +1,7 @@
-import { AssemblyPartDef }  from "./assembly-part-def";
-import { AssemblyNodeDef }  from "./assembly-node-def";
-import { AssemblyPartUpdateDef } from "./assembly-part-update-def";
-import { AssemblyLoadedPartDef } from "./assembly-loaded-part-def";
+import type { AssemblyPartDef }  from "./assembly-part-def";
+import type { AssemblyNodeDef }  from "./assembly-node-def";
+import type { AssemblyPartUpdateDef } from "./assembly-part-update-def";
+import type { AssemblyLoadedPartDef } from "./assembly-loaded-part-def";
 
 /**
  * Complete assembly structure definition.
@@ -42,6 +42,12 @@ export interface AssemblyStructureDef<T> {
      * place it multiple times with different transforms.
      */
     loadedParts?: AssemblyLoadedPartDef[] | undefined;
+    /**
+     * The length unit the shapes' numbers are in, which the STEP export writes into the file. Left
+     * out, a new document states none and the STEP export takes millimetres; an existing document
+     * keeps its own.
+     */
+    lengthUnit?: "mm" | "cm" | "m" | "in" | undefined;
     /**
      * Whether to clear the existing document before adding new content.
      * Only relevant when an existingDocument is provided.

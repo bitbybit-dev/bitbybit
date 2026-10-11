@@ -1,8 +1,9 @@
-import { KernelCallError, KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
+import type { KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
+import { KernelCallError } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
-import { JscadInfo } from "./jscad-info";
+import type { JscadInfo } from "./jscad-info";
 import { JscadStateEnum } from "./jscad-state.enum";
-import { JSCADWorkerMock } from "./jscad-worker-mock";
+import type { JSCADWorkerMock } from "./jscad-worker-mock";
 
 type WorkerResponse = "jscad-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
 type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };

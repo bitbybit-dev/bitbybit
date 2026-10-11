@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
@@ -320,12 +321,46 @@ describe("OCCT shape unit tests", () => {
         cube.delete();
     });
 
-    it("should not purge internal edges for the shape if there are any and return it", () => {
-        const cube = solid.createCube({ size: 1, center: [0, 0, 0] });
-        const s = shape.purgeInternalEdges({
-            shape: cube
+    describe("purging internal edges", () => {
+        const internalEdgesOf = (s: TopoDS_Shape): number => edge.getEdges({ shape: s }).filter(e => shape.getOrientation({ shape: e }) === Inputs.OCCT.topAbsOrientationEnum.internal).length;
+
+        it("should remove the segment a split leaves on the top of a box and keep the solid whole", () => {
+            const box = solid.createBox({ width: 4, length: 4, height: 2, center: [0, 1, 0] });
+            const segment = edge.line({ start: [-1, 2, 0], end: [1, 2, 0] });
+            const split = operations.splitShapeWithShapes({ shape: box, shapes: [segment], localFuzzyTolerance: 1e-4, nonDestructive: false })[0]!;
+
+            const purged = shape.purgeInternalEdges({ shape: split });
+
+            expect(edge.getEdges({ shape: split })).toHaveLength(13);
+            expect(internalEdgesOf(split)).toBe(1);
+            expect(shape.getShapeType({ shape: purged })).toBe(Inputs.OCCT.shapeTypeEnum.solid);
+            expect(edge.getEdges({ shape: purged })).toHaveLength(12);
+            expect(internalEdgesOf(purged)).toBe(0);
+            expect(solid.getSolidVolume({ shape: purged })).toBeCloseTo(32, 9);
+            expect(edge.getEdges({ shape: split })).toHaveLength(13);
+            [box, segment, split, purged].forEach(s => s.delete());
         });
-        expect(s).toBeDefined();
-        cube.delete();
+
+        it("should remove the segment a split leaves inside a face", () => {
+            const square = face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+            const segment = edge.line({ start: [-1, 0, 0], end: [1, 0, 0] });
+            const split = operations.splitShapeWithShapes({ shape: square, shapes: [segment], localFuzzyTolerance: 1e-4, nonDestructive: false })[0]!;
+
+            const purged = shape.purgeInternalEdges({ shape: split });
+
+            expect(internalEdgesOf(split)).toBe(1);
+            expect(edge.getEdges({ shape: purged })).toHaveLength(4);
+            expect(face.getFaceArea({ shape: purged })).toBeCloseTo(16, 9);
+            [square, segment, split, purged].forEach(s => s.delete());
+        });
+
+        it("should give a shape without internal edges back as it was", () => {
+            const cube = solid.createCube({ size: 1, center: [0, 0, 0] });
+
+            const purged = shape.purgeInternalEdges({ shape: cube });
+
+            expect(shape.isEqual({ shape: purged, otherShape: cube })).toBe(true);
+            [cube, purged].forEach(s => s.delete());
+        });
     });
 });

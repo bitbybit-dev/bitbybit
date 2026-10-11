@@ -21,6 +21,7 @@ import {
   ReteEditorIcon,
   BlocklyEditorIcon,
   TypeScriptEditorIcon,
+  DesignerEditorIcon,
   TerminalIcon,
   AIRobotIcon,
 } from "@site/src/components/Icons";
@@ -185,12 +186,12 @@ function HeroSection() {
             <span className={styles.statLabel}>CAD Kernels</span>
           </div>
           <div className={styles.stat}>
-            <span className={styles.statNumber}>1919</span>
+            <span className={styles.statNumber}>2017</span>
             <span className={styles.statLabel}>API Functions</span>
           </div>
           <div className={styles.stat}>
-            <span className={styles.statNumber}>3</span>
-            <span className={styles.statLabel}>Editor Modes</span>
+            <span className={styles.statNumber}>4</span>
+            <span className={styles.statLabel}>Editors</span>
           </div>
         </div>
       </div>
@@ -530,7 +531,7 @@ function CTASection() {
       <div className="container">
         <div className={styles.sectionHeader}>
           <Heading as="h2">Ready to Create Something Amazing?</Heading>
-          <p>Start building 3D models today — no installation required. Launch any editor directly.</p>
+          <p>Start building 3D models today, with no installation: code geometry in Rete, Blockly or TypeScript, or model it by clicking in the Designer.</p>
         </div>
         <div className={styles.ctaHeader}>
           <Link className={styles.primaryButton} to="/learn/getting-started/overview">
@@ -599,6 +600,28 @@ function CTASection() {
               </div>
               <div className={styles.editorLaunchBtn}>
                 <span>Launch Editor</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+            <div className={styles.editorCardShine}></div>
+          </a>
+
+          <a href="https://bitbybit.dev/app?editor=designer" className={`${styles.editorCard} ${styles.editorCardDesigner}`}>
+            <div className={styles.editorCardGlow}></div>
+            <div className={styles.editorCardContent}>
+              <div className={styles.editorIconWrapper}>
+                <DesignerEditorIcon size={56} />
+              </div>
+              <h3 className={styles.editorTitle}>Designer</h3>
+              <p className={styles.editorDescription}>Parametric CAD by clicking: sketches, features and assemblies</p>
+              <div className={styles.editorTags}>
+                <span className={styles.editorTag}>CAD</span>
+                <span className={styles.editorTag}>Gold</span>
+              </div>
+              <div className={styles.editorLaunchBtn}>
+                <span>Launch Designer</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>

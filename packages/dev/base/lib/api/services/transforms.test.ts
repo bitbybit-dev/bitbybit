@@ -3,7 +3,7 @@ import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
-import * as Inputs from "../inputs";
+import type * as Inputs from "../inputs";
 import { UnitTestHelper } from "../unit-test-helper";
 
 describe("Transforms unit tests", () => {

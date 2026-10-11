@@ -1,6 +1,4 @@
-// A fragment of the Verb inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../verb-inputs.ts. Edit here, then regenerate.
-import { Base } from "../base-inputs";
+import type { Base } from "../base-inputs";
 
 export class ConeAndCylinderParametersDto {
     constructor(axis?: Base.Vector3, xAxis?: Base.Vector3, base?: Base.Point3, height?: number, radius?: number) {

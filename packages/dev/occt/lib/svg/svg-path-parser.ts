@@ -1,38 +1,15 @@
-/**
- * Parser for the SVG path `d` mini-language.
- *
- * Produces absolute subpaths over the exact segment vocabulary in svg-models.
- * Handles: M/m L/l H/h V/v C/c S/s Q/q T/t A/a Z/z, relative/absolute,
- * smooth-curve reflection, implicit repeated commands, and the quirky arc-flag
- * packing. Elliptical arcs are converted from SVG endpoint parametrization to
- * center parametrization so downstream code never re-derives it.
- */
-
-import { Base } from "@bitbybit-dev/base";
-import { SvgArcSegment, SvgSegment, SvgSubpath } from "./svg-models";
+import type { Base } from "@bitbybit-dev/base";
+import type { SvgArcSegment, SvgSegment, SvgSubpath } from "./svg-models";
 
 interface Token {
     command: string;
-    /** Raw numeric args following the command letter. */
     args: number[];
 }
 
-/** Number of arguments each command letter consumes per repetition. */
 const ARG_COUNTS: { [cmd: string]: number } = {
     m: 2, l: 2, h: 1, v: 1, c: 6, s: 4, q: 4, t: 2, a: 7, z: 0,
 };
 
-/**
- * Tokenize a `d` string into command + flat arg list groups.
- *
- * Parsing is per-command rather than a global split into numbers, because the two arc flags break the
- * usual rule. Large-arc and sweep are single `0` or `1` digits, and the specification lets them be
- * written with no separator after them, so `"016"` in an arc means `0, 1, 6` rather than `16`. A
- * general number reader consumes it as one number, which misreads essentially every arc produced by
- * real drawing tools. Knowing which argument position we are at is what makes the difference readable.
- * @param d the `d` attribute of a path
- * @returns one token per command, each with its flat argument list
- */
 function tokenize(d: string): Token[] {
     const tokens: Token[] = [];
     let i = 0;
@@ -88,15 +65,14 @@ function tokenize(d: string): Token[] {
 
         while (true) {
             const group: number[] = [];
-            let ok = true;
+            let complete = true;
             for (let k = 0; k < count; k++) {
                 const isFlag = lower === "a" && (k === 3 || k === 4);
                 const num = readNumber(isFlag);
-                if (num === undefined) { ok = false; break; }
+                if (num === undefined) { complete = false; break; }
                 group.push(num);
             }
-            if (!ok) {
-                if (first) { /* command had no/partial args; drop it */ }
+            if (!complete) {
                 break;
             }
             const emitCmd = (!first && lower === "m") ? (ch === "m" ? "l" : "L") : ch;
@@ -109,7 +85,6 @@ function tokenize(d: string): Token[] {
     return tokens;
 }
 
-/** SVG endpoint-arc -> center parametrization (per SVG 1.1 implementation notes). */
 function endpointToCenterArc(
     p0: Base.Point2, p1: Base.Point2, rxIn: number, ryIn: number,
     xRotDeg: number, largeArc: boolean, sweep: boolean

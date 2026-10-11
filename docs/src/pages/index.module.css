@@ -1040,10 +1040,17 @@
 /* Editor Cards Grid */
 .editorCardsGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  max-width: 1200px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+  max-width: 1280px;
   margin: 0 auto;
+}
+
+@media (max-width: 1200px) {
+  .editorCardsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 760px;
+  }
 }
 
 .editorCard {
@@ -1051,7 +1058,7 @@
   background: linear-gradient(135deg, rgba(26, 28, 31, 0.95) 0%, rgba(35, 40, 48, 0.9) 100%);
   border: 1px solid rgba(240, 206, 187, 0.2);
   border-radius: 24px;
-  padding: 40px 30px;
+  padding: 40px 24px;
   text-decoration: none;
   color: white;
   overflow: hidden;
@@ -1106,6 +1113,10 @@
 .editorCardContent {
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
 }
 
 .editorCardShine {
@@ -1150,11 +1161,12 @@
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.6;
   margin-bottom: 20px;
+  flex-grow: 1;
 }
 
 .editorTags {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 25px;
@@ -1164,7 +1176,7 @@
   background: rgba(240, 206, 187, 0.1);
   border: 1px solid rgba(240, 206, 187, 0.2);
   border-radius: 20px;
-  padding: 6px 14px;
+  padding: 6px 12px;
   font-size: 12px;
   color: #F0CEBB;
   text-transform: uppercase;
@@ -1201,6 +1213,10 @@
 }
 
 .editorCardTypescript:hover {
+  box-shadow: 0 20px 50px rgba(240, 206, 187, 0.2);
+}
+
+.editorCardDesigner:hover {
   box-shadow: 0 20px 50px rgba(240, 206, 187, 0.2);
 }
 

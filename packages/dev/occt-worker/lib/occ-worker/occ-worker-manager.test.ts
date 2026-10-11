@@ -1,11 +1,12 @@
 import { KernelCallError } from "@bitbybit-dev/base";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { OCCTWorkerManager, OccProgress } from "./occ-worker-manager";
+import type { OccProgress } from "./occ-worker-manager";
+import { OCCTWorkerManager } from "./occ-worker-manager";
 import { OccStateEnum } from "./occ-state.enum";
-import { OccInfo } from "./occ-info";
+import type { OccInfo } from "./occ-info";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
-type WorkerAnswer = "occ-initialised" | "busy" | { progressWords: Int32Array } | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel" | "cancelled"; code?: string; details?: Record<string, unknown>; stack?: string };
+type WorkerAnswer = "occ-initialised" | "busy" | { progressWords: Int32Array; stepWords?: Int32Array } | { steps: { done: number; total: number } } | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel" | "cancelled"; code?: string; details?: Record<string, unknown>; stack?: string };
 
 class RecordingWorker extends EventTarget implements Worker {
     readonly posted: PostedCall[] = [];
@@ -573,6 +574,46 @@ describe("OCCTWorkerManager unit tests", () => {
             ]);
         });
 
+        it("should add how many steps the running call has done, when its worker shares step words", () => {
+            // Arrange
+            const steps = new Int32Array(new SharedArrayBuffer(8));
+            words = new Int32Array(new SharedArrayBuffer(12));
+            answer({ progressWords: words, stepWords: steps });
+            void manager.genericCallToWorkerPromise("design.build", {});
+
+            // Act
+            vi.advanceTimersByTime(100);
+            Atomics.store(steps, 1, 4);
+            Atomics.store(steps, 0, 1);
+            vi.advanceTimersByTime(100);
+            Atomics.store(steps, 0, 9);
+            vi.advanceTimersByTime(100);
+
+            // Assert
+            expect(progress).toEqual([
+                { functionName: "design.build", fraction: 0, algorithms: 0 },
+                { functionName: "design.build", fraction: 0, algorithms: 0, steps: { done: 1, total: 4 } },
+                { functionName: "design.build", fraction: 0, algorithms: 0, steps: { done: 4, total: 4 } },
+            ]);
+        });
+
+        it("should pass on the steps a worker without shared words posts, for the call running then", () => {
+            // Arrange
+            answer({ steps: { done: 1, total: 4 } });
+            void manager.genericCallToWorkerPromise("design.build", {});
+            void manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+
+            // Act
+            answer({ steps: { done: 2, total: 4 } });
+            answer({ steps: { done: 4, total: 4 } });
+
+            // Assert
+            expect(progress).toEqual([
+                { functionName: "design.build", fraction: 0, algorithms: 0, steps: { done: 2, total: 4 } },
+                { functionName: "design.build", fraction: 0, algorithms: 0, steps: { done: 4, total: 4 } },
+            ]);
+        });
+
         it("should move on to the next call once the running one is answered", async () => {
             // Arrange
             shareWords();
@@ -692,6 +733,16 @@ describe("OCCTWorkerManager unit tests", () => {
 
             // Assert
             expect((posted[0] as PostedCall).action).toEqual({ functionName: "cleanAllCache", inputs: {} });
+        });
+    });
+
+    describe("setMeshRetention", () => {
+        it("should post the budget in triangles", () => {
+            // Act
+            void manager.setMeshRetention(250000);
+
+            // Assert
+            expect((posted[0] as PostedCall).action).toEqual({ functionName: "setMeshRetention", inputs: { triangles: 250000 } });
         });
     });
 });

@@ -1,0 +1,10 @@
+{
+    "label": "Designer",
+    "position": 8,
+    "link": {
+        "type": "generated-index",
+        "title": "Designer",
+        "description": "The Designer is Bitbybit's interactive CAD modeller: you make parametric parts and assemblies by clicking, an AI agent can work in the same document beside you, and the OpenCascade kernel builds every change in the browser. Start with the introduction and the first tutorial, then use the reference pages, which are generated from the Designer itself.",
+        "slug": "/designer"
+    }
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import * as Inputs from "../inputs";
+import type * as Inputs from "../inputs";
 import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
 import { Vector } from "./vector";

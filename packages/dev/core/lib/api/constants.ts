@@ -1,9 +1,4 @@
 /**
- * Shared constants for DrawHelper implementations across all game engines.
- * These constants ensure consistency between PlayCanvas, ThreeJS, and BabylonJS implementations.
- */
-
-/**
  * Default material properties for different geometry types
  */
 export const MATERIAL_DEFAULTS = {

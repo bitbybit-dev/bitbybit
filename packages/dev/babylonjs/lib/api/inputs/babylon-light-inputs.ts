@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
-import { Base } from "./base-inputs";
+import type * as BABYLON from "@babylonjs/core";
+import type { Base } from "./base-inputs";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for lights: direction, position, intensity, color, range and the shadow settings for
  * point, directional, spot and hemispheric lights.

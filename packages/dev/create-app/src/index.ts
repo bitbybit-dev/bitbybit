@@ -13,7 +13,7 @@ import { AGENT_SECTION_FILE, applyAgentLayer, listFiles, restoreTemplateDotfiles
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CLI_VERSION = "1.4.1";
+const CLI_VERSION = "1.5.0-rc.0";
 const TEMPLATES_ROOT = path.join(__dirname, "..", "templates");
 
 const BITBYBIT_LOGO = `
@@ -42,7 +42,7 @@ interface CloudProjectOptions {
 
 type AppType = "frontend" | "cloud" | "app";
 
-type AppTemplateId = "product-configurator" | "laser-cut-box" | "sheet-metal-unfold" | "step-to-gltf-cli" | "drone-assembly";
+type AppTemplateId = "product-configurator" | "laser-cut-box" | "sheet-metal-unfold" | "step-to-gltf-cli" | "drone-assembly" | "ifc-house";
 
 interface AppTemplate {
     name: string;
@@ -74,6 +74,11 @@ const APP_TEMPLATES: Record<AppTemplateId, AppTemplate> = {
     "drone-assembly": {
         name: "Drone assembly",
         description: "A multirotor built as a real assembly: twenty-seven parts placed through sub-assemblies, physically based materials, spinning propellers, a bill of materials, STEP and GLB exports that keep the tree",
+        cloud: false,
+    },
+    "ifc-house": {
+        name: "IFC family house",
+        description: "A two-storey house written as an IFC4 building model: layered walls, windows and doors, rooms, a roof, terrain and trees, every element clickable, IFC and STEP downloads",
         cloud: false,
     },
 };
@@ -249,8 +254,12 @@ async function promptCloudProjectOptions(projectNameArg?: string): Promise<Cloud
                 message: chalk.cyan("📁 What is your project name?"),
                 default: "my-bitbybit-cloud-app",
                 validate: (input: string) => {
-                    if (!input.trim()) return "Project name is required";
-                    if (!/^[a-z0-9-_]+$/i.test(input)) return "Project name can only contain letters, numbers, hyphens, and underscores";
+                    if (!input.trim()) {
+                        return "Project name is required";
+                    }
+                    if (!/^[a-z0-9-_]+$/i.test(input)) {
+                        return "Project name can only contain letters, numbers, hyphens, and underscores";
+                    }
                     return true;
                 }
             },
@@ -303,8 +312,12 @@ async function promptAppTemplate(projectNameArg?: string): Promise<AppProjectOpt
             message: chalk.cyan("📁 What is your project name?"),
             default: "my-bitbybit-app",
             validate: (input: string) => {
-                if (!input.trim()) return "Project name is required";
-                if (!/^[a-z0-9-_]+$/i.test(input)) return "Project name can only contain letters, numbers, hyphens, and underscores";
+                if (!input.trim()) {
+                    return "Project name is required";
+                }
+                if (!/^[a-z0-9-_]+$/i.test(input)) {
+                    return "Project name can only contain letters, numbers, hyphens, and underscores";
+                }
                 return true;
             }
         }]),
@@ -956,16 +969,15 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
     }
 }
 
-/**
- * A template that needs a secret ships an .env.example beside the code that reads it; the scaffold
- * gets an .env copied from it so the first run finds the file and the variable, empty. The same
- * probe the cloud templates use, for any depth.
- */
 async function writeEnvFromExamples(dir: string): Promise<void> {
     for (const example of await listFiles(dir)) {
-        if (path.basename(example) !== ".env.example") continue;
+        if (path.basename(example) !== ".env.example") {
+            continue;
+        }
         const env = path.join(path.dirname(example), ".env");
-        if (!(await fs.pathExists(env))) await fs.copy(example, env);
+        if (!(await fs.pathExists(env))) {
+            await fs.copy(example, env);
+        }
     }
 }
 
@@ -1117,7 +1129,9 @@ async function main(): Promise<void> {
                     appOptions = { projectName, template: cmdOptions.template as AppTemplateId };
                 } else {
                     appOptions = await promptAppTemplate(projectName);
-                    if (cmdOptions.template) appOptions.template = cmdOptions.template as AppTemplateId;
+                    if (cmdOptions.template) {
+                        appOptions.template = cmdOptions.template as AppTemplateId;
+                    }
                 }
                 await createAppProject(appOptions);
             } else if (appType === "cloud") {

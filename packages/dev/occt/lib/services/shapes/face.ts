@@ -1,10 +1,10 @@
-import { Geom_Surface, BitbybitOcctModule, GeomFill_FillingStyle, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { Geom_Surface, BitbybitOcctModule, GeomFill_FillingStyle, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import { Base } from "../../api/inputs";
-import * as Models from "../../api/models";
+import type { Base } from "../../api/inputs";
+import type * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 import { framesFromNumbers } from "../base/frames";
 import { checkedChoice, checkedNumber, checkedNumberList, checkedPoint, checkedPoints, checkedShape, checkedShapes, checkedWhole, checkedWithin } from "../base/input-checks";
 import { checkedPointGrid } from "../base/surface-analysis";
@@ -1844,10 +1844,6 @@ export class OCCTFace {
         return res;
     }
 
-    /**
-     * The kernel's value for a filling style.
-     * @ignore true
-     */
     private fillingStyle(style: Inputs.OCCT.fillingStyleEnum): GeomFill_FillingStyle {
         switch (style) {
             case Inputs.OCCT.fillingStyleEnum.stretch:
@@ -1859,11 +1855,6 @@ export class OCCTFace {
         }
     }
 
-    /**
-     * A list that holds one entry per edge, or nothing: left out and empty both read as no entries,
-     * and any other length is refused.
-     * @ignore true
-     */
     private oneEach<T>(list: T[] | undefined, count: number, property: string): T[] {
         if (list === undefined) {
             return [];
@@ -1877,11 +1868,6 @@ export class OCCTFace {
         return list;
     }
 
-    /**
-     * A support face as the caller gave it: undefined, or null, for an edge without one, and
-     * otherwise a shape that is not empty.
-     * @ignore true
-     */
     private checkedSupport(support: TopoDS_Face | undefined | null, position: number): TopoDS_Shape | undefined {
         if (support === undefined || support === null) {
             return undefined;

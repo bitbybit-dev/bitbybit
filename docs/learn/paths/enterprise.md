@@ -3,6 +3,8 @@ sidebar_position: 2
 title: Enterprise & B2B
 sidebar_label: Enterprise
 description: How Bitbybit supports enterprise clients with managed CAD infrastructure, custom development, and dedicated solutions.
+topic: platform.paths.enterprise
+type: landing
 tags: [enterprise, b2b, custom]
 ---
 

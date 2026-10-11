@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
@@ -49,7 +50,7 @@ describe("OCCT surface analysis", () => {
     };
     const trimmedPlaneFace = (): TopoDS_Shape => {
         const top = occt.shapes.face.getFace({ shape: occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [5, 5, 5], originOnCenter: true }), index: 5 });
-        const lines = kernel.WriteBREPToString(top).split("\n");
+        const lines = kernel.WriteBREPToString(top, true).split("\n");
         const surfaceRecord = lines.findIndex(line => line.startsWith("Surfaces")) + Number(lines[lines.findIndex(line => line.startsWith("Fa")) + 1]!.trim().split(/\s+/)[2]);
         lines[surfaceRecord] = `10 -100 100 -100 100\n${lines[surfaceRecord]}`;
         return kernel.ReadBREPFromString(lines.join("\n"));

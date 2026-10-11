@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 import { OCCTAssemblyManager } from "./manager";
-import { AnchorRecord, AnsweringWorker, recordDownloads } from "../../__mocks__/test-helpers";
+import type { AnchorRecord } from "../../__mocks__/test-helpers";
+import { AnsweringWorker, recordDownloads } from "../../__mocks__/test-helpers";
 import { Inputs } from "@bitbybit-dev/occt";
 
 const A_DOCUMENT: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-entity" };

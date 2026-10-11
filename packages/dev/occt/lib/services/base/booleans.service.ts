@@ -1,7 +1,7 @@
-import { BitbybitBool_Strategy, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitBool_Strategy, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import * as Resolved from "../../api/resolved-inputs";
-import * as Models from "../../api/models";
+import type * as Resolved from "../../api/resolved-inputs";
+import type * as Models from "../../api/models";
 import { historyFromKernel } from "./history";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
@@ -39,6 +39,15 @@ export class BooleansService {
         return intersectionResults;
     }
 
+    intersectionWithHistory(inputs: Resolved.OCCT.IntersectionDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        if (inputs.shapes.length < 2) {
+            throw new InputError(`An intersection needs at least two shapes, and got ${inputs.shapes.length}.`, "shapes");
+        }
+        checkedShapes(inputs.shapes);
+        const result = this.occ.BooleanCommonEachWithHistory(inputs.shapes[0]!, inputs.shapes.slice(1), !inputs.keepEdges, 0);
+        return { shape: this.resultOf(result), histories: result.histories.map(historyFromKernel) };
+    }
+
     difference(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
         checkedShape(inputs.shape);
         if (inputs.shapes.length === 0) {
@@ -48,10 +57,6 @@ export class BooleansService {
         return this.loneSolidOf(this.resultOf(this.occ.BooleanCut([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy))));
     }
 
-    /**
-     * The solid of a compound that holds nothing but that one solid, or the shape as it is: a
-     * compound that also holds a face or a wire keeps them.
-     */
     private loneSolidOf(shape: TopoDS_Shape): TopoDS_Shape {
         let current: TopoDS_Shape = shape.clone();
         while (current.ShapeType() === this.occ.TopAbs_ShapeEnum.COMPOUND) {
@@ -117,7 +122,11 @@ export class BooleansService {
 
     private resultOf(result: { shape: TopoDS_Shape | null, errorAlerts: string }): TopoDS_Shape {
         if (result.shape === null) {
-            throw result.errorAlerts.split(" ").includes("BOPAlgo_AlertBOPNotAllowed") ? occtFailure("occt.boolean.mixedDimensions") : occtFailure("occt.boolean.failed");
+            const alerts = result.errorAlerts.split(" ");
+            if (alerts.includes("BitbybitBool_AlertFaceWithoutSurface")) {
+                throw occtFailure("occt.boolean.tessellated");
+            }
+            throw alerts.includes("BOPAlgo_AlertBOPNotAllowed") ? occtFailure("occt.boolean.mixedDimensions") : occtFailure("occt.boolean.failed");
         }
         return result.shape;
     }

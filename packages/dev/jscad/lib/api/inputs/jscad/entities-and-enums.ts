@@ -1,6 +1,4 @@
-// A fragment of the JSCAD inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../jscad-inputs.ts. Edit here, then regenerate.
-import { Base } from "../base-inputs";
+import type { Base } from "../base-inputs";
 
 /** A 2D point or vector, `[x, y]`. */
 export type JSCADVec2 = [number, number];

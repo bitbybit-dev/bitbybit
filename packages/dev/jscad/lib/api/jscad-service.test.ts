@@ -100,7 +100,9 @@ describe("Jscad", () => {
 
             // Assert
             expect(meshes).toHaveLength(2);
-            for (const mesh of meshes) expect(mesh.indices).toHaveLength(CUBE_TRIANGLES * POINTS_PER_TRIANGLE);
+            for (const mesh of meshes) {
+                expect(mesh.indices).toHaveLength(CUBE_TRIANGLES * POINTS_PER_TRIANGLE);
+            }
         });
     });
 
@@ -116,7 +118,9 @@ describe("Jscad", () => {
             expect(polygons).toHaveLength(CUBE_TRIANGLES);
             for (const triangle of polygons) {
                 expect(triangle).toHaveLength(POINTS_PER_TRIANGLE);
-                for (const point of triangle) expect(point).toHaveLength(COORDINATES_PER_POINT);
+                for (const point of triangle) {
+                    expect(point).toHaveLength(COORDINATES_PER_POINT);
+                }
             }
         });
 

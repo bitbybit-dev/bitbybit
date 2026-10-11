@@ -1,0 +1,10 @@
+{
+    "label": "Concepts",
+    "position": 1,
+    "link": {
+        "type": "generated-index",
+        "title": "Concepts Behind Every Script",
+        "description": "The ideas every Bitbybit script stands on, whichever editor you write it in: shapes that live in a worker, choosing a kernel, units and precision, lists, picking faces and edges, checking a shape, getting a model out and giving it a look. Each page shows its idea in Rete, Blockly and TypeScript.",
+        "slug": "/code/common/concepts"
+    }
+}

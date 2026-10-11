@@ -1,0 +1,84 @@
+---
+sidebar_position: 2
+slug: /tutorials/parametric-cube-bitbybit
+title: Creating a Parametric Cube with TypeScript
+sidebar_label: Parametric Cube
+description: Size an OCCT cube from one constant in TypeScript, step by step with a picture of the editor after every step, then change the number and run again to watch the solid follow.
+topic: typescript.tutorials.parametric-cube
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, typescript, occt]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+
+# A Parametric Cube
+
+Parametric means that a shape follows its parameters: change a number and the geometry is rebuilt from it. In code a parameter is simply a value the rest of the script reads. Here one constant sizes a cube made by OCCT, the CAD kernel behind solids on Bitbybit.
+
+## Before you start
+
+Open [an empty TypeScript editor](https://bitbybit.dev/app?editor=typescript). If this is your first TypeScript script, [Hello World](./hello-world.mdx) shows the basics first.
+
+## The steps
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. **Add this line to `main.ts`:**
+
+   ```typescript
+   const size = 3;
+   ```
+
+   One constant holds the parameter; everything that depends on it reads it.
+
+   <Shot id="typescript.tutorials.parametric-cube/size" />
+
+2. **Type `bitbybit.occt.shapes.solid.`** and IntelliSense lists what the API offers there. **Then add these lines to `main.ts`:**
+
+   ```typescript
+   const cubeOptions = new Bit.Inputs.OCCT.CubeDto();
+   cubeOptions.size = size;
+   const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);
+   ```
+
+   The API follows its categories: occt, then shapes, then solid. The cube is a solid made by OCCT, the CAD kernel, so it is awaited.
+
+   <Shot id="typescript.tutorials.parametric-cube/cube" />
+
+3. **Add this line to `main.ts`:**
+
+   ```typescript
+   await bitbybit.draw.drawAnyAsync({ entity: cube });
+   ```
+
+4. **Run the script.** Press <Ui>Run The Code</Ui>, the play button at the lower left.
+
+   <Shot id="typescript.tutorials.parametric-cube/run" />
+
+5. **Change `const size = 3;` to `const size = 5;`.**
+
+   Change the one number, run again, and the cube follows.
+
+6. **Run the script.** Press <Ui>Run The Code</Ui>, the play button at the lower left.
+
+   <Shot id="typescript.tutorials.parametric-cube/bigger" />
+
+### The finished script
+
+The script these steps build, to run here:
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"const size = 5;\nconst cubeOptions = new Bit.Inputs.OCCT.CubeDto();\ncubeOptions.size = size;\nconst cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);\nawait bitbybit.draw.drawAnyAsync({ entity: cube });","type":"typescript"}}
+  title="A cube one number sizes"
+  description="The script the steps above build."
+/>
+
+{/* steps:end */}
+
+## What you learned
+
+- **One value can drive a model.** Every line that reads `size` follows it.
+- **The API follows its categories,** `bitbybit.occt.shapes.solid.createCube` sitting where the cube does in [Rete](../../rete/intro.md) and [Blockly](../../blockly/intro.md).
+- **Split a growing script into files** with [files and imports](../features/files-and-imports.md).

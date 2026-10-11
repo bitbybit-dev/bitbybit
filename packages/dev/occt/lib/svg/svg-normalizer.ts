@@ -1,31 +1,16 @@
-/**
- * Normalizer: walks the parsed XML tree, accumulates the transform stack and a
- * (pragmatic) style cascade, expands every drawable element into transformed
- * subpaths, and emits the flat SvgScene the OCCT builder consumes.
- *
- * Scope of the style cascade: presentation attributes + inline `style="..."`
- * inherited down the tree. Full external/embedded CSS stylesheet selectors are
- * intentionally out of scope (rare in machine-generated SVG); when a <style>
- * element is present we record a warning rather than silently mis-styling.
- */
-
-import { SvgElement, SvgScene, SvgStyle, SvgSubpath } from "./svg-models";
+import type { SvgElement, SvgScene, SvgStyle, SvgSubpath } from "./svg-models";
 import { parsePathData } from "./svg-path-parser";
 import { shapeToSubpaths } from "./svg-shapes";
-import { IDENTITY, Matrix, multiply, parseTransform, transformSubpath } from "./svg-transform";
-import { parseXml, XmlNode } from "./svg-xml";
+import type { Matrix } from "./svg-transform";
+import { IDENTITY, multiply, parseTransform, transformSubpath } from "./svg-transform";
+import type { XmlNode } from "./svg-xml";
+import { parseXml } from "./svg-xml";
 
 const DRAWABLE = new Set(["path", "rect", "circle", "ellipse", "line", "polyline", "polygon"]);
 const SKIP_GEOMETRY = new Set(["defs", "symbol", "clippath", "mask", "marker", "pattern", "metadata", "title", "desc"]);
-/** Elements that hold no geometry themselves but whose children may, so the walk descends without comment. */
 const CONTAINERS = new Set(["svg", "g", "a", "switch", "style", "script", "view", "set", "animate",
     "animatemotion", "animatetransform", "lineargradient", "radialgradient", "stop", "filter"]);
 
-/**
- * What to say about the unsupported elements whose absence is otherwise hard to explain. `<use>` is
- * the one that matters most: it instantiates geometry defined inside `<defs>`, which is skipped, so an
- * SVG built that way imports as nothing at all unless the import says why.
- */
 const UNSUPPORTED_HINTS: { [tag: string]: string } = {
     use: " It instantiates geometry defined elsewhere in the document, usually inside <defs>, which is not imported; inline the shapes it references.",
     text: " Convert text to paths before exporting.",
@@ -53,7 +38,6 @@ function parseInlineStyle(style: string | undefined): { [k: string]: string } {
     return out;
 }
 
-/** Resolve presentation values for a node, layering inline style over attributes. */
 function resolveStyleProps(node: XmlNode, inherited: { [k: string]: string }): { [k: string]: string } {
     const props: { [k: string]: string } = { ...inherited };
     for (const key of STYLE_KEYS) {

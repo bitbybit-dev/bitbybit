@@ -1,0 +1,9 @@
+{
+    "label": "JSON",
+    "link": {
+        "type": "generated-index",
+        "title": "JSON in Bitbybit",
+        "description": "Read and change JSON data in a Bitbybit script: parse text into values, read a property, find values anywhere in a document with JSONPath, set them on a copy and write the result back as text. JSON is how a model takes its sizes from a configurator, a file or a web service, and these pages show it driving a part in Rete, Blockly and TypeScript.",
+        "slug": "/code/common/base/json"
+    }
+}

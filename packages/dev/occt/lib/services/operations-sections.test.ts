@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTService } from "../occ-service";
 import { readKernelException } from "../kernel-exception";
-import * as Inputs from "../api/inputs";
+import type * as Inputs from "../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
 
 describe("OCCT sections and splitting", () => {

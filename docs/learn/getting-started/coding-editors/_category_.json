@@ -1,0 +1,10 @@
+{
+    "label": "Coding Editors",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "The coding editors: Rete, Blockly and TypeScript",
+        "description": "Three ways to write the same parametric 3D program on bitbybit.dev: Rete connects nodes into a graph and updates the scene as you change it, Blockly snaps blocks together, and TypeScript gives you the whole API in the Monaco editor with IntelliSense. Each section introduces its editor, then builds a Hello World and a parametric cube. All three call the same CAD algorithms, so what you learn in one carries over to the others.",
+        "slug": "/getting-started/coding-editors"
+    }
+}

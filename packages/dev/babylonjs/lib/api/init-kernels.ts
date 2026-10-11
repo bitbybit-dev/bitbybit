@@ -1,12 +1,6 @@
-import * as BABYLON from "@babylonjs/core";
-import { BitByBitBase } from "./bitbybit-base";
-import {
-    type InitKernelsResult,
-    type WorkerInstances,
-    type WorkerOptions,
-    getOrCreateWorkers,
-    waitForKernelInitialization,
-} from "@bitbybit-dev/core";
+import type * as BABYLON from "@babylonjs/core";
+import type { BitByBitBase } from "./bitbybit-base";
+import { type InitKernelsResult, type WorkerInstances, type WorkerOptions, getOrCreateWorkers, waitForKernelInitialization } from "@bitbybit-dev/core";
 
 /**
  * Options for initializing bitbybit with Babylon.js
@@ -46,6 +40,9 @@ export async function initBitByBit(
         workers.manifoldWorker,
         options.havokPlugin
     );
+    if (workers.ifcWorker) {
+        bitbybit.ifcWorkerManager.setIfcWorker(workers.ifcWorker);
+    }
 
     const result = await waitForKernelInitialization(bitbybit, options);
 

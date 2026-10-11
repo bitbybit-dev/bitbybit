@@ -1,15 +1,15 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Questions and repairs that apply to any OpenCascade shape whatever its kind: what type it is,
- * which way it is oriented, whether it is closed or the same object as another, and
- * `unifySameDomain`, which merges faces and edges that lie on one surface after a boolean. For work
- * specific to one kind, use the vertex, edge, wire, face, shell, solid and compound classes beside
- * this one.
+ * which way it is oriented, whether it is closed or the same object as another, and two clean-ups:
+ * `unifySameDomain`, which merges faces and edges that lie on one surface after a boolean, and
+ * `purgeInternalEdges`, which removes edges left inside faces. For work specific to one kind, use
+ * the vertex, edge, wire, face, shell, solid and compound classes beside this one.
  */
 export class OCCTShape {
 
@@ -20,16 +20,23 @@ export class OCCTShape {
     }
 
     /**
-     * Returns the shape as it is; the internal-edge purge is not applied in this version, so the
-     * result is the input.
+     * Removes the edges that lie inside a face without bounding it, such as the segment a split
+     * leaves on a face, and rebuilds the faces around them.
+     *
+     * An edge that bounds any face of the shape stays, and a shape with nothing to remove comes
+     * back as it was.
      * @param inputs - The shape
-     * @returns The same shape
+     * @returns The shape without its internal edges
      * @group edit
      * @shortname purge internal edges
      * @drawable true
+     * @example
+     * ```typescript
+     * const clean = await bitbybit.occt.shapes.shape.purgeInternalEdges({ shape: splitBox });
+     * ```
      */
     purgeInternalEdges(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape {
-        return inputs.shape;
+        return this.occ.PurgeInternalEdges(inputs.shape);
     }
 
     /**

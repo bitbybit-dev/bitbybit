@@ -2,12 +2,6 @@ import { vi, type Mock } from "vitest";
 
 
 
-/**
- * Centralized Three.js mocks for testing
- * This file contains all reusable mock classes for Three.js types
- */
-
-// Helper function to parse hex color
 function hexToRgb(hex: string): { r: number; g: number; b: number } {
     if (hex.length === 4) {
         hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
@@ -23,12 +17,6 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
     };
 }
 
-/**
- * Hands `value` back as an instance of `type` once it has checked that it is one, so a test that
- * reads a double's own state gets there through a check instead of an assertion. Where `three` is
- * mocked, its classes are the doubles in this file, and a suite that forgot the mock fails here, by
- * name, rather than somewhere downstream.
- */
 export function instanceOf<T>(value: unknown, type: abstract new (...args: never[]) => T): T {
     if (value instanceof type) {
         return value;
@@ -158,7 +146,7 @@ export class MockPlaneGeometry {
         this.parameters.height = height;
     }
 
-    dispose() { /* mock */ }
+    dispose() { }
 }
 
 export class MockMaterial {
@@ -175,7 +163,7 @@ export class MockMaterial {
         }
     }
 
-    dispose() { /* mock */ }
+    dispose() { }
 }
 
 export class MockMesh {
@@ -200,22 +188,18 @@ export class MockWebGLRenderer {
         this.domElement = options.canvas || null;
     }
 
-    setSize(_width: number, _height: number) { /* mock */ }
-    setPixelRatio(_ratio: number) { /* mock */ }
+    setSize(_width: number, _height: number) { }
+    setPixelRatio(_ratio: number) { }
     setAnimationLoop(callback: ((time: number) => void) | null) {
         this._animationLoop = callback;
     }
-    render(_scene: MockScene, _camera: object) { /* mock */ }
-    dispose() { /* mock */ }
+    render(_scene: MockScene, _camera: object) { }
+    dispose() { }
 }
 
-// Constants
 export const VSMShadowMap = 2;
 export const DoubleSide = 2;
 
-/**
- * Create Three.js module mock for vi.mock()
- */
 export function createThreeJSMock() {
     return {
         Scene: MockScene,
@@ -232,7 +216,6 @@ export function createThreeJSMock() {
     };
 }
 
-/** What an orbit camera hands back, as this suite stands it in. */
 export type MockOrbitCameraResult = {
     camera: { aspect: number; updateProjectionMatrix: Mock };
     orbitCamera: { distance: number; pitch: number; yaw: number; pivotPoint: { x: number; y: number; z: number } };
@@ -243,9 +226,6 @@ export type MockOrbitCameraResult = {
     destroy: Mock;
 };
 
-/**
- * Create mock orbit camera result for testing
- */
 export function createMockOrbitCameraResult(): MockOrbitCameraResult {
     return {
         camera: { aspect: 1, updateProjectionMatrix: vi.fn() },
@@ -258,7 +238,6 @@ export function createMockOrbitCameraResult(): MockOrbitCameraResult {
     };
 }
 
-// Type definitions for test assertions
 export interface MockMeshType {
     geometry: { parameters: { width: number; height: number } };
     material: { color: { r: number; g: number; b: number } };

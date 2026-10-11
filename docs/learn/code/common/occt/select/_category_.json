@@ -1,0 +1,8 @@
+{
+    "label": "Selecting Faces and Edges",
+    "position": 6,
+    "link": {
+        "type": "doc",
+        "id": "code/common/occt/select/intro"
+    }
+}

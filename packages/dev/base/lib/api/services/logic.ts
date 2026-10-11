@@ -1,6 +1,6 @@
 import * as Inputs from "../inputs";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Booleans and decisions: comparing values, flipping booleans, turning lists of numbers into lists

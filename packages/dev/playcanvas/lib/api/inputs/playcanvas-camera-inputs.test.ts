@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import * as pc from "playcanvas";
+import type * as pc from "playcanvas";
 import { PlayCanvasCamera } from "./playcanvas-camera-inputs";
 
 describe("PlayCanvasCamera inputs unit tests", () => {

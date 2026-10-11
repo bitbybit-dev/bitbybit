@@ -26,11 +26,13 @@ export const fetchTool: ToolDefinition<typeof input, DocsContext> = {
         }
         const id = args.id.replace(/^bitbybit\./, "");
         const member = resolved.reader.get(id);
-        if (!member) return fail(`No document has the id ${id}; ids are dotted API paths returned by search.`);
+        if (!member) {
+            return fail(`No document has the id ${id}; ids are dotted API paths returned by search.`);
+        }
         const document = {
             id: member.path,
             title: member.path,
-            text: renderMember(member, resolved.version, resolved.reader.examplesOf(member.path)),
+            text: renderMember(member, resolved.version, resolved.reader.examplesOf(member.path), resolved.reader.typesUsedBy(member)),
             url: member.docUrl ?? context.guideUrl,
             metadata: { tier: member.tier, kind: member.kind, version: resolved.version, engines: member.engines.join(",") },
         };

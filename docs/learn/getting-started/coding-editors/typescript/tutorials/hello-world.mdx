@@ -1,0 +1,94 @@
+---
+sidebar_position: 1
+slug: /getting-started/typescript/hello-world
+title: Your First 3D "Hello World" with TypeScript
+sidebar_label: Hello World
+description: Write a first TypeScript script step by step - a grid and 3D text made with the bitbybit API and drawn - with a picture of the editor after every step and the finished script to run on the page.
+topic: typescript.tutorials.hello-world
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, typescript, occt]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+
+# Hello World in 3D
+
+The classic first program prints "Hello World". In TypeScript on Bitbybit the words stand in 3D on a grid, in a few lines that call the bitbybit API. Every step shows the editor as it looks after it, and the finished script waits at the end, ready to run on this page.
+
+## Before you start
+
+Open [an empty TypeScript editor](https://bitbybit.dev/app?editor=typescript) in your browser, or start a TypeScript script in one of your [projects](../../../basics/projects/create-project.md). The script lives in `main.ts`, the file the run starts from. [The tour](../tour.md) names every part of the window.
+
+## The steps
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. **Add these lines to `main.ts`:**
+
+   ```typescript
+   const grid = new Bit.Inputs.Draw.SceneDrawGridMeshDto();
+   bitbybit.draw.drawGridMesh(grid);
+   ```
+
+   `bitbybit` holds the whole API, and `Bit.Inputs` the option objects its functions take. A new options object starts with sensible values, so the grid needs nothing else.
+
+   <Shot id="typescript.tutorials.hello-world/grid" />
+
+2. **Run the script.** Press <Ui>Run The Code</Ui>, the play button at the lower left.
+
+   A script runs only when you press Run The Code, so run it after each change.
+
+   <Shot id="typescript.tutorials.hello-world/run" />
+
+3. **Type `bitbybit.advanced.text3d.`** and IntelliSense lists what the API offers there. **Then add these lines to `main.ts`:**
+
+   ```typescript
+   const options = new Bit.Advanced.Text3D.Text3DDto();
+   options.text = "Hello World!";
+   options.rotation = -90;
+   options.originAlignment = Bit.Advanced.Text3D.recAlignmentEnum.centerBottom;
+   options.direction = [0, 0, -1];
+   const text = await bitbybit.advanced.text3d.create(options);
+   ```
+
+   As you type, IntelliSense lists what the API offers at each dot, with what each function does. Text 3d takes the words, how they turn and where they stand; `await` waits for the text to be made.
+
+   <Shot id="typescript.tutorials.hello-world/intellisense" />
+
+4. **Add this line to `main.ts`:**
+
+   ```typescript
+   await bitbybit.draw.drawAnyAsync({ entity: text });
+   ```
+
+   Making the text and drawing it are separate calls, so you can change a shape before you draw it, or never draw it at all.
+
+   <Shot id="typescript.tutorials.hello-world/draw" />
+
+5. **Run the script.** Press <Ui>Run The Code</Ui>, the play button at the lower left.
+
+   Run the script, and the words stand on the grid facing you.
+
+   <Shot id="typescript.tutorials.hello-world/done" />
+
+### The finished script
+
+The script these steps build, to run here:
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"const grid = new Bit.Inputs.Draw.SceneDrawGridMeshDto();\nbitbybit.draw.drawGridMesh(grid);\nconst options = new Bit.Advanced.Text3D.Text3DDto();\noptions.text = \"Hello World!\";\noptions.rotation = -90;\noptions.originAlignment = Bit.Advanced.Text3D.recAlignmentEnum.centerBottom;\noptions.direction = [0, 0, -1];\nconst text = await bitbybit.advanced.text3d.create(options);\nawait bitbybit.draw.drawAnyAsync({ entity: text });","type":"typescript"}}
+  title="Hello World in 3D with TypeScript"
+  description="The script the steps above build."
+/>
+
+{/* steps:end */}
+
+## What you learned
+
+- **`bitbybit` holds the API**, and `Bit.Inputs` its option objects. [The API in code](../features/how-to-code-in-monaco.md) has more.
+- **IntelliSense lists what comes next** at each dot, and marks a mistake before you run. [IntelliSense and errors](../features/intellisense-and-errors.md) has more.
+- **Making and drawing are separate,** and anything a CAD kernel makes is awaited.
+
+Next, [a parametric cube](./parametric-cube.mdx) sizes a solid from one number.

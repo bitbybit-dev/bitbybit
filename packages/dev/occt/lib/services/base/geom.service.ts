@@ -1,11 +1,12 @@
-import { BRepAdaptor_CompCurve, Geom_Curve, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs";
-import { Base } from "../../api/inputs";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { EntitiesService } from "./entities.service";
-import * as Resolved from "../../api/resolved-inputs";
+import type { BRepAdaptor_CompCurve, Geom_Curve, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Inputs from "../../api/inputs";
+import type { Base } from "../../api/inputs";
+import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { EntitiesService } from "./entities.service";
+import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
-import { MassAndCentre, massesAndCentres, pointsFromCoordinates } from "./kernel-arrays";
+import type { MassAndCentre } from "./kernel-arrays";
+import { massesAndCentres, pointsFromCoordinates } from "./kernel-arrays";
 
 export class GeomService {
 

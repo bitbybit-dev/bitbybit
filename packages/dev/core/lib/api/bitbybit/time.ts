@@ -1,5 +1,5 @@
 
-import { ContextBase } from "../context";
+import type { ContextBase } from "../context";
 
 /**
  * Hooks into the frame loop of the scene: a function registered here runs once per rendered frame

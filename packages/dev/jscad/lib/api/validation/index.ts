@@ -1,6 +1,7 @@
-import { RuleBook, custom, defineRules, lessThan, ruleBook } from "@bitbybit-dev/base";
+import type { RuleBook } from "@bitbybit-dev/base";
+import { custom, defineRules, lessThan, ruleBook } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * What the inputs of a JSCAD operation have to satisfy together, beyond what each property accepts

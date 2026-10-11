@@ -3,6 +3,8 @@ sidebar_position: 1
 title: Pen Sketcher
 sidebar_label: Pen Sketcher
 description: Draw exact 2D outlines in OCCT with a pen - lines, tangent arcs, sagitta and bulge arcs, Bezier curves, rounded and beveled corners - on any plane, then extrude them into solids.
+topic: code.occt.sketch.pen-sketcher
+type: how-to
 tags: [code, occt, typescript]
 ---
 

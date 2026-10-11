@@ -31,15 +31,24 @@ package outside the browser bundle conventions of `packages/dev/CLAUDE.md`:
   root (`src/index.ts`) imports no Node built-in, so a bundler can take it into an edge runtime;
   only `index-loader.ts`, `installed-version.ts` and `stdio.ts` may, and the dependency test holds
   that line. `src/index-reader.ts` is the lookup, search and
-  nearest-path logic; `src/render.ts` turns a record into the markdown a model reads.
-- `src/guides.generated.ts` is generated from `docs/learn/using-ai-with-bitbybit/agentic-cad.md`
-  by `npm run sync:guides`; `npm run check:guides` and `src/guides.test.ts` fail when the page and
-  the file disagree. Edit the page, then regenerate.
+  nearest-path logic, and finds the types a member returns or takes in the index's `types` (the
+  `Inputs` and `Models` data classes and interfaces; a bare name is read in the namespace that names
+  it first);
+  `src/render.ts` turns a record into the markdown a model reads.
+- `src/guides.generated.ts` is generated from `docs/learn/using-ai-with-bitbybit/agentic-cad.md`,
+  `cad-geometry.md`, `design-documents.md` and `ifc-models.md` beside it by `npm run sync:guides`;
+  `npm run check:guides` and `src/guides.test.ts` fail when the pages and the file disagree. Edit a
+  page, then regenerate. The worked examples of the geometry and IFC pages are run from the page
+  itself by `packages/dev/occt/lib/geometry-guide.test.ts` and
+  `packages/dev/ifc/lib/ifc-guide.test.ts`, so a change to one is a change to what those tests
+  build.
+  Each section carries the URL of its page, `GUIDE_PAGE_URL` stays the first page's, and a section
+  id may be used once across all the pages: the sync refuses a repeat, so retitle one.
 
 ## What the code does not say
 
 The source carries no comments, JSDoc included: `bitbybit/no-loose-comments` runs here with
-`allowJsDoc: false`, because nothing reads a comment in this package. A name, an extracted function
+`jsDoc: "none"`, because nothing reads a comment in this package. A name, an extracted function
 or a line here is where an explanation goes.
 
 - The index is addressed by exact version only, never by `latest`: `index-url.ts` refuses
@@ -66,7 +75,7 @@ or a line here is where an explanation goes.
   form is what a list shows.
 - `search` and `fetch` are the shapes ChatGPT's connectors require: results of id, title and url;
   one document with id, title, text, url and metadata.
-- `guides-split.ts` splits the guide page into its `##` and `###` sections; a `##` body runs to
+- `guides-split.ts` splits each guide page into its `##` and `###` sections; a `##` body runs to
   the next `##` and so contains its subsections, the frontmatter and anything before the first
   heading are dropped, and a heading becomes its id as lower-case words joined by dashes.
   `get-guide.ts` maps the short names agents reach for onto those ids.
@@ -76,4 +85,5 @@ or a line here is where an explanation goes.
 Unit tests run against `src/__fixtures__/index.sample.json`, a small index at version `9.9.9`, so
 they need no network. `src/network.test.ts` fetches the real index for this package's version and
 runs only when `BITBYBIT_MCP_NETWORK=1` (the nightly workflow sets it); it skips itself while the
-version's index is not yet published.
+version's index is not yet published. The coverage floor check therefore compares this package's coverage
+only with the switch on, and allows it 2 points below the floor (`scripts/coverage-baseline.mjs`).

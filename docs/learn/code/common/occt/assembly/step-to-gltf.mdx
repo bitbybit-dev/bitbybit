@@ -3,7 +3,9 @@ sidebar_position: 2
 title: "Convert STEP to GLTF"
 sidebar_label: STEP to GLTF
 description: Convert STEP files to web-optimized GLTF/GLB format directly in the browser with privacy-preserving local processing.
-tags: [occt, assembly, step, gltf, cad]
+topic: code.occt.assembly.step-to-gltf
+type: how-to
+tags: [code, occt, assembly, step, gltf, cad]
 ---
 
 import Tabs from '@theme/Tabs';
@@ -86,7 +88,7 @@ For **larger models**, use higher precision values (e.g., 0.1 or higher) to redu
 <TabItem value="typescript-step-to-gltf-export" label="TypeScript">
 <BitByBitRenderCanvas
     requireManualStart={true}
-    script={{"script":"// Import required DTOs for assembly operations\nconst { LoadStepToDocDto, ExportDocumentToGltfDto } = Bit.Inputs.OCCT;\ntype TDocStdDocumentPointer = Bit.Inputs.OCCT.TDocStdDocumentPointer;\n\n// Get access to modules\nconst { asset } = bitbybit;\nconst { manager } = bitbybit.occt.assembly;\n\nconst start = async () => {\n    // Fetch the STEP file from URL\n    const stepData = await asset.fetchFile({\n        url: \"https://learn.bitbybit.dev/files/3d/Soil-Sensor.stpZ\"\n    });\n\n    // Load STEP data into an OCCT document\n    const loadDocOpt = new LoadStepToDocDto();\n    loadDocOpt.stepData = stepData;\n    const document = await manager.loadStepToDoc(loadDocOpt);\n\n    // Export the document to GLTF (binary GLB format)\n    const exportOpt = new ExportDocumentToGltfDto<TDocStdDocumentPointer>();\n    exportOpt.document = document;\n    exportOpt.meshDeflection = 0.05;\n    exportOpt.meshAngle = 0.5;\n    exportOpt.mergeFaces = false;\n    exportOpt.forceUVExport = true;\n    exportOpt.fileName = \"assembly.glb\";\n    exportOpt.tryDownload = true;\n\n    const gltfData = await manager.exportDocumentToGltf(exportOpt);\n    console.log(\"GLTF exported successfully!\", gltfData);\n}\n\n// Execute the main function\nstart();","type":"typescript"}}
+    script={{"script":"// Import required DTOs for assembly operations\nconst { LoadStepToDocDto, ExportDocumentToGltfDto } = Bit.Inputs.OCCT;\ntype TDocStdDocumentPointer = Bit.Inputs.OCCT.TDocStdDocumentPointer;\n\n// Get access to modules\nconst { asset } = bitbybit;\nconst { manager } = bitbybit.occt.assembly;\n\n// Fetch the STEP file from URL\nconst stepData = await asset.fetchFile({\n    url: \"https://learn.bitbybit.dev/files/3d/Soil-Sensor.stpZ\"\n});\n\n// Load STEP data into an OCCT document\nconst loadDocOpt = new LoadStepToDocDto();\nloadDocOpt.stepData = stepData;\nconst document = await manager.loadStepToDoc(loadDocOpt);\n\n// Export the document to GLTF (binary GLB format)\nconst exportOpt = new ExportDocumentToGltfDto<TDocStdDocumentPointer>();\nexportOpt.document = document;\nexportOpt.meshDeflection = 0.05;\nexportOpt.meshAngle = 0.5;\nexportOpt.mergeFaces = false;\nexportOpt.forceUVExport = true;\nexportOpt.fileName = \"assembly.glb\";\nexportOpt.tryDownload = true;\n\nconst gltfData = await manager.exportDocumentToGltf(exportOpt);\nconsole.log(\"GLTF exported successfully!\", gltfData);","type":"typescript"}}
     title="STEP to gLTF Export"
     />
 </TabItem>

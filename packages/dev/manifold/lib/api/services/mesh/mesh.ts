@@ -1,4 +1,4 @@
-import * as Manifold3D from "manifold-3d";
+import type * as Manifold3D from "manifold-3d";
 import { MeshEvaluate } from "./mesh-evaluate";
 import { MeshOperations } from "./mesh-operations";
 

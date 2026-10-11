@@ -5,14 +5,14 @@ vi.mock("@babylonjs/core", async () => {
 });
 
 import { createDrawHelperMocks, partialMock } from "./__mocks__/test-helpers";
-import { MockGreasedLineMesh, MockLinesMesh, MockPBRMetallicRoughnessMaterial, instanceOf, type MockScene } from "./__mocks__/babylonjs.mock";
+import { MockGreasedLineMesh, MockLinesMesh, MockPBRMetallicRoughnessMaterial, MockVertexData, instanceOf, type MockMesh, type MockScene } from "./__mocks__/babylonjs.mock";
 import { DrawHelper } from "./draw-helper";
-import { Context } from "./context";
+import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { Vector } from "@bitbybit-dev/base";
+import type { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { Vector } from "@bitbybit-dev/base";
 import * as BABYLON from "@babylonjs/core";
 
 const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
@@ -1815,6 +1815,31 @@ describe("DrawHelper unit tests", () => {
 
 
     describe("drawManifoldOrCrossSection", () => {
+        it("should ask the worker for normals sharp beyond 40 degrees, or flat when computeNormals is false, and use the ones it sends", async () => {
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
+                numProp: 6,
+                vertProperties: new Float32Array([0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1]),
+                triVerts: new Uint32Array([0, 1, 2]),
+            });
+            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
+            inputs.drawTwoSided = false;
+            const applied: MockVertexData[] = [];
+            const spy = vi.spyOn(MockVertexData.prototype, "applyToMesh").mockImplementation(function (this: MockVertexData, mesh: MockMesh) {
+                applied.push(this);
+                mesh._vertexData = this;
+            });
+
+            await drawHelper.drawManifoldOrCrossSection(inputs);
+            await drawHelper.drawManifoldOrCrossSection({ ...inputs, computeNormals: false });
+            spy.mockRestore();
+
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(1, "decomposeManifoldOrCrossSection", expect.objectContaining({ minSharpAngle: 40 }));
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(2, "decomposeManifoldOrCrossSection", expect.objectContaining({ minSharpAngle: 0 }));
+            expect(Array.from(applied[0]!.positions)).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+            expect(Array.from(applied[0]!.normals)).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 1]);
+        });
+
         it("should draw manifold or cross section", async () => {
             (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
@@ -1951,6 +1976,21 @@ describe("DrawHelper unit tests", () => {
     });
 
     describe("drawManifoldsOrCrossSections", () => {
+        it("should ask the worker for every shape's normals sharp beyond 40 degrees, or flat when computeNormals is false", async () => {
+            // Arrange
+            manifoldWorkerCall.mockResolvedValue([]);
+            const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
+            inputs.manifoldsOrCrossSections = [{ hash: 123, type: "manifold-shape" }];
+
+            // Act
+            await drawHelper.drawManifoldsOrCrossSections(inputs);
+            await drawHelper.drawManifoldsOrCrossSections({ ...inputs, computeNormals: false });
+
+            // Assert
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(1, "decomposeManifoldsOrCrossSections", expect.objectContaining({ minSharpAngle: 40 }));
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(2, "decomposeManifoldsOrCrossSections", expect.objectContaining({ minSharpAngle: 0 }));
+        });
+
         it("should draw multiple manifolds", async () => {
             (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]), numProp: 3 },
@@ -1991,6 +2031,89 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
             expect(result.getChildMeshes().length).toBe(1);
+        });
+    });
+
+    describe("drawManifoldMesh and drawManifoldMeshes", () => {
+        const triangle = (): Inputs.Manifold.DecomposedManifoldMeshDto => ({ numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) });
+        const empty = (): Inputs.Manifold.DecomposedManifoldMeshDto => ({ numProp: 3, vertProperties: new Float32Array(0), triVerts: new Uint32Array(0) });
+
+        it("should draw a mesh it was handed with normals of its own, asking no worker", () => {
+            // Arrange
+            const options = { ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), drawTwoSided: false };
+            const applied: MockVertexData[] = [];
+            const spy = vi.spyOn(MockVertexData.prototype, "applyToMesh").mockImplementation(function (this: MockVertexData, mesh: MockMesh) {
+                applied.push(this);
+                mesh._vertexData = this;
+            });
+
+            // Act
+            const mesh = drawHelper.drawManifoldMesh(triangle(), options);
+            spy.mockRestore();
+
+            // Assert
+            expect(mesh).toBeDefined();
+            expect(manifoldWorkerCall).not.toHaveBeenCalled();
+            expect(Array.from(applied[0]!.normals)).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 1]);
+            expect(Array.from(applied[0]!.indices)).toEqual([2, 1, 0]);
+        });
+
+        it("should index a mesh of more vertices than sixteen bits can name with 32-bit indices, however few its triangles", () => {
+            // Arrange
+            const vertices = 65537;
+            const vertProperties = new Float32Array(vertices * 6);
+            vertProperties.set([0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1], (vertices - 3) * 6);
+            const options = { ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), drawTwoSided: false };
+            const applied: MockVertexData[] = [];
+            const spy = vi.spyOn(MockVertexData.prototype, "applyToMesh").mockImplementation(function (this: MockVertexData, mesh: MockMesh) {
+                applied.push(this);
+                mesh._vertexData = this;
+            });
+
+            // Act
+            drawHelper.drawManifoldMesh({ numProp: 6, vertProperties, triVerts: new Uint32Array([vertices - 3, vertices - 2, vertices - 1]) }, options);
+            spy.mockRestore();
+
+            // Assert
+            expect(applied[0]!.indices).toBeInstanceOf(Uint32Array);
+            expect(Array.from(applied[0]!.indices)).toEqual([vertices - 1, vertices - 2, vertices - 3]);
+        });
+
+        it("should shade every face flat when computeNormals is false, splitting the corners a gentle bend shares", () => {
+            // Arrange
+            const bend = (): Inputs.Manifold.DecomposedManifoldMeshDto => ({ numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1 + Math.cos(Math.PI / 9), Math.sin(Math.PI / 9), 1, 1 + Math.cos(Math.PI / 9), Math.sin(Math.PI / 9)]), triVerts: new Uint32Array([0, 1, 3, 0, 3, 2, 2, 3, 5, 2, 5, 4]) });
+            const applied: MockVertexData[] = [];
+            const spy = vi.spyOn(MockVertexData.prototype, "applyToMesh").mockImplementation(function (this: MockVertexData, mesh: MockMesh) {
+                applied.push(this);
+                mesh._vertexData = this;
+            });
+
+            // Act
+            drawHelper.drawManifoldMesh(bend(), { ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), drawTwoSided: false });
+            drawHelper.drawManifoldMesh(bend(), { ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), drawTwoSided: false, computeNormals: false });
+            spy.mockRestore();
+
+            // Assert
+            expect(applied.map((data) => data.positions.length / 3)).toEqual([6, 8]);
+        });
+
+        it("should give nothing for a mesh without triangles", () => {
+            // Act
+            const mesh = drawHelper.drawManifoldMesh(empty(), new Inputs.Draw.DrawManifoldOrCrossSectionOptions());
+
+            // Assert
+            expect(mesh).toBeUndefined();
+        });
+
+        it("should draw a list under one container, leaving out the empty ones", () => {
+            // Arrange
+            const options = { ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), drawTwoSided: false };
+
+            // Act
+            const container = drawHelper.drawManifoldMeshes([triangle(), empty(), triangle()], options);
+
+            // Assert
+            expect(container.getChildMeshes()).toHaveLength(2);
         });
     });
 
@@ -4310,6 +4433,31 @@ describe("DrawHelper unit tests", () => {
 
             // Assert
             expect(helper.arrowAngles).toEqual([15]);
+        });
+    });
+
+    describe("the color of an OCCT shape's edges", () => {
+        const oneEdge = (): Inputs.OCCT.DecomposedMeshDto => {
+            const edge = new Inputs.OCCT.DecomposedEdgeDto();
+            edge.edgeIndex = 0;
+            edge.vertexCoord = [[0, 0, 0], [1, 0, 0]];
+            edge.middlePoint = [0.5, 0, 0];
+            const mesh = new Inputs.OCCT.DecomposedMeshDto([], [edge]);
+            mesh.pointsList = [];
+            return mesh;
+        };
+        const lineColorOf = (drawn: BABYLON.Mesh): string => greasedLineOf(drawn.getChildMeshes()[0]).greasedLineMaterial!.color!.toHexString();
+
+        it("should take the face color moved by the edge contrast in place of the edge color", async () => {
+            // Act
+            const plain = await drawHelper.handleDecomposedMesh({ drawFaces: false, faceColour: "#ffffff", edgeColour: "#00ff00" }, oneEdge(), {});
+            const contrasted = await drawHelper.handleDecomposedMesh({ drawFaces: false, faceColour: "#ffffff", edgeColour: "#00ff00" }, oneEdge(), { edgeContrast: 0.4 });
+            const individually = await drawHelper.handleDecomposedMeshIndividually({ drawFaces: false, faceColour: "#000000" }, oneEdge(), { edgeContrast: 1 });
+
+            // Assert
+            expect(lineColorOf(plain)).toBe("#00ff00");
+            expect(lineColorOf(contrasted)).toBe("#999999");
+            expect(lineColorOf(individually)).toBe("#ffffff");
         });
     });
 });

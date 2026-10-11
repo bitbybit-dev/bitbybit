@@ -11,7 +11,9 @@ export function indexPath(version: string): string {
 }
 
 export function indexUrl(version: string, host: string = INDEX_HOST): string {
-    if (!isExactVersion(version)) throw new Error(`"${version}" is not an exact version; the index is published per release and never under a moving name`);
+    if (!isExactVersion(version)) {
+        throw new Error(`"${version}" is not an exact version; the index is published per release and never under a moving name`);
+    }
     return `${host}${indexPath(version)}`;
 }
 

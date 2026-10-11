@@ -3,6 +3,8 @@ sidebar_position: 5
 title: Educators & Teachers
 sidebar_label: Educator
 description: Using Bitbybit to teach 3D geometry, mathematics, and programming in STEM classrooms.
+topic: platform.paths.educator
+type: landing
 tags: [education, stem, classroom, teaching]
 ---
 
@@ -14,13 +16,13 @@ Bitbybit is a practical tool for teaching 3D geometry, mathematics, and programm
 
 ## Classroom Setup
 
-Use the [Rete](https://bitbybit.dev/app?editor=rete) or [Blockly](https://bitbybit.dev/app?editor=blockly) editors for younger or beginner students. It teaches computational thinking through visual blocks. For more advanced classes, the [TypeScript editor](https://bitbybit.dev/app?editor=typescript) provides a real programming environment.
+Use the [Blockly](https://bitbybit.dev/app?editor=blockly) editor for younger or beginner students: its blocks teach computational thinking without typing. The [Rete](https://bitbybit.dev/app?editor=rete) editor suits students who think in diagrams: they wire nodes into a graph and see each change at once. For more advanced classes, the [TypeScript editor](https://bitbybit.dev/app?editor=typescript) provides a real programming environment. Each editor has tutorials with a picture after every step, starting from [Getting Started](/learn/getting-started/overview).
 
 <Admonition type="caution" title="No Accounts Needed for Students">
-  <p>We take student privacy seriously. <strong>Students do not need accounts to use the editors.</strong> All tools are completely free.</p>
+  <p>We take student privacy seriously. <strong>Students do not need accounts to use the editors.</strong> The three coding editors are completely free; only the Designer is part of a paid plan.</p>
   <p>Without an account, students should:</p>
   <ul>
-    <li><strong>Export their scripts manually</strong> to save work locally. Cloud saving requires an account.</li>
+    <li><strong>Keep their projects in the browser</strong>, and export them to keep a copy elsewhere. Cloud saving requires an account.</li>
     <li><strong>Host assets in the browser</strong> when working with 3D models. See the <a href="/learn/getting-started/basics/assets/local/intro">Local Assets guide</a>.</li>
   </ul>
   <p>Sharing projects via URL is only available with an account.</p>

@@ -1,9 +1,9 @@
 import * as BABYLON from "@babylonjs/core";
 import { uniqueName } from "../../../unique-name";
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * The orbiting camera: it circles a target point at a distance, the way you would turn a product in

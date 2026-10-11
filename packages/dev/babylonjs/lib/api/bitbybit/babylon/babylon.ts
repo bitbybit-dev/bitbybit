@@ -1,6 +1,6 @@
-import { Color } from "@bitbybit-dev/base";
-import { Context } from "../../context";
-import { DrawHelper } from "../../draw-helper";
+import type { Color } from "@bitbybit-dev/base";
+import type { Context } from "../../context";
+import type { DrawHelper } from "../../draw-helper";
 import { BabylonCamera } from "./camera/camera";
 import { BabylonEngine } from "./engine";
 import { BabylonGaussianSplatting } from "./gaussian-splatting";

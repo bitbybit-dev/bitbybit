@@ -1,7 +1,7 @@
 import * as Inputs from "../inputs";
-import { ContextBase } from "../context";
+import type { ContextBase } from "../context";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Text labels pinned to 3D positions: a tag is an HTML text element placed over the canvas at the

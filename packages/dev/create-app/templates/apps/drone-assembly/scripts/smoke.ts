@@ -67,8 +67,8 @@ for (const part of model.parts) {
         if (edges === 0) problems.push(`${part.id} has no edges`);
     } else {
         if (solids.length === 0) problems.push(`${part.id} has no solid`);
-        const infos = await Promise.all(solids.map((solid) => occt.shapes.solid.debugInfo({ shape: solid })));
-        if (!infos.every((info) => info.valid)) problems.push(`${part.id} is not a valid solid`);
+        const valid = await Promise.all(solids.map((solid) => occt.shapeFix.isValid({ shape: solid })));
+        if (!valid.every(Boolean)) problems.push(`${part.id} is not a valid solid`);
         if (!(volume > 0)) problems.push(`${part.id} has no volume`);
     }
     parts[part.id] = { solids: solids.length, faces: (await occt.shapes.face.getFaces({ shape: part.shape })).length, edges, volume: round(volume) };
@@ -141,7 +141,7 @@ const reloadedSolids = reloadedShape ? (await solidsOf(reloadedShape)).length : 
 const expectedSolids = expectedPlacements(model).solidsOf((part) => statsOf(part.id).solids);
 if (reloadedSolids !== expectedSolids) problems.push(`the STEP reads back with ${reloadedSolids} solids, not ${expectedSolids}`);
 const origin: [number, number, number] = [0, 0, 0];
-const box = reloadedShape ? await occt.operations.boundingBoxOfShape({ shape: reloadedShape }) : { min: origin, max: origin };
+const box = reloadedShape ? await occt.analysis.measure.tightBoundingBox({ shape: reloadedShape }) : { min: origin, max: origin };
 const nutTop = model.lift + MOTOR_TOP + 3.5;
 const reach = model.params.armLength + model.params.propDiameter / 2;
 if (Math.abs(box.min[2]) > 0.5) problems.push(`the feet stand at z ${round(box.min[2])} in the Z-up STEP, not on the ground`);

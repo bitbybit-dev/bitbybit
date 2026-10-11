@@ -1,0 +1,74 @@
+# The ifc package measured against IfcOpenShell, twice a week and by hand. First the files the library
+# writes, through IfcOpenShell's validator (npm run validate in packages/dev/ifc), then the public
+# corpus other tools wrote (npm run ifc:corpus, scripts/README.md): timings, memory, the round trip
+# and every element's volume and box against IfcOpenShell's. Not a pull-request gate: the corpus is
+# served by other people, and a file that moved is not the fault of a change. Twice a week because
+# GitHub drops a cache unused for seven days, and the corpus is downloaded from its hosts on a miss.
+name: IFC
+
+on:
+  schedule:
+    - cron: "23 5 * * 1,4"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ifc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .tool-versions
+          cache: pnpm
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install -r packages/dev/ifc/requirements.txt
+
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/cache@v6
+        with:
+          key: occt-kernels-${{ hashFiles('packages/dev/occt/kernels.json') }}
+          path: packages/dev/occt/bitbybit-dev-occt*/*.wasm
+      - run: npm run kernels:fetch
+      - run: npm run rebuild-all-packages
+
+      - name: The library's files pass IfcOpenShell's validator
+        working-directory: packages/dev/ifc
+        env:
+          IFC_PYTHON: python
+        run: npm run validate
+
+      # Cached on the manifest's hash, as the kernels are: the files only change with it.
+      - uses: actions/cache@v6
+        with:
+          key: ifc-corpus-${{ hashFiles('packages/dev/ifc/corpus/corpus.json') }}
+          path: packages/dev/ifc/corpus/files
+      - name: The corpus is the one the manifest names
+        run: npm run ifc:corpus -- fetch
+
+      # IfcOpenShell measures a large file for most of an hour, and its answer changes only with the
+      # files, the oracle script or the IfcOpenShell version.
+      - uses: actions/cache@v6
+        with:
+          key: ifc-oracle-${{ hashFiles('packages/dev/ifc/corpus/corpus.json', 'packages/dev/ifc/corpus/oracle.py', 'packages/dev/ifc/requirements.txt') }}
+          path: packages/dev/ifc/corpus/.cache/oracle
+
+      # Measured even when a download failed: every file that is present is still worth the numbers.
+      - name: The corpus measured against IfcOpenShell
+        if: success() || failure()
+        env:
+          IFC_PYTHON: python
+        run: npm run ifc:corpus -- run --exact
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: ifc-corpus-report
+          path: packages/dev/ifc/corpus/.cache/report.json
+          if-no-files-found: ignore

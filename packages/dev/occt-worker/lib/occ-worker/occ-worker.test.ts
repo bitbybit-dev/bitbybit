@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeAll, beforeEach } from "vitest";
-import { InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
-import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { InputIssueReport } from "@bitbybit-dev/base";
+import { setInputIssueSink } from "@bitbybit-dev/base";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "@bitbybit-dev/occt/lib/api/inputs";
-import { CacheHelper } from "./cache-helper";
+import type { CacheHelper } from "./cache-helper";
 import { initializationComplete, onMessageInput } from "./occ-worker";
 
 type CallAction = <T, R>(functionName: string, inputs: T) => Promise<R>;

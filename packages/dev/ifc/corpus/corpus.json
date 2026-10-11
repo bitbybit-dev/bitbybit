@@ -1,0 +1,922 @@
+{
+    "files": [
+        {
+            "id": "bsi-cert-building-architecture-ifc2x3",
+            "url": "https://raw.githubusercontent.com/buildingSMART/Certification-datasets/80d976a9b193a26a8e928c3e79bff67af1de68a8/IFC%202.3.0.1%20%28IFC%202x3%20TC1%29/Simple-Scene/Building-Architecture.ifc",
+            "bytes": 92542,
+            "sha256": "c4db65ba847f6b369a95d6c54fa11f4750cbe6d59f021934e8923d8d578e5885",
+            "schema": "IFC2X3",
+            "exporter": "SketchUp 2026 + Sketchup IFC manager 5.6.0",
+            "source": "buildingSMART/Certification-datasets",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingSMART/Certification-datasets/blob/80d976a9b193a26a8e928c3e79bff67af1de68a8/LICENSE",
+            "attribution": "(C) buildingSMART International Ltd., CC BY 4.0, https://github.com/buildingSMART/Certification-datasets",
+            "features": [
+                "faceted-brep",
+                "spaces",
+                "cross-schema-triplet"
+            ]
+        },
+        {
+            "id": "bsi-cert-building-architecture-ifc4",
+            "url": "https://raw.githubusercontent.com/buildingSMART/Certification-datasets/80d976a9b193a26a8e928c3e79bff67af1de68a8/IFC%204.0.2.1%20%28IFC%204%20ADD2%20TC1%29/Simple-Scene/Building-Architecture.ifc",
+            "bytes": 142325,
+            "sha256": "8790a1e193e82b8e7e7f337ec2633cd40f2120590317a1443503a25b079e2e80",
+            "schema": "IFC4",
+            "exporter": "SketchUp 2026 + Sketchup IFC manager 5.6.0",
+            "source": "buildingSMART/Certification-datasets",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingSMART/Certification-datasets/blob/80d976a9b193a26a8e928c3e79bff67af1de68a8/LICENSE",
+            "attribution": "(C) buildingSMART International Ltd., CC BY 4.0, https://github.com/buildingSMART/Certification-datasets",
+            "features": [
+                "triangulated-face-set",
+                "map-conversion",
+                "spaces",
+                "cross-schema-triplet"
+            ]
+        },
+        {
+            "id": "bsi-cert-building-architecture-ifc4x3",
+            "url": "https://raw.githubusercontent.com/buildingSMART/Certification-datasets/80d976a9b193a26a8e928c3e79bff67af1de68a8/IFC%204.3.2.0%20%28IFC%204.3%20ADD2%29/Simple-Scene/Building-Architecture.ifc",
+            "bytes": 141965,
+            "sha256": "96e7103812b15b65eb1fd7802d36b9962833485dce5ead4f440bbf529530881d",
+            "schema": "IFC4X3_ADD2",
+            "exporter": "SketchUp 2026 + Sketchup IFC manager 5.6.0",
+            "source": "buildingSMART/Certification-datasets",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingSMART/Certification-datasets/blob/80d976a9b193a26a8e928c3e79bff67af1de68a8/LICENSE",
+            "attribution": "(C) buildingSMART International Ltd., CC BY 4.0, https://github.com/buildingSMART/Certification-datasets",
+            "features": [
+                "triangulated-face-set",
+                "map-conversion",
+                "spaces",
+                "cross-schema-triplet"
+            ]
+        },
+        {
+            "id": "bsi-cert-infra-bridge-ifc4x3",
+            "url": "https://raw.githubusercontent.com/buildingSMART/Certification-datasets/80d976a9b193a26a8e928c3e79bff67af1de68a8/IFC%204.3.2.0%20%28IFC%204.3%20ADD2%29/Simple-Scene/Infra-Bridge.ifc",
+            "bytes": 1739554,
+            "sha256": "97e84cb93e07bfbedbc1bdc57aef161f4998e09accd77175dd0561af2ab4ffab",
+            "schema": "IFC4X3_ADD2",
+            "exporter": "SketchUp 2026 + Sketchup IFC manager 5.6.0",
+            "source": "buildingSMART/Certification-datasets",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingSMART/Certification-datasets/blob/80d976a9b193a26a8e928c3e79bff67af1de68a8/LICENSE",
+            "attribution": "(C) buildingSMART International Ltd., CC BY 4.0, https://github.com/buildingSMART/Certification-datasets",
+            "features": [
+                "triangulated-face-set",
+                "map-conversion",
+                "infrastructure"
+            ]
+        },
+        {
+            "id": "bsi-cert-infra-road-ifc4x3",
+            "url": "https://raw.githubusercontent.com/buildingSMART/Certification-datasets/80d976a9b193a26a8e928c3e79bff67af1de68a8/IFC%204.3.2.0%20%28IFC%204.3%20ADD2%29/Simple-Scene/Infra-Road.ifc",
+            "bytes": 263708,
+            "sha256": "a3cb29433d7176bd31ff7535a596b5d7cd4eb7f2fb0eb6eee451612063c1f167",
+            "schema": "IFC4X3_ADD2",
+            "exporter": "SketchUp 2026 + Sketchup IFC manager 5.6.0",
+            "source": "buildingSMART/Certification-datasets",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingSMART/Certification-datasets/blob/80d976a9b193a26a8e928c3e79bff67af1de68a8/LICENSE",
+            "attribution": "(C) buildingSMART International Ltd., CC BY 4.0, https://github.com/buildingSMART/Certification-datasets",
+            "features": [
+                "triangulated-face-set",
+                "shell-based-surface-model",
+                "map-conversion",
+                "infrastructure"
+            ]
+        },
+        {
+            "id": "bsi-cert-rv-wall-with-opening-and-window",
+            "url": "https://raw.githubusercontent.com/buildingSMART/Certification-datasets/80d976a9b193a26a8e928c3e79bff67af1de68a8/IFC%204.0.2.1%20%28IFC%204%20ADD2%20TC1%29/ISO%20Spec%20-%20ReferenceView_V1.2/wall-with-opening-and-window.ifc",
+            "bytes": 12492,
+            "sha256": "73b0e45d931d5dc13bfee5fdc7bd80f796526445458b2de74c4168d209097832",
+            "schema": "IFC4",
+            "exporter": "RDF IFC Engine",
+            "source": "buildingSMART/Certification-datasets",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingSMART/Certification-datasets/blob/80d976a9b193a26a8e928c3e79bff67af1de68a8/LICENSE",
+            "attribution": "(C) buildingSMART International Ltd., CC BY 4.0, https://github.com/buildingSMART/Certification-datasets",
+            "features": [
+                "openings",
+                "material-layer-set"
+            ]
+        },
+        {
+            "id": "bsc-duplex-architecture",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Duplex%20Apartment/Duplex_A_20110907.ifc",
+            "bytes": 2380763,
+            "sha256": "b347a2c8aa8fff6db896a4417a9c50c22ac0ccd7c5cfc22b99b8d29336c606ed",
+            "schema": "IFC2X3",
+            "exporter": "Revit Architecture 2011",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Duplex%20Apartment/README.md",
+            "attribution": "BSI (2020) \"Duplex Apartment Test Files,\" buildingSMART International, https://github.com/buildingsmart-community/Community-Sample-Test-Files (indicate any changes)",
+            "features": [
+                "clipping",
+                "polygonal-bounded-half-space",
+                "openings",
+                "mapped-items",
+                "spaces",
+                "reference-model"
+            ]
+        },
+        {
+            "id": "bsc-duplex-mep",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Duplex%20Apartment/Duplex_MEP_20110907.ifc",
+            "bytes": 17871432,
+            "sha256": "13976a8e223f177a6d7123679e4b02e750cd90c13f7bb20c593be125d9407119",
+            "schema": "IFC2X3",
+            "exporter": "Revit MEP 2011",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Duplex%20Apartment/README.md",
+            "attribution": "BSI (2020) \"Duplex Apartment Test Files,\" buildingSMART International, https://github.com/buildingsmart-community/Community-Sample-Test-Files (indicate any changes)",
+            "features": [
+                "mapped-items",
+                "faceted-brep",
+                "mep",
+                "reference-model"
+            ]
+        },
+        {
+            "id": "bsc-clinic-architectural",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Medical-Dental%20Clinic/Clinic_Architectural.ifc",
+            "bytes": 13003205,
+            "sha256": "2ac970ce065ecac4e0c9e5f453a257169e90d0067f419b7e33533a64ef837880",
+            "schema": "IFC2X3",
+            "exporter": "Revit Architecture 2011 + Solibri IFC Optimizer",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Medical-Dental%20Clinic/README.md",
+            "attribution": "BSI (2020) \"Medical-Dental Test Files,\" buildingSMART International, https://github.com/buildingsmart-community/Community-Sample-Test-Files (indicate any changes)",
+            "features": [
+                "clipping",
+                "half-space",
+                "polygonal-bounded-half-space",
+                "openings",
+                "mapped-items",
+                "spaces",
+                "reference-model"
+            ]
+        },
+        {
+            "id": "bsc-clinic-plumbing",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Medical-Dental%20Clinic/Clinic_Plumbing.ifc",
+            "bytes": 55834520,
+            "sha256": "e662a8d0273694b745a313fc18ee8d4916db03453caa8f9d00d4d80b62bb6e23",
+            "schema": "IFC2X3",
+            "exporter": "Revit 2013 + Solibri IFC Optimizer",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Medical-Dental%20Clinic/README.md",
+            "attribution": "BSI (2020) \"Medical-Dental Test Files,\" buildingSMART International, https://github.com/buildingsmart-community/Community-Sample-Test-Files (indicate any changes)",
+            "features": [
+                "mep",
+                "large-fallback",
+                "reference-model"
+            ]
+        },
+        {
+            "id": "bsc-esplanades-archicad22",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Esplanades/1807_EP_AR_v18.ifc",
+            "bytes": 12109172,
+            "sha256": "b97db10a2cb679a6543ccf4e34cfa8e77753f14e67f51b403e6cd9a819e3748f",
+            "schema": "IFC2X3",
+            "exporter": "Archicad 22",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Esplanades/readme.md",
+            "attribution": "(c) Esplan http://www.esplan.ee/en, CC BY 4.0",
+            "features": [
+                "boolean-result",
+                "faceted-brep",
+                "shell-based-surface-model",
+                "openings",
+                "mapped-items",
+                "spaces"
+            ]
+        },
+        {
+            "id": "bsc-molio-archicad25",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/Molio/Molio_with_URIs.ifc",
+            "bytes": 73945142,
+            "sha256": "626654e3b62648d3f0499e17c04d4f087931f048ddf79410f6cb90e45004c086",
+            "schema": "IFC2X3",
+            "exporter": "Archicad 25",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/LICENSE",
+            "attribution": "(C) original authors, buildingSMART Community Sample & Test Files, CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "large-fallback",
+                "space-boundaries",
+                "classification-uris"
+            ]
+        },
+        {
+            "id": "bsc-bsdd-references-sketchup-large",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/SDK%20-%20S1/bSDD_references_example.ifc",
+            "bytes": 394697402,
+            "sha256": "4075c44a6e4769b10a0f3ef2c925847899c76444ea33b81d3caffa85f321f9f2",
+            "schema": "IFC2X3",
+            "exporter": "SketchUp 2022 + IFC-manager",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20%28IFC%202x3%29/SDK%20-%20S1/README.md",
+            "attribution": "(C) original authors (S1 / Sixty5 dataset, Strijp-S), CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "large",
+                "bsdd-references"
+            ]
+        },
+        {
+            "id": "bsc-iso-basin-advanced-brep",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/basin-advanced-brep.ifc",
+            "bytes": 9962,
+            "sha256": "2d64cbb23ba78eb7a9ed8b8e87543593381191c3913015a0e9addd40491fdd37",
+            "schema": "IFC4",
+            "exporter": "Geometry Gym ggIFC",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/README.md",
+            "attribution": "(C) original authors - ISO/IFC4 specification examples attributed to Jon Mirtschin (Geometry Gym) and Tim Chipman (Constructivity); CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "advanced-brep",
+                "bspline-surface",
+                "bspline-curve",
+                "mapped-items"
+            ]
+        },
+        {
+            "id": "bsc-iso-cube-advanced-brep",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/cube-advanced-brep.ifc",
+            "bytes": 10611,
+            "sha256": "6f90cfd2641e868b490d650fd8bcbbdafc39bda23a43fc7a7c15c1e881066b9d",
+            "schema": "IFC4",
+            "exporter": "Geometry Gym Grasshopper",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/README.md",
+            "attribution": "(C) original authors - ISO/IFC4 specification examples attributed to Jon Mirtschin (Geometry Gym) and Tim Chipman (Constructivity); CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "advanced-brep",
+                "bspline-surface"
+            ]
+        },
+        {
+            "id": "bsc-iso-csg-primitive",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/csg-primitive.ifc",
+            "bytes": 5143,
+            "sha256": "3d17b1c5e994f406aabc5868517cbb9a5d740ed857eaf6f51599faa8d0d395df",
+            "schema": "IFC4",
+            "exporter": "hand-written",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/README.md",
+            "attribution": "(C) original authors - ISO/IFC4 specification examples attributed to Jon Mirtschin (Geometry Gym) and Tim Chipman (Constructivity); CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "csg",
+                "block",
+                "header-comments"
+            ]
+        },
+        {
+            "id": "bsc-iso-mapped-shape-with-multiple-items",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/mapped-shape-with-multiple-items.ifc",
+            "bytes": 7904,
+            "sha256": "ed7dda34f1f04896bf3c99d9e6a14f263d47cfd0032826953d0b0ce2b2512a4a",
+            "schema": "IFC4",
+            "exporter": "hand-written",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/README.md",
+            "attribution": "(C) original authors - ISO/IFC4 specification examples attributed to Jon Mirtschin (Geometry Gym) and Tim Chipman (Constructivity); CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "mapped-items"
+            ]
+        },
+        {
+            "id": "bsc-iso-tessellation-pixel-texture",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/tessellation-with-pixel-texture.ifc",
+            "bytes": 805084,
+            "sha256": "366128817fb449b5f375f11d79891574fa339ca474e224dbec6fed81fc6fe175",
+            "schema": "IFC4",
+            "exporter": "Constructivity 0.9.8.3",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/README.md",
+            "attribution": "(C) original authors - ISO/IFC4 specification examples attributed to Jon Mirtschin (Geometry Gym) and Tim Chipman (Constructivity); CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "triangulated-face-set",
+                "pixel-texture",
+                "mapped-items"
+            ]
+        },
+        {
+            "id": "bsc-iso-beam-curved-tessellated",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/beam-curved-i-shape-tessellated.ifc",
+            "bytes": 356937,
+            "sha256": "ed91a56ede6735c9202a9d258920b31ab4f7630eb4ce1e3ab690c85971380170",
+            "schema": "IFC4",
+            "exporter": "Geometry Gym Grasshopper",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/README.md",
+            "attribution": "(C) original authors - ISO/IFC4 specification examples attributed to Jon Mirtschin (Geometry Gym) and Tim Chipman (Constructivity); CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "triangulated-face-set",
+                "curved"
+            ]
+        },
+        {
+            "id": "bsc-iso-reinforcing-stirrup",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/reinforcing-stirrup.ifc",
+            "bytes": 4265,
+            "sha256": "6f1bd2ad3cc0b4c743479c1f3b515f8f00685a4286e1dba86379a5353c1c684b",
+            "schema": "IFC4",
+            "exporter": "Geometry Gym ggIFC",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/README.md",
+            "attribution": "(C) original authors - ISO/IFC4 specification examples attributed to Jon Mirtschin (Geometry Gym) and Tim Chipman (Constructivity); CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "swept-disk-solid",
+                "indexed-polycurve",
+                "mapped-items",
+                "rebar"
+            ]
+        },
+        {
+            "id": "bsc-iso-slab-openings",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/slab-openings.ifc",
+            "bytes": 4706,
+            "sha256": "ad8708583a490eda9d44196067e64fa15c6a585a596951275312f09d3249d1bc",
+            "schema": "IFC4",
+            "exporter": "Geometry Gym ggIFC",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/README.md",
+            "attribution": "(C) original authors - ISO/IFC4 specification examples attributed to Jon Mirtschin (Geometry Gym) and Tim Chipman (Constructivity); CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "openings",
+                "opening-standard-case",
+                "indexed-polycurve"
+            ]
+        },
+        {
+            "id": "bsc-iso-construction-scheduling-task",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/construction-scheduling-task.ifc",
+            "bytes": 18719,
+            "sha256": "64ed6ce487d8b9565114540d53d674c80289a0c9078be6ab61273c83cc9486d1",
+            "schema": "IFC4",
+            "exporter": "hand-written",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/ISO%20Spec%20archive/README.md",
+            "attribution": "(C) original authors - ISO/IFC4 specification examples attributed to Jon Mirtschin (Geometry Gym) and Tim Chipman (Constructivity); CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "tasks",
+                "non-geometric"
+            ]
+        },
+        {
+            "id": "bsc-nurbs-bentley-bspline-surface",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/NURBS/Bentley%20Building%20Designer/Faces/bspline%20surface.ifc",
+            "bytes": 394061,
+            "sha256": "dcc082e399a8685c243e0c3bb960ccd5af1dfa8f8d496d9f1164548e3028a7d2",
+            "schema": "IFC4",
+            "exporter": "Bentley OpenBuildings Designer 10",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/NURBS/README.md",
+            "attribution": "(C) original authors (Bentley OpenBuildings Designer NURBS examples, crowd-sourced), CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "advanced-brep",
+                "bspline-surface",
+                "rational-bspline-surface",
+                "bspline-curve",
+                "shell-based-surface-model"
+            ]
+        },
+        {
+            "id": "bsc-nurbs-bentley-jar-split",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/NURBS/Bentley%20Building%20Designer/SolidsAndSheets/jarSplit.ifc",
+            "bytes": 27176,
+            "sha256": "a13823cf4ee9cabeb789d6648c0068f9fcb193700882fa1b37226f44596e0bf9",
+            "schema": "IFC4",
+            "exporter": "Bentley OpenBuildings Designer 10",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/NURBS/README.md",
+            "attribution": "(C) original authors (Bentley OpenBuildings Designer NURBS examples, crowd-sourced), CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "rational-bspline-surface",
+                "shell-based-surface-model",
+                "indexed-polycurve"
+            ]
+        },
+        {
+            "id": "bsc-gymzaal-amersfoort-revit2020",
+            "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%204.0.2.1%20%28IFC%204%29/Example%20project%20location/example%20project%20location.ifc",
+            "bytes": 2959580,
+            "sha256": "2c12c00c675e43fb872af8bec583c29e887e75a40c614d8585abcc2baf7590ed",
+            "schema": "IFC4",
+            "exporter": "Revit 2020 IFC exporter",
+            "source": "buildingsmart-community/Community-Sample-Test-Files (Git LFS)",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/LICENSE",
+            "attribution": "(C) original authors, buildingSMART Community Sample & Test Files, CC BY 4.0, https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+            "features": [
+                "map-conversion",
+                "georeferencing",
+                "polygonal-face-set",
+                "triangulated-face-set",
+                "indexed-polycurve",
+                "openings",
+                "mapped-items",
+                "spaces"
+            ]
+        },
+        {
+            "id": "infra-sectioned-surface-openroads",
+            "url": "https://raw.githubusercontent.com/bSI-InfraRoom/IFC-infra-unit-test/bc13603cc4899084edbf9f1d9151443a7fb4cf0e/SectionedSurface-INDOT/PR_Twin_Branch_SectionedSurface.ifc",
+            "bytes": 42599943,
+            "sha256": "1a2c6bfbab1114789b2729e01be6da09b7865a375f78cc1bfe76f145f2b742fc",
+            "schema": "IFC4",
+            "exporter": "Bentley OpenRoads Designer",
+            "source": "bSI-InfraRoom/IFC-infra-unit-test",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/bSI-InfraRoom/IFC-infra-unit-test/blob/bc13603cc4899084edbf9f1d9151443a7fb4cf0e/LICENSE.txt",
+            "attribution": "(C) original authors, bSI InfraRoom IFC-infra-unit-test, CC BY 4.0, https://github.com/bSI-InfraRoom/IFC-infra-unit-test",
+            "features": [
+                "infrastructure",
+                "road",
+                "mid-size"
+            ]
+        },
+        {
+            "id": "gherkin-alignment-cant-rail",
+            "url": "https://raw.githubusercontent.com/buildingSMART/ifc-gherkin-rules/893f8275049b8960c3ce0c7379b4b57aefeaa8f9/test/files/ALB/alb004/pass-alb004-alignment-contained_in_spatial_entity.ifc",
+            "bytes": 375428,
+            "sha256": "4758164c966ae4d86fd571a637687a4ca0d3b12f0cd3949bb0c7b9dd974344d2",
+            "schema": "IFC4X3_ADD2",
+            "exporter": "IfcOpenShell (Python script)",
+            "source": "buildingSMART/ifc-gherkin-rules",
+            "licence": "MIT",
+            "licenceUrl": "https://github.com/buildingSMART/ifc-gherkin-rules/blob/893f8275049b8960c3ce0c7379b4b57aefeaa8f9/LICENSE",
+            "attribution": "Copyright (c) buildingSMART International Ltd, MIT licence, https://github.com/buildingSMART/ifc-gherkin-rules",
+            "features": [
+                "alignment",
+                "alignment-cant",
+                "clothoid",
+                "gradient-curve",
+                "segmented-reference-curve",
+                "linear-placement",
+                "triangulated-face-set"
+            ]
+        },
+        {
+            "id": "bonsai-project0-openings",
+            "url": "https://raw.githubusercontent.com/IfcOpenShell/IfcOpenShell/261de82d5ab5653907dd216ae3e27384b86d4fda/src/bonsai/docs/tutorials/files/project0-openings.ifc",
+            "bytes": 48413,
+            "sha256": "0f9444facdf4fc2a6a05241b5d40eda63863e0de276009a7ae06dea449e03773",
+            "schema": "IFC4",
+            "exporter": "Bonsai 0.7.9",
+            "source": "IfcOpenShell/IfcOpenShell",
+            "licence": "GPL-3.0-or-later",
+            "licenceUrl": "https://github.com/IfcOpenShell/IfcOpenShell/blob/261de82d5ab5653907dd216ae3e27384b86d4fda/src/bonsai/COPYING",
+            "attribution": "IfcOpenShell / Bonsai contributors, GPL-3.0-or-later, https://github.com/IfcOpenShell/IfcOpenShell",
+            "features": [
+                "clipping",
+                "half-space",
+                "openings",
+                "mapped-items",
+                "indexed-polycurve",
+                "polygonal-face-set",
+                "material-layer-set"
+            ]
+        },
+        {
+            "id": "bonsai-ifc4x3-demo-library",
+            "url": "https://raw.githubusercontent.com/IfcOpenShell/IfcOpenShell/261de82d5ab5653907dd216ae3e27384b86d4fda/src/bonsai/bonsai/bim/data/libraries/IFC4X3%20Demo%20Library.ifc",
+            "bytes": 85036,
+            "sha256": "c302ef8796eb44cb3972dd18510a830b5b880dbf388ac26633aa414a03c66e3e",
+            "schema": "IFC4X3_ADD2",
+            "exporter": "IfcOpenShell (Bonsai library)",
+            "source": "IfcOpenShell/IfcOpenShell",
+            "licence": "GPL-3.0-or-later",
+            "licenceUrl": "https://github.com/IfcOpenShell/IfcOpenShell/blob/261de82d5ab5653907dd216ae3e27384b86d4fda/src/bonsai/COPYING",
+            "attribution": "IfcOpenShell / Bonsai contributors, GPL-3.0-or-later, https://github.com/IfcOpenShell/IfcOpenShell",
+            "features": [
+                "type-library",
+                "polygonal-face-set",
+                "indexed-polycurve"
+            ]
+        },
+        {
+            "id": "bonsai-ifc4-us-steel-library",
+            "url": "https://raw.githubusercontent.com/IfcOpenShell/IfcOpenShell/261de82d5ab5653907dd216ae3e27384b86d4fda/src/bonsai/bonsai/bim/data/libraries/IFC4%20US%20Steel.ifc",
+            "bytes": 2182594,
+            "sha256": "108efbfd7ef91735ead176332b51698d472615e8cc8ca234fc0d642e7f3f8bf8",
+            "schema": "IFC4",
+            "exporter": "IfcOpenShell v0.7.0",
+            "source": "IfcOpenShell/IfcOpenShell",
+            "licence": "GPL-3.0-or-later",
+            "licenceUrl": "https://github.com/IfcOpenShell/IfcOpenShell/blob/261de82d5ab5653907dd216ae3e27384b86d4fda/src/bonsai/COPYING",
+            "attribution": "IfcOpenShell / Bonsai contributors, GPL-3.0-or-later, https://github.com/IfcOpenShell/IfcOpenShell",
+            "features": [
+                "profile-library",
+                "composite-profile",
+                "non-geometric"
+            ]
+        },
+        {
+            "id": "bonsai-basic-ifczip",
+            "url": "https://raw.githubusercontent.com/IfcOpenShell/IfcOpenShell/261de82d5ab5653907dd216ae3e27384b86d4fda/src/bonsai/test/files/basic.ifczip",
+            "bytes": 3453,
+            "sha256": "9181b618f040118c1726617cc669089ce4cc0dbf6f09d67f8b3720623d47e01e",
+            "schema": "IFC4",
+            "exporter": "BlenderBIM",
+            "source": "IfcOpenShell/IfcOpenShell",
+            "licence": "GPL-3.0-or-later",
+            "licenceUrl": "https://github.com/IfcOpenShell/IfcOpenShell/blob/261de82d5ab5653907dd216ae3e27384b86d4fda/src/bonsai/COPYING",
+            "attribution": "IfcOpenShell / Bonsai contributors, GPL-3.0-or-later, https://github.com/IfcOpenShell/IfcOpenShell",
+            "features": [
+                "ifczip"
+            ]
+        },
+        {
+            "id": "ifcopenshell-advanced-brep-through-hole",
+            "url": "https://raw.githubusercontent.com/IfcOpenShell/IfcOpenShell/261de82d5ab5653907dd216ae3e27384b86d4fda/src/ifcopenshell-python/test/fixtures/geom/advanced_brep_through_hole_9570.ifc",
+            "bytes": 7782,
+            "sha256": "6246360a3ec1537aff30e1f9973533e614e9758ff7881618fedf3565d8f2e8d0",
+            "schema": "IFC4",
+            "exporter": "IfcOpenShell 0.8.0",
+            "source": "IfcOpenShell/IfcOpenShell",
+            "licence": "LGPL-3.0-or-later",
+            "licenceUrl": "https://github.com/IfcOpenShell/IfcOpenShell/blob/261de82d5ab5653907dd216ae3e27384b86d4fda/README.md",
+            "attribution": "IfcOpenShell contributors, LGPL-3.0-or-later (ifcopenshell-python), https://github.com/IfcOpenShell/IfcOpenShell",
+            "features": [
+                "advanced-brep",
+                "inner-loop"
+            ]
+        },
+        {
+            "id": "ifcopenshell-fixed-reference-sweep-ifc4x3",
+            "url": "https://raw.githubusercontent.com/IfcOpenShell/IfcOpenShell/261de82d5ab5653907dd216ae3e27384b86d4fda/src/ifcopenshell-python/test/fixtures/geom/simple_sweep_2.ifc",
+            "bytes": 4485,
+            "sha256": "cb9edbffd4432ba4e18ffdd9544057583e0f738f52b0a8ab67295777533195f6",
+            "schema": "IFC4X3_ADD2",
+            "exporter": "IfcOpenShell 0.8.2",
+            "source": "IfcOpenShell/IfcOpenShell",
+            "licence": "LGPL-3.0-or-later",
+            "licenceUrl": "https://github.com/IfcOpenShell/IfcOpenShell/blob/261de82d5ab5653907dd216ae3e27384b86d4fda/README.md",
+            "attribution": "IfcOpenShell contributors, LGPL-3.0-or-later (ifcopenshell-python), https://github.com/IfcOpenShell/IfcOpenShell",
+            "features": [
+                "fixed-reference-swept-area-solid",
+                "indexed-polycurve"
+            ]
+        },
+        {
+            "id": "kit-ac20-fzk-haus",
+            "url": "https://www.ifcwiki.org/images/e/e3/AC20-FZK-Haus.ifc",
+            "bytes": 2570803,
+            "sha256": "70cc8ff245fc0894201d96496c031005a5cbd7a96b22d8a1b87c5a883fb77994",
+            "schema": "IFC4",
+            "exporter": "Archicad 20",
+            "source": "KIT IAI examples on ifcwiki.org",
+            "licence": "Free for unrestricted use, granted by KIT IAI",
+            "licenceUrl": "https://www.ifcwiki.org/index.php?title=KIT_IFC_Examples",
+            "attribution": "Institute for Automation and Applied Informatics (IAI) / Karlsruhe Institute of Technology (KIT)",
+            "features": [
+                "clipping",
+                "half-space",
+                "polygonal-bounded-half-space",
+                "faceted-brep",
+                "mapped-items",
+                "openings",
+                "spaces",
+                "reference-model"
+            ]
+        },
+        {
+            "id": "kit-ac20-institute-var-2",
+            "url": "https://www.ifcwiki.org/images/9/98/AC20-Institute-Var-2.ifc",
+            "bytes": 10934237,
+            "sha256": "cfb2124497b25d9a72101075e84be0feb44ff669cb1bd3251be11efebeea945c",
+            "schema": "IFC4",
+            "exporter": "Archicad 20",
+            "source": "KIT IAI examples on ifcwiki.org",
+            "licence": "Free for unrestricted use, granted by KIT IAI",
+            "licenceUrl": "https://www.ifcwiki.org/index.php?title=KIT_IFC_Examples",
+            "attribution": "Institute for Automation and Applied Informatics (IAI) / Karlsruhe Institute of Technology (KIT)",
+            "features": [
+                "clipping",
+                "polygonal-bounded-half-space",
+                "faceted-brep",
+                "shell-based-surface-model",
+                "mapped-items",
+                "openings",
+                "spaces",
+                "reference-model"
+            ]
+        },
+        {
+            "id": "zen-restage-bonsai-large",
+            "url": "https://zenodo.org/api/records/21470658/files/Restage_IP_ALL_MULTI_001.ifc/content",
+            "bytes": 189817172,
+            "sha256": "9162a43f3e1041cb4825705b901edcf6d90f6d0b62f306dcaba6402184f01bb5",
+            "schema": "IFC4",
+            "exporter": "Bonsai 0.8.5",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/21470658",
+            "attribution": "Wu, Chu Han; Ertemli, Goerkem Can; von Hilchen, Martin; Brell-Cokcan, Sigrid; Zoecklein, Marit et al. (2026). RestageIFC. Zenodo. https://doi.org/10.5281/zenodo.21470658",
+            "features": [
+                "large"
+            ]
+        },
+        {
+            "id": "zen-balconies-a6-large",
+            "url": "https://zenodo.org/api/records/5047709/files/a6.ifc/content",
+            "bytes": 261917263,
+            "sha256": "91d8b72a1b6640b8115c3171ad954b2462770cf8c7a94b3d2e57bdcf3ad81ac4",
+            "schema": "IFC2X3",
+            "exporter": "Revit 2020 IFC exporter",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/5047709",
+            "attribution": "Krijnen, Thomas & Hesselink, Geert (2021). IFC Building Models for Automated Extraction of Data from Balconies. Zenodo. https://doi.org/10.5281/zenodo.5047709",
+            "features": [
+                "large"
+            ]
+        },
+        {
+            "id": "zen-balconies-archicad17",
+            "url": "https://zenodo.org/api/records/5047709/files/a5.ifc/content",
+            "bytes": 36194815,
+            "sha256": "05c6b43e3f31bd4d2f4fb84ff6222dda725fbe4f6d7cec67d1eb3e1ddd253772",
+            "schema": "IFC2X3",
+            "exporter": "ArchiCAD 17",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/5047709",
+            "attribution": "Krijnen, Thomas & Hesselink, Geert (2021). Zenodo. https://doi.org/10.5281/zenodo.5047709",
+            "features": [
+                "mid-size",
+                "housing"
+            ]
+        },
+        {
+            "id": "zen-balconies-tekla2016",
+            "url": "https://zenodo.org/api/records/5047709/files/a8.ifc/content",
+            "bytes": 1874616,
+            "sha256": "80053d7bedc833d261e43ca6ce2a7f87a40620a334726593e8025e599cb0302c",
+            "schema": "IFC2X3",
+            "exporter": "Tekla Structures 2016i",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/5047709",
+            "attribution": "Krijnen, Thomas & Hesselink, Geert (2021). Zenodo. https://doi.org/10.5281/zenodo.5047709",
+            "features": [
+                "clipping",
+                "half-space",
+                "faceted-brep",
+                "steel",
+                "beams"
+            ]
+        },
+        {
+            "id": "zen-parking-house-ifc4x3",
+            "url": "https://zenodo.org/api/records/21924325/files/CaseA_Existing_Parking_House_FULL_BIM_WASTEie_IFC4X3_REV4_DTV_VALIDATED.ifc/content",
+            "bytes": 71958522,
+            "sha256": "f890d21827f20f0ea9574b45267374ba7ccd128704fab8b5ca92f9464f6ad2e7",
+            "schema": "IFC4X3_ADD2",
+            "exporter": "RECONMATIC workflow",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/21924325",
+            "attribution": "Fulka, Zdenek (2026). Case A Existing Parking House: FULL BIM-WASTEie Information Model (IFC 4.3). Zenodo. https://doi.org/10.5281/zenodo.21924325",
+            "features": [
+                "large-fallback",
+                "schema-migrated"
+            ]
+        },
+        {
+            "id": "zen-craslab-revit2023",
+            "url": "https://zenodo.org/api/records/7948116/files/craslabbim.ifc/content",
+            "bytes": 67553572,
+            "sha256": "a83e573037b0c4cbba30f1167ed96cda52eb51859091d2c7d47cec7a59e1a36b",
+            "schema": "IFC2X3",
+            "exporter": "Revit 2023 IFC exporter",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/7948116",
+            "attribution": "Abreu, Nuno; Souza, Rayssa; Andry; Anibal; Miguel (2023). Indoor point cloud dataset for BIM related applications. Zenodo. https://doi.org/10.5281/zenodo.7948116",
+            "features": [
+                "large-fallback",
+                "indoor"
+            ]
+        },
+        {
+            "id": "zen-taltech-revit2023-ifc4",
+            "url": "https://zenodo.org/api/records/15782433/files/DS3_TalTech_V4.ifc/content",
+            "bytes": 38728810,
+            "sha256": "05919eee0701b955d3d08501c4889c879d9c486e2389a6a1a5cdaad32a5d10ba",
+            "schema": "IFC4",
+            "exporter": "Revit 2023",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/15782433",
+            "attribution": "Veliskaki, Angeliki; Koltsios, Stavros; Giannopoulos, Georgios et al. (2025). SmartlivingEPC public building BIM model and measurements. Zenodo. https://doi.org/10.5281/zenodo.15782433",
+            "features": [
+                "mid-size"
+            ]
+        },
+        {
+            "id": "zen-chek-lisbon-revit2025-signed",
+            "url": "https://zenodo.org/api/records/17419355/files/signed_Demo_Lisbon_Updated.ifc/content",
+            "bytes": 12728850,
+            "sha256": "49118ab4c6ae407e3d0157afb8ed2e8984c9dcb6f26465f0f9c0fa0504178a7f",
+            "schema": "IFC4",
+            "exporter": "Revit 2025",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/17419355",
+            "attribution": "Stojanov, Trajche; Martinez, Borja; Muro, Lorenzo; Gonzalez, Angel (2025). CHEK Project Demonstration Models. Zenodo. https://doi.org/10.5281/zenodo.17419355",
+            "features": [
+                "polygonal-face-set",
+                "indexed-polycurve",
+                "map-conversion",
+                "openings",
+                "mapped-items",
+                "spaces",
+                "signature-comment-in-header"
+            ]
+        },
+        {
+            "id": "zen-prehealing-archicad27",
+            "url": "https://zenodo.org/api/records/14014621/files/PH_IFC4_rev01.ifc/content",
+            "bytes": 8935516,
+            "sha256": "dae45d4e3be4a5da310b521149e3b6f759afff0e7f635c176fd1d17e9b727701",
+            "schema": "IFC4",
+            "exporter": "Archicad 27",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/14014621",
+            "attribution": "Gonzalez-Fonteboa, Belen; Perez-Ordonez, Juan Luis; Seara-Paz, Sindy et al. (2024). PREHEALING. Zenodo. https://doi.org/10.5281/zenodo.14014621",
+            "features": [
+                "rebar",
+                "polygonal-face-set",
+                "openings",
+                "mapped-items",
+                "precast"
+            ]
+        },
+        {
+            "id": "zen-kit-smiley-west-corrected",
+            "url": "https://zenodo.org/api/records/10680698/files/smiley-west.ifc/content",
+            "bytes": 6107305,
+            "sha256": "f75f1e8b1a37840db7540e7855f51776f8d653f4af2e6d068cdd88bcde456c9d",
+            "schema": "IFC4",
+            "exporter": "Archicad 20",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/10680698",
+            "attribution": "Tauscher, Helga (2024). KIT Smiley West corrected. Zenodo. https://doi.org/10.5281/zenodo.10680698; original model: Institute for Automation and Applied Informatics (IAI) / Karlsruhe Institute of Technology (KIT)",
+            "features": [
+                "openings",
+                "spaces",
+                "mapped-items",
+                "faceted-brep",
+                "material-layer-set",
+                "reference-model"
+            ]
+        },
+        {
+            "id": "zen-rame-tower-edificius",
+            "url": "https://zenodo.org/api/records/10931088/files/Rame_Tower.ifc/content",
+            "bytes": 19540457,
+            "sha256": "70061585e5cd3ec920f56fc5068dd883b145d31d182e50a5b580d6b3d60487e4",
+            "schema": "IFC2X3",
+            "exporter": "ACCA Edificius",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/10931088",
+            "attribution": "Garcia-Leon, Josefina; Murrieri, Patrizia (2024). Model of the Rame Tower in IFC format. Zenodo. https://doi.org/10.5281/zenodo.10931088",
+            "features": [
+                "clipping",
+                "polygonal-bounded-half-space",
+                "composite-profile",
+                "faceted-brep",
+                "mapped-items",
+                "openings",
+                "heritage"
+            ]
+        },
+        {
+            "id": "zen-carpark-ifc4x3-generator",
+            "url": "https://zenodo.org/api/records/21828968/files/Malesice_CaseB_FINAL_IFC4X3_SJTSK_Bpv.ifc/content",
+            "bytes": 1675745,
+            "sha256": "cb292dd2ba9ecb4d12e19762156380f018ddd0086cac653c7fb16b37bf1181b2",
+            "schema": "IFC4X3_ADD2",
+            "exporter": "custom generator",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/21828968",
+            "attribution": "Fulka, Zdenek (2026). Car_park_CaseB_FLATBIM_3DModel_WASTEie. Zenodo. https://doi.org/10.5281/zenodo.21828968",
+            "features": [
+                "faceted-brep",
+                "shell-based-surface-model",
+                "map-conversion",
+                "georeferencing"
+            ]
+        },
+        {
+            "id": "zen-bridge-girder-ifc4x3-noadd",
+            "url": "https://zenodo.org/api/records/18920226/files/Output_2_main_Girder.ifc/content",
+            "bytes": 3274742,
+            "sha256": "49de183e8df3cf88868e99dd76a7ad9cee1785cd9b7914b334f177f7f3a583f5",
+            "schema": "IFC4X3",
+            "exporter": "IfcOpenShell 0.8.0",
+            "source": "Zenodo",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://zenodo.org/records/18920226",
+            "attribution": "Chen, Yu; Chun, Pang-jo (2026). Sample Input and Output Data for Automated IFC-Compliant Bridge Information Modeling. Zenodo. https://doi.org/10.5281/zenodo.18920226",
+            "features": [
+                "bridge",
+                "beams",
+                "extrusions",
+                "faceted-brep",
+                "schema-identifier-variant"
+            ]
+        },
+        {
+            "id": "freecad-manual-house",
+            "url": "https://raw.githubusercontent.com/yorikvanhavre/FreeCAD-manual/92d76e681a97da36cd201463d5ed82fc6f75a2c3/files/house.ifc",
+            "bytes": 67185,
+            "sha256": "e0244350186ad35250797770fb09a96d2e8b2dbfab387e960abd1bcfe3e0feea",
+            "schema": "IFC4",
+            "exporter": "FreeCAD 0.16",
+            "source": "yorikvanhavre/FreeCAD-manual",
+            "licence": "CC BY 4.0",
+            "licenceUrl": "https://github.com/yorikvanhavre/FreeCAD-manual/blob/92d76e681a97da36cd201463d5ed82fc6f75a2c3/README.md",
+            "attribution": "Yorik van Havre, 'A FreeCAD manual', CC BY 4.0, https://github.com/yorikvanhavre/FreeCAD-manual",
+            "features": [
+                "faceted-brep",
+                "small-house"
+            ]
+        },
+        {
+            "id": "webifc-swept-disk-hollow",
+            "url": "https://raw.githubusercontent.com/ThatOpen/engine_web-ifc/a7b53a8b41376993fb2f70cfe85e7a293d43348c/tests/functional/fixtures/swept-disk/ifc4-swept-disk-hollow.ifc",
+            "bytes": 1256,
+            "sha256": "b14c10bdcac925db364e8768dedc8fc048b6dcc58d5641d9074f9e419f2ad47b",
+            "schema": "IFC4",
+            "exporter": "IfcOpenShell 0.8.5 (hand-made fixture)",
+            "source": "ThatOpen/engine_web-ifc functional fixtures",
+            "licence": "MPL-2.0",
+            "licenceUrl": "https://github.com/ThatOpen/engine_web-ifc/blob/a7b53a8b41376993fb2f70cfe85e7a293d43348c/LICENSE.md",
+            "attribution": "That Open Company / web-ifc contributors, MPL-2.0, https://github.com/ThatOpen/engine_web-ifc",
+            "features": [
+                "swept-disk-solid",
+                "hollow"
+            ]
+        },
+        {
+            "id": "webifc-tapered-extrusion-hole",
+            "url": "https://raw.githubusercontent.com/ThatOpen/engine_web-ifc/a7b53a8b41376993fb2f70cfe85e7a293d43348c/tests/functional/fixtures/tapered-extrusion/ifc4-tapered-hole.ifc",
+            "bytes": 1871,
+            "sha256": "cedd64871b94b059ebbe1ce83948743edfb7075c866a03e377bcafd3aaf3bbed",
+            "schema": "IFC4",
+            "exporter": "IfcOpenShell 0.8.5 (hand-made fixture)",
+            "source": "ThatOpen/engine_web-ifc functional fixtures",
+            "licence": "MPL-2.0",
+            "licenceUrl": "https://github.com/ThatOpen/engine_web-ifc/blob/a7b53a8b41376993fb2f70cfe85e7a293d43348c/LICENSE.md",
+            "attribution": "That Open Company / web-ifc contributors, MPL-2.0, https://github.com/ThatOpen/engine_web-ifc",
+            "features": [
+                "extruded-area-solid-tapered",
+                "profile-with-void"
+            ]
+        },
+        {
+            "id": "webifc-sectioned-solid-horizontal-ifc4x3",
+            "url": "https://raw.githubusercontent.com/ThatOpen/engine_web-ifc/a7b53a8b41376993fb2f70cfe85e7a293d43348c/tests/functional/fixtures/sectioned-solid/ifc4x3_add2-sectioned-horizontal.ifc",
+            "bytes": 1582,
+            "sha256": "ccd0b30f152c54ecdfecbc93010b245ef136202670d6d30fc08f24086aace3af",
+            "schema": "IFC4X3_ADD2",
+            "exporter": "IfcOpenShell 0.8.5 (hand-made fixture)",
+            "source": "ThatOpen/engine_web-ifc functional fixtures",
+            "licence": "MPL-2.0",
+            "licenceUrl": "https://github.com/ThatOpen/engine_web-ifc/blob/a7b53a8b41376993fb2f70cfe85e7a293d43348c/LICENSE.md",
+            "attribution": "That Open Company / web-ifc contributors, MPL-2.0, https://github.com/ThatOpen/engine_web-ifc",
+            "features": [
+                "sectioned-solid-horizontal"
+            ]
+        }
+    ]
+}

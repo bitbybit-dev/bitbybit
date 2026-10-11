@@ -1,0 +1,11 @@
+{
+    "label": "Tutorials",
+    "key": "designer-tutorials",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Designer tutorials",
+        "description": "Step-by-step tutorials for the Designer. Each one is the same tutorial the Designer plays under Help > Tutorials, so the steps on the page and the steps in the app never differ, and every picture is rendered from the model those steps build.",
+        "slug": "/designer/tutorials"
+    }
+}

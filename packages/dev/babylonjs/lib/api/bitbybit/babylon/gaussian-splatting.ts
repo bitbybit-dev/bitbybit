@@ -1,8 +1,8 @@
 
 import { uniqueName } from "../../unique-name";
 import * as BABYLON from "@babylonjs/core";
-import { Context } from "../../context";
-import * as Inputs from "../../inputs";
+import type { Context } from "../../context";
+import type * as Inputs from "../../inputs";
 
 /**
  * Gaussian splatting scenes, captured real-world environments stored as clouds of soft colored

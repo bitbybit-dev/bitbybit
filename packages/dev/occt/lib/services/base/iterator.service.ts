@@ -1,7 +1,4 @@
-import {
-    BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape,
-    TopoDS_Shell, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire
-} from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 
 /**
  * Walks over the sub-shapes of a shape. Each walk is one kernel call that hands back every sub-shape

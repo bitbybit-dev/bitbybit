@@ -1,5 +1,5 @@
 
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import { BabylonGuiAdvancedDynamicTexture } from "./advanced-dynamic-texture";
 import { BabylonGuiStackPanel } from "./stack-panel";
 import { BabylonGuiContainer } from "./container";

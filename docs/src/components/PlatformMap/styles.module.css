@@ -1,0 +1,91 @@
+.map {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1.5rem 0 2rem;
+}
+
+.layer {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: 0.6rem;
+    background: var(--ifm-color-emphasis-100);
+}
+
+.title {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ifm-color-emphasis-700);
+}
+
+.items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.items .item {
+    margin: 0;
+}
+
+.link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    height: 100%;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: 0.45rem;
+    background: var(--ifm-background-color);
+    color: var(--ifm-font-color-base);
+    text-decoration: none;
+}
+
+.link:hover {
+    border-color: var(--ifm-color-primary);
+    color: var(--ifm-font-color-base);
+    text-decoration: none;
+}
+
+.name {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 700;
+}
+
+.plan {
+    padding: 0 0.4rem;
+    border-radius: 0.3rem;
+    background: var(--ifm-color-primary);
+    color: #1c1e21;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.detail {
+    font-size: 0.85rem;
+    color: var(--ifm-color-emphasis-700);
+    line-height: 1.35;
+}
+
+.packages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.2rem;
+}
+
+.packages code {
+    font-size: 0.7rem;
+    padding: 0 0.3rem;
+    white-space: nowrap;
+}

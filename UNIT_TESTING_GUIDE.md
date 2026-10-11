@@ -36,6 +36,8 @@ packages/dev/
 ├── jscad-worker/   ← @bitbybit-dev/jscad-worker
 ├── manifold/       ← @bitbybit-dev/manifold
 ├── manifold-worker/← @bitbybit-dev/manifold-worker
+├── ifc/            ← @bitbybit-dev/ifc
+├── ifc-worker/     ← @bitbybit-dev/ifc-worker
 └── core/           ← @bitbybit-dev/core
 ```
 
@@ -101,8 +103,14 @@ MeshInstance: vi.fn(function (mesh, material, node = mockNode) {
 | `npm run test-core` | Test core package |
 | `npm run test-jscad` | Test JSCAD package |
 | `npm run test-manifold` | Test Manifold package |
+| `npm run test-ifc` | Test IFC package |
 | `npm run test-threejs` | Test ThreeJS package |
-| `npm run test-playcavnas` | Test PlayCanvas package |
+| `npm run test-playcanvas` | Test PlayCanvas package |
+| `npm run test-babylonjs` | Test BabylonJS package |
+| `npm run test-occt-worker` | Test OCCT worker package |
+| `npm run test-jscad-worker` | Test JSCAD worker package |
+| `npm run test-manifold-worker` | Test Manifold worker package |
+| `npm run test-ifc-worker` | Test IFC worker package |
 
 Within individual packages:
 - `npm run test` - one run
@@ -112,6 +120,31 @@ Within individual packages:
 Coverage is a floor, not a report: `packages/dev/coverage-baseline.json` records what each suite
 reaches, and `npm run check:coverage-baseline` at the root fails a run that reaches less or that
 lost tests. Raise the floor with `npm run coverage-baseline:save` when a suite genuinely improves.
+
+## Test configuration
+
+`packages/dev/vitest.shared.ts` is the configuration every package suite shares. A package's
+`vitest.config.ts` passes it only what differs: the `coverage` globs, which are that package's
+denominator; `environment: "jsdom"` where the code under test reaches for a document or a canvas;
+`pool: "forks"` where a kernel holds global state, so each file gets its own process; and
+`siblingsFromDist`.
+
+- Siblings resolve through the `@bitbybit-dev/source` condition their exports maps put first, so a
+  suite reads a sibling's TypeScript sources and sees an edit without a rebuild. Node's own
+  conditions follow it, spelled out, because naming a condition replaces the default list rather
+  than adding to it. The packages directory as a whole is readable to the dev server, since siblings
+  sit beside a package, not under it.
+- `siblingsFromDist` names the siblings a suite reads from their built `dist` instead, both the bare
+  package name and any subpath under it. The renderer suites need it: they mount an engine against
+  compiled siblings, and a sibling's sources would drag its own untranspiled dependencies into the
+  run. Build those siblings before running such a suite.
+- The coverage exclusions are spelled out in full, because naming one replaces vitest's defaults:
+  the tests, `__mocks__`, `__test__` (the kernel boot helpers the suites share), and the inputs
+  fragments, which are the authoring form of an assembled namespace already counted.
+- Results are written as JSON to `test-results/vitest.json` for the repository's test report. On
+  GitHub Actions the annotations stay and the runner's own job summary is switched off, leaving the
+  summary to that report. The SDK, the scaffolder and the MCP server keep their own configs and
+  write the same results.
 
 ## AAA Pattern (Arrange-Act-Assert)
 

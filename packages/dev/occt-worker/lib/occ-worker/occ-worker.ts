@@ -1,10 +1,11 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules, readKernelException } from "@bitbybit-dev/occt";
-import { describeKernelFailure, prepareKernelCall } from "@bitbybit-dev/base";
+import { InputError, describeKernelFailure, prepareKernelCall, setKernelStepSink } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
-import { getCommandHandler, CommandContext } from "./command-handlers";
+import type { CommandContext } from "./command-handlers";
+import { getCommandHandler } from "./command-handlers";
 
 let kernel: BitbybitOcctModule;
 let openCascade: OCCTService;
@@ -13,26 +14,24 @@ let shapeResolver: ShapeResolver;
 let resultSerializer: ResultSerializer;
 let functionPathResolver: FunctionPathResolver;
 
-/** Starts the worker again after the kernel crashed, by calling initializationComplete anew. */
-let restartKernel: (() => unknown) | undefined;
-/** Counts the kernels the worker has been given, so a restart can tell whether one arrived. */
-let kernelGeneration = 0;
-/** Set while a crashed kernel is being replaced; calls wait for it. */
-let restarting: Promise<void> | undefined;
-/** What crashed the kernel, when it was not replaced; every later call is refused. */
-let lostKernel: string | undefined;
-/**
- * The kernel's three progress words, shared with the manager: word 0 asks the running call to stop,
- * word 1 is its progress in thousandths, word 2 counts the algorithms it started. Undefined where
- * memory cannot be shared (a page that is not cross-origin isolated) or the kernel predates them.
- */
-let progressWords: Int32Array | undefined;
+const STOP_REQUEST_WORD = 0;
+const PROGRESS_WORD_COUNT = 3;
+const STEP_WORD_COUNT = 2;
+const STEPS_DONE_WORD = 0;
+const STEPS_TOTAL_WORD = 1;
 
-/**
- * The words the kernel reports progress in and reads a stop request from, over memory the manager
- * can share: the multithreaded kernel's own memory, or for the other kernels a SharedArrayBuffer
- * handed to the module, which the kernel keeps in step with its own words.
- */
+let restartKernel: (() => unknown) | undefined;
+let kernelGeneration = 0;
+let restarting: Promise<void> | undefined;
+let lostKernel: string | undefined;
+let meshRetention = 0;
+let progressWords: Int32Array | undefined;
+let stepWords: Int32Array | undefined;
+
+type Held = { call: DataInput; postMessage: (message: unknown) => void };
+
+let held: Held[] | undefined = [];
+
 function progressWordsOf(occ: BitbybitOcctModule): Int32Array | undefined {
     const control = (occ as Partial<BitbybitOcctModule>).ProgressControl;
     if (typeof SharedArrayBuffer === "undefined" || control === undefined) {
@@ -42,23 +41,17 @@ function progressWordsOf(occ: BitbybitOcctModule): Int32Array | undefined {
     if (kernelWords.buffer instanceof SharedArrayBuffer) {
         return kernelWords;
     }
-    const hostWords = new Int32Array(new SharedArrayBuffer(3 * Int32Array.BYTES_PER_ELEMENT));
+    const hostWords = new Int32Array(new SharedArrayBuffer(PROGRESS_WORD_COUNT * Int32Array.BYTES_PER_ELEMENT));
     (occ as BitbybitOcctModule & { bitbybitControl?: Int32Array }).bitbybitControl = hostWords;
     return hostWords;
 }
 
-/** True when the manager asked the running call to stop. */
 function stopRequested(): boolean {
-    return progressWords !== undefined && Atomics.load(progressWords, 0) !== 0;
+    return progressWords !== undefined && Atomics.load(progressWords, STOP_REQUEST_WORD) !== 0;
 }
 
-/** Thrown inside a call the manager stopped, so nothing it made is cached. */
 class CallStopped extends Error { }
 
-/**
- * Pending dependencies that need to be added to plugins once OpenCascade is initialized.
- * This handles the case where addOc is called before full initialization.
- */
 const pendingDependencies: Record<string, unknown> = {};
 
 /**
@@ -73,6 +66,7 @@ export type DataInput = {
         functionName: string;
         inputs: Record<string, unknown>;
     };
+
     /**
      * Unique identifier used to match responses with their corresponding requests.
      */
@@ -86,7 +80,8 @@ export type DataInput = {
  * an unknown state, so the worker answers that call as a `crash` and never runs the crashed kernel
  * again. Pass `restart` to have the worker start over: it is called once per crash and must end by
  * calling `initializationComplete` again with a new module and new plugins, and calls wait until it
- * has. Without it, every later call is refused.
+ * has. Without it, every later call is refused. Calls that arrive before the first kernel is given
+ * wait for it, and are answered in the order they came.
  *
  * @param occ - The BitbybitOcctModule instance
  * @param plugins - Optional plugins to add to the OpenCascade service (e.g., AdvancedOCCT)
@@ -102,10 +97,15 @@ export const initializationComplete = (
     restart?: () => unknown
 ): CacheHelper => {
     kernel = occ;
+    if (restarting === undefined) {
+        meshRetention = 0;
+    } else if (meshRetention > 0) {
+        occ.SetMeshRetention(meshRetention);
+    }
     kernelGeneration++;
     lostKernel = undefined;
     restartKernel = restart;
-    cacheHelper = new CacheHelper(occ);
+    cacheHelper = new CacheHelper();
 
     const vecService = new VectorHelperService();
     const shapesService = new ShapesHelperService();
@@ -124,22 +124,37 @@ export const initializationComplete = (
     }
 
     progressWords = progressWordsOf(occ);
+    stepWords = progressWords === undefined ? undefined : stepWords ?? new Int32Array(new SharedArrayBuffer(STEP_WORD_COUNT * Int32Array.BYTES_PER_ELEMENT));
+    const steps = stepWords;
+    if (steps !== undefined) {
+        setKernelStepSink(({ done, total }) => {
+            Atomics.store(steps, STEPS_TOTAL_WORD, total);
+            Atomics.store(steps, STEPS_DONE_WORD, done);
+        });
+    } else {
+        setKernelStepSink(doNotPost ? undefined : ({ done, total }) => { postMessage({ steps: { done, total } }); });
+    }
     if (!doNotPost && progressWords !== undefined) {
-        postMessage({ progressWords });
+        postMessage({ progressWords, stepWords });
     }
     if (!doNotPost && restarting === undefined) {
         postMessage(WorkerMessages.INITIALIZED);
     }
+    const waiting = held ?? [];
+    held = undefined;
+    waiting.forEach(({ call, postMessage: answer }) => onMessageInput(call, answer));
 
     return cacheHelper;
 };
 
-/**
- * Creates the command context for command handlers.
- */
 function createCommandContext(): CommandContext {
     return {
         openCascade,
+        kernel,
+        setMeshRetention: (triangles: number) => {
+            kernel.SetMeshRetention(triangles);
+            meshRetention = triangles;
+        },
         cacheHelper,
         shapeResolver,
         addPendingDependency: (key: string, value: unknown) => {
@@ -148,13 +163,10 @@ function createCommandContext(): CommandContext {
     };
 }
 
-/** What the worker answers when a call failed and even its failure could not be sent back. */
-const UNREPORTABLE_FAILURE = "OCCT computation failed, and the failure could not be reported.";
+const unreportableFailure = (functionName: unknown): string => typeof functionName === "string" && functionName !== ""
+    ? `OCCT '${functionName}' failed, and the failure could not be reported.`
+    : "OCCT computation failed, and the failure could not be reported.";
 
-/**
- * Stops running the crashed kernel: starts it over when the worker can, or remembers the crash so
- * every later call is refused. Returns what the caller of the crashed call is told happens next.
- */
 function afterCrash(crash: string): string {
     const restart = restartKernel;
     if (restart === undefined) {
@@ -180,17 +192,6 @@ function afterCrash(crash: string): string {
     return " The kernel is restarting, and every shape made before it is gone.";
 }
 
-/**
- * Executes a standard (cacheable) OCCT function.
- * 
- * This handles the common flow:
- * 1. Lay the inputs over the defaults of the DTO the operation takes, so a property left out, or
- *    passed as undefined or as null where it has a default, gets its default, and cache the call
- *    under those inputs
- * 2. Only on a cache miss: report what the inputs would be rejected for, resolve the shape
- *    references in them recursively, and run the function - a hit touches no referenced shape
- * 3. Serialize the result for transmission
- */
 function executeStandardFunction(
     action: DataInput["action"]
 ): unknown {
@@ -221,6 +222,10 @@ export const onMessageInput = (
     d: DataInput,
     postMessage: (message: unknown) => void
 ): void => {
+    if (held !== undefined) {
+        held.push({ call: d, postMessage });
+        return;
+    }
     if (restarting !== undefined) {
         void restarting.then(() => onMessageInput(d, postMessage));
         return;
@@ -231,11 +236,18 @@ export const onMessageInput = (
     }
     postMessage(WorkerMessages.BUSY);
     (kernel as Partial<BitbybitOcctModule> | undefined)?.ProgressBeginCall?.();
+    if (stepWords !== undefined) {
+        Atomics.store(stepWords, STEPS_DONE_WORD, 0);
+        Atomics.store(stepWords, STEPS_TOTAL_WORD, 0);
+    }
 
     let result: unknown;
     let started = "";
 
     try {
+        if (typeof d.action?.functionName !== "string" || d.action.functionName === "") {
+            throw new InputError("An OCCT call must name the method it calls, such as shapes.solid.createBox");
+        }
         const { functionName, inputs } = d.action;
         started = functionName;
 
@@ -279,7 +291,7 @@ export const onMessageInput = (
                 stack: failure.stack,
             });
         } catch {
-            postMessage({ uid: d?.uid, result: undefined, error: UNREPORTABLE_FAILURE, errorKind: "kernel" });
+            postMessage({ uid: d?.uid, result: undefined, error: unreportableFailure(d?.action?.functionName), errorKind: "kernel" });
         }
     }
 };

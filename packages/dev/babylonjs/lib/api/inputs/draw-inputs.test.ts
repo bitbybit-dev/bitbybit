@@ -81,7 +81,8 @@ describe("Draw DTO unit tests", () => {
             expect(result.crossSectionColour).toBe("#ff00ff");
             expect(result.crossSectionWidth).toBe(2);
             expect(result.crossSectionOpacity).toBe(1);
-            expect(result.computeNormals).toBe(false);
+            expect(result.computeNormals).toBe(true);
+            expect(result.minSharpAngle).toBe(40);
             expect(result.drawTwoSided).toBe(true);
             expect(result.backFaceColour).toBe("#0000ff");
             expect(result.backFaceOpacity).toBe(1);
@@ -224,6 +225,38 @@ describe("Draw DTO unit tests", () => {
             expect([result.surfaceAnalysis, result.draftDirection]).toEqual([Inputs.OCCT.surfaceAnalysisEnum.none, [0, 1, 0]]);
             expect("analysisMin" in result).toBe(false);
             expect("analysisMax" in result).toBe(false);
+        });
+
+        it("should take the edge contrast as its last constructor parameter and leave it out by default", () => {
+            // Act
+            const given = new Draw.DrawOcctShapeOptions(
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0.4
+            );
+            const left = new Draw.DrawOcctShapeOptions();
+
+            // Assert
+            expect(given.edgeContrast).toBe(0.4);
+            expect(given.edgeColour).toBe("#ffffff");
+            expect("edgeContrast" in left).toBe(false);
+        });
+
+        it("should take the angular and the relative deflection after the edge contrast, 0.5 and false by default", () => {
+            // Act
+            const given = new Draw.DrawOcctShapeOptions(
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0.2, true
+            );
+            const left = new Draw.DrawOcctShapeOptions();
+
+            // Assert
+            expect(given.angularDeflection).toBe(0.2);
+            expect(given.relativeDeflection).toBe(true);
+            expect("edgeContrast" in given).toBe(false);
+            expect(left.angularDeflection).toBe(0.5);
+            expect(left.relativeDeflection).toBe(false);
         });
     });
 

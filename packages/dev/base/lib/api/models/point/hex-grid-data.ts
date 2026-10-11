@@ -1,4 +1,4 @@
-import { Base } from "../../inputs/base-inputs";
+import type { Base } from "../../inputs/base-inputs";
 
 /**
  * A generated hexagonal grid: the center point of every hexagon, its corner points, and the

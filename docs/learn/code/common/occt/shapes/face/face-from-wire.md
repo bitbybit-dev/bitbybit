@@ -3,6 +3,8 @@ sidebar_position: 4
 title: Face From Wire
 sidebar_label: Face From Wire
 description: Create an OCCT face from a single closed wire, the most common way to turn an outline into a surface you can extrude, offset or boolean against.
+topic: code.occt.shapes.face.from-wire
+type: how-to
 tags: [code, occt, rete, blockly, typescript]
 ---
 
@@ -50,7 +52,7 @@ This example demonstrates creating a star-shaped face from a reversed wire to co
 <TabItem value="typescript" label="TypeScript">
 <BitByBitRenderCanvas
     requireManualStart={true}
-    script={{"script":"// Import required DTOs and types for wire and face creation\nconst { StarDto, FaceFromWireDto } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\ntype Vector3 = Bit.Inputs.Base.Vector3;\ntype TopoDSWirePointer = Bit.Inputs.OCCT.TopoDSWirePointer;\n\n// Get access to OCCT wire and face creation functions\nconst { wire, face } = bitbybit.occt.shapes;\n\n// Define the main function to create a face from a wire\nconst start = async () => {\n    // Create a star wire\n    const starOptions = new StarDto();\n    starOptions.center = [0, 0, 0] as Point3;\n    starOptions.direction = [0, 1, 0] as Vector3;\n    starOptions.numRays = 7;\n    starOptions.outerRadius = 7;\n    starOptions.innerRadius = 3;\n    starOptions.offsetOuterEdges = 0;\n    starOptions.half = false;\n\n    const starWire = await wire.createStarWire(starOptions);\n\n    // Reverse the wire orientation\n    const reversedWire = await wire.reversedWire({ shape: starWire });\n\n    // Create a face from the reversed wire\n    const faceOptions = new FaceFromWireDto<TopoDSWirePointer>();\n    faceOptions.shape = reversedWire;\n    faceOptions.planar = true;\n\n    const faceFromWire = await face.createFaceFromWire(faceOptions);\n\n    // Draw the created face\n    bitbybit.draw.drawAnyAsync({ entity: faceFromWire });\n}\n\n// Execute the function\nstart();","type":"typescript"}}
+    script={{"script":"// Import required DTOs and types for wire and face creation\nconst { StarDto, FaceFromWireDto } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\ntype Vector3 = Bit.Inputs.Base.Vector3;\ntype TopoDSWirePointer = Bit.Inputs.OCCT.TopoDSWirePointer;\n\n// Get access to OCCT wire and face creation functions\nconst { wire, face } = bitbybit.occt.shapes;\n\n// Create a face from a wire\n// Create a star wire\nconst starOptions = new StarDto();\nstarOptions.center = [0, 0, 0] as Point3;\nstarOptions.direction = [0, 1, 0] as Vector3;\nstarOptions.numRays = 7;\nstarOptions.outerRadius = 7;\nstarOptions.innerRadius = 3;\nstarOptions.offsetOuterEdges = 0;\nstarOptions.half = false;\n\nconst starWire = await wire.createStarWire(starOptions);\n\n// Reverse the wire orientation\nconst reversedWire = await wire.reversedWire({ shape: starWire });\n\n// Create a face from the reversed wire\nconst faceOptions = new FaceFromWireDto<TopoDSWirePointer>();\nfaceOptions.shape = reversedWire;\nfaceOptions.planar = true;\n\nconst faceFromWire = await face.createFaceFromWire(faceOptions);\n\n// Draw the created face\nbitbybit.draw.drawAnyAsync({ entity: faceFromWire });","type":"typescript"}}
     title="Creating face from wire"
     />
 </TabItem>

@@ -1,12 +1,27 @@
 import * as Inputs from "../../inputs/manifold-inputs";
-import * as Manifold3D from "manifold-3d";
-import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Manifold3D from "manifold-3d";
+import type { Base } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
+import { isTransformMatrix, linearDeterminant } from "@bitbybit-dev/base/lib/api/services/helpers/matrices";
+import { pathTangents, roundedPath3, sweepMatrices, transportedAxes } from "@bitbybit-dev/base/lib/api/services/helpers/paths";
+import type * as Resolved from "../../resolved-inputs";
+import { loftMesh } from "../recipes/recipe-loft";
+import type { ProfileRings } from "../recipes/recipe-types";
+import { DEGENERATE_DETERMINANT, FULL_TURN, MIN_CIRCLE_SIDES, MIN_LOFT_FRAMES, NO_DIRECTION } from "./cross-section.constants";
+
+function isPlacing(frame: unknown): frame is Base.TransformMatrix {
+    return isTransformMatrix(frame) && frame[3] === 0 && frame[7] === 0 && frame[11] === 0 && frame[15] === 1 && Math.abs(linearDeterminant(frame)) > DEGENERATE_DETERMINANT;
+}
+
+function distinctPoints(path: readonly Base.Point3[]): Base.Point3[] {
+    return path.filter((point, at) => at === 0 || point.some((value, axis) => value !== path[at - 1]![axis]));
+}
 
 /**
  * Working with Manifold cross-sections beyond booleans: turning them into solids by extruding along
- * Z or revolving, offsetting their outlines, wrapping them in a convex hull, simplifying them, and
- * composing and decomposing them. Every method returns a new shape.
+ * Z, revolving, lofting through frames or sweeping along a path, offsetting their outlines, wrapping
+ * them in a convex hull, simplifying them, and composing and decomposing them. Every method returns a
+ * new shape.
  */
 export class CrossSectionOperations {
 
@@ -80,6 +95,78 @@ export class CrossSectionOperations {
         } else {
             return res;
         }
+    }
+
+    /**
+     * Joins cross-sections placed by frames into a solid, each section to the next by straight
+     * sides, closed at both ends: a taper from one outline to another, or one outline through many
+     * frames.
+     *
+     * Corner `i` of a section joins corner `i` of the next, so differing sections need matching loops;
+     * frames move the sections apart, mirroring all or none.
+     * @param inputs - The cross-sections, one or one per frame, and the frames that place them
+     * @returns The lofted solid
+     * @group basic
+     * @shortname loft
+     * @drawable true
+     * @example
+     * ```typescript
+     * const square = await bitbybit.manifold.crossSection.shapes.square({ size: 2, center: true });
+     * const solid = await bitbybit.manifold.crossSection.operations.loft({ crossSections: [square], frames: [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], [0.5, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 1, 0, 0, 0, 4, 1]] });
+     * ```
+     */
+    loft(inputs: Inputs.Manifold.LoftDto<Manifold3D.CrossSection>): Manifold3D.Manifold {
+        const { crossSections, frames } = inputs;
+        if (!Array.isArray(frames) || frames.length < MIN_LOFT_FRAMES) {
+            throw new InputError(`A loft needs at least ${MIN_LOFT_FRAMES} frames`, "frames");
+        }
+        const wrong = frames.findIndex((frame) => !isPlacing(frame));
+        if (wrong >= 0) {
+            throw new InputError(`Frame ${wrong} is not sixteen numbers in column-major order with 0, 0, 0, 1 as the bottom row that place a plane without flattening it`, "frames");
+        }
+        const firstMirrors = linearDeterminant(frames[0]!) < 0;
+        const turnedOver = frames.findIndex((frame) => linearDeterminant(frame) < 0 !== firstMirrors);
+        if (turnedOver >= 0) {
+            throw new InputError(`Frame ${turnedOver} turns the profile over where frame 0 does not, or the other way round: a loft's frames all mirror, or none do`, "frames");
+        }
+        if (!Array.isArray(crossSections) || (crossSections.length !== 1 && crossSections.length !== frames.length)) {
+            throw new InputError(`A loft needs one cross-section, or one for each of its ${frames.length} frames`, "crossSections");
+        }
+        const sections: ProfileRings[] = crossSections.map((crossSection) => crossSection.toPolygons());
+        return this.manifold.Manifold.ofMesh(loftMesh(this.manifold, sections, Float64Array.from(frames.flat()), undefined, "The loft"));
+    }
+
+    /**
+     * Carries a cross-section along a path of points into a solid, square to the path at every
+     * point and turning with it without twisting, like a pipe, a rail or a cable.
+     *
+     * Sharp corners are mitred so the solid keeps its width; `cornerRadius` rounds them instead.
+     * `xDirection` sets where the profile's X axis points at the start.
+     * @param inputs - The cross-section, the path, the corner radius and its segments, and the profile's starting X direction
+     * @returns The swept solid
+     * @group basic
+     * @shortname sweep
+     * @drawable true
+     * @example
+     * ```typescript
+     * const ring = await bitbybit.manifold.crossSection.shapes.circle({ radius: 1, circularSegments: 32 });
+     * const pipe = await bitbybit.manifold.crossSection.operations.sweep({ crossSection: ring, path: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [10, 10, 10]], cornerRadius: 3, circularSegments: 32 });
+     * ```
+     */
+    sweep(inputs: Inputs.Manifold.SweepDto<Manifold3D.CrossSection>): Manifold3D.Manifold {
+        const resolved = resolveDto(Inputs.Manifold.SweepDto, inputs) as Resolved.Manifold.SweepDto<Manifold3D.CrossSection>;
+        const path = Array.isArray(resolved.path) ? distinctPoints(resolved.path) : [];
+        if (path.length < MIN_LOFT_FRAMES) {
+            throw new InputError(`A sweep needs a path of at least ${MIN_LOFT_FRAMES} distinct points`, "path");
+        }
+        if (!Number.isSafeInteger(resolved.circularSegments) || resolved.circularSegments < MIN_CIRCLE_SIDES) {
+            throw new InputError(`A rounded corner needs at least ${MIN_CIRCLE_SIDES} segments a turn, got ${resolved.circularSegments}`, "circularSegments");
+        }
+        const step = FULL_TURN / resolved.circularSegments;
+        const points = resolved.cornerRadius > 0 ? roundedPath3(path, resolved.cornerRadius, (turn) => Math.ceil(turn / step)) : path;
+        const tangents = pathTangents(points);
+        const frames = sweepMatrices(points, tangents, transportedAxes(points, tangents, resolved.xDirection ?? NO_DIRECTION));
+        return this.loft({ crossSections: [resolved.crossSection], frames });
     }
 
     /**

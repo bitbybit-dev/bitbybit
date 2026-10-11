@@ -4,6 +4,7 @@ import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Verb, Tag, Time, OCCTW, Asset, JSONBitByBit, CSVBitByBit } from "@bitbybit-dev/core";
 import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import { IFCBitByBit, IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
 import {
     Vector, Point, Frame, Line, Polyline, TextBitByBit, Color, MathBitByBit,
     Lists, Logic, Transforms, Dates, MeshBitByBit
@@ -31,6 +32,7 @@ describe("BitByBitBase unit tests", () => {
             ["context", Context],
             ["jscadWorkerManager", JSCADWorkerManager],
             ["manifoldWorkerManager", ManifoldWorkerManager],
+            ["ifcWorkerManager", IFCWorkerManager],
             ["occtWorkerManager", OCCTWorkerManager],
             ["math", MathBitByBit],
             ["logic", Logic],
@@ -48,6 +50,7 @@ describe("BitByBitBase unit tests", () => {
             ["verb", Verb],
             ["jscad", JSCAD],
             ["manifold", ManifoldBitByBit],
+            ["ifc", IFCBitByBit],
             ["text", TextBitByBit],
             ["dates", Dates],
             ["tag", Tag],

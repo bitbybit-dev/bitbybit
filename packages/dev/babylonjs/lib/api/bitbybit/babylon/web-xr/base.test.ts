@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
-import * as BABYLON from "@babylonjs/core";
-import { createHeadlessScene, HeadlessScene } from "../../../__test__/headless";
+import type * as BABYLON from "@babylonjs/core";
+import type { HeadlessScene } from "../../../__test__/headless";
+import { createHeadlessScene } from "../../../__test__/headless";
 import { BabylonWebXRBase } from "./base";
 import * as Inputs from "../../../inputs";
 

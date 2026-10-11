@@ -1,8 +1,11 @@
 ---
-sidebar_position: 4
+sidebar_position: 16
 title: Our Vision
 sidebar_label: Our Vision
 description: Why Bitbybit exists, our open-core philosophy, and how commercial products sustain the open-source foundation.
+topic: platform.about.vision
+type: explanation
+verified: 2026-10-11
 tags: [vision, philosophy, open-source, business-model]
 ---
 
@@ -24,17 +27,17 @@ We are transparent about how this works. Our business follows an **open-core mod
 
 ### What is free and open
 
-The core NPM packages - wrapping OpenCASCADE, JSCAD, Manifold, and our base utilities - are MIT-licensed and always will be. You can install them, inspect the source, modify them, and ship them in commercial products. (Third-party dependencies like OpenCASCADE retain their own licenses, such as LGPL.) The visual IDEs are free to use. Runners are free to deploy under the [Bitbybit Runner License](./runners/licensing).
+The core NPM packages - wrapping OpenCASCADE, JSCAD, Manifold, and our base utilities - are MIT-licensed and always will be. You can install them, inspect the source, modify them, and ship them in commercial products. (Third-party dependencies like OpenCASCADE retain their own licenses, such as LGPL.) The three coding editors are free to use. Runners are free to deploy under the [Bitbybit Runner License](./runners/licensing).
 
 This is not a trial or a freemium teaser. The open-source core is production-grade software that powers real applications.
 
 ### What is commercial
 
-Revenue comes from four sources:
+Revenue comes from:
 
 1. **CAD Cloud API** - Managed server infrastructure for heavy geometry processing. Customers pay based on usage.
 2. **3D Bits for Shopify** - A subscription-based app that brings 3D configurators to e-commerce storefronts, including the no-code [Composer](/learn/3d-bits/composer/intro) for building configurators visually.
-3. **Premium features** - Certain advanced algorithms (`bitbybit.advanced`, `bitbybit.things`, `bitbybit.asset`) that go beyond the open-source core.
+3. **The Silver and Gold plans of bitbybit.dev** - Cloud space, the platform algorithms (`bitbybit.advanced` and `bitbybit.things`) that go beyond the open-source core, and, with Gold, the [Designer](/learn/designer/intro). [Plans](/learn/plans) lists what each includes.
 4. **Enterprise services** - Custom development, dedicated infrastructure, and bespoke CAD solutions built in close collaboration with B2B clients.
 
 ### Why this matters
@@ -43,11 +46,17 @@ Commercial revenue directly funds the open-source core. Every subscription, API 
 
 This creates a virtuous cycle: developers and designers start with the free tools, build their skills, and as their needs grow - more compute, more automation, more support - they move to paid products. Meanwhile, the free tier keeps getting stronger.
 
+## Designing with AI
+
+We think AI will become a large part of how things are designed, and we are building Bitbybit for that. A parametric model is a set of rules, sizes, steps and relations, which is what a language model reads and writes well; and a model made of rules stays exact, editable and exportable, where a generated mesh can only be looked at. So the person keeps the judgement and the agent does more of the work: you describe what you want, an agent writes or changes the model, you review it, adjust a parameter, and send it to manufacturing as STEP.
+
+That is why our API is published in the form agents read, through the free [Bitbybit CAD MCP](./using-ai-with-bitbybit/mcp/bitbybit-mcp); why agents can run geometry on CAD Cloud; and why [the Designer](./designer/working-with-agents) lets an agent work beside you, with every change waiting for your review. A jet engine of 130 parts placed 4,853 times, [written by an agent](/blog/bitbybit-mcp-ai-ready-jet-engine), shows how far this already goes.
+
 ## Who We Serve
 
 Our users range from students learning geometry for the first time to enterprise teams automating industrial manufacturing workflows. We design for both.
 
-**For learners and makers:** Zero-friction browser tools, no accounts required, visual programming that teaches real concepts. We believe that educated users become the next wave of creators - and that spreading 3D literacy benefits everyone.
+**For learners and makers:** Zero-friction browser tools, no account needed to start, visual programming that teaches real concepts. We believe that educated users become the next wave of creators - and that spreading 3D literacy benefits everyone.
 
 **For businesses and enterprises:** Production-grade infrastructure, custom development, and a team that understands CAD at a deep level. We partner with organizations in manufacturing, industrial design, e-commerce, and beyond to build and maintain solutions that work at scale. We develop the server-side components ourselves or in close collaboration with our clients to ensure quality and security.
 

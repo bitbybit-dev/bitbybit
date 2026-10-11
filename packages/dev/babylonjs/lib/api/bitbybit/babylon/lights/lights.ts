@@ -1,5 +1,5 @@
 
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import { BabylonShadowLight } from "./shadow-light";
 
 /**

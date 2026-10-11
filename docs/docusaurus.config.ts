@@ -3,7 +3,8 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
 import packageJson from "./package.json";
-import { readFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync } from "fs";
+import shotPlaceholders from "./src/remark/shot-placeholders";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -20,11 +21,66 @@ function readBuildId(): string {
 }
 const buildId = readBuildId();
 
+// Screenshots not published yet, shown on a local start only: LEARN_MEDIA_LOCAL=1 reads the unpublished
+// images in .learn-media-local/ (gitignored), serves their files, and lets <Shot>
+// and the pages' shot placeholders show them. A build refuses it, so no candidate is ever deployed.
+interface LocalMedia {
+    id: string;
+    url: string;
+    width: number;
+    height: number;
+    alt: string;
+    kind: string;
+    bytes: number;
+}
+function readLocalMedia(): LocalMedia[] {
+    if (process.env.LEARN_MEDIA_LOCAL !== "1") {
+        return [];
+    }
+    if (process.argv.includes("build")) {
+        throw new Error("LEARN_MEDIA_LOCAL is for a local start only: a build shows published media alone");
+    }
+    try {
+        return JSON.parse(readFileSync("./.learn-media-local/manifest.json", "utf8")) as LocalMedia[];
+    } catch {
+        throw new Error("LEARN_MEDIA_LOCAL is set, but .learn-media-local/manifest.json is missing: copy the candidates in first");
+    }
+}
+const localMedia = readLocalMedia();
+
+// The editor the learn pages embed their Rete, Blockly and TypeScript scripts in is the published one. On a local
+// start, an editor named by LEARN_EDITOR_URL, or by the gitignored file .learn-editor-url, is tried first: each
+// embed uses it when it answers and falls back to the published editor when it does not. A build reads neither.
+const editorUrl = "https://s.bitbybit.dev";
+function readLocalEditorUrl(): string | null {
+    if (process.argv.includes("build")) {
+        return null;
+    }
+    const configured = process.env.LEARN_EDITOR_URL ?? (existsSync("./.learn-editor-url") ? readFileSync("./.learn-editor-url", "utf8") : "");
+    return configured.trim() === "" ? null : new URL(configured.trim()).toString();
+}
+const localEditorUrl = readLocalEditorUrl();
+
+// Search reads a Pagefind index that only a build makes (build/pagefind). A local start serves the last build's copy
+// from .search-index/ (gitignored, kept by npm run index-search), so search works on npm start too and picks up the
+// next build without a restart; a build serves its own index.
+const localSearchIndex = process.argv.includes("build") ? [] : [".search-index"];
+if (localSearchIndex.length > 0) {
+    mkdirSync("./.search-index", { recursive: true });
+}
+
+// The local candidates fill the shot placeholders of the learn pages and of the blog alike.
+const localMediaPlugins = localMedia.length > 0 ? [[shotPlaceholders, { entries: localMedia.map((entry) => ({ id: entry.id, kind: entry.kind })) }]] : [];
+
 const config: Config = {
     customFields: {
         bitbybitVersion: packageJson.version,
         buildId,
+        learnMediaLocal: localMedia,
+        editorUrl,
+        localEditorUrl,
     },
+    staticDirectories: [...(localMedia.length > 0 ? ["static", ".learn-media-local/static"] : ["static"]), ...localSearchIndex],
     title: "Bitbybit",
     tagline: "Learn How To Use The Platform",
     favicon: "img/favicon-96x96.png",
@@ -159,8 +215,10 @@ const config: Config = {
                     onInlineTags: "throw",
                     editUrl:
                         "https://github.com/bitbybit-dev/bitbybit/tree/master/docs/",
+                    remarkPlugins: localMediaPlugins,
                 },
                 blog: {
+                    remarkPlugins: localMediaPlugins,
                     blogTitle: "Bitbybit Blog",
                     blogDescription: "Release notes, tutorials and product news from the bitbybit.dev 3D CAD platform - visual programming, OpenCascade geometry, Shopify 3D configurators and the open-source packages behind them.",
                     showReadingTime: true,
@@ -283,15 +341,25 @@ const config: Config = {
                     position: "left",
                     label: "Learn",
                 },
+                { to: "/learn/getting-started/overview", label: "Getting Started", position: "left" },
+                { to: "/learn/designer/intro", label: "Designer", position: "left" },
                 { to: "/learn/code/intro", label: "Code", position: "left" },
                 { to: "/learn/3d-bits/intro", label: "3D Bits", position: "left" },
                 { to: "/learn/using-ai-with-bitbybit/intro", label: "AI", position: "left" },
-                { to: "/learn/getting-started/engines/threejs", label: "ThreeJS", position: "left" },
-                { to: "/learn/getting-started/engines/babylonjs", label: "BabylonJS", position: "left" },
-                { to: "/learn/getting-started/engines/playcanvas", label: "PlayCanvas", position: "left" },
-                { to: "/blog", label: "Blog", position: "left" },
-                { to: "/api/cloud-api", label: "API", position: "left" },
-                { to: "https://bitbybit.dev", label: "Home", position: "left" },
+                {
+                    type: "dropdown",
+                    label: "Engines",
+                    position: "left",
+                    items: [
+                        { to: "/learn/getting-started/engines/babylonjs", label: "BabylonJS" },
+                        { to: "/learn/getting-started/engines/threejs", label: "ThreeJS" },
+                        { to: "/learn/getting-started/engines/playcanvas", label: "PlayCanvas" },
+                    ],
+                },
+                { to: "/blog", label: "Blog", position: "left", className: "navbar-hide-medium" },
+                { to: "/api/cloud-api", label: "API", position: "left", className: "navbar-hide-medium" },
+                { to: "https://bitbybit.dev", label: "Home", position: "left", className: "navbar-hide-medium" },
+                { type: "search", position: "right" },
                 {
                     href: "https://bitbybit.dev/auth/pick-plan",
                     label: "Support the Mission",
@@ -310,12 +378,14 @@ const config: Config = {
                     href: "https://docs.bitbybit.dev",
                     label: "API Reference",
                     position: "right",
+                    className: "navbar-hide-narrow",
                     "aria-label": "TypeScript API Reference",
                 },
                 {
                     href: "https://github.com/bitbybit-dev/bitbybit",
                     label: "GitHub",
                     position: "right",
+                    className: "navbar-hide-narrow",
                 },
             ],
         },
@@ -329,12 +399,28 @@ const config: Config = {
                             to: "/learn/intro",
                         },
                         {
+                            label: "Getting Started",
+                            to: "/learn/getting-started/overview",
+                        },
+                        {
+                            label: "Designer",
+                            to: "/learn/designer/intro",
+                        },
+                        {
                             label: "Code",
                             to: "/learn/code/intro",
                         },
                         {
                             label: "TypeScript API Reference",
                             href: "https://docs.bitbybit.dev",
+                        },
+                        {
+                            label: "CAD Cloud API",
+                            to: "/api/cloud-api",
+                        },
+                        {
+                            label: "bitbybit.dev",
+                            href: "https://bitbybit.dev",
                         },
                     ],
                 },

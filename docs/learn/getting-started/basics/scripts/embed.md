@@ -2,34 +2,37 @@
 sidebar_position: 5
 title: Embedding Bitbybit Scripts in Your Website
 sidebar_label: Embedding Scripts
-description: Learn how to embed public Bitbybit scripts into your own website using iframes for broader sharing and integration.
+description: Embed a public script's preview in your own website with the iframe code bitbybit.dev writes for you, and why the editors themselves cannot be embedded.
+topic: platform.scripts.embed
+type: how-to
+verified: 2026-10-09
 tags: [getting-started, scripts]
 ---
 
 # Embedding Bitbybit Scripts
 
-## What is Embedding?
+Embedding shows a script's [preview](/learn/start/general/script-preview-mode) inside your own web page, so visitors see and use your 3D work without leaving your site.
 
-Embedding allows you to take a script you've created on Bitbybit and display it directly within your own website. This means visitors to your site can see and interact with your 3D creations without leaving your page.
+**Before you embed:**
 
-**Important Considerations:**
-*   **Only Public Projects/Scripts Can Be Embedded:** You can only embed scripts that are part of a **Public Project**. Scripts from private projects or those with Silver/Gold community visibility cannot be embedded.
-*   **Public Accessibility:** Be aware that if a project is public, all assets (like 3D models or images) and scripts within it are also public and easily accessible to everyone on the internet.
+- **Only a public project's scripts embed for everyone.** A visitor would have to be signed in to bitbybit.dev with the right plan to open a community project's preview, and nobody else can open a private one.
+- **Everything public is open to all.** A public project's scripts and the files they load can be opened, read and downloaded by anyone.
+- **Previews embed; the editors do not.** bitbybit.dev refuses to show its editors inside another site's page, so an editor link in an iframe stays blank. Embed the preview.
+- **A Designer script embeds too:** its preview shows the design to turn and pose by its configurations, with a link to open it on bitbybit.dev.
 
-## How to Embed Public Scripts
+## Embed a preview
 
-All Bitbybit scripts can be embedded into your website using an HTML `<iframe>` element. An iframe allows you to display another HTML page within your own.
+<Shot id="platform.scripts.embed/embed-code" />
 
-For the purpose of this tutorial, we'll demonstrate embedding a script that opens in one of our editors. To do this, you'll add an `<iframe>` element to your website's HTML and set its `src` attribute to the URL of the Bitbybit script you want to embed.
+1. Open the script and choose the share button at the left of the bitbybit.dev header (<Ui>Share script preview</Ui>).
+2. Choose the kernels and the renderer the preview loads, as [Script Preview Mode](/learn/start/general/script-preview-mode#share-a-preview) explains.
+3. Choose <Ui>Embed Code</Ui>, then <Ui>Copy to clipboard</Ui>.
+4. Paste the code into your page's HTML where the preview should appear.
 
-**Example `<iframe>` Code:**
+The code is an iframe with the preview's address:
 
 ```html
-<iframe 
-  src="https://bitbybit.dev/app/your-username/your-project-id/your-script-id?editor=rete"
-  width="100%" 
-  height="600px"
-  sandbox="allow-scripts allow-same-origin allow-downloads allow-forms allow-popups"
-  frameBorder="0"
-  title="Embedded Bitbybit Script with Editor">
-</iframe>
+<iframe src="https://bitbybit.dev/app/your-username/your-project-id/your-script-id/preview?occt=true&jscad=false&manifold=false" width="800" height="600" frameborder="0" allowfullscreen></iframe>
+```
+
+Change `width` and `height` to fit your page; `width="100%"` fills the column it sits in.

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
-import { Base } from "./base-inputs";
+import type * as BABYLON from "@babylonjs/core";
+import type { Base } from "./base-inputs";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for mesh objects in the scene: visibility, picking, parenting, position, rotation and
  * scale, material assignment, and the options for cloning, merging and disposing a mesh.

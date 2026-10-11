@@ -1,0 +1,11 @@
+{
+    "label": "Tutorials",
+    "key": "blockly-tutorials",
+    "position": 4,
+    "link": {
+        "type": "generated-index",
+        "title": "Blockly Tutorials",
+        "description": "Scripts built step by step in the Blockly editor, with a picture of the editor after every step and the finished script to run on the page.",
+        "slug": "/getting-started/blockly/tutorials"
+    }
+}

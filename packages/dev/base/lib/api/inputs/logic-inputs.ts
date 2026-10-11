@@ -1,9 +1,8 @@
-import { Base } from "./base-inputs";
+import type { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for boolean logic and control flow: the operands of comparisons and and/or/not, the
  * branches of a conditional selection, and the gate values that visual scripts use where code would

@@ -60,19 +60,22 @@ importers:
         specifier: 9.26.0
         version: 9.26.0(@babylonjs/core@9.26.0)(babylonjs-gltf2interface@9.25.0)
       '@bitbybit-dev/base':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../core
+      '@bitbybit-dev/ifc-worker':
+        specifier: 1.5.0-rc.0
+        version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../occt-worker
       earcut:
         specifier: 3.0.2
@@ -146,25 +149,31 @@ importers:
   packages/dev/core:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../base
+      '@bitbybit-dev/ifc':
+        specifier: 1.5.0-rc.0
+        version: link:../ifc
+      '@bitbybit-dev/ifc-worker':
+        specifier: 1.5.0-rc.0
+        version: link:../ifc-worker
       '@bitbybit-dev/jscad':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../jscad
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../manifold
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../occt
       '@bitbybit-dev/occt-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.4.0
@@ -185,6 +194,9 @@ importers:
       jsdom:
         specifier: 29.0.1
         version: 29.0.1(canvas@3.2.3)
+      manifold-3d:
+        specifier: 3.5.3
+        version: 3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7)
       shx:
         specifier: 0.4.0
         version: 0.4.0
@@ -235,10 +247,60 @@ importers:
         specifier: 4.1.11
         version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
 
+  packages/dev/ifc:
+    dependencies:
+      '@bitbybit-dev/base':
+        specifier: 1.5.0-rc.0
+        version: link:../base
+    devDependencies:
+      '@microsoft/api-extractor':
+        specifier: 7.59.1
+        version: 7.59.1(@types/node@22.20.1)
+      '@vitest/coverage-v8':
+        specifier: 4.1.11
+        version: 4.1.11(vitest@4.1.11)
+      shx:
+        specifier: 0.4.0
+        version: 0.4.0
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 4.1.11
+        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+
+  packages/dev/ifc-worker:
+    dependencies:
+      '@bitbybit-dev/base':
+        specifier: 1.5.0-rc.0
+        version: link:../base
+      '@bitbybit-dev/ifc':
+        specifier: 1.5.0-rc.0
+        version: link:../ifc
+      rxjs:
+        specifier: 7.8.2
+        version: 7.8.2
+    devDependencies:
+      '@microsoft/api-extractor':
+        specifier: 7.59.1
+        version: 7.59.1(@types/node@22.20.1)
+      '@vitest/coverage-v8':
+        specifier: 4.1.11
+        version: 4.1.11(vitest@4.1.11)
+      shx:
+        specifier: 0.4.0
+        version: 0.4.0
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 4.1.11
+        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+
   packages/dev/jscad:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../base
       '@jscad/3mf-serializer':
         specifier: 2.1.17
@@ -275,10 +337,10 @@ importers:
   packages/dev/jscad-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../base
       '@bitbybit-dev/jscad':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../jscad
       rxjs:
         specifier: 7.8.2
@@ -303,7 +365,7 @@ importers:
   packages/dev/manifold:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../base
       manifold-3d:
         specifier: 3.5.3
@@ -328,10 +390,10 @@ importers:
   packages/dev/manifold-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../base
       '@bitbybit-dev/manifold':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../manifold
       rxjs:
         specifier: 7.8.2
@@ -384,7 +446,7 @@ importers:
   packages/dev/occt:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../base
     devDependencies:
       '@microsoft/api-extractor':
@@ -406,10 +468,10 @@ importers:
   packages/dev/occt-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../base
       '@bitbybit-dev/occt':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../occt
       rxjs:
         specifier: 7.8.2
@@ -431,19 +493,22 @@ importers:
   packages/dev/playcanvas:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../core
+      '@bitbybit-dev/ifc-worker':
+        specifier: 1.5.0-rc.0
+        version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.4.0
@@ -477,19 +542,22 @@ importers:
   packages/dev/threejs:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../core
+      '@bitbybit-dev/ifc-worker':
+        specifier: 1.5.0-rc.0
+        version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.4.1
+        specifier: 1.5.0-rc.0
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.4.0

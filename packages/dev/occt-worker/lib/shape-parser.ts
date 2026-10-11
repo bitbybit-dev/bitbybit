@@ -1,4 +1,4 @@
-import { Inputs, Models } from "@bitbybit-dev/occt";
+import type { Inputs, Models } from "@bitbybit-dev/occt";
 
 export class ShapeParser {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

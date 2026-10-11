@@ -2,9 +2,17 @@ import * as Inputs from "../../inputs";
 import { uniqueName } from "../../unique-name";
 import * as SERIALIZERS from "@babylonjs/serializers";
 import * as BABYLON from "@babylonjs/core";
-import { Context } from "../../context";
+import type { Context } from "../../context";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
+
+function receiveShadowsWhereSupported(mesh: BABYLON.AbstractMesh): void {
+    try {
+        mesh.receiveShadows = true;
+    } catch {
+        return;
+    }
+}
 
 /**
  * Loading models into the scene and exporting it: glTF, glb, STL and OBJ files come in from a File,
@@ -344,22 +352,13 @@ export class BabylonIO {
                     }
                 });
                 if (this.context.scene.metadata.shadowGenerators.length > 0) {
-                    try {
-                        mesh.receiveShadows = true;
-                    } catch {
-                        // A loaded mesh without a material cannot receive shadows; the rest of the
-                        // scene setup should still run.
-                    }
+                    receiveShadowsWhereSupported(mesh);
                     sgs.forEach(sg => {
                         sg.addShadowCaster(mesh);
                     });
                     const children = mesh.getChildMeshes();
                     children.forEach(child => {
-                        try {
-                            child.receiveShadows = true;
-                        } catch {
-                            // As above, for a child of the loaded mesh.
-                        }
+                        receiveShadowsWhereSupported(child);
                         sgs.forEach(sg => {
                             sg.addShadowCaster(child);
                         });

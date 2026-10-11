@@ -1,5 +1,5 @@
-import * as Inputs from "../../inputs";
-import * as Manifold3D from "manifold-3d";
+import type * as Inputs from "../../inputs";
+import type * as Manifold3D from "manifold-3d";
 
 /**
  * Measuring Manifold cross-sections: area, emptiness, vertex and contour counts and the bounding

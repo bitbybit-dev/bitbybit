@@ -1,5 +1,5 @@
-import * as pc from "playcanvas";
-import { Base } from "./base-inputs";
+import type * as pc from "playcanvas";
+import type { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 /**

@@ -1,18 +1,14 @@
-// Hand-written members of the generated class of the same name (see scripts/gen-worker-api.mjs).
-// Each member's marker says where it lands: `// replaces <path>` takes the kernel method's slot (and its doc,
-// when the member has none), `// after <path>` follows that slot, `// first` and `// last` frame the class.
 import { Inputs } from "@bitbybit-dev/occt";
-import { Models } from "@bitbybit-dev/occt";
-import { Resolved } from "@bitbybit-dev/occt";
+import type { Models } from "@bitbybit-dev/occt";
+import type { Resolved } from "@bitbybit-dev/occt";
 import { resolveDto } from "@bitbybit-dev/base";
-import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
+import type { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
 export class OCCTAssemblyManager {
     constructor(private readonly occWorkerManager: OCCTWorkerManager) { }
 
     // replaces assembly.manager.loadStepToDoc
     async loadStepToDoc(inputs: Inputs.OCCT.LoadStepToDocDto): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
-        // Convert File/Blob to ArrayBuffer before sending to worker
         const stepData = await this.occWorkerManager.prepareStepData(inputs.stepData);
         const preparedInputs = {
             ...inputs,

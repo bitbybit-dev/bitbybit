@@ -1,10 +1,10 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import { Base } from "../../api/inputs";
-import * as Models from "../../api/models";
+import type { Base } from "../../api/inputs";
+import type * as Models from "../../api/models";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Rounding and beveling single corners of an OpenCascade shell or solid, picked by a point near

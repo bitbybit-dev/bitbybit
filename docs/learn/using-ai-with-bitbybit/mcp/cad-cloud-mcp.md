@@ -25,6 +25,7 @@ A language model cannot measure a part by looking at it. With this server it doe
 | "How much surface will I be painting?" | the loader, then `occt.shapes.solid.getSolidSurfaceArea` | an area, in square model units |
 | "How close do these two parts come?" | two uploads, the loader twice, `occt.operations.closestPointsBetweenTwoShapes` | the two closest points and their distance |
 | "A box with rounded edges, as STEP" | `occt.shapes.solid.createBox`, then `occt.fillets.filletEdges` with `$ref:0` | a STEP link |
+| "Build this design document" | `occt.design.build` with the document as `params.document` | STEP and glTF links of every part, and the build's report |
 | "Slice it every 2 mm for the printer" | the loader, then `occt.operations.slice` | the slices as a file |
 | "Flatten this sheet-metal part" | `occtPro.sheetMetal.unfoldSolidToFlat`, a Pro algorithm | the flat pattern and its report |
 | "Twenty variants of the gear, as STL" | `list_models` for the parameters, `run_model` per variant | the files, one task each |
@@ -33,7 +34,7 @@ A language model cannot measure a part by looking at it. With this server it doe
 Under the hood:
 
 - **A pipeline is one request.** Later steps reference earlier results (`$ref:0`) and uploaded files (`$file:0`); one round trip, one result set, and the agent marks the steps whose value it wants back with `output: true`.
-- **Files come back as links,** never inlined into the conversation: STEP, glTF, STL or JSON, valid for one hour.
+- **Files come back as links:** STEP, glTF, STL or JSON, valid for one hour. A JSON result of 16 KB or less is also read into the answer (`structured.result`), so the agent sees a [design document](../design-documents)'s build report, which features built and which failed, without opening a link.
 - **Every execution is a task.** The agent waits up to 25 seconds; longer work is collected with `task_status`.
 - **The Pro algorithms** exist only here, and the docs server reports them with the tier `cloud-pro`, so the agent knows in advance what needs a key.
 

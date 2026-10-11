@@ -1,4 +1,4 @@
-import { KernelFailureDetail, KernelFailureDetails } from "./errors";
+import type { KernelFailureDetail, KernelFailureDetails } from "./errors";
 
 /**
  * Writes a list the way English does: `3`, `3 and 7`, `3, 7 and 9`.

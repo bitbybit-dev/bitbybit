@@ -1,6 +1,6 @@
 
-import { ContextBase } from "../../context";
-import * as Inputs from "../../inputs";
+import type { ContextBase } from "../../context";
+import type * as Inputs from "../../inputs";
 
 /**
  * Cylindrical surface functions.

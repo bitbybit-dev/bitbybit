@@ -1,11 +1,13 @@
 import * as THREEJS from "three";
-import { DrawCore, Tag } from "@bitbybit-dev/core";
+import type { Tag } from "@bitbybit-dev/core";
+import { DrawCore } from "@bitbybit-dev/core";
 import * as Inputs from "../inputs";
-import { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
-import { Context } from "../context";
-import { DrawHelper } from "../draw-helper";
+import type { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
+import type { Context } from "../context";
+import type { DrawHelper } from "../draw-helper";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
+import type * as Models from "@bitbybit-dev/core/lib/api/models";
 
 /**
  * Everything drawing can hand back: a group for geometry, the tag or tags for tags, a disposable
@@ -42,8 +44,8 @@ export class Draw extends DrawCore {
 
     /**
      * Draws any entity the library produces into the scene and gives back the drawn object: kernel
-     * shapes from OCCT, JSCAD and Manifold, points, lines, polylines, frames, curves, meshes, tags
-     * and nodes.
+     * shapes, alone or with their appearance, design builds, points, lines, polylines, frames,
+     * curves, meshes, tags and nodes.
      *
      * The options are matched to the entity, with defaults when none are given; pass the previous
      * result back in the update slot to redraw in place.
@@ -64,11 +66,6 @@ export class Draw extends DrawCore {
 
     private cachedSyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny<THREEJS.Group>) => DrawnEntity> | undefined;
 
-    /**
-     * What this renderer draws each synchronous kind with, keyed by the kind's name in the ordered
-     * table. A kind absent from here is one this renderer does not draw, and the walk skips it.
-     * @ignore true
-     */
     private syncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny<THREEJS.Group>) => DrawnEntity> {
         return this.cachedSyncHandlers ??= {
             line: (i) => this.handleLine(i),
@@ -92,24 +89,22 @@ export class Draw extends DrawCore {
 
     private cachedAsyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny<THREEJS.Group>, entity: unknown) => Promise<DrawnEntity>> | undefined;
 
-    /**
-     * The same for the kinds that have to cross to a worker and back.
-     *
-     * The two JSCAD entries ask their own check again rather than asserting: a handler that takes the
-     * narrowed entity can only be given one honestly, and re-running a check the table just ran is
-     * cheaper than a cast that could be wrong.
-     * @ignore true
-     */
     private asyncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny<THREEJS.Group>, entity: unknown) => Promise<DrawnEntity>> {
         return this.cachedAsyncHandlers ??= {
             jscadMesh: (i, e) => this.detectJscadMesh(e) ? this.handleJscadMesh(i, e) : Promise.resolve(undefined),
             occtShape: (i) => this.handleOcctShape(i),
             occtShapes: (i) => this.handleOcctShapes(i),
+            occtShapeWithAppearance: (i) => this.handleShapeWithAppearance(i),
+            occtShapesWithAppearance: (i) => this.handleShapesWithAppearance(i),
+            designBuild: (i) => this.handleDesignBuild(i),
             jscadMeshes: (i, e) => this.detectJscadMeshes(e) ? this.handleJscadMeshes(i, e) : Promise.resolve(undefined),
             manifoldShape: (i) => this.handleManifoldShape(i),
             manifoldShapes: (i) => this.handleManifoldShapes(i),
             decomposedMeshes: (i) => this.handleDecomposedMeshes(i),
             decomposedMesh: (i) => this.handleDecomposedMeshShape(i),
+            manifoldMesh: (i) => this.handleManifoldMesh(i),
+            manifoldMeshes: (i) => this.handleManifoldMeshes(i),
+            recipeMeshes: (i) => this.handleRecipeMeshes(i),
         };
     }
 
@@ -252,6 +247,80 @@ export class Draw extends DrawCore {
      */
     optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
         return resolveDto(Inputs.Draw.DrawOcctShapeOptions, inputs);
+    }
+
+    /**
+     * Builds drawing options for the meshes of a recipe, as `manifold.recipes.meshes` gives them:
+     * the tag naming an element, when repeated meshes become instances, the batch size, and the
+     * color and surface of roots without a color.
+     * @param inputs - The options to start from
+     * @returns The drawing options
+     * @group options
+     * @shortname recipe meshes draw options
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsRecipeMeshes({ elementKey: "globalId", instancing: true, minInstances: 2, maxBatchVertices: 1000000, defaultColour: "#cccccc", defaultOpacity: 1, metallic: 0, roughness: 0.8 });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: meshes, options });
+     * ```
+     */
+    optionsRecipeMeshes(inputs: Inputs.Draw.DrawRecipeMeshesOptions): Inputs.Draw.DrawRecipeMeshesOptions {
+        return resolveDto(Inputs.Draw.DrawRecipeMeshesOptions, inputs);
+    }
+
+    /**
+     * Shows or hides elements of a recipe drawn from its meshes, such as one storey's walls, by the
+     * values of their element tag, changing only their own triangles and instances.
+     * @param inputs - The drawn recipe, the elements and whether they are shown
+     * @group recipe elements
+     * @shortname show recipe elements
+     * @drawable false
+     * @example
+     * ```typescript
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: meshes });
+     * bitbybit.draw.setRecipeElementsVisible({ drawn, keys: ["2O2Fr$t4X7Zf8NOew3FLOH"], visible: false });
+     * ```
+     */
+    setRecipeElementsVisible(inputs: Inputs.Draw.RecipeElementsVisibilityDto<THREEJS.Group>): void {
+        const resolved = resolveDto(Inputs.Draw.RecipeElementsVisibilityDto, inputs) as Resolved.Draw.RecipeElementsVisibilityDto<THREEJS.Group>;
+        this.drawHelper.setRecipeElementsVisible(resolved);
+    }
+
+    /**
+     * Shows elements of a recipe drawn from its meshes in one color, such as the ones selected, or
+     * with no color gives each its own back, by the values of their element tag.
+     * @param inputs - The drawn recipe, the elements, and the color and opacity, or none
+     * @group recipe elements
+     * @shortname color recipe elements
+     * @drawable false
+     * @example
+     * ```typescript
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: meshes });
+     * bitbybit.draw.setRecipeElementsColour({ drawn, keys: ["2O2Fr$t4X7Zf8NOew3FLOH"], colour: "#ffaa00" });
+     * bitbybit.draw.setRecipeElementsColour({ drawn, keys: ["2O2Fr$t4X7Zf8NOew3FLOH"] });
+     * ```
+     */
+    setRecipeElementsColour(inputs: Inputs.Draw.RecipeElementsColourDto<THREEJS.Group>): void {
+        const resolved = resolveDto(Inputs.Draw.RecipeElementsColourDto, inputs) as Resolved.Draw.RecipeElementsColourDto<THREEJS.Group>;
+        this.drawHelper.setRecipeElementsColour(resolved);
+    }
+
+    /**
+     * Gives the element a pick hit in a recipe drawn from its meshes, as the value of its element
+     * tag, from the object and the face index or instance id a raycaster reports.
+     * @param inputs - The drawn recipe, the object hit, and its triangle or instance
+     * @returns The value of the element's tag, or undefined when the pick hit no element of it
+     * @group recipe elements
+     * @shortname recipe element of pick
+     * @drawable false
+     * @example
+     * ```typescript
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: meshes });
+     * const [hit] = raycaster.intersectObject(drawn, true);
+     * const globalId = bitbybit.draw.recipeElementOfPick({ drawn, mesh: hit.object, triangle: hit.faceIndex, instance: hit.instanceId });
+     * ```
+     */
+    recipeElementOfPick(inputs: Inputs.Draw.RecipeElementPickDto<THREEJS.Group, THREEJS.Object3D>): string | undefined {
+        return this.drawHelper.recipeElementOfPick(inputs);
     }
 
     /**
@@ -416,6 +485,24 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.occt);
     }
 
+    private handleManifoldMesh(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group | undefined> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), (options) => {
+            return Promise.resolve(this.drawHelper.drawManifoldMesh(inputs.entity as Inputs.Manifold.DecomposedManifoldMeshDto, this.manifoldOptions(options)));
+        }, Inputs.Draw.drawingTypes.manifold);
+    }
+
+    private handleManifoldMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), (options) => {
+            return Promise.resolve(this.drawHelper.drawManifoldMeshes(inputs.entity as Inputs.Manifold.DecomposedManifoldMeshDto[], this.manifoldOptions(options)));
+        }, Inputs.Draw.drawingTypes.manifold);
+    }
+
+    private handleRecipeMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawRecipeMeshesOptions(), (options) => {
+            return Promise.resolve(this.drawHelper.drawRecipeMeshes(inputs.entity as Inputs.Manifold.RecipeMeshesDto, options as Inputs.Draw.DrawRecipeMeshesOptions));
+        }, Inputs.Draw.drawingTypes.recipeMeshes);
+    }
+
     private handleOcctShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShape({
@@ -431,6 +518,24 @@ export class Draw extends DrawCore {
                 ...this.occtOptions(options),
                 shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
             });
+        }, Inputs.Draw.drawingTypes.occtShapes);
+    }
+
+    private handleShapeWithAppearance(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
+            return this.drawHelper.drawShapeWithAppearance(inputs.entity as Inputs.Draw.ShapeWithAppearance, this.occtOptions(options));
+        }, Inputs.Draw.drawingTypes.occt);
+    }
+
+    private handleShapesWithAppearance(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
+            return this.drawHelper.drawShapesWithAppearance(inputs.entity as Inputs.Draw.ShapeWithAppearance[], this.occtOptions(options));
+        }, Inputs.Draw.drawingTypes.occtShapes);
+    }
+
+    private handleDesignBuild(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
+            return this.drawHelper.drawDesignBuild(inputs.entity as Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, this.occtOptions(options), inputs.group);
         }, Inputs.Draw.drawingTypes.occtShapes);
     }
 
@@ -461,13 +566,6 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.point);
     }
 
-    /**
-     * A JSCAD path drawn as the polyline it is.
-     *
-     * The path's points are two-dimensional and its closing segment is implied by `isClosed`, so
-     * both are resolved before the polyline handler sees it - which then applies the same options,
-     * metadata and update handling every other polyline gets.
-     */
     private handleJscadPath(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         const points = this.pathToPolylinePoints(inputs.entity as Inputs.JSCAD.JSCADPath2);
         return this.handlePolyline({ ...inputs, entity: { points } }, Inputs.Draw.drawingTypes.jscadPath);
@@ -509,12 +607,6 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbSurface);
     }
 
-    /**
-     * A frame or a list of frames drawn as one set of lines: the axes and plane grids of every
-     * frame in the list go into the same draw call, however long the list is. Whether it is one
-     * frame or a list is read from the entity, so a drawing can be redrawn with either. When no
-     * frame can be squared nothing is drawn, and an updatable drawing handed back is removed.
-     */
     private handleFrames(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group | undefined {
         let options: Inputs.Draw.DrawOptions = inputs.options ? inputs.options : this.defaultFrameOptions;
         if (!inputs.options && inputs.group && inputs.group.userData["options"]) {
@@ -698,10 +790,6 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    /**
-     * The options a draw call was given, laid over the defaults of the options class for the kind
-     * being drawn: a partial object gets the same values the matching `options` method would give it.
-     */
     private basicOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawBasicGeometryOptions {
         return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, options) as Resolved.Draw.DrawBasicGeometryOptions;
     }

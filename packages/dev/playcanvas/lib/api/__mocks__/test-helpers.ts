@@ -1,42 +1,22 @@
 import { vi, type Mock } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-/**
- * Test helper functions for creating mock contexts and objects
- */
-
 import { Context } from "../context";
 import { MockApp, MockScene } from "./playcanvas.mock";
 import * as pc from "playcanvas";
-import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { Vector } from "@bitbybit-dev/base";
+import type { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { Vector } from "@bitbybit-dev/base";
 
-/**
- * A test double implements the part of `T` that the test actually exercises. The assertion is
- * single and from `Partial<T>`, not through `unknown`, so every member supplied is checked against
- * the real type: one that is renamed or retyped upstream fails here, instead of passing through an
- * assertion that had erased it.
- */
 const partialMock = <T>(members: Partial<T>): T => members as T;
 
-/**
- * Creates a basic mock context with app and scene
- */
 export function createMockContext(): Context {
     const context = new Context();
     context.scene = new pc.Entity("root");
-    // The engine creates buffers through the concrete device, not the abstract one, so the
-    // stand-in is typed as the null device playcanvas ships for exactly this - which is what makes
-    // the members below checkable at all.
     context.app = partialMock<pc.AppBase>({
         graphicsDevice: partialMock<pc.NullGraphicsDevice>({
-            // The engine's own counter, under the name and shape it really has: the stand-in used
-            // to declare a `vram` with a `total`, neither of which exists on a GraphicsDevice.
             _vram: { texShadow: 0, texAsset: 0, texLightmap: 0, tex: 0, vb: 0, ib: 0, ub: 0, sb: 0 },
-            // The buffer impls answer to the members the engine calls on them. They used to be
-            // `{}`, so an unlock would have thrown had anything reached it.
             createVertexBufferImpl: vi.fn(() => ({ destroy: vi.fn(), unlock: vi.fn() })),
             createIndexBufferImpl: vi.fn(() => ({ destroy: vi.fn(), unlock: vi.fn() })),
         }),
@@ -45,16 +25,10 @@ export function createMockContext(): Context {
     return context;
 }
 
-/**
- * Creates a simple mock context without app
- */
 export function createSimpleMockContext(): Context {
     return new Context();
 }
 
-/**
- * Creates a mock window object for testing
- */
 export function mockWindow() {
     (globalThis as any).window = {
         addEventListener: vi.fn(),
@@ -78,10 +52,6 @@ export interface DrawHelperMocks extends MockWorkerManagers {
     mockScene: pc.Entity;
 }
 
-/**
- * Creates mock worker managers for testing, with the mock behind each manager's
- * `genericCallToWorkerPromise` alongside it, so a suite asserts on the mock itself
- */
 export function createMockWorkerManagers(): MockWorkerManagers {
     const jscadWorkerCall = vi.fn().mockResolvedValue({
         positions: [],
@@ -121,27 +91,18 @@ export function createMockWorkerManagers(): MockWorkerManagers {
     };
 }
 
-/**
- * Creates a mock JSCADText service
- */
 export function createMockJSCADText(): JSCADText {
     return partialMock<JSCADText>({
         createVectorText: vi.fn().mockResolvedValue([])
     });
 }
 
-/**
- * Creates a mock Vector service
- */
 export function createMockVector(): Vector {
     return partialMock<Vector>({
         add: vi.fn().mockReturnValue([0, 0, 0])
     });
 }
 
-/**
- * Creates a complete set of mocks for DrawHelper tests
- */
 export function createDrawHelperMocks(): DrawHelperMocks {
     const mockContext = createMockContext();
     const mockSolidText = createMockJSCADText();
@@ -157,15 +118,10 @@ export function createDrawHelperMocks(): DrawHelperMocks {
     };
 }
 
-/**
- * Creates mock app and scene for orbit camera tests
- */
 export function createOrbitCameraMocks() {
     mockWindow();
     const mockApp = new MockApp();
     const mockScene = new MockScene();
-    // The stand-ins carry the members the camera reaches for, which is where a partial stand-in
-    // meets the engine's full types.
     const appStandIn: unknown = mockApp;
     const sceneStandIn: unknown = mockScene;
     const mockContext = {

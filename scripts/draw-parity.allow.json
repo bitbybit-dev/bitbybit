@@ -3,7 +3,7 @@
   "allow": {
     "Entity": "BabylonJS draws a node as an axis triad, so its union admits TransformNode and a list of them. The other two renderers have no node concept to admit.",
     "DrawOptions": "BabylonJS has node, simple-shape and material option DTOs that the other two do not, so the union of option shapes is genuinely longer there.",
-    "DrawAny": "The update slot is the renderer's own object - babylonMesh against group - and those property names are persisted socket keys in saved scripts, so they cannot be unified.",
+    "DrawAny": "The update slot is the renderer's own object - babylonMesh against group - and those property names are persisted in users' scripts, so they cannot be unified.",
     "DrawnTag": "The carrier a drawn tag keeps its metadata on is an engine convention: metadata in BabylonJS, userData in Three and PlayCanvas.",
     "DrawnTags": "The same carrier convention as DrawnTag.",
     "DrawnAny": "BabylonJS adds the node arms, because only it resolves a node; and each renderer names its own scene object.",

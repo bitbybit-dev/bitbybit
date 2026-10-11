@@ -1,0 +1,116 @@
+---
+sidebar_position: 2
+slug: /getting-started/typescript/tutorials/drone/around
+title: "Build a drone: around, bolts and standoffs"
+sidebar_label: 2. Around, bolts and standoffs
+description: The second chapter of the TypeScript drone - a function that repeats one shape evenly around the drone, its first use cutting the leg openings, an M3 bolt revolved from a profile with a hexagon socket, and the standoffs with their bolts between the arms.
+topic: typescript.tutorials.drone.around
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, typescript, occt]
+---
+
+# Build a drone: around, bolts and standoffs
+
+Four arms, four legs and four standoffs stand evenly around the drone. One function places a shape that many times, and every part that repeats uses it from here on; it does for the TypeScript drone what the Around module does for the Rete one.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. Arms, motors, propellers, legs and standoffs all stand evenly around the drone, so one function repeats a shape count times around the upright axis, half a step off the axes: at 45, 135, 225 and 315 degrees for four. Its first use is the plate's leg openings, a hole 6 millimetres across, 52 from the centre, repeated for every leg and cut away with the vents.
+
+   - **Make `parts/around.ts`:**
+
+   ```typescript
+   export function around(shape: Bit.Inputs.OCCT.TopoDSShapePointer, count: number) {
+       const angles = Array.from({ length: count }, (_, i) => (i + 0.5) * 360 / count);
+       return bitbybit.occt.transforms.rotateShapes({
+           shapes: angles.map(() => shape),
+           axes: angles.map((): Bit.Inputs.Base.Vector3 => [0, 1, 0]),
+           angles,
+       });
+   }
+   ```
+
+   - **Import at the top of `parts/frame.ts`:**
+
+   ```typescript
+   import { around } from "./around";
+   ```
+
+   - **In `parts/frame.ts`, change** `export async function framePlate() {` **to** `export async function framePlate(legs: number) {`.
+   - **In `parts/frame.ts`, change** `const cuts = await vents();` **to** `const cuts = [...await vents(), await legOpenings(legs)];`.
+   - **Add at the end of `parts/frame.ts`:**
+
+   ```typescript
+   async function legOpenings(legs: number) {
+       const opening = await bitbybit.occt.shapes.solid.createCylinder({ radius: 6, height: 3, center: [52, 0, 0], direction: [0, 1, 0] });
+       return bitbybit.occt.shapes.compound.makeCompound({ shapes: await around(opening, legs) });
+   }
+   ```
+
+   - **In `main.ts`, change** `const plate = await framePlate();` **to** `const plate = await framePlate(sizes.legs);`.
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="typescript.tutorials.drone/openings" />
+
+2. An M3 bolt is a profile revolved into its body, with a hexagon socket cut into its head; the standoffs, the arms and the legs all use it. A standoff is a post 10 millimetres tall between the plates, with a bolt from below and a flipped bolt from above. Turned back half a step, the standoffs stand between the arms, as many as there are arms.
+
+   - **Make `parts/bolt.ts`:**
+
+   ```typescript
+   export async function m3Bolt(length: number) {
+       const profile: Bit.Inputs.Base.Point3[] = [
+           [0, -3, 0], [2.35, -3, 0], [2.75, -2.6, 0], [2.75, 0, 0],
+           [1.5, 0, 0], [1.5, length - 0.4, 0], [1.1, length, 0], [0, length, 0],
+       ];
+       const outline = await bitbybit.occt.shapes.wire.createPolygonWire({ points: profile });
+       const face = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: outline, planar: true });
+       const body = await bitbybit.occt.operations.revolve({ shape: face, angle: 360, direction: [0, 1, 0], copy: false });
+       const hexagon = await bitbybit.occt.shapes.wire.createNGonWire({ nrCorners: 6, radius: 1.45, center: [0, -3.5, 0], direction: [0, 1, 0] });
+       const socketFace = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: hexagon, planar: true });
+       const socket = await bitbybit.occt.operations.extrude({ shape: socketFace, direction: [0, 2.5, 0] });
+       return bitbybit.occt.booleans.difference({ shape: body, shapes: [socket], keepEdges: false });
+   }
+   ```
+
+   - **Make `parts/standoffs.ts`:**
+
+   ```typescript
+   import { around } from "./around";
+   import { m3Bolt } from "./bolt";
+
+   export async function standoffs(arms: number) {
+       const post = await bitbybit.occt.shapes.solid.createCylinder({ radius: 3.2, height: 10, center: [40, 3, 0], direction: [0, 1, 0] });
+       const bolt = await m3Bolt(8);
+       const lower = await bitbybit.occt.transforms.translate({ shape: bolt, translation: [40, 0, 0] });
+       const flipped = await bitbybit.occt.transforms.rotate({ shape: bolt, axis: [1, 0, 0], angle: 180 });
+       const upper = await bitbybit.occt.transforms.translate({ shape: flipped, translation: [40, 16, 0] });
+       const pair = await bitbybit.occt.shapes.compound.makeCompound({ shapes: [lower, upper] });
+       const halfBack = -180 / arms;
+       const postBetween = await bitbybit.occt.transforms.rotate({ shape: post, axis: [0, 1, 0], angle: halfBack });
+       const pairBetween = await bitbybit.occt.transforms.rotate({ shape: pair, axis: [0, 1, 0], angle: halfBack });
+       return { posts: await around(postBetween, arms), bolts: await around(pairBetween, arms) };
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { standoffs } from "./parts/standoffs";
+   ```
+
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   const posts = await standoffs(sizes.arms);
+   await draw(looks.accent, posts.posts);
+   await draw(looks.steel, posts.bolts);
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="typescript.tutorials.drone/standoffs" />
+
+{/* steps:end */}
+
+Next: [one arm](./arm.mdx).

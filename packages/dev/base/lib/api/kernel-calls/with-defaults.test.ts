@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { withDefaults } from "./with-defaults";
-import { DtoRegistry } from "./resolve-dto";
+import type { DtoRegistry } from "./resolve-dto";
 
 class BoxDto {
     width = 1;

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { readKernelException } from "./kernel-exception";
 import { InputError } from "@bitbybit-dev/base";
 import { OccHelper } from "./occ-helper";
@@ -41,6 +42,7 @@ describe("kernel functions given a null shape", () => {
         ["GetFaceTriangulation", (k: BitbybitOcctModule): unknown => k.GetFaceTriangulation(new k.TopoDS_Face()), "GetFaceTriangulation: the face is null"],
         ["GetFaceSurfaceType", (k: BitbybitOcctModule): unknown => k.GetFaceSurfaceType(new k.TopoDS_Face()), "GetFaceSurfaceType: the face is null"],
         ["ShapeFix_Shape_Perform", (k: BitbybitOcctModule): unknown => k.ShapeFix_Shape_Perform(new k.TopoDS_Shape()), "ShapeFix_Shape_Perform: the shape is null"],
+        ["PurgeInternalEdges", (k: BitbybitOcctModule): unknown => k.PurgeInternalEdges(new k.TopoDS_Shape()), "PurgeInternalEdges: the shape is null"],
         ["ClassifyPointOnFace2d", (k: BitbybitOcctModule): unknown => k.ClassifyPointOnFace2d(new k.TopoDS_Face(), new k.gp_Pnt2d(0, 0), 1e-7), "ClassifyPointOnFace2d: the face is null"],
         ["CreateFillet2d", (k: BitbybitOcctModule): unknown => k.CreateFillet2d(new k.TopoDS_Edge(), new k.TopoDS_Edge(), 1), "CreateFillet2d: the first edge is null"],
         ["ProjectWireOnShape", (k: BitbybitOcctModule): unknown => k.ProjectWireOnShape(new k.TopoDS_Wire(), planarFace(k), new k.gp_Dir(0, 0, 1)), "ProjectWireOnShape: the wire is null"],
@@ -69,6 +71,12 @@ describe("kernel functions given a null shape", () => {
         ["OrientShape", (k: BitbybitOcctModule): unknown => k.OrientShape(new k.TopoDS_Shape(), [0, 0, 0, 0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 0, 1, 1, 0, 0]), "OrientShape: the shape is null"],
         ["PlaceOnFrames", (k: BitbybitOcctModule): unknown => k.PlaceOnFrames(new k.TopoDS_Shape(), [0, 0, 0, 0, 0, 1, 1, 0, 0], []), "PlaceOnFrames: the shape is null"],
         ["PlaceByMatrices", (k: BitbybitOcctModule): unknown => k.PlaceByMatrices(new k.TopoDS_Shape(), []), "PlaceByMatrices: the shape is null"],
+        ["ShapeSignatures", (k: BitbybitOcctModule): unknown => k.ShapeSignatures(new k.TopoDS_Shape()), "ShapeSignatures: the shape is null"],
+        ["WriteBREPToBytes", (k: BitbybitOcctModule): unknown => k.WriteBREPToBytes(new k.TopoDS_Shape(), true), "WriteBREPToBytes: the shape is null"],
+        ["WriteBREPToString", (k: BitbybitOcctModule): unknown => k.WriteBREPToString(new k.TopoDS_Shape(), true), "WriteBREPToString: the shape is null"],
+        ["BooleanCommonEachWithHistory", (k: BitbybitOcctModule): unknown => k.BooleanCommonEachWithHistory(new k.TopoDS_Shape(), [planarFace(k)], true, 0), "BooleanCommonEachWithHistory: the object is null"],
+        ["FeatureBossWithHistory", (k: BitbybitOcctModule): unknown => k.FeatureBossWithHistory(new k.TopoDS_Shape(), planarFace(k), 0, [0, 0, 1], 1, -1, false), "FeatureBossWithHistory: the base is null"],
+        ["DrillHolesWithHistory", (k: BitbybitOcctModule): unknown => k.DrillHolesWithHistory(new k.TopoDS_Shape(), [0, 0, 0, 0, 0, 1, 1, 0, 0], 1, 0, 0, 0, 0, 0, 0), "DrillHoles: the shape is null"],
     ])("%s names the null shape instead of crashing", (_name, run, message) => {
         // Act
         const read = messageOf(run);
@@ -150,6 +158,21 @@ describe("kernel functions given a null shape", () => {
 
         // Assert
         expect(read).toBe("Standard_NullObject: HistoryOfFillet: the input is null");
+    });
+
+    it("names the thick solid and loft history makers given a null input or result", () => {
+        // Arrange
+        const box = new occt.BRepPrimAPI_MakeBox(10, 10, 10).Shape();
+        const thick = new occt.BRepOffsetAPI_MakeThickSolid();
+        const loft = new occt.BRepOffsetAPI_ThruSections(false);
+
+        // Act
+        const thickRead = messageOf(k => k.HistoryOfThickSolid(thick, new k.TopoDS_Shape(), box));
+        const loftRead = messageOf(k => k.HistoryOfLoft(loft, [box], new k.TopoDS_Shape()));
+
+        // Assert
+        expect(thickRead).toBe("Standard_NullObject: HistoryOfThickSolid: the input is null");
+        expect(loftRead).toBe("Standard_NullObject: HistoryOfLoft: the result is null");
     });
 });
 

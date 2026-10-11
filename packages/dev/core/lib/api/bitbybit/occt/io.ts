@@ -1,9 +1,10 @@
 
 import * as Inputs from "../../inputs";
-import { OCCTWorkerManager, OCCTIO } from "@bitbybit-dev/occt-worker";
-import { ContextBase } from "../../context";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import { OCCTIO } from "@bitbybit-dev/occt-worker";
+import type { ContextBase } from "../../context";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 /**
  * Reading and writing CAD files with OCCT: everything `io` offers on the kernel, plus loaders that

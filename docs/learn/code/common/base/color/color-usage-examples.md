@@ -3,6 +3,8 @@ sidebar_position: 2
 title: Color Usage Examples
 sidebar_label: Color Usage Examples
 description: Learn how to use colors and apply them to 3D geometry in Bitbybit with examples in Rete, Blockly, and TypeScript.
+topic: code.base.color.usage-examples
+type: how-to
 tags: [code, color, rete, blockly, typescript]
 ---
 
@@ -62,7 +64,7 @@ Click through the tabs below to see the implementation. You can interact with th
 <TabItem value="typescript" label="TypeScript">
 <BitByBitRenderCanvas
     requireManualStart={true}
-    script={{"script":"const start = async () => {\n\n    const colorParam = 55;\n    const rgbToHexOptions = new Bit.Inputs.Color.RGBMinMaxDto();\n    rgbToHexOptions.r = colorParam;\n    rgbToHexOptions.b = colorParam;\n    const faceColor = bitbybit.color.rgbToHex(rgbToHexOptions);\n\n    // This might look strange as you could just assign the string to edgeColor directly, \n    // but this identity function is nice to have in visual prgramming editors - check Rete & Blockly\n    // examples\n    \n    const edgeColor = bitbybit.color.hexColor({ color: \"#ff0000\" });\n\n    const cubeOptions = new Bit.Inputs.OCCT.CubeDto();\n    cubeOptions.size = 6;\n    const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);\n\n    const drawOpt = new Bit.Inputs.Draw.DrawOcctShapeSimpleOptions();\n    drawOpt.faceColour = faceColor;\n    drawOpt.edgeColour = edgeColor;\n    drawOpt.edgeWidth = 10;\n    bitbybit.draw.drawAnyAsync({ entity: cube, options: drawOpt });\n}\n\nstart();","type":"typescript"}}
+    script={{"script":"\nconst colorParam = 55;\nconst rgbToHexOptions = new Bit.Inputs.Color.RGBMinMaxDto();\nrgbToHexOptions.r = colorParam;\nrgbToHexOptions.b = colorParam;\nconst faceColor = bitbybit.color.rgbToHex(rgbToHexOptions);\n\n// This might look strange as you could just assign the string to edgeColor directly, \n// but this identity function is nice to have in visual prgramming editors - check Rete & Blockly\n// examples\n\nconst edgeColor = bitbybit.color.hexColor({ color: \"#ff0000\" });\n\nconst cubeOptions = new Bit.Inputs.OCCT.CubeDto();\ncubeOptions.size = 6;\nconst cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);\n\nconst drawOpt = new Bit.Inputs.Draw.DrawOcctShapeSimpleOptions();\ndrawOpt.faceColour = faceColor;\ndrawOpt.edgeColour = edgeColor;\ndrawOpt.edgeWidth = 10;\nbitbybit.draw.drawAnyAsync({ entity: cube, options: drawOpt });","type":"typescript"}}
     title="Color Usage Example"
     />
 </TabItem>

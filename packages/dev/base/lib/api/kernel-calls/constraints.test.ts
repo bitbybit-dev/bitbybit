@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { constraintKinds as k, PropertyConstraint } from "./constraints";
+import type { PropertyConstraint } from "./constraints";
+import { constraintKinds as k } from "./constraints";
 
 describe("constraintKinds", () => {
     it.each([

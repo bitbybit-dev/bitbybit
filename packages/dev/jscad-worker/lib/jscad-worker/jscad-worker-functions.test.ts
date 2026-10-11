@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
-import { DataInput, initializationComplete, onMessageInput } from "./jscad-worker";
+import type { InputIssueReport } from "@bitbybit-dev/base";
+import { setInputIssueSink } from "@bitbybit-dev/base";
+import type { DataInput } from "./jscad-worker";
+import { initializationComplete, onMessageInput } from "./jscad-worker";
 
 type Answer = { uid: string; result?: { hash?: string | number } | boolean; error?: string };
 type Message = "busy" | Answer;

@@ -1,5 +1,5 @@
 
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import { BabylonGizmoManager } from "./manager";
 import { BabylonGizmoPositionGizmo } from "./position-gizmo";
 import { BabylonGizmoAxisDragGizmo } from "./axis-drag-gizmo";

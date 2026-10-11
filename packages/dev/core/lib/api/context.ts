@@ -1,4 +1,4 @@
-import { PrintSaveInterface } from "../models/print-save.model";
+import type { PrintSaveInterface } from "../models/print-save.model";
 import type { JSONPath } from "jsonpath-plus";
 import type { Tag } from "./inputs/tag-inputs";
 
@@ -23,11 +23,11 @@ export interface PreviewAssemblyHierarchyInterface {
 }
 
 export class ContextBase {
-    /** The Blockly workspace, put here by the host. Nothing in these packages reads it. */
+    /** A Blockly workspace a caller may keep here. Nothing in these packages reads it. */
     blocklyWorkspace: unknown;
     /** @deprecated verbnurbs is unmaintained; this and the API over it come out in the next major. */
     verb: any;
-    /** The OCCT instance, put here by the host. Nothing in these packages reads it. */
+    /** An OCCT instance a caller may keep here. Nothing in these packages reads it. */
     occ: unknown;
     /**
      * The jsonpath-plus query, put here by the renderer packages. It takes the library's own type:

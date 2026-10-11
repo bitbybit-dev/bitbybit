@@ -1,4 +1,4 @@
-import { Base } from "../../inputs";
+import type { Base } from "../../inputs";
 
 /**
  * A shape's principal axes of inertia as a frame at its centre of mass: the direction is the axis

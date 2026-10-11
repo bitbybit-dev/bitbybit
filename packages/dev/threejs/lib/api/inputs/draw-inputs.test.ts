@@ -106,7 +106,8 @@ describe("Draw DTO unit tests", () => {
             expect(result.crossSectionColour).toBe("#ff00ff");
             expect(result.crossSectionWidth).toBe(2);
             expect(result.crossSectionOpacity).toBe(1);
-            expect(result.computeNormals).toBe(false);
+            expect(result.computeNormals).toBe(true);
+            expect(result.minSharpAngle).toBe(40);
             expect(result.drawTwoSided).toBe(true);
             expect(result.backFaceColour).toBe("#0000ff");
             expect(result.backFaceOpacity).toBe(1);
@@ -249,6 +250,38 @@ describe("Draw DTO unit tests", () => {
             expect([result.surfaceAnalysis, result.draftDirection]).toEqual([Inputs.OCCT.surfaceAnalysisEnum.none, [0, 1, 0]]);
             expect("analysisMin" in result).toBe(false);
             expect("analysisMax" in result).toBe(false);
+        });
+
+        it("should take the edge contrast as its last constructor parameter and leave it out by default", () => {
+            // Act
+            const given = new Draw.DrawOcctShapeOptions(
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0.4
+            );
+            const left = new Draw.DrawOcctShapeOptions();
+
+            // Assert
+            expect(given.edgeContrast).toBe(0.4);
+            expect(given.edgeColour).toBe("#ffffff");
+            expect("edgeContrast" in left).toBe(false);
+        });
+
+        it("should take the angular and the relative deflection after the edge contrast, 0.5 and false by default", () => {
+            // Act
+            const given = new Draw.DrawOcctShapeOptions(
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0.2, true
+            );
+            const left = new Draw.DrawOcctShapeOptions();
+
+            // Assert
+            expect(given.angularDeflection).toBe(0.2);
+            expect(given.relativeDeflection).toBe(true);
+            expect("edgeContrast" in given).toBe(false);
+            expect(left.angularDeflection).toBe(0.5);
+            expect(left.relativeDeflection).toBe(false);
         });
     });
 
@@ -466,6 +499,40 @@ describe("Draw DTO unit tests", () => {
             expect(result.doubleSided).toBe(false);
             expect(result.wireframe).toBe(false);
             expect(result.unlit).toBe(false);
+        });
+    });
+
+    describe("the recipe meshes options and element DTOs", () => {
+        it("should set every property from its constructor parameter", () => {
+            // Arrange
+            const drawn = { name: "drawn" };
+            const mesh = { name: "mesh" };
+
+            // Act
+            const options = new Draw.DrawRecipeMeshesOptions("name", false, 5, 1000, "#123456", 0.5, 0.3, 0.2);
+            const visibility = new Draw.RecipeElementsVisibilityDto(drawn, ["a"], false);
+            const colour = new Draw.RecipeElementsColourDto(drawn, ["a"], "#ffaa00", 0.4);
+            const pick = new Draw.RecipeElementPickDto(drawn, mesh, 7, 3);
+
+            // Assert
+            expect({ ...options }).toEqual({ elementKey: "name", instancing: false, minInstances: 5, maxBatchVertices: 1000, defaultColour: "#123456", defaultOpacity: 0.5, metallic: 0.3, roughness: 0.2 });
+            expect({ ...visibility }).toEqual({ drawn, keys: ["a"], visible: false });
+            expect({ ...colour }).toEqual({ drawn, keys: ["a"], colour: "#ffaa00", opacity: 0.4 });
+            expect({ ...pick }).toEqual({ drawn, mesh, triangle: 7, instance: 3 });
+        });
+
+        it("should take the defaults when no parameters are given", () => {
+            // Arrange & Act
+            const options = new Draw.DrawRecipeMeshesOptions();
+            const visibility = new Draw.RecipeElementsVisibilityDto();
+            const colour = new Draw.RecipeElementsColourDto();
+            const pick = new Draw.RecipeElementPickDto();
+
+            // Assert
+            expect({ ...options }).toEqual({ elementKey: "globalId", instancing: true, minInstances: 2, maxBatchVertices: 1000000, defaultColour: "#cccccc", defaultOpacity: 1, metallic: 0, roughness: 0.8 });
+            expect({ ...visibility }).toEqual({ visible: true });
+            expect({ ...colour }).toEqual({ opacity: 1 });
+            expect({ ...pick }).toEqual({});
         });
     });
 });

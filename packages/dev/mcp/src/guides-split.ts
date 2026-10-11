@@ -3,6 +3,12 @@ export interface GuideSection {
     title: string;
     level: 2 | 3;
     body: string;
+    page?: string;
+}
+
+export interface GuidePage {
+    url: string;
+    markdown: string;
 }
 
 const FRONTMATTER = /^---\n[\s\S]*?\n---\n/;
@@ -22,7 +28,9 @@ export function splitGuides(markdown: string): GuideSection[] {
     const close = (minLevel: number): void => {
         while (open.length > 0) {
             const last = open[open.length - 1];
-            if (!last || last.section.level < minLevel) break;
+            if (!last || last.section.level < minLevel) {
+                break;
+            }
             last.section.body = last.lines.join("\n").trim();
             open.pop();
         }
@@ -33,14 +41,30 @@ export function splitGuides(markdown: string): GuideSection[] {
             const level = heading[1] === "##" ? 2 : 3;
             const title = (heading[2] ?? "").trim();
             close(level);
-            for (const entry of open) entry.lines.push(line);
+            for (const entry of open) {
+                entry.lines.push(line);
+            }
             const section: GuideSection = { id: slugify(title), title, level, body: "" };
             sections.push(section);
             open.push({ section, lines: [] });
             continue;
         }
-        for (const entry of open) entry.lines.push(line);
+        for (const entry of open) {
+            entry.lines.push(line);
+        }
     }
     close(2);
+    return sections;
+}
+
+export function splitGuidePages(pages: readonly GuidePage[]): GuideSection[] {
+    const sections = pages.flatMap((page) => splitGuides(page.markdown).map((section) => ({ ...section, page: page.url })));
+    const seen = new Set<string>();
+    for (const section of sections) {
+        if (seen.has(section.id)) {
+            throw new Error(`Two guide sections share the id "${section.id}"; retitle one of them so every section has its own id`);
+        }
+        seen.add(section.id);
+    }
     return sections;
 }

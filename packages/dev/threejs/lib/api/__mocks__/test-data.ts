@@ -1,11 +1,5 @@
-/**
- * Mock data for testing geometry drawing functions
- */
-import * as Inputs from "../inputs";
+import type * as Inputs from "../inputs";
 
-/**
- * Creates a mock surface object for Verb NURBS testing
- */
 export function createSurfaceMock() {
     return {
         tessellate: () => {
@@ -20,9 +14,6 @@ export function createSurfaceMock() {
     };
 }
 
-/**
- * Creates a second mock surface object with different data
- */
 export function createSurfaceMock2() {
     return {
         tessellate: () => {
@@ -37,9 +28,6 @@ export function createSurfaceMock2() {
     };
 }
 
-/**
- * Creates mock OCCT box decomposed mesh data
- */
 export function mockOCCTBoxDecomposedMesh(): Inputs.OCCT.DecomposedMeshDto {
     return {
         "faceList": [
@@ -68,9 +56,6 @@ export function mockOCCTBoxDecomposedMesh(): Inputs.OCCT.DecomposedMeshDto {
     };
 }
 
-/**
- * Creates mock JSCAD box decomposed mesh data
- */
 export function mockJSCADBoxDecomposedMesh() {
     return {
         "positions": [-0.5, -1, -1.5, -0.5, 1, 1.5, -0.5, 1, -1.5, -0.5, -1, -1.5, -0.5, -1, 1.5, -0.5, 1, 1.5, 0.5, -1, -1.5, 0.5, 1, 1.5, 0.5, -1, 1.5, 0.5, -1, -1.5, 0.5, 1, -1.5, 0.5, 1, 1.5, -0.5, -1, -1.5, 0.5, -1, 1.5, -0.5, -1, 1.5, -0.5, -1, -1.5, 0.5, -1, -1.5, 0.5, -1, 1.5, -0.5, 1, -1.5, 0.5, 1, 1.5, 0.5, 1, -1.5, -0.5, 1, -1.5, -0.5, 1, 1.5, 0.5, 1, 1.5, -0.5, -1, -1.5, 0.5, 1, -1.5, 0.5, -1, -1.5, -0.5, -1, -1.5, -0.5, 1, -1.5, 0.5, 1, -1.5, -0.5, -1, 1.5, 0.5, 1, 1.5, -0.5, 1, 1.5, -0.5, -1, 1.5, 0.5, -1, 1.5, 0.5, 1, 1.5],

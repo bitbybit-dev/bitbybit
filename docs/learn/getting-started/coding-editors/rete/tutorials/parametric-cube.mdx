@@ -1,0 +1,74 @@
+---
+sidebar_position: 2
+slug: /getting-started/rete/parametric-cube
+title: Creating a Parametric Cube with Rete
+sidebar_label: Parametric Cube
+description: Wire a number slider into an OCCT cube in Rete, step by step with a picture of the editor after every step, and drag the slider to resize the solid live.
+topic: rete.tutorials.parametric-cube
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, rete, occt]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+
+# A Parametric Cube
+
+Parametric means that a shape follows its parameters: change a number and the geometry is rebuilt from it. In Rete a parameter is just another component whose output is wired into an input. Here a number slider sizes a cube made by OCCT, the CAD kernel behind solids on Bitbybit.
+
+## Before you start
+
+Open [an empty Rete editor](https://bitbybit.dev/app?editor=rete). If this is your first Rete script, [Hello World](./hello-world.mdx) shows the basics first.
+
+## The steps
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. **Add cube from the palette.** Open <Ui>occt</Ui> > <Ui>shapes</Ui> > <Ui>solid</Ui> along the top of the canvas and click <Ui>cube</Ui> under primitives.
+
+   The palette follows the API: occt, then shapes, then solid. Cube sits among the primitives. Its path, occt.shapes.solid.createCube, is printed on the node and links to its documentation.
+
+   <Shot id="rete.tutorials.parametric-cube/cube" />
+
+2. **Run the script.** Press <Ui>Run The Code</Ui>, the play button at the lower left.
+
+   Run the script once. The cube is a solid made by OCCT, the CAD kernel, and Rete draws it for you.
+
+   <Shot id="rete.tutorials.parametric-cube/run" />
+
+3. **Add number slider from the palette.** Open <Ui>math</Ui> along the top of the canvas and click <Ui>number slider</Ui> under create.
+
+   A number slider gives a value you can drag. It starts at 5, between 0 and 10.
+
+   <Shot id="rete.tutorials.parametric-cube/slider" />
+
+4. **Connect number slider to the size of cube.** Drag from the output on the right of number slider to the size input of cube.
+
+   Wire the slider's output into the cube's size. The cube takes the slider's 5 at once.
+
+   <Shot id="rete.tutorials.parametric-cube/connected" />
+
+5. **Set number to `2.5`** on number slider.
+
+   Drag the slider, or focus it and use the arrow keys: the cube follows every value, because its size now comes from the slider.
+
+   <Shot id="rete.tutorials.parametric-cube/smaller" />
+
+### The finished script
+
+The script these steps build, to run here:
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"{\"id\":\"rete-v2-json\",\"nodes\":{\"cube\":{\"id\":\"cube\",\"name\":\"bitbybit.occt.shapes.solid.createCube\",\"customName\":\"cube\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"size\":1,\"center\":[0,0,0],\"originOnCenter\":true},\"inputs\":{\"size\":{\"connections\":[{\"node\":\"slider\",\"output\":\"result\",\"data\":{}}]}},\"position\":[700,140]},\"slider\":{\"id\":\"slider\",\"name\":\"bitbybit.math.numberSlider\",\"customName\":\"number slider\",\"async\":false,\"drawable\":false,\"data\":{\"options\":{},\"number\":2.5},\"inputs\":{},\"position\":[20,140]}},\"modules\":{}}","type":"rete"}}
+  title="A cube a slider sizes"
+  description="The script the steps above build."
+/>
+
+{/* steps:end */}
+
+## What you learned
+
+- **The palette follows the API.** A component's path on the node, such as `occt.shapes.solid.createCube`, is where it sits in the palette and what you call from [TypeScript](../../typescript/intro.md).
+- **A wire makes a parameter.** Any output that fits can drive an input; the editor refuses a wire that does not fit and says why ([Nodes, wires and values](../features/nodes-and-wires.md)).
+- **Sliders have limits.** Open the slider's options (⌄) to change its minimum, maximum and step.

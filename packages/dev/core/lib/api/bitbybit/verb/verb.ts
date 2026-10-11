@@ -1,6 +1,6 @@
 
-import { ContextBase } from "../../context";
-import { MathBitByBit, GeometryHelper } from "@bitbybit-dev/base";
+import type { ContextBase } from "../../context";
+import type { MathBitByBit, GeometryHelper } from "@bitbybit-dev/base";
 import { VerbCurve } from "./curve";
 import { VerbIntersect } from "./intersect";
 import { VerbSurface } from "./surface";

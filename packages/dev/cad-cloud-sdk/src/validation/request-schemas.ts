@@ -699,7 +699,9 @@ export const schemaBundle = {
         "json",
         "csv",
         "stl",
-        "3mf"
+        "3mf",
+        "brep",
+        "brep-binary"
       ]
     },
     "PipelineOutputOptions": {

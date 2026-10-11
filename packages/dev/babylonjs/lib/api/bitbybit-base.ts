@@ -1,56 +1,39 @@
-import { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { JSONPath } from "jsonpath-plus";
 import { Babylon } from "./bitbybit/babylon/babylon";
-import {
-    Verb,
-    Tag,
-    Time,
-    OCCTW,
-    Asset,
-    JSONBitByBit,
-    CSVBitByBit,
-} from "@bitbybit-dev/core";
-import {
-    Vector,
-    Point,
-    Frame,
-    Line,
-    Polyline,
-    TextBitByBit,
-    Color,
-    MathBitByBit,
-    Lists,
-    Logic,
-    Transforms,
-    Dates,
-    MeshBitByBit,
-} from "@bitbybit-dev/base";
-import {
-    JSCAD
-} from "@bitbybit-dev/jscad-worker";
-import { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
+import type { Verb, Tag, Time, OCCTW, IFCW, Asset, JSONBitByBit, CSVBitByBit } from "@bitbybit-dev/core";
+import type { Vector, Point, Frame, Line, Polyline, TextBitByBit, Color, MathBitByBit, Lists, Logic, Transforms, Dates, MeshBitByBit } from "@bitbybit-dev/base";
+import type { JSCAD } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
+import type { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
 import { createSharedServices } from "@bitbybit-dev/core/lib/api/shared-services";
 import { Draw } from "./bitbybit/draw";
 import { Context } from "./context";
-import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import * as BABYLON from "@babylonjs/core";
+import type { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type * as BABYLON from "@babylonjs/core";
 import * as vrb from "verb-nurbs-web";
 import { DrawHelper } from "./draw-helper";
 
 /**
  * The whole library behind one object for a BabylonJS scene: `occt`, `jscad` and `manifold` for the
- * CAD kernels, `draw` to put anything into the scene, `babylon` for the engine's meshes, cameras,
- * lights, materials and GUI, and the plain data helpers `math`, `vector`, `point`, `frame`, `line`,
- * `polyline`, `transforms`, `lists`, `logic`, `json`, `csv`, `text`, `dates`, `color`, `asset`,
- * `tag` and `time`. Call `init` once with the scene and the kernel workers before using any of
- * them. The `bitbybit` object in the examples throughout these docs is an instance of this class.
+ * CAD kernels, `ifc` for IFC building models, `draw` to put anything into the scene, `babylon` for
+ * the engine's meshes, cameras, lights, materials and GUI, and the plain data helpers `math`,
+ * `vector`, `point`, `frame`, `line`, `polyline`, `transforms`, `lists`, `logic`, `json`, `csv`,
+ * `text`, `dates`, `color`, `asset`, `tag` and `time`. Call `init` once with the scene and the
+ * kernel workers before using any of them. The `bitbybit` object in the examples throughout these
+ * docs is an instance of this class.
  */
 export class BitByBitBase {
 
     public context: Context;
     public jscadWorkerManager: JSCADWorkerManager;
     public manifoldWorkerManager: ManifoldWorkerManager;
+    /**
+     * Sends IFC calls to their worker and reports its state; `initBitByBit` hands it the worker, or
+     * call its `setIfcWorker` with one.
+     */
+    public ifcWorkerManager: IFCWorkerManager;
     public occtWorkerManager: OCCTWorkerManager;
 
     public math: MathBitByBit;
@@ -76,6 +59,12 @@ export class BitByBitBase {
     public verb: Verb;
     public jscad: JSCAD;
     public manifold: ManifoldBitByBit;
+    /**
+     * IFC building models: read, written and authored in a worker, each method answering with a
+     * promise, and built as OpenCascade shapes or STEP through `geometry`. Experimental, as the IFC
+     * library is.
+     */
+    public ifc: IFCW;
     public text: TextBitByBit;
     public dates: Dates;
     public tag: Tag;
@@ -90,9 +79,11 @@ export class BitByBitBase {
         const shared = createSharedServices(this.context);
         this.jscadWorkerManager = shared.jscadWorkerManager;
         this.manifoldWorkerManager = shared.manifoldWorkerManager;
+        this.ifcWorkerManager = shared.ifcWorkerManager;
         this.occtWorkerManager = shared.occtWorkerManager;
         this.jscad = shared.jscad;
         this.manifold = shared.manifold;
+        this.ifc = shared.ifc;
         this.lists = shared.lists;
         this.math = shared.math;
         this.vector = shared.vector;

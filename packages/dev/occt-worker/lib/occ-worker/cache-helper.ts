@@ -1,15 +1,5 @@
-import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { Models } from "@bitbybit-dev/occt";
-
-/** Finishes a cyrb53 hash: the two 32-bit lanes are avalanched into each other and 21 bits of one
- * are stacked above the 32 bits of the other, giving a non-negative safe integer below 2^53. */
-function foldHashLanes(lane1: number, lane2: number): number {
-    let h1 = Math.imul(lane1 ^ (lane1 >>> 16), 2246822507);
-    h1 ^= Math.imul(lane2 ^ (lane2 >>> 13), 3266489909);
-    let h2 = Math.imul(lane2 ^ (lane2 >>> 16), 2246822507);
-    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-}
+import { hashOfBytes, hashOfText } from "@bitbybit-dev/base";
+import type { Models } from "@bitbybit-dev/occt";
 
 type ItemList = { itemHashes: (string | number)[] };
 
@@ -21,77 +11,17 @@ export class CacheHelper {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     argCache: Record<string, any> = {};
 
-    constructor(private readonly occ: BitbybitOcctModule) { }
-
     cleanAllCache(): void {
         const allCacheKeys = Object.keys(this.argCache);
 
-        allCacheKeys.forEach(hash => {
-            if (this.argCache[hash]) {
-                try {
-                    const cachedItem = this.argCache[hash];
-                    if (this.isOCCTObject(cachedItem)) {
-                        if (Array.isArray(cachedItem)) {
-                            cachedItem.forEach(item => {
-                                try {
-                                    if (this.isShape(item)) {
-                                        this.occ.BRepTools_Clean_Force(item, true);
-                                        this.occ.BRepTools_CleanGeometry(item);
-                                    }
-                                    item.delete();
-                                } catch {
-                                    // Ignore errors for already deleted objects
-                                }
-                            });
-                        } else {
-                            if (this.isShape(cachedItem)) {
-                                this.occ.BRepTools_Clean_Force(cachedItem, true);
-                                this.occ.BRepTools_CleanGeometry(cachedItem);
-                            }
-                            cachedItem.delete();
-                        }
-                    }
-                }
-                catch {
-                    // Ignore errors when cleaning objects that may already be deleted
-                }
-            }
-        });
+        allCacheKeys.forEach(hash => this.freeEntry(this.argCache[hash]));
 
         this.argCache = {};
         this.usedHashes = {};
     }
 
     cleanCacheForHash(hash: string): void {
-        if (this.argCache[hash]) {
-            try {
-                const cachedItem = this.argCache[hash];
-                if (this.isOCCTObject(cachedItem)) {
-                    if (Array.isArray(cachedItem)) {
-                        cachedItem.forEach(item => {
-                            try {
-                                if (this.isShape(item)) {
-                                    this.occ.BRepTools_Clean_Force(item, true);
-                                    this.occ.BRepTools_CleanGeometry(item);
-                                }
-                                item.delete();
-                            } catch {
-                                // Ignore errors for already deleted objects
-                            }
-                        });
-                    } else {
-                        if (this.isShape(cachedItem)) {
-                            this.occ.BRepTools_Clean_Force(cachedItem, true);
-                            this.occ.BRepTools_CleanGeometry(cachedItem);
-                        }
-                        cachedItem.delete();
-                    }
-                }
-            }
-            catch {
-                // Ignore errors when cleaning objects that may already be deleted
-            }
-        }
+        this.freeEntry(this.argCache[hash]);
         delete this.argCache[hash];
         delete this.usedHashes[hash];
     }
@@ -145,7 +75,8 @@ export class CacheHelper {
      * item, and the call's own key holds the list of their keys, so an identical call is answered
      * from the cache with the same objects under the same hashes. When one of the items has since
      * been deleted the list is computed again, and every item of the old list that is still alive is
-     * freed as its new one takes its key.
+     * freed as its new one takes its key. An answer that holds kernel objects inside a structure is
+     * served again only while every one of them is alive; otherwise it is computed again the same way.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cacheOp(args: any, cacheMiss: () => any): any {
@@ -158,11 +89,14 @@ export class CacheHelper {
                 return check;
             }
             if (!isItemList(check)) {
-                return check.value;
-            }
-            const items = this.cachedItems(check.itemHashes);
-            if (items) {
-                return items;
+                if (this.allKernelObjectsStillCached(check.value)) {
+                    return check.value;
+                }
+            } else {
+                const items = this.cachedItems(check.itemHashes);
+                if (items) {
+                    return items;
+                }
             }
         }
         const toReturn = cacheMiss();
@@ -175,11 +109,11 @@ export class CacheHelper {
         } else if (toReturn && toReturn.compound && toReturn.data && toReturn.shapes && toReturn.shapes.length > 0) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const objDef: Models.OCCT.ObjectDefinition<any, any> = toReturn;
-            this.addToCache(this.itemHash(curHash, "compound"), objDef.compound);
-            objDef.shapes!.forEach((s, index) => this.addToCache(this.itemHash(curHash, index), s.shape));
+            this.replace(this.itemHash(curHash, "compound"), objDef.compound);
+            objDef.shapes!.forEach((s, index) => this.replace(this.itemHash(curHash, index), s.shape));
             this.addToCache(curHash, { value: objDef });
         } else if (toReturn && typeof toReturn === "object" && "success" in toReturn && "document" in toReturn && this.isEntityHandle(toReturn.document)) {
-            this.addToCache(this.itemHash(curHash, "document"), toReturn.document);
+            this.replace(this.itemHash(curHash, "document"), toReturn.document);
             this.addToCache(curHash, { value: toReturn });
         } else {
             this.hashNestedShapes(toReturn, curHash, "result");
@@ -194,9 +128,6 @@ export class CacheHelper {
         return this.stringToHash(`${callHash}:${position}`);
     }
 
-    /** Stores the kernel objects of one result, each under its key. A kernel object a key held before
-     * is freed unless the result hands it back again, so a result computed anew never leaves the one
-     * it replaces alive. */
     private storeItems(items: readonly (readonly [string | number, unknown])[]): void {
         const kept = new Set(items.map(([, object]) => object));
         for (const [hash, object] of items) {
@@ -208,21 +139,49 @@ export class CacheHelper {
         }
     }
 
-    /** Frees one kernel object the way every cleanup here does: a shape's triangulation first. */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private free(object: any): void {
         try {
-            if (this.isShape(object)) {
-                this.occ.BRepTools_Clean_Force(object, true);
-                this.occ.BRepTools_CleanGeometry(object);
-            }
             object.delete();
         } catch {
-            // An object that is already gone has nothing left to free.
         }
     }
 
-    /** The kernel objects a cached list holds, or undefined when any of them is no longer in the cache. */
+    private freeEntry(entry: unknown): void {
+        if (!this.isOCCTObject(entry)) {
+            return;
+        }
+        if (Array.isArray(entry)) {
+            entry.forEach(item => this.free(item));
+        } else {
+            this.free(entry);
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private replace(hash: string | number, object: any): void {
+        const previous: unknown = this.argCache[hash];
+        if (previous !== object && this.isOCCTObject(previous) && !Array.isArray(previous)) {
+            this.free(previous);
+        }
+        this.addToCache(hash, object);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private allKernelObjectsStillCached(value: any): boolean {
+        if (value === null || typeof value !== "object") {
+            return true;
+        }
+        if (value.$$ !== undefined) {
+            return value.hash === undefined || this.checkCache(value.hash) === value;
+        }
+        if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
+            return true;
+        }
+        const items: unknown[] = Array.isArray(value) ? value : Object.values(value);
+        return items.every(item => this.allKernelObjectsStillCached(item));
+    }
+
     private cachedItems(itemHashes: readonly (string | number)[]): unknown[] | undefined {
         const items: unknown[] = [];
         for (const hash of itemHashes) {
@@ -250,7 +209,7 @@ export class CacheHelper {
         }
         if (value.$$ !== undefined) {
             if (this.isShape(value) && value.hash === undefined) {
-                this.addToCache(this.itemHash(callHash, path), value);
+                this.replace(this.itemHash(callHash, path), value);
             }
             return;
         }
@@ -349,45 +308,65 @@ export class CacheHelper {
         const inputs = (args && typeof args === "object" && args.inputs && typeof args.inputs === "object")
             ? args.inputs
             : args;
-        if (!inputs || typeof inputs !== "object") return false;
+        if (!inputs || typeof inputs !== "object") {
+            return false;
+        }
         for (const key of Object.keys(inputs)) {
             const v = inputs[key];
-            if (v === null || v === undefined) continue;
-            if (typeof v === "string") {
-                if (v.length > CacheHelper.LARGE_STRING_THRESHOLD) return true;
+            if (v === null || v === undefined) {
                 continue;
             }
-            if (typeof v !== "object") continue;
-            if (typeof ArrayBuffer !== "undefined" && v instanceof ArrayBuffer) return true;
-            if (ArrayBuffer.isView && ArrayBuffer.isView(v as ArrayBufferView)) return true;
-            if (typeof Blob !== "undefined" && v instanceof Blob) return true;
+            if (typeof v === "string") {
+                if (v.length > CacheHelper.LARGE_STRING_THRESHOLD) {
+                    return true;
+                }
+                continue;
+            }
+            if (typeof v !== "object") {
+                continue;
+            }
+            if (typeof ArrayBuffer !== "undefined" && v instanceof ArrayBuffer) {
+                return true;
+            }
+            if (ArrayBuffer.isView && ArrayBuffer.isView(v as ArrayBufferView)) {
+                return true;
+            }
+            if (typeof Blob !== "undefined" && v instanceof Blob) {
+                return true;
+            }
         }
         return false;
     }
 
     /** Builds a representation of `args` that is cheap and safe to JSON.stringify
-     * for hashing, by replacing any large string / binary payload found in the
-     * immediate input properties with a compact content digest. Returns the
-     * original `args` unchanged when there is nothing large/binary to replace,
-     * so hashes for ordinary inputs are byte-for-byte identical to before.
-     * Idempotent - running it on already-digested args is a cheap no-op.
+     * for hashing, by replacing every large string and binary payload, at any depth, with a compact
+     * content digest: a design's asset bytes sit inside `inputs.assets`, not at its top level.
+     * Objects are copied only along the way to a replaced value, so ordinary arguments come back
+     * as the very same object and hash exactly as they always did. Kernel handles are left as they
+     * are; they serialize as the hash they carry. Idempotent - running it on already-digested args
+     * is a cheap no-op.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     toHashableArgs(args: any): any {
-        if (!args || typeof args !== "object") return args;
-        const hasInputsWrapper = args.inputs && typeof args.inputs === "object";
-        const source = hasInputsWrapper ? args.inputs : args;
+        const digest = this.digestIfLargeOrBinary(args);
+        if (digest !== undefined) {
+            return digest;
+        }
+        if (args === null || typeof args !== "object" || args.$$ !== undefined) {
+            return args;
+        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let sanitized: any = null;
-        for (const key of Object.keys(source)) {
-            const digest = this.digestIfLargeOrBinary(source[key]);
-            if (digest !== undefined) {
-                if (!sanitized) { sanitized = Array.isArray(source) ? [...source] : { ...source }; }
-                sanitized[key] = digest;
+        let copy: any = undefined;
+        const keys = Array.isArray(args) ? args.map((_item, index) => index) : Object.keys(args);
+        for (const key of keys) {
+            const item = args[key];
+            const hashable = this.toHashableArgs(item);
+            if (hashable !== item) {
+                copy ??= Array.isArray(args) ? [...args] : { ...args };
+                copy[key] = hashable;
             }
         }
-        if (!sanitized) return args;
-        return hasInputsWrapper ? { ...args, inputs: sanitized } : sanitized;
+        return copy ?? args;
     }
 
     /** Returns a compact, JSON-serializable content digest for a value that is a
@@ -400,14 +379,18 @@ export class CacheHelper {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     digestIfLargeOrBinary(v: any): any {
-        if (v === null || v === undefined) return undefined;
+        if (v === null || v === undefined) {
+            return undefined;
+        }
         if (typeof v === "string") {
             if (v.length > CacheHelper.LARGE_STRING_THRESHOLD) {
                 return { __largeStringDigest__: this.stringToHash(v), length: v.length };
             }
             return undefined;
         }
-        if (typeof v !== "object") return undefined;
+        if (typeof v !== "object") {
+            return undefined;
+        }
         if (typeof ArrayBuffer !== "undefined" && v instanceof ArrayBuffer) {
             return { __binaryDigest__: this.bytesToHash(new Uint8Array(v)), byteLength: v.byteLength };
         }
@@ -431,27 +414,13 @@ export class CacheHelper {
     /** Hashes raw bytes the way `stringToHash` hashes code units, so ASCII text digests to the same
      * number whether it arrives as a string or as bytes. */
     bytesToHash(bytes: Uint8Array): number {
-        let h1 = 0xdeadbeef;
-        let h2 = 0x41c6ce57;
-        for (let i = 0; i < bytes.length; i++) {
-            const byte = bytes[i]!;
-            h1 = Math.imul(h1 ^ byte, 2654435761);
-            h2 = Math.imul(h2 ^ byte, 1597334677);
-        }
-        return foldHashLanes(h1, h2);
+        return hashOfBytes(bytes);
     }
 
     /** Hashes a string to a non-negative 53-bit safe integer with cyrb53. Both lanes are mixed with
      * `Math.imul`, so the result is the same on every JavaScript engine. */
     stringToHash(str: string): number {
-        let h1 = 0xdeadbeef;
-        let h2 = 0x41c6ce57;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            h1 = Math.imul(h1 ^ char, 2654435761);
-            h2 = Math.imul(h2 ^ char, 1597334677);
-        }
-        return foldHashLanes(h1, h2);
+        return hashOfText(str);
     }
 
 }

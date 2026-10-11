@@ -1,10 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { InputError } from "@bitbybit-dev/base";
-import {
-    checkedChoice, checkedCount, checkedDirection, checkedFlag, checkedFrame, checkedFrames, checkedIndexes, checkedNumber, checkedNumberList,
-    checkedPlacements, checkedPoint, checkedPoints, checkedShape, checkedShapes, checkedWhole, checkedWithin, withIndexesInRange,
-} from "./input-checks";
-import { KernelExceptionReader } from "../../kernel-exception";
+import { checkedChoice, checkedCount, checkedDirection, checkedFlag, checkedFrame, checkedFrames, checkedIndexes, checkedNumber, checkedNumberList, checkedPlacements, checkedPoint, checkedPoints, checkedShape, checkedShapes, checkedWhole, checkedWithin, withIndexesInRange } from "./input-checks";
+import type { KernelExceptionReader } from "../../kernel-exception";
 
 const thrownBy = (action: () => unknown): InputError => {
     try {

@@ -1,6 +1,6 @@
 {
     "name": "docs",
-    "version": "1.4.1",
+    "version": "1.5.0-rc.0",
     "private": true,
     "scripts": {
         "docusaurus": "docusaurus",
@@ -9,9 +9,12 @@
         "generate-api-docs": "docusaurus gen-api-docs openapi-docs",
         "clean-api-docs": "docusaurus clean-api-docs openapi-docs",
         "start": "npm run generate-llms && npm run build-id && docusaurus start",
-        "build": "npm run generate-llms && npm run clean-api-docs && npm run generate-api-docs && npm run inject-openapi-static && npm run build-id && docusaurus build && npm run check-descriptions",
+        "start:media": "LEARN_MEDIA_LOCAL=1 npm start",
+        "build": "npm run generate-llms && npm run clean-api-docs && npm run generate-api-docs && npm run inject-openapi-static && npm run build-id && docusaurus build && npm run index-search && npm run check-search-index && npm run check-descriptions",
         "inject-openapi-static": "node scripts/inject-openapi-static.js",
         "check-descriptions": "node scripts/check-descriptions.js",
+        "index-search": "pagefind && node scripts/keep-search-index.js",
+        "check-search-index": "node scripts/check-search-index.js",
         "swizzle": "docusaurus swizzle",
         "deploy": "docusaurus deploy",
         "clear": "docusaurus clear",
@@ -41,6 +44,7 @@
         "@docusaurus/module-type-aliases": "3.10.2",
         "@docusaurus/tsconfig": "3.10.2",
         "@docusaurus/types": "3.10.2",
+        "pagefind": "1.5.2",
         "typescript": "~5.6.2"
     },
     "browserslist": {

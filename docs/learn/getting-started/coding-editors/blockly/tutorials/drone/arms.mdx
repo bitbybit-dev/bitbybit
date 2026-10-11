@@ -1,0 +1,72 @@
+---
+sidebar_position: 4
+slug: /getting-started/blockly/tutorials/drone/arms
+title: "Build a drone: arms around the frame"
+sidebar_label: 4. Arms around the frame
+description: The fourth chapter of the Blockly drone - the arm's parts repeated around the frame by calls of around, an async function that alternates the propellers' spin, and another that sorts the lights into green and red by the side they are on.
+topic: blockly.tutorials.drone.arms
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, blockly, occt]
+---
+
+# Build a drone: arms around the frame
+
+One arm becomes as many as *arms* says: each draw gets a call of ***around*** in place of its part. Two async functions then make the drone fly straight and show which way it faces.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. around makes the one arm into as many as arms says: in each draw, replace the part with a call of around, and the arm, the motor, the stator and the bolts stand around the frame.
+
+   - **In** **draw any async no return**(entity *one arm*, options *carbon*), **replace** *one arm* **with** ***around***(*one arm*, *arms*).
+   - **In** **draw any async no return**(entity *one motor*, options *aluminium*), **replace** *one motor* **with** ***around***(*one motor*, *arms*).
+   - **In** **draw any async no return**(entity *one stator*, options *copper*), **replace** *one stator* **with** ***around***(*one stator*, *arms*).
+   - **In** **draw any async no return**(entity *arm fixings*, options *steel*), **replace** *arm fixings* **with** ***around***(*arm fixings*, *arms*).
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="blockly.tutorials.drone/arms" />
+
+2. Neighbouring propellers turn opposite ways, so the drone does not spin. alternate spin is an async function: it awaits the propellers it is given, then a count loop awaits each one's centre, turns it a little around it, and mirrors every second one across its own arm. A function with an await block in it runs as async; a set block that keeps its result waits for it, so the blocks after it can use the result.
+
+   - **Make the function** ***alternate spin*** with the inputs *propellers*:
+     - set *propellers* to **await** *propellers*
+     - set *spun* to **empty list**
+     - **count with** *i* from 0 to (**list length**(list *propellers*, clone false) - 1) by 1:
+       - set *centre* to **await** **get solid center of mass**(**get item**(list *propellers*, index *i*, clone false))
+       - set *turned* to **rotate around center**(shape **get item**(list *propellers*, index *i*, clone false), angle (*i* × 37), center **point xyz**(**get item**(list *centre*, index 0, clone false), 0, **get item**(list *centre*, index 2, clone false)), axis **vector xyz**(0, 1, 0))
+       - set *angle* to **deg to rad**((((*i* + 0.5) × 360) ÷ **list length**(list *propellers*, clone false)))
+       - **if** (**modulus**(number *i*, modulus 2) = 0):
+         - set *spun* to **add item**(list *spun*, item *turned*, clone false)
+       - **else**:
+         - set *spun* to **add item**(list *spun*, item **mirror along normal**(shape *turned*, origin **point xyz**(0, 0, 0), normal **vector xyz**(**sin**(*angle*), 0, **cos**(*angle*))), clone false)
+     - **return** *spun*
+   - **Snap under** the block set *one propeller* to ***propeller***(*arm length*, *diameter*):
+     - set *spun* to ***alternate spin***(***around***(*one propeller*, *arms*))
+   - **In** **draw any async no return**(entity *one propeller*, options *accent*), **replace** *one propeller* **with** *spun*.
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="blockly.tutorials.drone/propellers" />
+
+3. The lights repeat too. lights on side awaits each light's centre and keeps the ones on the side it is asked for; two set blocks keep the front ones and the back ones, drawn green and red, as on an aircraft.
+
+   - **Make the function** ***lights on side*** with the inputs *lights*, *front*:
+     - set *lights* to **await** *lights*
+     - set *chosen* to **empty list**
+     - **for each item** *lamp* in *lights*:
+       - set *centre* to **await** **get solid center of mass**(*lamp*)
+       - **if** ((**get item**(list *centre*, index 2, clone false) > 0) = *front*):
+         - set *chosen* to **add item**(list *chosen*, item *lamp*, clone false)
+     - **return** *chosen*
+   - **Snap under** the block set *one light* to ***light***(*arm length*):
+     - set *front lights* to ***lights on side***(***around***(*one light*, *arms*), true)
+     - set *back lights* to ***lights on side***(***around***(*one light*, *arms*), false)
+   - **In** **draw any async no return**(entity *one light*, options *green*), **replace** *one light* **with** *front lights*.
+   - **Snap under** the block **draw any async no return**(entity *front lights*, options *green*):
+     - **draw any async no return**(entity *back lights*, options ***look***("red", `#ff2a2a`, 0, 0.2, `#ff2a2a`, `#0d0e10`, 0))
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="blockly.tutorials.drone/lights" />
+
+{/* steps:end */}
+
+Next: [canopy and electronics](./canopy.mdx).

@@ -2,7 +2,10 @@
 sidebar_position: 1
 title: Working with Assets in Bitbybit
 sidebar_label: Assets Overview
-description: Learn about using assets (3D models, images, etc.) in Bitbybit, how to upload them to cloud or local storage, and their availability within your projects.
+description: What an asset is on bitbybit.dev, the file types it can be, and where to keep one - with its project, in the cloud or in this browser, which is the recommended way, or in the browser asset catalog for quick tests.
+topic: platform.assets.intro
+type: explanation
+verified: 2026-10-09
 tags: [getting-started, assets]
 ---
 
@@ -14,8 +17,8 @@ The Bitbybit platform allows you to upload your own assets (like 3D models, imag
 
 This section will guide you through:
 *   Understanding what constitutes an asset.
-*   The different ways you can upload assets.
-*   How assets are made available within your projects and scripts.
+*   Where to keep a file, and which way to choose.
+*   How scripts load the files you keep.
 
 ## What is an Asset?
 
@@ -28,38 +31,34 @@ The simplest way to think about an asset is as a **file**. These files can conta
 
 While our 3D platform primarily focuses on 3D model assets, we also support other common file types.
 
-**As of this writing, here is a list of supported file extensions:**
-`.txt`, `.bitbybit`, `.ply`, `.splat`, `.csv`, `.step`, `.stp`, `.iges`, `.igs`, `.stl`, `.glb`, `.gltf`, `.babylon`, `.jpg`, `.jpeg`, `.png`, `.json`
+**The file types an asset can be:**
 
-## Ways of Uploading Assets
+- 3D models and CAD: `.step`, `.stp`, `.iges`, `.igs`, `.stl`, `.glb`, `.gltf`, `.babylon`, `.ply`, `.splat`, and in the cloud also `.brep`, `.brp`, `.obj` and `.ifc`;
+- images: `.jpg`, `.jpeg`, `.png`, and in the cloud also `.svg`;
+- fonts: `.ttf`, `.woff`, `.otf`;
+- data and text: `.json`, `.csv`, `.txt`, `.bitbybit`.
 
-We offer two primary methods for uploading your assets:
+## Where to keep a file
 
-1.  **Cloud Storage:**
-    *   **Account-Based:** Assets uploaded to cloud storage are linked to your Bitbybit account.
-    *   **Cross-Device Access:** You can access these assets from any device where you are logged into your account.
-    *   **Every Account:** Free accounts can keep assets in the cloud too; the paid plans raise the limits.
-    *   **Limits:** The file size, the number of files per project and the total storage depend on your plan. You can find each plan's limits in our [Pick a Plan](https://bitbybit.dev/auth/pick-plan) section.
+A file can be kept in three places. **Keep it with its project**, the first two rows: that is the recommended way, because the file then travels with the project.
 
-2.  **Local Browser Storage:**
-    *   **Browser-Specific:** Assets uploaded to local storage are stored within your specific web browser's storage.
-    *   **Single Browser Access:** You can only access these assets from that particular browser on that particular device. They are not synced across devices or browsers.
-    *   **No Account Needed:** Local storage can be used without a Bitbybit account for quick, temporary asset use.
-    *   **No Special File Size Limits (Platform-Side):** Since it uses your own computer's/browser's memory, Bitbybit doesn't impose special file size limits, though your browser might have its own constraints.
+| | Files of a project in the cloud | Files of a project in this browser | The browser asset catalog |
+|---|---|---|---|
+| Added from | the project's <Ui>Files</Ui> | the project's <Ui>Files</Ui> | the editor's <Ui>Assets</Ui> dialog |
+| Scripts that can load it | every script of that project | every script of that project | every script you open in this browser |
+| Opens on other devices | yes, when you are signed in | no | no |
+| Goes with the project | yes, shared and published with it | yes: in its export, and to the cloud when the project moves there | no: download it and add it to a project |
+| Account and limits | an account; your plan's file count, file size and storage | none; any type of file | none |
 
-**Important Considerations for Cloud Assets:**
+- [Files of a project](/learn/getting-started/basics/assets/project-files) is the place to start: adding files to a project in either place, loading them, and moving a project from this browser to the cloud with its files.
+- [Cloud assets](/learn/getting-started/basics/assets/cloud/intro) covers what a cloud project's files add: sharing, addresses to download them, and your plan's limits.
+- [The browser asset catalog](/learn/getting-started/basics/assets/local/intro) is for trying a file quickly in any project. It cannot be moved to the cloud, so add anything you keep to a project.
+
+**Before you upload to the cloud:**
 *   According to our [Terms and Conditions](https://bitbybit.dev/terms-and-conditions), cloud assets should be used purely for making your 3D experiences on Bitbybit more engaging and interactive.
 *   You must have the legal right to use any assets you upload.
-*   If you make a Project public, any cloud assets associated with that project may also become accessible to anyone on the web. Please review our terms carefully.
+*   When you make a project public, its files can be opened by anyone on the web too.
 
-## Asset Availability Within Projects and Scripts
+## Loading a file in a script
 
-*   **Local Assets:**
-    *   Are generally available **across all your projects** *within the same browser* where they were uploaded.
-
-*   **Cloud Assets:**
-    *   Are available **only within the specific Project to which you uploaded them.**
-    *   If you want to use the same cloud asset in multiple projects, you will need to upload it separately to each project.
-    *   However, a project can contain multiple scripts. All scripts within a single project can access the same cloud assets that are linked to that project.
-
-Understanding these distinctions will help you manage your assets effectively as you build your creations on Bitbybit.
+Scripts load a project's files with the <Ui>get file</Ui> component or block, `bitbybit.asset.getFile` in TypeScript, by file name or by title; <Ui>get local file</Ui>, `bitbybit.asset.getLocalFile`, looks in the browser asset catalog first and then in the project, and gives every file under one title as a list. [Files and assets in scripts](/learn/code/common/base/asset/intro) lists every function.

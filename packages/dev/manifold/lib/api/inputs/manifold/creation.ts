@@ -1,7 +1,6 @@
-// A fragment of the Manifold inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../manifold-inputs.ts. Edit here, then regenerate.
-import { Base } from "../base-inputs";
-import { DecomposedManifoldMeshDto, fillRuleEnum } from "./pointers-and-enums";
+import type { Base } from "../base-inputs";
+import type { DecomposedManifoldMeshDto } from "./pointers-and-enums";
+import { fillRuleEnum } from "./pointers-and-enums";
 
 /**
  * Mesh data for `manifold.shapes.manifoldFromMesh`, which builds a solid from it.

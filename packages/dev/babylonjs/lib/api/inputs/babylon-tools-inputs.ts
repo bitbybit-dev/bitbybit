@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
+import type * as BABYLON from "@babylonjs/core";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for engine utilities: screenshots, canvas sizing, color conversion and the other helpers
  * that sit around the scene rather than inside it.

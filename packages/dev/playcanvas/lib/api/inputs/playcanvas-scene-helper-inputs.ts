@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import * as pc from "playcanvas";
-import { Base } from "./base-inputs";
-import { PlayCanvasCamera } from "./playcanvas-camera-inputs";
+import type * as pc from "playcanvas";
+import type { Base } from "./base-inputs";
+import type { PlayCanvasCamera } from "./playcanvas-camera-inputs";
 
 /**
  * Interface for orbit camera internal state and methods (PlayCanvas).

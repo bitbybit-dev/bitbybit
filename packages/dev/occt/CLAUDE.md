@@ -88,7 +88,7 @@ fillet failed on (`FaultyEdges`, numbered as `getEdge` numbers them), the corner
 not round (numbered from 1, as `fillet2d` takes them), shapes of different dimensions in a boolean
 (its `BOPAlgo_AlertBOPNotAllowed`). Offsets report nothing useful (`NoError` or `UnknownError` on real
 failures) and 2D chamfers report every corner done even when the result is not valid, so neither
-has a reason code. The codes and detail types are in the API report, because hosts translate by
+has a reason code. The codes and detail types are in the API report, because callers translate by
 them; a new kind of failure gets a new code, and a code is never reused for another meaning. Inputs
 that would crash or trivially fail the kernel (a loft through fewer than two sections, a loft of
 points only, an empty operand of a boolean) are refused as an `InputError` before it runs. OCCT also

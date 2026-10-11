@@ -4,7 +4,7 @@
 
 ```ts
 
-import * as JSCAD_3 from '@jscad/modeling';
+import type * as JSCAD_3 from '@jscad/modeling';
 
 // @public
 export namespace Base {
@@ -86,13 +86,126 @@ export namespace Base {
     export type Polyline2 = {
         points: Base.Point2[];
         isClosed?: boolean;
-        color?: number[];
+        color?: string | number[];
     };
     export type Polyline3 = {
         points: Base.Point3[];
         isClosed?: boolean;
-        color?: number[];
+        color?: string | number[];
     };
+    // @beta
+    export interface Recipe {
+        buffers: RecipeBuffers;
+        format: "bitbybit.recipe";
+        groups?: RecipeGroup[] | undefined;
+        millimetresPerUnit: number;
+        nodes: RecipeNode[];
+        roots: RecipeRoot[];
+        tolerance: number;
+        version: 1;
+    }
+    // @beta
+    export interface RecipeBuffers {
+        f64: Float64Array;
+        i32: Int32Array;
+    }
+    // @beta
+    export interface RecipeCircleNode {
+        center: Point2;
+        op: "circle";
+        radius: number;
+    }
+    // @beta
+    export interface RecipeCompoundNode {
+        of: number[];
+        op: "compound";
+    }
+    // @beta
+    export interface RecipeDifferenceNode {
+        of: number;
+        op: "difference";
+        tools: number[];
+    }
+    // @beta
+    export interface RecipeExtrudeNode {
+        depth: number;
+        direction: Vector3;
+        op: "extrude";
+        profile: number;
+    }
+    // @beta
+    export interface RecipeGroup {
+        name: string;
+        parent?: number | undefined;
+        tag: Record<string, RecipeTagValue>;
+    }
+    // @beta
+    export interface RecipeHalfSpaceNode {
+        normal: Vector3;
+        op: "halfSpace";
+        origin: Point3;
+    }
+    // @beta
+    export interface RecipeIntersectionNode {
+        of: number[];
+        op: "intersection";
+    }
+    // @beta
+    export interface RecipeLoftNode {
+        frames: RecipeRange;
+        op: "loft";
+        profiles: number[];
+    }
+    // @beta
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode;
+    // @beta
+    export interface RecipePolygonNode {
+        holes: RecipeRange[];
+        op: "polygon";
+        points: RecipeRange;
+    }
+    // @beta
+    export type RecipeRange = [number, number];
+    // @beta
+    export interface RecipeRevolveNode {
+        angle: number;
+        direction: Vector2;
+        op: "revolve";
+        origin: Point2;
+        profile: number;
+    }
+    // @beta
+    export interface RecipeRoot {
+        group?: number | undefined;
+        matrix: TransformMatrix;
+        node: number;
+        tag: Record<string, RecipeTagValue>;
+    }
+    // @beta
+    export type RecipeTagValue = string | number | boolean | number[];
+    // @beta
+    export interface RecipeTransformNode {
+        matrix: TransformMatrix;
+        of: number;
+        op: "transform";
+    }
+    // @beta
+    export interface RecipeTrianglesNode {
+        indices: RecipeRange;
+        op: "triangles";
+        positions: RecipeRange;
+    }
+    // @beta
+    export interface RecipeUnionNode {
+        of: number[];
+        op: "union";
+    }
+    // @beta
+    export interface RecipeVoidsNode {
+        host: number;
+        op: "voids";
+        openings: number[];
+    }
     export type Segment2 = [Point2, Point2];
     export type Segment3 = [Point3, Point3];
     export enum topBottomEnum {
@@ -1973,11 +2086,20 @@ namespace Math_3 {
 
 // @public
 export namespace Mesh {
+    export class MeshDto {
+        constructor(mesh?: Base.Mesh3);
+        mesh: Base.Mesh3;
+    }
     export class MeshMeshToleranceDto {
         constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, tolerance?: number);
         mesh1: Base.Mesh3;
         mesh2: Base.Mesh3;
         tolerance?: number | undefined;
+    }
+    export class PolygonWithHolesDto {
+        constructor(points?: Base.Point3[], holes?: Base.Point3[][]);
+        holes?: Base.Point3[][] | undefined;
+        points: Base.Point3[];
     }
     export class SignedDistanceFromPlaneToPointDto {
         constructor(point?: Base.Point3, plane?: Base.TrianglePlane3);
@@ -2004,7 +2126,11 @@ export namespace Mesh {
 // @public
 namespace Mesh_2 {
     // (undocumented)
+    type MeshDto = Inputs_2.Mesh.MeshDto;
+    // (undocumented)
     type MeshMeshToleranceDto = WithDefaults<Inputs_2.Mesh.MeshMeshToleranceDto, "tolerance">;
+    // (undocumented)
+    type PolygonWithHolesDto = Inputs_2.Mesh.PolygonWithHolesDto;
     // (undocumented)
     type SignedDistanceFromPlaneToPointDto = Inputs_2.Mesh.SignedDistanceFromPlaneToPointDto;
     // (undocumented)
@@ -2017,6 +2143,13 @@ namespace Mesh_2 {
 
 // @public
 export namespace Point {
+    export class ArcThroughThreePointsDto {
+        constructor(start?: Base.Point3, middle?: Base.Point3, end?: Base.Point3, segments?: number);
+        end: Base.Point3;
+        middle: Base.Point3;
+        segments?: number | undefined;
+        start: Base.Point3;
+    }
     export class ClosestPointFromPointsDto {
         constructor(points?: Base.Point3[], point?: Base.Point3);
         point: Base.Point3;
@@ -2197,6 +2330,8 @@ export namespace Point {
 
 // @public
 namespace Point_2 {
+    // (undocumented)
+    type ArcThroughThreePointsDto = WithDefaults<Inputs_2.Point.ArcThroughThreePointsDto, "segments">;
     // (undocumented)
     type ClosestPointFromPointsDto = Inputs_2.Point.ClosestPointFromPointsDto;
     // (undocumented)

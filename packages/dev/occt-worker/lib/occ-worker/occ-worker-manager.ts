@@ -1,10 +1,12 @@
-import { KernelCallError, KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
+import type { KernelFailureDetails, KernelFailureKind, KernelSteps } from "@bitbybit-dev/base";
+import { KernelCallError } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
-import { OccInfo } from "./occ-info";
+import type { OccInfo } from "./occ-info";
+import type { MeshRetention } from "./constants";
 import { OccStateEnum } from "./occ-state.enum";
-import { OCCTWorkerMock } from "./occ-worker-mock";
+import type { OCCTWorkerMock } from "./occ-worker-mock";
 
-type WorkerResponse = "occ-initialised" | "busy" | { progressWords: Int32Array } | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
+type WorkerResponse = "occ-initialised" | "busy" | { progressWords: Int32Array, stepWords?: Int32Array | undefined } | { steps: KernelSteps } | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
 
 /** How far the OCCT call running now has got. */
 export type OccProgress = {
@@ -14,10 +16,16 @@ export type OccProgress = {
     fraction: number;
     /** How many kernel algorithms the call has started so far; each reports from 0 to 1 again. */
     algorithms: number;
+    /** For a call that works in steps, such as a design build making its features, how many are done of how many. */
+    steps?: KernelSteps;
 };
 
-/** How often the progress of a running call is read, in milliseconds. */
-const PROGRESS_INTERVAL = 100;
+const PROGRESS_INTERVAL_MS = 100;
+const STOP_REQUEST_WORD = 0;
+const PERMILLE_WORD = 1;
+const ALGORITHMS_STARTED_WORD = 2;
+const STEPS_DONE_WORD = 0;
+const STEPS_TOTAL_WORD = 1;
 type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
 
 /**
@@ -30,13 +38,16 @@ export class OCCTWorkerManager {
     occWorkerState$: Subject<OccInfo> = new Subject();
     /**
      * The progress of the call running now, read ten times a second while calls are pending, when
-     * the worker can share its progress: in a browser, only on a cross-origin isolated page.
+     * the worker can share its progress: in a browser, only on a cross-origin isolated page. Without
+     * that, only a call that works in steps, such as a design build, reports, as each step is done,
+     * with `fraction` and `algorithms` 0.
      */
     occWorkerProgress$: Subject<OccProgress> = new Subject();
     errorCallback!: (err: string) => void;
     private occWorker!: Worker | OCCTWorkerMock;
     private promisesMade: PendingCall[] = [];
     private progressWords: Int32Array | undefined;
+    private stepWords: Int32Array | undefined;
     private progressTimer: ReturnType<typeof setInterval> | undefined;
     private lastProgress = "";
 
@@ -54,7 +65,7 @@ export class OCCTWorkerManager {
         if (this.progressWords === undefined || this.promisesMade.length === 0) {
             return false;
         }
-        Atomics.store(this.progressWords, 0, 1);
+        Atomics.store(this.progressWords, STOP_REQUEST_WORD, 1);
         return true;
     }
 
@@ -83,10 +94,19 @@ export class OCCTWorkerManager {
     setOccWorker(worker: Worker | OCCTWorkerMock): void {
         this.occWorker = worker;
         this.progressWords = undefined;
+        this.stepWords = undefined;
         this.stopWatchingProgress();
         this.occWorker.onmessage = ({ data }: { data: WorkerResponse }) => {
+            if (typeof data === "object" && "steps" in data) {
+                const running = this.promisesMade[0];
+                if (running !== undefined) {
+                    this.occWorkerProgress$.next({ functionName: running.functionName, fraction: 0, algorithms: 0, steps: data.steps });
+                }
+                return;
+            }
             if (typeof data === "object" && "progressWords" in data) {
                 this.progressWords = data.progressWords;
+                this.stepWords = data.stepWords;
                 this.stopWatchingProgress();
                 if (this.promisesMade.length > 0) {
                     this.watchProgress();
@@ -138,13 +158,12 @@ export class OCCTWorkerManager {
         this.stopWatchingProgress();
     }
 
-    /** Starts reading the running call's progress, when the worker shares it and nothing reads it yet. */
     private watchProgress(): void {
         const words = this.progressWords;
         if (words === undefined || this.progressTimer !== undefined) {
             return;
         }
-        this.progressTimer = setInterval(() => this.readProgress(words), PROGRESS_INTERVAL);
+        this.progressTimer = setInterval(() => this.readProgress(words), PROGRESS_INTERVAL_MS);
     }
 
     private stopWatchingProgress(): void {
@@ -155,18 +174,16 @@ export class OCCTWorkerManager {
         this.lastProgress = "";
     }
 
-    /**
-     * Publishes the running call's progress when it moved; the oldest pending call is the one running.
-     * Only the timer calls it, and the timer is stopped whenever the last pending call settles.
-     */
     private readProgress(words: Int32Array): void {
         const running = this.promisesMade[0]!;
-        const permille = Atomics.load(words, 1);
-        const algorithms = Atomics.load(words, 2);
-        const key = `${running.uid}:${permille}:${algorithms}`;
+        const permille = Atomics.load(words, PERMILLE_WORD);
+        const algorithms = Atomics.load(words, ALGORITHMS_STARTED_WORD);
+        const total = this.stepWords === undefined ? 0 : Atomics.load(this.stepWords, STEPS_TOTAL_WORD);
+        const done = this.stepWords === undefined ? 0 : Math.min(Atomics.load(this.stepWords, STEPS_DONE_WORD), total);
+        const key = `${running.uid}:${permille}:${algorithms}:${done}/${total}`;
         if (key !== this.lastProgress) {
             this.lastProgress = key;
-            this.occWorkerProgress$.next({ functionName: running.functionName, fraction: permille / 1000, algorithms });
+            this.occWorkerProgress$.next({ functionName: running.functionName, fraction: permille / 1000, algorithms, ...(total > 0 ? { steps: { done, total } } : {}) });
         }
     }
 
@@ -229,5 +246,19 @@ export class OCCTWorkerManager {
      */
     cleanAllCache(): Promise<void> {
         return this.genericCallToWorkerPromise("cleanAllCache", {});
+    }
+
+    /**
+     * Sets how many triangles the kernel may keep on the shapes it meshes, so drawing a shape again
+     * with the same settings, or drawing a shape that shares faces with one drawn before, reuses
+     * their triangulation instead of meshing them anew. With a budget every mesh is kept, and the
+     * least recently used faces are freed once the kept triangles exceed it; a mesh made with other
+     * settings is never reused. Kept meshes cost about 40 bytes a triangle. 0, the default, keeps
+     * nothing and frees what was kept; `cleanAllCache` frees it too.
+     * @param triangles - The budget, a whole number of triangles from 0
+     * @returns What the kernel keeps after the change
+     */
+    setMeshRetention(triangles: number): Promise<MeshRetention> {
+        return this.genericCallToWorkerPromise("setMeshRetention", { triangles });
     }
 }

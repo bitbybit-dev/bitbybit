@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { pollTask } from "./polling.js";
-import { BitbybitApiError } from "./errors.js";
+import type { BitbybitApiError } from "./errors.js";
 
 function jsonResponse(data: unknown, status = 200): Response {
     return new Response(JSON.stringify(data), {

@@ -26,7 +26,9 @@ instead and a note says so. Everything this program prints goes to stderr; stdou
 
 function ownVersion(): string {
     const manifest: unknown = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
-    if (typeof manifest === "object" && manifest !== null && "version" in manifest && typeof manifest.version === "string") return manifest.version;
+    if (typeof manifest === "object" && manifest !== null && "version" in manifest && typeof manifest.version === "string") {
+        return manifest.version;
+    }
     throw new Error("The package manifest carries no version");
 }
 
@@ -34,7 +36,9 @@ async function loadServed(detected: DetectedVersion, own: string, cacheDir: stri
     try {
         return { index: await loadIndex({ version: detected.version, cacheDir }), served: detected };
     } catch (error) {
-        if (!(error instanceof IndexNotPublishedError) || detected.source !== "installed" || detected.version === own) throw error;
+        if (!(error instanceof IndexNotPublishedError) || detected.source !== "installed" || detected.version === own) {
+            throw error;
+        }
         console.error(`bitbybit-mcp: ${error.message}`);
         console.error(`bitbybit-mcp: serving this package's version ${own} instead; answers describe ${own}, not the installed ${detected.version}`);
         const served: DetectedVersion = { version: own, source: "own" };

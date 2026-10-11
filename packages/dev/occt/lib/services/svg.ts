@@ -1,12 +1,13 @@
-import { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
-import { PathBuilder } from "../svg/path-builder";
-import { SvgFaceBuilder, SvgFaceRule } from "../svg/svg-face-builder";
+import { PathBuilder, deleteQuietly } from "../svg/path-builder";
+import type { SvgFaceRule } from "../svg/svg-face-builder";
+import { SvgFaceBuilder } from "../svg/svg-face-builder";
 import { normalizeSvg } from "../svg/svg-normalizer";
-import { SvgElement, SvgStyle, SvgSubpath } from "../svg/svg-models";
+import type { SvgElement, SvgStyle, SvgSubpath } from "../svg/svg-models";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../api/resolved-inputs";
+import type * as Resolved from "../api/resolved-inputs";
 
 type PlacedShape = {
     shape: TopoDS_Shape;
@@ -40,7 +41,6 @@ export class OCCTSVG {
         this.faceBuilder = new SvgFaceBuilder(occ, och);
     }
 
-    /** Resolve the public face strategy + an element's own fill into a concrete rule (or none → wires). */
     private resolveRule(strategy: Inputs.OCCT.svgFaceStrategyEnum, style: SvgStyle): SvgFaceRule | undefined {
         if (strategy === Inputs.OCCT.svgFaceStrategyEnum.none) { return undefined; }
         if (style.fill === "none") { return undefined; }
@@ -50,7 +50,6 @@ export class OCCTSVG {
         return style.fillRule === "evenodd" ? "evenOdd" : "nonzero";
     }
 
-    /** Pull the individual wires out of a built element (a single wire or a compound of wires). */
     private extractWires(shape: TopoDS_Shape): { wires: TopoDS_Wire[]; cleanup: TopoDS_Shape[] } {
         if (this.och.enumService.getShapeTypeEnum(shape) === Inputs.OCCT.shapeTypeEnum.wire) {
             return { wires: [shape], cleanup: [shape] };
@@ -59,7 +58,7 @@ export class OCCTSVG {
         const cleanup: TopoDS_Shape[] = [shape];
         this.och.iteratorService.forEachShapeInCompound(shape, (_i: number, child: TopoDS_Shape) => {
             const typed = this.och.converterService.getActualTypeOfShape(child);
-            if (typed !== child) { try { child.delete(); } catch { /* noop */ } }
+            if (typed !== child) { deleteQuietly(child); }
             cleanup.push(typed);
             if (this.och.enumService.getShapeTypeEnum(typed) === Inputs.OCCT.shapeTypeEnum.wire) {
                 wires.push(typed);
@@ -68,7 +67,6 @@ export class OCCTSVG {
         return { wires, cleanup };
     }
 
-    /** Convert the internal normalized subpath to the public path vocabulary. */
     private toPathSubpath(sp: SvgSubpath): Inputs.OCCT.PathSubpath {
         return {
             start: sp.start,
@@ -93,12 +91,6 @@ export class OCCTSVG {
         return meta;
     }
 
-    /**
-     * Lay every shape flat on the ground plane and place the whole drawing as one unit. The SVG is
-     * built in the XY plane, rotated onto the XZ ground plane (matching the other on-ground
-     * primitives), then its combined bounding box is anchored according to `alignment` and finally
-     * oriented to `direction` and moved to `center`.
-     */
     private placeAll(shapes: TopoDS_Shape[], inputs: Resolved.OCCT.LoadSVGDto): TopoDS_Shape[] {
         if (shapes.length === 0) { return []; }
         const grounded = shapes.map((shape) => this.och.transformsService.rotate({ shape, angle: 90, axis: [1, 0, 0] }));
@@ -121,7 +113,6 @@ export class OCCTSVG {
         });
     }
 
-    /** Parse, build and place every drawable SVG element; shared by both public entry points. */
     private buildAndPlace(inputs: Resolved.OCCT.LoadSVGDto): BuiltScene {
         const scene = normalizeSvg(inputs.svg);
         const warnings = [...scene.warnings];
@@ -158,7 +149,7 @@ export class OCCTSVG {
                 return;
             }
             const faced = this.faceBuilder.build(wires, rule, warnings);
-            cleanup.forEach((s) => { try { s.delete(); } catch { /* noop */ } });
+            cleanup.forEach((s) => deleteQuietly(s));
             items.push({ el, shape: faced.shape, isFace: faced.isFace });
         });
 

@@ -1,5 +1,5 @@
-import * as Inputs from "../../inputs";
-import * as Manifold3D from "manifold-3d";
+import type * as Inputs from "../../inputs";
+import type * as Manifold3D from "manifold-3d";
 
 /**
  * Repairs on Manifold mesh data before it is turned back into a solid; today that is `merge`, which

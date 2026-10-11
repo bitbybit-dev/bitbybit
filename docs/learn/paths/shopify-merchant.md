@@ -3,6 +3,8 @@ sidebar_position: 4
 title: Shopify Merchants
 sidebar_label: Shopify Merchant
 description: Add interactive 3D product viewers and configurators to your Shopify store with the 3D Bits app.
+topic: platform.paths.shopify-merchant
+type: landing
 tags: [shopify, ecommerce, 3d-bits]
 ---
 

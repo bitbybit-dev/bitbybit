@@ -1,9 +1,9 @@
-import { OccHelper } from "../occ-helper";
-import { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../api/resolved-inputs";
-import * as Models from "../api/models";
+import type * as Resolved from "../api/resolved-inputs";
+import type * as Models from "../api/models";
 import { historyFromKernel } from "./base/history";
 import { checkedIndexes, checkedShape, checkedShapes } from "./base/input-checks";
 
@@ -428,9 +428,9 @@ export class OCCTFillets {
     /**
      * Rounds the corners of a flat wire or face with arcs of a given radius.
      *
-     * Without `indexes` every corner is rounded with `radius`. With `indexes`, counted from 1 along
-     * the outline, only those corners are rounded, each with `radius` or the matching entry of
-     * `radiusList`, as long as `indexes`. Wires with free-form edges use `fillet3DWire`.
+     * Without `indexes` every corner is rounded with `radius`. With `indexes`, counted from 1, only
+     * those corners are rounded, each with `radius` or the matching entry of `radiusList`, as long
+     * as `indexes`. Straight corners stay; free-form wires use `fillet3DWire`.
      * @param inputs - The flat wire or face, the radius or radius list, and the optional 1-based corner indexes
      * @returns The rounded wire or face
      * @group 2d fillets
@@ -538,11 +538,6 @@ export class OCCTFillets {
     }
 
 
-    /**
-     * Refuses an index that names no edge of `shape`, counted as `shapes.edge.getEdges` counts them,
-     * so the history of a rounding or a beveling always describes one that was made.
-     * @ignore true
-     */
     private checkEdgeIndexes(shape: TopoDS_Shape, indexes: number[] | undefined): void {
         if (indexes === undefined) {
             return;

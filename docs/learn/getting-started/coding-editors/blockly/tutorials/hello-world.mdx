@@ -1,0 +1,112 @@
+---
+sidebar_position: 1
+slug: /getting-started/blockly/hello-world
+title: Your First 3D "Hello World" with Blockly
+sidebar_label: Hello World
+description: Build a first Blockly script step by step - a grid and 3D text stacked under it, values changed and plugged in - with a picture of the editor after every step and the finished script to run on the page.
+topic: blockly.tutorials.hello-world
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, blockly, occt]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+
+# Hello World in 3D
+
+The classic first program prints "Hello World". In Blockly the words stand in 3D on a grid. You drag a few blocks from the toolbox, stack them, plug one into another and change its values. Every step shows the editor as it looks after it, and the finished script waits at the end, ready to run on this page.
+
+## Before you start
+
+Open [an empty Blockly editor](https://bitbybit.dev/app?editor=blockly) in your browser, or start a Blockly script in one of your [projects](../../../basics/projects/create-project.md). [The tour](../tour.md) names every part of the window.
+
+## The steps
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. **Add draw grid mesh no return.** Open **draw** > **grid** in the toolbox and drag **draw grid mesh no return** onto the workspace.
+
+   Categories nest: draw opens into grid, draw async and the rest. A block that draws something and gives nothing back has a notch above and below, so it stacks with others.
+
+   <Shot id="blockly.tutorials.hello-world/grid" />
+
+2. **Run the script.** Press <Ui>Run The Code</Ui>, the play button at the lower left.
+
+   Blockly runs only when you ask, so press Run The Code after a change to see it.
+
+   <Shot id="blockly.tutorials.hello-world/run" />
+
+3. **Add draw any async no return.** Open **draw** > **draw async** in the toolbox and drag **draw any async no return** onto the workspace.
+
+   This block draws whatever is plugged into its entity input.
+
+   <Shot id="blockly.tutorials.hello-world/draw" />
+
+4. **Put draw any async no return under draw grid mesh no return.** Drag it below until it snaps on.
+
+   Stacked blocks run from top to bottom.
+
+   <Shot id="blockly.tutorials.hello-world/stacked" />
+
+5. **Add text 3d.** Open **advanced** > **text 3d** > **create** in the toolbox and drag **text 3d** onto the workspace.
+
+   A block with a tab on its left gives a value back. It comes with a block plugged into every input, holding a value to start from.
+
+   <Shot id="blockly.tutorials.hello-world/text" />
+
+6. **Plug text 3d into the entity of draw any async no return.** Drag it by its left edge onto that input until it snaps in.
+
+   Drag the block by its left edge until its tab meets the input, and it snaps in.
+
+   <Shot id="blockly.tutorials.hello-world/plugged" />
+
+7. **Set the text to `Hello World!`** on text 3d.
+
+   Click a value to change it.
+
+   <Shot id="blockly.tutorials.hello-world/words" />
+
+8. **Set the origin alignment to `centerBottom`** on text 3d.
+
+   A choice opens a list to pick from.
+
+   <Shot id="blockly.tutorials.hello-world/alignment" />
+
+9. **Set the rotation to `-90`** on text 3d.
+
+   <Shot id="blockly.tutorials.hello-world/rotation" />
+
+10. **Set the y of the direction to `0`** on text 3d.
+
+11. **Set the z of the direction to `-1`** on text 3d.
+
+   The direction is a vector of three numbers: point it towards the default camera.
+
+   <Shot id="blockly.tutorials.hello-world/direction" />
+
+12. **Run the script.** Press <Ui>Run The Code</Ui>, the play button at the lower left.
+
+   Run the script again, and the words stand on the grid facing you.
+
+   <Shot id="blockly.tutorials.hello-world/done" />
+
+### The finished script
+
+The script these steps build, to run here:
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"bitbybit.draw.drawGridMeshNoReturn\" x=\"40\" y=\"40\"><value name=\"Width\"><block type=\"math_number\"><field name=\"NUM\">400</field></block></value><value name=\"Height\"><block type=\"math_number\"><field name=\"NUM\">400</field></block></value><value name=\"Subdivisions\"><block type=\"math_number\"><field name=\"NUM\">10</field></block></value><value name=\"MajorUnitFrequency\"><block type=\"math_number\"><field name=\"NUM\">10</field></block></value><value name=\"MinorUnitVisibility\"><block type=\"math_number\"><field name=\"NUM\">0.45</field></block></value><value name=\"GridRatio\"><block type=\"math_number\"><field name=\"NUM\">0.5</field></block></value><value name=\"Opacity\"><block type=\"math_number\"><field name=\"NUM\">0.5</field></block></value><value name=\"BackFaceCulling\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value><value name=\"MainColor\"><block type=\"colour_picker\"><field name=\"COLOUR\">#ffffff</field></block></value><value name=\"SecondaryColor\"><block type=\"colour_picker\"><field name=\"COLOUR\">#ffffff</field></block></value><next><block type=\"bitbybit.draw.drawAnyAsyncNoReturn\"><value name=\"Entity\"><block type=\"bitbybit.advanced.text3d.create\"><value name=\"Text\"><block type=\"text\"><field name=\"TEXT\">Hello World!</field></block></value><value name=\"FontType\"><block type=\"bitbybit.advanced.text3d.fontsEnum\"><field name=\"bitbybit.advanced.text3d.fontsEnum\">'Roboto'</field></block></value><value name=\"FontVariant\"><block type=\"bitbybit.advanced.text3d.fontVariantsEnum\"><field name=\"bitbybit.advanced.text3d.fontVariantsEnum\">'Regular'</field></block></value><value name=\"FontSize\"><block type=\"math_number\"><field name=\"NUM\">1.5</field></block></value><value name=\"Height\"><block type=\"math_number\"><field name=\"NUM\">0.2</field></block></value><value name=\"Rotation\"><block type=\"math_number\"><field name=\"NUM\">-90</field></block></value><value name=\"Origin\"><block type=\"bitbybit.vector.vectorXYZ\"><value name=\"X\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Z\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></value><value name=\"Direction\"><block type=\"bitbybit.vector.vectorXYZ\"><value name=\"X\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Z\"><block type=\"math_number\"><field name=\"NUM\">-1</field></block></value></block></value><value name=\"OriginAlignment\"><block type=\"bitbybit.advanced.text3d.recAlignmentEnum\"><field name=\"bitbybit.advanced.text3d.recAlignmentEnum\">'centerBottom'</field></block></value></block></value></block></next></block></xml>","type":"blockly"}}
+  title="Hello World in 3D with Blockly"
+  description="The script the steps above build."
+/>
+
+{/* steps:end */}
+
+## What you learned
+
+- **Blocks come from the toolbox**, by category or by search. [Building a script](../features/build-a-script.md) has more.
+- **Two shapes of block:** one with notches above and below does something and stacks; one with a tab on its left gives a value and plugs into an input.
+- **Running:** Blockly runs when you press <Ui>Run The Code</Ui>, so run again after a change.
+
+Next, [a parametric cube](./parametric-cube.mdx) sizes a solid with a variable.

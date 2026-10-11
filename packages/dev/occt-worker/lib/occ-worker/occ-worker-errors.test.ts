@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputIssueReport, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
-import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
-import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { InputIssueReport } from "@bitbybit-dev/base";
+import { KernelOperationError, reportKernelSteps, setInputIssueSink } from "@bitbybit-dev/base";
+import type { DataInput } from "./occ-worker";
+import { initializationComplete, onMessageInput } from "./occ-worker";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 
 const { thrown, progress } = vi.hoisted(() => {
     const thrown: { value: unknown } = { value: undefined };
@@ -197,23 +199,23 @@ describe("what the worker says when a call fails", () => {
             expect(answer().error).toContain("[object Object]");
         });
 
-        it("should name no function when the call named none", () => {
+        it("should refuse a call that names no method as an input", () => {
             // Act
             run({ functionName: "", inputs: { shape: { type: "occ-shape", hash: 999 } } });
 
             // Assert
-            expect(answer().error).toContain("OCCT computation failed:");
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "An OCCT call must name the method it calls, such as shapes.solid.createBox", errorKind: "input", stack: expect.any(String) });
         });
 
-        it("should report a call that named no function at all", () => {
+        it("should refuse a call that leaves the method out as an input", () => {
             // Act
             run({ inputs: {} } as { functionName: string; inputs: Record<string, unknown> });
 
             // Assert
-            expect(answer().error).toContain("OCCT computation failed:");
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "An OCCT call must name the method it calls, such as shapes.solid.createBox", errorKind: "input", stack: expect.any(String) });
         });
 
-        it("should report a message that carried no action at all", () => {
+        it("should refuse a message that carries no action as an input", () => {
             // Arrange
             const call = { uid: "uid-1" } as DataInput;
 
@@ -221,7 +223,7 @@ describe("what the worker says when a call fails", () => {
             onMessageInput(call, (message: unknown) => messages.push(message));
 
             // Assert
-            expect(answer().error).toContain("OCCT computation failed:");
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "An OCCT call must name the method it calls, such as shapes.solid.createBox", errorKind: "input", stack: expect.any(String) });
         });
 
         it("should report a failure that carried no inputs at all", () => {
@@ -299,12 +301,23 @@ describe("what the worker says when a call fails", () => {
             };
         };
 
-        it("should still answer, with a fixed message", () => {
+        it("should still answer, naming the call", () => {
             // Arrange
             const sent: unknown[] = [];
 
             // Act
             run({ functionName: "boom", inputs: {} }, refusingOnce(sent));
+
+            // Assert
+            expect(sent[1]).toEqual({ uid: "uid-1", result: undefined, error: "OCCT 'boom' failed, and the failure could not be reported.", errorKind: "kernel" });
+        });
+
+        it("should say only that the computation failed when the call names no function", () => {
+            // Arrange
+            const sent: unknown[] = [];
+
+            // Act
+            run({ functionName: "", inputs: {} }, refusingOnce(sent));
 
             // Assert
             expect(sent[1]).toEqual({ uid: "uid-1", result: undefined, error: "OCCT computation failed, and the failure could not be reported.", errorKind: "kernel" });
@@ -321,7 +334,7 @@ describe("what the worker says when a call fails", () => {
             run({ functionName: "boom", inputs: {} }, refusingOnce(sent));
 
             // Assert
-            expect(sent[1]).toEqual({ uid: "uid-1", result: undefined, error: "OCCT computation failed, and the failure could not be reported.", errorKind: "kernel" });
+            expect(sent[1]).toEqual({ uid: "uid-1", result: undefined, error: "OCCT 'boom' failed, and the failure could not be reported.", errorKind: "kernel" });
         });
 
         it("should describe what the kernel threw when it has no text form and JSON cannot write it", () => {
@@ -359,6 +372,20 @@ describe("what the worker says when a call fails", () => {
             expect(messages.filter((message) => message === "busy")).toHaveLength(1);
         });
 
+        it("should pass on the feature a design build tagged its crash with, so the caller can leave it out", () => {
+            // Arrange
+            const trap = new RuntimeError("null function");
+            Reflect.set(trap, "code", "occt.design.crashed");
+            Reflect.set(trap, "details", { feature: "fillet1", path: "/features/3" });
+            thrown.value = trap;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(messages.filter((message) => typeof message === "object")[0]).toEqual(expect.objectContaining({ errorKind: "crash", code: "occt.design.crashed", details: { feature: "fillet1", path: "/features/3" } }));
+        });
+
         it("should still refuse, and answer, a later message that carries no call", () => {
             // Arrange
             const sent: unknown[] = [];
@@ -393,6 +420,70 @@ describe("what the worker says when a call fails", () => {
             expect(answers()[1]).toEqual({ uid: "uid-1", result: { size: 2 } });
             expect(posted).toEqual([]);
             vi.unstubAllGlobals();
+        });
+
+        describe("the mesh retention budget", () => {
+            const given: [string, number][] = [];
+            const kernelNamed = (name: string): BitbybitOcctModule => ({
+                SetMeshRetention: (triangles: number): void => {
+                    given.push([name, triangles]);
+                },
+                MeshRetentionBudget: (): number => 0,
+                KeptMeshFaces: (): number => 0,
+                KeptMeshTriangles: (): number => 0,
+            }) as BitbybitOcctModule;
+
+            beforeEach(() => {
+                given.length = 0;
+            });
+
+            it("should give a kernel it restarts the budget the crashed one was given", async () => {
+                // Arrange
+                const restart = (): void => {
+                    initializationComplete(kernelNamed("second"), undefined, true, restart);
+                };
+                initializationComplete(kernelNamed("first"), undefined, true, restart);
+                run({ functionName: "setMeshRetention", inputs: { triangles: 500 } });
+
+                // Act
+                run({ functionName: "boom", inputs: {} });
+                await settle();
+
+                // Assert
+                expect(given).toEqual([["first", 500], ["second", 500]]);
+            });
+
+            it("should forget the budget when it is given a kernel anew", async () => {
+                // Arrange
+                const restart = (): void => {
+                    initializationComplete(kernelNamed("third"), undefined, true, restart);
+                };
+                initializationComplete(kernelNamed("first"), undefined, true, restart);
+                run({ functionName: "setMeshRetention", inputs: { triangles: 500 } });
+
+                // Act
+                initializationComplete(kernelNamed("second"), undefined, true, restart);
+                run({ functionName: "boom", inputs: {} });
+                await settle();
+
+                // Assert
+                expect(given).toEqual([["first", 500]]);
+            });
+
+            it("should give a restarted kernel no budget when none was set", async () => {
+                // Arrange
+                const restart = (): void => {
+                    initializationComplete(kernelNamed("second"), undefined, true, restart);
+                };
+                initializationComplete(kernelNamed("first"), undefined, true, restart);
+
+                // Act
+                run({ functionName: "boom", inputs: {} });
+                await settle();
+
+                // Assert
+                expect(given).toEqual([]);
+            });
         });
 
         it("should refuse later calls when the restart brought no new kernel", async () => {
@@ -435,17 +526,37 @@ describe("what the worker says when a call fails", () => {
     });
 
     describe("a call that arrives before any kernel was given", () => {
-        it("should be answered, so the host does not wait on it forever", async () => {
+        it("should wait for the kernel and then be answered, in the order the calls came", async () => {
             // Arrange
             vi.resetModules();
             const fresh = await import("./occ-worker");
             const posted: unknown[] = [];
+            const post = (message: unknown): number => posted.push(message);
+            fresh.onMessageInput({ action: { functionName: "echo", inputs: { size: 1 } }, uid: "first" }, post);
+            fresh.onMessageInput({ action: { functionName: "addOc", inputs: { plan: "silver" } }, uid: "second" }, post);
+            const beforeTheKernel = [...posted];
 
             // Act
-            fresh.onMessageInput({ action: { functionName: "addOc", inputs: { plan: "silver" } }, uid: "early" }, (message: unknown) => posted.push(message));
+            fresh.initializationComplete(A_MODULE, undefined, true);
 
             // Assert
-            expect(posted).toContainEqual({ uid: "early", result: undefined });
+            expect(beforeTheKernel).toEqual([]);
+            expect(posted).toEqual(["busy", { uid: "first", result: { size: 1 } }, "busy", { uid: "second", result: undefined }]);
+        });
+
+        it("should be answered once, not again when a crashed kernel is replaced", async () => {
+            // Arrange
+            vi.resetModules();
+            const fresh = await import("./occ-worker");
+            const posted: unknown[] = [];
+            fresh.onMessageInput({ action: { functionName: "echo", inputs: { size: 2 } }, uid: "early" }, (message: unknown) => posted.push(message));
+            fresh.initializationComplete(A_MODULE, undefined, true);
+
+            // Act
+            fresh.initializationComplete(A_MODULE, undefined, true);
+
+            // Assert
+            expect(posted).toEqual(["busy", { uid: "early", result: { size: 2 } }]);
         });
     });
 
@@ -522,7 +633,7 @@ describe("what the worker says when a call fails", () => {
             initializationComplete(progressKernel(progress.words), undefined, false);
 
             // Assert
-            expect(posted).toEqual([{ progressWords: progress.words }, "occ-initialised"]);
+            expect(posted).toEqual([{ progressWords: progress.words, stepWords: expect.any(Int32Array) }, "occ-initialised"]);
             expect((posted[0] as { progressWords: Int32Array }).progressWords).toBe(progress.words);
         });
 
@@ -540,12 +651,52 @@ describe("what the worker says when a call fails", () => {
             expect(Reflect.get(kernel, "bitbybitControl")).toBe(shared);
         });
 
-        it("should share no words for a kernel that has none", () => {
+        it("should share no words for a kernel that has none, and post each step a call reports instead", () => {
             // Act
             initializationComplete(A_MODULE, undefined, false);
+            reportKernelSteps({ done: 1, total: 2 });
+            reportKernelSteps({ done: 2, total: 2 });
 
             // Assert
-            expect(posted).toEqual(["occ-initialised"]);
+            expect(posted).toEqual(["occ-initialised", { steps: { done: 1, total: 2 } }, { steps: { done: 2, total: 2 } }]);
+        });
+
+        it("should post no steps from a worker told not to post", () => {
+            // Act
+            initializationComplete(A_MODULE, undefined, true);
+            reportKernelSteps({ done: 1, total: 2 });
+
+            // Assert
+            expect(posted).toEqual([]);
+        });
+
+        it("should write the steps a call reports into the step words it shares, and clear them when the next call starts", () => {
+            // Arrange
+            initializationComplete(progressKernel(progress.words), undefined, false);
+            const steps = (posted[0] as { stepWords: Int32Array }).stepWords;
+
+            // Act
+            reportKernelSteps({ done: 2, total: 5 });
+            const during = [...steps];
+            run({ functionName: "work", inputs: { size: 1 } });
+
+            // Assert
+            expect(steps.buffer).toBeInstanceOf(SharedArrayBuffer);
+            expect(during).toEqual([2, 5]);
+            expect([...steps]).toEqual([0, 0]);
+        });
+
+        it("should keep sharing the same step words when a crashed kernel is replaced", () => {
+            // Arrange
+            initializationComplete(progressKernel(progress.words), undefined, false);
+            const first = (posted[0] as { stepWords: Int32Array }).stepWords;
+            posted.length = 0;
+
+            // Act
+            initializationComplete(progressKernel(progress.words), undefined, false);
+
+            // Assert
+            expect((posted[0] as { stepWords: Int32Array }).stepWords).toBe(first);
         });
 
         it("should start every call afresh", () => {

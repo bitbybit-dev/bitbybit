@@ -4,7 +4,9 @@ title: "Working with Edges in OCCT"
 sidebar_label: Intro Edges
 description: Learn about OCCT edges, how to create linear and curved edges, analyze their properties, use them to construct wires, and deconstruct other shapes into edges in Bitbybit.
 slug: /editors/categories/occt/edge # Or adjust as needed
-tags: [occt]
+topic: code.occt.shapes.edge
+type: explanation
+tags: [code, occt]
 ---
 
 # OCCT Shapes: The Edge

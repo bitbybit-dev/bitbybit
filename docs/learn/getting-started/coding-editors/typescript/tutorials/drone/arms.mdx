@@ -1,0 +1,107 @@
+---
+sidebar_position: 4
+slug: /getting-started/typescript/tutorials/drone/arms
+title: "Build a drone: arms around the frame"
+sidebar_label: 4. Arms around the frame
+description: The fourth chapter of the TypeScript drone - the arm's parts repeated around the frame by the around function, propellers that alternate their spin, and lights sorted by the side they are on into green and red.
+topic: typescript.tutorials.drone.arms
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, typescript, occt]
+---
+
+# Build a drone: arms around the frame
+
+One arm becomes as many as `sizes.arms` says. Wrapping a part's shape in `around` is the whole change, and two small functions make the drone fly straight and show which way it faces.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. `around` makes the one arm into as many as `sizes.arms` says: wrap each part's shape in it, and the arm, the motor, the stator and the bolts stand around the frame.
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { around } from "./parts/around";
+   ```
+
+   - **In `main.ts`, change** `await draw(looks.carbon, arm);` **to** `await draw(looks.carbon, await around(arm, sizes.arms));`.
+   - **In `main.ts`, change** `await draw(looks.aluminium, motorParts.motor);` **to** `await draw(looks.aluminium, await around(motorParts.motor, sizes.arms));`.
+   - **In `main.ts`, change** `await draw(looks.copper, motorParts.stator);` **to** `await draw(looks.copper, await around(motorParts.stator, sizes.arms));`.
+   - **In `main.ts`, change** `await draw(looks.steel, bolts);` **to** `await draw(looks.steel, await around(bolts, sizes.arms));`.
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="typescript.tutorials.drone/arms" />
+
+2. Neighbouring propellers turn opposite ways, so the drone does not spin. `alternateSpin` mirrors every second propeller across its own arm and turns each a little, so the blades do not all line up.
+
+   - **Make `parts/spin.ts`:**
+
+   ```typescript
+   export async function alternateSpin(propellers: Bit.Inputs.OCCT.TopoDSShapePointer[]) {
+       const spun: Bit.Inputs.OCCT.TopoDSShapePointer[] = [];
+       for (const [i, propeller] of propellers.entries()) {
+           const angle = (i + 0.5) * 360 / propellers.length * Math.PI / 180;
+           const centre = (await bitbybit.occt.analysis.measure.tightBoundingBox({ shape: propeller })).center;
+           const turned = await bitbybit.occt.transforms.rotateAroundCenter({ shape: propeller, angle: i * 37, center: [centre[0], 0, centre[2]], axis: [0, 1, 0] });
+           spun.push(i % 2 === 0
+               ? turned
+               : await bitbybit.occt.transforms.mirrorAlongNormal({ shape: turned, origin: [0, 0, 0], normal: [Math.sin(angle), 0, Math.cos(angle)] }));
+       }
+       return spun;
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { alternateSpin } from "./parts/spin";
+   ```
+
+   - **In `main.ts`, change** `await draw(looks.accent, blades);` **to** `await draw(looks.accent, await alternateSpin(await around(blades, sizes.arms)));`.
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="typescript.tutorials.drone/propellers" />
+
+3. The lights repeat too, and `bySide` sorts them by the side of the drone they are on, so the front ones are drawn green and the back ones red, as on an aircraft.
+
+   - **Make `parts/lights.ts`:**
+
+   ```typescript
+   export async function bySide(lights: Bit.Inputs.OCCT.TopoDSShapePointer[]) {
+       const front: Bit.Inputs.OCCT.TopoDSShapePointer[] = [];
+       const back: Bit.Inputs.OCCT.TopoDSShapePointer[] = [];
+       for (const lamp of lights) {
+           const centre = (await bitbybit.occt.analysis.measure.tightBoundingBox({ shape: lamp })).center;
+           (centre[2] > 0 ? front : back).push(lamp);
+       }
+       return { front, back };
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { bySide } from "./parts/lights";
+   ```
+
+   - **In `main.ts`, change**
+
+   ```typescript
+   await draw(looks.green, lamp);
+   ```
+
+     **to**
+
+   ```typescript
+   const lights = await bySide(await around(lamp, sizes.arms));
+   await draw(looks.green, lights.front);
+   await draw(looks.red, lights.back);
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="typescript.tutorials.drone/lights" />
+
+{/* steps:end */}
+
+Next: [canopy and electronics](./canopy.mdx).

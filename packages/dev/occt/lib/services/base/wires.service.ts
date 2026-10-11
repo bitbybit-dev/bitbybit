@@ -1,22 +1,19 @@
-import {
-    Geom_Surface, BitbybitOcctModule,
-    TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire
-} from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { Geom_Surface, BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { Base } from "../../api/inputs";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
-import { EdgesService } from "./edges.service";
-import { ShapeGettersService } from "./shape-getters";
-import { EntitiesService } from "./entities.service";
-import { GeomService } from "./geom.service";
-import { TransformsService } from "./transforms.service";
-import { ConverterService } from "./converter.service";
-import { EnumService } from "./enum.service";
+import type { Base } from "../../api/inputs";
+import type { ShapesHelperService } from "../../api/shapes-helper.service";
+import type { EdgesService } from "./edges.service";
+import type { ShapeGettersService } from "./shape-getters";
+import type { EntitiesService } from "./entities.service";
+import type { GeomService } from "./geom.service";
+import type { TransformsService } from "./transforms.service";
+import type { ConverterService } from "./converter.service";
+import type { EnumService } from "./enum.service";
 import { TextWiresDataDto, ObjectDefinition } from "../../api/models/bucket";
-import { OperationsService } from "./operations.service";
-import { BaseBitByBit } from "../../base";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import * as Resolved from "../../api/resolved-inputs";
+import type { OperationsService } from "./operations.service";
+import type { BaseBitByBit } from "../../base";
+import type { VectorHelperService } from "../../api/vector-helper.service";
+import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { resolveDto } from "@bitbybit-dev/base";
@@ -295,11 +292,6 @@ export class WiresService {
         return this.createLineWire({ start, end });
     }
 
-    /**
-     * A wire through a chain of lines, each starting where the one before it ends, laid in the plane
-     * normal to `direction` around `center`. A closed chain is a polygon through the line starts; an
-     * open one also passes through the last line's end.
-     */
     private wireAlongLines(lines: Base.Line3[], closed: boolean, direction: Base.Vector3, center: Base.Point3, kind: string): TopoDS_Wire {
         const points = lines.map(line => line.start);
         const last = lines[lines.length - 1];
@@ -448,10 +440,6 @@ export class WiresService {
         }
     }
 
-    /**
-     * Build an interpolated BSpline wire with selectable parametrization, periodicity and optional
-     * tangent constraints. Returns undefined if the interpolation fails.
-     */
     private buildInterpolatedWire(inputs: Resolved.OCCT.InterpolationDto, periodicOverride?: boolean, parametrizationOverride?: Inputs.OCCT.bSplineParametrizationEnum): TopoDS_Wire | undefined {
         const periodic = periodicOverride ?? inputs.periodic;
         const coords = new this.occ.VectorDouble();
@@ -459,12 +447,15 @@ export class WiresService {
 
         const tangents = new this.occ.VectorDouble();
         const flags = new this.occ.VectorInt();
+        const enforced = (tangent: Inputs.Base.Vector3 | undefined): tangent is Inputs.Base.Vector3 =>
+            tangent !== undefined && Math.hypot(tangent[0], tangent[1], tangent[2]) > inputs.tolerance;
         if (inputs.tangents && inputs.tangents.length === inputs.points.length) {
             for (const t of inputs.tangents) {
-                tangents.push_back(t ? t[0] : 0); tangents.push_back(t ? t[1] : 0); tangents.push_back(t ? t[2] : 0);
-                flags.push_back(t ? 1 : 0);
+                const used = enforced(t);
+                tangents.push_back(used ? t[0] : 0); tangents.push_back(used ? t[1] : 0); tangents.push_back(used ? t[2] : 0);
+                flags.push_back(used ? 1 : 0);
             }
-        } else if (!periodic && inputs.startTangent && inputs.endTangent) {
+        } else if (!periodic && enforced(inputs.startTangent) && enforced(inputs.endTangent)) {
             const s = inputs.startTangent; const e = inputs.endTangent;
             tangents.push_back(s[0]); tangents.push_back(s[1]); tangents.push_back(s[2]);
             tangents.push_back(e[0]); tangents.push_back(e[1]); tangents.push_back(e[2]);
@@ -541,7 +532,9 @@ export class WiresService {
         const splitPoints = this.vecHelper.removeAllDuplicateVectors(inputs.points, 1e-7);
 
         const edges = this.edgesService.getEdgesAlongWire({ shape: wire });
-        if (edges.length === 0) return [];
+        if (edges.length === 0) {
+            return [];
+        }
 
         const splitLocations: { edgeIndex: number; parameter: number }[] = [];
 
@@ -573,9 +566,10 @@ export class WiresService {
                     }
                     projectedPt.delete();
                 } catch {
-                    // Projection failed, skip this edge
+                    return;
+                } finally {
+                    gpPnt.delete();
                 }
-                gpPnt.delete();
             });
 
             if (bestEdgeIndex >= 0) {
@@ -590,7 +584,9 @@ export class WiresService {
             index === self.findIndex((t) => t.edgeIndex === loc.edgeIndex && t.parameter === loc.parameter)
         );
         uniqueLocations.sort((a, b) => {
-            if (a.edgeIndex !== b.edgeIndex) return a.edgeIndex - b.edgeIndex;
+            if (a.edgeIndex !== b.edgeIndex) {
+                return a.edgeIndex - b.edgeIndex;
+            }
             return a.parameter - b.parameter;
         });
 
@@ -603,7 +599,9 @@ export class WiresService {
             if (startLoc.edgeIndex === endLoc.edgeIndex) {
                 const edge = edges[startLoc.edgeIndex]!;
 
-                if (startLoc.parameter === endLoc.parameter) continue;
+                if (startLoc.parameter === endLoc.parameter) {
+                    continue;
+                }
 
                 const newEdge = this.occ.TrimEdgeToParams(edge, startLoc.parameter, endLoc.parameter);
                 if (!newEdge.IsNull()) {
@@ -1071,17 +1069,6 @@ export class WiresService {
         return res;
     }
 
-    /**
-     * The parameter range of an edge, as the kernel's own helper reports it. An edge the helper
-     * cannot read reports zero for both, which is what the callers below already treated as "no range".
-     * @param edge edge to read
-     * @returns first and last parameter
-     */
-    /**
-     * `parameter`, or the edge's first or last parameter when `point` is within 1e-7 of the edge's
-     * end there. A split at a vertex then matches the split the wire's own ends make, where a
-     * projection a rounding error inside the edge would cut off a piece of length 0.
-     */
     private snappedToEdgeEnds(edge: TopoDS_Edge, parameter: number, point: Base.Point3): number {
         const { first, last } = this.edgeParameterRange(edge);
         const end = [first, last].find(candidate => {

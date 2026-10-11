@@ -1,8 +1,13 @@
-import type { ApiIndex, Engine, IndexExample, IndexMember } from "./index-types.js";
+import type { ApiIndex, Engine, IndexExample, IndexMember, IndexType } from "./index-types.js";
 
 export interface SearchHit {
     member: IndexMember;
     score: number;
+}
+
+export interface NamedType {
+    key: string;
+    type: IndexType;
 }
 
 export interface SearchOptions {
@@ -24,6 +29,8 @@ const MAX_LIMIT = 50;
 const NEAREST_LIMIT = 5;
 const MIN_EDIT_TOLERANCE = 2;
 const EDIT_TOLERANCE_DIVISOR = 3;
+const TYPE_NAME = /[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*/g;
+const INPUTS = "Inputs.";
 
 export function tokenize(text: string): string[] {
     return text
@@ -31,6 +38,16 @@ export function tokenize(text: string): string[] {
         .toLowerCase()
         .split(/[^a-z0-9]+/)
         .filter((token) => token.length > 0);
+}
+
+function namespaceOf(typeText: string): string | undefined {
+    const name = typeText.match(TYPE_NAME)?.[0] ?? "";
+    const dot = name.lastIndexOf(".");
+    return dot > 0 ? name.slice(0, dot) : undefined;
+}
+
+function uniqueTypes(found: readonly NamedType[]): NamedType[] {
+    return [...new Map(found.map((named) => [named.key, named])).values()];
 }
 
 interface MemberTokens {
@@ -46,9 +63,13 @@ export class IndexReader {
     readonly version: string;
     private readonly byPath = new Map<string, IndexMember>();
     private readonly tokens = new Map<string, MemberTokens>();
+    private readonly typeKeysByName = new Map<string, string[]>();
 
     constructor(readonly index: ApiIndex) {
         this.version = index.version;
+        for (const [key, type] of Object.entries(index.types ?? {})) {
+            this.typeKeysByName.set(type.name, [...(this.typeKeysByName.get(type.name) ?? []), key]);
+        }
         for (const member of index.members) {
             this.byPath.set(member.path, member);
             this.tokens.set(member.path, {
@@ -61,6 +82,40 @@ export class IndexReader {
 
     get(path: string): IndexMember | undefined {
         return this.byPath.get(path);
+    }
+
+    type(name: string, near?: string): NamedType | undefined {
+        const types = this.index.types ?? {};
+        const bare = name.replace(/^Bit\./, "").replace(/\[\]$/, "");
+        for (const key of [bare, ...(near === undefined ? [] : [`${near}.${bare}`]), `${INPUTS}${bare}`]) {
+            const type = types[key];
+            if (type) {
+                return { key, type };
+            }
+        }
+        const keys = this.typeKeysByName.get(bare) ?? [];
+        const only = keys.length === 1 ? keys[0] : undefined;
+        const type = only === undefined ? undefined : types[only];
+        return only === undefined || !type ? undefined : { key: only, type };
+    }
+
+    typeKeysNamed(name: string): string[] {
+        return this.typeKeysByName.get(name.replace(/^Bit\./, "").replace(/\[\]$/, "")) ?? [];
+    }
+
+    typesIn(texts: readonly (string | null | undefined)[], near?: string): NamedType[] {
+        return uniqueTypes(texts.flatMap((text) => (text?.match(TYPE_NAME) ?? []).flatMap((name) => this.type(name, near) ?? [])));
+    }
+
+    typesUsedBy(member: IndexMember): NamedType[] {
+        return uniqueTypes([
+            ...this.typesIn([member.returns]),
+            ...member.params.flatMap((param) => this.typesIn((param.fields ?? []).map((field) => field.type), namespaceOf(param.type))),
+        ]);
+    }
+
+    typesUsedByType(named: NamedType): NamedType[] {
+        return this.typesIn(named.type.fields.map((field) => field.type), namespaceOf(named.key)).filter((used) => used.key !== named.key);
     }
 
     all(): IndexMember[] {
@@ -79,9 +134,13 @@ export class IndexReader {
         const limit = Math.min(Math.max(options.limit ?? DEFAULT_LIMIT, 1), MAX_LIMIT);
         const hits: SearchHit[] = [];
         for (const member of this.index.members) {
-            if (options.engine && member.engines.length > 0 && !member.engines.includes(options.engine)) continue;
+            if (options.engine && member.engines.length > 0 && !member.engines.includes(options.engine)) {
+                continue;
+            }
             const score = this.score(member, queryTokens, phrase);
-            if (score > 0) hits.push({ member, score });
+            if (score > 0) {
+                hits.push({ member, score });
+            }
         }
         return hits.sort(byPathThenLength).slice(0, limit);
     }
@@ -94,11 +153,17 @@ export class IndexReader {
         const found: IndexMember[] = [];
         const seen = new Set<string>();
         const add = (member: IndexMember): void => {
-            if (seen.has(member.path)) return;
+            if (seen.has(member.path)) {
+                return;
+            }
             seen.add(member.path);
             found.push(member);
         };
-        for (const member of this.index.members) if (member.path.toLowerCase() === lower) add(member);
+        for (const member of this.index.members) {
+            if (member.path.toLowerCase() === lower) {
+                add(member);
+            }
+        }
         if (parent) {
             const tolerance = Math.max(MIN_EDIT_TOLERANCE, Math.floor(lastSegment.length / EDIT_TOLERANCE_DIVISOR));
             const siblings = this.index.members
@@ -106,20 +171,28 @@ export class IndexReader {
                 .map((member) => ({ member, distance: editDistance(member.name.toLowerCase(), lastSegment, tolerance) }))
                 .filter(({ distance }) => distance <= tolerance)
                 .sort((a, b) => a.distance - b.distance || (a.member.path < b.member.path ? -1 : 1));
-            for (const { member } of siblings) add(member);
+            for (const { member } of siblings) {
+                add(member);
+            }
         }
         const sameName = this.index.members
             .filter((member) => member.name.toLowerCase() === lastSegment)
             .map((member) => ({ member, distance: editDistance(member.path.toLowerCase(), lower, lower.length) }))
             .sort((a, b) => a.distance - b.distance || (a.member.path < b.member.path ? -1 : 1));
-        for (const { member } of sameName) add(member);
-        for (const hit of this.search(path.replace(/\./g, " "), { limit })) add(hit.member);
+        for (const { member } of sameName) {
+            add(member);
+        }
+        for (const hit of this.search(path.replace(/\./g, " "), { limit })) {
+            add(hit.member);
+        }
         return found.slice(0, limit);
     }
 
     examplesOf(path: string): IndexExample[] {
         const member = this.byPath.get(path);
-        if (!member) return [];
+        if (!member) {
+            return [];
+        }
         return member.examples.flatMap((id) => {
             const example = Object.hasOwn(this.index.examples, id) ? this.index.examples[id] : undefined;
             return example ? [example] : [];
@@ -130,10 +203,14 @@ export class IndexReader {
         const prefix = `${path}.`;
         const examples: IndexExample[] = [];
         for (const member of this.index.members) {
-            if (!member.path.startsWith(prefix)) continue;
+            if (!member.path.startsWith(prefix)) {
+                continue;
+            }
             for (const example of this.examplesOf(member.path)) {
                 examples.push(example);
-                if (examples.length >= limit) return examples;
+                if (examples.length >= limit) {
+                    return examples;
+                }
             }
         }
         return examples;
@@ -141,22 +218,34 @@ export class IndexReader {
 
     private score(member: IndexMember, queryTokens: string[], phrase: string): number {
         const tokens = this.tokens.get(member.path);
-        if (!tokens || queryTokens.length === 0) return 0;
+        if (!tokens || queryTokens.length === 0) {
+            return 0;
+        }
         let score = member.path.toLowerCase() === phrase ? EXACT_PATH : 0;
         for (const token of queryTokens) {
-            if (tokens.name.has(token)) score += NAME_MATCH;
-            else if (tokens.path.has(token)) score += PATH_MATCH;
-            else if (token.length >= PREFIX_MIN_LENGTH && startsWithAny(tokens.path, token)) score += PATH_PREFIX;
-            else if (tokens.text.has(token)) score += TEXT_MATCH;
-            else if (token.length >= PREFIX_MIN_LENGTH && startsWithAny(tokens.text, token)) score += TEXT_PREFIX;
+            if (tokens.name.has(token)) {
+                score += NAME_MATCH;
+            } else if (tokens.path.has(token)) {
+                score += PATH_MATCH;
+            } else if (token.length >= PREFIX_MIN_LENGTH && startsWithAny(tokens.path, token)) {
+                score += PATH_PREFIX;
+            } else if (tokens.text.has(token)) {
+                score += TEXT_MATCH;
+            } else if (token.length >= PREFIX_MIN_LENGTH && startsWithAny(tokens.text, token)) {
+                score += TEXT_PREFIX;
+            }
         }
-        if (phrase.length > 0 && member.summary.toLowerCase().includes(phrase)) score += PHRASE_IN_SUMMARY;
+        if (phrase.length > 0 && member.summary.toLowerCase().includes(phrase)) {
+            score += PHRASE_IN_SUMMARY;
+        }
         return score;
     }
 }
 
 export function editDistance(a: string, b: string, cap: number): number {
-    if (Math.abs(a.length - b.length) > cap) return cap + 1;
+    if (Math.abs(a.length - b.length) > cap) {
+        return cap + 1;
+    }
     let previous = Array.from({ length: b.length + 1 }, (_, index) => index);
     for (let i = 1; i <= a.length; i++) {
         const current = [i];
@@ -167,13 +256,19 @@ export function editDistance(a: string, b: string, cap: number): number {
             current.push(value);
             rowMinimum = Math.min(rowMinimum, value);
         }
-        if (rowMinimum > cap) return cap + 1;
+        if (rowMinimum > cap) {
+            return cap + 1;
+        }
         previous = current;
     }
     return previous[b.length] ?? cap + 1;
 }
 
 function startsWithAny(tokens: Set<string>, prefix: string): boolean {
-    for (const token of tokens) if (token.startsWith(prefix)) return true;
+    for (const token of tokens) {
+        if (token.startsWith(prefix)) {
+            return true;
+        }
+    }
     return false;
 }

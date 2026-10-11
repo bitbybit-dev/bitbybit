@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Scaffold a project with create-app
-sidebar_label: create-app
+sidebar_label: Create App
 description: npm init @bitbybit-dev/app scaffolds a browser app on Three.js, Babylon.js or PlayCanvas, a complete app template such as a product configurator or a laser-cut box generator, or a CAD Cloud backend with its frontend. Every project ships with a strict TypeScript and ESLint setup, a headless smoke test, and is configured for AI coding agents.
 tags: [npm-packages, ai, threejs, babylonjs, playcanvas]
 ---
@@ -51,6 +51,7 @@ npm init @bitbybit-dev/app my-shop -- -T product-configurator
 | `sheet-metal-unfold` | A sheet-metal channel built in the browser and unfolded on CAD Cloud, whose unfold is a Pro algorithm; the flat pattern with bend lines and a bend table; a forty-line backend keeps the key | DXF, STEP | for the unfold only |
 | `step-to-gltf-cli` | A command line that converts STEP and IGES files to GLB and STL in-process and writes a JSON of facts per file; `--cloud` converts on CAD Cloud instead, for serverless functions or volume | GLB, STL, JSON | optional |
 | `drone-assembly` | A multirotor drone built as a real CAD assembly: twenty-seven parts, each built once and placed by a tree of sub-assemblies, so four, six or eight arms change only the placements; physically based materials, spinning propellers, a bill of materials read back from the document, and exports that keep the part tree, names and colours | STEP assembly, GLB | not needed |
+| `ifc-house` | A two-storey family house written as an IFC4 building model with `@bitbybit-dev/ifc`: layered walls joined at their corners, windows and doors placed from shared types, slabs, a flat roof, rooms with their areas, charred-larch cladding gathered into an assembly per facade, the garden's terrain and trees; Manifold draws every element in its material and a click names it by its GlobalId; downloads as `house.ifc` and, through OpenCascade, as `house.step` nested by storey and IFC class. The house is plain data in one file, so an agent changes it by editing the plan. | IFC, STEP assembly | no |
 
 Each template is MIT code that becomes yours, branded with the bitbybit.dev favicon and logo in `public/` until you replace them. Its README explains the product and how to make it your own; its smoke pins facts an agent can iterate against, such as the exact face count of the sample part, the volume of the planter, or that the box's fingers fill their slots. `--engine` and `--occt-architecture` do not apply here: an app template ships its own engine (Three.js) and kernel.
 

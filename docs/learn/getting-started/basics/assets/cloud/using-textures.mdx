@@ -2,7 +2,10 @@
 sidebar_position: 4
 title: Using Image Cloud Assets as Textures in Bitbybit
 sidebar_label: Using Texture Cloud Assets
-description: Learn how to upload an image as a cloud asset and then use it to create and apply textures to 3D meshes in Bitbybit using Rete, Blockly, and TypeScript.
+description: Use an image from a cloud project's files as a texture on bitbybit.dev - load the file, make an object URL, a texture and a material, and put it on a mesh - in Rete, Blockly and TypeScript.
+topic: platform.assets.cloud-textures
+type: tutorial
+verified: 2026-10-09
 tags: [getting-started, assets]
 ---
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
@@ -20,7 +23,7 @@ This tutorial demonstrates how to use image-based cloud assets to create texture
 :::
 
 **Sample Image for this Tutorial:**
-Please upload the following image to your project as a **cloud asset**. Name it `dogs-small.jpeg` during the upload process (or remember the exact filename you use).
+Please add the following image to your project's files as a **cloud asset**. The scripts below load it by its file name, `dogs-small.jpeg`, so keep that name.
 *   [dogs-small.jpeg](https://bitbybit.dev/files/site/start/general/assets/cloud/dogs-small.jpeg) (Click to view/download)
 
 ![A photograph of several dogs, which will be used as a texture.](https://bitbybit.dev/files/site/start/general/assets/cloud/dogs-small.jpeg "Image of dogs for texture")
@@ -40,7 +43,7 @@ The core process for using an uploaded image as a texture applies across all our
 *(Remember, in the visual editors, you can typically find components by following the category path indicators on them.)*
 
 1.  **Load the Image File:**
-    *   First, retrieve the image file (e.g., `dogs-small.jpeg`) that you uploaded to your project's cloud assets. This is usually done via a component or function in the "asset" category (e.g., "get cloud file"). This action loads the file data into the browser's memory.
+    *   First, retrieve the image file (e.g., `dogs-small.jpeg`) that you uploaded to your project's cloud assets, with <Ui>get file</Ui> under `asset` > `get`, or `bitbybit.asset.getFile` in TypeScript. This action loads the file data into the browser's memory.
 
 2.  **Create an Object URL:**
     *   Once you have the file data, you need to create an **Object URL** from it. An Object URL is a special type of URL that provides a temporary, local reference to a file's data stored in the browser's memory. BabylonJS (our 3D engine) can then use this URL to load the image data for a texture.
@@ -71,12 +74,16 @@ The core process for using an uploaded image as a texture applies across all our
 
 The Rete editor provides a visual flow that closely mirrors the conceptual steps described above. It tends to hide some of the underlying asynchronous complexities, making the graph appear more direct.
 
+Each example below is a preview of a public script whose project holds the image: start it to run the script, and open the script in its editor to see how it is built.
+
 **Rete Editor Example:**
 <BitByBitRenderCanvas
   requireManualStart={true}
-  iframeUrl="https://bitbybit.dev/app/matas/W6UsDIugtv1VYJkq4mcQ/CwI3c0lxy1taEeu6dWAG?editor=rete"
-  title="Bitbybit Rete Editor - Using Image Textures"
+  iframeUrl="https://bitbybit.dev/app/matas/W6UsDIugtv1VYJkq4mcQ/CwI3c0lxy1taEeu6dWAG/preview"
+  title="An image texture from a cloud asset on a cube and a plane, a preview of a Rete script"
 />
+
+[Open the script in the Rete editor](https://bitbybit.dev/app/matas/W6UsDIugtv1VYJkq4mcQ/CwI3c0lxy1taEeu6dWAG?editor=rete)
 
 ---
 
@@ -89,9 +96,11 @@ The Blockly implementation will also follow the core principles but might look a
 **Blockly Editor Example:**
 <BitByBitRenderCanvas
   requireManualStart={true}
-  iframeUrl="https://bitbybit.dev/app/matas/W6UsDIugtv1VYJkq4mcQ/hNLKDEC4aee7ovsRV96E?editor=blockly"
-  title="Bitbybit Rete Blockly - Using Image Textures"
+  iframeUrl="https://bitbybit.dev/app/matas/W6UsDIugtv1VYJkq4mcQ/hNLKDEC4aee7ovsRV96E/preview"
+  title="An image texture from a cloud asset on a cube and a plane, a preview of a Blockly script"
 />
+
+[Open the script in the Blockly editor](https://bitbybit.dev/app/matas/W6UsDIugtv1VYJkq4mcQ/hNLKDEC4aee7ovsRV96E?editor=blockly)
 
 ---
 
@@ -104,68 +113,70 @@ TypeScript gives you the most freedom in structuring your code. However, you'll 
 **TypeScript Editor Example:**
 <BitByBitRenderCanvas
   requireManualStart={true}
-  iframeUrl="https://bitbybit.dev/app/matas/W6UsDIugtv1VYJkq4mcQ/rLDIV3HBnes9grkiuGfy?editor=typescript"
-  title="Bitbybit TypeScript Blockly - Using Image Textures"
+  iframeUrl="https://bitbybit.dev/app/matas/W6UsDIugtv1VYJkq4mcQ/rLDIV3HBnes9grkiuGfy/preview"
+  title="An image texture from a cloud asset on a cube and a plane, a preview of a TypeScript script"
 />
 
-```js
-const start = async () => {
-    setupEnvironment();
-    const mat = await setupTextureAndMaterial("dogs-small.jpeg");
-    createGeometryAndAssignMaterial(mat);
+[Open the script in the TypeScript editor](https://bitbybit.dev/app/matas/W6UsDIugtv1VYJkq4mcQ/rLDIV3HBnes9grkiuGfy?editor=typescript)
+
+```typescript
+setupEnvironment();
+const mat = await setupTextureAndMaterial("dogs-small.jpeg");
+createGeometryAndAssignMaterial(mat);
 }
 
 async function setupTextureAndMaterial(cloudAssetFileName: string) {
-    const file = await bitbybit.asset.getFile({
-        fileName: cloudAssetFileName
-    });
-    const objectUrl = bitbybit.asset.createObjectURL({
-        file
-    });
+const file = await bitbybit.asset.getFile({
+    fileName: cloudAssetFileName
+});
+const objectUrl = bitbybit.asset.createObjectURL({
+    file
+});
 
-    const textureOptions = new Bit.Inputs.BabylonTexture.TextureSimpleDto();
-    textureOptions.url = objectUrl;
-    const texture = bitbybit.babylon.texture.createSimple(textureOptions);
-    const materialOptions = new Bit.Inputs.BabylonMaterial.PBRMetallicRoughnessDto();
-    materialOptions.roughness = 0.9;
-    materialOptions.metallic = 0.1;
-    materialOptions.baseColor = "#ffffff";
-    const mat = bitbybit.babylon.material.pbrMetallicRoughness.create(materialOptions);
-    mat.baseTexture = texture;
-    return mat;
+const textureOptions = new Bit.Inputs.BabylonTexture.TextureSimpleDto();
+textureOptions.url = objectUrl;
+const texture = bitbybit.babylon.texture.createSimple(textureOptions);
+const materialOptions = new Bit.Inputs.BabylonMaterial.PBRMetallicRoughnessDto();
+materialOptions.roughness = 0.9;
+materialOptions.metallic = 0.1;
+materialOptions.baseColor = "#ffffff";
+const mat = bitbybit.babylon.material.pbrMetallicRoughness.create(materialOptions);
+mat.baseTexture = texture;
+return mat;
 }
 
 function createGeometryAndAssignMaterial(mat: BABYLON.PBRMetallicRoughnessMaterial) {
-    const cubeOptions = new Bit.Inputs.BabylonMeshBuilder.CreateCubeDto();
-    cubeOptions.size = 10;
-    const cubeMesh = bitbybit.babylon.meshBuilder.createCube(cubeOptions);
+const cubeOptions = new Bit.Inputs.BabylonMeshBuilder.CreateCubeDto();
+cubeOptions.size = 10;
+const cubeMesh = bitbybit.babylon.meshBuilder.createCube(cubeOptions);
 
-    cubeMesh.material = mat;
-    bitbybit.babylon.mesh.moveUp({
-        babylonMesh: cubeMesh,
-        distance: 7,
-    })
-    const squarePlaneOptions = new Bit.Inputs.BabylonMeshBuilder.CreateSquarePlaneDto();
-    squarePlaneOptions.size = 40;
-    const planeSquareMesh = bitbybit.babylon.meshBuilder.createSquarePlane(squarePlaneOptions);
-    bitbybit.babylon.mesh.pitch({
-        babylonMesh: planeSquareMesh,
-        rotate: 90
-    })
-    planeSquareMesh.material = mat;
+cubeMesh.material = mat;
+bitbybit.babylon.mesh.moveUp({
+    babylonMesh: cubeMesh,
+    distance: 7,
+})
+const squarePlaneOptions = new Bit.Inputs.BabylonMeshBuilder.CreateSquarePlaneDto();
+squarePlaneOptions.size = 40;
+const planeSquareMesh = bitbybit.babylon.meshBuilder.createSquarePlane(squarePlaneOptions);
+bitbybit.babylon.mesh.pitch({
+    babylonMesh: planeSquareMesh,
+    rotate: 90
+})
+planeSquareMesh.material = mat;
 }
 
 function setupEnvironment() {
-    const skyboxOptions = new Bit.Inputs.BabylonScene.SkyboxDto();
-    bitbybit.babylon.scene.enableSkybox(skyboxOptions);
-    const dirLightOptions = new Bit.Inputs.BabylonScene.DirectionalLightDto();
-    dirLightOptions.intensity = 5;
-    bitbybit.babylon.scene.drawDirectionalLight(dirLightOptions);
-}
-
-start();
-
+const skyboxOptions = new Bit.Inputs.BabylonScene.SkyboxDto();
+bitbybit.babylon.scene.enableSkybox(skyboxOptions);
+const dirLightOptions = new Bit.Inputs.BabylonScene.DirectionalLightDto();
+dirLightOptions.intensity = 5;
+bitbybit.babylon.scene.drawDirectionalLight(dirLightOptions);
 ```
+
+The same code in a TypeScript script of a project that holds the image, run beside its result:
+
+<Shot id="platform.assets.cloud-textures/typescript" />
+
 ---
 
 By following these examples, you can effectively use your uploaded image cloud assets to add rich textures and visual detail to your 3D scenes in Bitbybit, regardless of your preferred editor.

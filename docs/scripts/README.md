@@ -1,0 +1,74 @@
+# docs/scripts
+
+Node scripts the documentation site's npm scripts run around `docusaurus build` (see the `scripts`
+block of `../package.json` for when each one runs). They are CommonJS with no dependencies beyond
+Node, they are linted by the repository root's ESLint configuration, and they carry no comments:
+what a comment would have said is here.
+
+## build-id.js
+
+Writes `static/build-id.json`, the identity of the site build: it is shown in the footer and served
+at `/build-id.json`, so one deployment can be told apart from the previous one.
+
+```
+{ "buildId": "<short commit>.<yyyymmdd>", "version": "<package.json version>" }
+```
+
+`BUILD_ID` in the environment wins, so a deploy pipeline can hand the same identity to every artifact
+of one run; otherwise it is derived from this repository's `HEAD`, and it is `dev` where git is not
+available. There is no dirty marker: the build regenerates tracked API pages before this runs, so the
+tree is never clean here.
+
+## generate-llms.js
+
+Writes `static/llms.txt` from `static/llms.template.txt`, replacing every `{{VERSION}}` with the
+version in `../package.json`. It runs on every `start` and `build`. Edit the template, never the
+output.
+
+## inject-openapi-static.js
+
+The OpenAPI docs plugin renders the parameter, request-body and response panes client-side, so every
+endpoint page ships a few dozen words of server-rendered text and a row of empty skeletons. A crawler
+that does not run JavaScript sees none of the reference.
+
+This script appends a plain-markdown mirror of the same data to each generated `.api.mdx` under
+`api/openapi-docs/`, built from `static/openapi.json`: the parameters, the request body's fields
+(nested objects and arrays flattened to three levels), the responses and an example request. It runs
+after `generate-api-docs` and before the build. The section opens with the marker line
+`{/* static-reference:generated */}`, and a page that already carries it is skipped, so the script is
+safe to re-run. The committed `api/openapi-docs/` is the pre-injection output; do not commit the
+injected form.
+
+## check-descriptions.js
+
+Fails the build when a page ships a meta description that Docusaurus derived from the source instead
+of the front matter. Docusaurus falls back to the first line of the MDX body when `description:` is
+missing, which has produced live descriptions reading `return (`, `<img` and `Learn`.
+
+It runs against `build/` after `docusaurus build`. Every indexable page (not `noindex`, not the 404
+page) must carry a description that does not start like code and is at least 50 characters long;
+each page that fails is listed with the reason.
+
+## The search index (`index-search`) and check-search-index.js
+
+The site's search needs no service: `npm run index-search` runs Pagefind over `build/` after
+`docusaurus build`, and writes the index into `build/pagefind/`, which deploys with the pages. The
+search dialog in the navbar (`src/theme/SearchBar`, `src/components/Search`) loads
+`/pagefind/pagefind.js` on first use and fetches only the parts of the index a query needs. `../pagefind.yml` configures the
+run and lists what is left out of the index inside a page: the editor tabs' labels, which would read
+"Rete. Blockly. TypeScript." in every excerpt, the heading anchors, and the embedded editors' start
+button and caption (the script previews beside them stay searchable).
+
+`npm start` builds no index: `keep-search-index.js`, the last part of `index-search`, copies the index
+into the gitignored `.search-index/pagefind`, which a local start serves (`docusaurus.config.ts`), so
+search on `npm start` reads the last build's index and a new build shows without a restart. Before any
+build the dialog says to run one.
+
+Pagefind indexes only what sits inside an element marked `data-pagefind-body`: each docs page's content
+(`src/theme/DocItem/Content`, which the learn pages and the CAD Cloud API pages share) and each blog post
+on its own page (`src/theme/BlogPostItem`), never the sidebars, the table of contents, the related links
+or the blog's list pages. The same element names the page's section (`data-pagefind-filter`), from its
+route through `src/components/Search/sections.ts`, and the dialog narrows a search by it.
+
+`check-search-index.js` fails the build when a page with docs or blog content is not marked, when a
+marked page has no section, or when the index holds a different number of pages than are marked.

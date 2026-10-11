@@ -1,0 +1,40 @@
+{
+    "extends": "../../../tsconfig.base.cad.json",
+    "compileOnSave": false,
+    "exclude": [
+        "coverage",
+        "dist",
+        "**/__mocks__/**",
+        "**/__test__/**",
+        "./**/*.test.ts",
+        "vitest.config.ts"
+    ],
+    "compilerOptions": {
+        "composite": true,
+        "tsBuildInfoFile": "./dist/tsconfig.bitbybit.tsbuildinfo",
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "paths": {
+            "@bitbybit-dev/base": [
+                "../base/dist"
+            ],
+            "@bitbybit-dev/base/*": [
+                "../base/dist/*"
+            ],
+            "@bitbybit-dev/ifc": [
+                "../ifc/dist"
+            ],
+            "@bitbybit-dev/ifc/*": [
+                "../ifc/dist/*"
+            ]
+        }
+    },
+    "references": [
+        {
+            "path": "../base/tsconfig.bitbybit.json"
+        },
+        {
+            "path": "../ifc/tsconfig.bitbybit.json"
+        }
+    ]
+}

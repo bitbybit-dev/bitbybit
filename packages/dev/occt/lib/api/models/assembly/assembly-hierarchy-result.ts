@@ -1,4 +1,4 @@
-import { AssemblyHierarchyNode } from "./assembly-hierarchy-node";
+import type { AssemblyHierarchyNode } from "./assembly-hierarchy-node";
 
 /**
  * Result from getAssemblyHierarchy.

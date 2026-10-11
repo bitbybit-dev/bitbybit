@@ -35,7 +35,7 @@ npm run dev
 
 ## Build It With an AI Agent
 
-Bitbybit has 1919 functions across three CAD kernels - more than any model remembers, so an agent working from memory invents plausible names that do not exist. Give it the **[Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp)** instead and it looks up the exact signature, defaults, return type and examples for the version you have installed. It is free and needs no account:
+Bitbybit has 2017 functions across three CAD kernels - more than any model remembers, so an agent working from memory invents plausible names that do not exist. Give it the **[Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp)** instead and it looks up the exact signature, defaults, return type and examples for the version you have installed. It is free and needs no account:
 
 ```bash
 claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp
@@ -113,6 +113,8 @@ The [full walkthrough of the diagram](https://learn.bitbybit.dev/learn/intro) is
 | [@bitbybit-dev/manifold-worker](https://www.npmjs.com/package/@bitbybit-dev/manifold-worker) | Manifold via WebWorker (non-blocking, browser only) |
 | [@bitbybit-dev/jscad](https://www.npmjs.com/package/@bitbybit-dev/jscad) | JSCAD solid modeling (works in Node.js & browser) |
 | [@bitbybit-dev/jscad-worker](https://www.npmjs.com/package/@bitbybit-dev/jscad-worker) | JSCAD via WebWorker (non-blocking, browser only) |
+| [@bitbybit-dev/ifc](https://www.npmjs.com/package/@bitbybit-dev/ifc) | IFC building models read, written and authored in TypeScript (works in Node.js & browser) |
+| [@bitbybit-dev/ifc-worker](https://www.npmjs.com/package/@bitbybit-dev/ifc-worker) | IFC via WebWorker (non-blocking, browser only) |
 | [@bitbybit-dev/base](https://www.npmjs.com/package/@bitbybit-dev/base) | Base math/vector/matrix algorithms used by all packages |
 | [@bitbybit-dev/create-app](https://www.npmjs.com/package/@bitbybit-dev/create-app) | CLI tool to scaffold 3D/CAD projects |
 | [@bitbybit-dev/cad-cloud-sdk](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) | TypeScript SDK for the CAD Cloud API |

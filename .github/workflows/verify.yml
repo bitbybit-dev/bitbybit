@@ -104,7 +104,7 @@ jobs:
       - name: OpenAPI document matches the SDK version
         run: npm run check:openapi
 
-      # The dotted public API is persisted in users' saved scripts. The committed reports under
+      # The dotted public API is persisted in users' scripts. The committed reports under
       # etc/ are the surface; a change to it lands only with a deliberate `npm run api:update`.
       - name: Public API surface matches the committed reports
         run: npm run api:check

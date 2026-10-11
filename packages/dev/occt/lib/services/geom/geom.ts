@@ -1,5 +1,5 @@
-import { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import { OCCTCurves } from "./curves";
 import { OCCTSurfaces } from "./surfaces";
 

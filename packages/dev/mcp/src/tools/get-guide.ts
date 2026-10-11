@@ -25,24 +25,69 @@ export const GUIDE_ALIASES: Readonly<Record<string, string>> = {
     layers: "three-layers-you-can-use",
     trust: "trust",
     companies: "for-companies",
+    design: "what-a-design-document-is",
+    "design-document": "what-a-design-document-is",
+    "design-documents": "what-a-design-document-is",
+    documents: "what-a-design-document-is",
+    "build-loop": "the-loop-an-agent-should-follow",
+    validate: "the-loop-an-agent-should-follow",
+    references: "references-naming-faces-and-edges",
+    sketch: "sketches",
+    assembly: "assemblies",
+    "design-mistakes": "mistakes-to-avoid",
+    geometry: "geometry-in-bitbybit",
+    cad: "geometry-in-bitbybit",
+    occt: "how-the-occt-kernel-thinks",
+    kernels: "which-kernel-to-use",
+    manifold: "manifold-and-jscad",
+    jscad: "manifold-and-jscad",
+    "part-order": "the-order-to-build-a-part-in",
+    part: "a-part-to-start-from",
+    edges: "choosing-edges-and-faces",
+    fillets: "choosing-edges-and-faces",
+    check: "checking-a-shape",
+    export: "drawing-and-exporting-a-part",
+    step: "drawing-and-exporting-a-part",
+    mistakes: "mistakes-to-avoid-in-geometry-code",
+    "geometry-mistakes": "mistakes-to-avoid-in-geometry-code",
+    ifc: "ifc-models-in-bitbybit",
+    bim: "ifc-models-in-bitbybit",
+    building: "ifc-models-in-bitbybit",
+    buildings: "ifc-models-in-bitbybit",
+    "ifc-node": "two-ways-to-call-the-ifc-api",
+    "ifc-worker": "two-ways-to-call-the-ifc-api",
+    "ifc-order": "the-order-to-write-a-building-in",
+    "ifc-house": "a-house-to-start-from",
+    "ifc-example": "a-house-to-start-from",
+    "ifc-check": "checking-an-ifc-model",
+    "ifc-validate": "checking-an-ifc-model",
+    "ifc-read": "reading-and-changing-ifc-files",
+    "ifc-edit": "reading-and-changing-ifc-files",
+    "ifc-draw": "drawing-an-ifc-model-and-exporting-step",
+    "ifc-step": "drawing-an-ifc-model-and-exporting-step",
+    "ifc-mistakes": "mistakes-to-avoid-in-ifc-models",
 };
 
 const MAX_TOPIC_LENGTH = 128;
 
 const input = z.object({
-    topic: z.string().max(MAX_TOPIC_LENGTH).optional().describe("A section id or a short name such as integrate, browser, backend, server-side, pro, start; omit to list the sections"),
+    topic: z.string().max(MAX_TOPIC_LENGTH).optional().describe("A section id or a short name such as integrate, browser, backend, server-side, pro, start, geometry, part-order, geometry-mistakes, design, references, assembly, ifc, ifc-order, ifc-mistakes; omit to list the sections"),
 });
 
 function findSection(guides: readonly GuideSection[], topic: string): GuideSection | undefined {
     const wanted = topic.trim().toLowerCase();
     const alias = Object.hasOwn(GUIDE_ALIASES, wanted) ? GUIDE_ALIASES[wanted] : undefined;
     const byId = guides.find((section) => section.id === (alias ?? wanted));
-    if (byId) return byId;
+    if (byId) {
+        return byId;
+    }
     const words = new Set(tokenize(wanted));
     let best: { section: GuideSection; overlap: number } | undefined;
     for (const section of guides) {
         const overlap = tokenize(section.title).filter((word) => words.has(word)).length;
-        if (overlap > 0 && (!best || overlap > best.overlap)) best = { section, overlap };
+        if (overlap > 0 && (!best || overlap > best.overlap)) {
+            best = { section, overlap };
+        }
     }
     return best?.section;
 }
@@ -54,16 +99,18 @@ export const getGuide: ToolDefinition<typeof input, DocsContext> = {
     input,
     where: "server",
     handler: (args, context) => {
-        const sections = context.guides.map((section) => ({ id: section.id, title: section.title, level: section.level }));
+        const pageOf = (section: GuideSection): string => section.page ?? context.guideUrl;
+        const sections = context.guides.map((section) => ({ id: section.id, title: section.title, level: section.level, page: pageOf(section) }));
         if (args.topic === undefined) {
-            const text = [`Sections of the guide (${context.guideUrl}):`, ...context.guides.map((section) => `- ${section.id}: ${section.title}`)].join("\n");
-            return ok(text, { url: context.guideUrl, sections });
+            const pages = [...new Set(context.guides.map(pageOf))];
+            const text = pages.flatMap((page) => [`Sections of ${page}:`, ...context.guides.filter((section) => pageOf(section) === page).map((section) => `- ${section.id}: ${section.title}`)]).join("\n");
+            return ok(text, { url: context.guideUrl, pages, sections });
         }
         const section = findSection(context.guides, args.topic);
         if (!section) {
             return ok(`No guide section matches "${args.topic}". Sections: ${context.guides.map((candidate) => candidate.id).join(", ")}.`, { url: context.guideUrl, notFound: args.topic, sections });
         }
-        const url = `${context.guideUrl}#${section.id}`;
+        const url = `${pageOf(section)}#${section.id}`;
         return ok(`${"#".repeat(section.level)} ${section.title}\n\n${section.body}\n\nSource: ${url}`, { url, id: section.id, title: section.title, body: section.body });
     },
 };

@@ -1,14 +1,14 @@
-import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire, Geom_Surface, Handle_Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire, Geom_Surface, Handle_Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { Base } from "../../api/inputs";
-import { ShapeGettersService } from "./shape-getters";
-import { EntitiesService } from "./entities.service";
-import { EnumService } from "./enum.service";
-import { WiresService } from "./wires.service";
-import { BooleansService } from "./booleans.service";
-import { ConverterService } from "./converter.service";
-import { BaseBitByBit } from "../../base";
-import * as Resolved from "../../api/resolved-inputs";
+import type { Base } from "../../api/inputs";
+import type { ShapeGettersService } from "./shape-getters";
+import type { EntitiesService } from "./entities.service";
+import type { EnumService } from "./enum.service";
+import type { WiresService } from "./wires.service";
+import type { BooleansService } from "./booleans.service";
+import type { ConverterService } from "./converter.service";
+import type { BaseBitByBit } from "../../base";
+import type * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { coordinatesOf, massesAndCentres, pointsFromCoordinates } from "./kernel-arrays";
@@ -902,18 +902,10 @@ export class FacesService {
         return result;
     }
 
-    /**
-     * The corners of a rectangle about the origin with half sides `halfU` and `halfV`, in the order a
-     * rectangle wire runs: counterclockwise from the corner at the lowest u and highest v.
-     */
     private rectangleCorners(halfU: number, halfV: number): number[] {
         return [-halfU, halfV, -halfU, -halfV, halfU, -halfV, halfU, halfV];
     }
 
-    /**
-     * How long one unit of each parameter is along a face's surface, from its parameter origin, which
-     * turns lengths on the surface into parameter steps and back.
-     */
     private unitParameterLengths(face: TopoDS_Face): { alongU: number, alongV: number } {
         const handle = this.occ.BRep_Tool_Surface(face);
         const surface = this.surfaceOf(handle);
@@ -930,10 +922,6 @@ export class FacesService {
         return lengths;
     }
 
-    /**
-     * The wires of the outlines on a face in one kernel call, leaving out those that reach outside its
-     * trims or into its holes.
-     */
     private outlinesOnFace(face: TopoDS_Face, outlines: OutlineList): TopoDS_Wire[] {
         const wires = this.occ.OutlinesOnFace(face, outlines.counts, outlines.corners, outlines.placements);
         if (wires === null) {
@@ -942,7 +930,6 @@ export class FacesService {
         return wires;
     }
 
-    /** The face with the wires cut from it as holes, and when asked, a face inside each wire. */
     private cutOutlines(face: TopoDS_Face, wires: TopoDS_Wire[], holesToFaces: boolean): TopoDS_Face[] {
         const holed = this.occ.FaceWithHoles(face, wires);
         const cells = holesToFaces ? this.occ.FacesInsideWires(face, wires) : [];
@@ -950,13 +937,11 @@ export class FacesService {
         return [holed, ...cells];
     }
 
-    /** The u and v parameters of a face at fractions of its parameter ranges, u and v one after the other. */
     private parametersOf(face: TopoDS_Face, fractions: Base.Point2[]): number[] {
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         return fractions.flatMap(([u, v]) => [uMin + (uMax - uMin) * u, vMin + (vMax - vMin) * v]);
     }
 
-    /** The points of a face's surface at u and v parameters given one pair after the other, in one kernel call. */
     private surfacePointsAt(face: TopoDS_Face, parameters: number[]): Base.Point3[] {
         const coordinates = this.occ.FacePointsAtUV(face, parameters);
         if (coordinates === null) {
@@ -965,10 +950,6 @@ export class FacesService {
         return pointsFromCoordinates(coordinates);
     }
 
-    /**
-     * The unit normals of a face at u and v parameters given one pair after the other, in one kernel
-     * call, turned over where the face is reversed or mirrored so they point out of its material.
-     */
     private surfaceNormalsAt(face: TopoDS_Face, parameters: number[]): Base.Vector3[] {
         const coordinates = this.occ.FaceNormalsAtUV(face, parameters);
         if (coordinates === null) {
@@ -986,19 +967,11 @@ export class FacesService {
     }
 }
 
-/**
- * Outlines in a face's parameter space, gathered for one kernel call: the corner count, the corners
- * and the placement of each, in flat lists.
- */
 class OutlineList {
     readonly counts: number[] = [];
     readonly corners: number[] = [];
     readonly placements: number[] = [];
 
-    /**
-     * Adds an outline: its corners, x and y one after the other, the radius its corners are rounded
-     * with, and the scales and shifts that place it at u = x * scaleU + shiftU, v = y * scaleV + shiftV.
-     */
     add(corners: number[], radius: number, scaleU: number, scaleV: number, shiftU: number, shiftV: number): void {
         this.counts.push(corners.length / 2);
         this.corners.push(...corners);

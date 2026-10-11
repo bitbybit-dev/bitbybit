@@ -1,7 +1,7 @@
-import { BitbybitOcctModule, Geom_Surface, TopoDS_Face } from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import { VectorHelperService } from "./api/vector-helper.service";
-import * as Inputs from "./api/inputs";
-import { ShapesHelperService } from "./api/shapes-helper.service";
+import type { BitbybitOcctModule, Geom_Surface, TopoDS_Face } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { VectorHelperService } from "./api/vector-helper.service";
+import type * as Inputs from "./api/inputs";
+import type { ShapesHelperService } from "./api/shapes-helper.service";
 import { IteratorService } from "./services/base/iterator.service";
 import { EnumService } from "./services/base/enum.service";
 import { ConverterService } from "./services/base/converter.service";

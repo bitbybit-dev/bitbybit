@@ -10,6 +10,10 @@ interface ImageGalleryProps {
   altPrefix?: string;
   /** Gap between images in CSS units (default: "1rem") */
   gap?: string;
+  /** Alt text per image, used instead of the prefix and number when given */
+  alts?: string[];
+  /** Width and height per image, so the page keeps their space while they load */
+  sizes?: { width: number; height: number }[];
 }
 
 const MIN_ZOOM = 1;
@@ -22,7 +26,10 @@ export default function ImageGallery({
   columns = 2,
   altPrefix = "Gallery image",
   gap = "1rem",
+  alts,
+  sizes,
 }: ImageGalleryProps): React.JSX.Element {
+  const altOf = (index: number): string => alts?.[index] ?? `${altPrefix} ${index + 1}`;
   const [open, setOpen] = useState<number | null>(null);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -207,8 +214,11 @@ export default function ImageGallery({
           <img
             key={src}
             src={src}
-            alt={`${altPrefix} ${i + 1}`}
+            alt={altOf(i)}
+            width={sizes?.[i]?.width}
+            height={sizes?.[i]?.height}
             loading="lazy"
+            decoding="async"
             className={styles.thumbnail}
             onClick={() => setOpen(i)}
           />
@@ -224,7 +234,7 @@ export default function ImageGallery({
           >
             <img
               src={images[open]}
-              alt={`${altPrefix} ${open + 1}`}
+              alt={altOf(open)}
               className={styles.fullImage}
               style={{
                 transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,

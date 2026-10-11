@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "./occ-helper";
 import { VectorHelperService } from "./api/vector-helper.service";
 import { ShapesHelperService } from "./api/shapes-helper.service";
 import { OCCTService } from "./occ-service";
-import { Base } from "./api/inputs";
+import type { Base } from "./api/inputs";
 
 describe("workflows built from several operations", () => {
     let occt: OCCTService;

@@ -1,20 +1,16 @@
-/**
- * Generic 2D-path -> OCCT geometry builder. SVG-agnostic: it consumes the
- * Inputs.OCCT path vocabulary (line / quadratic / cubic / arc) and builds wires
- * and (optionally) faces, placed into 3D CAD space.
- *
- * The whole group set is encoded into a single flat command buffer and built in
- * one native call (BuildShapesFromSegments): each segment becomes exact geometry
- * (low-degree bezier / rational-conic arc), each subpath is optionally
- * concatenated into one BSpline, and closed groups optionally become faces with
- * holes. The native call returns a compound with one child per group, in order.
- */
-
-import { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
-import * as Resolved from "../api/resolved-inputs";
+import type * as Resolved from "../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
+
+export function deleteQuietly(handle: { delete(): void }): void {
+    try {
+        handle.delete();
+    } catch {
+        return;
+    }
+}
 
 export interface BuiltElement {
     shape: TopoDS_Shape;
@@ -33,14 +29,12 @@ export class PathBuilder {
         private readonly och: OccHelper
     ) { }
 
-    /** Map a 2D path-space point into 3D CAD space per placement options. */
     private toCad(p: Inputs.Base.Point2, o: Resolved.OCCT.PathPlacementDto): Inputs.Base.Point3 {
         const x = p[0] * o.scale;
         const y = (o.flipY ? -p[1] : p[1]) * o.scale;
         return [o.origin[0] + x, o.origin[1] + y, o.origin[2]];
     }
 
-    /** Apply uniform-scale + optional Y-flip + translate to an arc (analytic, exact). */
     private placeArc(segment: Inputs.OCCT.PathArcSegment, o: Resolved.OCCT.PathPlacementDto): Resolved.OCCT.PathArcSegment {
         const arc = resolveDto(Inputs.OCCT.PathArcSegment, segment) as Resolved.OCCT.PathArcSegment;
         const sx = o.scale;
@@ -135,7 +129,7 @@ export class PathBuilder {
             );
         } finally {
             [segTypes, segData, subStarts, subSegCounts, subClosed, groupSubCounts, groupMakeFace]
-                .forEach((v) => { try { v.delete(); } catch { /* noop */ } });
+                .forEach((v) => deleteQuietly(v));
         }
 
         if (!compound || compound.IsNull()) {
@@ -145,9 +139,9 @@ export class PathBuilder {
 
         const out: (BuiltElement | undefined)[] = new Array(groups.length).fill(undefined);
         this.och.iteratorService.forEachShapeInCompound(compound, (i: number, child: TopoDS_Shape) => {
-            if (i >= groups.length) { try { child.delete(); } catch { /* noop */ } return; }
+            if (i >= groups.length) { deleteQuietly(child); return; }
             const typed = this.och.converterService.getActualTypeOfShape(child);
-            if (typed !== child) { try { child.delete(); } catch { /* noop */ } }
+            if (typed !== child) { deleteQuietly(child); }
             const isFace = this.och.enumService.getShapeTypeEnum(typed) === Inputs.OCCT.shapeTypeEnum.face;
             out[i] = { shape: typed, isFace };
         });

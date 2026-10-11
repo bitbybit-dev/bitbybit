@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, CurvePointResult, TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Pnt } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, CurvePointResult, TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Pnt } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";
@@ -114,6 +115,20 @@ describe("OCCT wire unit tests", () => {
         const length = wire.getWireLength({ shape: w });
         expect(length).toBeCloseTo(7.253889764838339, 11);
         w.delete();
+    });
+
+    it("should treat start and end tangents shorter than the tolerance as not given", () => {
+        const w = wire.interpolatePoints({ points: [[0, 0, 0], [1, 1, 0], [0, 2, 5]], periodic: false, tolerance: 1e-7, startTangent: [0, 0, 0], endTangent: [0, 0, 0] });
+        const length = wire.getWireLength({ shape: w });
+        expect(length).toBeCloseTo(7.253889764838339, 11);
+        w.delete();
+    });
+
+    it("should leave a point free when its tangent is shorter than the tolerance", () => {
+        const free = wire.interpolatePoints({ points: [[0, 0, 0], [1, 1, 0], [0, 2, 5]], periodic: false, tolerance: 1e-7, tangents: [undefined, [0, 0, 0], undefined] });
+        const length = wire.getWireLength({ shape: free });
+        expect(length).toBeCloseTo(7.253889764838339, 11);
+        free.delete();
     });
 
     it("should interpolate wires", () => {

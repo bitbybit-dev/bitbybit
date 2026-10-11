@@ -1,9 +1,9 @@
 import * as THREEJS from "three";
-import { Context } from "../../context";
+import type { Context } from "../../context";
 import * as Inputs from "../../inputs";
-import { OrbitCameraInstance, InputHandler, OrbitCameraController } from "../../inputs/threejs-camera-inputs";
+import type { OrbitCameraInstance, InputHandler, OrbitCameraController } from "../../inputs/threejs-camera-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 export type { OrbitCameraInstance, InputHandler, OrbitCameraController };
 

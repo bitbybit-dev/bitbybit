@@ -267,7 +267,8 @@ const result = await client.cad.pipelineAndPoll({
 
 - Max **100** items per map
 - Max **3** nesting levels (map inside map)
-- Total operations across all steps and iterations: **500**
+- Total operations across all steps and iterations: **500**; a design step counts as one, and its
+  documents' features and components count toward their own budget of **10,000**
 
 ## Choice (Conditional)
 
@@ -510,12 +511,13 @@ const { downloads } = await client.cad.pipelineAndPoll({
 |-------|-------|
 | Max top-level steps | 50 |
 | Max total operations (including map iterations) | 500 |
+| Max design features and components (`occt.design.build` and `occt.design.clashes` steps, together) | 10,000 |
 | Max items per map | 100 |
 | Max nesting depth | 3 |
 | Max input files | 5 |
 | Max pipeline payload | 512 KB |
-| Max params depth | 10 levels |
-| Max params keys | 500 |
+| Max params depth | 10 levels (32 inside a design step's `document` and `documents`) |
+| Max params keys | 500 (a design step's `document` and `documents` do not count) |
 | Max string param length | 1,000,000 chars |
 | Max array param length | 10,000 elements |
 

@@ -1,11 +1,11 @@
 
 import { uniqueName } from "../../unique-name";
 import * as BABYLON from "@babylonjs/core";
-import { Context } from "../../context";
-import { DrawHelper } from "../../draw-helper";
+import type { Context } from "../../context";
+import type { DrawHelper } from "../../draw-helper";
 import * as Inputs from "../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 /**
  * Transform nodes: invisible points with a position and an orientation that meshes and other nodes

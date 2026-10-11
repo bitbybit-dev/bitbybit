@@ -1,4 +1,4 @@
-import { Base } from "./base-inputs";
+import type { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 

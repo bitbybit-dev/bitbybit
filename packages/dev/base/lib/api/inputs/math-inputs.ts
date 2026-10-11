@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for numeric helpers: the operands of arithmetic and trigonometry, the source and target
  * ranges for remapping a value, rounding and clamping bounds, interpolation factors, and the seed for

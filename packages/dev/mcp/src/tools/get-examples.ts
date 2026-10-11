@@ -39,20 +39,28 @@ export const getExamples: ToolDefinition<typeof input, DocsContext> = {
         let examples: IndexExample[] = [];
         if (args.path !== undefined) {
             const path = args.path.replace(/^bitbybit\./, "");
-            if (!reader.get(path) && reader.children(path).length === 0) return fail(`${path} is not a member of the Bitbybit API ${resolved.version}; call describe to see the nearest paths.`);
+            if (!reader.get(path) && reader.children(path).length === 0) {
+                return fail(`${path} is not a member of the Bitbybit API ${resolved.version}; call describe to see the nearest paths.`);
+            }
             examples = reader.examplesOf(path);
-            if (examples.length < limit) examples = [...examples, ...reader.examplesUnder(path, limit - examples.length)];
+            if (examples.length < limit) {
+                examples = [...examples, ...reader.examplesUnder(path, limit - examples.length)];
+            }
         } else if (args.topic !== undefined) {
             for (const hit of reader.search(args.topic, { engine: args.engine, limit: MAX_LIMIT })) {
                 for (const example of reader.examplesOf(hit.member.path)) {
-                    if (examples.length >= limit) break;
+                    if (examples.length >= limit) {
+                        break;
+                    }
                     examples.push(example);
                 }
             }
         }
         examples = examples.slice(0, limit);
         const rows = examples.map((example) => ({ path: example.path, code: example.code, url: reader.get(example.path)?.docUrl ?? null }));
-        if (rows.length === 0) return ok(`No example matches in the Bitbybit API ${resolved.version}. Try describe on a path: its parameters and defaults are enough to write a call.`, { version: resolved.version, examples: [] });
+        if (rows.length === 0) {
+            return ok(`No example matches in the Bitbybit API ${resolved.version}. Try describe on a path: its parameters and defaults are enough to write a call.`, { version: resolved.version, examples: [] });
+        }
         const text = rows.map((row) => `// ${row.path}${row.url ? ` (${row.url})` : ""}\n${row.code}`).join("\n\n");
         return ok(text, { version: resolved.version, examples: rows });
     },

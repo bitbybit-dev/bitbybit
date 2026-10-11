@@ -1,12 +1,6 @@
-import * as pc from "playcanvas";
-import { BitByBitBase } from "./bitbybit-base";
-import {
-    type InitKernelsResult,
-    type WorkerInstances,
-    type WorkerOptions,
-    getOrCreateWorkers,
-    waitForKernelInitialization,
-} from "@bitbybit-dev/core";
+import type * as pc from "playcanvas";
+import type { BitByBitBase } from "./bitbybit-base";
+import { type InitKernelsResult, type WorkerInstances, type WorkerOptions, getOrCreateWorkers, waitForKernelInitialization } from "@bitbybit-dev/core";
 
 /**
  * Options for initializing bitbybit with PlayCanvas
@@ -64,6 +58,9 @@ export async function initBitByBit(
         workers.jscadWorker,
         workers.manifoldWorker
     );
+    if (workers.ifcWorker) {
+        bitbybit.ifcWorkerManager.setIfcWorker(workers.ifcWorker);
+    }
 
     const result = await waitForKernelInitialization(bitbybit, options);
 

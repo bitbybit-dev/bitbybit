@@ -21,10 +21,15 @@ export async function listFiles(dir: string): Promise<string[]> {
     const out: string[] = [];
     const walk = async (current: string): Promise<void> => {
         for (const entry of await fs.readdir(current, { withFileTypes: true })) {
-            if (SKIPPED_DIRS.has(entry.name)) continue;
+            if (SKIPPED_DIRS.has(entry.name)) {
+                continue;
+            }
             const full = path.join(current, entry.name);
-            if (entry.isDirectory()) await walk(full);
-            else out.push(full);
+            if (entry.isDirectory()) {
+                await walk(full);
+            } else {
+                out.push(full);
+            }
         }
     };
     await walk(dir);
@@ -41,10 +46,16 @@ export async function restoreTemplateDotfiles(dir: string): Promise<string[]> {
     const restored: string[] = [];
     const walk = async (current: string): Promise<void> => {
         for (const entry of await fs.readdir(current, { withFileTypes: true })) {
-            if (SKIPPED_DIRS.has(entry.name)) continue;
+            if (SKIPPED_DIRS.has(entry.name)) {
+                continue;
+            }
             const from = path.join(current, entry.name);
-            if (entry.isDirectory()) await walk(from);
-            if (!entry.name.startsWith(DOTFILE_PREFIX)) continue;
+            if (entry.isDirectory()) {
+                await walk(from);
+            }
+            if (!entry.name.startsWith(DOTFILE_PREFIX)) {
+                continue;
+            }
             const to = path.join(current, `.${entry.name.slice(DOTFILE_PREFIX.length)}`);
             await fs.move(from, to, { overwrite: true });
             restored.push(to);
@@ -62,7 +73,9 @@ export async function restoreTemplateDotfiles(dir: string): Promise<string[]> {
 export async function renderPlaceholders(dir: string, values: PlaceholderValues): Promise<void> {
     const leftovers: string[] = [];
     for (const file of await listFiles(dir)) {
-        if (!TEXT_EXTENSIONS.has(path.extname(file))) continue;
+        if (!TEXT_EXTENSIONS.has(path.extname(file))) {
+            continue;
+        }
         const text = await fs.readFile(file, "utf8");
         if (!PLACEHOLDER.test(text)) { PLACEHOLDER.lastIndex = 0; continue; }
         PLACEHOLDER.lastIndex = 0;
@@ -92,7 +105,9 @@ export async function applyAgentLayer(templatesRoot: string, targetDir: string, 
         const agents = path.join(targetDir, AGENTS_FILE);
         const text = await fs.readFile(section, "utf8");
         await fs.appendFile(agents, `\n${text.endsWith("\n") ? text : `${text}\n`}`);
-        if (section === staged) await fs.remove(staged);
+        if (section === staged) {
+            await fs.remove(staged);
+        }
     }
     await restoreTemplateDotfiles(targetDir);
     await renderPlaceholders(targetDir, values);

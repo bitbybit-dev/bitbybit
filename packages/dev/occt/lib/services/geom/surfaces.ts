@@ -1,8 +1,8 @@
-import { BitbybitOcctModule, TopoDS_Face, Geom_CylindricalSurface, Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Face, Geom_CylindricalSurface, Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Construction surfaces of OpenCascade: the infinite mathematical surfaces that faces are cut from.

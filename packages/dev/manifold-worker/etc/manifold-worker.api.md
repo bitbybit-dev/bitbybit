@@ -72,6 +72,10 @@ export class ManifoldBitByBit {
     //
     // (undocumented)
     readonly mesh: Mesh_2;
+    // Warning: (ae-forgotten-export) The symbol "ManifoldRecipes" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly recipes: ManifoldRecipes;
     toPolygonPoints(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Base.Mesh3>;
 }
 

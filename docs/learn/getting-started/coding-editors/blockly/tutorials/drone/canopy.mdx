@@ -1,0 +1,90 @@
+---
+sidebar_position: 5
+slug: /getting-started/blockly/tutorials/drone/canopy
+title: "Build a drone: canopy and electronics"
+sidebar_label: 5. Canopy and electronics
+description: The fifth chapter of the Blockly drone - a canopy lofted through rounded rectangles, an async function that traces a honeycomb of hexagon wires on its sides, a hatch with the bitbybit logo read from a STEP file cut into it, and the GPS mast and antennas.
+topic: blockly.tutorials.drone.canopy
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, blockly, occt]
+---
+
+# Build a drone: canopy and electronics
+
+The canopy covers the electronics on the top plate. Its honeycomb and the logo on its hatch measure the geometry they work on, so both are async functions that await what they measure.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. The canopy is lofted through five rounded rectangles that narrow as they rise; a list of lists gives each one's height, size and corner radius, and a for each loop makes them. The main stack sets it on the top plate and paints it midnight blue.
+
+   - **Make the function** ***canopy***:
+     - set *wires* to **empty list**
+     - **for each item** *section* in [[0, 140, 90, 26, 4], [12, 132, 84, 24, 6], [22, 110, 70, 19, 9], [29, 76, 48, 13, 10], [32, 52, 36, 10, 10]]:
+       - set *wires* to **add item**(list *wires*, item **fillet 2d**(shape **rectangle wire**(width **get item**(list *section*, index 2, clone false), length **get item**(list *section*, index 1, clone false), center **point xyz**(0, **get item**(list *section*, index 0, clone false), **get item**(list *section*, index 4, clone false)), direction **vector xyz**(0, 1, 0)), radius **get item**(list *section*, index 3, clone false)), clone false)
+     - **return** **loft**(shapes *wires*, make solid true)
+   - **Add a stack under the others:**
+     - set *shell* to ***canopy***()
+     - set *paint* to ***look***("paint", `#1f2b4d`, 0.1, 0.25, `#000000`, `#f2f2f2`, 6)
+     - **draw any async no return**(entity **translate**(shape *shell*, translation **vector xyz**(0, 16, 0)), options *paint*)
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="blockly.tutorials.drone/canopy" />
+
+2. A honeycomb is traced on the canopy's sides by an async function. It awaits the canopy's faces and their areas, then a count loop awaits each face's normal, leaves out the top and the bottom, and divides each side into hexagon wires, eight across the long sides and five across the short ones. The wires are drawn as white lines over the canopy.
+
+   - **Make the function** ***honeycomb*** with the inputs *shell*:
+     - set *middle* to **await** **get solid center of mass**(*shell*)
+     - set *faces* to **await** **get faces**(**scale 3d**(shape *shell*, scale **vector xyz**(1.02, 1.02, 1.02), center **point xyz**(**get item**(list *middle*, index 0, clone false), 0, **get item**(list *middle*, index 2, clone false))))
+     - set *areas* to **await** **get faces areas**(*faces*)
+     - set *largest side* to **get item**(list **sort number**(list **get sub list**(list *areas*, index start 0, index end (**list length**(list *areas*, clone false) - 2), clone false), order asc false, clone false), index 0, clone false)
+     - set *cells* to **empty list**
+     - **count with** *i* from 0 to (**list length**(list *faces*, clone false) - 1) by 1:
+       - set *normal* to **await** **normal on uv**(shape **get item**(list *faces*, index *i*, clone false), param u 0.5, param v 0.5)
+       - **if** (absolute **get item**(list *normal*, index 1, clone false) < 0.9):
+         - set *new cells* to **await** **subdivide to hexagon wires**(shape **get item**(list *faces*, index *i*, clone false), nr hexagons u (if (**get item**(list *areas*, index *i*, clone false) > (*largest side* × 0.7)) then 8 else 5), nr hexagons v 3, flat u false, scale pattern u [0.8], scale pattern v [0.8], fillet pattern [0.35], offset from border u 0.05, offset from border v 0.08)
+         - set *cells* to **concatenate**(lists [*cells*, *new cells*], clone false)
+     - **return** **make compound**(*cells*)
+   - **Snap under** the block **draw any async no return**(entity **translate**(shape *shell*, translation **vector xyz**(0, 16, 0)), options *paint*):
+     - set *canopy cells* to ***honeycomb***(*shell*)
+     - **draw any async no return**(entity **translate**(shape *canopy cells*, translation **vector xyz**(0, 16, 0)), options ***look***("honeycomb", `#1f2b4d`, 0.1, 0.25, `#000000`, `#f2f2f2`, 8))
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="blockly.tutorials.drone/honeycomb" />
+
+3. A hatch closes the top, with the bitbybit logo in it. logo on hatch fetches the logo's STEP file from the CDN, reads it into a shape and awaits its bounding box, so it can scale it to 26 millimetres and centre it on the hatch. Extruded, the logo is cut through the hatch, and a copy a little smaller sits in the cut as a white emblem.
+
+   - **Make the function** ***hatch lid***:
+     - **return** **extrude**(shape **face from wire**(shape **fillet 2d**(shape **rectangle wire**(width 34, length 50, center **point xyz**(0, 48, 10), direction **vector xyz**(0, 1, 0)), radius 9), planar true), direction **vector xyz**(0, 1.4, 0))
+   - **Make the function** ***logo on hatch***:
+     - set *logo* to **mirror along normal**(shape **load step or iges from text**(text **fetch text**("https://git-cdn.bitbybit.dev/latest/assets/logo/logo-faces.stp"), file type step, adjust z to y true), origin **point xyz**(0, 0, 0), normal **vector xyz**(1, 0, 0))
+     - set *box* to **await** **tight bbox**(*logo*)
+     - set *scaled* to **scale**(shape *logo*, factor (26 ÷ (if (**get item**(list **get value on prop**(json *box*, property "size"), index 0, clone false) > **get item**(list **get value on prop**(json *box*, property "size"), index 2, clone false)) then **get item**(list **get value on prop**(json *box*, property "size"), index 0, clone false) else **get item**(list **get value on prop**(json *box*, property "size"), index 2, clone false))))
+     - set *box* to **await** **tight bbox**(*scaled*)
+     - **return** **translate**(shape *scaled*, translation **vector xyz**((0 - **get item**(list **get value on prop**(json *box*, property "center"), index 0, clone false)), (47.9 - **get item**(list **get value on prop**(json *box*, property "min"), index 1, clone false)), (10 - **get item**(list **get value on prop**(json *box*, property "center"), index 2, clone false))))
+   - **Add a stack under the others:**
+     - set *placed logo* to ***logo on hatch***()
+     - **draw any async no return**(entity **difference**(shape ***hatch lid***(), shapes [**extrude**(shape *placed logo*, direction **vector xyz**(0, 1.7, 0))], keep edges false), options *paint*)
+     - **draw any async no return**(entity **extrude**(shape **scale 3d**(shape *placed logo*, scale **vector xyz**(0.96, 1, 0.96), center **point xyz**(0, 47.9, 10)), direction **vector xyz**(0, 1.1, 0)), options ***look***("emblem", `#f4f4f4`, 0.2, 0.5, `#000000`, `#0d0e10`, 4))
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="blockly.tutorials.drone/logo" />
+
+4. The GPS stands on a mast behind the canopy, its puck's edges rounded, and two antennas angle down and back from the bottom plate.
+
+   - **Make the function** ***gps***:
+     - **return** **union**(shapes [**cylinder**(radius 2.5, height 34, center **point xyz**(0, 16, -70), direction **vector xyz**(0, 1, 0)), **fillet edges**(shape **cylinder**(radius 11, height 6, center **point xyz**(0, 50, -70), direction **vector xyz**(0, 1, 0)), radius 1.5)], keep edges false)
+   - **Make the function** ***antennas***:
+     - set *antenna* to **rotate**(shape **union**(shapes [**cylinder**(radius 1.5, height 42, center **point xyz**(0, 0, 0), direction **vector xyz**(0, 1, 0)), **sphere**(radius 1.5, center **point xyz**(0, 42, 0))], keep edges false), axis **vector xyz**(1, 0, 0), angle 225)
+     - **return** **make compound**([**translate**(shape *antenna*, translation **vector xyz**(-14, 0, -67)), **translate**(shape *antenna*, translation **vector xyz**(14, 0, -67))])
+   - **Add a stack under the others:**
+     - **draw any async no return**(entity ***gps***(), options ***look***("polymer", `#2a2d31`, 0.05, 0.4, `#000000`, `#f2f2f2`, 6))
+     - set *rubber* to ***look***("rubber", `#111214`, 0, 0.92, `#000000`, `#f2f2f2`, 4)
+     - **draw any async no return**(entity ***antennas***(), options *rubber*)
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="blockly.tutorials.drone/electronics" />
+
+{/* steps:end */}
+
+Next: [landing gear](./landing-gear.mdx).

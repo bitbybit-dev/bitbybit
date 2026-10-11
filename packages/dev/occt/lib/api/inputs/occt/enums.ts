@@ -1,5 +1,3 @@
-// A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
 
 /**
  * How an offset fills the outside of a corner. arc rounds it, intersection extends both sides to
@@ -327,4 +325,22 @@ export enum featureExtentEnum {
     length = "length",
     untilFace = "untilFace",
     throughAll = "throughAll",
+}
+/**
+ * Which axis of a model points up: z, as STEP files and most CAD models have it, or y, as glTF and
+ * the 3D engines have it.
+ */
+export enum upAxisEnum {
+    y = "y",
+    z = "z",
+}
+/**
+ * What a design build does when a reference that carries a hint loses its faces: `never` fails the
+ * feature and offers the faces most like the hint as repairs, as a headless build should; `report`
+ * takes them when they stand clear of every other face and reports the feature `rebound`, as an
+ * editor wants.
+ */
+export enum designRebindEnum {
+    never = "never",
+    report = "report",
 }

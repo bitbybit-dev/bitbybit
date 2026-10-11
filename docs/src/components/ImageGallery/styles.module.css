@@ -5,6 +5,7 @@
 
 .thumbnail {
   width: 100%;
+  height: auto;
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;

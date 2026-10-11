@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: "Bitbybit's Engine-Agnostic Architecture"
 sidebar_label: "Engine Agnosticism"
 description: "Learn about Bitbybit's core architecture, designed to be game engine agnostic, its base layer of fundamental algorithms, and its current integrations with ThreeJS, BabylonJS, and PlayCanvas."

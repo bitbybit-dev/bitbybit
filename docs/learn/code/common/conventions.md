@@ -1,8 +1,10 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 title: Conventions
 sidebar_label: Conventions
 description: The handful of conventions that hold everywhere in Bitbybit - colour ranges, which way is up, and the defaults that surprise people.
+topic: code.start.conventions
+type: reference
 tags: [code, draw, occt]
 ---
 
@@ -42,9 +44,15 @@ want your option to apply, remove the colour from the geometry rather than fight
 
 ## Y is up
 
-Bitbybit treats **Y** as the up axis, throughout.
+Bitbybit's scene treats **Y** as the up axis: the ground is the XZ plane, and the camera, the lights and
+the OCCT primitives agree. A box's height runs along Y, and a cylinder or a circle faces `[0, 1, 0]` unless
+you give it another direction.
 
-Many CAD systems treat Z as up instead. When you import from one, the model arrives lying on its side,
+Two kernels are the exception. **Manifold** and **JSCAD** build along **Z**: their cylinders stand on the XY
+plane. A primitive from either needs a quarter turn about X to stand up in the scene, or to line up with a
+shape OCCT made.
+
+Many CAD systems treat Z as up as well. When you import from one, the model arrives lying on its side,
 which is what the `adjustZtoY` option on the STEP and IGES importers is for.
 
 Two related mappings, if you are building points by hand:

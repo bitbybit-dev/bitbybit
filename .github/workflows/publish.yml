@@ -22,9 +22,9 @@
 # channel it could never be promoted out of. That is how something is installable by name before a
 # release: `npm install @bitbybit-dev/core@rc`.
 #
-# Before the first release from here, each of the thirteen packages needs a trusted publisher on
-# npmjs.com pointing at bitbybit-dev/bitbybit and this file, publish.yml. A package's first ever
-# version cannot be published this way; all thirteen already exist.
+# Each package needs a trusted publisher on npmjs.com pointing at bitbybit-dev/bitbybit and this
+# file, publish.yml. A package's first ever version cannot be published this way: publish it once by
+# hand from its dist/ (npm publish --access public --tag <channel>), then add its trusted publisher.
 name: Publish
 
 on:

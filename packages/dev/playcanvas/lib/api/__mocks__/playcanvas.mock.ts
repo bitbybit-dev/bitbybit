@@ -2,10 +2,7 @@ import { vi, type Mock } from "vitest";
  
  
 
-/**
- * Centralized PlayCanvas mocks for testing
- * This file contains all reusable mock classes for PlayCanvas types
- */
+const MAT4_FLOAT_COUNT = 16;
 
 export class MockVec2 {
     x: number;
@@ -115,8 +112,6 @@ export class MockQuat {
         return this;
     }
     setFromMat4(_mat: { data: Float32Array | number[] }) {
-        // Simplified matrix to quaternion conversion for testing
-        // This is a mock implementation that just sets identity quaternion
         this.x = 0;
         this.y = 0;
         this.z = 0;
@@ -128,7 +123,6 @@ export class MockQuat {
         return result;
     }
     mul2(a: MockQuat, b: MockQuat) {
-        // Simplified quaternion multiplication for testing
         this.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
         this.y = a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z;
         this.z = a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x;
@@ -162,17 +156,10 @@ export class MockColor {
 
 export class MockCameraComponent {
     fov = 45;
-    // The engine works this out from the viewport it renders into; a camera that has never rendered
-    // still answers with a number, and a square one keeps the arithmetic that reads it honest.
     aspectRatio = 1;
     farClip = 10000;
     nearClip = 0.1;
 
-    /**
-     * The engine's own projection of a screen point onto a plane at the given depth. A camera that
-     * has never rendered has no viewport to project through, so this stands the point up in world
-     * space unchanged, which is enough for the pans that only need the difference between two of them.
-     */
     screenToWorld(x: number, y: number, z: number, result?: MockVec3): MockVec3 {
         const world = result ?? new MockVec3();
         world.x = x;
@@ -245,7 +232,6 @@ export class MockEntity {
     findByName() { return null; }
     findOne() { return null; }
     destroy() { 
-        // Mock destroy - cleanup children references
         this.children.forEach(child => {
             child.parent = null;
         });
@@ -270,7 +256,6 @@ export class MockEntity {
             }
             return this.camera;
         }
-        // Mock implementation for other component types
         const mockComponent = { type, ...options };
         Reflect.set(this, type, mockComponent);
         return mockComponent;
@@ -302,7 +287,6 @@ export class MockTouch {
 
 export class MockApp {
     root!: MockEntity;
-    // A device the browser did not give us is absent, and the camera has to cope with that.
     mouse: MockMouse | null = new MockMouse();
     touch: MockTouch | null = new MockTouch();
     on: Mock = vi.fn();
@@ -319,7 +303,6 @@ export class MockApp {
     }
 }
 
-// Scene helper specific mock classes
 export class MockGraphicsDevice {
     maxPixelRatio = 1;
     vram = { vb: 0, ib: 0, tex: 0, total: 0 };
@@ -350,9 +333,9 @@ export class MockApplication {
         this._canvas = canvas;
     }
     
-    setCanvasFillMode(_mode: number) { /* mock */ }
-    setCanvasResolution(_mode: number) { /* mock */ }
-    resizeCanvas() { /* mock */ }
+    setCanvasFillMode(_mode: number) { }
+    setCanvasResolution(_mode: number) { }
+    resizeCanvas() { }
     start() { this._started = true; }
     destroy() { this._started = false; }
     on(event: string, callback: (dt: number) => void) {
@@ -379,8 +362,8 @@ export class MockStandardMaterial {
         this.diffuse = new MockColor(1, 1, 1);
     }
     
-    update() { /* mock */ }
-    destroy() { /* mock */ }
+    update() { }
+    destroy() { }
 }
 
 export class MockTouchDevice {
@@ -388,7 +371,6 @@ export class MockTouchDevice {
     off: Mock = vi.fn();
 }
 
-// Type definitions for test assertions
 export interface MockEntityType {
     name: string;
     children: MockEntityType[];
@@ -401,18 +383,11 @@ export interface MockAppType {
     _canvas: HTMLCanvasElement | null;
     _started: boolean;
     _updateCallbacks: ((dt: number) => void)[];
-    // The devices the engine reads input from. A browser may hand over neither, which is why the
-    // application declares them as optional, and the camera has to cope with their absence.
     mouse: MockMouse | null;
     touch: MockTouch | null;
     root: MockEntity;
 }
 
-/**
- * Reads a value the engine's types describe as one of its own as the stand-in it actually is. The
- * suites hold engine-typed handles - an application, an entity - that the mocked module built, and
- * the members they need to read are the recording ones these classes add.
- */
 export function asMockApp(app: unknown): MockAppType {
     return app as MockAppType;
 }
@@ -421,9 +396,6 @@ export function asMockEntity(entity: unknown): MockEntityType {
     return entity as MockEntityType;
 }
 
-/**
- * Create scene helper mock for vi.mock("playcanvas")
- */
 export function createSceneHelperMock() {
     return {
         Application: MockApplication,
@@ -459,9 +431,6 @@ export function createSceneHelperMock() {
     };
 }
 
-/**
- * Creates a mock node with scene for mesh instances
- */
 export function createMockNode(): Record<string, unknown> {
     return {
         scene: {
@@ -475,15 +444,10 @@ export function createMockNode(): Record<string, unknown> {
     };
 }
 
-/**
- * Creates PlayCanvas module mock for vi.mock()
- * Includes basic mock and extends with actual PlayCanvas where needed
- */
 export async function createPlayCanvasMock(): Promise<Record<string, unknown>> {
     const actual = await vi.importActual("playcanvas");
     const mockNode = createMockNode();
     
-    // Mock graphics device for instancing
     const mockGraphicsDevice: unknown = {
         vram: { vb: 0, ib: 0, tex: 0, total: 0 },
         createVertexBufferImpl: vi.fn(() => ({})),
@@ -499,7 +463,6 @@ export async function createPlayCanvasMock(): Promise<Record<string, unknown>> {
         Entity: MockEntity,
         Color: MockColor,
         GraphNode: MockGraphNode,
-        // Mock Texture class to avoid graphics device registry issues
         Texture: class MockTexture {
             name: string;
             addressU: number;
@@ -523,63 +486,49 @@ export async function createPlayCanvasMock(): Promise<Record<string, unknown>> {
             }
             
             destroy() {
-                // Mock cleanup
             }
         },
         Mesh: class MockMesh extends (actual["Mesh"] as typeof import("playcanvas").Mesh) {
             constructor(graphicsDevice?: import("playcanvas").GraphicsDevice) {
-                // The stand-in device carries only the members the real Mesh constructor
-                // reaches for, so this is where a partial stand-in meets a full signature.
                 const mockDevice = graphicsDevice ?? (mockGraphicsDevice as import("playcanvas").GraphicsDevice);
                 super(mockDevice);
             }
             override update() {
                 return this;
             }
-            // Mock fromGeometry static method for GPU instancing
             static override fromGeometry(graphicsDevice: import("playcanvas").GraphicsDevice, _geometry: unknown) {
                 return new MockMesh(graphicsDevice);
             }
         },
-        // Mock SphereGeometry for point rendering
         SphereGeometry: class MockSphereGeometry {
             constructor(_options?: Record<string, unknown>) {
-                // Store options for potential validation
             }
         },
-        // Mock VertexFormat for instancing
         VertexFormat: class MockVertexFormat {
             constructor() {}
             static getDefaultInstancingFormat(_graphicsDevice: unknown) {
                 return new MockVertexFormat();
             }
         },
-        // Mock VertexBuffer for instancing
         VertexBuffer: class MockVertexBuffer {
             private data: ArrayBuffer;
             constructor(_graphicsDevice: unknown, _format: unknown, numVertices: number, _options?: Record<string, unknown>) {
-                // Allocate buffer for instance data (16 floats per instance for Mat4)
-                this.data = new ArrayBuffer(numVertices * 16 * 4); // 4 bytes per float
+                this.data = new ArrayBuffer(numVertices * MAT4_FLOAT_COUNT * Float32Array.BYTES_PER_ELEMENT);
             }
             lock() {
                 return this.data;
             }
             unlock() {}
             setData(_data: Float32Array) {
-                // Mock data storage
             }
             destroy() {
-                // Mock cleanup
             }
         },
-        // A function expression, not an arrow: the code under test reaches this through
-        // `new pc.MeshInstance(...)`, and only a function can be constructed.
         MeshInstance: vi.fn(function (mesh: unknown, material: unknown, node: unknown = mockNode) {
             return {
                 mesh,
                 material,
                 node,
-                // Mock setInstancing method for GPU instancing
                 setInstancing: vi.fn((_vertexBuffer: unknown) => {}),
             };
         }),
@@ -591,7 +540,6 @@ export async function createPlayCanvasMock(): Promise<Record<string, unknown>> {
                 return Math.min(Math.max(value, min), max);
             },
         },
-        // Add BUFFER_STATIC constant for VertexBuffer usage
         BUFFER_STATIC: 0,
         MOUSEBUTTON_LEFT: 0,
         MOUSEBUTTON_MIDDLE: 1,

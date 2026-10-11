@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "../../gui-enriched-babylon";
+import type * as BABYLON from "../../gui-enriched-babylon";
 import { BabylonTexture } from "./babylon-texture-inputs";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for the in-scene 2D interface: buttons, sliders, checkboxes, color pickers, text blocks,
  * input fields, images and the containers that lay them out. Use it for controls that live inside the
@@ -472,20 +471,26 @@ export namespace BabylonGui {
         container!: BABYLON.GUI.Container;
     }
     /**
+     * What controls can be added to: a container such as a stack panel, or a full-screen or mesh UI
+     * (`advancedDynamicTexture`), which takes them at its root.
+     */
+    export type ControlsParent = BABYLON.GUI.Container | BABYLON.GUI.AdvancedDynamicTexture;
+    /**
      * Feeds `babylon.gui.container.addControls`: the container, the controls to put in it and
      * whether to empty it first.
      */
-    export class AddControlsToContainerDto {
-        constructor(container?: BABYLON.GUI.StackPanel, controls?: BABYLON.GUI.Control[], clearControlsFirst?: boolean) {
+    export class AddControlsToContainerDto<C extends ControlsParent = ControlsParent> {
+        constructor(container?: C, controls?: BABYLON.GUI.Control[], clearControlsFirst?: boolean) {
             if (container !== undefined) { this.container = container; }
             if (controls !== undefined) { this.controls = controls; }
             if (clearControlsFirst !== undefined) { this.clearControlsFirst = clearControlsFirst; }
         }
         /**
-         * The panel or root that receives the controls as its children
+         * The panel that receives the controls as its children, or a full-screen or mesh UI
+         * (`advancedDynamicTexture`), which takes them at its root
          * @default undefined
          */
-        container!: BABYLON.GUI.Container;
+        container!: C;
         /**
          * The controls to add, in the order they should appear
          * @default undefined

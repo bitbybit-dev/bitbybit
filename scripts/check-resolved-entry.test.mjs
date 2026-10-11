@@ -454,7 +454,7 @@ describe("the walked files", () => {
             handIo: true,
             init: true,
             generated: 0,
-            chains: { "occt-worker": PACKAGES.occt.join(","), "jscad-worker": PACKAGES.jscad.join(","), "manifold-worker": PACKAGES.manifold.join(",") },
+            chains: { "occt-worker": PACKAGES.occt.join(","), "jscad-worker": PACKAGES.jscad.join(","), "manifold-worker": PACKAGES.manifold.join(","), "ifc-worker": PACKAGES.ifc.join(",") },
         });
     });
 });

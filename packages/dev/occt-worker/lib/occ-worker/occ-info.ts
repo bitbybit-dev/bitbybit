@@ -1,4 +1,4 @@
-import { OccStateEnum } from "./occ-state.enum";
+import type { OccStateEnum } from "./occ-state.enum";
 
 export class OccInfo {
     state!: OccStateEnum;

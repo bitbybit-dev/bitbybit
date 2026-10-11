@@ -1,7 +1,7 @@
 import * as Inputs from "../inputs";
-import { MathBitByBit } from "./math";
+import type { MathBitByBit } from "./math";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Colors in the two forms the library uses: a hex text such as `#ff5733`, and an object `{ r, g, b

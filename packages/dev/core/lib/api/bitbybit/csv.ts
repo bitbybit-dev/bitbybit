@@ -1,6 +1,6 @@
 import * as Inputs from "../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Reading and writing CSV, the plain-text table format with one row per line and a separator
@@ -38,7 +38,9 @@ export class CSVBitByBit {
         
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i]!.trim();
-            if (!line) continue;
+            if (!line) {
+                continue;
+            }
             
             const columns = this.parseCsvLine(line, columnSeparator);
             result.push(columns);
@@ -72,7 +74,9 @@ export class CSVBitByBit {
             columnSeparator: resolved.columnSeparator
         });
         
-        if (array.length === 0) return [];
+        if (array.length === 0) {
+            return [];
+        }
         
         const headerRow = resolved.headerRow;
         const dataStartRow = resolved.dataStartRow;
@@ -129,7 +133,9 @@ export class CSVBitByBit {
             columnSeparator: resolved.columnSeparator
         });
         
-        if (array.length === 0) return [];
+        if (array.length === 0) {
+            return [];
+        }
         
         const dataStartRow = resolved.dataStartRow;
         const numberColumnsSet = new Set(resolved.numberColumns || []);
@@ -314,7 +320,9 @@ export class CSVBitByBit {
      */
     jsonToCsvAuto<T = Record<string, unknown>>(inputs: Inputs.CSV.JsonToCsvAutoDto<T>): string {
         const resolved = resolveDto(Inputs.CSV.JsonToCsvAutoDto, inputs) as Resolved.CSV.JsonToCsvAutoDto<T>;
-        if (!resolved.json || resolved.json.length === 0) return "";
+        if (!resolved.json || resolved.json.length === 0) {
+            return "";
+        }
         
         const headers = Object.keys(resolved.json[0]!);
         
@@ -447,10 +455,6 @@ export class CSVBitByBit {
         return cellStr;
     }
 
-    /**
-     * Converts literal escape sequence strings to their actual characters.
-     * For example, converts "\\n" (two characters) to "\n" (newline character).
-     */
     private convertEscapeSequences(str: string): string {
         return str
             .replace(/\\n/g, "\n")

@@ -24,10 +24,14 @@ function readTextIfPresent(path: string): string | undefined {
 }
 
 function versionOf(text: string | undefined): string | undefined {
-    if (text === undefined) return undefined;
+    if (text === undefined) {
+        return undefined;
+    }
     try {
         const manifest: unknown = JSON.parse(text);
-        if (typeof manifest === "object" && manifest !== null && "version" in manifest && typeof manifest.version === "string") return manifest.version;
+        if (typeof manifest === "object" && manifest !== null && "version" in manifest && typeof manifest.version === "string") {
+            return manifest.version;
+        }
     } catch {
         return undefined;
     }
@@ -49,12 +53,18 @@ export function installedVersions(cwd: string, readFile: (path: string) => strin
     let directory = cwd;
     for (;;) {
         for (const name of VERSION_PACKAGES) {
-            if (found.has(name)) continue;
+            if (found.has(name)) {
+                continue;
+            }
             const version = versionOf(readFile(join(directory, "node_modules", "@bitbybit-dev", name, "package.json")));
-            if (version !== undefined) found.set(name, version);
+            if (version !== undefined) {
+                found.set(name, version);
+            }
         }
         const parent = dirname(directory);
-        if (parent === directory) break;
+        if (parent === directory) {
+            break;
+        }
         directory = parent;
     }
     return found;
@@ -62,9 +72,13 @@ export function installedVersions(cwd: string, readFile: (path: string) => strin
 
 export function detectVersion(options: DetectVersionOptions): DetectedVersion {
     const flag = flagValue(options.argv ?? [], "--version");
-    if (flag !== undefined && flag !== "") return { version: flag, source: "flag" };
+    if (flag !== undefined && flag !== "") {
+        return { version: flag, source: "flag" };
+    }
     const fromEnv = options.env?.["BITBYBIT_VERSION"];
-    if (fromEnv !== undefined && fromEnv !== "") return { version: fromEnv, source: "env" };
+    if (fromEnv !== undefined && fromEnv !== "") {
+        return { version: fromEnv, source: "env" };
+    }
     if (options.cwd !== undefined) {
         const installed = installedVersions(options.cwd, options.readFile);
         const first = VERSION_PACKAGES.map((name) => installed.get(name)).find((version) => version !== undefined);

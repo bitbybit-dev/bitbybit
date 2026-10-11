@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { Base } from "./base-inputs";
+import type { Base } from "./base-inputs";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for color handling: hex, RGB and HSL values, the components to combine or extract, and
  * the settings for blending, inverting and generating ranges of colors.

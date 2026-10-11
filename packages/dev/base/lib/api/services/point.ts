@@ -1,11 +1,12 @@
-import { GeometryHelper } from "./geometry-helper";
+import type { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
-import { Transforms } from "./transforms";
-import { Vector } from "./vector";
-import * as Models from "../models";
-import { Lists } from "./lists";
-import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type { Transforms } from "./transforms";
+import type { Vector } from "./vector";
+import type * as Models from "../models";
+import type { Lists } from "./lists";
+import { InputError, resolveDto } from "../kernel-calls";
+import { arcThroughThreePoints, pointsOnArc } from "./helpers/arcs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Points as plain number arrays. A point is `[x, y, z]` with Y pointing up, the same shape as a
@@ -670,10 +671,18 @@ export class Point {
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         for (const hex of unscaledHexagons) {
             for (const vertex of hex) {
-                if (vertex[0] < minX) minX = vertex[0];
-                if (vertex[0] > maxX) maxX = vertex[0];
-                if (vertex[1] < minY) minY = vertex[1];
-                if (vertex[1] > maxY) maxY = vertex[1];
+                if (vertex[0] < minX) {
+                    minX = vertex[0];
+                }
+                if (vertex[0] > maxX) {
+                    maxX = vertex[0];
+                }
+                if (vertex[1] < minY) {
+                    minY = vertex[1];
+                }
+                if (vertex[1] > maxY) {
+                    maxY = vertex[1];
+                }
             }
         }
 
@@ -1269,18 +1278,16 @@ export class Point {
      */
     sortPoints(inputs: Inputs.Point.PointsDto): Inputs.Base.Point3[] {
         return [...inputs.points].sort((a, b) => {
-            if (a[0] !== b[0]) return a[0] - b[0];
-            if (a[1] !== b[1]) return a[1] - b[1];
+            if (a[0] !== b[0]) {
+                return a[0] - b[0];
+            }
+            if (a[1] !== b[1]) {
+                return a[1] - b[1];
+            }
             return a[2] - b[2];
         });
     }
 
-    /**
-     * Calculates the 6 vertices of a regular flat-top hexagon.
-     * @param center The center point [x, y, z].
-     * @param radius The radius (distance from center to vertex).
-     * @returns An array of 6 Point3 vertices in counter-clockwise order.
-     */
     private getRegularHexagonVertices(center: Inputs.Base.Point3, radius: number): Inputs.Base.Point3[] {
         const vertices: Inputs.Base.Point3[] = [];
         const cx = center[0];
@@ -1298,5 +1305,34 @@ export class Point {
             ]);
         }
         return vertices;
+    }
+
+    /**
+     * Lays out points along the circular arc through three points, from the first through the
+     * second to the third.
+     *
+     * The arc is divided into `segments` equal steps between the given ends. Points on one line fix
+     * no arc and come back as they are.
+     * Example: [1,0,0], [0,1,0] and [-1,0,0] in 2 segments -> [[1,0,0], [0,1,0], [-1,0,0]]
+     * @param inputs - The three points and the number of steps
+     * @returns The points along the arc, its ends included
+     * @group create
+     * @shortname arc 3 points
+     * @drawable true
+     * @example
+     * ```typescript
+     * const points = bitbybit.point.arcThroughThreePoints({ start: [5, 0, 0], middle: [0, 5, 0], end: [-5, 0, 0], segments: 16 });
+     * ```
+     */
+    arcThroughThreePoints(inputs: Inputs.Point.ArcThroughThreePointsDto): Inputs.Base.Point3[] {
+        const resolved = resolveDto(Inputs.Point.ArcThroughThreePointsDto, inputs) as Resolved.Point.ArcThroughThreePointsDto;
+        if (!Number.isInteger(resolved.segments) || resolved.segments < 1) {
+            throw new InputError(`\`segments\` must be a whole number of at least 1; it is ${String(resolved.segments)}.`, "segments");
+        }
+        const start: Inputs.Base.Point3 = [...resolved.start];
+        const middle: Inputs.Base.Point3 = [...resolved.middle];
+        const end: Inputs.Base.Point3 = [...resolved.end];
+        const arc = arcThroughThreePoints(start, middle, end);
+        return arc ? pointsOnArc(arc, start, end, resolved.segments) : [start, middle, end];
     }
 }

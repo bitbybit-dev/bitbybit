@@ -115,7 +115,7 @@ These packages form the foundation of our geometry processing capabilities.
 ### @bitbybit-dev/core
 
 -   [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/core)
--   [GitHub Source](https://github.com/bitbybit-dev/bitbybit) {/* Consider linking to specific core package if deeply nested */}
+-   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/core)
 
 Contains the core 3D algorithms of the Bitbybit platform. It's independent of UI and specific game engines but is designed for browser environments. This package integrates various 3D kernels (OCCT, JSCAD, Manifold) by leveraging our other specialized kernel packages.
 
@@ -167,6 +167,38 @@ Contains Manifold 3D algorithms. The Manifold geometry kernel was started by Emm
 -   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/base)
 
 Contains foundational algorithms for the Bitbybit platform, used in all higher-level NPM packages. Includes utilities for vectors, math, text manipulation, and other basic operations.
+
+### @bitbybit-dev/ifc-worker
+
+-   [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/ifc-worker)
+-   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/ifc-worker)
+
+Exposes the IFC library through a Web Worker for browser environments, the way the other kernels are exposed. For Node.js environments, consider the `@bitbybit-dev/ifc` library.
+
+### @bitbybit-dev/ifc
+
+-   [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/ifc)
+-   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/ifc)
+
+Reads, writes and authors BIM models in IFC, in TypeScript. [IFC models](./ifc) explains what it does.
+
+---
+
+## Tools
+
+### @bitbybit-dev/create-app
+
+-   [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/create-app)
+-   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/create-app)
+
+Scaffolds a project with the packages already wired to an engine, as [the quick start above](#quick-start-with-cli) shows. [Create App](./create-app) lists its templates and options.
+
+### @bitbybit-dev/mcp
+
+-   [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/mcp)
+-   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/mcp)
+
+An MCP server that gives AI coding agents the exact API of the version you use: every function, its parameters, defaults and examples. [The Bitbybit CAD MCP](../using-ai-with-bitbybit/mcp/bitbybit-mcp) explains how to connect it.
 
 ---
 

@@ -1,5 +1,5 @@
-import { Context } from "../context";
-import { DrawHelper } from "../draw-helper";
+import type { Context } from "../context";
+import type { DrawHelper } from "../draw-helper";
 import { PlayCanvasCamera } from "./playcanvas/camera";
 
 /**

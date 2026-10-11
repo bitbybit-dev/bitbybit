@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { Base } from "./base-inputs";
+import type { Base } from "./base-inputs";
 
 /**
  * Parameters for connected sequences of line segments: the point list that defines the path, whether

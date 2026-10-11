@@ -1,0 +1,9 @@
+{
+    "label": "Asset",
+    "link": {
+        "type": "generated-index",
+        "title": "Assets in Bitbybit",
+        "description": "Load files into a Bitbybit script and send files out of it: the assets a project keeps in the cloud or in this browser, files fetched from a URL, downloads, and the conversions between File, Blob and byte arrays that loaders and exporters ask for.",
+        "slug": "/code/common/base/asset"
+    }
+}

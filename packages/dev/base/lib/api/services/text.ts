@@ -1,9 +1,9 @@
 import * as Inputs from "../inputs";
-import * as Models from "../models";
+import type * as Models from "../models";
 import { defaultsVectorParams } from "../models/simplex";
-import { Point } from "./point";
+import type { Point } from "./point";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 type Line = { width: number, height: number, chars: Models.Text.VectorCharData[] };
 
@@ -423,7 +423,9 @@ export class TextBitByBit {
      */
     toUpperCaseFirst(inputs: Inputs.Text.TextDto): string {
         const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
-        if (!resolved.text) return resolved.text;
+        if (!resolved.text) {
+            return resolved.text;
+        }
         return resolved.text.charAt(0).toUpperCase() + resolved.text.slice(1);
     }
 
@@ -439,7 +441,9 @@ export class TextBitByBit {
      */
     toLowerCaseFirst(inputs: Inputs.Text.TextDto): string {
         const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
-        if (!resolved.text) return resolved.text;
+        if (!resolved.text) {
+            return resolved.text;
+        }
         return resolved.text.charAt(0).toLowerCase() + resolved.text.slice(1);
     }
 
@@ -710,7 +714,9 @@ export class TextBitByBit {
         } = Object.assign({}, defaultsVectorParams, resolved);
 
         const text = resolved.text;
-        if (typeof text !== "string") throw new Error("text must be a string");
+        if (typeof text !== "string") {
+            throw new Error("text must be a string");
+        }
 
         const extraLetterSpacing = (height * letterSpacing);
 
@@ -721,7 +727,9 @@ export class TextBitByBit {
         const pushLine = () => {
             maxWidth = Math.max(maxWidth, line.width);
 
-            if (line.chars.length) lines.push(line);
+            if (line.chars.length) {
+                lines.push(line);
+            }
             line = { width: 0, height: 0, chars: [] };
         };
 
@@ -749,7 +757,9 @@ export class TextBitByBit {
                 line.chars = line.chars.concat(vchar);
             }
         }
-        if (line.chars.length) pushLine();
+        if (line.chars.length) {
+            pushLine();
+        }
 
         lines = lines.map((line) => {
             const diff = maxWidth - line.width;

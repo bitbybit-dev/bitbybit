@@ -2,45 +2,34 @@
 sidebar_position: 8
 title: Importing Scripts From a Local File
 sidebar_label: Import Script From File
-description: Learn how to import previously saved .bitbybit script files (Blockly, Rete, or TypeScript) back into the Bitbybit editors.
+description: Import a .bitbybit file into the editor it was made in, or a zip of projects or a single script into this browser from My Projects.
+topic: platform.scripts.import
+type: how-to
+verified: 2026-10-09
 tags: [getting-started, scripts]
 ---
 
 # Importing Scripts From a Local File
 
-## How Importing Works
+## Into the editor
 
-You can import scripts that you've previously [saved to a `.bitbybit` file](/learn/getting-started/basics/scripts/save-to-file) back into the Bitbybit platform.
+A `.bitbybit` file [exported from an editor](/learn/getting-started/basics/scripts/save-to-file) opens again in an editor of the same kind.
 
-**Important Considerations for Importing:**
-*   **Editor Context:** You must be in one of our editors (Rete, Blockly, or Monaco for TypeScript) to import a file.
-*   **Matching File Type:** The type of file you import must match the editor you are currently using:
-    *   You can only import `-rete.bitbybit` files into the **Rete editor**.
-    *   You can only import `-bl.bitbybit` files into the **Blockly editor**.
-    *   You can only import `-ts.bitbybit` files into the **Monaco (TypeScript) editor**.
-*   **Mismatched Types:** If you attempt to import a file of an incompatible type (e.g., trying to import a Blockly script into the Rete editor), the import will likely fail, and the editor canvas will remain unchanged.
+1. In the editor, open <Ui>More</Ui>, the last button of the editor's left bar.
+2. Choose <Ui>Import</Ui>.
+3. Choose the `.bitbybit` file.
 
-## How to Import a Script From a File
+The file replaces what the editor shows, and the version it replaces is kept in the script's [history](/learn/getting-started/basics/scripts/auto-save#history). Choose <Ui>Run The Code</Ui>, the play button at the top of the left bar, to see its result.
 
-Follow these steps to import a `.bitbybit` file into your current editor:
+The file must come from the same editor: Rete scripts import into the Rete editor, Blockly into Blockly and TypeScript into TypeScript. A file from another editor is refused, and the editor says which editor to open instead; what was on screen stays as it was. A Rete module file imports into the Rete editor as a module.
 
-1.  **Open the "More Actions" Menu:**
-    While in the appropriate editor (Rete, Blockly, or TypeScript), locate the "More Actions" menu button. This button often looks like three dots (`...`) or a similar icon indicating additional options. Depending on your screen size and layout, this menu might appear in a vertical or horizontal orientation within the editor's interface.
+## Into this browser
 
-    ![The "More Actions" menu button in the Bitbybit editor interface.](https://bitbybit.dev/files/site/start/general/projects/scripts/more-actions.jpeg "Button To Open More Actions")
-    *Button To Open More Actions*
+<Shot id="platform.scripts.import/my-projects" />
 
-2.  **Click the "Import" Button:**
-    Once the "More Actions" menu is open, find and click the **"Import"** button.
+[My Projects](https://bitbybit.dev/projects/my) brings files into the projects kept in this browser:
 
-    ![The "Import" button within the "More Actions" menu, used to load a script from a local file.](https://bitbybit.dev/files/site/start/general/projects/scripts/import.jpeg "Import button that loads script from a file")
-    *Import button that loads script from a file*
+- <Ui>Import</Ui>, at the top, takes a zip that <Ui>Export</Ui> or <Ui>Export all</Ui> made and adds its projects, or a single `.bitbybit` script, which lands in <Ui>Drafts</Ui>.
+- <Ui>Import scripts</Ui>, on a project in this browser, adds scripts to that project.
 
-3.  **Select Your File:**
-    Your browser will open a file selection dialog. Navigate to and select the `.bitbybit` file you wish to import. Ensure it's the correct type for your current editor.
-
-**After Importing:**
-*   The contents of the imported script will be interpreted and loaded onto your editor canvas (or into the code editor for TypeScript).
-*   You can then click the **"Run" button** to execute the imported script and see its output.
-
-This feature allows you to easily resume work on previously saved local scripts or share scripts with others via file transfer.
+From there, a project can [move to the cloud](/learn/getting-started/basics/scripts/auto-save#move-a-script-to-the-cloud).

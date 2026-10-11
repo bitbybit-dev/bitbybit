@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { InputIssue, resolveInputs, validateInputs } from "@bitbybit-dev/base";
+import type { InputIssue } from "@bitbybit-dev/base";
+import { resolveInputs, validateInputs } from "@bitbybit-dev/base";
 import { occtDtoRegistry } from "../dto-registry";
 import { occtDtoRules } from "./index";
 

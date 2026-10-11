@@ -22,7 +22,7 @@ const BACKEND_MANIFEST: Record<(typeof CLOUD_BACKENDS)[number], string> = {
 const BACKEND_SECRET: Record<(typeof CLOUD_BACKENDS)[number], string> = {
     "hono-sdk": ".dev.vars", "hono-rest": ".dev.vars", "nodejs-sdk": ".env", "nodejs-rest": ".env", "dotnet-rest": "appsettings.Development.json",
 };
-const APP_TEMPLATES = ["product-configurator", "laser-cut-box", "sheet-metal-unfold", "step-to-gltf-cli", "drone-assembly"] as const;
+const APP_TEMPLATES = ["product-configurator", "laser-cut-box", "sheet-metal-unfold", "step-to-gltf-cli", "drone-assembly", "ifc-house"] as const;
 const SINGLE_APP_FILES = ["package.json", ...TOOLCHAIN_FILES, "index.html", "README.md", "src/main.ts", "src/model.ts", "src/style.css", "scripts/smoke.ts", ".gitignore", ...BRAND_FILES, ...AGENT_FILES];
 const APP_FILES: Record<(typeof APP_TEMPLATES)[number], string[]> = {
     "product-configurator": SINGLE_APP_FILES,
@@ -34,6 +34,11 @@ const APP_FILES: Record<(typeof APP_TEMPLATES)[number], string[]> = {
     ],
     "step-to-gltf-cli": ["package.json", ...TOOLCHAIN_FILES, "README.md", ".gitignore", "src/cli.ts", "src/convert.ts", "src/cloud.ts", "src/kernel.ts", "samples/bracket.step", "scripts/smoke.ts", ...AGENT_FILES],
     "drone-assembly": [...SINGLE_APP_FILES, "src/parts.ts", "src/assembly.ts", "src/materials.ts", "src/kernel.ts", "src/ui.ts"],
+    "ifc-house": [
+        "package.json", ...TOOLCHAIN_FILES, "index.html", "README.md", "src/main.ts", "src/style.css", "scripts/smoke.ts", ".gitignore", ...BRAND_FILES, ...AGENT_FILES,
+        "src/house/build-house.ts", "src/house/house-plan.ts", "src/house/details.ts", "src/house/house-types.ts", "src/scene/draw-house.ts", "src/scene/stage.ts", "src/ui/panel.ts", "src/export/step-export.ts",
+        "src/workers/ifc.worker.ts", "src/workers/manifold.worker.ts", "src/workers/occt.worker.ts",
+    ],
 };
 const CLOUD_APP_TEMPLATES = ["sheet-metal-unfold"] as const;
 const MCP_URL = "https://mcp.bitbybit.dev/mcp";
@@ -62,7 +67,9 @@ type EngineTemplate = { engine: string; mainTs: string };
 
 const walk = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-        if (entry.name === "node_modules") return [];
+        if (entry.name === "node_modules") {
+            return [];
+        }
         const full = path.join(dir, entry.name);
         return entry.isDirectory() ? [full, ...walk(full)] : [full];
     });
@@ -134,13 +141,19 @@ const answerPrompts = (cwd: string, args: string[], answers: Answer[]): Promise<
         const onData = (chunk: Buffer): void => {
             output += chunk.toString();
             const answer = answers[answered];
-            if (!answer) return;
+            if (!answer) {
+                return;
+            }
             const match = answer.question.exec(output.slice(searchFrom));
-            if (!match) return;
+            if (!match) {
+                return;
+            }
             searchFrom += match.index + match[0].length;
             answered += 1;
             child.stdin.write(answer.keys);
-            if (answered === answers.length) child.stdin.end();
+            if (answered === answers.length) {
+                child.stdin.end();
+            }
         };
         child.stdout.on("data", onData);
         child.stderr.on("data", onData);
@@ -178,7 +191,9 @@ describe("create-app", () => {
     }, 120_000);
 
     afterAll(() => {
-        if (work) rmSync(work, { recursive: true, force: true });
+        if (work) {
+            rmSync(work, { recursive: true, force: true });
+        }
     });
 
     describe("a frontend project", () => {
@@ -211,7 +226,9 @@ describe("create-app", () => {
             const pins = Object.entries({ ...manifest.dependencies, ...manifest.devDependencies })
                 .filter(([dependency]) => dependency.startsWith("@bitbybit-dev/"));
             expect(pins.map(([dependency]) => dependency).sort()).toEqual(["@bitbybit-dev/occt", "@bitbybit-dev/threejs"]);
-            for (const [, pinned] of pins) expect(pinned).toBe(RELEASE_VERSION);
+            for (const [, pinned] of pins) {
+                expect(pinned).toBe(RELEASE_VERSION);
+            }
         });
     });
 
@@ -384,7 +401,9 @@ describe("create-app", () => {
             const manifests = walk(path.join(work, name)).filter((file) => path.basename(file) === "package.json").map((file) => JSON.parse(readFileSync(file, "utf8")) as Manifest);
             const pins = manifests.flatMap((m) => Object.entries({ ...m.dependencies, ...m.devDependencies })).filter(([dependency]) => dependency.startsWith("@bitbybit-dev/"));
             expect(pins.length).toBeGreaterThan(0);
-            for (const [, pinned] of pins) expect(pinned).toBe(RELEASE_VERSION);
+            for (const [, pinned] of pins) {
+                expect(pinned).toBe(RELEASE_VERSION);
+            }
             expect(pins.map(([dependency]) => dependency)).toContain("@bitbybit-dev/occt");
             const agents = readFileSync(path.join(work, name, "AGENTS.md"), "utf8");
             expect(agents).toContain(`\`${template}\` template`);
@@ -440,7 +459,9 @@ describe("create-app", () => {
             // Assert
             expect(status).toBe(FAILURE_EXIT);
             expect(output).toMatch(/space-elevator/);
-            for (const template of APP_TEMPLATES) expect(output).toContain(template);
+            for (const template of APP_TEMPLATES) {
+                expect(output).toContain(template);
+            }
             expect(existsSync(path.join(work, "bad-template"))).toBe(false);
         });
 
@@ -456,6 +477,17 @@ describe("create-app", () => {
             // Assert
             expect(listed).toEqual(shipped);
             expect(shipped).toEqual([...APP_TEMPLATES].sort());
+        });
+
+        it("should have both smoke lanes scaffold every app template", () => {
+            // Arrange
+            const lanes = ["smoke.mjs", "smoke-local.mjs"].map((file) => readFileSync(path.join(ROOT, "scripts", file), "utf8"));
+
+            // Act
+            const listed = lanes.map((text) => (/\[("product-configurator"[^\]]*)\]/.exec(text)?.[1] ?? "").split(",").map((id) => id.trim().replace(/"/g, "")).sort());
+
+            // Assert
+            expect(listed).toEqual([[...APP_TEMPLATES].sort(), [...APP_TEMPLATES].sort()]);
         });
     });
 
@@ -484,7 +516,9 @@ describe("create-app", () => {
                 const scripts = readManifest(path.join(dir, "package.json")).scripts ?? {};
 
                 // Assert
-                for (const flag of STRICT_FLAGS) expect(tsconfig.compilerOptions[flag], `${relative}: ${flag}`).toBe(true);
+                for (const flag of STRICT_FLAGS) {
+                    expect(tsconfig.compilerOptions[flag], `${relative}: ${flag}`).toBe(true);
+                }
                 expect(scripts["typecheck"], relative).toBe("tsc --noEmit");
                 expect(scripts["lint"], relative).toBe("eslint . --max-warnings 0");
                 expect(scripts["smoke"], relative).toMatch(/^npm run typecheck && npm run lint/);
@@ -747,7 +781,9 @@ describe("create-app", () => {
 
         it("should stop matching once that options object is reordered", () => {
             const [first] = engineTemplates();
-            if (!first) throw new Error(`no engine templates under ${ENGINE_TEMPLATES_DIR} - there is nothing left to patch`);
+            if (!first) {
+                throw new Error(`no engine templates under ${ENGINE_TEMPLATES_DIR} - there is nothing left to patch`);
+            }
             const template = readFileSync(first.mainTs, "utf8");
             const reordered = template.replace(LAST_TWO_OPTION_PROPERTIES, "$2$1");
 

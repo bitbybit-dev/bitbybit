@@ -1,22 +1,4 @@
 #!/usr/bin/env node
-/**
- * Assemble each kernel's inputs namespace from its fragments.
- *
- * A kernel's parameter objects are one `export namespace` of anything from 60 to 300 DTO classes,
- * enums and pointer types. TypeScript cannot merge a namespace across modules, and the visual
- * editors are generated from the emitted .d.ts, matching DTOs on the innermost namespace name - so
- * the namespace has to stay one compilation unit. What is split is the authoring: every fragment
- * holds a slice of the namespace body, unindented and with imports so it reads and type-checks as an
- * ordinary module, and this script writes them back into the namespace, in the order
- * scripts/inputs.config.mjs sets, indented by four spaces. The fragments' own imports are dropped -
- * the assembled file carries the namespace's - and namespace.ts holds the namespace's doc comment.
- *
- * The assembled files are committed: nothing runs at build time, and `--check` in `npm test` fails
- * when a committed file is not what its fragments assemble to.
- *
- *   node scripts/gen-inputs.mjs           write every namespace
- *   node scripts/gen-inputs.mjs --check   write nothing; fail if any would change
- */
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,35 +7,43 @@ import { targets } from "./inputs.config.mjs";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const check = process.argv.includes("--check");
 
-/** The fragment holding the namespace's own doc comment rather than a slice of its body. */
 const DOC = "namespace";
 
-/**
- * A fragment's body: everything after its header, which is the run of `//` comment lines and imports
- * up to the first blank line. A `//` comment that opens the body itself therefore survives - the
- * slicer always leaves one blank line between header and body.
- */
 function fragmentBody(file) {
     const lines = readFileSync(file, "utf8").split("\n");
-    if (lines[lines.length - 1] === "") lines.pop();
+    if (lines[lines.length - 1] === "") {
+        lines.pop();
+    }
     let i = 0;
-    while (i < lines.length && lines[i] !== "" && (lines[i].startsWith("// ") || /^import /.test(lines[i]))) i++;
-    if (lines[i] !== "") throw new Error(`${path.relative(ROOT, file)}: a blank line must separate the header (comments and imports) from the body`);
-    return lines.slice(i + 1);
+    while (i < lines.length && lines[i] !== "" && (lines[i].startsWith("// ") || /^import /.test(lines[i]))) {
+        i++;
+    }
+    if (lines[i] === "") {
+        return lines.slice(i + 1);
+    }
+    if (i === 0) {
+        return lines;
+    }
+    throw new Error(`${path.relative(ROOT, file)}: a blank line must separate the header (comments and imports) from the body`);
 }
 
-/** What `out` should hold, given the fragments `order` names in `dir`. */
 function assemble(target) {
     const dir = path.join(ROOT, target.dir);
     const present = readdirSync(dir).filter((f) => f.endsWith(".ts")).map((f) => f.replace(/\.ts$/, ""));
     const named = new Set([DOC, ...target.order]);
     const missing = [...named].filter((n) => !present.includes(n));
-    if (missing.length) throw new Error(`${target.dir}: scripts/inputs.config.mjs names ${missing.join(", ")}, which do not exist`);
+    if (missing.length) {
+        throw new Error(`${target.dir}: scripts/inputs.config.mjs names ${missing.join(", ")}, which do not exist`);
+    }
     const unnamed = present.filter((n) => !named.has(n));
-    if (unnamed.length) throw new Error(`${target.dir}: ${unnamed.join(", ")} would be left out of the ${target.namespace} namespace; add them to order in scripts/inputs.config.mjs`);
+    if (unnamed.length) {
+        throw new Error(`${target.dir}: ${unnamed.join(", ")} would be left out of the ${target.namespace} namespace; add them to order in scripts/inputs.config.mjs`);
+    }
 
     const doc = fragmentBody(path.join(dir, `${DOC}.ts`));
-    if (!doc.length || !doc[0].startsWith("/**") || !doc[doc.length - 1].startsWith(" */")) throw new Error(`${target.dir}/${DOC}.ts must hold exactly the namespace's JSDoc block`);
+    if (!doc.length || !doc[0].startsWith("/**") || !doc[doc.length - 1].startsWith(" */")) {
+        throw new Error(`${target.dir}/${DOC}.ts must hold exactly the namespace's JSDoc block`);
+    }
 
     const out = [
         ...target.header,
@@ -63,7 +53,9 @@ function assemble(target) {
         `export namespace ${target.namespace} {`,
     ];
     for (const name of target.order) {
-        for (const line of fragmentBody(path.join(dir, `${name}.ts`))) out.push(line === "" ? "" : "    " + line);
+        for (const line of fragmentBody(path.join(dir, `${name}.ts`))) {
+            out.push(line === "" ? "" : "    " + line);
+        }
     }
     out.push("}", "");
     return out.join("\n");
@@ -77,7 +69,9 @@ for (const target of targets) {
     if (current === text) { console.log(`${path.basename(target.out)} is what its ${target.order.length} fragments assemble to`); continue; }
     if (check) {
         const a = (current || "").split("\n"), b = text.split("\n");
-        let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++;
+        let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) {
+            i++;
+        }
         console.error(`inputs check FAILED: ${target.out} differs from its fragments (first difference at line ${i + 1}); run \`npm run gen:inputs\` and commit the result`);
         failed++;
         continue;

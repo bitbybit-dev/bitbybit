@@ -2,67 +2,41 @@
 sidebar_position: 4
 title: Publishing Your Projects in Bitbybit
 sidebar_label: Publish a Project
-description: Learn why and how to publish your Bitbybit projects to share them with the community or specific user groups.
+description: Share a cloud project with everyone or with a plan's community by changing its visibility, after giving it a cover image, and what that means for your code.
+topic: platform.projects.share
+type: how-to
+verified: 2026-10-09
 tags: [getting-started, projects]
 ---
 
 # Publishing Your Projects
 
-## Why Publish Your Project?
+Publishing a project lets others open, run and learn from its scripts. Others learn from your techniques, a public project can serve as a portfolio, and you can get feedback from the community.
 
-We strongly encourage sharing your projects with the Bitbybit community and beyond! We do it ourselves frequently. Sharing your work allows others to learn from your creations and contributes to a vibrant, collaborative environment.
+## Before you publish
 
-While publishing is not mandatory, it offers several benefits:
-*   **Learning Resource:** Others can learn from your techniques and approaches.
-*   **Showcase Your Skills:** Public projects can serve as a portfolio.
-*   **Community Feedback:** Get insights and suggestions from other users.
+- Keep the project in the cloud. A project in this browser cannot be shared; move it with <Ui>Move to the cloud</Ui> first.
+- Give it a [cover image](/learn/getting-started/basics/projects/cover-image). Until it has one, only <Ui>Private</Ui> can be chosen.
+- Make sure its scripts run, so whoever opens them sees what you meant.
 
-**Good to know:**
-*   There's **no limit** on the number of **public** cloud projects our signed-up users can create.
-*   **Private** projects do have quotas based on your subscription plan. If you reach your private project quota, you won't be able to create new private projects until you free up space or upgrade your plan.
+## Change its visibility
 
-## How to Publish Your Project (from the Editor)
+<Shot id="platform.projects.share/visibility" />
 
-When you're working in one of our editors (TypeScript, Blockly, or Rete) and feel that your project, along with all its scripts, is complete and ready to be shared, you can publish it.
+1. In [My Projects](https://bitbybit.dev/projects/my), choose the project.
+2. Choose <Ui>Edit details</Ui>.
+3. Under <Ui>Visibility</Ui>, choose who can open it:
+   - <Ui>Public</Ui> for everyone, on every plan;
+   - <Ui>Silver community</Ui> for Silver and Gold members, offered on the Silver and Gold plans;
+   - <Ui>Gold community</Ui> for Gold members, offered on the Gold plan;
+   - <Ui>Private</Ui> to take it back.
+4. For a project that holds a Designer script, choose under <Ui>Visitors can download</Ui> what people below Gold may download from it: <Ui>Nothing</Ui>, <Ui>Model</Ui> (GLB and STL) or <Ui>Everything</Ui> (STEP and the project file as well). It is asked once the project is no longer private. Showing a design sends it to the visitor's browser, so this chooses the download buttons visitors see; it is not protection, and it does not change the terms below.
+5. Choose <Ui>Save</Ui>.
 
-**Before you publish, consider:**
-*   Adding a compelling [cover image for your project and its scripts](/learn/getting-started/basics/projects/cover-image).
-*   Ensuring your scripts are functional and provide a good user experience.
+[Understanding Projects](/learn/getting-started/basics/projects/intro#who-can-open-a-project) explains each visibility. A public project is listed among the [community projects](https://bitbybit.dev/projects/public) and its scripts' previews can be shared and embedded: see [Script Preview Mode](/learn/start/general/script-preview-mode).
 
-**Steps to Publish:**
+:::warning Public projects are open source
+**The code in your public projects is shared under the MIT license, and their creative output under CC BY 4.0.** Everyone can view, use, change and share them. The [Terms and Conditions](https://bitbybit.dev/terms-and-conditions) have the details.
 
-1.  **Open Project Management:**
-    While in an editor, click on the button located in the top-left corner. This button usually displays the name of your current script and has a settings icon.
-
-    ![The button in the editor's top-left corner, typically showing the script name and a settings icon, used to open the project management panel.](https://bitbybit.dev/files/site/start/general/assets/cloud/script-icon.jpeg "Button to open project management panel")
-    *Button to open project management panel*
-
-2.  **Find the "Publish Project" Button:**
-    In the project management panel that opens, locate and click the **"Publish Project"** button.
-
-    ![The project management panel showing the "Publish Project" button.](https://bitbybit.dev/files/site/start/general/projects/publish-project-button.jpeg "Publish Project button")
-    *Button to publish your project*
-
-3.  **Choose Visibility Options & Publish:**
-    A "Publish Project" dialog will open. Here, you'll be presented with several **Visibility options** for your project.
-    *   You can learn more about these options in detail on our [Projects Overview page](/learn/getting-started/basics/projects/intro).
-
-    The dialog will look something like this:
-
-    ![The "Publish Project" dialog showing visibility options (e.g., Public, Silver Community, Gold Community) and an "Apply Updates" button.](https://bitbybit.dev/files/site/start/general/projects/publish-project-form.jpeg "The form to publish your project")
-    *The form to publish your project*
-
-    Make your desired visibility choice and then click the **"Apply Updates"** button.
-
-4.  **Confirmation:**
-    After you click "Apply Updates," the modal will close, and your project's visibility settings will be updated.
-
-Your project should now be visible according to the settings you chose! If you made it public, you can navigate to our [Public Projects Gallery](https://bitbybit.dev/projects/public) to see it listed.
-
-:::warning IMPORTANT Reminder: Licensing and Sharing
-**Your public projects fall under the MIT license.**
-
-This means that when you publish a project as "Public," everyone will be able to view, use, modify, and redistribute your code. Please read more about this in our [Terms and Conditions](https://bitbybit.dev/terms-and-conditions).
-
-**If you do not want your code to be openly accessible and reusable under these terms, do not publish your project as "Public."** Keep it private or choose a more restrictive community sharing option if appropriate.
+If you do not want your code open and reusable on those terms, do not make the project public: keep it private, or share it with a community.
 :::

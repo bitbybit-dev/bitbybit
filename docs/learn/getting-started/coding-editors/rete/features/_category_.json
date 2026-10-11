@@ -1,0 +1,10 @@
+{
+    "label": "Working in Rete",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "Working in Rete",
+        "description": "How to find and add components, wire them, read their values, work with lists, keep a large script tidy with groups and comments, reuse graphs as modules, and write code inside a node.",
+        "slug": "/getting-started/rete/working-in-rete"
+    }
+}

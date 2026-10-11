@@ -1,21 +1,20 @@
-import { IGESControl_Reader, BitbybitOcctModule, Handle_TDocStd_Document, STEPControl_Reader, TopoDS_Compound, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
+import type { IGESControl_Reader, BitbybitOcctModule, Handle_TDocStd_Document, STEPControl_Reader, TopoDS_Compound, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
-import * as Models from "../api/models";
-import { IO } from "@bitbybit-dev/base/lib/api/inputs";
-import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../api/resolved-inputs";
+import type * as Models from "../api/models";
+import type { IO } from "@bitbybit-dev/base/lib/api/inputs";
+import { InputError, messageOf, resolveDto } from "@bitbybit-dev/base";
+import type * as Resolved from "../api/resolved-inputs";
 import { checkedFrame, checkedNumber, checkedShape } from "./base/input-checks";
 import { readKernelException } from "../kernel-exception";
 import { numbersOfFrames } from "./base/frames";
 import { SMALLEST_MESH_DEFLECTION, bytesOfFile, objNameOf, textOfFile } from "./base/file-data";
-import { DrawingLine, svgOfDrawing } from "./base/svg-drawing";
+import type { DrawingLine } from "./base/svg-drawing";
+import { svgOfDrawing } from "./base/svg-drawing";
 import { stlWithYAndZSwapped } from "./base/stl-data";
 
-/** What a whole BREP text opens with, after an optional line a drawing tool writes before it. */
 const BREP_HEADER = /^\s*(DBRep_DrawableShape\s+)?CASCADE Topology V\d/;
 
-/** What a whole BREP text ends with: its table of shapes, then the reference to the shape it holds. */
 const BREP_ENDING = /\r?\nTShapes \d+\r?\n[\s\S]*\r?\n[+\-ie]\d+ \d+\s*$/;
 
 /**
@@ -37,9 +36,9 @@ export class OCCTIO {
      * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and returns the
      * file's text.
      *
-     * With `adjustYtoZ` true the shape is turned so this library's Y-up becomes STEP's Z-up;
-     * `fromRightHanded` skips the mirror that swap otherwise includes. `fileName` and `tryDownload`
-     * matter only where a browser download can be started.
+     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape;
+     * turn it 90 degrees about X with `transforms.rotate` first to keep it as built. `fileName` and
+     * `tryDownload` matter only where a browser download can be started.
      * @param inputs - The shape, the file name, the axis adjustment and the download options
      * @returns The STEP file as text
      * @group io
@@ -109,8 +108,8 @@ export class OCCTIO {
      * returning the file's text, or its bytes when `binary` is true.
      *
      * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
-     * more closely. `adjustYtoZ` turns Y-up into Z-up. `fileName` and `tryDownload` only matter
-     * where a download can start.
+     * more closely. `adjustYtoZ` swaps Y and Z, which mirrors the shape. `fileName` and
+     * `tryDownload` matter only for a download.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment, the form and the download options
      * @returns The STL file as text, or as bytes when `binary` is true
      * @group io
@@ -163,16 +162,38 @@ export class OCCTIO {
      */
     saveShapeBrep(inputs: Inputs.OCCT.SaveBrepDto<TopoDS_Shape>): string {
         const resolved = resolveDto(Inputs.OCCT.SaveBrepDto, inputs) as Resolved.OCCT.SaveBrepDto<TopoDS_Shape>;
-        return this.occ.WriteBREPToString(checkedShape(resolved.shape));
+        return this.occ.WriteBREPToString(checkedShape(resolved.shape), resolved.withTriangulation);
+    }
+
+    /**
+     * Writes a shape as binary BREP, the exact geometry and topology `saveShapeBrep` writes as text,
+     * in bytes, and returns them.
+     *
+     * `io.loadBrepBinary` reads them back with every face and edge at the same index.
+     * `withTriangulation` false leaves out the mesh.
+     * @param inputs - The shape, the file name, the download option and whether to keep the mesh
+     * @returns The binary BREP file's bytes
+     * @group io
+     * @shortname save brep binary and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const bytes = await bitbybit.occt.io.saveShapeBrepBinaryAndReturn({ shape: box, fileName: "box.bbrep", tryDownload: false, withTriangulation: false });
+     * const copy = await bitbybit.occt.io.loadBrepBinary({ brepData: bytes });
+     * ```
+     */
+    saveShapeBrepBinary(inputs: Inputs.OCCT.SaveBrepBinaryDto<TopoDS_Shape>): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.SaveBrepBinaryDto, inputs) as Resolved.OCCT.SaveBrepBinaryDto<TopoDS_Shape>;
+        return this.occ.WriteBREPToBytes(checkedShape(resolved.shape), resolved.withTriangulation);
     }
 
     /**
      * Triangulates a shape and writes it as OBJ, the mesh format most 3D programs read, returning
      * the file's text.
      *
-     * `precision` is the meshing tolerance in model units, `adjustYtoZ` turns Y-up into Z-up, and
-     * coordinates keep six decimals. `mtl` stays empty, since a shape carries no colors;
-     * `assembly.manager.exportDocumentToObj` writes colored parts.
+     * `precision` is the meshing tolerance in model units, `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape, and coordinates keep six decimals. `mtl` stays empty, since a shape
+     * carries no colors; `assembly.manager.exportDocumentToObj` writes colored parts.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns The OBJ text, with an empty material library text
      * @group io
@@ -200,7 +221,8 @@ export class OCCTIO {
      * scanning tools read, returning the file's text.
      *
      * Coordinates keep six significant digits, so past 1000 units they keep two decimals.
-     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up.
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns The PLY file as text
      * @group io
@@ -402,7 +424,37 @@ export class OCCTIO {
         return shape;
     }
 
-    /** The kernel's reading of BREP text; text the kernel finds damaged is refused as an input error saying where. */
+    /**
+     * Reads a binary BREP file, the bytes `io.saveShapeBrepBinary` writes, back into the shape it
+     * holds, with its faces and edges in the same order.
+     *
+     * The bytes are checked first: damaged ones, or ones not in version 4, are refused, saying where.
+     * @param inputs - The binary BREP file
+     * @returns The shape the file holds
+     * @group io
+     * @shortname load brep binary
+     * @drawable true
+     * @example
+     * ```typescript
+     * const bytes = await bitbybit.occt.io.saveShapeBrepBinaryAndReturn({ shape: box, fileName: "box.bbrep", tryDownload: false, withTriangulation: true });
+     * const copy = await bitbybit.occt.io.loadBrepBinary({ brepData: bytes });
+     * ```
+     */
+    loadBrepBinary(inputs: Inputs.OCCT.LoadBrepBinaryDto): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.LoadBrepBinaryDto, inputs);
+        const bytes = bytesOfFile(resolved.brepData, "brepData");
+        try {
+            return this.occ.ReadBREPFromBytes(bytes);
+        } catch (thrown) {
+            const read = readKernelException(this.occ, thrown);
+            const refusal = read instanceof Error ? /ReadBREPFromBytes: (?:the binary BREP data is damaged: )?(.+)$/.exec(read.message) : null;
+            if (refusal === null) {
+                throw read;
+            }
+            throw new InputError(`\`brepData\` is damaged: ${refusal[1]}.`, "brepData");
+        }
+    }
+
     private brepShapeOf(text: string): TopoDS_Shape {
         try {
             return this.occ.ReadBREPFromString(text);
@@ -560,7 +612,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             throw new Error(`STEP to glTF conversion failed: ${errorMessage}`, { cause: error });
         }
     }
@@ -689,7 +741,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             throw new Error(`STEP to glTF advanced conversion failed: ${errorMessage}`, { cause: error });
         }
     }
@@ -755,7 +807,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             throw new Error(`STEP to glTF (Draco) conversion failed: ${errorMessage}`, { cause: error });
         }
     }
@@ -841,7 +893,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             throw new Error(`STEP to glTF advanced (Draco) conversion failed: ${errorMessage}`, { cause: error });
         }
     }
@@ -883,7 +935,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             return {
                 version: "1.0",
                 nodes: [],
@@ -892,9 +944,6 @@ export class OCCTIO {
         }
     }
 
-    /**
-     * Convert gltfNameFormatEnum string to OCCT numeric value.
-     */
     private gltfNameFormatEnumToOcct(format: Inputs.OCCT.gltfNameFormatEnum): number {
         switch (format) {
             case Inputs.OCCT.gltfNameFormatEnum.empty: return 0;
@@ -908,9 +957,6 @@ export class OCCTIO {
         }
     }
 
-    /**
-     * Convert gltfTransformFormatEnum string to OCCT numeric value.
-     */
     private gltfTransformFormatEnumToOcct(format: Inputs.OCCT.gltfTransformFormatEnum): number {
         switch (format) {
             case Inputs.OCCT.gltfTransformFormatEnum.compact: return 0;
@@ -920,12 +966,6 @@ export class OCCTIO {
         }
     }
 
-    /**
-     * A copy of the shape without the mesh it may carry, so a mesh export triangulates at its own
-     * precision and leaves the caller's mesh alone. With `adjustYtoZ` the copy is placed with y and z
-     * swapped, which turns Y-up into Z-up; a placement moves a face that carries only a mesh too, and
-     * the mesh writers turn the triangles of a mirrored placement so they keep facing out.
-     */
     private unmeshedCopy(shape: TopoDS_Shape, adjustYtoZ: boolean): TopoDS_Shape {
         const copy = this.occ.BRepBuilderAPI_Copy_Shape(shape, false);
         if (!adjustYtoZ) {
@@ -941,10 +981,6 @@ export class OCCTIO {
         return placed;
     }
 
-    /**
-     * Puts a copy of the shape into a new document as one part named `name`, hands the document to
-     * `write` and deletes the document and the copy, whatever `write` does.
-     */
     private writtenAsDocument<R>(shape: TopoDS_Shape, adjustYtoZ: boolean, name: string, write: (document: Handle_TDocStd_Document) => R): R {
         const copy = this.unmeshedCopy(shape, adjustYtoZ);
         try {
@@ -963,7 +999,6 @@ export class OCCTIO {
         }
     }
 
-    /** The edges of a flat drawing as lines of x and y, each curve traced within `precision`. */
     private drawingLinesOf(drawing: TopoDS_Compound, precision: number): DrawingLine[] {
         const edges = this.occ.EdgesOf(drawing, true);
         try {
@@ -980,7 +1015,6 @@ export class OCCTIO {
         }
     }
 
-    /** Removes a file the kernel staged, if it is there. */
     private removeFile(path: string): void {
         try {
             this.occ.FS.unlink(path);

@@ -2,7 +2,9 @@
 sidebar_position: 1
 title: Dates in Bitbybit
 sidebar_label: Dates in Bitbybit
-description: An overview of the Dates class in Bitbybit, explaining how to create, access, modify, and format date and time information.
+description: How bitbybit.dates creates JavaScript dates, reads and sets their parts in local time or UTC without changing the input, formats them as text and converts to and from Unix timestamps.
+topic: code.base.dates
+type: explanation
 tags: [code, dates]
 ---
 
@@ -14,65 +16,95 @@ tags: [code, dates]
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/dates.ts)
 
-The `Dates` class in Bitbybit provides a collection of tools for working with dates and times. It largely leverages the built-in JavaScript `Date` object, offering convenient methods to create, manipulate, and query date information.
+`bitbybit.dates` works with dates and times as standard JavaScript `Date` values: a single moment, with its year, month, day, hour, minute, second and millisecond.
 
-**What is a Date in Bitbybit?**
+## Three counting rules
 
-A "Date" in Bitbybit refers to a standard JavaScript `Date` object. This object encapsulates a specific moment in time, including the year, month, day, hour, minute, second, and millisecond.
+- **Months count from 0**: 0 is January, 11 is December. This holds for `createDate`, `getMonth`, `setMonth` and their UTC twins.
+- **Days of the month count from 1**, from 1 to 31.
+- **Weekdays count from 0**: `getWeekday` gives 0 for Sunday and 6 for Saturday.
 
-## Core Capabilities of the Dates Class
+## Local time or UTC
 
-The `Dates` class simplifies common date and time operations. Here's a high-level look at its features. For the exact input parameters (like DTOs) and detailed behavior (e.g., how months are 0-indexed), please consult the [full Dates API documentation](https://docs.bitbybit.dev/classes/Bit.Dates) or the GitHub source linked above.
+Most functions come in two forms. The plain one reads and writes the date in the time zone of the computer running the script; the one with `UTC` in its name uses Coordinated Universal Time, so the result is the same everywhere. Choose UTC when the date travels between people or machines.
 
-### 1. Creating Dates
+## Creating dates
 
-Need to define a specific date or get the current time?
-*   **Current Date & Time (`now()`):** Get a `Date` object representing the exact moment the function is called.
-*   **Specific Date (`createDate()`):** Create a `Date` object by providing individual components like year, month (0-11), day, hours, minutes, seconds, and milliseconds.
-*   **Specific UTC Date (`createDateUTC()`):** Similar to `createDate()`, but interprets the provided components as Coordinated Universal Time (UTC).
-*   **From Timestamp (`createFromUnixTimeStamp()`):** Create a `Date` object from a Unix timestamp (the number of milliseconds since January 1, 1970, UTC).
+- `now` gives the moment of the call.
+- `createDate` builds a date from year, month, day, hours, minutes, seconds and milliseconds, read in local time; `createDateUTC` reads the same parts as UTC. A part outside its range rolls over, so day 32 of January becomes 1 February.
+- `createFromUnixTimeStamp` builds a date from a Unix timestamp, the milliseconds since 1 January 1970 at 00:00 UTC.
+- `parseDate` reads a date written as text and gives its Unix timestamp, not a date; pass the number to `createFromUnixTimeStamp` to get one. ISO 8601 text such as `2024-01-15T14:30:00Z` is read reliably, and text that cannot be read gives `NaN`.
 
-### 2. Converting Dates to Strings (Formatting)
+## Reading parts
 
-Displaying dates in a human-readable format:
-*   **Basic String (`toString()`):** Get a general string representation of the date (format depends on the system's locale).
-*   **Date Part Only (`toDateString()`):** Get just the date portion as a string (e.g., "Mon Jan 01 2024").
-*   **Time Part Only (`toTimeString()`):** Get just the time portion as a string (e.g., "14:30:00 GMT+0000").
-*   **ISO Format (`toISOString()`):** Get the date in the standard ISO 8601 format (e.g., "2024-01-01T14:30:00.000Z"). This is often used for data interchange.
-*   **JSON Format (`toJSON()`):** Get the date as a string suitable for JSON serialization (typically ISO format).
-*   **UTC String (`toUTCString()`):** Get the date as a string formatted according to UTC conventions (e.g., "Mon, 01 Jan 2024 14:30:00 GMT").
+- `getYear` / `getUTCYear` give the full year, such as 2024.
+- `getMonth` / `getUTCMonth` give the month, from 0.
+- `getDayOfMonth` / `getUTCDay` give the day of the month, from 1 to 31. Unlike JavaScript's own `getUTCDay`, `getUTCDay` here gives the day of the month, not the weekday.
+- `getWeekday` gives the day of the week in local time; there is no UTC form.
+- `getHours` / `getUTCHours`, `getMinutes` / `getUTCMinutes`, `getSeconds` / `getUTCSeconds` and `getMilliseconds` / `getUTCMilliseconds` give the time parts.
+- `getTime` gives the date as a Unix timestamp in milliseconds.
 
-### 3. Getting Specific Parts of a Date
+## Setting parts
 
-Extracting individual components from a `Date` object. Most "get" methods have both a local time version and a UTC version:
-*   **Year:** `getYear()` / `getUTCYear()`
-*   **Month:** `getMonth()` (0 for January, 11 for December) / `getUTCMonth()`
-*   **Day of the Month:** `getDayOfMonth()` (1-31) / `getUTCDay()` (Note: `getUTCDay()` in JS Date returns day of week for UTC, but here it seems to mean day of month for UTC based on pairing with `setUTCDay` which takes day of month).
-*   **Day of the Week:** `getWeekday()` (0 for Sunday, 6 for Saturday - local time)
-*   **Hours:** `getHours()` (0-23) / `getUTCHours()`
-*   **Minutes:** `getMinutes()` (0-59) / `getUTCMinutes()`
-*   **Seconds:** `getSeconds()` (0-59) / `getUTCSeconds()`
-*   **Milliseconds:** `getMilliseconds()` (0-999) / `getUTCMilliseconds()`
-*   **Total Time (`getTime()`):** Get the raw numeric value of the date, represented as milliseconds since the Unix epoch (January 1, 1970, UTC).
+Every setter gives a new date and leaves the one you pass in unchanged, so the same date can feed several branches of a script. A value outside its range rolls the date over.
 
-### 4. Setting Parts of a Date (Modifying Dates)
+- `setYear` / `setUTCYear`, `setMonth` / `setUTCMonth`, `setDayOfMonth` / `setUTCDay`
+- `setHours` / `setUTCHours`, `setMinutes` / `setUTCMinutes`, `setSeconds` / `setUTCSeconds`, `setMilliseconds` / `setUTCMilliseconds`
+- `setTime` moves the copy to a Unix timestamp.
 
-Changing components of an existing `Date` object. These methods typically return a *new* `Date` object with the modification, leaving the original unchanged. Like "get" methods, "set" methods often have local and UTC versions:
-*   **Year:** `setYear()` / `setUTCYear()`
-*   **Month:** `setMonth()` / `setUTCMonth()`
-*   **Day of the Month:** `setDayOfMonth()` / `setUTCDay()`
-*   **Hours:** `setHours()` / `setUTCHours()`
-*   **Minutes:** `setMinutes()` / `setUTCMinutes()`
-*   **Seconds:** `setSeconds()` / `setUTCSeconds()`
-*   **Milliseconds:** `setMilliseconds()` / `setUTCMilliseconds()`
-*   **Total Time (`setTime()`):** Set the date based on a Unix timestamp (milliseconds since epoch).
+## Formatting as text
 
-### 5. Parsing Date Strings
+- `toISOString` and `toJSON` give the ISO 8601 form, always in UTC, such as `2024-01-15T14:30:00.000Z`. Use it for data that other programs read.
+- `toUTCString` gives a readable form in UTC, such as `Mon, 15 Jan 2024 14:30:00 GMT`.
+- `toString` gives the date and time in local time with the zone offset; `toDateString` gives only the date, such as `Mon Jan 15 2024`, and `toTimeString` only the time with the offset.
 
-*   **Parse Date String (`parseDate()`):** Convert a string representation of a date into a Unix timestamp (number of milliseconds since epoch). The success of parsing depends on the format of the string and the browser's parsing capabilities.
+## Every function
 
-## Important Notes:
+{/* api:dates:start - generated from the API index; edits between these markers are overwritten */}
 
-*   **Local Time vs. UTC:** Be mindful of whether you're working with local time (which depends on the user's system timezone) or UTC (a global time standard). The class provides methods for both.
-*   **Month Indexing:** When creating dates or getting/setting months, remember that months are typically 0-indexed in JavaScript (0 for January, 1 for February, ..., 11 for December).
-*   **Immutability:** The "set" methods in this class are designed to be immutable: they return a *new* `Date` object with the changes, rather than modifying the original `Date` object you passed in. This is generally a safer approach.
+| Function | What it does |
+|---|---|
+| [`createDate`](https://docs.bitbybit.dev/classes/Bit.Dates#createDate) | Builds a date from its parts, read in the local time zone. |
+| [`createDateUTC`](https://docs.bitbybit.dev/classes/Bit.Dates#createDateUTC) | Builds a date from its parts, read as UTC so the local time zone plays no part. |
+| [`createFromUnixTimeStamp`](https://docs.bitbybit.dev/classes/Bit.Dates#createFromUnixTimeStamp) | Builds a date from a Unix timestamp: the number of milliseconds since 1 January 1970 at 00:00 UTC. |
+| [`getDayOfMonth`](https://docs.bitbybit.dev/classes/Bit.Dates#getDayOfMonth) | Reads the day of the month, from 1 to 31, in the local time zone. |
+| [`getHours`](https://docs.bitbybit.dev/classes/Bit.Dates#getHours) | Reads the hour, from 0 to 23, in the local time zone. |
+| [`getMilliseconds`](https://docs.bitbybit.dev/classes/Bit.Dates#getMilliseconds) | Reads the milliseconds, from 0 to 999, in the local time zone. |
+| [`getMinutes`](https://docs.bitbybit.dev/classes/Bit.Dates#getMinutes) | Reads the minutes, from 0 to 59, in the local time zone. |
+| [`getMonth`](https://docs.bitbybit.dev/classes/Bit.Dates#getMonth) | Reads the month in the local time zone, counting from 0: 0 is January, 11 December. |
+| [`getSeconds`](https://docs.bitbybit.dev/classes/Bit.Dates#getSeconds) | Reads the seconds, from 0 to 59, in the local time zone. |
+| [`getTime`](https://docs.bitbybit.dev/classes/Bit.Dates#getTime) | Gives the date as a Unix timestamp: the milliseconds since 1 January 1970 at 00:00 UTC. |
+| [`getUTCDay`](https://docs.bitbybit.dev/classes/Bit.Dates#getUTCDay) | Reads the day of the month, from 1 to 31, in UTC. |
+| [`getUTCHours`](https://docs.bitbybit.dev/classes/Bit.Dates#getUTCHours) | Reads the hour, from 0 to 23, in UTC. |
+| [`getUTCMilliseconds`](https://docs.bitbybit.dev/classes/Bit.Dates#getUTCMilliseconds) | Reads the milliseconds, from 0 to 999, in UTC. |
+| [`getUTCMinutes`](https://docs.bitbybit.dev/classes/Bit.Dates#getUTCMinutes) | Reads the minutes, from 0 to 59, in UTC. |
+| [`getUTCMonth`](https://docs.bitbybit.dev/classes/Bit.Dates#getUTCMonth) | Reads the month in UTC, counting from 0: 0 is January, 11 December. |
+| [`getUTCSeconds`](https://docs.bitbybit.dev/classes/Bit.Dates#getUTCSeconds) | Reads the seconds, from 0 to 59, in UTC. |
+| [`getUTCYear`](https://docs.bitbybit.dev/classes/Bit.Dates#getUTCYear) | Reads the full year in UTC. |
+| [`getWeekday`](https://docs.bitbybit.dev/classes/Bit.Dates#getWeekday) | Reads the day of the week in the local time zone: 0 is Sunday, 6 Saturday. |
+| [`getYear`](https://docs.bitbybit.dev/classes/Bit.Dates#getYear) | Reads the full year in the local time zone. |
+| [`now`](https://docs.bitbybit.dev/classes/Bit.Dates#now) | Gives the current date and time at the moment of the call. |
+| [`parseDate`](https://docs.bitbybit.dev/classes/Bit.Dates#parseDate) | Reads a date written as text and gives its Unix timestamp, the milliseconds since 1 January 1970 at 00:00 UTC. |
+| [`setDayOfMonth`](https://docs.bitbybit.dev/classes/Bit.Dates#setDayOfMonth) | Makes a copy of the date with another day of the month, in the local time zone. |
+| [`setHours`](https://docs.bitbybit.dev/classes/Bit.Dates#setHours) | Makes a copy of the date with another hour, in the local time zone. |
+| [`setMilliseconds`](https://docs.bitbybit.dev/classes/Bit.Dates#setMilliseconds) | Makes a copy of the date with other milliseconds, in the local time zone. |
+| [`setMinutes`](https://docs.bitbybit.dev/classes/Bit.Dates#setMinutes) | Makes a copy of the date with other minutes, in the local time zone. |
+| [`setMonth`](https://docs.bitbybit.dev/classes/Bit.Dates#setMonth) | Makes a copy of the date with another month, in the local time zone; months count from 0. |
+| [`setSeconds`](https://docs.bitbybit.dev/classes/Bit.Dates#setSeconds) | Makes a copy of the date with other seconds, in the local time zone. |
+| [`setTime`](https://docs.bitbybit.dev/classes/Bit.Dates#setTime) | Makes a copy of the date moved to a Unix timestamp, the milliseconds since 1 January 1970 at 00:00 UTC. |
+| [`setUTCDay`](https://docs.bitbybit.dev/classes/Bit.Dates#setUTCDay) | Makes a copy of the date with another day of the month, in UTC. |
+| [`setUTCHours`](https://docs.bitbybit.dev/classes/Bit.Dates#setUTCHours) | Makes a copy of the date with another hour, in UTC. |
+| [`setUTCMilliseconds`](https://docs.bitbybit.dev/classes/Bit.Dates#setUTCMilliseconds) | Makes a copy of the date with other milliseconds, in UTC. |
+| [`setUTCMinutes`](https://docs.bitbybit.dev/classes/Bit.Dates#setUTCMinutes) | Makes a copy of the date with other minutes, in UTC. |
+| [`setUTCMonth`](https://docs.bitbybit.dev/classes/Bit.Dates#setUTCMonth) | Makes a copy of the date with another month, in UTC; months count from 0. |
+| [`setUTCSeconds`](https://docs.bitbybit.dev/classes/Bit.Dates#setUTCSeconds) | Makes a copy of the date with other seconds, in UTC. |
+| [`setUTCYear`](https://docs.bitbybit.dev/classes/Bit.Dates#setUTCYear) | Makes a copy of the date with another year, in UTC. |
+| [`setYear`](https://docs.bitbybit.dev/classes/Bit.Dates#setYear) | Makes a copy of the date with another year, in the local time zone. |
+| [`toDateString`](https://docs.bitbybit.dev/classes/Bit.Dates#toDateString) | Formats the date part as text, without the time, in the local time zone. |
+| [`toISOString`](https://docs.bitbybit.dev/classes/Bit.Dates#toISOString) | Formats the date and time in the ISO 8601 form used for data exchange, always in UTC. |
+| [`toJSON`](https://docs.bitbybit.dev/classes/Bit.Dates#toJSON) | Formats the date the way it appears inside JSON, which is the ISO 8601 form in UTC. |
+| [`toString`](https://docs.bitbybit.dev/classes/Bit.Dates#toString) | Formats the full date and time as text in the local time zone, with the zone offset. |
+| [`toTimeString`](https://docs.bitbybit.dev/classes/Bit.Dates#toTimeString) | Formats the time part as text, without the date, in the local time zone with the zone offset. |
+| [`toUTCString`](https://docs.bitbybit.dev/classes/Bit.Dates#toUTCString) | Formats the date and time as text in UTC. |
+
+{/* api:dates:end */}

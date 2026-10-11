@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { ManifoldService } from "./manifold-service";
+import type { ManifoldService } from "./manifold-service";
 import { manifoldDtoRegistry } from "./dto-registry";
-import { InputIssue, resolveInputs, validateInputs } from "@bitbybit-dev/base";
+import type { InputIssue } from "@bitbybit-dev/base";
+import { resolveInputs, validateInputs } from "@bitbybit-dev/base";
 import { getManifold } from "./__test__/kernel";
 
 const methodAt = (root: object, path: string): unknown => path.split(".").reduce<unknown>((owner, segment) => (owner === null || owner === undefined ? undefined : Reflect.get(owner, segment)), root);

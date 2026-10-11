@@ -18,13 +18,14 @@ const occt = inProcess(new OCCTService(occ, new OccHelper(new VectorHelperServic
 
 const shape = await buildModel(occt, defaultParams);
 const info = await occt.shapes.solid.debugInfo({ shape });
-const bbox = await occt.operations.boundingBoxOfShape({ shape });
+const valid = await occt.shapeFix.isValid({ shape });
+const bbox = await occt.analysis.measure.tightBoundingBox({ shape });
 const round = (n: number): number => Math.round(n * 1000) / 1000;
 
 console.log(JSON.stringify({
     template: "vite-threejs",
     params: defaultParams,
-    valid: info.valid,
+    valid,
     faces: info.nbFaces,
     edges: info.nbEdges,
     volume: round(info.volume),
@@ -33,7 +34,7 @@ console.log(JSON.stringify({
 }));
 
 const problems: string[] = [];
-if (!info.valid) problems.push("the model is not a valid solid");
+if (!valid) problems.push("the model is not a valid solid");
 if (!(info.volume > 0)) problems.push("the model has no volume");
 if (problems.length) {
     console.error(`smoke: ${problems.join("; ")}`);

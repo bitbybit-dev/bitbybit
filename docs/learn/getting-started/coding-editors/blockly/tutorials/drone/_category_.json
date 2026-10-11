@@ -1,0 +1,11 @@
+{
+    "label": "Build a drone",
+    "key": "blockly-drone",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "Build a drone in Blockly",
+        "description": "The quadcopter the Rete and TypeScript tutorials build, made of blocks in the Blockly editor with a picture after every step: variables for its sizes, functions for every part, loops that repeat a part around the drone and cut its holes, async functions that await the geometry they measure, a canopy with a honeycomb and the bitbybit logo, sprung landing legs and a camera. The finished drone is the Blockly showcase.",
+        "slug": "/getting-started/blockly/tutorials/drone"
+    }
+}

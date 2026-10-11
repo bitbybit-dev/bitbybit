@@ -1,5 +1,5 @@
 import { InputError } from "@bitbybit-dev/base";
-import { BitbybitFrame_CurveFrame, BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitFrame_CurveFrame, BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { readKernelException } from "../../kernel-exception";
 import { checkedChoice, checkedDirection, checkedNumber, checkedShape } from "./input-checks";

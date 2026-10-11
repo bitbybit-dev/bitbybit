@@ -1,11 +1,5 @@
-/**
- * Conversion of the SVG basic shape elements (rect, circle, ellipse, line,
- * polyline, polygon) into the same subpath/segment vocabulary used by <path>.
- * Once here, every element is treated uniformly downstream.
- */
-
-import { Base } from "@bitbybit-dev/base";
-import { SvgArcSegment, SvgSegment, SvgSubpath } from "./svg-models";
+import type { Base } from "@bitbybit-dev/base";
+import type { SvgArcSegment, SvgSegment, SvgSubpath } from "./svg-models";
 
 type Attrs = { [k: string]: string };
 
@@ -14,7 +8,6 @@ const num = (attrs: Attrs, name: string, def = 0): number => {
     return Number.isNaN(v) ? def : v;
 };
 
-/** Full ellipse as two 180-degree arcs (avoids a degenerate 360-degree arc). */
 function ellipseSubpath(cx: number, cy: number, rx: number, ry: number): SvgSubpath {
     if (rx <= 0 || ry <= 0) { return { start: [cx, cy], segments: [], closed: true }; }
     const start: Base.Point2 = [cx + rx, cy];
@@ -45,7 +38,6 @@ function polySubpath(pts: Base.Point2[], closed: boolean): SvgSubpath[] {
     return [{ start: pts[0]!, segments, closed }];
 }
 
-/** Rounded-rectangle subpath honoring SVG rx/ry corner rules. */
 function rectSubpath(x: number, y: number, w: number, h: number, rxIn: number, ryIn: number): SvgSubpath[] {
     if (w <= 0 || h <= 0) { return []; }
     let rx = rxIn;

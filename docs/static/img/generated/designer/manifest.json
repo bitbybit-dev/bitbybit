@@ -1,0 +1,98 @@
+[
+  {
+    "id": "designer.tutorials.desk-arm/arm",
+    "file": "/img/generated/designer/desk-arm/arm.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Model a desk robot arm: arm"
+  },
+  {
+    "id": "designer.tutorials.desk-arm/base",
+    "file": "/img/generated/designer/desk-arm/base.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Model a desk robot arm: base"
+  },
+  {
+    "id": "designer.tutorials.desk-arm/gripper",
+    "file": "/img/generated/designer/desk-arm/gripper.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Model a desk robot arm: gripper"
+  },
+  {
+    "id": "designer.tutorials.desk-arm/jaw",
+    "file": "/img/generated/designer/desk-arm/jaw.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Model a desk robot arm: jaw"
+  },
+  {
+    "id": "designer.tutorials.desk-arm/link",
+    "file": "/img/generated/designer/desk-arm/link.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Model a desk robot arm: link"
+  },
+  {
+    "id": "designer.tutorials.desk-arm/nut",
+    "file": "/img/generated/designer/desk-arm/nut.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Model a desk robot arm: nut"
+  },
+  {
+    "id": "designer.tutorials.desk-arm/screw",
+    "file": "/img/generated/designer/desk-arm/screw.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Model a desk robot arm: screw"
+  },
+  {
+    "id": "designer.tutorials.desk-arm/turntable",
+    "file": "/img/generated/designer/desk-arm/turntable.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Model a desk robot arm: turntable"
+  },
+  {
+    "id": "designer.tutorials.desk-arm/wrist",
+    "file": "/img/generated/designer/desk-arm/wrist.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Model a desk robot arm: wrist"
+  },
+  {
+    "id": "designer.tutorials.first-part/extruded-plate",
+    "file": "/img/generated/designer/first-part/extruded-plate.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Make your first part: extruded-plate"
+  },
+  {
+    "id": "designer.tutorials.first-part/rounded-edges-and-holes",
+    "file": "/img/generated/designer/first-part/rounded-edges-and-holes.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Make your first part: rounded-edges-and-holes"
+  },
+  {
+    "id": "designer.tutorials.first-part/wider-plate",
+    "file": "/img/generated/designer/first-part/wider-plate.webp",
+    "width": 1600,
+    "height": 1000,
+    "scenario": "designer-tutorials",
+    "alt": "Make your first part: wider-plate"
+  }
+]

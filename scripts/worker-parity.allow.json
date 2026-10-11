@@ -58,5 +58,10 @@
       "manifold.manifoldToMesh": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying",
       "manifold.manifoldsToMeshes": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying"
     }
+  },
+  "ifc": {
+    "workerOnly": {},
+    "kernelOnly": {},
+    "signature": {}
   }
 }

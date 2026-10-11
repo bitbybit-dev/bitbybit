@@ -1,0 +1,64 @@
+---
+sidebar_position: 6
+slug: /getting-started/blockly/tutorials/drone/landing-gear
+title: "Build a drone: landing gear"
+sidebar_label: 6. Landing gear
+description: The sixth chapter of the Blockly drone - a landing leg swept along a bent path, a revolved damper with a helical spring, a lofted rubber foot and the leg's bolts, each a function whose result around repeats for every leg.
+topic: blockly.tutorials.drone.landing-gear
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, blockly, occt]
+---
+
+# Build a drone: landing gear
+
+Each leg is made once, along the x axis, and ***around*** repeats it as many times as *legs* says.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. A leg is a carbon tube bent twice on its way down: a polyline whose corners are filleted, with a circle swept along it, and a flange and a boss that pass through the leg opening. around repeats it once per leg.
+
+   - **Make the function** ***leg***:
+     - set *bent* to **fillet 3d wire**(shape **polyline wire**([**point xyz**(52, 0, 0), **point xyz**(58, -18, 0), **point xyz**(78, -34, 0), **point xyz**(78, -48, 0)]), radius list [12, 6], indexes [0, 1], direction **vector xyz**(0, 0, 1))
+     - set *tube* to **pipe wire cylindrical**(shape *bent*, radius 4, make solid true, trihedron enum isConstantNormal, force approx c1 false)
+     - **return** **union**(shapes [*tube*, **box**(width 20, length 12, height 3, center **point xyz**(52, -1.5, 0)), **cylinder**(radius 5.5, height 6.4, center **point xyz**(52, -3, 0), direction **vector xyz**(0, 1, 0))], keep edges false)
+   - **Add a stack under the others:**
+     - **draw any async no return**(entity ***around***(***leg***(), *legs*), options *carbon*)
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="blockly.tutorials.drone/legs" />
+
+2. At the end of each leg a damper, its aluminium body revolved from a profile of twelve points by the revolved function the motor uses, and a steel spring, a pipe swept along a helix.
+
+   - **Make the function** ***damper***:
+     - set *profile* to [**point xyz**(0, 0, 0), **point xyz**(6.5, 0, 0), **point xyz**(6.5, -4, 0), **point xyz**(5.5, -4.5, 0), **point xyz**(5.5, -14, 0), **point xyz**(6.2, -14, 0), **point xyz**(6.2, -16.5, 0), **point xyz**(4, -16.5, 0), **point xyz**(4, -18, 0), **point xyz**(2.2, -18, 0), **point xyz**(2.2, -30, 0), **point xyz**(0, -30, 0)]
+     - **return** **translate**(shape ***revolved***(*profile*), translation **vector xyz**(78, -46, 0))
+   - **Make the function** ***spring***:
+     - **return** **pipe wire cylindrical**(shape **create helix wire**(radius 4.2, pitch 2.8, height 12.5, center **point xyz**(78, -75.8, 0), direction **vector xyz**(0, 1, 0), clockwise false, tolerance 0.0001), radius 0.9, make solid true, trihedron enum isCorrectedFrenet, force approx c1 false)
+   - **Snap under** the block **draw any async no return**(entity ***around***(***leg***(), *legs*), options *carbon*):
+     - **draw any async no return**(entity ***around***(***damper***(), *legs*), options *aluminium*)
+     - **draw any async no return**(entity ***around***(***spring***(), *legs*), options *steel*)
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="blockly.tutorials.drone/dampers" />
+
+3. A rubber foot is lofted through five circles, and two M3 bolts fix each leg's flange to the plate.
+
+   - **Make the function** ***foot***:
+     - set *rings* to **empty list**
+     - **for each item** *ring* in [[0, 3.2], [-2, 7], [-5, 9.5], [-8, 9], [-10, 7]]:
+       - set *rings* to **add item**(list *rings*, item **circle wire**(radius **get item**(list *ring*, index 1, clone false), center **point xyz**(78, (-76 + **get item**(list *ring*, index 0, clone false)), 0), direction **vector xyz**(0, 1, 0)), clone false)
+     - **return** **loft**(shapes *rings*, make solid true)
+   - **Make the function** ***leg bolts***:
+     - set *bolt* to ***m3 bolt***(8)
+     - **return** **make compound**([**translate**(shape *bolt*, translation **vector xyz**(44.5, -3, 0)), **translate**(shape *bolt*, translation **vector xyz**(59.5, -3, 0))])
+   - **Snap under** the block **draw any async no return**(entity ***around***(***spring***(), *legs*), options *steel*):
+     - **draw any async no return**(entity ***around***(***foot***(), *legs*), options *rubber*)
+     - **draw any async no return**(entity ***around***(***leg bolts***(), *legs*), options *steel*)
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="blockly.tutorials.drone/feet" />
+
+{/* steps:end */}
+
+Next: [payload and sizes](./finish.mdx).

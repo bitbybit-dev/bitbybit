@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as BABYLON from "@babylonjs/core";
 import { Color, MathBitByBit } from "@bitbybit-dev/base";
-import { createHeadlessScene, HeadlessScene } from "../../../__test__/headless";
+import type { HeadlessScene } from "../../../__test__/headless";
+import { createHeadlessScene } from "../../../__test__/headless";
 import { BabylonMaterialPbrMetallicRoughness } from "./pbr-metallic-roughness";
 import * as Inputs from "../../../inputs";
 

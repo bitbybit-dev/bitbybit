@@ -2,7 +2,7 @@
 import * as Inputs from "../inputs";
 import { AssetManager } from "../../asset-manager";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Files in and out of a script: assets the running application stores under a name, files fetched

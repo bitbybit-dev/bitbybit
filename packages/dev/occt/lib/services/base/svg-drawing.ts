@@ -1,19 +1,14 @@
 /** A line of a flat drawing, as the x and y of its points in the drawing's plane. */
 export type DrawingLine = readonly (readonly [number, number])[];
 
-/** How wide a stroke is, as a share of the drawing's larger side. */
 const STROKE_SHARE = 1 / 400;
-/** How wide the empty border around the drawing is, as a share of its larger side. */
 const MARGIN_SHARE = 1 / 40;
-/** How long a dash of a hidden line is, and the gap after it, in stroke widths. */
 const DASH_STROKES = 6;
 const GAP_STROKES = 3;
-/** How many significant digits a coordinate keeps, counted from the drawing's larger side. */
 const SIGNIFICANT_DIGITS = 9;
 
 type Bounds = { minX: number; minY: number; maxX: number; maxY: number };
 
-/** The bounds of the lines as SVG draws them, with every y negated. */
 function boundsOf(lines: readonly DrawingLine[]): Bounds {
     const bounds: Bounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
     lines.forEach(line => line.forEach(([x, y]) => {

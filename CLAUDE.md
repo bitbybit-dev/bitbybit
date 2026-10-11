@@ -1,14 +1,14 @@
 # CLAUDE.md - the bitbybit open-source monorepo
 
 MIT-licensed, and the source of truth for the CAD algorithms and the published `@bitbybit-dev/*` npm
-packages. It is consumed as a git submodule elsewhere, but it stands alone: everything here builds and
-tests without it. Start with `README.md` for the overview, `CONTRIBUTING.md` before opening a PR.
+packages. It stands alone: everything here builds and tests from a bare clone with nothing
+above it. Start with `README.md` for the overview, `CONTRIBUTING.md` before opening a PR.
 
 ## Layout
 
 | Directory | What it is |
 |---|---|
-| `packages/dev/*` | the 14 published npm packages - see `packages/dev/CLAUDE.md` |
+| `packages/dev/*` | the 16 published npm packages - see `packages/dev/CLAUDE.md` |
 | `docs/` | the Docusaurus site for learn.bitbybit.dev, including the generated API reference |
 | `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react); `examples/scripts/examples.mjs` installs, builds and audits each one weekly from the registry, in examples.yml, and `examples/scripts/local.mjs` runs them against this repository's own packages instead |
 | `languages/` | the API help text per locale, keyed by each member's dotted path, and `doc-paths.json`, the map from documentation page names to those keys (`API_DOCS_GUIDE.md`) |
@@ -18,8 +18,8 @@ tests without it. Start with `README.md` for the overview, `CONTRIBUTING.md` bef
 The packages form a dependency DAG, and the order has one source: each package's `package.json`
 dependencies. `scripts/gen-ts-references.mjs` turns them into TypeScript project references -
 every `tsconfig.bitbybit.json` is a composite project that references the siblings its manifest
-declares, and `tsconfig.build.json` at the root references all eleven - so `tsc -b` orders the
-compiles itself and rebuilds only what changed. `npm run build-packages` is `pnpm -r run build-p`: pnpm orders the eleven stagings by the same
+declares, and `tsconfig.build.json` at the root references all thirteen - so `tsc -b` orders the
+compiles itself and rebuilds only what changed. `npm run build-packages` is `pnpm -r run build-p`: pnpm orders the thirteen stagings by the same
 manifests, each `build-p` compiles with `tsc -b` and stages dist/ for publishing.
 `npm run rebuild-all-packages` empties every dist first; `tsc -b tsconfig.build.json --verbose`
 prints the order it derives and what it considered up to date.
@@ -37,7 +37,7 @@ directory out of the project - a stale one reads the built `dist` back in as sou
 
 ## The workspace
 
-The fourteen packages under `packages/dev/` are one pnpm workspace (`pnpm-workspace.yaml`): one
+The sixteen packages under `packages/dev/` are one pnpm workspace (`pnpm-workspace.yaml`): one
 `pnpm install` at the root - `npm run ci-packages` is exactly that, frozen to the lockfile - installs
 all of them, and a sibling dependency whose exact pin matches the sibling's version becomes a symlink
 instead of a registry copy (`linkWorkspacePackages`). One `pnpm-lock.yaml` replaces the per-package
@@ -60,22 +60,21 @@ manifest to that shape and every built `dist/package.json` to the derivation.
 
 pnpm's layout is strict: a package resolves only what its own manifest declares, where npm's flat
 hoisting let it reach anything a sibling had installed. Every import in `lib/` must therefore be a
-dependency of that package - the engine packages import `@bitbybit-dev/base`, the three workers,
+dependency of that package - the engine packages import `@bitbybit-dev/base`, the four workers,
 `jsonpath-plus` and `verb-nurbs-web` directly, and declare them. Verify a build from a clone outside
 your home directory: a stray `~/node_modules` above the checkout satisfies an undeclared import on
 your machine and nowhere else, which is how one reached CI.
 
 ## Lint and the strictness ratchet
 
-`npm run lint` is ESLint 10 from one self-contained `eslint.config.mjs`: the recommended sets, the
-type-aware set (it reads the type graph, so it sees an unawaited promise), the house style, and two
-local rules in `eslint-rules/`, neither with a fixer - `no-double-assertion` (`x as unknown as T`
-widens until nothing is checked; use a type predicate) and `no-loose-comments` (JSDoc and directives
-stay, free-form comments do not; a `*.test.ts` may carry `// Arrange`, `// Act` and `// Assert`, each
-on its own, and nothing else; the MCP server package runs it with `allowJsDoc: false`, since nothing
-reads a comment there, and keeps what the code cannot say in its `CLAUDE.md`). Findings that predate
-a rule sit in `eslint-suppressions.json`; a new one fails, as does a stale suppression, so the count
-only falls. Never load `eslint-plugin-no-comments`: its fixer would delete that JSDoc corpus.
+`npm run lint` is ESLint 10 from one self-contained `eslint.config.mjs`: the recommended and
+type-aware sets, the house style, and four local rules in `eslint-rules/`, none with a fixer, each
+with a `RuleTester` suite. **The code carries no comments** but the public API's JSDoc (DTOs and
+models included), tool directives, notices and a test's bare `// Arrange` / `// Act` / `// Assert`;
+what a comment would say goes into a name, a constant, the package's `ARCHITECTURE.md` or
+`scripts/README.md`. `LINT.md` holds the policy and every rule's reasons. Findings that predate a rule
+sit in `eslint-suppressions.json`; a new one fails, as does a stale suppression, so the count only
+falls. Never load `eslint-plugin-no-comments`: its fixer would delete the public API's JSDoc.
 
 Every package builds and typechecks under the whole strict set, and the flags live in one place:
 `tsconfig.base.cad.json`, which every package's `tsconfig.json` (the editor and test view) and
@@ -99,7 +98,7 @@ from the build configs: the runner compiles it itself, so dist ships no mocks.
 ```bash
 npm run lint                     # includes the AAA-only comment rule over every *.test.ts
 npm run typecheck:tests          # nothing else typechecks a test file
-npm test                         # the check:* gates and all eleven suites, with coverage
+npm test                         # the check:* gates and all thirteen suites, with coverage
 npm run check:coverage-baseline  # reads what the npm test above it just measured
 ```
 
@@ -111,7 +110,8 @@ plus `check:references`, `check:exports`, `rebuild-all-packages`, `check:strict-
 the scaffolder's and the MCP server's own builds and tests, `check:openapi`, `api:check`, `check:tarballs`, and last -
 on a red run too - `test:report`, which puts every suite's results on the summary page. It needs no
 secrets and must never gain any. `nightly.yml` runs the build and tests on every Node line the
-packages should keep working on. Neither publishes.
+packages should keep working on, and `ifc.yml` twice a week runs the `ifc` package's `validate` and
+`npm run ifc:corpus` against IfcOpenShell. None of the three publishes.
 
 `publish.yml` does, by hand-dispatch only, through npm trusted publishing: the job's OIDC token is
 exchanged for a short-lived publish token per package, so no npm token is stored anywhere and every
@@ -132,8 +132,8 @@ Two of those checks carry committed state. `api:check` runs api-extractor in eve
 carry a report - all but `occt-worker`, whose `BitbybitOcctModule` comes from emscripten glue it
 cannot follow, and which `check:worker-api` and `check:worker-parity` pin harder instead - against its
 built `dist/index.d.ts`, and fails when the public surface differs from the report in that package's
-`etc/`: the dotted API is persisted in users' saved scripts, so a change lands only with a deliberate
-`npm run api:update` and the report diff in the same commit. `check:tarballs` packs all fourteen,
+`etc/`: the dotted API is persisted in users' scripts, so a change lands only with a deliberate
+`npm run api:update` and the report diff in the same commit. `check:tarballs` packs all sixteen,
 installs the library ones into an empty project and probes each as a consumer would, then reads what
 every tarball carries: a credential, an absolute build path, a source map naming excluded sources.
 
@@ -156,8 +156,8 @@ of `scripts/worker-parity.allow.json`, one list for the generator and the parity
 
 The four inputs namespaces - `occ-inputs.ts` (some 300 DTOs), `jscad-inputs.ts`,
 `manifold-inputs.ts`, `verb-inputs.ts` - are assembled the same way. Each has to stay one compilation
-unit, because TypeScript does not merge a namespace across modules and the declarations the visual
-editors are generated from read each as a whole, so `scripts/gen-inputs.mjs` writes it from the
+unit, because TypeScript does not merge a namespace across modules and tools that read the published
+declarations read each as a whole, so `scripts/gen-inputs.mjs` writes it from the
 fragments beside it, each a slice of the namespace body written as an ordinary module.
 `scripts/inputs.config.mjs` names the four and their fragment order - the order of the emitted
 declarations - and fails on a fragment nothing names. Edit a fragment and run `npm run gen:inputs`;
@@ -168,7 +168,7 @@ generators' and checkers' own `node --test` suites, `scripts/**/*.test.mjs`). Ea
 mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends a path the kernel lacks, when a kernel method
 has no mirror outside the allow-list, when signatures disagree, when the JSDoc on a mirrored method
 or class reads differently on the two sides, or when the worker's path set differs from the committed
-snapshot (those paths are persisted in users' saved scripts). A deliberate surface change is accepted
+snapshot (those paths are persisted in users' scripts). A deliberate surface change is accepted
 with `--update`; a doc change is made on the kernel and regenerated into the worker.
 
 Every runner writes its results as JSON into `test-results/` next to the code it tested

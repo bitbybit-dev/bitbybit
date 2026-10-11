@@ -1,4 +1,4 @@
-import { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTSelectFaces } from "./faces";
 import { OCCTSelectEdges } from "./edges";
 

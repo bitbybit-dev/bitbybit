@@ -1,0 +1,44 @@
+import type { Color, Dates, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
+import type { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { Tag } from "./bitbybit/tag";
+import type { Time } from "./bitbybit/time";
+import type { Asset } from "./bitbybit/asset";
+import type { JSONBitByBit } from "./bitbybit/json";
+import type { CSVBitByBit } from "./bitbybit/csv";
+import type { Verb } from "./bitbybit/verb/verb";
+import type { OCCTW } from "./bitbybit/occt/occt";
+import type { IFCW } from "./bitbybit/ifc/ifc";
+
+export interface SharedServices {
+    jscadWorkerManager: JSCADWorkerManager;
+    manifoldWorkerManager: ManifoldWorkerManager;
+    occtWorkerManager: OCCTWorkerManager;
+    ifcWorkerManager: IFCWorkerManager;
+    jscad: JSCAD;
+    manifold: ManifoldBitByBit;
+    ifc: IFCW;
+    lists: Lists;
+    math: MathBitByBit;
+    vector: Vector;
+    tag: Tag;
+    color: Color;
+    transforms: Transforms;
+    point: Point;
+    frame: Frame;
+    line: Line;
+    polyline: Polyline;
+        verb: Verb;
+    time: Time;
+    occt: OCCTW;
+    asset: Asset;
+    logic: Logic;
+    json: JSONBitByBit;
+    csv: CSVBitByBit;
+    text: TextBitByBit;
+    dates: Dates;
+    mesh: MeshBitByBit;
+    geometryHelper: GeometryHelper;
+}

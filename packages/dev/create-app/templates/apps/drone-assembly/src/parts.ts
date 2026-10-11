@@ -93,7 +93,7 @@ export async function plate(occt: Occt): Promise<Shape> {
 export async function honeycomb(occt: Occt): Promise<Shape> {
     const h = FRAME.honeycomb;
     const shell = await canopy(occt);
-    const centre = await occt.operations.boundingBoxCenterOfShape({ shape: shell });
+    const { center: centre } = await occt.analysis.measure.tightBoundingBox({ shape: shell });
     const grown = await occt.transforms.scale3d({ shape: shell, scale: [h.grow, h.grow, h.grow], center: [centre[0], 0, centre[2]] });
     const faces = await occt.shapes.face.getFaces({ shape: grown });
     const areas = await occt.shapes.face.getFacesAreas({ shapes: faces });
@@ -321,9 +321,9 @@ export async function antenna(occt: Occt): Promise<Shape> {
 
 export async function logoFaces(occt: Occt, logo: Shape, width: number): Promise<Shape> {
     const mirrored = await occt.transforms.mirrorAlongNormal({ shape: logo, origin: [0, 0, 0], normal: [1, 0, 0] });
-    const size = await occt.operations.boundingBoxSizeOfShape({ shape: mirrored });
+    const { size } = await occt.analysis.measure.tightBoundingBox({ shape: mirrored });
     const scaled = await occt.transforms.scale({ shape: mirrored, factor: width / Math.max(size[0], size[2]) });
-    const box = await occt.operations.boundingBoxOfShape({ shape: scaled });
+    const box = await occt.analysis.measure.tightBoundingBox({ shape: scaled });
     return occt.transforms.translate({ shape: scaled, translation: [-box.center[0], -box.min[1], -box.center[2]] });
 }
 

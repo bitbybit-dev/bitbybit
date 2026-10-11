@@ -1,8 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-/**
- * Re-export Base namespace from @bitbybit-dev/core and extend with PlayCanvas-specific types.
- * This includes the base types + core extensions (VerbCurve, VerbSurface, colorMapStrategyEnum, etc.)
- */
 import { Base as CoreBase } from "@bitbybit-dev/core";
 
 /**
@@ -10,7 +6,6 @@ import { Base as CoreBase } from "@bitbybit-dev/core";
  * Vector3, colors and the shared enumerations from one place.
  */
 export namespace Base {
-    // Re-export all types from core package (which includes base types)
     export type Color = CoreBase.Color;
     export type ColorRGB = CoreBase.ColorRGB;
     export type ColorRGBA = CoreBase.ColorRGBA;
@@ -39,7 +34,6 @@ export namespace Base {
     export type TransformMatrix = CoreBase.TransformMatrix;
     export type TransformMatrixes = CoreBase.TransformMatrixes;
 
-    // Re-export enums from base package
     export const horizontalAlignEnum = CoreBase.horizontalAlignEnum;
     export type horizontalAlignEnum = CoreBase.horizontalAlignEnum;
     export const verticalAlignmentEnum = CoreBase.verticalAlignmentEnum;
@@ -49,13 +43,11 @@ export namespace Base {
     export const basicAlignmentEnum = CoreBase.basicAlignmentEnum;
     export type basicAlignmentEnum = CoreBase.basicAlignmentEnum;
 
-    // Re-export core-specific types and enums
     export const colorMapStrategyEnum = CoreBase.colorMapStrategyEnum;
     export type colorMapStrategyEnum = CoreBase.colorMapStrategyEnum;
     export type VerbCurve = CoreBase.VerbCurve;
     export type VerbSurface = CoreBase.VerbSurface;
 
-    // PlayCanvas-specific types
     /** Texture type for PlayCanvas materials */
     export type Texture = any;
 }

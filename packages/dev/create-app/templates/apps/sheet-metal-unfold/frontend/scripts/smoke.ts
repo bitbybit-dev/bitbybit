@@ -36,17 +36,18 @@ async function check(name: string, params: PartParams): Promise<PartCheck> {
     const p = clampParams(params);
     const model = await buildModel(occt, params);
     const info = await occt.shapes.solid.debugInfo({ shape: model.shape });
-    const bbox = await occt.operations.boundingBoxOfShape({ shape: model.shape });
+    const valid = await occt.shapeFix.isValid({ shape: model.shape });
+    const bbox = await occt.analysis.measure.tightBoundingBox({ shape: model.shape });
     const expectedVolume = profileArea(p) * p.depth - removedVolume(p);
     const estimate = flatLengthEstimate(p);
     const expectedMin: [number, number, number] = [-p.baseWidth / 2, 0, -p.depth / 2];
     const expectedMax: [number, number, number] = [p.baseWidth / 2, p.flangeHeight, p.depth / 2];
     const within = spans(bbox.min, expectedMin) && spans(bbox.max, expectedMax);
-    if (!info.valid) problems.push(`${name}: the part is not a valid solid`);
+    if (!valid) problems.push(`${name}: the part is not a valid solid`);
     if (Math.abs(model.volume - expectedVolume) > expectedVolume * 1e-4) problems.push(`${name}: volume ${round(model.volume)} is not the thickness times the rounded centre line times the depth minus the mounting features (${round(expectedVolume)}); the sheet is not one thickness along its bends or a feature sits in a bend`);
     if (!within) problems.push(`${name}: the part spans ${JSON.stringify([bbox.min.map(round), bbox.max.map(round)])}, expected ${JSON.stringify([expectedMin, expectedMax])}`);
     if (!(estimate.total > 0 && estimate.total < estimate.outerLengths)) problems.push(`${name}: the flat length estimate ${round(estimate.total)} is not below the outer lengths ${round(estimate.outerLengths)}`);
-    return { valid: info.valid, faces: info.nbFaces, volume: round(model.volume), holes: model.mounting.baseHoles.length, slots: model.mounting.flangeSlots.length, bends: estimate.bends, flatEstimate: round(estimate.total) };
+    return { valid, faces: info.nbFaces, volume: round(model.volume), holes: model.mounting.baseHoles.length, slots: model.mounting.flangeSlots.length, bends: estimate.bends, flatEstimate: round(estimate.total) };
 }
 
 const report: UnfoldSolidReport[] = [

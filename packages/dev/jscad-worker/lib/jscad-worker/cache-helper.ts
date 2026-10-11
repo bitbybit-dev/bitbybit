@@ -1,13 +1,4 @@
-
-/** Finishes a cyrb53 hash: the two 32-bit lanes are avalanched into each other and 21 bits of one
- * are stacked above the 32 bits of the other, giving a non-negative safe integer below 2^53. */
-function foldHashLanes(lane1: number, lane2: number): number {
-    let h1 = Math.imul(lane1 ^ (lane1 >>> 16), 2246822507);
-    h1 ^= Math.imul(lane2 ^ (lane2 >>> 13), 3266489909);
-    let h2 = Math.imul(lane2 ^ (lane2 >>> 16), 2246822507);
-    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-}
+import { hashOfText } from "@bitbybit-dev/base";
 
 export class CacheHelper {
 
@@ -30,7 +21,6 @@ export class CacheHelper {
                                     if (obj.delete) {
                                         obj.delete();
                                     }
-                                // eslint-disable-next-line no-empty
                                 } catch {
                                 }
                             });
@@ -41,7 +31,6 @@ export class CacheHelper {
                         }
                     }
                 }
-                // eslint-disable-next-line no-empty
                 catch {
                 }
             }
@@ -63,7 +52,6 @@ export class CacheHelper {
                                 if (obj.delete) {
                                     obj.delete();
                                 }
-                            // eslint-disable-next-line no-empty
                             } catch {
                             }
                         });
@@ -74,7 +62,6 @@ export class CacheHelper {
                     }
                 }
             }
-            // eslint-disable-next-line no-empty
             catch {
             }
         }
@@ -189,14 +176,7 @@ export class CacheHelper {
     /** Hashes a string to a non-negative 53-bit safe integer with cyrb53. Both lanes are mixed with
      * `Math.imul`, so the result is the same on every JavaScript engine. */
     stringToHash(str: string): number {
-        let h1 = 0xdeadbeef;
-        let h2 = 0x41c6ce57;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            h1 = Math.imul(h1 ^ char, 2654435761);
-            h2 = Math.imul(h2 ^ char, 1597334677);
-        }
-        return foldHashLanes(h1, h2);
+        return hashOfText(str);
     }
 
 }

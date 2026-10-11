@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
-import { Base } from "./base-inputs";
-import * as MATERIALS from "@babylonjs/materials";
+import type * as BABYLON from "@babylonjs/core";
+import type { Base } from "./base-inputs";
+import type * as MATERIALS from "@babylonjs/materials";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for materials: base color, metallic and roughness, emissive and ambient contributions,
  * alpha and blending, backface culling, and the texture slots a physically-based material accepts.

@@ -1,4 +1,4 @@
-import { Base } from "../../inputs";
+import type { Base } from "../../inputs";
 
 /**
  * What kind of corner was found at a point: planar, where the meeting faces are flat;

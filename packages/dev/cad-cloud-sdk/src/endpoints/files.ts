@@ -42,9 +42,15 @@ export class FilesEndpoint {
     /** List uploaded files with optional filters. */
     async list(query?: FileListQuery): Promise<FileList> {
         const params = new URLSearchParams();
-        if (query?.page != null) params.set("page", String(query.page));
-        if (query?.limit != null) params.set("limit", String(query.limit));
-        if (query?.status) params.set("status", query.status);
+        if (query?.page != null) {
+            params.set("page", String(query.page));
+        }
+        if (query?.limit != null) {
+            params.set("limit", String(query.limit));
+        }
+        if (query?.status) {
+            params.set("status", query.status);
+        }
         const qs = params.toString();
         return unwrap(await this.fetch("GET", `/api/v1/files${qs ? `?${qs}` : ""}`));
     }
@@ -72,7 +78,9 @@ export class FilesEndpoint {
             contentType,
             bytes: data.byteLength,
         });
-        if (uploadResult.status === "confirmed") return uploadResult;
+        if (uploadResult.status === "confirmed") {
+            return uploadResult;
+        }
 
         const putRes = await fetch(uploadResult.uploadUrl, {
             method: "PUT",

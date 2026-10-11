@@ -1,8 +1,8 @@
 import * as Inputs from "../inputs/jscad-inputs";
-import * as JSCAD from "@jscad/modeling";
+import type * as JSCAD from "@jscad/modeling";
 import { asEntity, asKind, oneOrMany } from "./entity-narrowing";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Growing and shrinking JSCAD geometry by a distance: `expand` moves every boundary outward, or

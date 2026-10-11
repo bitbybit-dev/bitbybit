@@ -1,7 +1,8 @@
-import { Base, resolveDto } from "@bitbybit-dev/base";
+import type { Base } from "@bitbybit-dev/base";
+import { resolveDto } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs/jscad-inputs";
-import * as JSCAD from "@jscad/modeling";
-import * as Resolved from "../resolved-inputs";
+import type * as JSCAD from "@jscad/modeling";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Writing text with JSCAD's built-in stroke font. `createVectorText` gives the pen strokes of the

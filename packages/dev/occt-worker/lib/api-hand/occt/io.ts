@@ -1,11 +1,8 @@
-// Hand-written members of the generated class of the same name (see scripts/gen-worker-api.mjs).
-// Each member's marker says where it lands: `// replaces <path>` takes the kernel method's slot (and its doc,
-// when the member has none), `// after <path>` follows that slot, `// first` and `// last` frame the class.
 import { Inputs } from "@bitbybit-dev/occt";
-import { Models } from "@bitbybit-dev/occt";
-import { Resolved } from "@bitbybit-dev/occt";
+import type { Models } from "@bitbybit-dev/occt";
+import type { Resolved } from "@bitbybit-dev/occt";
 import { resolveDto } from "@bitbybit-dev/base";
-import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
+import type { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
 
 export class OCCTIO {
     constructor(readonly occWorkerManager: OCCTWorkerManager) { }
@@ -15,9 +12,9 @@ export class OCCTIO {
      * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and starts a
      * browser download of the file.
      *
-     * With `adjustYtoZ` true the shape is turned so this library's Y-up becomes STEP's Z-up;
-     * `fromRightHanded` skips the mirror that swap otherwise includes. `fileName` names the download
-     * and `tryDownload` false skips it. `saveShapeSTEPAndReturn` gives the file's text instead.
+     * With `adjustYtoZ` true, Y and Z swap, which mirrors the shape; to keep it as built, turn it 90
+     * degrees about X with `transforms.rotate` first. `fileName` names the download, `tryDownload`
+     * false skips it, and `saveShapeSTEPAndReturn` gives the text instead.
      * @param inputs - The shape, the file name, the axis adjustment and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
@@ -46,9 +43,9 @@ export class OCCTIO {
      * Triangulates a shape, writes it as STL, the mesh format 3D printers read, and starts a browser
      * download of the file.
      *
-     * `precision` is the meshing tolerance in model units, `adjustYtoZ` turns Y-up into Z-up and
-     * `binary` writes the smaller binary form. `fileName` names the download, `tryDownload` false
-     * skips it. `saveShapeStlAndReturn` gives the file instead.
+     * `precision` is the meshing tolerance in model units, `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape, and `binary` writes the smaller binary form. `fileName` names the
+     * download, `tryDownload` false skips it. `saveShapeStlAndReturn` gives the file instead.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment, the form and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
@@ -130,14 +127,46 @@ export class OCCTIO {
         return text;
     }
 
+    // replaces io.saveShapeBrepBinary
+    /**
+     * Writes a shape as binary BREP, the exact geometry and topology `saveShapeBrep` writes as text,
+     * in bytes, and starts a browser download of the file.
+     *
+     * `io.loadBrepBinary` reads the file back into the same shape. `fileName` names the download and
+     * `tryDownload` false skips it; `saveShapeBrepBinaryAndReturn` gives the bytes instead.
+     * @param inputs - The shape, the file name, the download option and whether to keep the mesh
+     * @returns Nothing; the download starts when the file is ready
+     * @group io
+     * @shortname save brep binary
+     * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.occt.io.saveShapeBrepBinary({ shape: box, fileName: "box.bbrep", tryDownload: true, withTriangulation: false });
+     * ```
+     */
+    async saveShapeBrepBinary(inputs: Inputs.OCCT.SaveBrepBinaryDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
+        const resolved = resolveDto(Inputs.OCCT.SaveBrepBinaryDto, inputs) as Resolved.OCCT.SaveBrepBinaryDto<Inputs.OCCT.TopoDSShapePointer>;
+        await this.saveShapeBrepBinaryAndReturn(resolved);
+    }
+
+    // replaces io.saveShapeBrepBinary
+    async saveShapeBrepBinaryAndReturn(inputs: Inputs.OCCT.SaveBrepBinaryDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Uint8Array> {
+        const resolved = resolveDto(Inputs.OCCT.SaveBrepBinaryDto, inputs) as Resolved.OCCT.SaveBrepBinaryDto<Inputs.OCCT.TopoDSShapePointer>;
+        const bytes = await this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("io.saveShapeBrepBinary", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(bytes, resolved.fileName, "application/octet-stream");
+        }
+        return bytes;
+    }
+
     // replaces io.saveShapeObj
     /**
      * Triangulates a shape, writes it as OBJ, the mesh format most 3D programs read, and starts a
      * browser download of the file.
      *
-     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up. The
-     * file name may hold no spaces or slashes; `tryDownload` false skips the download, and
-     * `saveShapeObjAndReturn` gives the text instead.
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape. The file name may hold no spaces or slashes; `tryDownload` false skips the
+     * download, and `saveShapeObjAndReturn` gives the text instead.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns Nothing; the download starts when the file is ready
      * @group io
@@ -168,9 +197,9 @@ export class OCCTIO {
      * Triangulates a shape, writes it as ASCII PLY with a normal per vertex, and starts a browser
      * download of the file.
      *
-     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up.
-     * `fileName` names the download and `tryDownload` false skips it; `saveShapePlyAndReturn` gives
-     * the text instead.
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape. `fileName` names the download and `tryDownload` false skips it;
+     * `saveShapePlyAndReturn` gives the text instead.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns Nothing; the download starts when the file is ready
      * @group io
@@ -265,6 +294,12 @@ export class OCCTIO {
         return this.occWorkerManager.genericCallToWorkerPromise("io.loadBrep", { ...inputs, brepData });
     }
 
+    // replaces io.loadBrepBinary
+    async loadBrepBinary(inputs: Inputs.OCCT.LoadBrepBinaryDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        const brepData = await this.occWorkerManager.prepareStepData(inputs.brepData);
+        return this.occWorkerManager.genericCallToWorkerPromise("io.loadBrepBinary", { ...inputs, brepData });
+    }
+
     // replaces io.dxfCreate
     dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): Promise<string> {
         const resolved = resolveDto(Inputs.OCCT.DxfPathsPartsListDto, inputs) as Resolved.OCCT.DxfPathsPartsListDto;
@@ -316,7 +351,6 @@ export class OCCTIO {
 
     // replaces io.parseStepToJson
     async parseStepToJson(inputs: Inputs.OCCT.ParseStepAssemblyToJsonDto): Promise<Models.OCCT.AssemblyJsonResult> {
-        // Convert File/Blob to ArrayBuffer before sending to worker
         const stepData = await this.occWorkerManager.prepareStepData(inputs.stepData);
         const preparedInputs = {
             ...inputs,

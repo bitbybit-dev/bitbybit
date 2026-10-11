@@ -1,9 +1,9 @@
-import { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape, TopoDS_Vertex } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape, TopoDS_Vertex } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { ConverterService } from "./converter.service";
-import { EntitiesService } from "./entities.service";
-import { ShapeGettersService } from "./shape-getters";
-import * as Resolved from "../../api/resolved-inputs";
+import type { ConverterService } from "./converter.service";
+import type { EntitiesService } from "./entities.service";
+import type { ShapeGettersService } from "./shape-getters";
+import type * as Resolved from "../../api/resolved-inputs";
 import { checkedShapes } from "./input-checks";
 
 export class VerticesService {

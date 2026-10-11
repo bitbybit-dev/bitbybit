@@ -2,48 +2,45 @@
 sidebar_position: 7
 title: Saving Your Scripts to a Local File
 sidebar_label: Save Script to File
-description: Learn how to export your Bitbybit scripts (Blockly, Rete, or TypeScript) to a local file for backup, sharing, or offline storage.
+description: Export a script from its editor as a .bitbybit file, or every project in this browser as one zip, to keep a copy, share it privately or move it to another browser.
+topic: platform.scripts.export
+type: how-to
+verified: 2026-10-09
 tags: [getting-started, scripts]
 ---
 
 # Saving Your Scripts to a Local File
 
-## Why Save a Script to a File?
+A file keeps a copy of your work outside bitbybit.dev:
 
-Exporting your Bitbybit scripts to a local file on your computer can be useful in several scenarios:
+- **a backup** of a script or a version you want to keep, beside its [history](/learn/getting-started/basics/scripts/auto-save#history);
+- **a private share**, sent to someone without making the project public;
+- **a move** of drafts and projects in this browser to another browser or computer.
 
-*   **No Account/Offline Work:** If you don't have a Bitbybit account or are working on a [local, unsaved script](/learn/getting-started/basics/scripts/create-script#how-to-create-a-new-local-script-unsaved), saving to a file is the primary way to preserve your work.
-*   **Sharing Privately:** If you want to share your work with someone without making your project public on our platform.
-*   **Version Control/Backups:** To save different versions or milestones of your scripts for later use or as personal backups, independent of the [cloud auto-save](/learn/getting-started/basics/scripts/auto-save).
+## Export a script
 
-All script types on our platform (Blockly, Rete, and TypeScript) can be exported to a file and then later imported back into Bitbybit.
+<Shot id="platform.scripts.export/more-menu" />
 
-## How to Save Your Script to a File
+1. In the editor, open <Ui>More</Ui>, the last button of the editor's left bar.
+2. Choose <Ui>Export</Ui>.
 
-Follow these steps to export your current script:
+Your browser downloads the script as a `.bitbybit` file, named after its editor and the moment you exported it:
 
-1.  **Open the "More Actions" Menu:**
-    While in any of our editors, locate the "More Actions" menu button. This button often looks like three dots (`...`) or a similar icon indicating additional options. Depending on your screen size and layout, this menu might appear in a vertical or horizontal orientation within the editor's interface.
+| Editor | File name |
+|---|---|
+| Rete | `workspace-rete_2026-10-09_14-30-00.bitbybit` |
+| Blockly | `workspace-bl_2026-10-09_14-30-00.bitbybit` |
+| TypeScript | `workspace-ts_2026-10-09_14-30-00.bitbybit` |
 
-    ![The "More Actions" menu button in the Bitbybit editor interface.](https://bitbybit.dev/files/site/start/general/projects/scripts/more-actions.jpeg "Button To Open More Actions")
-    *Button To Open More Actions*
+A `.bitbybit` file is JSON, so a text editor can show it, but only the bitbybit.dev editors read it back: see [Importing Scripts](/learn/getting-started/basics/scripts/import-file). The Designer exports its own way, from its <Ui>File</Ui> menu: see [Export and import design files](/learn/designer/get-started/export-import).
 
-2.  **Click the "Export" Button:**
-    Once the "More Actions" menu is open, find and click the **"Export"** button.
+<Ui>Copy to Clipboard</Ui>, in the same menu, copies the script instead, to paste into another editor of the same kind with <Ui>Paste from Clipboard</Ui>.
 
-    ![The "Export" button within the "More Actions" menu, used to save the current script to a file.](https://bitbybit.dev/files/site/start/general/projects/scripts/export.jpeg "Export button that saves script to a file")
-    *Export button that saves script to a file*
+## Export projects in this browser
 
-    This will trigger your browser to download the script as a file.
+Projects kept in this browser export whole, as zip files, from [My Projects](https://bitbybit.dev/projects/my):
 
-**File Format and Naming:**
-*   All files exported from our platform will have the **`.bitbybit`** extension.
-*   While you can open these `.bitbybit` files with a text editor to see their contents (they are typically JSON-based), only the Bitbybit platform editors are designed to import and interpret these files correctly.
-*   We also include an indicator in the filename to denote the script type:
-    *   Blockly scripts: `your-script-name-bl.bitbybit`
-    *   Rete scripts: `your-script-name-rete.bitbybit`
-    *   TypeScript scripts: `your-script-name-ts.bitbybit`
+- <Ui>Export</Ui>, on a project, saves that project as one zip.
+- <Ui>Export all</Ui>, at the top, saves every project in this browser, <Ui>Drafts</Ui> included, as one zip.
 
----
-
-Now that you know how to save your scripts to a file, you can also learn how to [import them back into the Bitbybit platform](/learn/getting-started/basics/scripts/import-file).
+A cloud project is kept in your account, which works from any device; export its scripts one by one from their editors to keep copies of your own.

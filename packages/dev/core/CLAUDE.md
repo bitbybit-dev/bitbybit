@@ -32,8 +32,8 @@ so it can never satisfy a check for the engine's own object type. Routing a draw
 written for scene objects fails for every tag rather than some, which is why the tag path has its own.
 
 The renderers' entry points now say so in their types: `Inputs.Draw.Drawn<E, T>` maps the entity a
-caller passes to what drawing it produces - a tag to the drawn tag, a list of tags to the list, a
-host-resolved overlay to something disposable, everything else to the renderer's own object. A layer
+caller passes to what drawing it produces - a tag to the drawn tag, a list of tags to the list, an
+overlay the application resolves to something disposable, everything else to the renderer's own object. A subclass
 that adds entity kinds overrides the protected `drawResolved` / `drawResolvedAsync` seam rather than
 the public method: two unresolved conditional types over the same `E` have no provable relation, so a
 narrower override of the public signature cannot typecheck however correct it is.
@@ -60,6 +60,23 @@ also why a draw layer never lays a partial options object over `DrawBasicGeometr
 line or polyline hands its options to the helper, which fills the gaps from its own DTO
 (`DrawPolylinesDto` gives `size` 3), while OCCT and Manifold options are laid over their options
 class, the values `optionsOcctShape` and its siblings give.
+
+## Looks and placements
+
+`draw-appearance.ts` holds what the renderers share for a shape with its appearance and a design
+build, above the engine objects: the looks of a shape's faces (`lookGroupsOf`: the base look
+first, the last `faces` entry listing a face wins, a look no face wears is dropped), the faces of
+each look merged into typed arrays with each face's index range kept for picking (`lookMeshesOf`),
+the edges as segments (`edgeSegmentsOf`), the colour of each edge (`edgeColorsOf`: the last `edges`
+entry listing it, else the appearance's `edgeColor`, else the fallback, which `defaultEdgeColor`
+derives from the face colour when the options carry `edgeContrast`), and where each part is placed
+(`partPlacementsOf`: a build without components places each part once, at the origin).
+`samePlacements` and `designSignatureOf` (the looks, the shapes and the drawing options) are the tests
+that decide a redraw only moves instances. A part's mesh is kept under `designMeshKeyOf`, its
+`shapeHash`: a variant's id survives an edit to its source that keeps its values, its shape hash
+does not, so keying meshes by id would show the old shape after such an edit. `detectShapeWithAppearance`
+and `detectDesignBuild` check the shape of what arrives - integer face and edge indexes, colours as
+strings, a 16-number world matrix per component - because the drawers trust it from there on.
 
 ## Handedness
 

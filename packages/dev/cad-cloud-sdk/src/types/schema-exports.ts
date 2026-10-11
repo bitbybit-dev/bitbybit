@@ -114,9 +114,9 @@ export type PhoneNestParams = components["schemas"]["PhoneNestParams"];
 export type PipelineAnyStep = components["schemas"]["PipelineAnyStep"];
 /** Execute a chain of Bitbybit CAD operations sequentially. Supports $ref:N step references, $file:N file inputs, map iteration, and choice conditionals. */
 export type PipelineBody = components["schemas"]["PipelineBody"];
-/** Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only). */
+/** Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only), 'brep' (OpenCascade BREP as text, which OCCT-based tools such as FreeCAD read) and 'brep-binary' (OpenCascade binary BREP, the smallest and fastest exact form, which keeps the numbering of faces and edges; read back with occt.io.loadBrepBinary) - both OCCT only, without triangulation. */
 export type PipelineOutputFormat = components["schemas"]["PipelineOutputFormat"];
-/** Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf) beyond standard model outputs. */
+/** Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf, brep, brep-binary) beyond standard model outputs. */
 export type PipelineOutputOptions = components["schemas"]["PipelineOutputOptions"];
 /** A single step in a sequential CAD pipeline. Steps can reference outputs of earlier steps via $ref or input files via $file. */
 export type PipelineStep = components["schemas"]["PipelineStep"];

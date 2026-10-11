@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { InputIssue, resolveInputs, validateInputs, withDefaults } from "@bitbybit-dev/base";
-import createBitbybitOcct, { TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { InputIssue } from "@bitbybit-dev/base";
+import { resolveInputs, validateInputs, withDefaults } from "@bitbybit-dev/base";
+import type { TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { OCCTService } from "../occ-service";
 import { VectorHelperService } from "./vector-helper.service";
@@ -119,7 +121,9 @@ const callAt = (root: object, path: string, inputs: object): unknown => {
     const segments = path.split(".");
     const owner = methodAt(root, segments.slice(0, -1).join("."));
     const method = typeof owner === "object" && owner !== null ? Reflect.get(owner, segments[segments.length - 1] ?? "") : undefined;
-    if (typeof method !== "function") throw new Error(`no method at ${path}`);
+    if (typeof method !== "function") {
+        throw new Error(`no method at ${path}`);
+    }
     return Reflect.apply(method, owner, [inputs]);
 };
 

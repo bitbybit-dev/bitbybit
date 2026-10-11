@@ -1,7 +1,6 @@
-// A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
-import { Base } from "@bitbybit-dev/base";
-import { dimensionEndTypeEnum, directionEnum } from "./enums";
+import type { Base } from "@bitbybit-dev/base";
+import type { directionEnum } from "./enums";
+import { dimensionEndTypeEnum } from "./enums";
 import { LPolygonDto } from "./profiles-and-primitive-solids";
 import { ChristmasTreeDto, Heart2DDto, NGonWireDto, ParallelogramDto, StarDto } from "./faces-2d-curves-and-decorative-wires";
 

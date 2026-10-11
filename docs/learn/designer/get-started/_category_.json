@@ -1,0 +1,11 @@
+{
+    "label": "Get started",
+    "key": "designer-get-started",
+    "position": 1.5,
+    "link": {
+        "type": "generated-index",
+        "title": "Get started with the Designer",
+        "description": "Everything around the model itself: how to open the Designer, start a Designer project, open a design again, how your work is saved in this browser and in the cloud, how to export and import design files, and how to share a design with someone else.",
+        "slug": "/designer/get-started"
+    }
+}

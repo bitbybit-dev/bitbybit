@@ -1,0 +1,8 @@
+{
+    "label": "Vertex",
+    "position": 1.5,
+    "link": {
+        "type": "doc",
+        "id": "code/common/occt/shapes/vertex/intro"
+    }
+}

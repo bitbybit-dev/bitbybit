@@ -3,6 +3,8 @@ sidebar_position: 8
 title: STEP & IGES Import
 sidebar_label: STEP & IGES Import
 description: Read STEP and IGES files into OCCT shapes - the compressed variants, passing file data from a browser, and how a file that cannot be read reports itself.
+topic: code.occt.io.step-and-iges
+type: how-to
 tags: [code, occt, rete, blockly, typescript]
 ---
 

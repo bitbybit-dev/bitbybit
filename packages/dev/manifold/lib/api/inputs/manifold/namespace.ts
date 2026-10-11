@@ -1,5 +1,3 @@
-// The doc of the Manifold inputs namespace itself; scripts/gen-inputs.mjs places it above `export namespace Manifold`.
-
 /**
  * Every parameter object the Manifold kernel accepts. Manifold specialises in fast, reliably
  * watertight mesh booleans, so its DTOs carry manifold handles and the settings that keep results

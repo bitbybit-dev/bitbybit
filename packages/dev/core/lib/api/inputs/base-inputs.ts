@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-/**
- * Re-export Base namespace from @bitbybit-dev/base and extend with core-specific types.
- */
 import { Base as BaseTypes } from "@bitbybit-dev/base";
 
 /**
@@ -9,7 +6,6 @@ import { Base as BaseTypes } from "@bitbybit-dev/base";
  * package still sees Point3, Vector3 and the rest without reaching into the base package.
  */
 export namespace Base {
-    // Re-export all types from base package
     export type Color = BaseTypes.Color;
     export type ColorRGB = BaseTypes.ColorRGB;
     export type ColorRGBA = BaseTypes.ColorRGBA;
@@ -38,7 +34,6 @@ export namespace Base {
     export type TransformMatrix = BaseTypes.TransformMatrix;
     export type TransformMatrixes = BaseTypes.TransformMatrixes;
 
-    // Re-export enums from base package
     export const horizontalAlignEnum = BaseTypes.horizontalAlignEnum;
     export type horizontalAlignEnum = BaseTypes.horizontalAlignEnum;
     export const verticalAlignmentEnum = BaseTypes.verticalAlignmentEnum;
@@ -48,7 +43,6 @@ export namespace Base {
     export const basicAlignmentEnum = BaseTypes.basicAlignmentEnum;
     export type basicAlignmentEnum = BaseTypes.basicAlignmentEnum;
 
-    // Core-specific types and enums
     /**
      * Defines how colors are mapped to entities when there are more entities than colors.
      * - firstColorForAll: Uses the first color for all entities (legacy behavior)

@@ -1,13 +1,8 @@
-/** The bytes before the triangle count of a binary STL file. */
 const BINARY_HEADER_BYTES = 80;
-/** The bytes of the triangle count that follows the header. */
 const BINARY_COUNT_BYTES = 4;
-/** The bytes of one triangle: its normal, its three corners and a two-byte attribute. */
 const BINARY_TRIANGLE_BYTES = 50;
-/** The bytes of one point of three 32-bit floats. */
 const BINARY_POINT_BYTES = 12;
 
-/** One facet of an ASCII STL file: its normal and its three corners, each written as three numbers. */
 const ASCII_FACET = new RegExp(
     "facet\\s+normal\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+outer\\s+loop" +
     "\\s+vertex\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+vertex\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+vertex\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)" +
@@ -15,7 +10,6 @@ const ASCII_FACET = new RegExp(
     "gi",
 );
 
-/** Whether the bytes are a binary STL file: a header, a count and exactly that many triangles. */
 function isBinaryStl(bytes: Uint8Array): boolean {
     if (bytes.length < BINARY_HEADER_BYTES + BINARY_COUNT_BYTES) {
         return false;
@@ -24,7 +18,6 @@ function isBinaryStl(bytes: Uint8Array): boolean {
     return bytes.length === BINARY_HEADER_BYTES + BINARY_COUNT_BYTES + count * BINARY_TRIANGLE_BYTES;
 }
 
-/** A binary STL file with y and z of every normal and corner swapped and every triangle's winding reversed. */
 function swappedBinary(bytes: Uint8Array): Uint8Array {
     const swapped = bytes.slice();
     const source = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -45,7 +38,6 @@ function swappedBinary(bytes: Uint8Array): Uint8Array {
     return swapped;
 }
 
-/** An ASCII STL file with y and z of every normal and corner swapped and every facet's winding reversed. */
 function swappedAscii(bytes: Uint8Array): Uint8Array {
     const text = new TextDecoder().decode(bytes);
     const swapped = text.replace(ASCII_FACET, (_facet: string, nx: string, ny: string, nz: string, ax: string, ay: string, az: string,

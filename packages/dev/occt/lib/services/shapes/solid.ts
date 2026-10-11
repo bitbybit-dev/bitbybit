@@ -1,10 +1,10 @@
-import { OccHelper } from "../../occ-helper";
-import { BitbybitOcctModule, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { Base } from "../../api/inputs";
-import * as Models from "../../api/models";
+import type { Base } from "../../api/inputs";
+import type * as Models from "../../api/models";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Solids in OpenCascade: closed shapes that enclose a volume. Build one from a primitive
@@ -23,11 +23,11 @@ export class OCCTSolid {
     }
 
     /**
-     * Collects diagnostic facts about a solid: whether it is valid, how many faces and edges it
-     * has, its surface area and volume, and for every face the surface type, degrees, control point
-     * counts, bounds and area.
+     * Collects diagnostic facts about a solid: how many faces and edges it has, its surface area and
+     * volume, and for every face the surface type, degrees, control point counts, bounds and area.
      *
-     * An empty or null shape gives a report marked invalid with zero counts.
+     * `valid` is false only for an empty or null shape, which gives zero counts; it does not check
+     * the geometry, which `shapeFix.isValid` does.
      * @param inputs - The solid to inspect
      * @returns The report with counts, area, volume and one entry per face
      * @group debug

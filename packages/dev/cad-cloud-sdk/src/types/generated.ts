@@ -2048,9 +2048,9 @@ export interface components {
             /** @description Role identifier for the file (e.g. 'step-model', 'coordinates-csv') */
             role: string;
         };
-        /** @description Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf) beyond standard model outputs. */
+        /** @description Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf, brep, brep-binary) beyond standard model outputs. */
         PipelineOutputOptions: {
-            /** @description Output formats to generate. Supports standard CAD formats (step, stpz, gltf, decomposed-mesh) plus pipeline-specific formats (json, csv, stl, 3mf). */
+            /** @description Output formats to generate. Supports standard CAD formats (step, stpz, gltf, decomposed-mesh) plus pipeline-specific formats (json, csv, stl, 3mf, brep, brep-binary). */
             formats: components["schemas"]["PipelineOutputFormat"][];
             /** @description Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes. */
             meshPrecision?: components["schemas"]["MeshPrecision"];
@@ -2062,10 +2062,10 @@ export interface components {
             includePipelineInMetadata?: boolean;
         };
         /**
-         * @description Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only).
+         * @description Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only), 'brep' (OpenCascade BREP as text, which OCCT-based tools such as FreeCAD read) and 'brep-binary' (OpenCascade binary BREP, the smallest and fastest exact form, which keeps the numbering of faces and edges; read back with occt.io.loadBrepBinary) - both OCCT only, without triangulation.
          * @enum {string}
          */
-        PipelineOutputFormat: "step" | "stpz" | "decomposed-mesh" | "gltf" | "json" | "csv" | "stl" | "3mf";
+        PipelineOutputFormat: "step" | "stpz" | "decomposed-mesh" | "gltf" | "json" | "csv" | "stl" | "3mf" | "brep" | "brep-binary";
         /**
          * @description Mesh tessellation precision (lower = finer). Range: [0.0001, 10]
          * @example 0.1

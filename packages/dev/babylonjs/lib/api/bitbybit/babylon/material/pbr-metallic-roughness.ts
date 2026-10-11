@@ -1,9 +1,10 @@
 
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
-import { Color, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type { Color } from "@bitbybit-dev/base";
+import { resolveDto } from "@bitbybit-dev/base";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * Physically based materials of the metallic-roughness kind, the standard way to describe a real

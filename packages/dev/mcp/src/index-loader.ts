@@ -28,16 +28,26 @@ export async function loadIndex(options: LoadIndexOptions): Promise<ApiIndex> {
     const cacheFile = cacheDir === null ? null : join(cacheDir, `index-v${options.version}.json`);
     if (cacheFile !== null) {
         const cached = await readCached(cacheFile, options.version);
-        if (cached) return cached;
+        if (cached) {
+            return cached;
+        }
     }
     const doFetch = options.fetch ?? fetch;
     const response = await doFetch(url);
-    if (response.status === NOT_FOUND) throw new IndexNotPublishedError(options.version, url);
-    if (!response.ok) throw new Error(`Fetching ${url} failed with HTTP ${response.status}`);
+    if (response.status === NOT_FOUND) {
+        throw new IndexNotPublishedError(options.version, url);
+    }
+    if (!response.ok) {
+        throw new Error(`Fetching ${url} failed with HTTP ${response.status}`);
+    }
     const text = await response.text();
     const parsed: unknown = JSON.parse(text);
-    if (!isApiIndex(parsed, options.version)) throw new Error(`${url} is not an API index for version ${options.version}`);
-    if (cacheFile !== null && cacheDir !== null) await writeCached(cacheDir, cacheFile, text);
+    if (!isApiIndex(parsed, options.version)) {
+        throw new Error(`${url} is not an API index for version ${options.version}`);
+    }
+    if (cacheFile !== null && cacheDir !== null) {
+        await writeCached(cacheDir, cacheFile, text);
+    }
     return parsed;
 }
 

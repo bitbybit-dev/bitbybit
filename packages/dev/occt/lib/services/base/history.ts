@@ -1,5 +1,5 @@
-import { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Models from "../../api/models";
+import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Models from "../../api/models";
 
 /** What the kernel reports of one input's history, typed arrays of indexes. */
 export type KernelHistory = ReturnType<BitbybitOcctModule["HistoryOfFillet"]>;
@@ -10,10 +10,17 @@ export function historyFromKernel(history: KernelHistory): Models.OCCT.ShapeHist
     return {
         faces: lists(history.faces),
         edges: lists(history.edges),
+        facesFromFaces: lists(history.facesFromFaces),
+        edgesFromFaces: lists(history.edgesFromFaces),
         facesFromEdges: lists(history.facesFromEdges),
         facesFromVertices: lists(history.facesFromVertices),
         edgesFromVertices: lists(history.edgesFromVertices),
         firstFaces: Array.from(history.firstFaces),
         lastFaces: Array.from(history.lastFaces),
     };
+}
+
+/** Several of the kernel's histories as plain arrays, in the order the kernel gave them. */
+export function historiesFromKernel(histories: KernelHistory[]): Models.OCCT.ShapeHistory[] {
+    return histories.map(historyFromKernel);
 }

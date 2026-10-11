@@ -1,6 +1,15 @@
 {
   "$comment": "Read by scripts/examples.mjs. `skip` names examples the verification lane leaves out, each with the reason; an example listed here is unmaintained until someone removes it from this list and makes it pass. `buildOnlyWithHeavy` names the framework directories whose builds run only with --heavy - they still install and audit on every run. Only directories with a package.json are examples to this lane; api/dotnet-rest is a .NET project and is not covered.",
-  "skip": [],
+  "skip": [
+    {
+      "path": "vite/threejs/ifc-house",
+      "reason": "uses @bitbybit-dev/ifc-worker and Manifold's recipes.build, which the registry carries from the version after 1.4.1; remove this entry with that release"
+    },
+    {
+      "path": "node/ifc-house",
+      "reason": "uses @bitbybit-dev/ifc, which the registry carries from the version after 1.4.1; remove this entry with that release"
+    }
+  ],
   "buildOnlyWithHeavy": [
     "angular",
     "nextjs",

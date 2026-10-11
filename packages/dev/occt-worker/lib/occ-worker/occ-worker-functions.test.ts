@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "@bitbybit-dev/occt/lib/api/inputs";
 import { CacheHelper } from "./cache-helper";
 import { initializationComplete, onMessageInput } from "./occ-worker";
@@ -19,6 +20,7 @@ describe("OCC Worker Functions Unit Tests", () => {
 
     afterEach(() => {
         cacheHelper.cleanAllCache();
+        occt.SetMeshRetention(0);
     });
 
     describe("initializationComplete", () => {
@@ -616,6 +618,34 @@ describe("OCC Worker Functions Unit Tests", () => {
                 }
             });
         }));
+
+        it("should handle setMeshRetention, answering with what the kernel keeps after each call", () => {
+            // Arrange
+            const replies: any[] = [];
+            const send = (functionName: string, inputs: Record<string, unknown>): any => {
+                onMessageInput({ action: { functionName, inputs }, uid: `uid-${replies.length}` }, (data: any) => {
+                    if (data !== "busy") {
+                        replies.push(data);
+                    }
+                });
+                return replies[replies.length - 1];
+            };
+
+            // Act
+            const set = send("setMeshRetention", { triangles: 100 });
+            const box = send("shapes.solid.createBox", { ...new Inputs.OCCT.BoxDto(1, 1, 1, [0, 0, 0]) });
+            send("shapeToMesh", { shape: { hash: box.result.hash, type: "occ-shape" }, precision: 0.01, adjustYtoZ: false });
+            const again = send("setMeshRetention", { triangles: 100 });
+            send("cleanAllCache", {});
+            const cleaned = send("setMeshRetention", { triangles: 100 });
+
+            // Assert
+            expect([set, again, cleaned].map(reply => reply.result)).toEqual([
+                { budget: 100, faces: 0, triangles: 0 },
+                { budget: 100, faces: 6, triangles: 12 },
+                { budget: 100, faces: 0, triangles: 0 },
+            ]);
+        });
 
         it("should handle startedTheRun function without cleaning cache (below threshold)", () => new Promise<void>((done) => {
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);

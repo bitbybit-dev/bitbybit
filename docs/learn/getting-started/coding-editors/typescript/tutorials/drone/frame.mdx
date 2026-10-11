@@ -1,0 +1,214 @@
+---
+sidebar_position: 1
+slug: /getting-started/typescript/tutorials/drone/frame
+title: "Build a drone: sizes, stage and the frame"
+sidebar_label: 1. Sizes, stage and the frame
+description: The first chapter of the TypeScript drone - the drone's sizes in a file of their own with a function that keeps the propeller in bounds, a lit stage and the materials, then the carbon frame plate from a rounded rectangle, a face and an extrusion with hexagon vents cut through it, and a second plate above it.
+topic: typescript.tutorials.drone.frame
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, typescript, occt]
+---
+
+# Build a drone: sizes, stage and the frame
+
+<Shot id="typescript.start.showcases/drone" />
+
+Over seven chapters you write this drone in the TypeScript editor: a carbon frame of two plates, arms that carry motors, propellers, bolts and lights, a canopy traced with a honeycomb and marked with the bitbybit logo, sprung landing legs and a camera, all sized by four numbers. It is the same drone the [Rete](../../../rete/tutorials/drone/frame.mdx) and [Blockly](../../../blockly/tutorials/drone/frame.mdx) tutorials build, written as code: each part is a function in a file of its own, and `main.ts` puts them together. It is the [showcase](../../showcases.md) of the TypeScript editor.
+
+The drone is built in millimetres. Open a new [TypeScript editor](https://bitbybit.dev/app?editor=typescript) and follow the steps: each one makes a file or adds a few lines to one, then runs the script, and the picture shows the editor after the run with the step's file open. [Files and imports](../../features/files-and-imports.md) shows how to make a file and a folder; a new file is written with <Ui>New file</Ui> at the top of <Ui>Files</Ui>.
+
+This chapter sets the sizes, lights the stage and makes the frame.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. Four numbers size the whole drone: the arms, how long they are, the propeller's diameter and the legs. They live in a file of their own, with a function that works out the largest propeller that clears its neighbours and the canopy. `main.ts` imports both and logs the diameter it will use.
+
+   - **Make `sizes.ts`:**
+
+   ```typescript
+   export const sizes = {
+       arms: 4,
+       armLength: 185,
+       propeller: 230,
+       legs: 4,
+   };
+
+   export function fitPropeller(arms: number, armLength: number, diameter: number): number {
+       const neighbours = 2 * armLength * Math.sin(Math.PI / arms) - 10;
+       const canopy = 2 * (armLength - 68);
+       const largest = Math.floor(Math.min(neighbours, canopy) / 5) * 5;
+       return Math.min(diameter, largest);
+   }
+   ```
+
+   - **Replace what `main.ts` holds with:**
+
+   ```typescript
+   import { fitPropeller, sizes } from "./sizes";
+
+   const diameter = fitPropeller(sizes.arms, sizes.armLength, sizes.propeller);
+   console.log("Propeller diameter:", diameter);
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="typescript.tutorials.drone/sizes" />
+
+2. Set the stage before the first part: a dark background, a city environment that metal reflects with its picture hidden, a sun that casts shadows and a wide ground under the feet. `materials.ts` holds every material the drone uses, each physically based and drawn a little behind its edges, so the white edges on the dark parts stay sharp; `draw` shows shapes in one of them.
+
+   - **Make `stage.ts`:**
+
+   ```typescript
+   export async function setStage() {
+       bitbybit.babylon.scene.backgroundColour({ colour: "#15171a" });
+       bitbybit.babylon.scene.enableSkybox({ skybox: Bit.Inputs.Base.skyboxEnum.city, environmentIntensity: 0.4, hideSkybox: true });
+       bitbybit.babylon.scene.drawDirectionalLight({
+           direction: [-0.45, -1, -0.3],
+           intensity: 2,
+           shadowGeneratorMapSize: 4096,
+           shadowBias: 0.0003,
+           shadowNormalBias: 1,
+           shadowMinZ: -1000,
+           shadowMaxZ: 1000,
+       });
+       return bitbybit.occt.shapes.face.createRectangleFace({ width: 2500, length: 2500, center: [0, -86.2, 0], direction: [0, 1, 0] });
+   }
+   ```
+
+   - **Make `materials.ts`:**
+
+   ```typescript
+   type Shape = Bit.Inputs.OCCT.TopoDSShapePointer;
+
+   interface Finish {
+       readonly colour: string;
+       readonly metallic: number;
+       readonly roughness: number;
+       readonly edgeWidth?: number;
+       readonly emissive?: string;
+   }
+
+   const FINISHES = {
+       carbon: { colour: "#23262b", metallic: 0.35, roughness: 0.45, edgeWidth: 6 },
+       paint: { colour: "#1f2b4d", metallic: 0.1, roughness: 0.25, edgeWidth: 6 },
+       honeycomb: { colour: "#1f2b4d", metallic: 0.1, roughness: 0.25, edgeWidth: 8 },
+       accent: { colour: "#f0cebb", metallic: 0.85, roughness: 0.35, edgeWidth: 4 },
+       aluminium: { colour: "#b9bec6", metallic: 1, roughness: 0.32, edgeWidth: 4 },
+       copper: { colour: "#b87333", metallic: 1, roughness: 0.5, edgeWidth: 4 },
+       steel: { colour: "#1c1c1e", metallic: 0.9, roughness: 0.42, edgeWidth: 4 },
+       polymer: { colour: "#2a2d31", metallic: 0.05, roughness: 0.4, edgeWidth: 6 },
+       rubber: { colour: "#111214", metallic: 0, roughness: 0.92, edgeWidth: 4 },
+       glass: { colour: "#0c1522", metallic: 0.1, roughness: 0.05, edgeWidth: 4 },
+       emblem: { colour: "#f4f4f4", metallic: 0.2, roughness: 0.5, edgeWidth: 4 },
+       green: { colour: "#22ff66", metallic: 0, roughness: 0.2, emissive: "#22ff66" },
+       red: { colour: "#ff2a2a", metallic: 0, roughness: 0.2, emissive: "#ff2a2a" },
+       ground: { colour: "#050506", metallic: 0, roughness: 1 },
+   } satisfies Record<string, Finish>;
+
+   type Look = keyof typeof FINISHES;
+
+   function isDark(hex: string): boolean {
+       const value = parseInt(hex.slice(1), 16);
+       const channel = (shift: number) => ((value >> shift) & 255) / 255;
+       return 0.2126 * channel(16) + 0.7152 * channel(8) + 0.0722 * channel(0) < 0.3;
+   }
+
+   export function makeLooks() {
+       const looks = {} as Record<Look, Bit.Inputs.Draw.DrawOcctShapeOptions>;
+       for (const [name, finish] of Object.entries(FINISHES) as [Look, Finish][]) {
+           const material = bitbybit.babylon.material.pbrMetallicRoughness.create({
+               name,
+               baseColor: finish.colour,
+               emissiveColor: finish.emissive ?? "#000000",
+               metallic: finish.metallic,
+               roughness: finish.roughness,
+               alpha: 1,
+               backFaceCulling: false,
+               zOffset: 2,
+           });
+           const edges = finish.edgeWidth === undefined
+               ? { drawEdges: false }
+               : { edgeColour: isDark(finish.colour) ? "#f2f2f2" : "#0d0e10", edgeWidth: finish.edgeWidth };
+           looks[name] = bitbybit.draw.optionsOcctShape({ faceMaterial: material, precision: 0.05, drawTwoSided: false, ...edges });
+       }
+       return looks;
+   }
+
+   export function draw(look: Bit.Inputs.Draw.DrawOcctShapeOptions, shapes: Shape | Shape[]) {
+       return bitbybit.draw.drawAnyAsync({ entity: shapes, options: look });
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { setStage } from "./stage";
+   import { draw, makeLooks } from "./materials";
+   ```
+
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   const looks = makeLooks();
+   await draw(looks.ground, await setStage());
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="typescript.tutorials.drone/stage" />
+
+3. The frame plate is a rounded rectangle, 96 by 150 millimetres, made into a face and extruded 3 millimetres. Hexagon vents from a grid of hexagons are cut through it at the front and the back. The parts go in a folder of their own; `main.ts` places a second plate 13 millimetres above the first and draws both in carbon.
+
+   - **Make `parts/frame.ts`:**
+
+   ```typescript
+   export async function framePlate() {
+       const rectangle = await bitbybit.occt.shapes.wire.createRectangleWire({ width: 96, length: 150 });
+       const outline = await bitbybit.occt.fillets.fillet2d({ shape: rectangle, radius: 26 });
+       const face = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: outline, planar: true });
+       const slab = await bitbybit.occt.operations.extrude({ shape: face, direction: [0, 3, 0] });
+       const cuts = await vents();
+       return bitbybit.occt.booleans.difference({ shape: slab, shapes: cuts, keepEdges: false });
+   }
+
+   async function vents() {
+       const hexagons = await bitbybit.occt.shapes.wire.hexagonsInGrid({
+           width: 56,
+           height: 20,
+           nrHexagonsInWidth: 5,
+           nrHexagonsInHeight: 2,
+           flatTop: true,
+           scalePatternWidth: [0.8],
+           scalePatternHeight: [0.8],
+       });
+       const faces = await bitbybit.occt.shapes.face.createFacesFromWires({ shapes: hexagons, planar: true });
+       const prisms = await bitbybit.occt.operations.extrudeShapes({ shapes: faces, direction: [0, 3, 0] });
+       const set = await bitbybit.occt.shapes.compound.makeCompound({ shapes: prisms });
+       const front = await bitbybit.occt.transforms.translate({ shape: set, translation: [0, 0, 60] });
+       const back = await bitbybit.occt.transforms.translate({ shape: set, translation: [0, 0, -60] });
+       return [front, back];
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { framePlate } from "./parts/frame";
+   ```
+
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   const plate = await framePlate();
+   const topPlate = await bitbybit.occt.transforms.translate({ shape: plate, translation: [0, 13, 0] });
+   await draw(looks.carbon, [plate, topPlate]);
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   <Shot id="typescript.tutorials.drone/plates" />
+
+{/* steps:end */}
+
+Next: [around, bolts and standoffs](./around.mdx).

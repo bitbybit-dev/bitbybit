@@ -1,6 +1,6 @@
-import * as BABYLON from "@babylonjs/core";
-import { Context } from "../../../context";
-import * as Inputs from "../../../inputs";
+import type * as BABYLON from "@babylonjs/core";
+import type { Context } from "../../../context";
+import type * as Inputs from "../../../inputs";
 
 /**
  * The building blocks the `webXr.simple` entry points are made of, for applications that hold the

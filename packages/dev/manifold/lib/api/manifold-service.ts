@@ -1,18 +1,21 @@
-import * as Manifold3D from "manifold-3d";
-import * as Inputs from "./inputs";
+import type * as Manifold3D from "manifold-3d";
+import type * as Inputs from "./inputs";
 import { Manifold } from "./services/manifold/manifold";
 import { CrossSection } from "./services/cross-section/cross-section";
 import { Mesh } from "./services/mesh/mesh";
+import { ManifoldRecipes } from "./services/recipes/recipes";
+import { creasedMeshData, positionsOf } from "./services/mesh-data";
 import { BaseBitByBit } from "../base";
 
 /**
  * The entry point to the Manifold kernel, a fast mesh-based solid modeler: `manifold` builds and
- * changes solids, `crossSection` handles the flat outlines they are extruded and revolved from, and
- * `mesh` reads the triangle data. Manifold works on triangle meshes rather than exact curves, so
- * booleans are quick and always watertight, and it keeps its own Z axis as up: extrusions grow
- * along Z and slices are parallel to the XY plane. The methods on the service itself turn solids
- * and cross-sections into plain mesh data for drawing.
+ * changes solids, `crossSection` handles the flat outlines they are extruded and revolved from,
+ * `mesh` reads the triangle data, and `recipes` builds solids described as data. Manifold works on
+ * triangle meshes rather than exact curves, so booleans are quick and always watertight, and it
+ * keeps its own Z axis as up: extrusions grow along Z and slices are parallel to the XY plane. The
+ * methods on the service itself turn solids and cross-sections into plain mesh data for drawing.
  */
+
 export class ManifoldService {
     plugins: any;
     public manifold: Manifold;
@@ -20,20 +23,28 @@ export class ManifoldService {
     public crossSection: CrossSection;
     private base: BaseBitByBit;
     mesh: Mesh;
+    /**
+     * Experimental: builds solids described as data, whose format may still change.
+     * @beta
+     */
+    recipes: ManifoldRecipes;
+    private readonly wasm: Manifold3D.ManifoldToplevel;
 
     constructor(wasm: Manifold3D.ManifoldToplevel) {
+        this.wasm = wasm;
         this.base = new BaseBitByBit();
         this.manifold = new Manifold(wasm);
         this.crossSection = new CrossSection(wasm, this.base);
         this.mesh = new Mesh(wasm);
+        this.recipes = new ManifoldRecipes(wasm);
     }
 
     /**
      * Turns a solid into plain mesh data, or a cross-section into its polygons, ready for drawing
      * or export.
      *
-     * `normalIdx` names the vertex property channel that holds normals, when the solid carries
-     * them.
+     * `normalIdx` names the channel holding normals the solid carries. With `minSharpAngle`, normals
+     * follow each position, smooth across flatter edges and split across sharper ones.
      * @param inputs - The solid or cross-section and the optional normal channel
      * @returns The mesh data of a solid, or the polygons of a cross-section
      * @group decompose
@@ -46,7 +57,15 @@ export class ManifoldService {
      */
     decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Manifold3D.Manifold | Manifold3D.CrossSection>): Manifold3D.Mesh | Manifold3D.SimplePolygon[] {
         if ((inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh) {
-            return (inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh(inputs.normalIdx);
+            const solid = inputs.manifoldOrCrossSection as Manifold3D.Manifold;
+            if (inputs.minSharpAngle === undefined) {
+                return solid.getMesh(inputs.normalIdx);
+            }
+            if (!Number.isFinite(inputs.minSharpAngle) || inputs.minSharpAngle < 0) {
+                throw new RangeError(`minSharpAngle must be a finite angle of at least 0 degrees, got ${inputs.minSharpAngle}`);
+            }
+            const plain = solid.getMesh();
+            return new this.wasm.Mesh(creasedMeshData(positionsOf(plain), plain.triVerts, inputs.minSharpAngle));
         } else {
             return (inputs.manifoldOrCrossSection as Manifold3D.CrossSection).toPolygons();
         }
@@ -140,6 +159,7 @@ export class ManifoldService {
             const normalIdx = inputs.normalIdx ? inputs.normalIdx[index] : undefined;
             return this.decomposeManifoldOrCrossSection({
                 manifoldOrCrossSection,
+                minSharpAngle: inputs.minSharpAngle,
                 normalIdx
             });
         });

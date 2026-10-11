@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, vi, afterEach } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { readKernelException } from "./kernel-exception";
 
 describe("readKernelException", () => {

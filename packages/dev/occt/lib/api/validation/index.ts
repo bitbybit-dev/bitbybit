@@ -1,4 +1,5 @@
-import { RuleBook, ruleBook } from "@bitbybit-dev/base";
+import type { RuleBook } from "@bitbybit-dev/base";
+import { ruleBook } from "@bitbybit-dev/base";
 import { filletRules } from "./fillets";
 import { shapeRules } from "./shapes";
 import { transformRules } from "./transforms";

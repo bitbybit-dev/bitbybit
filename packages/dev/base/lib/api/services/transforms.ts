@@ -1,10 +1,10 @@
 
-import { Base } from "../inputs/base-inputs";
+import type { Base } from "../inputs/base-inputs";
 import * as Inputs from "../inputs";
-import { MathBitByBit } from "./math";
-import { Vector } from "./vector";
+import type { MathBitByBit } from "./math";
+import type { Vector } from "./vector";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Builds transformation matrices for moving, rotating, scaling and stretching geometry. A
@@ -441,12 +441,6 @@ export class Transforms {
         return m;
     }
 
-    /**
-     * Creates a 4x4 matrix that scales along a given direction vector.
-     * @param direction The direction vector (will be normalized).
-     * @param scale The scale factor along the direction.
-     * @returns A 4x4 column-major transformation matrix.
-     */
     private stretchDirection(direction: Base.Vector3, scale: number): Base.TransformMatrix {
         const d = this.vector.normalized({ vector: direction });
 

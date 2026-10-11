@@ -1,5 +1,7 @@
-import { DtoConstraints, NumberBounds, PropertyConstraint, ValueKind } from "./constraints";
-import { DtoConstructor, DtoRegistry, isRegisteredOperation, resolveInputs } from "./resolve-dto";
+import type { DtoConstraints, NumberBounds, PropertyConstraint, ValueKind } from "./constraints";
+import type { DtoConstructor, DtoRegistry } from "./resolve-dto";
+import { isRegisteredOperation, resolveInputs } from "./resolve-dto";
+import { isRecord } from "./unknown-values";
 
 /**
  * Something wrong with the inputs of a call. `property` names the input at fault, `code` says what
@@ -44,7 +46,6 @@ export type RuleBook = ReadonlyMap<RuleTarget, readonly InputRule<unknown>[]>;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 const TUPLE_LENGTH: Partial<Record<ValueKind, number>> = { point2: 2, vector2: 2, point3: 3, vector3: 3 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === "object" && !Array.isArray(value);
 const issue = (property: string, code: string, message: string, params?: Record<string, unknown>): InputIssue => (params ? { property, code, message, params } : { property, code, message });
 
 function checkBounds(property: string, value: number, bounds: NumberBounds): InputIssue | undefined {
@@ -64,8 +65,12 @@ function checkValue(property: string, value: unknown, constraint: PropertyConstr
     }
     switch (constraint.kind) {
         case "number":
-            if (typeof value !== "number") return issue(property, "type", "must be a number");
-            if (Number.isNaN(value)) return issue(property, "not-a-number", "is not a number (NaN)");
+            if (typeof value !== "number") {
+                return issue(property, "type", "must be a number");
+            }
+            if (Number.isNaN(value)) {
+                return issue(property, "not-a-number", "is not a number (NaN)");
+            }
             return constraint.bounds ? checkBounds(property, value, constraint.bounds) : undefined;
         case "boolean":
             return typeof value === "boolean" ? undefined : issue(property, "type", "must be true or false");
@@ -80,17 +85,27 @@ function checkValue(property: string, value: unknown, constraint: PropertyConstr
         case "vector3": {
             const expected = TUPLE_LENGTH[constraint.kind];
             const count = expected === undefined ? "2 or 3" : String(expected);
-            if (!Array.isArray(value)) return issue(property, "type", `must be a list of ${count} numbers`);
+            if (!Array.isArray(value)) {
+                return issue(property, "type", `must be a list of ${count} numbers`);
+            }
             const fits = expected === undefined ? value.length === 2 || value.length === 3 : value.length === expected;
-            if (!fits) return issue(property, "arity", `must have ${count} numbers, not ${value.length}`, { expected: expected ?? [2, 3], actual: value.length });
+            if (!fits) {
+                return issue(property, "arity", `must have ${count} numbers, not ${value.length}`, { expected: expected ?? [2, 3], actual: value.length });
+            }
             return value.every((n) => typeof n === "number" && !Number.isNaN(n)) ? undefined : issue(property, "type", `must be a list of ${count} numbers`);
         }
         case "list": {
-            if (!Array.isArray(value) && !ArrayBuffer.isView(value)) return issue(property, "type", "must be a list");
-            if (!constraint.items || !Array.isArray(value)) return undefined;
+            if (!Array.isArray(value) && !ArrayBuffer.isView(value)) {
+                return issue(property, "type", "must be a list");
+            }
+            if (!constraint.items || !Array.isArray(value)) {
+                return undefined;
+            }
             for (let index = 0; index < value.length; index++) {
                 const itemIssue = checkValue(property, value[index], { required: true, ...constraint.items });
-                if (itemIssue) return { ...itemIssue, message: `item ${index} ${itemIssue.message}`, params: { ...itemIssue.params, index } };
+                if (itemIssue) {
+                    return { ...itemIssue, message: `item ${index} ${itemIssue.message}`, params: { ...itemIssue.params, index } };
+                }
             }
             return undefined;
         }
@@ -114,7 +129,9 @@ export function checkStructure(constraints: DtoConstraints, inputs: unknown): In
     const issues: InputIssue[] = [];
     for (const [property, constraint] of Object.entries(constraints)) {
         const found = checkValue(property, record[property], constraint);
-        if (found) issues.push(found);
+        if (found) {
+            issues.push(found);
+        }
     }
     return issues;
 }
@@ -165,7 +182,9 @@ export function validateInputs(registry: DtoRegistry, path: string, inputs: unkn
     const issues = checkStructure(entry.constraints, inputs);
     const failed = new Set(issues.map((found) => found.property));
     rulesOf(entry.dto, rules).forEach((rule, index) => {
-        if (rule.reads.some((property) => failed.has(property))) return;
+        if (rule.reads.some((property) => failed.has(property))) {
+            return;
+        }
         const found = rule.check(inputs);
         if (found) {
             ruleOfIssue.set(found, index);
@@ -210,7 +229,7 @@ const reported = new Set<string>();
 
 /**
  * Where input issues go; by default a console warning. Passing nothing restores the default. The
- * reporter says each distinct issue once, so a configurator that redraws on every change is not
+ * reporter says each distinct issue once, so a caller that redraws on every change is not
  * flooded.
  * @param next - The function that receives each new issue, or undefined for the console
  */
@@ -238,11 +257,15 @@ export function reportInputIssues(kernel: string, path: string, issues: readonly
     for (const found of all) {
         const rule = ruleOfIssue.get(found);
         const key = `${kernel}|${path}|${found.property}|${found.code}${rule === undefined ? "" : `|rule ${rule}`}`;
-        if (reported.has(key)) continue;
+        if (reported.has(key)) {
+            continue;
+        }
         reported.add(key);
         if (reported.size > MAX_REMEMBERED_ISSUES) {
             const oldest = reported.values().next();
-            if (!oldest.done) reported.delete(oldest.value);
+            if (!oldest.done) {
+                reported.delete(oldest.value);
+            }
         }
         sink({ kernel, path, issue: found });
     }
@@ -279,7 +302,6 @@ export function prepareKernelCall(kernel: string, registry: DtoRegistry, path: s
         try {
             reportInputIssues(kernel, path, validateInputs(registry, path, inputs, rules), unknownProperties(registry, path, given));
         } catch {
-            // Issues are only reported for now, so a check or a sink that throws must not fail the call.
         }
     };
     return { inputs, reportIssues };

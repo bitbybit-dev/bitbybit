@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputError, InputIssueReport, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
-import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
+import type { InputIssueReport } from "@bitbybit-dev/base";
+import { InputError, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
+import type { DataInput } from "./manifold-worker";
+import { initializationComplete, onMessageInput } from "./manifold-worker";
 
 const { FakeCacheHelper, latest, kernelCalls, failure } = vi.hoisted(() => {
     class FakeCacheHelper {
@@ -140,6 +142,24 @@ describe("the worker message loop", () => {
     });
 
     describe("initializationComplete", () => {
+        it("should hold a call that arrives before the kernel and answer it once the kernel is given", async () => {
+            // Arrange
+            vi.resetModules();
+            const fresh = await import("./manifold-worker");
+            const posted: unknown[] = [];
+            fresh.onMessageInput({ action: { functionName: "manifold.shapes.cube", inputs: { size: 1 } }, uid: "early" }, (message: unknown) => posted.push(message));
+            const beforeTheKernel = [...posted];
+            kernelCalls.length = 0;
+
+            // Act
+            fresh.initializationComplete(A_KERNEL, undefined, true);
+
+            // Assert
+            expect(beforeTheKernel).toEqual([]);
+            expect(posted[0]).toBe("busy");
+            expect(kernelCalls).toEqual([{ path: "manifold.shapes.cube", inputs: { size: 1 } }]);
+        });
+
         it("should announce itself to the host that started it", () => {
             // Act
             initializationComplete(A_KERNEL);
@@ -826,12 +846,28 @@ describe("the worker message loop", () => {
             expect(answer().result).toBeUndefined();
         });
 
-        it("should still answer when the call named no function", () => {
+        it("should refuse a call that names no method as an input", () => {
+            // Act
+            run({ functionName: "", inputs: { size: 1 } });
+
+            // Assert
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "A Manifold call must name the method it calls, such as manifold.shapes.cube", errorKind: "input", stack: expect.any(String) });
+        });
+
+        it("should refuse a call that leaves the method out as an input", () => {
             // Act
             run({ inputs: { size: 1 } });
 
             // Assert
-            expect(answer().error).toContain("Manifold computation failed");
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "A Manifold call must name the method it calls, such as manifold.shapes.cube", errorKind: "input", stack: expect.any(String) });
+        });
+
+        it("should refuse a message that carries no action as an input", () => {
+            // Act
+            onMessageInput({ uid: "uid-1" } as DataInput, (message: unknown) => messages.push(message));
+
+            // Assert
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "A Manifold call must name the method it calls, such as manifold.shapes.cube", errorKind: "input", stack: expect.any(String) });
         });
 
         it("should still answer when there are no inputs to repeat", () => {
@@ -928,7 +964,7 @@ describe("the worker message loop", () => {
             expect(answer().error).toBe("Manifold computation failed while executing function 'boom': [object Object].");
         });
 
-        it("should still answer, with a fixed message, when the failure cannot be sent back", () => {
+        it("should still answer, naming the call, when the failure cannot be sent back", () => {
             // Arrange
             const sent: unknown[] = [];
             const post = (message: unknown): void => {
@@ -940,6 +976,23 @@ describe("the worker message loop", () => {
 
             // Act
             onMessageInput({ action: { functionName: "boom", inputs: {} }, uid: "uid-9" }, post);
+
+            // Assert
+            expect(sent).toEqual(["busy", { uid: "uid-9", result: undefined, error: "Manifold 'boom' failed, and the failure could not be reported.", errorKind: "kernel" }]);
+        });
+
+        it("should say only that the computation failed when the call names no function", () => {
+            // Arrange
+            const sent: unknown[] = [];
+            const post = (message: unknown): void => {
+                if (typeof message === "object" && message !== null && "stack" in message) {
+                    throw new Error("the channel refused");
+                }
+                sent.push(message);
+            };
+
+            // Act
+            onMessageInput({ action: { functionName: "", inputs: {} }, uid: "uid-9" }, post);
 
             // Assert
             expect(sent).toEqual(["busy", { uid: "uid-9", result: undefined, error: "Manifold computation failed, and the failure could not be reported.", errorKind: "kernel" }]);

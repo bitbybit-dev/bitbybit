@@ -22,6 +22,7 @@ export const FIXTURE_GUIDES: readonly GuideSection[] = [
     { id: "the-honest-default", title: "The honest default", level: 3, body: "The packages are the whole answer." },
     { id: "browser-apps", title: "Browser apps", level: 3, body: "The kernels run in the tab." },
     { id: "get-started", title: "Get started", level: 2, body: "Scaffold a project." },
+    { id: "what-a-design-document-is", title: "What a design document is", level: 2, body: "A parametric model as JSON.", page: "https://example.test/design" },
 ];
 
 export function fixtureContext(): DocsContext {

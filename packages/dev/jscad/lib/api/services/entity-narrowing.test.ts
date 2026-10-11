@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import * as Inputs from "../inputs/jscad-inputs";
+import type * as Inputs from "../inputs/jscad-inputs";
 import { asEntity, asKind, asPath, asRegion, asSolid, oneOrMany } from "./entity-narrowing";
 
 const IDENTITY: Inputs.JSCAD.JSCADMat4 = [

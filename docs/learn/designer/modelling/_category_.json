@@ -1,0 +1,11 @@
+{
+    "label": "Modelling",
+    "key": "designer-modelling",
+    "position": 3.2,
+    "link": {
+        "type": "generated-index",
+        "title": "Modelling parts in the Designer",
+        "description": "How to model a part in the Designer: sketches, the features and their dialogs, parameters, references to faces and edges, parts with materials, the history of a part and how to change it, what the Problems tab tells you, and how to look at and pick what you need in the view.",
+        "slug": "/designer/modelling"
+    }
+}

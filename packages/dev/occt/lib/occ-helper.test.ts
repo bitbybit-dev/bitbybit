@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import initOpenCascade, { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import initOpenCascade from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "./occ-helper";
 import { VectorHelperService } from "./api/vector-helper.service";
 import { ShapesHelperService } from "./api/shapes-helper.service";

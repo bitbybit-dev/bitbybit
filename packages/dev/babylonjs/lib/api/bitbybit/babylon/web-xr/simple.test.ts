@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
 import * as BABYLON from "@babylonjs/core";
 import { GUI3DManager, NearMenu, TouchHolographicButton } from "@babylonjs/gui";
-import { createHeadlessScene, HeadlessScene } from "../../../__test__/headless";
+import type { HeadlessScene } from "../../../__test__/headless";
+import { createHeadlessScene } from "../../../__test__/headless";
 import { BabylonWebXRSimple } from "./simple";
 import * as Inputs from "../../../inputs";
 

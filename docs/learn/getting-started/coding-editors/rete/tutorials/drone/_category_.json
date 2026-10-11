@@ -1,0 +1,11 @@
+{
+    "label": "Build a drone",
+    "key": "rete-drone",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "Build a drone in Rete",
+        "description": "A quadcopter built step by step in the Rete editor, with a picture after every step: number sliders for its sizes, a carbon frame with hexagon vents, two modules (one that repeats a part evenly around the drone, one for an arm with its motor, propeller, bolts and light), code components for the detailed parts, a canopy with a honeycomb, sprung landing legs and a camera, every part in a group with a comment. The finished drone is the Rete showcase.",
+        "slug": "/getting-started/rete/tutorials/drone"
+    }
+}

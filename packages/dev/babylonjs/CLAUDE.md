@@ -5,17 +5,16 @@ up in `packages/dev/CLAUDE.md`.
 
 **The engine is a peer dependency here, not a hard one** - `@babylonjs/core`, `gui`, `havok`,
 `loaders`, `materials`, `serializers`, plus `earcut`. Its siblings `threejs` and `playcanvas` take
-their engines as ordinary dependencies instead. That asymmetry is load-bearing: the tooling that
-provisions a runtime reads **`peerDependencies`** as the source of truth for which engine version
-to install. Moving an engine between `dependencies` and `peerDependencies`
-therefore changes how the runners resolve it.
+their engines as ordinary dependencies instead. That asymmetry is load-bearing: applications that
+install the engine themselves read **`peerDependencies`** to know which engine version to install,
+so moving an engine between `dependencies` and `peerDependencies` changes what they get.
 
 Because the engine is a peer, the consuming application supplies it. A version skew between the app's
 Babylon and the one this package was built against surfaces at runtime, not at build time.
 
 Adding a feature area follows a fixed shape: a class, its inputs, two index entries and the
-aggregator. JSDoc tags on the public surface drive code generation downstream, so a missing tag
-produces a wrong result there rather than an error here.
+aggregator. JSDoc tags on the public surface are read as data by documentation tooling, so a missing
+tag produces a wrong result there rather than an error here.
 
 The shared draw rules live in `core`'s `CLAUDE.md`. What Babylon itself forces:
 
@@ -45,3 +44,15 @@ The shared draw rules live in `core`'s `CLAUDE.md`. What Babylon itself forces:
   names minted in another tab, a worker, or an older file being imported back. The name contains **no
   dot**, because a glTF importer that reads a trailing dot-and-digits as a duplicate marker can parse a
   long digit run into a fixed-width integer and abort.
+- **A shape with its appearance is one mesh with a sub-mesh and a material per look**: a
+  `MultiMaterial` over the cached look materials when there is more than one look, the cached material
+  itself when there is one. Each triangle is written reversed, which is what `flipFaces(false)` does
+  to the plain kernel meshes; calling `flipFaces` instead sets the indices again, and Babylon then
+  replaces the sub-meshes with one. `metadata.faceRanges` says where each face's triangles sit.
+- **A design build is one mesh and one greased line per part, both thin-instanced** from one matrix
+  buffer per part, so a placement adds no node. The line follows the instances because the greased
+  line's camera-facing vertex code places vertices through `finalWorld`, which carries the thin
+  instance matrix on the PBR material type the lines use. A pose writes that buffer, calls
+  `thinInstanceBufferUpdated` and refreshes the bounding info. A redraw disposes the part meshes,
+  their `MultiMaterial` and the lines with their own materials, never the cached look materials.
+  `draw-appearance.test.ts` runs all of it on the `NullEngine`, not the engine mock.

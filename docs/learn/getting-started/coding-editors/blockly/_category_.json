@@ -1,0 +1,10 @@
+{
+    "label": "Blockly",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Getting Started With Bitbybit Blockly Editor",
+        "description": "Blockly is Bitbybit's block-based editor, where a program is assembled from interlocking blocks rather than typed. The blocks only fit together in ways that make sense, so a whole kind of syntax mistake cannot happen, which makes it the gentlest way into programming 3D geometry. These pages tour the editor, offer three showcase scripts, build two scripts step by step, and explain building a script, working with blocks, variables and functions, the code behind the blocks, and every shortcut.",
+        "slug": "/getting-started/blockly"
+    }
+}

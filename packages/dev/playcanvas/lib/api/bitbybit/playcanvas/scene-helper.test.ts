@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { initPlayCanvas } from "./scene-helper";
 import { PlayCanvasScene } from "../../inputs/playcanvas-scene-helper-inputs";
 import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { asMockApp, asMockEntity } from "../../__mocks__/playcanvas.mock";
 import type { Mock } from "vitest";

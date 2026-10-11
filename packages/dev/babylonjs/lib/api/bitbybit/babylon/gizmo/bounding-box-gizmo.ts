@@ -1,8 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * The bounding box gizmo: a frame around the attached mesh with corner boxes that scale it and

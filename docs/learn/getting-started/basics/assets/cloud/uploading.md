@@ -2,7 +2,10 @@
 sidebar_position: 2
 title: Uploading Cloud Assets to Your Projects
 sidebar_label: Uploading Cloud Assets
-description: Learn the step-by-step process for uploading cloud assets (like .glb and .step files) to your Bitbybit projects for use in your scripts.
+description: Add files to a cloud project on bitbybit.dev - Add files under the project's Files, a title for each file or one for all, the limits your plan sets - and copy a file's address to use it elsewhere.
+topic: platform.assets.cloud-upload
+type: how-to
+verified: 2026-10-09
 tags: [getting-started, assets]
 ---
 
@@ -21,65 +24,46 @@ We'll use these two different asset types (a `.glb` glTF file and a `.step` CAD 
 ## Before We Start: Project Setup
 
 You'll first need to either:
-*   Create a new project, or
-*   Use an existing project.
+*   Create a new project kept in the cloud, or
+*   Use an existing cloud project.
 
 If you're unsure how to create a project, please refer to our [Create a New Project](/learn/getting-started/basics/projects/create-project) tutorial. The type of script you choose initially (Blockly, Rete, or TypeScript) doesn't matter for the asset uploading process, as cloud assets are linked to the project itself. We'll provide examples later on how to use these uploaded assets in different script types.
 
 ## How to Upload a Cloud Asset
 
-Cloud assets are directly associated with your projects. Think of them as integral parts of a specific project. Therefore, the upload process happens through the project management panel.
+Cloud assets belong to a project, so you add them where the project's scripts are listed: on [My Projects](https://bitbybit.dev/projects/my), or, while a script is open in an editor, in the projects list that its title opens.
 
-You can access the project management panel in two main ways:
-1.  While working in one of the editors.
-2.  By navigating to the [My Projects](https://bitbybit.dev/projects/my) dashboard.
+1.  **Open the project.** On [My Projects](https://bitbybit.dev/projects/my), choose the project on the left. Below its scripts is <Ui>Files</Ui>, with the number of files the project holds and, under it, how many files your plan keeps in a project and how much of your cloud storage is used.
 
-Let's focus on uploading via the editor:
+    <Shot id="platform.assets.cloud-upload/files" />
 
-### Uploading via the Editor
+    From an editor, click the script's title at the top: the same projects list opens over the editor, where you choose the project the same way.
 
-1.  **Open Project Management:**
-    If you've just created a new project and its first script, you'll be in an active editor session. To open the project management panel, click the button in the top-left corner of the editor. This button usually displays the name of your current script and has a settings icon.
+2.  **Choose the files.** Click <Ui>Add files</Ui> and pick `BoomBox.glb` and `CalmCup.step` where you saved them. You can pick several files at once.
 
-    ![The button in the editor's top-left corner (often showing the script name and a settings icon) used to open the project management panel.](https://bitbybit.dev/files/site/start/general/assets/cloud/script-icon.jpeg "Button to open project management panel")
-    *Button to open project management panel*
-    *(Note: The word "Script" in the image is a placeholder; it will show your actual script's name.)*
+3.  **Give them titles.** Each file gets a title, which starts as its file name without the extension: **BoomBox** and **CalmCup** here. Scripts load a file by its title or by its file name.
+    *   With several files, <Ui>A title for each file</Ui> keeps them apart; leave it chosen for this exercise.
+    *   <Ui>One title for all</Ui> puts them under one title instead: the <Ui>get local file</Ui> component then loads them together as a list, such as the files of a glTF model with its textures, and each can still be loaded alone by its file name. A title that a file of the project already has joins that file the same way, and the form says so under the title.
+    *   A title cannot be the name of another file, and a file name can be in the project only once.
+    *   <Ui>Leave this file out</Ui> takes a file off before anything is uploaded.
 
-2.  **Initiate Asset Upload:**
-    After clicking the button mentioned above, the project management panel will open. Look for an **"Upload Asset"** button, often located towards the bottom right of this panel, and click it.
+    <Shot id="platform.assets.cloud-upload/titles" />
 
-    ![The project management panel highlighting the "Upload Asset" button.](https://bitbybit.dev/files/site/start/general/assets/cloud/upload-cloud-asset-1.jpeg "Button to initiate cloud asset upload")
-    *Button to initiate the upload of a cloud asset*
+4.  **Upload.** Click **Add 2 files**, the button that counts the files you chose. The files upload to the project, and the list shows each one under its title, with its file name and size.
 
-3.  **Fill the Upload Form:**
-    You'll be presented with a form where you need to:
-    *   **Asset Title:** Enter a descriptive title for your asset.
-    *   **Choose File:** Select the asset file from your computer.
-
-    :::tip Naming Convention
-    We advise using a user-friendly name for the **Asset Title**. However, when you later use this asset in your scripts, you will typically refer to its **original file name** (e.g., `BoomBox.glb`, `CalmCup.step`), not the title you set here. Keep this in mind for consistency.
-    :::
-
-    For our examples:
-    *   Set the title for `BoomBox.glb` to "BoomBox".
-    *   Set the title for `CalmCup.step` to "CalmCup".
-
-    The form for the `BoomBox.glb` asset should look something like this:
-
-    ![The asset upload form with "BoomBox" as the title and the "BoomBox.glb" file selected.](https://bitbybit.dev/files/site/start/general/assets/cloud/upload-cloud.jpeg "Filled asset upload form")
-    *Filled asset upload form*
-
-4.  **Upload the Asset:**
-    Click the **"Upload"** button. The asset will begin uploading to your project's cloud storage.
-    *   The form will close, and after a short processing time, you should see the asset appear in the list of your project's assets within the management panel.
-    *   **Plan Limits:** Your plan's limits are checked before anything is uploaded. If the file is larger than your plan allows, or the project or your cloud storage is full, you are told which, and nothing is uploaded.
-
-5.  **Repeat for Other Assets:**
-    Follow the same steps (3 and 4) to upload the `CalmCup.step` file.
-
-After successfully uploading both files, your project's asset list in the management panel should look similar to this:
-
-![The project management panel showing the "BoomBox" and "CalmCup" assets successfully uploaded and listed.](https://bitbybit.dev/files/site/start/general/assets/cloud/uploaded-assets.jpeg "List of uploaded cloud assets")
-*Uploaded assets appear in the list*
+    <Shot id="platform.assets.cloud-upload/list" />
 
 Your cloud assets are now ready to be used by any of the scripts within this specific project! In the following sections, we'll show you how to import and utilize these assets in your Rete, Blockly, and TypeScript scripts.
+
+## What your plan allows
+
+Your plan's limits are checked before anything is uploaded: the number of files a project keeps, the size of one file and your cloud storage in all. A file that does not fit says why under its title, and <Ui>Add files</Ui> is turned off when the project or your storage is full. Each plan's limits are listed under [Pick a Plan](https://bitbybit.dev/auth/pick-plan).
+
+A cloud project keeps the file types listed in [What is an Asset?](/learn/getting-started/basics/assets/intro#what-is-an-asset), and a file name of letters, digits, spaces, `_ - ( )` and one extension; rename a file that has other characters before adding it. A project kept in this browser keeps any type of file.
+
+## Managing the files
+
+Beside each file:
+*   <Ui>Copy the file address</Ui> copies a link that downloads the file, for use outside the project, such as in a web page of your own or another tool. Anyone you give the link to can download the file.
+*   <Ui>Download</Ui> downloads it.
+*   <Ui>Delete</Ui> removes it from the project once you confirm. Scripts that load it will no longer find it.

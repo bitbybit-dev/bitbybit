@@ -3,10 +3,14 @@ sidebar_position: 3
 title: "OCCT Fillets: Applying to 2D Wires"
 sidebar_label: Fillets on 2D Wires
 description: Learn how to apply fillets to the corners of 2D wires in OCCT to create rounded transitions between connected edges, using Bitbybit's Rete, Blockly, and TypeScript editors.
-tags: [occt]
+topic: code.occt.fillets.on-2d-wires
+type: how-to
+tags: [code, occt]
 ---
 
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # OCCT Fillets: Applying to 2D Wires
 
@@ -26,25 +30,34 @@ Similar to filleting solids, you can typically:
 
 The examples below demonstrate how to create a simple 2D wire (e.g., a polyline or a rectangle) and then apply a fillet with the same radius to all of its corners.
 
-**TypeScript Example: Fillet All Corners of a Wire**
-<BitByBitRenderCanvas
-  requireManualStart={true}
-  script={{"script":"const start = async () => {\n    const squareOpt = new Bit.Inputs.OCCT.SquareDto();\n    const square = await bitbybit.occt.shapes.wire.createSquareWire(squareOpt);\n    const squareFillet = await bitbybit.occt.fillets.fillet2d({\n        shape: square,\n        radius: 0.25\n    });\n\n    bitbybit.draw.drawAnyAsync({\n        entity: squareFillet\n    });\n}\n\nstart();\n","type":"typescript"}}
-  title="Fillet All Corners of Wire"
-/>
+<Tabs groupId="editor" queryString>
+<TabItem value="rete" label="Rete">
 
-**Blockly Example: Fillet All Corners of a Wire**
-<BitByBitRenderCanvas
-  requireManualStart={true}
-  script={{"script":"<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"bitbybit.draw.drawAnyAsyncNoReturn\" id=\"UO^K1-FNciNjT{DsaF2S\" x=\"112\" y=\"-911\"><value name=\"Entity\"><block type=\"bitbybit.occt.fillets.fillet2d\" id=\"C9O)i|qmEJgLap43-Z;L\"><value name=\"Shape\"><block type=\"bitbybit.occt.shapes.wire.createSquareWire\" id=\"H3^18TfO9slzrT21aztx\"><value name=\"Size\"><block type=\"math_number\" id=\"^LeJ!`3jIgdZDn}p=/bh\"><field name=\"NUM\">1</field></block></value><value name=\"Center\"><block type=\"bitbybit.point.pointXYZ\" id=\"mzmQQh/*F|$K,Yc?3.}k\"><value name=\"X\"><block type=\"math_number\" id=\"oh:NburJx[a!Ofti2S.Y\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\" id=\"VYEX8LF=Ou3uq3A,N6GT\"><field name=\"NUM\">0</field></block></value><value name=\"Z\"><block type=\"math_number\" id=\"%Wf,`I{_m0gkmBbNqB1W\"><field name=\"NUM\">0</field></block></value></block></value><value name=\"Direction\"><block type=\"bitbybit.vector.vectorXYZ\" id=\"l0hSQuR6ry``rvJ9QHk3\"><value name=\"X\"><block type=\"math_number\" id=\"o4=QGwqlf{--K1gP)M#M\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\" id=\"}yFeDDSKT_@.{16TJ{/u\"><field name=\"NUM\">1</field></block></value><value name=\"Z\"><block type=\"math_number\" id=\"SBLFXbbDZxZ,T+!5$[dh\"><field name=\"NUM\">0</field></block></value></block></value></block></value><value name=\"Radius\"><block type=\"math_number\" id=\"M!i:8)[8Bg_8_~nA)0Br\"><field name=\"NUM\">0.24</field></block></value></block></value></block></xml>","type":"blockly"}}
-  title="Fillet All Corners of Wire"
-/>
-
-**Rete Example: Fillet All Corners of a Wire**
 <BitByBitRenderCanvas
   requireManualStart={true}
   script={{"script":"{\"id\":\"rete-v2-json\",\"nodes\":{\"2978b0692166de48\":{\"id\":\"2978b0692166de48\",\"name\":\"bitbybit.occt.shapes.wire.createSquareWire\",\"customName\":\"square wire\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":true,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"size\":1,\"center\":[0,0,0],\"direction\":[0,1,0]},\"inputs\":{},\"position\":[791.154487937843,877.3944151133886]},\"f4d42f035c26c026\":{\"id\":\"f4d42f035c26c026\",\"name\":\"bitbybit.occt.fillets.fillet2d\",\"customName\":\"fillet 2d\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"radius\":0.24},\"inputs\":{\"shape\":{\"connections\":[{\"node\":\"2978b0692166de48\",\"output\":\"result\",\"data\":{}}]}},\"position\":[1249.5551047178622,873.9058590672774]}}}","type":"rete"}}
-  title="Fillet All Corners of Wire"
+  title="Fillet All Corners of a Wire in Rete"
 />
+
+</TabItem>
+<TabItem value="blockly" label="Blockly">
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"bitbybit.draw.drawAnyAsyncNoReturn\" id=\"UO^K1-FNciNjT{DsaF2S\" x=\"112\" y=\"-911\"><value name=\"Entity\"><block type=\"bitbybit.occt.fillets.fillet2d\" id=\"C9O)i|qmEJgLap43-Z;L\"><value name=\"Shape\"><block type=\"bitbybit.occt.shapes.wire.createSquareWire\" id=\"H3^18TfO9slzrT21aztx\"><value name=\"Size\"><block type=\"math_number\" id=\"^LeJ!`3jIgdZDn}p=/bh\"><field name=\"NUM\">1</field></block></value><value name=\"Center\"><block type=\"bitbybit.point.pointXYZ\" id=\"mzmQQh/*F|$K,Yc?3.}k\"><value name=\"X\"><block type=\"math_number\" id=\"oh:NburJx[a!Ofti2S.Y\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\" id=\"VYEX8LF=Ou3uq3A,N6GT\"><field name=\"NUM\">0</field></block></value><value name=\"Z\"><block type=\"math_number\" id=\"%Wf,`I{_m0gkmBbNqB1W\"><field name=\"NUM\">0</field></block></value></block></value><value name=\"Direction\"><block type=\"bitbybit.vector.vectorXYZ\" id=\"l0hSQuR6ry``rvJ9QHk3\"><value name=\"X\"><block type=\"math_number\" id=\"o4=QGwqlf{--K1gP)M#M\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\" id=\"}yFeDDSKT_@.{16TJ{/u\"><field name=\"NUM\">1</field></block></value><value name=\"Z\"><block type=\"math_number\" id=\"SBLFXbbDZxZ,T+!5$[dh\"><field name=\"NUM\">0</field></block></value></block></value></block></value><value name=\"Radius\"><block type=\"math_number\" id=\"M!i:8)[8Bg_8_~nA)0Br\"><field name=\"NUM\">0.24</field></block></value></block></value></block></xml>","type":"blockly"}}
+  title="Fillet All Corners of a Wire in Blockly"
+/>
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"const squareOpt = new Bit.Inputs.OCCT.SquareDto();\nconst square = await bitbybit.occt.shapes.wire.createSquareWire(squareOpt);\nconst squareFillet = await bitbybit.occt.fillets.fillet2d({\n    shape: square,\n    radius: 0.25\n});\n\nbitbybit.draw.drawAnyAsync({\n    entity: squareFillet\n});\n","type":"typescript"}}
+  title="Fillet All Corners of a Wire in TypeScript"
+/>
+
+</TabItem>
+</Tabs>
 
 Applying fillets to 2D wires is a common technique for refining profiles before they are used to generate more complex 3D shapes, ensuring smooth and continuous transitions in the final model.

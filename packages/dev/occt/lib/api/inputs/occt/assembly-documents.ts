@@ -1,7 +1,6 @@
-// A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
-import { Base } from "@bitbybit-dev/base";
-import * as Models from "../../models";
+import type { Base } from "@bitbybit-dev/base";
+import type * as Models from "../../models";
+import { upAxisEnum } from "./enums";
 
 /**
  * A structure, an optional document to update and optional source documents for
@@ -611,6 +610,12 @@ export class ExportDocumentToGltfDto<T> {
      * @default false
      */
     forceUVExport?: boolean | undefined = false;
+    /**
+     * Which axis points up in the document. A z-up document is turned so that z becomes glTF's y;
+     * a y-up one is written as it is.
+     * @default z
+     */
+    up?: upAxisEnum | undefined = upAxisEnum.z;
     /**
      * The name the downloaded file gets; it should end in `.glb`.
      * @default assembly.glb

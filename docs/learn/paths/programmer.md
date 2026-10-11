@@ -3,6 +3,8 @@ sidebar_position: 1
 title: Software Developers
 sidebar_label: Programmer
 description: How to integrate Bitbybit's geometry engine into your web application, backend service, or development workflow.
+topic: platform.paths.programmer
+type: landing
 tags: [developer, npm, api, integration]
 ---
 
@@ -12,7 +14,7 @@ You want to integrate 3D geometry into your stack. Here is how to get started, d
 
 ## Try It First
 
-Open the [TypeScript editor](https://bitbybit.dev/app?editor=typescript) and this [Monaco Tutorial](/learn/getting-started/typescript/how-to-code-in-monaco) to start writing code immediately. Full autocomplete, zero setup - the fastest way to test algorithms before committing to an integration approach.
+Open the [TypeScript editor](https://bitbybit.dev/app?editor=typescript) and [the API in code](/learn/getting-started/typescript/how-to-code-in-monaco) to start writing code immediately. Full autocomplete, zero setup - the fastest way to test algorithms before committing to an integration approach.
 
 ## Client-Side: Run Geometry in the Browser
 
@@ -20,7 +22,7 @@ If your 3D logic should execute on the user's device, you have two options.
 
 ### NPM Packages (Recommended for production apps)
 
-Install our open-source packages into your existing frontend project. They run geometry kernels via WebAssembly and integrate directly with your rendering engine of choice.
+Install our open-source packages into your existing frontend project. They run geometry kernels via WebAssembly and integrate directly with your rendering engine of choice. To start a new project with everything wired, run `npx @bitbybit-dev/create-app` ([create-app](../npm-packages/create-app)).
 
 - [NPM Packages Introduction](../npm-packages/intro)
 - Renderer guides: [Three.js](../npm-packages/threejs) · [Babylon.js](../npm-packages/babylonjs) · [PlayCanvas](../npm-packages/playcanvas)

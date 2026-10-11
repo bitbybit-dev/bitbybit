@@ -1,9 +1,9 @@
 
 import * as BABYLON from "@babylonjs/core";
-import { Base } from "../../inputs/base-inputs";
+import type { Base } from "../../inputs/base-inputs";
 import * as Inputs from "../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 /**
  * Builds transformation matrices for moving, rotating and scaling geometry, using the BabylonJS

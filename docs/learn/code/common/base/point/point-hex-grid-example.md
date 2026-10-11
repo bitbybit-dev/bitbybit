@@ -3,6 +3,8 @@ sidebar_position: 3
 title: Point Hex Grid Examples
 sidebar_label: Point Hex Grid Examples
 description: Learn how to generate a hexagonal grid of points and hexagon outlines using Bitbybit's Point class, with examples in Rete, Blockly, and TypeScript.
+topic: code.base.point.hex-grid-example
+type: how-to
 tags: [code, point, rete, blockly, typescript]
 ---
 

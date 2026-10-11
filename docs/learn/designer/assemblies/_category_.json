@@ -1,0 +1,11 @@
+{
+    "label": "Assemblies",
+    "key": "designer-assemblies",
+    "position": 3.4,
+    "link": {
+        "type": "generated-index",
+        "title": "Assemblies in the Designer",
+        "description": "How to put parts together in the Designer: components and sub-assemblies, the connectors that mark where a part attaches, joints that fasten, turn or slide, a part placed on every hole of a set at once, patterns of components, and the bill of materials and clash check that inspect the result.",
+        "slug": "/designer/assemblies"
+    }
+}

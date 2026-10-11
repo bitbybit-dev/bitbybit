@@ -2,46 +2,23 @@
 sidebar_position: 4
 title: Searching Public Scripts in Bitbybit
 sidebar_label: Search Public Scripts
-description: Learn how to use the search feature to find specific public scripts in Bitbybit by title, author, description, or code content.
+description: Search the scripts of public projects on bitbybit.dev by title, author, editor, project and even the code they contain.
+topic: platform.scripts.search-public
+type: how-to
+verified: 2026-10-09
 tags: [getting-started, scripts]
 ---
 
 # Searching Public Scripts
 
-## How to Find a Specific Public Script
+The [public projects](https://bitbybit.dev/projects/public) page has a search box, <Ui>Search public scripts...</Ui>, above the projects. Type into it to find scripts by:
 
-On our [Public Projects Gallery](https://bitbybit.dev/projects/public) page, you'll find a button labeled **"Search Public Scripts"**. Clicking this button opens a dialog window with a single search input field. You can use this field to search for scripts by their:
+- their title;
+- their author;
+- their editor;
+- the title and description of their project;
+- the code they contain.
 
-*   Title
-*   Author's name
-*   Description
-*   Even parts of the code within the script
+## What can be found
 
-## What Kinds of Scripts Are Searchable?
-
-Currently, the search functionality is limited to scripts that meet the following criteria:
-*   They must be part of a **Public Project**.
-
-Scripts within Silver community projects, Gold community projects, or Private projects are **not** included in the search results.
-
-## How Search Indexing Works
-
-Please note that our search feature is currently somewhat experimental.
-*   **Indexing is not real-time:** If you create a new public project or update a script within an existing public project, it might not be immediately searchable. There can be a delay before the search index updates.
-*   **Deleted projects:** Similarly, if a public project is deleted, its scripts might remain searchable for a short period until the index refreshes.
-
-We will improve this feature in the future.
-
-## Video Tutorial: Search Feature Introduction
-
-Learn more about how the search feature works by watching this video tutorial:
-
-<div className="responsive-video-container">
-  <iframe
-    src="https://www.youtube.com/embed/m4cDaCQp23w"
-    title="Video that introduces search feature"
-    frameBorder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-    allowFullScreen
-  ></iframe>
-</div>
+The search covers the scripts of **public** projects, and each result can open in its editor or as a preview. It keeps its own index of those scripts, so a script that was just published or changed can take a while to be found, and a deleted one can still be found for a while.

@@ -153,6 +153,7 @@ export function outlineFor(spec: PanelSpec, p: BoxParams): Point2[] {
 }
 
 const same = (a: Point2, b: Point2): boolean => Math.abs(a[0] - b[0]) < 1e-9 && Math.abs(a[1] - b[1]) < 1e-9;
+const collinear = (a: Point2, b: Point2, c: Point2): boolean => Math.abs((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])) < 1e-9;
 
 function tidy(points: Point2[]): Point2[] {
     const out = [...points];
@@ -167,6 +168,7 @@ function tidy(points: Point2[]): Point2[] {
             if (!previous || !here || !next) break;
             if (same(here, next)) { out.splice(i, 1); changed = true; break; }
             if (same(previous, next)) { out.splice(i, 2); changed = true; break; }
+            if (collinear(previous, here, next)) { out.splice(i, 1); changed = true; break; }
         }
     }
     return out;

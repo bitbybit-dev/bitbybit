@@ -1,7 +1,6 @@
-// A fragment of the JSCAD inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../jscad-inputs.ts. Edit here, then regenerate.
-import { Base } from "../base-inputs";
-import { JSCADEntity, solidCornerTypeEnum } from "./entities-and-enums";
+import type { Base } from "../base-inputs";
+import type { JSCADEntity } from "./entities-and-enums";
+import { solidCornerTypeEnum } from "./entities-and-enums";
 
 /**
  * Feeds `expansions.offset`: the 2D shape or path, the signed distance to build its outline at and

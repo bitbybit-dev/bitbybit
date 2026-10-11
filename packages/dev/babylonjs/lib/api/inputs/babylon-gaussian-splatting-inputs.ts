@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
+import type * as BABYLON from "@babylonjs/core";
 
 /**
  * Parameters for 3D Gaussian Splatting scenes: the splat file to load and the options that control how

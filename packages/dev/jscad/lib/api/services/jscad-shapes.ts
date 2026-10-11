@@ -1,7 +1,8 @@
 import * as Inputs from "../inputs/jscad-inputs";
-import { MathBitByBit, resolveDto } from "@bitbybit-dev/base";
-import * as JSCAD from "@jscad/modeling";
-import * as Resolved from "../resolved-inputs";
+import type { MathBitByBit } from "@bitbybit-dev/base";
+import { resolveDto } from "@bitbybit-dev/base";
+import type * as JSCAD from "@jscad/modeling";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Building JSCAD solids: cubes, cuboids, spheres, ellipsoids, cylinders, a torus and a solid from

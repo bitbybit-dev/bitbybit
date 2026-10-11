@@ -1,8 +1,10 @@
 ---
-sidebar_position: 12
+sidebar_position: 17
 title: Bitbybit's Open Source Approach
 sidebar_label: Our Approach To Open Source
 description: Understand which parts of the Bitbybit platform are open source and which parts are proprietary. We believe in transparency for our community.
+topic: platform.about.open-source
+type: explanation
 tags: [open-source, licensing]
 ---
 
@@ -22,7 +24,7 @@ We are committed to open-sourcing the foundational elements that empower develop
     *   The powerful algorithms and utility functions that form the backbone of Bitbybit's capabilities. These are available as NPM packages (like `@bitbybit-dev/base`, `@bitbybit-dev/occt`, `@bitbybit-dev/babylonjs`, `@bitbybit-dev/threejs` etc.) for you to use in your own projects.
     *   If you're familiar with the `bitbybit` JavaScript namespace used in our editors, the following modules (and their sub-modules) are **open source**:
         *   `bitbybit.draw`
-        *   `bitbybit.babylon`
+        *   `bitbybit.babylon`, `bitbybit.three` and `bitbybit.playcanvas`
         *   `bitbybit.vector`
         *   `bitbybit.point`
         *   `bitbybit.line`
@@ -42,6 +44,9 @@ We are committed to open-sourcing the foundational elements that empower develop
         *   `bitbybit.occt`
         *   `bitbybit.manifold`
         *   `bitbybit.jscad`
+        *   `bitbybit.ifc`
+        *   `bitbybit.frame`
+        *   `bitbybit.asset`
 
 2.  **Official Documentation:**
     *   The Docusaurus site source code (`docs/src/`, config files, scripts) is MIT licensed.
@@ -65,7 +70,7 @@ We are committed to open-sourcing the foundational elements that empower develop
 To support the development and hosting of the Bitbybit platform, certain components are proprietary and not open source. These include:
 
 1.  **The Bitbybit.dev Platform & UI:**
-    *   **Visual Programming Editors & TypeScript Editor:** The user interfaces & all related logic for our Rete, Blockly & Monaco programming environments.
+    *   **The editors:** The user interfaces and all related logic of the Rete, Blockly and TypeScript coding editors and of the Designer.
     *   **Main Website & Cloud Infrastructure:** The [bitbybit.dev](https://bitbybit.dev) website, user account systems, cloud-based algorithms, and backend services.
 
 2.  **Code Execution "Runners":**
@@ -78,21 +83,22 @@ To support the development and hosting of the Bitbybit platform, certain compone
     *   You are, of course, free to use the JavaScript *generated* by our editors in your projects.
 
 <Admonition type="warning" title="Important: Closed-Source Features">
-    Scripts using features from our closed-source categories (like `bitbybit.things`, `bitbybit.advanced`, or `bitbybit.asset`) will **not** run if you export them to your own website or use them outside of the Bitbybit platform. These advanced features are exclusive to our platform.
+    Scripts using features from our closed-source categories (`bitbybit.things` and `bitbybit.advanced`) will **not** run if you export them to your own website or use them outside of the Bitbybit platform. These advanced features are exclusive to our platform.
+
+    `bitbybit.asset` is open source, but a named asset is looked up in the store of the application running the script. On bitbybit.dev that is your project's assets, so `asset.getFile` finds them only there; elsewhere, fetch the file from a URL with `asset.fetchFile`.
 </Admonition>
 
 4.  **Specific Advanced Algorithm Namespaces:**
     *   While our core libraries are open, certain higher-level and more complex algorithms are proprietary. In the `bitbybit` JavaScript namespace, these include:
         *   Everything under `bitbybit.advanced`
         *   Everything under `bitbybit.things`
-        *   Everything under `bitbybit.asset`
     *   Some algorithms within these proprietary namespaces might be executable for free for users of our editors on [bitbybit.dev](https://bitbybit.dev) or via the Runners, but this does not mean their source code is open or freely available for all uses.
 
 <Admonition type="info" title="Important Distinction">
     Being able to *use* a feature (e.g., running a script with an advanced algorithm via our platform or a Runner) is different from having access to its *source code*.
 </Admonition>
 
-4.  **[3D Bits](/learn/3d-bits/intro) app for Shopify:**
+5.  **[3D Bits](/learn/3d-bits/intro) app for Shopify:**
     *   This E-Commerce application is fully proprietary and is not shared as open-source project. It is meant to serve commercial B2B customers of Bit by bit developers company. 
     *   There are no plans to open-source any part of this application such as [Composer](/learn/3d-bits/composer/intro) or other related tools.
 

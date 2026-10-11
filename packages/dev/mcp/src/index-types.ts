@@ -58,6 +58,13 @@ export interface IndexEnum {
     values: { key: string; value: string }[];
 }
 
+export interface IndexType {
+    name: string;
+    summary: string;
+    doc: string;
+    fields: IndexField[];
+}
+
 export interface IndexExample {
     path: string;
     code: string;
@@ -70,5 +77,6 @@ export interface ApiIndex {
     namespaces: string[];
     members: IndexMember[];
     enums: Record<string, IndexEnum>;
+    types?: Record<string, IndexType>;
     examples: Record<string, IndexExample>;
 }

@@ -7,7 +7,9 @@ import { FIXTURE_VERSION, GUIDE_URL, fixtureContext } from "../__fixtures__/load
 
 function tool(name: string): HttpTool {
     const found = toHttp(createDocsRegistry(), fixtureContext()).find((candidate) => candidate.name === name);
-    if (!found) throw new Error(`no tool ${name}`);
+    if (!found) {
+        throw new Error(`no tool ${name}`);
+    }
     return found;
 }
 
@@ -103,6 +105,41 @@ describe("describe", () => {
         expect(result.text).toContain(member.signature);
         expect(result.text).toContain("version: 9.9.9");
         expect(result.text).toContain("## Examples");
+    });
+
+    it("lists the types a member returns in its answer, by full name", async () => {
+        // Act
+        const result = await call("describe", { path: "ifc.model.summary" });
+
+        // Assert
+        expect(structured(result)["types"]).toEqual(["Inputs.IFC.ModelSummaryDto"]);
+        expect(result.text).toContain("## Types");
+        expect(result.text).toContain("- `Inputs.IFC.ModelSummaryDto`: What a model holds");
+    });
+
+    it("describes a type a member returns, field by field, by its full or its short name", async () => {
+        // Act
+        const full = await call("describe", { path: "Inputs.IFC.ModelSummaryDto" });
+        const short = await call("describe", { path: "ModelSummaryDto" });
+
+        // Assert
+        const type = structured(full)["type"] as { key: string; fields: { name: string }[] };
+        expect(type.key).toBe("Inputs.IFC.ModelSummaryDto");
+        expect(type.fields.map((field) => field.name)).toEqual(["schema", "editable", "project", "millimetresPerUnit", "entities", "storeys", "elementCounts"]);
+        expect(structured(full)["version"]).toBe(FIXTURE_VERSION);
+        expect(full.text).toContain("- millimetresPerUnit: number; default 1 - How many millimetres one length unit of the model is.");
+        expect(full.text).toContain("- `Inputs.IFC.StoreyInfoDto`");
+        expect(short.text).toBe(full.text);
+    });
+
+    it("names every type a short name could mean instead of choosing one", async () => {
+        // Act
+        const result = await call("describe", { path: "DecomposedManifoldMeshDto" });
+
+        // Assert
+        expect(structured(result)["notFound"]).toBe("DecomposedManifoldMeshDto");
+        expect(structured(result)["types"]).toEqual(["Inputs.OCCT.DecomposedManifoldMeshDto", "Inputs.Manifold.DecomposedManifoldMeshDto"]);
+        expect(result.text).toContain("- Inputs.Manifold.DecomposedManifoldMeshDto");
     });
 
     it("accepts the bitbybit. prefix", async () => {
@@ -323,6 +360,17 @@ describe("get_guide", () => {
         expect(structured(result)["id"]).toBe("browser-apps");
     });
 
+    it("links a section of another page to that page, and lists the sections page by page", async () => {
+        // Act
+        const design = await call("get_guide", { topic: "design" });
+        const listing = await call("get_guide", {});
+
+        // Assert
+        expect(structured(design)["url"]).toBe("https://example.test/design#what-a-design-document-is");
+        expect(structured(listing)["pages"]).toEqual([GUIDE_URL, "https://example.test/design"]);
+        expect(listing.text).toContain("Sections of https://example.test/design:\n- what-a-design-document-is: What a design document is");
+    });
+
     it("names the sections when nothing matches", async () => {
         // Act
         const result = await call("get_guide", { topic: "kitchen" });
@@ -354,6 +402,14 @@ describe("search and fetch, the connector shape", () => {
         expect(structured(result)).toMatchObject({ id: "occt.shapes.solid.createBox", title: "occt.shapes.solid.createBox", metadata: { tier: "oss", version: FIXTURE_VERSION } });
         expect(structured(result)["text"]).toContain("# occt.shapes.solid.createBox");
         expect(JSON.parse(result.text)).toEqual(structured(result));
+    });
+
+    it("fetch lists the types a member returns, as describe does", async () => {
+        // Act
+        const result = await call("fetch", { id: "ifc.model.summary" });
+
+        // Assert
+        expect(structured(result)["text"]).toContain("- `Inputs.IFC.ModelSummaryDto`: What a model holds");
     });
 
     it("fetch accepts the bitbybit. prefix like every other tool", async () => {

@@ -1,0 +1,26 @@
+{
+  "name": "vite-threejs-ifc-house",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@bitbybit-dev/ifc": "1.5.0-rc.0",
+    "@bitbybit-dev/ifc-worker": "1.5.0-rc.0",
+    "@bitbybit-dev/manifold-worker": "1.5.0-rc.0",
+    "@bitbybit-dev/occt": "1.5.0-rc.0",
+    "@bitbybit-dev/occt-worker": "1.5.0-rc.0",
+    "@bitbybit-dev/threejs": "1.5.0-rc.0",
+    "manifold-3d": "3.5.3",
+    "three": "0.186.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "vite": "^6.3.2",
+    "@types/three": "0.186.0"
+  }
+}

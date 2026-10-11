@@ -1,0 +1,11 @@
+{
+    "label": "Tutorials",
+    "key": "rete-tutorials",
+    "position": 4,
+    "link": {
+        "type": "generated-index",
+        "title": "Rete Tutorials",
+        "description": "Scripts built step by step in the Rete editor, with a picture of the editor after every step and the finished script to run on the page.",
+        "slug": "/getting-started/rete/tutorials"
+    }
+}

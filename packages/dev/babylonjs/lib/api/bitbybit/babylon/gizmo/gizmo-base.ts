@@ -1,8 +1,8 @@
-import * as BABYLON from "@babylonjs/core";
-import { Context } from "../../../context";
+import type * as BABYLON from "@babylonjs/core";
+import type { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * Settings shared by every gizmo: the scale ratio that sets how large the handles are drawn on

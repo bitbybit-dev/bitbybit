@@ -1,6 +1,6 @@
 import * as Inputs from "../inputs";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Arithmetic, rounding, ranges, random numbers and the trigonometric functions on plain numbers.

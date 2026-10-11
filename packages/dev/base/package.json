@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/base",
-    "version": "1.4.1",
+    "version": "1.5.0-rc.0",
     "description": "Bit By Bit Developers Base CAD Library to Program Geometry",
     "homepage": "https://docs.bitbybit.dev/modules/Bit",
     "main": "index.js",
@@ -107,6 +107,11 @@
             "@bitbybit-dev/source": "./lib/api/models/text/index.ts",
             "types": "./dist/lib/api/models/text/index.d.ts",
             "default": "./dist/lib/api/models/text/index.js"
+        },
+        "./lib/api/recipes": {
+            "@bitbybit-dev/source": "./lib/api/recipes/index.ts",
+            "types": "./dist/lib/api/recipes/index.d.ts",
+            "default": "./dist/lib/api/recipes/index.js"
         },
         "./lib/api/resolved-inputs": {
             "@bitbybit-dev/source": "./lib/api/resolved-inputs/index.ts",

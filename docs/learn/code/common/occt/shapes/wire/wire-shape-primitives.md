@@ -3,6 +3,8 @@ sidebar_position: 2
 title: Wire Shape Primitives
 sidebar_label: Wire Shape Primitives
 description: Learn how to create shape wire primitives composed out of multiple edges
+topic: code.occt.shapes.wire.shape-primitives
+type: how-to
 tags: [code, occt, rete, blockly, typescript]
 ---
 
@@ -64,7 +66,7 @@ The star wire creates beautiful star-shaped patterns with customizable rays, rad
 <TabItem value="typescript" label="TypeScript">
 <BitByBitRenderCanvas
     requireManualStart={true}
-    script={{"script":"// Import required DTOs and types for star wire creation\nconst { StarDto } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\ntype Vector3 = Bit.Inputs.Base.Vector3;\n\n// Get access to OCCT wire creation functions\nconst { wire } = bitbybit.occt.shapes;\n\n// Define the main function to create a star wire\nconst start = async () => {\n    // Create a star wire with customizable parameters\n    const starOptions = new StarDto();\n    starOptions.center = [0, 0, 0] as Point3;\n    starOptions.direction = [0, 1, 0] as Vector3;\n    starOptions.numRays = 10;\n    starOptions.outerRadius = 7.8;\n    starOptions.innerRadius = 3.7;\n    starOptions.offsetOuterEdges = 0;\n    starOptions.half = false;\n\n    const starWire = await wire.createStarWire(starOptions);\n\n    // Draw the created star wire\n    bitbybit.draw.drawAnyAsync({ entity: starWire });\n}\n\n// Execute the function\nstart();","type":"typescript"}}
+    script={{"script":"// Import required DTOs and types for star wire creation\nconst { StarDto } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\ntype Vector3 = Bit.Inputs.Base.Vector3;\n\n// Get access to OCCT wire creation functions\nconst { wire } = bitbybit.occt.shapes;\n\n// Create a star wire\n// Create a star wire with customizable parameters\nconst starOptions = new StarDto();\nstarOptions.center = [0, 0, 0] as Point3;\nstarOptions.direction = [0, 1, 0] as Vector3;\nstarOptions.numRays = 10;\nstarOptions.outerRadius = 7.8;\nstarOptions.innerRadius = 3.7;\nstarOptions.offsetOuterEdges = 0;\nstarOptions.half = false;\n\nconst starWire = await wire.createStarWire(starOptions);\n\n// Draw the created star wire\nbitbybit.draw.drawAnyAsync({ entity: starWire });","type":"typescript"}}
     title="Creating basic wire star primitive"
     />
 </TabItem>
@@ -100,7 +102,7 @@ The Christmas tree wire creates detailed tree-like structures perfect for season
 <TabItem value="typescript" label="TypeScript">
 <BitByBitRenderCanvas
     requireManualStart={true}
-    script={{"script":"// Import required DTOs and types for Christmas tree wire creation\nconst { ChristmasTreeDto } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\ntype Vector3 = Bit.Inputs.Base.Vector3;\n\n// Get access to OCCT wire creation functions\nconst { wire } = bitbybit.occt.shapes;\n\n// Define the main function to create a Christmas tree wire\nconst start = async () => {\n    // Create a Christmas tree wire with customizable parameters\n    const treeOptions = new ChristmasTreeDto();\n    treeOptions.height = 6;\n    treeOptions.innerDist = 1.5;\n    treeOptions.outerDist = 3;\n    treeOptions.nrSkirts = 5;\n    treeOptions.trunkHeight = 1;\n    treeOptions.trunkWidth = 1;\n    treeOptions.half = false;\n    treeOptions.rotation = 0;\n    treeOptions.origin = [0, 0, 0] as Point3;\n    treeOptions.direction = [0, 1, 0] as Vector3;\n\n    const christmasTreeWire = await wire.createChristmasTreeWire(treeOptions);\n\n    // Draw the created Christmas tree wire\n    bitbybit.draw.drawAnyAsync({ entity: christmasTreeWire });\n}\n\n// Execute the function\nstart();","type":"typescript"}}
+    script={{"script":"// Import required DTOs and types for Christmas tree wire creation\nconst { ChristmasTreeDto } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\ntype Vector3 = Bit.Inputs.Base.Vector3;\n\n// Get access to OCCT wire creation functions\nconst { wire } = bitbybit.occt.shapes;\n\n// Create a Christmas tree wire\n// Create a Christmas tree wire with customizable parameters\nconst treeOptions = new ChristmasTreeDto();\ntreeOptions.height = 6;\ntreeOptions.innerDist = 1.5;\ntreeOptions.outerDist = 3;\ntreeOptions.nrSkirts = 5;\ntreeOptions.trunkHeight = 1;\ntreeOptions.trunkWidth = 1;\ntreeOptions.half = false;\ntreeOptions.rotation = 0;\ntreeOptions.origin = [0, 0, 0] as Point3;\ntreeOptions.direction = [0, 1, 0] as Vector3;\n\nconst christmasTreeWire = await wire.createChristmasTreeWire(treeOptions);\n\n// Draw the created Christmas tree wire\nbitbybit.draw.drawAnyAsync({ entity: christmasTreeWire });","type":"typescript"}}
     title="Creating basic wire primitive of christmass tree"
     />
 </TabItem>
@@ -136,7 +138,7 @@ The heart wire creates elegant heart-shaped curves, perfect for decorative appli
 <TabItem value="typescript" label="TypeScript">
 <BitByBitRenderCanvas
     requireManualStart={true}
-    script={{"script":"// Import required DTOs and types for heart wire creation\nconst { Heart2DDto } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\ntype Vector3 = Bit.Inputs.Base.Vector3;\n\n// Get access to OCCT wire creation functions\nconst { wire } = bitbybit.occt.shapes;\n\n// Define the main function to create a heart wire\nconst start = async () => {\n    // Create a heart wire with customizable parameters\n    const heartOptions = new Heart2DDto();\n    heartOptions.center = [0, 0, 0] as Point3;\n    heartOptions.direction = [0, 1, 0] as Vector3;\n    heartOptions.rotation = 0;\n    heartOptions.sizeApprox = 8;\n\n    const heartWire = await wire.createHeartWire(heartOptions);\n\n    // Draw the created heart wire\n    bitbybit.draw.drawAnyAsync({ entity: heartWire });\n}\n\n// Execute the function\nstart();","type":"typescript"}}
+    script={{"script":"// Import required DTOs and types for heart wire creation\nconst { Heart2DDto } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\ntype Vector3 = Bit.Inputs.Base.Vector3;\n\n// Get access to OCCT wire creation functions\nconst { wire } = bitbybit.occt.shapes;\n\n// Create a heart wire\n// Create a heart wire with customizable parameters\nconst heartOptions = new Heart2DDto();\nheartOptions.center = [0, 0, 0] as Point3;\nheartOptions.direction = [0, 1, 0] as Vector3;\nheartOptions.rotation = 0;\nheartOptions.sizeApprox = 8;\n\nconst heartWire = await wire.createHeartWire(heartOptions);\n\n// Draw the created heart wire\nbitbybit.draw.drawAnyAsync({ entity: heartWire });","type":"typescript"}}
     title="Creating basic wire primitive of heart"
     />
 </TabItem>
@@ -170,7 +172,7 @@ The L-polygon wire creates precise L-shaped structures essential for architectur
 <TabItem value="typescript" label="TypeScript">
 <BitByBitRenderCanvas
     requireManualStart={true}
-    script={{"script":"// Import required DTOs and types for L polygon wire creation\nconst { LPolygonDto, directionEnum } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\ntype Vector3 = Bit.Inputs.Base.Vector3;\n\n// Get access to OCCT wire creation functions\nconst { wire } = bitbybit.occt.shapes;\n\n// Define the main function to create an L polygon wire\nconst start = async () => {\n    // Create an L polygon wire with customizable parameters\n    const lPolygonOptions = new LPolygonDto();\n    lPolygonOptions.widthFirst = 3;\n    lPolygonOptions.lengthFirst = 5;\n    lPolygonOptions.widthSecond = 3;\n    lPolygonOptions.lengthSecond = 7;\n    lPolygonOptions.align = directionEnum.outside;\n    lPolygonOptions.rotation = 0;\n    lPolygonOptions.center = [0, 0, 0] as Point3;\n    lPolygonOptions.direction = [0, 1, 0] as Vector3;\n\n    const lPolygonWire = await wire.createLPolygonWire(lPolygonOptions);\n\n    // Draw the created L polygon wire\n    bitbybit.draw.drawAnyAsync({ entity: lPolygonWire });\n}\n\n// Execute the function\nstart();","type":"typescript"}}
+    script={{"script":"// Import required DTOs and types for L polygon wire creation\nconst { LPolygonDto, directionEnum } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\ntype Vector3 = Bit.Inputs.Base.Vector3;\n\n// Get access to OCCT wire creation functions\nconst { wire } = bitbybit.occt.shapes;\n\n// Create an L polygon wire\n// Create an L polygon wire with customizable parameters\nconst lPolygonOptions = new LPolygonDto();\nlPolygonOptions.widthFirst = 3;\nlPolygonOptions.lengthFirst = 5;\nlPolygonOptions.widthSecond = 3;\nlPolygonOptions.lengthSecond = 7;\nlPolygonOptions.align = directionEnum.outside;\nlPolygonOptions.rotation = 0;\nlPolygonOptions.center = [0, 0, 0] as Point3;\nlPolygonOptions.direction = [0, 1, 0] as Vector3;\n\nconst lPolygonWire = await wire.createLPolygonWire(lPolygonOptions);\n\n// Draw the created L polygon wire\nbitbybit.draw.drawAnyAsync({ entity: lPolygonWire });","type":"typescript"}}
     title="Creating basic wire primitive of L polygon"
     />
 </TabItem>

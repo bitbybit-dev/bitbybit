@@ -9,6 +9,9 @@
 .cache-loader
 /static/llms.txt
 /static/build-id.json
+/.learn-media-local
+/.learn-editor-url
+/.search-index
 
 # Misc
 .DS_Store

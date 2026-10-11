@@ -1,15 +1,14 @@
-import { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import { OccHelper } from "../../occ-helper";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Models from "../../api/models";
+import type * as Resolved from "../../api/resolved-inputs";
 import { checkedDirection, checkedNumber, checkedNumberList, checkedPoints, checkedShape, checkedWhole } from "../base/input-checks";
 import { pointsFromCoordinates } from "../base/kernel-arrays";
 import { RADIANS_PER_DEGREE, edgeNumbering } from "../base/curve-analysis";
 import { uvFractions } from "../base/surface-analysis";
 
-/** How the curve of an edge reads, one kind per value of the kernel's curve types. */
 const curveKindOf = (occ: BitbybitOcctModule, value: number): Inputs.OCCT.curveTypeEnum => {
     const kinds: [number, Inputs.OCCT.curveTypeEnum][] = [
         [occ.GeomAbs_CurveType.Line.value, Inputs.OCCT.curveTypeEnum.line],
@@ -24,7 +23,6 @@ const curveKindOf = (occ: BitbybitOcctModule, value: number): Inputs.OCCT.curveT
     return kinds.find(([kernelValue]) => kernelValue === value)?.[1] ?? Inputs.OCCT.curveTypeEnum.other;
 };
 
-/** The curvatures of a curve at fractions or at lengths, as the kernel reads them, with its fields named as the models name them. */
 const curvaturesOf = (occ: BitbybitOcctModule, curve: TopoDS_Shape, values: number[], isLength: boolean): Models.OCCT.CurveCurvature[] =>
     occ.CurvaturesOnCurve(curve, values, isLength).map(result => ({
         point: result.point,

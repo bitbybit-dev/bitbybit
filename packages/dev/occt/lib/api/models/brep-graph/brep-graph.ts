@@ -1,4 +1,4 @@
-import { Base } from "../../inputs";
+import type { Base } from "../../inputs";
 
 /**
  * The base shape every boundary-representation query returns: whether it succeeded, and the error

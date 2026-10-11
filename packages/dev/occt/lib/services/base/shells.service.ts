@@ -1,7 +1,7 @@
-import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shell } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs";
-import { ConverterService } from "./converter.service";
-import * as Resolved from "../../api/resolved-inputs";
+import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shell } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Inputs from "../../api/inputs";
+import type { ConverterService } from "./converter.service";
+import type * as Resolved from "../../api/resolved-inputs";
 import { massesAndCentres } from "./kernel-arrays";
 import { InputError } from "@bitbybit-dev/base";
 import { checkedShapes } from "./input-checks";

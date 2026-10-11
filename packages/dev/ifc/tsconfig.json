@@ -1,0 +1,16 @@
+{
+    "extends": "../../../tsconfig.base.cad.json",
+    "compileOnSave": false,
+    "compilerOptions": {
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "paths": {
+            "@bitbybit-dev/base": [
+                "../base/dist"
+            ],
+            "@bitbybit-dev/base/*": [
+                "../base/dist/*"
+            ]
+        }
+    }
+}

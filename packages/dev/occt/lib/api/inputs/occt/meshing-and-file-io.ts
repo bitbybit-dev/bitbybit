@@ -1,7 +1,5 @@
-// A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
-import { Base } from "@bitbybit-dev/base";
-import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
+import type { Base } from "@bitbybit-dev/base";
+import type { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum, surfaceAnalysisEnum } from "./enums";
 
 /**
@@ -9,7 +7,7 @@ import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum, surfaceAnalysisEn
  * add each face's iso curves and a surface analysis value at every vertex.
  */
 export class ShapeToMeshDto<T> {
-    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3) {
+    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -21,6 +19,8 @@ export class ShapeToMeshDto<T> {
         if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
         if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
         if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+        if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+        if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
     }
     /**
      * The shape to triangulate.
@@ -38,6 +38,21 @@ export class ShapeToMeshDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
+     * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+     * follows curvature more closely with more triangles.
+     * @default 0.5
+     * @minimum 0.001
+     * @maximum 3.14159
+     * @step 0.05
+     */
+    angularDeflection?: number | undefined = 0.5;
+    /**
+     * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+     * small and large parts get triangles in proportion to their size.
+     * @default false
+     */
+    relativeDeflection?: boolean | undefined = false;
+    /**
      * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
      * up.
      * @default false
@@ -50,20 +65,20 @@ export class ShapeToMeshDto<T> {
      */
     computeMetadata?: boolean | undefined = false;
     /**
-     * When true, the triangulation stays cached on the shape; when false it is cleared afterwards
-     * so memory does not grow across calls.
+     * When true, the triangulation stays on the shape for the next mesh with the same settings to
+     * reuse; when false it is cleared. A mesh retention budget keeps every mesh.
      * @default false
      */
     keepMeshData?: boolean | undefined = false;
     /**
-     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-     * for.
+     * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+     * again; when false, a finer one is kept.
      * @default true
      */
     allowQualityDecrease?: boolean | undefined = true;
     /**
-     * When true, every face is remeshed at the requested precision even when a triangulation is
-     * cached.
+     * When true, every face is meshed at exactly the requested precision; when false, a face's
+     * precision is raised to the average of its edges' and to twice its tolerance.
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
@@ -166,7 +181,7 @@ export class ShapeToManifoldMeshDto<T> {
  * settings, iso curves and surface analysis included.
  */
 export class ShapesToMeshesDto<T> {
-    constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3) {
+    constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean) {
         if (shapes !== undefined) { this.shapes = shapes; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -178,6 +193,8 @@ export class ShapesToMeshesDto<T> {
         if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
         if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
         if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+        if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+        if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
     }
     /**
      * The shapes to triangulate, one mesh per shape.
@@ -195,6 +212,21 @@ export class ShapesToMeshesDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
+     * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+     * follows curvature more closely with more triangles.
+     * @default 0.5
+     * @minimum 0.001
+     * @maximum 3.14159
+     * @step 0.05
+     */
+    angularDeflection?: number | undefined = 0.5;
+    /**
+     * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+     * small and large parts get triangles in proportion to their size.
+     * @default false
+     */
+    relativeDeflection?: boolean | undefined = false;
+    /**
      * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
      * as up.
      * @default false
@@ -207,20 +239,20 @@ export class ShapesToMeshesDto<T> {
      */
     computeMetadata?: boolean | undefined = false;
     /**
-     * When true, the triangulation stays cached on each shape; when false it is cleared afterwards
-     * so memory does not grow across calls.
+     * When true, the triangulations stay on the shapes for the next mesh with the same settings to
+     * reuse; when false they are cleared. A mesh retention budget keeps every mesh.
      * @default false
      */
     keepMeshData?: boolean | undefined = false;
     /**
-     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-     * for.
+     * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+     * again; when false, a finer one is kept.
      * @default true
      */
     allowQualityDecrease?: boolean | undefined = true;
     /**
-     * When true, every face is remeshed at the requested precision even when a triangulation is
-     * cached.
+     * When true, every face is meshed at exactly the requested precision; when false, a face's
+     * precision is raised to the average of its edges' and to twice its tolerance.
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
@@ -259,7 +291,7 @@ export class ShapesToMeshesDto<T> {
  * shapes into one mesh with the document's colors.
  */
 export class DocToMeshDto<U> {
-    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean) {
         if (document !== undefined) { this.document = document; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -267,6 +299,8 @@ export class DocToMeshDto<U> {
         if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
         if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+        if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
     }
     /**
      * The assembly document whose top-level shapes are meshed together; their face colors end up in
@@ -285,6 +319,21 @@ export class DocToMeshDto<U> {
      */
     precision?: number | undefined = 0.01;
     /**
+     * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+     * follows curvature more closely with more triangles.
+     * @default 0.5
+     * @minimum 0.001
+     * @maximum 3.14159
+     * @step 0.05
+     */
+    angularDeflection?: number | undefined = 0.5;
+    /**
+     * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+     * small and large parts get triangles in proportion to their size.
+     * @default false
+     */
+    relativeDeflection?: boolean | undefined = false;
+    /**
      * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
      * up.
      * @default false
@@ -297,20 +346,20 @@ export class DocToMeshDto<U> {
      */
     computeMetadata?: boolean | undefined = false;
     /**
-     * When true, the triangulation stays cached on the shapes; when false it is cleared afterwards
-     * so memory does not grow across calls.
+     * When true, the triangulations stay on the shapes for the next mesh with the same settings to
+     * reuse; when false they are cleared. A mesh retention budget keeps every mesh.
      * @default false
      */
     keepMeshData?: boolean | undefined = false;
     /**
-     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-     * for.
+     * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+     * again; when false, a finer one is kept.
      * @default true
      */
     allowQualityDecrease?: boolean | undefined = true;
     /**
-     * When true, every face is remeshed at the requested precision even when a triangulation is
-     * cached.
+     * When true, every face is meshed at exactly the requested precision; when false, a face's
+     * precision is raised to the average of its edges' and to twice its tolerance.
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
@@ -320,7 +369,7 @@ export class DocToMeshDto<U> {
  * shape into its own mesh with the document's colors.
  */
 export class DocToMeshesDto<U> {
-    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean) {
         if (document !== undefined) { this.document = document; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -328,6 +377,8 @@ export class DocToMeshesDto<U> {
         if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
         if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+        if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
     }
     /**
      * The assembly document whose top-level shapes are meshed one by one; each shape's face colors
@@ -346,6 +397,21 @@ export class DocToMeshesDto<U> {
      */
     precision?: number | undefined = 0.01;
     /**
+     * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+     * follows curvature more closely with more triangles.
+     * @default 0.5
+     * @minimum 0.001
+     * @maximum 3.14159
+     * @step 0.05
+     */
+    angularDeflection?: number | undefined = 0.5;
+    /**
+     * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+     * small and large parts get triangles in proportion to their size.
+     * @default false
+     */
+    relativeDeflection?: boolean | undefined = false;
+    /**
      * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
      * as up.
      * @default false
@@ -358,20 +424,20 @@ export class DocToMeshesDto<U> {
      */
     computeMetadata?: boolean | undefined = false;
     /**
-     * When true, the triangulation stays cached on the shapes; when false it is cleared afterwards
-     * so memory does not grow across calls.
+     * When true, the triangulations stay on the shapes for the next mesh with the same settings to
+     * reuse; when false they are cleared. A mesh retention budget keeps every mesh.
      * @default false
      */
     keepMeshData?: boolean | undefined = false;
     /**
-     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-     * for.
+     * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+     * again; when false, a finer one is kept.
      * @default true
      */
     allowQualityDecrease?: boolean | undefined = true;
     /**
-     * When true, every face is remeshed at the requested precision even when a triangulation is
-     * cached.
+     * When true, every face is meshed at exactly the requested precision; when false, a face's
+     * precision is raised to the average of its edges' and to twice its tolerance.
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
@@ -398,13 +464,14 @@ export class SaveStepDto<T> {
      */
     fileName?: string | undefined = "shape.step";
     /**
-     * When true, the shape is turned so this library's Y-up becomes STEP's Z-up.
+     * When true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape. To keep it as
+     * built, turn it 90 degrees about X with `transforms.rotate` instead.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
     /**
-     * When true, the axis swap skips its mirror step, for shapes that were built in a right-handed
-     * system.
+     * When true, the swap of `adjustYtoZ` becomes a turn of -90 degrees about X: the shape is not
+     * mirrored but stands upside down in a Z-up tool.
      * @default false
      */
     fromRightHanded?: boolean | undefined = false;
@@ -445,7 +512,8 @@ export class SaveStlDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, the shape is turned so this library's Y-up becomes Z-up.
+     * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
+     * turn it 90 degrees about X with `transforms.rotate` instead.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
@@ -852,8 +920,6 @@ export class ConvertStepToGltfAdvancedDto {
      */
     stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
 
-    // ==================== STEP Reading Options ====================
-
     /**
      * When true, colors are read from the file; needed for a colored glTF.
      * @default true
@@ -884,8 +950,6 @@ export class ConvertStepToGltfAdvancedDto {
      * @default false
      */
     readProps?: boolean | undefined = false;
-
-    // ==================== Mesh Options ====================
 
     /**
      * How closely triangles follow curved surfaces: with `meshRelative` true a fraction of each
@@ -944,8 +1008,6 @@ export class ConvertStepToGltfAdvancedDto {
      */
     controlSurfaceDeflection?: boolean | undefined = false;
 
-    // ==================== glTF Writer Options ====================
-
     /**
      * When true, the faces of a part are joined into one mesh, which makes a smaller file.
      * @default true
@@ -994,8 +1056,6 @@ export class ConvertStepToGltfAdvancedDto {
      * @default compact
      */
     transformFormat?: gltfTransformFormatEnum | undefined = gltfTransformFormatEnum.compact;
-
-    // ==================== Coordinate System Options ====================
 
     /**
      * When true, the file's Z-up is turned into glTF's Y-up; false keeps Z up.
@@ -1083,10 +1143,4 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      */
     dracoUnifiedQuantization?: boolean | undefined = false;
 }
-
-// =====================================================
-// Document-based Assembly API DTOs
-// These DTOs work with document handles directly instead of docId strings.
-// The caller is responsible for managing document lifetime via document.delete().
-// =====================================================
 

@@ -1,12 +1,12 @@
 
 import { uniqueName } from "../../../unique-name";
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
-import { BabylonMesh } from "../mesh";
+import type { BabylonMesh } from "../mesh";
 import earcut from "earcut";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 /**
  * BabylonJS's own mesh primitives, built straight into the scene as ready-to-render meshes rather
  * than through a CAD kernel: boxes, spheres, discs, tori, polygons, tubes, polyhedra, capsules,
