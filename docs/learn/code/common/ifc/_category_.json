@@ -1,0 +1,8 @@
+{
+    "label": "IFC Building Models",
+    "position": 7.5,
+    "link": {
+        "type": "doc",
+        "id": "code/common/ifc/intro"
+    }
+}

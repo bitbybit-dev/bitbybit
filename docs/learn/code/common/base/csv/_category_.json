@@ -1,0 +1,9 @@
+{
+    "label": "CSV",
+    "link": {
+        "type": "generated-index",
+        "title": "CSV in Bitbybit",
+        "description": "Read and write CSV tables in a Bitbybit script: split the text into rows, read a column as numbers, keep the rows that match, and turn lists of objects back into CSV. Spreadsheets export CSV, so it is the shortest path from a table of measurements to geometry, shown here in Rete, Blockly and TypeScript.",
+        "slug": "/code/common/base/csv"
+    }
+}

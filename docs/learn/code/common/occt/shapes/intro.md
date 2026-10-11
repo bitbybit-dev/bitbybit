@@ -3,7 +3,9 @@ sidebar_position: 1
 title: "Understanding OCCT Shape Types and Hierarchy"
 sidebar_label: Intro Shapes
 description: Explore the different types of shapes in OpenCascade Technology (OCCT) and understand their hierarchical relationship, from vertices to solids and compounds.
-tags: [occt]
+topic: code.occt.shapes
+type: explanation
+tags: [code, occt]
 ---
 
 # OCCT Shapes: Building Blocks of 3D Geometry

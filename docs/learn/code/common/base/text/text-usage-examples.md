@@ -3,6 +3,8 @@ sidebar_position: 2
 title: Text Usage Examples
 sidebar_label: Text Usage Examples
 description: Learn how to create and format text strings and then render them as 3D text geometry in Bitbybit using Rete, Blockly, and TypeScript.
+topic: code.base.text.usage-examples
+type: how-to
 tags: [code, text, rete, blockly, typescript]
 ---
 
@@ -67,7 +69,7 @@ Click through the tabs below to see the implementation. Each example will create
 <TabItem value="typescript" label="TypeScript">
 <BitByBitRenderCanvas
     requireManualStart={true}
-    script={{"script":"const start = async () => {\n    const name = \"John\";\n    const word = \"awesome\";\n\n    const formatOpt = new Bit.Inputs.Text.TextFormatDto();\n    formatOpt.text = \"Hi {0}, you are {1}!\";\n    formatOpt.values = [name, word];\n    const formattedText = bitbybit.text.format(formatOpt);\n\n    const text3dOptions = new Bit.Advanced.Text3D.Text3DDto();\n    text3dOptions.text = formattedText;\n    text3dOptions.rotation = 180;\n    text3dOptions.fontSize = 2;\n    const text3d = await bitbybit.advanced.text3d.create(text3dOptions);\n    bitbybit.draw.drawAnyAsync({ entity: text3d });\n}\n\nstart();","type":"typescript"}}
+    script={{"script":"const name = \"John\";\nconst word = \"awesome\";\n\nconst formatOpt = new Bit.Inputs.Text.TextFormatDto();\nformatOpt.text = \"Hi {0}, you are {1}!\";\nformatOpt.values = [name, word];\nconst formattedText = bitbybit.text.format(formatOpt);\n\nconst text3dOptions = new Bit.Advanced.Text3D.Text3DDto();\ntext3dOptions.text = formattedText;\ntext3dOptions.rotation = 180;\ntext3dOptions.fontSize = 2;\nconst text3d = await bitbybit.advanced.text3d.create(text3dOptions);\nbitbybit.draw.drawAnyAsync({ entity: text3d });","type":"typescript"}}
     title="Text Formatting And 3D Fonts"
     />
 </TabItem>

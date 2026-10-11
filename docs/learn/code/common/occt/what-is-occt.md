@@ -3,7 +3,9 @@ sidebar_position: 1
 title: "Understanding the OCCT (OpenCascade Technology) Category"
 sidebar_label: OCCT Category
 description: Learn about OpenCascade Technology (OCCT), its role as a powerful open-source 3D geometry kernel in Bitbybit and the @bitbybit-dev/occt NPM package.
-tags: [occt]
+topic: code.occt.what-is-occt
+type: explanation
+tags: [code, occt]
 ---
 
 # The OCCT (OpenCascade Technology) Category

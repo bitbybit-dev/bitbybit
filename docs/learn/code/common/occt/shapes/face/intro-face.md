@@ -3,7 +3,9 @@ sidebar_position: 1
 title: "Working with Faces in OCCT"
 sidebar_label: Intro Faces
 description: Learn about OCCT faces, how to create them from wires, their role in constructing solids, and how faces can have multiple wires (e.g., for holes).
-tags: [occt]
+topic: code.occt.shapes.face
+type: explanation
+tags: [code, occt]
 ---
 
 # OCCT Shapes: The Face

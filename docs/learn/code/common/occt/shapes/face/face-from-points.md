@@ -3,6 +3,8 @@ sidebar_position: 3
 title: Face From Points
 sidebar_label: Face From Points
 description: Create an OCCT face from an ordered list of points, and see how point order, planarity and closure decide whether you get a valid face or a failed operation.
+topic: code.occt.shapes.face.from-points
+type: how-to
 tags: [code, occt, rete, blockly, typescript]
 ---
 
@@ -42,7 +44,7 @@ This example demonstrates creating a quadrilateral face from four strategically 
 <TabItem value="typescript" label="TypeScript">
 <BitByBitRenderCanvas
     requireManualStart={true}
-    script={{"script":"// Import required DTOs and types for polygon face creation\nconst { PolygonDto } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\n\n// Get access to OCCT face creation functions\nconst { face } = bitbybit.occt.shapes;\n\n// Define the main function to create a polygon face from points\nconst start = async () => {\n    // Define the four points that will form the polygon face\n    const point1: Point3 = [-3, 0, -8];\n    const point2: Point3 = [-3, 0, 3];\n    const point3: Point3 = [3, 0, 3];\n    const point4: Point3 = [5, 0, 0];\n\n    // Create a list of points in the correct order\n    const points: Point3[] = [point1, point2, point3, point4];\n\n    // Create the polygon face options\n    const polygonOptions = new PolygonDto();\n    polygonOptions.points = points;\n\n    // Create the polygon face from the points\n    const polygonFace = await face.createPolygonFace(polygonOptions);\n\n    // Draw the polygon face\n    bitbybit.draw.drawAnyAsync({ entity: polygonFace });\n\n    // Optionally, draw the points to visualize the vertices\n    bitbybit.draw.drawAnyAsync({ entity: points });\n}\n\n// Execute the function\nstart();","type":"typescript"}}
+    script={{"script":"// Import required DTOs and types for polygon face creation\nconst { PolygonDto } = Bit.Inputs.OCCT;\ntype Point3 = Bit.Inputs.Base.Point3;\n\n// Get access to OCCT face creation functions\nconst { face } = bitbybit.occt.shapes;\n\n// Create a polygon face from points\n// Define the four points that will form the polygon face\nconst point1: Point3 = [-3, 0, -8];\nconst point2: Point3 = [-3, 0, 3];\nconst point3: Point3 = [3, 0, 3];\nconst point4: Point3 = [5, 0, 0];\n\n// Create a list of points in the correct order\nconst points: Point3[] = [point1, point2, point3, point4];\n\n// Create the polygon face options\nconst polygonOptions = new PolygonDto();\npolygonOptions.points = points;\n\n// Create the polygon face from the points\nconst polygonFace = await face.createPolygonFace(polygonOptions);\n\n// Draw the polygon face\nbitbybit.draw.drawAnyAsync({ entity: polygonFace });\n\n// Optionally, draw the points to visualize the vertices\nbitbybit.draw.drawAnyAsync({ entity: points });","type":"typescript"}}
     title="Creating face from points"
     />
 </TabItem>

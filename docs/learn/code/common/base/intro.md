@@ -3,6 +3,8 @@ sidebar_position: 1
 title: Introduction to Base Algorithms of Bitbybit
 sidebar_label: Base Algorithms of Bitbybit
 description: Discover the foundational capabilities of the @bitbybit-dev/base NPM package, your core toolkit for geometric and utility functions in Bitbybit.
+topic: code.base.intro
+type: explanation
 tags: [code, base]
 ---
 
@@ -85,7 +87,7 @@ The `@bitbybit-dev/base` package is organized into several key classes, each spe
    *   Basic **string manipulation**: splitting, joining, replacing, and formatting text.
    *   Converting various data types **to strings**.
    *   Generating **vector text**: converting text characters into 2D vector paths, suitable for creating 3D text objects in your scenes.
-   *   [Learn more about the Text class...](./text/intro) <!-- Link to Text API page -->
+   *   [Learn more about the Text class...](./text/intro)
 
 ### `Dates` - Handling Date and Time
     The `Dates` class provides utilities for working with date and time information:
@@ -93,7 +95,7 @@ The `@bitbybit-dev/base` package is organized into several key classes, each spe
     *   **Converting** dates to various string formats (ISO, locale-specific, UTC).
     *   **Getting and setting** individual components of a date (year, month, day, hour, etc.), with support for both local time and UTC.
     *   **Parsing** date strings into `Date` objects.
-    *   [Learn more about the Dates class...](./dates/intro) <!-- Link to Dates API page -->
+    *   [Learn more about the Dates class...](./dates/intro)
 
 ### `Mesh Utilities` - Low-Level Mesh Operations
     The `MeshBitByBit` class offers specialized functions for working directly with mesh triangles and planes:

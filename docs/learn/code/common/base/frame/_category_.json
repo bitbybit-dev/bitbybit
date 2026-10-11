@@ -1,0 +1,9 @@
+{
+    "label": "Frame",
+    "link": {
+        "type": "generated-index",
+        "title": "Frames in Bitbybit",
+        "description": "Frames are how Bitbybit places things: a point with three axes at right angles that a shape lands on, that points convert into and out of, and that patterns lay out by the dozen. These pages explain how a frame is written, the ways to build one, the grids, rings and honeycombs of frames that place copies, and the conversions between a frame's coordinates and the world's, with an example in Rete, Blockly and TypeScript.",
+        "slug": "/code/common/base/frame"
+    }
+}

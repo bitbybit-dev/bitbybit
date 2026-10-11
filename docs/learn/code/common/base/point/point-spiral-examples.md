@@ -3,6 +3,8 @@ sidebar_position: 2
 title: Point Spiral Examples
 sidebar_label: Point Spiral Examples
 description: Learn how to use the Point class to create and visualize a spiral pattern of points in Bitbybit with Rete, Blockly, and TypeScript.
+topic: code.base.point.spiral-examples
+type: how-to
 tags: [code, point, rete, blockly, typescript]
 ---
 

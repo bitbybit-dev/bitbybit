@@ -1,0 +1,8 @@
+{
+    "label": "Things",
+    "position": 10,
+    "link": {
+        "type": "doc",
+        "id": "code/common/things/intro"
+    }
+}

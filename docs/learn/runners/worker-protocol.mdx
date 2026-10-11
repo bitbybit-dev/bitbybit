@@ -152,10 +152,15 @@ These function names have special behavior and bypass the standard function disp
 |---|---|
 | `shapeToMesh` | Convert a shape to mesh data for rendering |
 | `shapesToMeshes` | Convert multiple shapes to mesh data |
+| `docToMesh` | Convert an assembly document to mesh data |
+| `docToMeshes` | Convert several assembly documents to mesh data |
 | `deleteShape` | Remove a single shape from the internal cache |
 | `deleteShapes` | Remove multiple shapes from the internal cache |
+| `deleteDocument` | Remove an assembly document handle from the cache |
 | `startedTheRun` | Signal a new computation run; may clean cache if too large |
-| `cleanAllCache` | Clear all cached shapes and entities |
+| `cleanAllCache` | Clear all cached shapes and entities, and any meshes kept on them |
+| `setMeshRetention` | Set how many triangles meshing may keep on shapes for reuse (`{ triangles }`, 0 keeps none); answers with what is kept |
+| `addOc` | Add OpenCascade dependencies or plugins |
 | `saveShapeSTEP` | Export a shape to STEP format |
 
 ### 6. Worker State Lifecycle

@@ -3,6 +3,8 @@ sidebar_position: 6
 title: Tree Decoration
 sidebar_label: Tree Decoration
 description: "Model a 3D-printable Christmas tree decoration in OCCT: build the outline from wires, give it thickness, and export a watertight solid ready for a slicer."
+topic: code.occt.modeling.festive-decor.tree-decoration
+type: tutorial
 tags: [code, occt, rete, blockly, typescript]
 ---
 

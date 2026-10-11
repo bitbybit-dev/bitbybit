@@ -1,10 +1,10 @@
 {
     "label": "Base",
-    "position": 1,
+    "position": 3,
     "link": {
         "type": "generated-index",
         "title": "Base Algorithms in Bitbybit",
-        "description": "The base algorithms every Bitbybit script is built from - points, vectors, lines, polylines, meshes, lists, maths, logic, text, dates and colour. These are the primitives that sit underneath the CAD kernel: they generate the coordinates a wire follows, the numbers that drive a dimension, and the lists that turn one shape into a hundred. Nothing here needs OCCT, so it runs fast and works identically in Rete, Blockly and TypeScript. If you are new to the platform, this is the right place to build fluency before moving on to solid modelling.",
+        "description": "The base algorithms every Bitbybit script is built from - points, vectors, frames, lines, polylines, meshes, lists, maths, logic, text, dates and colour, and the data and files a script reads: JSON, CSV and assets. These are the primitives that sit underneath the CAD kernel: they generate the coordinates a wire follows, the numbers that drive a dimension, and the lists that turn one shape into a hundred. Nothing here needs OCCT, so it runs fast and works identically in Rete, Blockly and TypeScript. If you are new to the platform, this is the right place to build fluency before moving on to solid modelling.",
         "slug": "/code/common/base"
     }
 }

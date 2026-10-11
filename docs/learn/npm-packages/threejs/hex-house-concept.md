@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: "Parametric Hex House Concept with ThreeJS & Bitbybit"
 sidebar_label: "Hex House (ThreeJS)"
 description: "Explore how to construct a parametric 'Hex House' architectural concept using Bitbybit with ThreeJS, OCCT, and a dynamic GUI for customization."

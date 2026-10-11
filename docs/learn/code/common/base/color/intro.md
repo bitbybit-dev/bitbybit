@@ -2,7 +2,9 @@
 sidebar_position: 1
 title: Colors in Bitbybit
 sidebar_label: Colors in Bitbybit
-description: An overview of the Color class in Bitbybit, explaining how to work with hex and RGB color formats, convert between them, and perform basic color manipulations.
+description: How bitbybit.color writes colors as hex text or as r, g, b objects, converts between the two with an explicit channel range, reads single channels and inverts a color for readable text.
+topic: code.base.color
+type: explanation
 tags: [code, color]
 ---
 
@@ -14,44 +16,61 @@ tags: [code, color]
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/color.ts)
 
-The `Color` class in Bitbybit provides tools for defining, converting, and manipulating colors, primarily focusing on hexadecimal (hex) and RGB (Red, Green, Blue) color formats.
+`bitbybit.color` builds colors, converts them between the forms the library uses, reads single channels and inverts them.
 
-**Understanding Color Formats in Bitbybit:**
+## Two ways to write a color
 
-*   **Hex Color (`Inputs.Base.Color`):** This is a string representation of a color, commonly used in web design and graphics, like `#FF0000` (for red) or `#00FF00` (for green).
-*   **RGB Color (`Inputs.Base.ColorRGB`):** This is an object representing color with separate red, green, and blue components, typically as numbers. For example, `{ r: 255, g: 0, b: 0 }` for red.
-    *   The `Color` class can handle RGB values in different ranges (e.g., 0-255, 0-1, or 0-100) and will remap them as needed for conversions.
+- **Hex text**, such as `#ff5733`: six hex digits for red, green and blue. This is what materials and drawing options usually take.
+- **An object** `{ r, g, b }`, or `{ r, g, b, a }` with an opacity `a` from 0 (transparent) to 1 (opaque). Its channels run either from 0 to 255 or from 0 to 1, and the functions that convert say which range they read or write.
 
-## Core Capabilities of the Color Class
+## Giving a color a name
 
-The `Color` class makes it easy to work with these common color formats. Here's what it can do. For precise input parameters and detailed behavior (like how RGB ranges are handled), please consult the [full Color API documentation](https://docs.bitbybit.dev/classes/Bit.Color) or the GitHub source linked above.
+These functions return their input unchanged. They exist so that a color can be picked once in Rete or Blockly, named and reused:
 
-### 1. Creating and Representing Colors
+- `hexColor` for hex text;
+- `rgb255Color` and `rgb1Color` for `{ r, g, b }` with channels from 0 to 255 or from 0 to 1;
+- `rgba255Color` (color channels from 0 to 255, `a` from 0 to 1) and `rgba1Color` (every channel from 0 to 1).
 
-*   **Hex Color Input (`hexColor()`):** If you already have a hex color string (e.g., from a color picker), this function simply returns it. It's useful in visual programming environments to explicitly define a color input.
+`rgbAtomic255Color` and `rgbAtomic1Color` build an `{ r, g, b }` object from three separate numbers.
 
-### 2. Converting Between Color Formats
+## Converting
 
-This is a key function of the class, allowing you to switch between hex and RGB representations:
-*   **Hex to RGB (`hexToRgb()`):** Converts a hex color string (e.g., `#FF0000`) into an RGB object (e.g., `{ r: 255, g: 0, b: 0 }`).
-*   **Hex to RGB Mapped (`hexToRgbMapped()`):** Converts a hex color to an RGB object, but then remaps the R, G, and B values from the standard 0-255 range to a custom range you specify (e.g., 0-1).
-*   **RGB to Hex (`rgbToHex()`):** Converts individual R, G, and B numerical values into a hex color string. It can intelligently handle input RGB values that are not in the 0-255 range by remapping them if you provide their original `min` and `max` range.
-*   **RGB Object to Hex (`rgbObjToHex()`):** Similar to `rgbToHex()`, but takes an RGB object (`{r, g, b}`) as input instead of separate R, G, B parameters.
+- `hexToRgb` reads hex text into `{ r, g, b }` with channels from 0 to 255: `#FF5733` gives `{ r: 255, g: 87, b: 51 }`. The `#` is optional; anything other than six hex digits, such as the short form `#f53`, stops the script with an error.
+- `hexToRgbMapped` does the same and remaps the channels so that 0 becomes `from` and 255 becomes `to`. With `from` 0 and `to` 1, `#FF5733` gives `{ r: 1, g: 0.341, b: 0.2 }`.
+- `rgbToHex` writes three channel values as hex text, and `rgbObjToHex` does the same from an `{ r, g, b }` object. `min` and `max` say which range the values use; with `max` 1, channels from 0 to 1 are remapped to 0 to 255 and rounded first, so `{ r: 1, g: 0.5, b: 0.2 }` gives `#ff8033`.
 
-### 3. Extracting Color Components
+## Reading one channel
 
-Get individual R, G, or B values from a color:
-*   **From Hex (Mapped):**
-    *   `getRedParam()`: Gets the red component from a hex color, remapped to a specified range.
-    *   `getGreenParam()`: Gets the green component from a hex color, remapped to a specified range.
-    *   `getBlueParam()`: Gets the blue component from a hex color, remapped to a specified range.
-*   **From RGB Object:**
-    *   `rgbToRed()`: Extracts the `r` value from an RGB object.
-    *   `rgbToGreen()`: Extracts the `g` value from an RGB object.
-    *   `rgbToBlue()`: Extracts the `b` value from an RGB object.
+- `getRedParam`, `getGreenParam` and `getBlueParam` read a channel of a hex color, remapped to the range `from` to `to` as `hexToRgbMapped` does.
+- `rgbToRed`, `rgbToGreen` and `rgbToBlue` read a channel of an `{ r, g, b }` object as it is.
 
-### 4. Basic Color Manipulation
+## Inverting
 
-*   **Invert Color (`invert()`):**
-    *   Takes a hex color and produces its photographic negative (e.g., red becomes cyan, white becomes black).
-    *   It also offers an option to invert to pure black or white based on the original color's perceived brightness, which can be useful for ensuring text visibility against a colored background.
+`invert` turns each channel of a hex color into 255 minus its value, so `#FF5733` gives `#00a8cc`. With `blackAndWhite` on, it gives black for a light color and white for a dark one instead, judged by perceived brightness, which keeps text readable on a colored background.
+
+## Every function
+
+{/* api:color:start - generated from the API index; edits between these markers are overwritten */}
+
+| Function | What it does |
+|---|---|
+| [`getBlueParam`](https://docs.bitbybit.dev/classes/Bit.Color#getBlueParam) | Reads the blue channel of a hex color, remapped to a range of your choice. |
+| [`getGreenParam`](https://docs.bitbybit.dev/classes/Bit.Color#getGreenParam) | Reads the green channel of a hex color, remapped to a range of your choice. |
+| [`getRedParam`](https://docs.bitbybit.dev/classes/Bit.Color#getRedParam) | Reads the red channel of a hex color, remapped to a range of your choice. |
+| [`hexColor`](https://docs.bitbybit.dev/classes/Bit.Color#hexColor) | Passes a hex color through unchanged, so a color can be given a name and reused. |
+| [`hexToRgb`](https://docs.bitbybit.dev/classes/Bit.Color#hexToRgb) | Reads a hex color into an `{ r, g, b }` object with channels from 0 to 255. |
+| [`hexToRgbMapped`](https://docs.bitbybit.dev/classes/Bit.Color#hexToRgbMapped) | Reads a hex color into an `{ r, g, b }` object with the channels remapped to a range of your choice. |
+| [`invert`](https://docs.bitbybit.dev/classes/Bit.Color#invert) | Inverts a hex color, turning each channel into its opposite: 255 minus the value. |
+| [`rgb1Color`](https://docs.bitbybit.dev/classes/Bit.Color#rgb1Color) | Passes an `{ r, g, b }` color with channels from 0 to 1 through unchanged, so it can be given a name and reused. |
+| [`rgb255Color`](https://docs.bitbybit.dev/classes/Bit.Color#rgb255Color) | Passes an `{ r, g, b }` color with channels from 0 to 255 through unchanged, so it can be given a name and reused. |
+| [`rgba1Color`](https://docs.bitbybit.dev/classes/Bit.Color#rgba1Color) | Passes an `{ r, g, b, a }` color with every channel from 0 to 1 through unchanged, so it can be given a name and reused. |
+| [`rgba255Color`](https://docs.bitbybit.dev/classes/Bit.Color#rgba255Color) | Passes an `{ r, g, b, a }` color with color channels from 0 to 255 and opacity from 0 to 1 through unchanged, so it can be given a name and reused. |
+| [`rgbAtomic1Color`](https://docs.bitbybit.dev/classes/Bit.Color#rgbAtomic1Color) | Builds an `{ r, g, b }` color from three separate channel values from 0 to 1. |
+| [`rgbAtomic255Color`](https://docs.bitbybit.dev/classes/Bit.Color#rgbAtomic255Color) | Builds an `{ r, g, b }` color from three separate channel values from 0 to 255. |
+| [`rgbObjToHex`](https://docs.bitbybit.dev/classes/Bit.Color#rgbObjToHex) | Writes an `{ r, g, b }` color as a hex color. |
+| [`rgbToBlue`](https://docs.bitbybit.dev/classes/Bit.Color#rgbToBlue) | Reads the blue channel of an `{ r, g, b }` color. |
+| [`rgbToGreen`](https://docs.bitbybit.dev/classes/Bit.Color#rgbToGreen) | Reads the green channel of an `{ r, g, b }` color. |
+| [`rgbToHex`](https://docs.bitbybit.dev/classes/Bit.Color#rgbToHex) | Writes three channel values as a hex color. |
+| [`rgbToRed`](https://docs.bitbybit.dev/classes/Bit.Color#rgbToRed) | Reads the red channel of an `{ r, g, b }` color. |
+
+{/* api:color:end */}
