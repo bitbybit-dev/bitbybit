@@ -1,10 +1,10 @@
 {
     "label": "Choose Your Path",
-    "position": 2,
+    "position": 6,
     "link": {
         "type": "generated-index",
         "title": "Choose Your Path",
-        "description": "Bitbybit is used by quite different people for quite different reasons, and the useful starting point is not the same for all of them. These pages lay out a suggested route through the documentation for each: computational designers exploring parametric form, software developers integrating the npm packages into an application, Shopify merchants building product configurators, educators teaching 3D and programming, and enterprise teams evaluating the platform for B2B work. Pick the one closest to your situation and it will point you at the right sections in the right order.",
+        "description": "Bitbybit is used by quite different people for quite different reasons, and the useful starting point is not the same for all of them. These pages lay out a suggested route through the documentation for each: software developers integrating the npm packages, runners or CAD Cloud into an application, enterprise teams evaluating the platform for B2B work, designers working with nodes, blocks, code or the Designer, Shopify merchants building product configurators, educators teaching 3D and programming, and AI coding agents and the people who drive them. Pick the one closest to your situation and it will point you at the right sections in the right order.",
         "slug": "/paths"
     }
 }

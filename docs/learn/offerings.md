@@ -1,12 +1,16 @@
 ---
-sidebar_position: 3
+sidebar_position: 5
 title: Platform & Products
 sidebar_label: Platform & Products
-description: A complete guide to Bitbybit's products, pricing tiers, and how to choose the right integration path.
+description: A complete guide to Bitbybit's products - npm packages, runners, the coding editors, the Designer, CAD Cloud and Studio, the plans, the converter and inspector, 3D Bits, the School and the MCP servers - with what each costs and when to choose it.
+topic: platform.start.products
+type: explanation
+verified: 2026-10-11
 tags: [getting-started, products, pricing, architecture]
 ---
 
 import Admonition from '@theme/Admonition';
+import ImageGallery from '@site/src/components/ImageGallery';
 
 # Platform & Products
 
@@ -34,7 +38,7 @@ A Runner is a single bundled JavaScript file you can load from our CDN or [host 
 
 The Runner bundle is governed by the proprietary Bitbybit Runner License - you can use and embed it freely (including commercially), but you cannot reverse-engineer or redistribute it as a standalone product. Open-source components bundled within (OCCT, Three.js, BabylonJS, etc.) retain their original licenses.
 
-Runners are the bridge between our geometry engine and the rest of the web. You can execute scripts exported from our visual editors (Blockly, Rete, Monaco), or write custom JavaScript directly - set up against our type definition files for full IntelliSense during development.
+Runners are the bridge between our geometry engine and the rest of the web. You can execute scripts exported from the coding editors (Rete, Blockly, TypeScript), or write custom JavaScript directly - set up against our type definition files for full IntelliSense during development.
 
 **Use when:** You want to deploy a 3D experience quickly. You are working in CodePen, StackBlitz, or a simple HTML page. You want to run geometry code on any website without a full NPM build pipeline.
 
@@ -42,25 +46,47 @@ Runners are the bridge between our geometry engine and the rest of the web. You 
 
 ---
 
-## 3. Visual IDEs - Build Without Writing Code
+## 3. The Coding Editors - Rete, Blockly and TypeScript
 
 **Free to use · No account required**
 
-Our browser-based editors let you create geometry logic visually and see results in real time.
+Three browser-based editors call the same API and show the result in 3D as you work.
 
 | Editor | Style | Best for |
 | :--- | :--- | :--- |
-| **Blockly** | Drag-and-drop blocks | Beginners, education, rapid prototyping |
-| **Rete** | Node-based visual programming | Experienced designers, parametric workflows |
-| **Monaco** | Full TypeScript editor | Developers who want code with autocomplete |
+| **Rete** | Nodes wired into a graph that reruns as you change it | Parametric design, people who know Grasshopper or Blender's nodes, large scripts in groups and modules |
+| **Blockly** | Blocks snapped together | Beginners, education, learning to program |
+| **TypeScript** | Code in many files, with IntelliSense over the whole API | Developers, and anything a loop or a formula says best |
 
-All editors are free. Saving projects to the cloud requires an account, but you can always export and import scripts locally.
+Projects can be kept in the browser without an account; an account keeps them in the cloud, where they can be shared and published.
 
-[Getting Started with Editors →](./getting-started/overview)
+<ImageGallery
+  images={['/img/blog/coding-editors-revamp/hero.webp']}
+  columns={1}
+  altPrefix="A drone built in the Rete editor: the node graph in groups on the left and the quadcopter on the right"
+/>
+
+A drone built step by step in all three editors is the tutorial of each: [Rete](./getting-started/rete/tutorials/drone), [Blockly](./getting-started/blockly/showcases), [TypeScript](./getting-started/typescript/showcases).
+
+[The coding editors →](./getting-started/coding-editors)
 
 ---
 
-## 4. CAD Cloud API - Server-Side Compute
+## 4. The Designer - Parametric CAD by Clicking
+
+**Gold plan · Free to view what is shared with you**
+
+The Designer is a parametric CAD modeller in the browser: sketches, features, parts and assemblies with joints, every step kept and editable, built on the same OpenCascade kernel. Its documents are JSON that AI agents can read and write, and it exports STEP, GLB, STL and BREP. Anyone a Designer project is shared with opens it to view; creating and editing is part of Gold.
+
+**Use when:** You want to model parts and assemblies the way CAD programs do, without writing code.
+
+{/* shot: designer.showcases/robot-arm-cover designer.showcases/jet-engine-cover */}
+
+[The Designer →](./designer/intro)
+
+---
+
+## 5. CAD Cloud API - Server-Side Compute
 
 **Paid · API Keys · Usage-based pricing**
 
@@ -78,23 +104,6 @@ API keys are purchased and managed through [**Bitbybit Studio**](https://studio.
 **Use when:** You need server-side CAD processing, batch automation, or your geometry jobs exceed what a browser can handle.
 
 [CAD Cloud API Documentation →](/api/cloud-api)
-
----
-
-## 5. Platform Subscriptions (Silver & Gold)
-
-**Paid · Monthly or Annual**
-
-The [bitbybit.dev](https://bitbybit.dev) platform offers **Silver** and **Gold** subscription plans for users who want to go beyond the free tier. These subscriptions unlock:
-
-- **Private projects** - Keep practically unlimited private projects in the cloud (free accounts have a smaller limit).
-- **More cloud storage** - Larger asset files, more files and scripts per project, and more storage in total. The plan page lists each plan's limits.
-- **Advanced algorithms** - Access proprietary algorithm namespaces (`bitbybit.advanced`, `bitbybit.things`, `bitbybit.asset`) within the online editors.
-- **Community content** - Silver and Gold subscribers can access scripts published by other community members at their respective tier levels.
-
-You can choose a plan at [bitbybit.dev/auth/pick-plan](https://bitbybit.dev/auth/pick-plan).
-
-**Use when:** You are actively using the online editors and want cloud project storage, access to advanced algorithms, or community content.
 
 ---
 
@@ -120,11 +129,41 @@ Everything you prototype in Studio maps directly to the [API endpoints](/api/ope
 
 ---
 
-## 7. 3D Bits for Shopify - E-Commerce Ready
+## 7. Platform Plans (Silver & Gold)
+
+**Paid · Monthly or Annual**
+
+The [bitbybit.dev](https://bitbybit.dev) platform offers **Silver** and **Gold** plans on top of the free one. They unlock:
+
+- **Cloud space** - practically unlimited private projects, more scripts and files per project, larger files, more storage and more backups of each script.
+- **Platform algorithms** - the closed-source `bitbybit.advanced` and `bitbybit.things` algorithms that need a plan, most of the ready-made `things` models among them.
+- **Community content** - projects shared with the Silver or Gold community.
+- **The converter and the 3D inspector** - below.
+- **The Designer** - with Gold.
+
+[Plans](./plans) compares them line by line. You can choose a plan at [bitbybit.dev/auth/pick-plan](https://bitbybit.dev/auth/pick-plan).
+
+**Use when:** You are actively using the online editors and want cloud project storage, the platform algorithms, community content or the Designer.
+
+---
+
+## 8. Converter and 3D Inspector
+
+**Silver and Gold**
+
+Two tools on bitbybit.dev for files that come from elsewhere. The [converter](https://bitbybit.dev/converter) turns STEP files into glTF in the browser, and the [3D inspector](https://bitbybit.dev/3d-inspector) opens glTF, GLB and STL files to look inside them. For conversions at scale, from a backend, use CAD Cloud.
+
+**Use when:** You have a STEP model to show on the web, or a mesh file to check before you use it.
+
+[Converter →](./tools/converter) · [3D Inspector →](./tools/3d-inspector)
+
+---
+
+## 9. 3D Bits for Shopify - E-Commerce Ready
 
 **Paid · Subscription (Base / Standard / Pro)**
 
-An end-to-end Shopify application that adds interactive 3D viewers, parametric product configurators, and Gaussian Splatting scans to your product pages. It connects directly to Shopify Variants for seamless checkout. 3D Bits has its own subscription tiers - separate from the platform Silver/Gold plans.
+An end-to-end Shopify application that adds interactive 3D viewers, parametric product configurators, and Gaussian Splatting scans to your product pages. It connects directly to Shopify Variants for seamless checkout. 3D Bits has its own subscription tiers, billed through Shopify and separate from the platform Silver and Gold plans.
 
 The app includes the **[Composer](/learn/3d-bits/composer/intro)** - a no-code tool for building 3D product configurators visually. Import your GLTF or 3DGS assets, set up variant matching, configure lighting and camera controls, and export a ready-to-use configuration without writing a single line of code.
 
@@ -134,7 +173,7 @@ The app includes the **[Composer](/learn/3d-bits/composer/intro)** - a no-code t
 
 ---
 
-## 8. Bitbybit School - Structured Learning
+## 10. Bitbybit School - Structured Learning
 
 **Free & Paid courses**
 
@@ -144,7 +183,7 @@ Comprehensive modules covering 3D programming, mathematics, parametric design, a
 
 ---
 
-## 9. MCP Servers - Bitbybit for AI Coding Agents
+## 11. MCP Servers - Bitbybit for AI Coding Agents
 
 **Free docs server · CAD Cloud server included with any CAD Cloud plan**
 
@@ -152,6 +191,19 @@ AI coding agents are a first-class audience for Bitbybit. Two Model Context Prot
 
 - **[Bitbybit CAD MCP](./using-ai-with-bitbybit/mcp/bitbybit-mcp)** - free, no account. Every function, parameter, default and example of the exact version you use, answered live to Claude Code, Codex, Cursor, VS Code, claude.ai, ChatGPT or the Claude API.
 - **[Bitbybit CAD Cloud MCP](./using-ai-with-bitbybit/mcp/cad-cloud-mcp)** - with an API key, the agent runs operations, pipelines, parametric models and STEP conversions on CAD Cloud and hands you the files. It can answer "what is the volume of this STEP file" without you hosting anything.
+
+In [the Designer](./designer/working-with-agents), an agent works beside you with the same commands you use, and each of its changes waits for your review.
+
+An agent wrote this turbofan engine of 130 parts placed 4,853 times, looking up the API through the Bitbybit CAD MCP ([how it was made](/blog/bitbybit-mcp-ai-ready-jet-engine)):
+
+<ImageGallery
+  images={[
+    '/img/blog/bitbybit-mcp-jet-engine/labelled.webp',
+    '/img/blog/bitbybit-mcp-jet-engine/exploded.webp',
+  ]}
+  columns={2}
+  altPrefix="The turbofan engine an AI agent wrote with Bitbybit: labelled on its transport stand, and exploded"
+/>
 
 **Use when:** An agent writes your Bitbybit code, or you want an agent to produce geometry and files for you directly.
 
@@ -166,8 +218,10 @@ AI coding agents are a first-class audience for Bitbybit. Two Model Context Prot
 | Build a custom 3D web app | NPM Packages | Free (MIT) |
 | Embed a 3D experience on any webpage | Runners | Free |
 | Learn geometry programming visually | Blockly / Rete Editors | Free |
-| Write TypeScript geometry code | Monaco Editor | Free |
-| Use advanced algorithms in online editors | Silver / Gold Subscription | Paid (monthly/annual) |
+| Write TypeScript geometry code | TypeScript Editor | Free |
+| Model parts and assemblies by clicking | The Designer | Gold plan |
+| Use the platform algorithms in the editors | Silver / Gold plan | Paid (monthly/annual) |
+| Turn a STEP file into glTF in the browser | Converter | Silver / Gold plan |
 | Automate CAD processing on a server | CAD Cloud API + Studio | Paid (usage-based) |
 | Add 3D products to a Shopify store | 3D Bits App | Paid (Base/Standard/Pro) |
 | Get a custom CAD solution built for you | Enterprise Services | Custom pricing |
@@ -180,6 +234,6 @@ AI coding agents are a first-class audience for Bitbybit. Two Model Context Prot
 
 All packages authored by Bitbybit in our [GitHub monorepo](https://github.com/bitbybit-dev/bitbybit) are MIT-licensed. These packages depend on third-party libraries that retain their own licenses (LGPL for OpenCASCADE, Apache 2.0 for BabylonJS, MIT for Three.js, etc.). This includes all core geometry algorithms, rendering integrations, and utility libraries available as NPM packages.
 
-Proprietary components include the visual editors' UI, the Runner bundle (governed by the [Bitbybit Runner License](./runners/licensing) - free to use and deploy, but source is closed), the platform infrastructure, certain advanced algorithm namespaces (`bitbybit.advanced`, `bitbybit.things`, `bitbybit.asset`), and the 3D Bits Shopify app.
+Proprietary components include the editors' user interfaces and the Designer, the Runner bundle (governed by the [Bitbybit Runner License](./runners/licensing) - free to use and deploy, but source is closed), the platform infrastructure, the platform algorithm namespaces (`bitbybit.advanced` and `bitbybit.things`), and the 3D Bits Shopify app.
 
 For the full technical breakdown, see [Our Approach to Open Source](./open-source-approach).

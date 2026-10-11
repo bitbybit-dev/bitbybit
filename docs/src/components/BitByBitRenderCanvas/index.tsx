@@ -6,9 +6,16 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 type ScriptType = "rete" | "blockly" | "typescript";
 
 interface ScriptProp {
-    script: string;
+    script?: string;
     version?: string; // Made optional - will use default from config if not provided
     type: ScriptType;
+    entry?: string;
+    files?: Record<string, string>;
+    folders?: string[];
+}
+
+function hasContent(scriptProp: ScriptProp | undefined): scriptProp is ScriptProp {
+    return scriptProp !== undefined && ((typeof scriptProp.script === "string" && scriptProp.script !== "") || (scriptProp.files !== undefined && scriptProp.entry !== undefined));
 }
 
 interface ScriptForIframe {
@@ -53,7 +60,7 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     script: scriptProp,
     title = "Interactive Script",
     description,
-    iframeUrl: baseUrl = "https://s.bitbybit.dev",
+    iframeUrl,
     requireManualStart = false,
     backgroundImageUrl = "https://bitbybit.dev/landscape.jpeg",
     height = "600px",
@@ -67,12 +74,26 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     const uniqueId = useId();
     const { siteConfig } = useDocusaurusContext();
     const defaultVersion = siteConfig.customFields?.bitbybitVersion as string || "1.4.1";
+    const publishedUrl = (siteConfig.customFields?.editorUrl as string | undefined) ?? "https://s.bitbybit.dev";
+    const localUrl = siteConfig.customFields?.localEditorUrl as string | null | undefined;
+    const [baseUrl, setBaseUrl] = useState<string | null>(iframeUrl ?? (localUrl ? null : publishedUrl));
 
     const [isIframeReady, setIsIframeReady] = useState(false);
     const [loadIframe, setLoadIframe] = useState(!requireManualStart);
     const [isInFullscreen, setIsInFullscreen] = useState(false);
 
+    useEffect(() => {
+        if (baseUrl !== null || !localUrl || !loadIframe) return;
+        let cancelled = false;
+        fetch(localUrl, { mode: "no-cors", cache: "no-store" }).then(
+            () => { if (!cancelled) setBaseUrl(localUrl); },
+            () => { if (!cancelled) setBaseUrl(publishedUrl); },
+        );
+        return () => { cancelled = true; };
+    }, [baseUrl, localUrl, loadIframe, publishedUrl]);
+
     const fullIframeUrl = React.useMemo(() => {
+        if (baseUrl === null) return null;
         if (!scriptProp || !scriptProp.type) return baseUrl;
         try {
             const url = new URL(baseUrl);
@@ -86,7 +107,7 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     }, [baseUrl, scriptProp]);
 
     const dataToPost = React.useMemo<PostMessageData | null>(() => {
-        if (!scriptProp || !scriptProp.script) return null;
+        if (!hasContent(scriptProp)) return null;
         try {
             // Use version from script prop if provided, otherwise use default from config
             const scriptWithVersion = {
@@ -169,17 +190,22 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
         }
     }, [scriptProp?.type]);
 
-    const formattedScriptForPreview = React.useMemo(() => {
-        if (!scriptProp || !scriptProp.script) return "";
+    const scriptsForPreview = React.useMemo<[string, string][]>(() => {
+        if (!hasContent(scriptProp)) return [];
+        if (scriptProp.files !== undefined) {
+            return Object.entries(scriptProp.files);
+        }
+        const source = scriptProp.script ?? "";
+        const title = `Script Source (${scriptProp.type})`;
         if (scriptProp.type === "rete") {
             try {
-                return JSON.stringify(JSON.parse(scriptProp.script), null, 2);
+                return [[title, JSON.stringify(JSON.parse(source), null, 2)]];
             } catch (e) {
                 console.warn("Could not parse Rete script:", e);
-                return scriptProp.script;
+                return [[title, source]];
             }
         }
-        return scriptProp.script;
+        return [[title, source]];
     }, [scriptProp]);
 
 
@@ -222,8 +248,8 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
         overflowY: "auto",
     };
 
-    if (scriptProp && !scriptProp.script) {
-        return <Admonition type="danger" title="Component Configuration Error">The 'script.script' content is missing from the provided 'script' prop.</Admonition>;
+    if (scriptProp && !hasContent(scriptProp)) {
+        return <Admonition type="danger" title="Component Configuration Error">The 'script' prop needs its 'script' text, or a project's 'entry' and 'files'.</Admonition>;
     }
 
     return (
@@ -272,7 +298,7 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
                             ref={iframeRef}
                             title={scriptProp && scriptProp.type ? `BitByBit ${scriptProp.type} Editor - ${title}` : `BitByBit Content - ${title}`}
                             id={`bitbybit-iframe-${uniqueId}`}
-                            src={fullIframeUrl}
+                            src={fullIframeUrl ?? undefined}
                             sandbox="allow-scripts allow-same-origin allow-downloads allow-forms allow-popups"
                             allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; camera; microphone; xr-spatial-tracking; fullscreen"
                             style={{ ...iframeStyle, paddingTop: "40px" }}
@@ -281,13 +307,15 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
                 ) : null}
             </div>
 
-            {showScriptPreviewInitially && scriptProp && scriptProp.script && (
+            {showScriptPreviewInitially && scriptsForPreview.length > 0 && (
                 <div style={scriptPreviewSectionStyle} className="script-preview-section">
-                    <div style={codeBlockWrapperStyle}>
-                        <CodeBlock language={getScriptLanguage()} title={`Script Source (${scriptProp.type})`}>
-                            {formattedScriptForPreview}
-                        </CodeBlock>
-                    </div>
+                    {scriptsForPreview.map(([path, source]) => (
+                        <div key={path} style={codeBlockWrapperStyle}>
+                            <CodeBlock language={getScriptLanguage()} title={path}>
+                                {source}
+                            </CodeBlock>
+                        </div>
+                    ))}
                 </div>
             )}
         </>

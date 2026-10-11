@@ -103,6 +103,21 @@ polyline:
   permalink: /polyline
   description: Connected line segments forming paths, profiles, and wire-frame geometry.
 
+frame:
+  label: Frame
+  permalink: /frame
+  description: Frames - a point with three axes - that place shapes, convert points and lay out patterns.
+
+json:
+  label: JSON
+  permalink: /json
+  description: Reading, querying and changing JSON data in scripts.
+
+csv:
+  label: CSV
+  permalink: /csv
+  description: Reading and writing CSV tables in scripts.
+
 manifold:
   label: Manifold
   permalink: /manifold
@@ -577,3 +592,8 @@ camera:
   label: Camera
   permalink: /camera
   description: How the view is positioned, framed and moved, and the controls shoppers use for it.
+
+designer:
+  label: Designer
+  permalink: /designer
+  description: The Designer, Bitbybit's interactive CAD modeller for parts and assemblies, built by clicking or by an AI agent on the OpenCascade kernel.

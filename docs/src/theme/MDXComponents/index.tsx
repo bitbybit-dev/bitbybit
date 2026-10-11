@@ -1,6 +1,10 @@
 import React from "react";
 import MDXComponents from "@theme-original/MDXComponents";
 import Version, { useBitbybitVersion } from "@site/src/components/Version";
+import Ui from "@site/src/components/Ui";
+import Shot from "@site/src/components/Shot";
+import Download from "@site/src/components/Download";
+import OpenInDesigner from "@site/src/components/OpenInDesigner";
 
 /**
  * VersionLink - A component for creating links with version numbers.
@@ -20,4 +24,8 @@ export default {
     // Add custom components available in all MDX files
     Version,
     VersionLink,
+    Ui,
+    Shot,
+    Download,
+    OpenInDesigner,
 };

@@ -1,0 +1,47 @@
+{
+    "layers": [
+        {
+            "title": "Where you work",
+            "items": [
+                { "name": "Rete", "detail": "wire nodes into a graph", "href": "/learn/getting-started/rete" },
+                { "name": "Blockly", "detail": "snap blocks together", "href": "/learn/getting-started/blockly" },
+                { "name": "TypeScript", "detail": "write code, in many files", "href": "/learn/getting-started/typescript" },
+                { "name": "Designer", "detail": "parametric CAD by clicking", "href": "/learn/designer/intro", "plan": "Gold" },
+                { "name": "AI agents", "detail": "two MCP servers", "href": "/learn/using-ai-with-bitbybit/intro", "packages": ["@bitbybit-dev/mcp"] },
+                { "name": "3D Bits", "detail": "3D and configurators on Shopify", "href": "/learn/3d-bits/intro" }
+            ]
+        },
+        {
+            "title": "Where it runs",
+            "items": [
+                { "name": "bitbybit.dev", "detail": "projects in the cloud or in this browser", "href": "/learn/getting-started/basics/intro" },
+                { "name": "Runners", "detail": "one script tag on any web page", "href": "/learn/runners/intro" },
+                { "name": "npm packages", "detail": "your own app, in the browser or Node", "href": "/learn/npm-packages/intro", "packages": ["@bitbybit-dev/create-app"] },
+                { "name": "CAD Cloud", "detail": "REST API, SDK and Studio, on our servers", "href": "/api/cloud-api", "packages": ["@bitbybit-dev/cad-cloud-sdk"] }
+            ]
+        },
+        {
+            "title": "What draws it",
+            "items": [
+                { "name": "BabylonJS", "detail": "the editors' engine", "href": "/learn/getting-started/engines/babylonjs", "packages": ["@bitbybit-dev/babylonjs"] },
+                { "name": "ThreeJS", "detail": "the same API, drawn in three.js", "href": "/learn/getting-started/engines/threejs", "packages": ["@bitbybit-dev/threejs"] },
+                { "name": "PlayCanvas", "detail": "the same API, drawn in PlayCanvas", "href": "/learn/getting-started/engines/playcanvas", "packages": ["@bitbybit-dev/playcanvas"] }
+            ]
+        },
+        {
+            "title": "The API",
+            "items": [
+                { "name": "bitbybit.*", "detail": "points, lists, maths, text, drawing, assets and the kernels, one call at a time", "href": "/learn/code/intro", "packages": ["@bitbybit-dev/core", "@bitbybit-dev/base"] }
+            ]
+        },
+        {
+            "title": "The kernels, in web workers",
+            "items": [
+                { "name": "OpenCascade", "detail": "exact solids, fillets, STEP", "href": "/learn/code/common/occt", "packages": ["@bitbybit-dev/occt", "@bitbybit-dev/occt-worker"] },
+                { "name": "Manifold", "detail": "fast, watertight mesh booleans", "href": "/learn/how-it-works#kernels", "packages": ["@bitbybit-dev/manifold", "@bitbybit-dev/manifold-worker"] },
+                { "name": "JSCAD", "detail": "quick solids and text", "href": "/learn/how-it-works#kernels", "packages": ["@bitbybit-dev/jscad", "@bitbybit-dev/jscad-worker"] },
+                { "name": "IFC", "detail": "building models (BIM)", "href": "/learn/npm-packages/ifc", "packages": ["@bitbybit-dev/ifc", "@bitbybit-dev/ifc-worker"] }
+            ]
+        }
+    ]
+}

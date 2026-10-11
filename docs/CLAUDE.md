@@ -1,8 +1,15 @@
 # CLAUDE.md - the Docusaurus site for learn.bitbybit.dev
 
 `npm run build` is the gate: it regenerates the API pages from `static/openapi.json`, injects the
-static reference sections, builds, then runs `scripts/check-descriptions.js`. `llms.txt` is
-generated from `static/llms.template.txt` - edit the template, never the output.
+static reference sections, builds, indexes the built pages for search with Pagefind, then runs
+`scripts/check-search-index.js` and `scripts/check-descriptions.js`. `llms.txt` is generated from
+`static/llms.template.txt` - edit the template, never the output.
+
+Search has no service: the index is files in `build/pagefind/` (a local start serves the last build's copy
+from the gitignored `.search-index/`), and only content inside a
+`data-pagefind-body` element is indexed (`src/theme/DocItem/Content`, `src/theme/BlogPostItem`). A new
+kind of page with readable content wraps its content the same way, with a section from
+`src/components/Search/sections.ts`, or `check-search-index.js` fails the build (`scripts/README.md`).
 
 `api/openapi-docs/` is generated **and tracked**, so a build leaves it modified: the committed copy
 is the pre-injection output, and `inject-openapi-static.js` appends a reference section behind a
@@ -38,3 +45,33 @@ to the major already installed. That scoping is not decoration:
 Never run `npm audit fix --force` here: npm reports the fix for the openapi plugin advisories as
 `docusaurus-plugin-openapi-docs@2.1.3`, which is a three-year downgrade, not a fix. The Docusaurus
 packages and the two openapi plugins move together - the plugins require `@docusaurus/* ^3.10.0`.
+
+## The Designer pages
+
+`learn/designer/reference/*.md`, the region between the `steps:start` and `steps:end` markers of each
+`learn/designer/tutorials` page, and the renders in `static/img/generated/designer/` with their
+`manifest.json` are generated: edits there are overwritten, so change only the prose around the markers.
+Every Designer page carries `topic` and `type` in its frontmatter, and `verified` (the date of the last full
+check against the Designer) when it is written by hand. `<Ui>` marks a label exactly as the Designer or
+bitbybit.dev shows it.
+
+## Screenshots and renders: `<Shot>`
+
+`<Shot id="...">` shows an image of `src/data/learn-media.json`, the manifest of published images (served
+from bitbybit.dev/files under content-hashed names; the maintainers publish them and write the manifest, so
+never edit it by hand). An id the manifest lacks fails the build. A page written before its image is published
+carries the placeholder `{/* shot: <id> */}`, which shows nothing until the upload turns it into `<Shot>`;
+several ids in one placeholder make a `<Shot ids>` grid, and a file's id (a project to download) becomes
+`<Download id>`, the button `src/components/Download` draws from the same manifest. `<OpenInDesigner showcase>`
+opens a Designer showcase's public project on bitbybit.dev; its link is in `src/data/designer-showcases.json`, filled
+in when the project is published, and the button is left out while the link is empty.
+
+To see unpublished images on the pages, put them in `.learn-media-local/`
+(gitignored: `manifest.json` plus the files under `static/learn-media-local/`), and `npm run start:media`
+starts the site with them: `<Shot>` prefers a local candidate, and `src/remark/shot-placeholders.ts` turns
+every placeholder with a candidate into `<Shot>`, on the learn pages and in the blog alike. `LEARN_MEDIA_LOCAL` is refused by a build, so no
+candidate is ever deployed. The Rete, Blockly and TypeScript scripts on the pages run in an embedded editor, `https://s.bitbybit.dev` by
+default, which takes scripts only from the published sites. On a local start, an editor named by `LEARN_EDITOR_URL`
+or by the gitignored file `.learn-editor-url` (one line, its address) is tried first, and each embed falls back to the
+published editor when it does not answer; a build reads neither. Embeds of a bitbybit.dev script frame its `/preview` address: the editor
+addresses refuse to be framed (`X-Frame-Options: DENY`), while s.bitbybit.dev, the default embed, frames.

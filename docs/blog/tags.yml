@@ -261,3 +261,13 @@ mcp:
   label: MCP
   permalink: /mcp
   description: Model Context Protocol servers that give AI coding agents the Bitbybit API and hosted CAD compute.
+
+visual-programming:
+  label: Visual programming
+  permalink: /visual-programming
+  description: The Rete node editor and the Blockly editor, where geometry is built from nodes and blocks instead of typed code.
+
+typescript:
+  label: TypeScript
+  permalink: /typescript
+  description: Writing Bitbybit scripts in the TypeScript editor and with the npm packages.

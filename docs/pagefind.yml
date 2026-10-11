@@ -1,0 +1,5 @@
+site: build
+exclude_selectors:
+  - "[role='tablist']"
+  - ".hash-link"
+  - ".bitbybit-canvas-container"

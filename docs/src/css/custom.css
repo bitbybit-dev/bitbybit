@@ -182,3 +182,25 @@
     font-size: 0.75rem;
     opacity: 0.6;
 }
+
+.navbar__item {
+    white-space: nowrap;
+}
+
+@media (min-width: 997px) and (max-width: 1559px) {
+    .navbar__item.navbar-hide-medium {
+        display: none;
+    }
+}
+
+@media (min-width: 997px) and (max-width: 1359px) {
+    .navbar__item.navbar-hide-narrow {
+        display: none;
+    }
+}
+
+@media (min-width: 997px) and (max-width: 1099px) {
+    .navbar__title {
+        display: none;
+    }
+}

@@ -16,6 +16,11 @@ This is the official documentation site for Bitbybit. The platform enables desig
 Comprehensive guides for new users to understand the platform basics.
 
 - Welcome Guide: https://learn.bitbybit.dev/learn/intro
+- How Bitbybit Works: https://learn.bitbybit.dev/learn/how-it-works
+- Glossary: https://learn.bitbybit.dev/learn/glossary
+- Plans and What They Unlock: https://learn.bitbybit.dev/learn/plans
+- STEP to glTF Converter: https://learn.bitbybit.dev/learn/tools/converter
+- 3D Inspector: https://learn.bitbybit.dev/learn/tools/3d-inspector
 - Platform Overview: https://learn.bitbybit.dev/learn/getting-started/overview
 - Open Source Approach: https://learn.bitbybit.dev/learn/open-source-approach
 
@@ -27,7 +32,7 @@ Scripts are the core building blocks in Bitbybit projects. Each project can cont
 
 Learn about:
 - What scripts are and how they work within projects
-- The three script types (Blockly, Rete, TypeScript)
+- The four script types (Rete, Blockly, TypeScript and Designer)
 - Script visibility settings (public/private)
 - Combining multiple script types in a single project
 - Exporting scripts for external use
@@ -51,23 +56,44 @@ The Rete editor includes embedded TypeScript, JavaScript, and JSON editors. This
 - Access algorithms not yet available as visual components
 - Combine the intuitiveness of visual programming with the power of text-based scripting
 
-### TypeScript Editor (Monaco)
+### TypeScript Editor
 
 For advanced users who prefer text-based programming:
 
 - Introduction to TypeScript: https://learn.bitbybit.dev/learn/getting-started/typescript/intro
 - Hello World Tutorial: https://learn.bitbybit.dev/learn/getting-started/typescript/hello-world
 
-The Monaco editor (based on core technologies of VS Code) provides:
-- Full IntelliSense and autocompletion
+The TypeScript editor is built on Monaco, the editor of VS Code, and provides:
+- Full IntelliSense and autocompletion over the whole API
+- Scripts of many files in folders, starting from main.ts
 - Type safety and early error detection
 - Maximum flexibility and control
+
+### The Designer (Parametric CAD by Clicking)
+
+A parametric CAD modeller: sketches, features, parts and assemblies with joints, every step editable, kept as design documents (JSON) that agents can read and write. Creating and editing is part of the Gold plan; anyone it is shared with can view.
+
+- Introduction to the Designer: https://learn.bitbybit.dev/learn/designer/intro
+- Design documents: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/design-documents
 
 ### Assets & File Management
 
 Working with local and external assets:
 
 - Importing Local glTF Files: https://learn.bitbybit.dev/learn/getting-started/basics/assets/local/gltf
+
+## Designer (Interactive Parametric CAD)
+
+The Designer is Bitbybit's interactive CAD modeller: parametric parts and assemblies made by clicking, or by an AI agent working in the same document, built by the OpenCascade kernel in the browser. It is part of the Gold plan. The tutorials are the ones the Designer plays under Help > Tutorials, and the reference pages are generated from the Designer itself.
+
+- Introduction: https://learn.bitbybit.dev/learn/designer/intro
+- Tutorial, Make your first part: https://learn.bitbybit.dev/learn/designer/tutorials/first-part
+- Tutorial, Model a desk robot arm: https://learn.bitbybit.dev/learn/designer/tutorials/desk-arm
+- How the Designer works: https://learn.bitbybit.dev/learn/designer/concepts
+- Working with agents in the Designer: https://learn.bitbybit.dev/learn/designer/working-with-agents
+- Commands: https://learn.bitbybit.dev/learn/designer/reference/commands
+- Keyboard shortcuts: https://learn.bitbybit.dev/learn/designer/reference/shortcuts
+- Tools for agents: https://learn.bitbybit.dev/learn/designer/reference/agent-tools
 
 ## Code & Algorithm Organization
 
@@ -277,7 +303,7 @@ are for placing the 3D view or part of the option panel somewhere specific in a 
 - Rete Editor - Node-based visual programming
 
 **Pro-Code:**
-- TypeScript with Monaco Editor
+- The TypeScript editor
 - Custom Vite/TypeScript templates for production apps
 
 ### Tutorials
@@ -314,8 +340,10 @@ Using AI assistants with Bitbybit for enhanced coding workflows. Bitbybit does n
 - Bitbybit CAD MCP (first party, free, version-exact API answers): https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp
 - Bitbybit CAD Cloud MCP (first party, API key, runs geometry on CAD Cloud): https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp
 - Agentic CAD, where geometry should run when an agent writes the code: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/agentic-cad
+- Geometry with the CAD kernels, how agents build, check and export parts with OpenCascade, Manifold and JSCAD: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/cad-geometry
 - Design documents, parametric models as JSON that agents write and occt.design builds: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/design-documents
 - Design document JSON Schema: https://git-cdn.bitbybit.dev/v{{VERSION}}/schemas/design-document/experimental.json
+- IFC building models, BIM files that agents write with @bitbybit-dev/ifc, check and hand to other tools: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/ifc-models
 - Context7 MCP Integration: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/context-7
 
 Context7 provides live AI context with always up-to-date documentation:
@@ -435,9 +463,9 @@ Latest updates, tutorials, and announcements:
 
 ## Key Concepts
 
-### Three Editor Types
+### Four Editors
 
-Bitbybit offers three ways to create 3D geometry, all sharing the same underlying algorithms:
+Bitbybit offers four ways to create 3D geometry, all sharing the same underlying kernels:
 
 1. **Blockly (Visual Block-Based)**
    - Beginner-friendly drag-and-drop blocks
@@ -446,16 +474,21 @@ Bitbybit offers three ways to create 3D geometry, all sharing the same underlyin
    - Has dedicated Functions and Variables categories
 
 2. **Rete (Node-Based Visual)**
-   - Professional node-based dataflow programming
-   - Over 1,300 pre-built components
+   - Node-based dataflow programming that reruns as you change it
+   - Every function of the API as a component, plus modules, groups and code components
    - Includes embedded TypeScript/JavaScript/JSON editors
    - Best for complex visual workflows
 
-3. **Monaco (TypeScript)**
-   - Full text-based TypeScript programming
-   - Same editor as VS Code
+3. **TypeScript**
+   - Full text-based TypeScript programming, in many files
+   - Built on Monaco, the editor of VS Code
    - Maximum flexibility and control
    - Best for experienced developers
+
+4. **The Designer**
+   - Parametric CAD by clicking: sketches, features, parts and assemblies
+   - Gold plan to edit; anyone it is shared with can view
+   - Best for modelling parts the way CAD programs do
 
 ### Geometry Kernels
 

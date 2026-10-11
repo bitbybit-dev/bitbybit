@@ -409,6 +409,19 @@ export const TypeScriptEditorIcon: React.FC<IconProps> = ({ size = defaultSize, 
   </svg>
 );
 
+export const DesignerEditorIcon: React.FC<IconProps> = ({ size = defaultSize, color = "currentColor", className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    <path d="M26 9 46 20.5 26 32 6 20.5Z" fill={color} fillOpacity="0.12"/>
+    <path d="M26 9 46 20.5v22L26 54 6 42.5v-22Z" stroke={color} strokeWidth="1.5" strokeLinejoin="round"/>
+    <path d="M6 20.5 26 32l20-11.5M26 32v22" stroke={color} strokeWidth="1.5" strokeLinejoin="round"/>
+    <ellipse cx="26" cy="20.5" rx="7.5" ry="4.3" stroke={color} strokeWidth="1.5"/>
+    <path d="M18.9 22a7.5 4.3 0 0 0 14.2 0" stroke={color} strokeWidth="1" opacity="0.5"/>
+    <path d="M48 20.5h10M48 42.5h10" stroke={color} strokeWidth="1" opacity="0.6"/>
+    <path d="M55 24.5v14" stroke={color} strokeWidth="1.5"/>
+    <path d="M55 21.5l-2.4 4h4.8Z M55 41.5l-2.4-4h4.8Z" fill={color}/>
+  </svg>
+);
+
 export const TerminalIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor, className }) => (
   <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
     {/* Terminal window frame */}
