@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { composed, followedBy, isTransformMatrix, linearDeterminant, symmetricEigen } from "./matrices";
+import { composed, followedBy, isRigidMatrix, isTransformMatrix, linearDeterminant, symmetricEigen } from "./matrices";
 
 const IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
@@ -147,5 +147,36 @@ describe("matrices", () => {
             // Assert
             expect(matrix).toEqual([[2, 1, 0], [1, 2, 0], [0, 0, 1]]);
         });
+    });
+});
+
+describe("isRigidMatrix", () => {
+    it("should keep a matrix that only turns and moves, within the tolerance of a turn written in single precision", () => {
+        // Arrange
+        const cosine = 0.8660254;
+        const singlePrecisionTurn = [cosine, 0.5, 0, 0, -0.5, cosine, 0, 0, 0, 0, 1, 0, 3, 4, 5, 1];
+
+        // Act
+        const rigid = [IDENTITY, quarterTurnAboutZ, moveBy(1, 2, 3), singlePrecisionTurn].map((matrix) => isRigidMatrix(matrix));
+
+        // Assert
+        expect(rigid).toEqual([true, true, true, true]);
+    });
+
+    it("should refuse a matrix that mirrors, scales, stretches or shears, and one just outside the tolerance given", () => {
+        // Arrange
+        const mirror = [-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+        const scale = [2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1];
+        const stretch = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1];
+        const shear = [1, 0, 0, 0, 0.001, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+        const almost = [1.001, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
+        // Act
+        const rigid = [mirror, scale, stretch, shear].map((matrix) => isRigidMatrix(matrix));
+        const [strict, loose] = [isRigidMatrix(almost), isRigidMatrix(almost, 0.01)];
+
+        // Assert
+        expect(rigid).toEqual([false, false, false, false]);
+        expect([strict, loose]).toEqual([false, true]);
     });
 });

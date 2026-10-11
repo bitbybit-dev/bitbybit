@@ -47,8 +47,10 @@ export const DOCUMENT_KEYS = {
     connector: ["id", "on", "origin", "axis", "centre", "direction"],
     assembly: ["$schema", "schemaVersion", "kind", "id", "units", "up", "meta", "requires", "parameters", "configurations", "components", "joints", "connectors", "properties"],
     assemblyConnector: ["id", "component", "connector"],
-    component: ["id", "name", "source", "at", "replicate", "suppressed", "properties"],
+    component: ["id", "name", "source", "at", "replicate", "pattern", "suppressed", "properties"],
     replicate: ["connector", "to", "flip", "angle", "offset"],
+    polarComponentPattern: ["axis", "count", "angle", "start"],
+    linearComponentPattern: ["direction", "spacing", "count"],
     source: ["document", "version", "part", "configuration", "parameters"],
     joint: ["id", "type", "component", "connector", "to", "flip", "angle", "offset", "limits"],
     jointLimits: ["angle", "offset"],
@@ -162,7 +164,7 @@ function framed(keys: readonly string[], what: string): Check {
     };
 }
 
-const checkAxis = framed(DOCUMENT_KEYS.axis, "an axis { origin, direction }");
+export const checkAxis = framed(DOCUMENT_KEYS.axis, "an axis { origin, direction }");
 const checkPlane = framed(DOCUMENT_KEYS.plane, "a plane { origin, normal }");
 export const checkFrame = framed(DOCUMENT_KEYS.frame, "a frame { origin, normal, direction }");
 

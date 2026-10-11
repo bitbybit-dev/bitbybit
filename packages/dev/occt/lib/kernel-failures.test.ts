@@ -89,6 +89,7 @@ describe("OCCT_FAILURES", () => {
             "occt.fillet.failedAtCorners": ["corners"],
             "occt.pipe.notValid": ["trihedron"],
             "occt.design.crashed": ["feature", "path"],
+            "occt.recipe.failed": ["node", "root", "reason"],
         });
     });
 });

@@ -349,20 +349,22 @@ export class InterpolationDto {
      */
     parametrization?: bSplineParametrizationEnum | undefined = bSplineParametrizationEnum.chordLength;
     /**
-     * A direction the curve must leave the first point in; only for open curves.
+     * A direction the curve must leave the first point in, for open curves and with `endTangent` only.
+     * Shorter than `tolerance`, such as `[0, 0, 0]`, it counts as not given.
      * @default undefined
      * @optional true
      */
     startTangent?: Base.Vector3 | undefined;
     /**
-     * A direction the curve must arrive at the last point in; only for open curves.
+     * A direction the curve must arrive at the last point in; only for open curves, and only together
+     * with `startTangent`. A tangent shorter than `tolerance` counts as not given.
      * @default undefined
      * @optional true
      */
     endTangent?: Base.Vector3 | undefined;
     /**
-     * One direction per point that the curve must follow there, with undefined entries left free;
-     * when given, the start and end tangents are ignored.
+     * One direction per point that the curve must follow there, with undefined entries, and entries
+     * shorter than `tolerance`, left free; when given, the start and end tangents are ignored.
      * @default undefined
      * @optional true
      */

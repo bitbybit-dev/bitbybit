@@ -10,6 +10,7 @@ export * from "@bitbybit-dev/base/lib/api/resolved-inputs";
  */
 export namespace Manifold {
     export type BuildRecipeDto = WithDefaults<Inputs.Manifold.BuildRecipeDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed">;
+    export type BuildRecipeMeshesDto = WithDefaults<Inputs.Manifold.BuildRecipeMeshesDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed" | "minSharpAngle">;
     export type CalculateCurvatureDto<T> = WithDefaults<Inputs.Manifold.CalculateCurvatureDto<T>, "gaussianIdx" | "meanIdx">;
     export type CalculateNormalsDto<T> = WithDefaults<Inputs.Manifold.CalculateNormalsDto<T>, "normalIdx" | "minSharpAngle">;
     export type CircleDto = WithDefaults<Inputs.Manifold.CircleDto, "radius" | "circularSegments">;
@@ -32,6 +33,7 @@ export namespace Manifold {
     export type ExtrudeDto<T> = WithDefaults<Inputs.Manifold.ExtrudeDto<T>, "height" | "nDivisions" | "twistDegrees" | "scaleTopX" | "scaleTopY" | "center">;
     export type FromPolygonPointsDto = Inputs.Manifold.FromPolygonPointsDto;
     export type HullPointsDto<T> = Inputs.Manifold.HullPointsDto<T>;
+    export type LoftDto<T> = Inputs.Manifold.LoftDto<T>;
     export type ManifoldDto<T> = Inputs.Manifold.ManifoldDto<T>;
     export type ManifoldOrCrossSectionDto<T> = Inputs.Manifold.ManifoldOrCrossSectionDto<T>;
     export type ManifoldRefineDto<T> = WithDefaults<Inputs.Manifold.ManifoldRefineDto<T>, "number">;
@@ -56,6 +58,8 @@ export namespace Manifold {
     export type MirrorDto<T> = WithDefaults<Inputs.Manifold.MirrorDto<T>, "normal">;
     export type OffsetDto<T> = WithDefaults<Inputs.Manifold.OffsetDto<T>, "delta" | "joinType" | "miterLimit" | "circularSegments">;
     export type RayCastDto<T> = WithDefaults<Inputs.Manifold.RayCastDto<T>, "origin" | "endpoint">;
+    export type RecipeMeshesDto = Inputs.Manifold.RecipeMeshesDto;
+    export type RecipeMeshPlacementDto = Inputs.Manifold.RecipeMeshPlacementDto;
     export type RecipeSurfaceMeshesDto = WithDefaults<Inputs.Manifold.RecipeSurfaceMeshesDto, "adjustZtoY">;
     export type RectangleDto = WithDefaults<Inputs.Manifold.RectangleDto, "length" | "height" | "center">;
     export type RevolveDto<T> = WithDefaults<Inputs.Manifold.RevolveDto<T>, "revolveDegrees" | "matchProfile" | "circularSegments">;
@@ -73,6 +77,7 @@ export namespace Manifold {
     export type SplitByPlaneOnOffsetsDto<T> = WithDefaults<Inputs.Manifold.SplitByPlaneOnOffsetsDto<T>, "normal" | "originOffsets">;
     export type SplitManifoldsDto<T> = Inputs.Manifold.SplitManifoldsDto<T>;
     export type SquareDto = WithDefaults<Inputs.Manifold.SquareDto, "center" | "size">;
+    export type SweepDto<T> = WithDefaults<Inputs.Manifold.SweepDto<T>, "cornerRadius" | "circularSegments">;
     export type TransformCrossSectionDto<T> = Inputs.Manifold.TransformCrossSectionDto<T>;
     export type TransformDto<T> = Inputs.Manifold.TransformDto<T>;
     export type TransformsDto<T> = Inputs.Manifold.TransformsDto<T>;

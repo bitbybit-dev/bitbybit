@@ -26,6 +26,9 @@ function surfaceRecipe(roots: Base.RecipeRoot[]): Base.Recipe {
             { op: "polygon", points: [18, 8], holes: [] },
             { op: "extrude", profile: 4, direction: [0, 0, 1], depth: 1 },
             { op: "compound", of: [0, 5] },
+            { op: "voids", host: 3, openings: [5] },
+            { op: "union", of: [0, 2] },
+            { op: "intersection", of: [0, 2] },
         ],
         roots,
     };
@@ -45,13 +48,23 @@ describe("recipeSurfaceMeshes", () => {
         expect(Array.from(mesh!.indices)).toEqual([0, 1, 2]);
     });
 
-    it("should join the triangles of a compound through its transforms, counting each part's vertices on", () => {
+    it("should join the triangles of a compound or a union through its transforms, counting each part's vertices on", () => {
         // Act
-        const [mesh] = recipeSurfaceMeshes(surfaceRecipe([root(3)]));
+        const [compound, union] = recipeSurfaceMeshes(surfaceRecipe([root(3), root(8)]));
 
         // Assert
-        expect(Array.from(mesh!.positions)).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 20, 32, 10, 22, 32, 10, 20, 35]);
-        expect(Array.from(mesh!.indices)).toEqual([0, 1, 2, 3, 4, 5]);
+        expect(Array.from(compound!.positions)).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 20, 32, 10, 22, 32, 10, 20, 35]);
+        expect(Array.from(compound!.indices)).toEqual([0, 1, 2, 3, 4, 5]);
+        expect(union).toEqual(compound);
+    });
+
+    it("should give a mesh with openings through it as the mesh uncut", () => {
+        // Act
+        const [voided, plain] = recipeSurfaceMeshes(surfaceRecipe([root(7), root(3)]));
+
+        // Assert
+        expect(Array.from(voided!.positions)).toEqual(Array.from(plain!.positions));
+        expect(Array.from(voided!.indices)).toEqual(Array.from(plain!.indices));
     });
 
     it("should apply a transform node before the root's placement", () => {
@@ -80,12 +93,12 @@ describe("recipeSurfaceMeshes", () => {
         expect(Array.from(mesh!.indices)).toEqual([0, 1, 2]);
     });
 
-    it("should give undefined for a root that holds a step other than triangles, transforms and compounds", () => {
+    it("should give undefined for a root that holds a step other than triangles, transforms, compounds and unions", () => {
         // Act
-        const meshes = recipeSurfaceMeshes(surfaceRecipe([root(5), root(6), root(0)]));
+        const meshes = recipeSurfaceMeshes(surfaceRecipe([root(5), root(6), root(9), root(0)]));
 
         // Assert
-        expect(meshes.map((mesh) => mesh?.indices.length)).toEqual([undefined, undefined, 3]);
+        expect(meshes.map((mesh) => mesh?.indices.length)).toEqual([undefined, undefined, undefined, 3]);
     });
 
     it("should read only the roots asked for, in the order asked", () => {

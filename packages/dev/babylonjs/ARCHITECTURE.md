@@ -27,6 +27,21 @@ What picking reads from a drawn design build: each part's faces mesh and edges l
 each face's triangles sit (`faceRanges`), and the edges line which edge each of its lines draws, as
 `shapes.edge.getEdges` numbers them (`edgeIndexes`).
 
+## Recipe meshes
+
+A recipe drawn from its meshes is an invisible root mesh with one child per merged batch and one per
+instance group, every child pickable. A batch is a mesh whose indices are written reversed (the
+plan's `reverseWinding`), with an updatable index buffer and an updatable colour buffer of four
+components, placed at the batch's centre; a group is a mesh with thin instances, a `matrix` and a
+`color` buffer. Both use a white `PBRMetallicRoughnessMaterial` cached by its surface, the
+see-through one blending with `hasVertexAlpha` on the mesh. Hiding writes the run's indices into a
+full copy kept per batch and uploads it with `updateIndices`: Babylon's partial update replaces the
+CPU copy that picking reads with the part it was given, so a partial upload would leave hidden
+elements pickable. Colours change through `VertexBuffer.updateDirectly` over the run alone; an
+instance hides by a matrix scaled to zero at its own place, and takes a colour through
+`thinInstanceSetAttributeAt`. A pick names its element from `faceId` in a batch and
+`thinInstanceIndex` in a group. The state lives in a `WeakMap` beside the drawer.
+
 ## Nodes
 
 Drawing a node parents an axis triad to it. The node is not geometry, so pickability and casting and
@@ -48,6 +63,9 @@ would make every mesh of the model unpickable and register each one again as a s
   views models would otherwise have to ship.
 
 ## Tests
+
+`lib/api/bitbybit/draw-recipe-meshes.test.ts` draws recipe meshes on the `NullEngine`, picks them with
+real rays, and checks that a hidden element lets a ray through and a shown one stops it again.
 
 - Coverage is measured over `lib/api`. `lib/gui-enriched-babylon.ts` is outside it on purpose: it is
   a re-export shim over `@babylonjs/gui` with no logic of its own.

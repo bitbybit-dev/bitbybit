@@ -389,6 +389,61 @@ describe("OCCT fillets unit tests", () => {
         result.delete();
     });
 
+    describe("corners where one edge carries straight on into the next", () => {
+        const wheelProfile: Inputs.Base.Point3[] = [[0, 12.4, 0.05], [0, 12, 0], [0, 11.6, -1.75], [0, 11.6, -3.5], [0, 11.6, -5.25], [0, 12, -7], [0, 12.4, -7.05]];
+        const arcsOf = (shape: TopoDS_Wire): number =>
+            occHelper.edgesService.getEdgesAlongWire({ shape }).filter(e => occHelper.edgesService.isEdgeCircular({ shape: e })).length;
+        const holds = (points: Inputs.Base.Point3[], point: Inputs.Base.Point3): boolean =>
+            points.some(each => Math.hypot(each[0] - point[0], each[1] - point[1], each[2] - point[2]) < 1e-7);
+
+        it("should leave a straight corner of an open 2D wire as it is and round the others", () => {
+            // Arrange
+            const profile = wire.createPolylineWire(new Inputs.OCCT.PolylineDto(wheelProfile));
+
+            // Act
+            const result = fillets.fillet2d(new Inputs.OCCT.FilletDto<TopoDS_Wire>(profile, 0.3));
+
+            // Assert
+            expect(arcsOf(result)).toBe(4);
+            expect(holds(endsAlong(result), [0, 11.6, -3.5])).toBe(true);
+        });
+
+        it("should leave a point midway along a side of a closed 2D wire as it is and round the four corners", () => {
+            // Arrange
+            const rectangle = wire.createPolylineWire(new Inputs.OCCT.PolylineDto([[0, 0, 0], [2, 0, 0], [4, 0, 0], [4, 0, 3], [0, 0, 3], [0, 0, 0]]));
+
+            // Act
+            const result = fillets.fillet2d(new Inputs.OCCT.FilletDto<TopoDS_Wire>(rectangle, 0.5));
+
+            // Assert
+            expect(arcsOf(result)).toBe(4);
+            expect(holds(endsAlong(result), [2, 0, 0])).toBe(true);
+        });
+
+        it("should leave a straight corner named by its index as it is, giving the listed radii to the others", () => {
+            // Arrange
+            const profile = wire.createPolylineWire(new Inputs.OCCT.PolylineDto(wheelProfile));
+
+            // Act
+            const result = fillets.fillet2d(new Inputs.OCCT.FilletDto<TopoDS_Wire>(profile, undefined, [0.3, 0.2, 0.3], [2, 3, 4]));
+
+            // Assert
+            expect(arcsOf(result)).toBe(2);
+        });
+
+        it("should leave a straight corner of a 3D wire as it is and round the others", () => {
+            // Arrange
+            const polyline = wire.createPolylineWire(new Inputs.OCCT.PolylineDto([[0, 0, 0], [3, 0, 0], [6, 0, 0], [6, 3, 0], [6, 3, 3]]));
+
+            // Act
+            const result = fillets.fillet3DWire(new Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>(polyline, 0.5, [0, 1, 0]));
+
+            // Assert
+            expect(arcsOf(result)).toBe(2);
+            expect(holds(endsAlong(result), [3, 0, 0])).toBe(true);
+        });
+    });
+
     it("should fillet multiple 2D wires with the same radius", () => {
         const starOpt1 = new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 0);
         const starOpt2 = new Inputs.OCCT.StarDto(8, 5, 6, [20, 0, 0], [0, 1, 0], 0);

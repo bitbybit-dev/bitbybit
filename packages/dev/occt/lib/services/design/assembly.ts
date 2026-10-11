@@ -13,7 +13,8 @@ import { framingOf, runDesign } from "./runner";
 import { ROOT_NODE, structurePartOf, withProperties } from "./export-structure";
 import type { DesignRunContext } from "./state";
 import type { DesignValues, ParameterChoice } from "./values";
-import { directionOf, formatNumber, isExpressionObject, numberOf, parameterTypeOf, parameterValues, pointOf, propertyValue, textOf, truthOf, valueOf } from "./values";
+import { MAX_PATTERN_COUNT, countOf, directionOf, formatNumber, isExpressionObject, numberOf, parameterTypeOf, parameterValues, pointOf, propertyValue, textOf, truthOf, valueOf } from "./values";
+import { FULL_TURN } from "./constants";
 
 type Built = Models.OCCT.DesignBuildResult<TopoDS_Shape>;
 type Part = Models.OCCT.DesignBuiltPart<TopoDS_Shape>;
@@ -80,11 +81,47 @@ function frameOf(frame: Models.OCCT.DesignFrame, parameters: DesignValues, path:
     return { origin, normal, direction };
 }
 
+function patternMoves(pattern: Models.OCCT.DesignComponentPattern, parameters: DesignValues, path: string, base: BaseBitByBit): Inputs.Base.TransformMatrixes[] {
+    if ("polar" in pattern) {
+        const at = pointer(path, "polar");
+        const { polar } = pattern;
+        const count = countOf(polar.count, parameters, pointer(at, "count"), 1, MAX_PATTERN_COUNT);
+        const center = pointOf(polar.axis.origin, parameters, pointer(at, "axis", "origin"));
+        const axis = directionOf(polar.axis.direction, parameters, pointer(at, "axis", "direction"));
+        const angle = polar.angle === undefined ? FULL_TURN : numberOf(polar.angle, parameters, pointer(at, "angle"));
+        if (angle === 0 || Math.abs(angle) > FULL_TURN) {
+            throw new DesignProblem(pointer(at, "angle"), `the angle is not 0 and at most ${FULL_TURN} either way, not ${formatNumber(angle)}`);
+        }
+        const start = polar.start === undefined ? 0 : numberOf(polar.start, parameters, pointer(at, "start"));
+        const step = Math.abs(angle) === FULL_TURN ? angle / count : count === 1 ? 0 : angle / (count - 1);
+        return Array.from({ length: count }, (_, index) => base.transforms.rotationCenterAxis({ angle: start + step * index, axis, center }));
+    }
+    const at = pointer(path, "linear");
+    const { linear } = pattern;
+    const count = countOf(linear.count, parameters, pointer(at, "count"), 1, MAX_PATTERN_COUNT);
+    const spacing = numberOf(linear.spacing, parameters, pointer(at, "spacing"));
+    const along = directionOf(linear.direction, parameters, pointer(at, "direction"));
+    const unit = base.vector.normalized({ vector: [...along] });
+    if (unit === undefined) {
+        throw new DesignProblem(pointer(at, "direction"), "the direction has no length");
+    }
+    return Array.from({ length: count }, (_, index) => base.transforms.translationXYZ({ translation: [unit[0]! * spacing * index, unit[1]! * spacing * index, unit[2]! * spacing * index] }));
+}
+
+function patternCountOf(component: Models.OCCT.DesignComponent): number {
+    const pattern = component.pattern;
+    if (pattern === undefined) {
+        return 1;
+    }
+    const count = "polar" in pattern ? pattern.polar.count : pattern.linear.count;
+    return typeof count === "number" ? Math.max(1, count) : 1;
+}
+
 function replicasOf(component: Models.OCCT.DesignComponent, document: Models.OCCT.DesignAssemblyDocument, library: BuildLibrary): number {
     const replicate = component.replicate;
     const target = replicate === undefined ? undefined : document.components.find(other => other.id === replicate.to.component);
     if (replicate === undefined || target === undefined) {
-        return 1;
+        return patternCountOf(component);
     }
     const placed = sourceDocument(library, target.source).document;
     const ids = placed.kind === "assembly" ? (placed.connectors ?? []).map(connector => connector.id) : connectorIdsOf(placed.parts?.find(part => part.id === target.source.part), placed);
@@ -331,7 +368,8 @@ function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: Desi
                 const sourcePath = pointer(documentPath, "source");
                 const overrides = overridesOf(component.source, source.parameters, parameters, sourcePath);
                 const properties = propertiesOf(component.properties, parameters, documentPath, gathered);
-                const place = (occurrencePath: string, name: string, how: Placing | undefined): Connectors => {
+                const place = (occurrencePath: string, name: string, how: Placing | undefined, move?: Inputs.Base.TransformMatrixes): Connectors => {
+                    const after = (matrix: Matrix): Matrix => move === undefined ? matrix : gathered.context.occt.transforms.multiplyTransforms({ transformation: [matrix, ...move] });
                     const target = targetOf(how, placed, parameters, base);
                     const joined = (values: ReturnType<typeof jointValues> | undefined): void => {
                         if (how === undefined || target === undefined || values === undefined) {
@@ -349,7 +387,7 @@ function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: Desi
                         gathered.products.set(occurrencePath, propertiesOf(source.properties, inner, pointer("/documents", sourceIndex), gathered));
                         const published = assemble(source, inner, `${occurrencePath}/`, occurrencePath, gathered);
                         const placement = placementOf(component, published, how, target, parameters, documentPath, base);
-                        listedComponent.matrix = placement.matrix;
+                        listedComponent.matrix = after(placement.matrix);
                         joined(placement.values);
                         return moved(listedComponent.matrix, published, base);
                     }
@@ -358,13 +396,24 @@ function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: Desi
                     entry.cached = cached;
                     entry.messages.push(...messages.filter(message => !entry.messages.includes(message)));
                     const own: Connectors = new Map(part.connectors.map(connector => [connector.id, connector.frame]));
-                    const { matrix, values } = placementOf(component, own, how, target, parameters, documentPath, base);
+                    const placement = placementOf(component, own, how, target, parameters, documentPath, base);
+                    const matrix = after(placement.matrix);
+                    const values = placement.values;
                     gathered.components.push({ ...occurrence, part: part.id, matrix });
                     joined(values);
                     return moved(matrix, own, base);
                 };
                 const replicate = component.replicate;
-                if (replicate === undefined) {
+                const pattern = component.pattern;
+                if (pattern !== undefined) {
+                    const name = component.name ?? component.id;
+                    patternMoves(pattern, parameters, pointer(documentPath, "pattern"), base).forEach((move, index) => {
+                        place(`${path}.${index + 1}`, `${name} ${index + 1}`, placing, move);
+                        if (gathered.components.length > MAX_OCCURRENCES) {
+                            throw new DesignProblem(pointer(documentPath, "pattern"), `the assembly places more than ${MAX_OCCURRENCES} occurrences through its levels`);
+                        }
+                    });
+                } else if (replicate === undefined) {
                     placed.set(component.id, place(path, component.name ?? component.id, placing));
                 } else {
                     const members = membersOf(placed.get(replicate.to.component), replicate.to.connector);

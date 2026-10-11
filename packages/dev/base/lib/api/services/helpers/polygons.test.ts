@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type * as Inputs from "../../inputs";
-import { isInsidePolygon2, perimeter2, signedArea2, wound2 } from "./polygons";
+import { isInsidePolygon2, perimeter2, roundedCorners2, signedArea2, wound2 } from "./polygons";
 
 const SQUARE: Inputs.Base.Point2[] = [[0, 0], [4, 0], [4, 3], [0, 3]];
 
@@ -54,5 +54,48 @@ describe("polygons", () => {
 
         // Assert
         expect(perimeter).toBe(14);
+    });
+});
+
+describe("roundedCorners2", () => {
+    const fine = (): number => 256;
+    const square: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10]];
+    const ell: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 2], [2, 2], [2, 10], [0, 10]];
+    const cornerArea = (radius: number): number => radius * radius * (1 - Math.PI / 4);
+
+    it("should take the corner's quarter of a square out where a convex corner is rounded, and add it where an inner corner is", () => {
+        // Act
+        const square1 = roundedCorners2(square, [0, 0, 2, 0], fine);
+        const ell1 = roundedCorners2(ell, [0, 0, 0, 1, 0, 0], fine);
+
+        // Assert
+        expect(signedArea2(square1)).toBeCloseTo(100 - cornerArea(2), 3);
+        expect(signedArea2(ell1)).toBeCloseTo(36 + cornerArea(1), 3);
+    });
+
+    it("should start and end the arc where it meets the edges, with the segments it is given", () => {
+        // Act
+        const rounded = roundedCorners2(square, [0, 0, 2, 0], () => 4);
+
+        // Assert
+        expect(rounded.length).toBe(4 - 1 + 5);
+        expect(rounded[2]![0]).toBeCloseTo(10, 12);
+        expect(rounded[2]![1]).toBeCloseTo(8, 12);
+        expect(rounded[6]![0]).toBeCloseTo(8, 12);
+        expect(rounded[6]![1]).toBeCloseTo(10, 12);
+    });
+
+    it("should leave a corner without a radius, and a straight one, as it is", () => {
+        // Act
+        const straight = roundedCorners2([[0, 0], [5, 0], [10, 0], [10, 10]], [0, 3, 0, 0], fine);
+
+        // Assert
+        expect(straight).toEqual([[0, 0], [5, 0], [10, 0], [10, 10]]);
+        expect(roundedCorners2(square, [], fine)).toEqual(square);
+    });
+
+    it("should refuse a radius its corner's edges are too short for", () => {
+        // Act & Assert
+        expect(() => roundedCorners2(ell, [0, 0, 0, 9, 0, 0], fine)).toThrow("A corner radius of 9 does not fit the edges beside its corner");
     });
 });

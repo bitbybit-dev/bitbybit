@@ -29,7 +29,22 @@ What picking reads from a design build's edges: the one `LineSegments2` carries 
 component path (`paths`) and part (`parts`) of each placement, where each placement's segments start
 (`segmentStarts`), and per part where each edge's segments are (`edgeRanges`).
 
+## Recipe meshes
+
+A recipe drawn from its meshes is a group, added to the scene, with one `Mesh` per merged batch and
+one `InstancedMesh` per instance group. A batch has a dynamic index and a four-component colour
+attribute and a white `MeshPhysicalMaterial` with `vertexColors`; a group sets its matrices and an
+`instanceColor` per instance, and its material carries the group's one opacity, because
+`instanceColor` has no alpha and the plan groups instances by alpha for that reason. An instance
+material has `vertexColors` off: its geometry has no colour attribute, which with the flag on draws
+black. A state change writes the run into the attribute's array and adds an update range, so only
+the run is uploaded, and the raycaster reads the same array; an instance hides by a matrix scaled
+to zero. A pick names its element from `faceIndex` on a batch and `instanceId` on a group.
+
 ## Tests
+
+`lib/api/bitbybit/draw-recipe-meshes.test.ts` raycasts drawn recipe meshes, through hidden elements
+and onto shown ones, and reads the colours written back.
 
 - `instanceOf` in `__mocks__/threejs.mock.ts` narrows a double with an `instanceof` check instead of
   an assertion. Where `three` is mocked its classes are these doubles, so a suite that forgot the

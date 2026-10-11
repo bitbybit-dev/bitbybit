@@ -1172,6 +1172,73 @@ export namespace Manifold {
         circularSegments?: number | undefined = 32;
     }
     /**
+     * Cross-sections and the frames that place them for `crossSection.operations.loft`, which joins them
+     * in order into a solid.
+     */
+    export class LoftDto<T> {
+        constructor(crossSections?: T[], frames?: Base.TransformMatrix[]) {
+            if (crossSections !== undefined) { this.crossSections = crossSections; }
+            if (frames !== undefined) { this.frames = frames; }
+        }
+        /**
+         * One cross-section, placed by every frame, or one for each frame. Cross-sections that differ
+         * need as many loops with as many corners each, as a moved or scaled copy has.
+         */
+        crossSections!: T[];
+        /**
+         * Where each section stands, at least two: sixteen numbers in column-major order that place the
+         * cross-section's XY plane, with 0, 0, 0, 1 as the bottom row.
+         */
+        frames!: Base.TransformMatrix[];
+    }
+
+    /**
+     * A cross-section, a path and the corner settings for `crossSection.operations.sweep`, which
+     * carries the cross-section along the path into a solid.
+     */
+    export class SweepDto<T> {
+        constructor(crossSection?: T, path?: Base.Point3[], cornerRadius?: number, circularSegments?: number, xDirection?: Base.Vector3) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (path !== undefined) { this.path = path; }
+            if (cornerRadius !== undefined) { this.cornerRadius = cornerRadius; }
+            if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
+            if (xDirection !== undefined) { this.xDirection = xDirection; }
+        }
+        /**
+         * The profile to carry, drawn around the origin of its XY plane, which follows the path.
+         */
+        crossSection!: T;
+        /**
+         * The points the path runs through, at least two.
+         */
+        path!: Base.Point3[];
+        /**
+         * How much the path's corners are rounded; 0 keeps them sharp, mitred so the solid keeps its
+         * width.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        cornerRadius?: number | undefined = 0;
+        /**
+         * How many segments a whole turn of a rounded corner is divided into; more is rounder.
+         * @default 32
+         * @minimum 3
+         * @maximum Infinity
+         * @step 1
+         */
+        circularSegments?: number | undefined = 32;
+        /**
+         * Where the profile's X axis points at the start of the path, turned square to it; left out,
+         * one is chosen. The profile then follows the path's turns without twisting.
+         * @default undefined
+         * @optional true
+         */
+        xDirection?: Base.Vector3 | undefined;
+    }
+
+    /**
      * A cross-section and the offset settings for `crossSection.operations.offset`.
      */
     export class OffsetDto<T> {
@@ -1958,8 +2025,8 @@ export namespace Manifold {
          */
         adjustZtoY?: boolean | undefined = false;
         /**
-         * When true, a root that cannot be built, such as an open triangle mesh, comes back empty and
-         * the others are still built; when false, it stops the build.
+         * When true, a root that cannot be built, such as an open mesh, comes back empty, and an
+         * opening that cannot is left uncut; when false, both stop the build.
          * @default false
          */
         emptyWhenFailed?: boolean | undefined = false;
@@ -1996,5 +2063,96 @@ export namespace Manifold {
          * @default false
          */
         adjustZtoY?: boolean | undefined = false;
+    }
+
+    /**
+     * A recipe for `recipes.meshes`, which gives the meshes its roots draw, with how finely circles are
+     * divided, whether Z turns into Y, whether failures are skipped and where normals split.
+     * Experimental: the recipe format may still change.
+     * @beta
+     */
+    export class BuildRecipeMeshesDto {
+        constructor(recipe?: Base.Recipe, circularSegments?: number, adjustZtoY?: boolean, emptyWhenFailed?: boolean, minSharpAngle?: number) {
+            if (recipe !== undefined) { this.recipe = recipe; }
+            if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
+            if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+            if (emptyWhenFailed !== undefined) { this.emptyWhenFailed = emptyWhenFailed; }
+            if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
+        }
+        /**
+         * The recipe: steps such as polygons, extrusions and cuts, and the roots to draw from them, as
+         * a package that describes geometry as data writes it.
+         * @default undefined
+         */
+        recipe!: Base.Recipe;
+        /**
+         * How many flat sides each circle of the recipe is divided into; more is rounder.
+         * @default 32
+         * @minimum 3
+         * @maximum Infinity
+         * @step 1
+         */
+        circularSegments?: number | undefined = 32;
+        /**
+         * When true, every placement turns a quarter turn about X so the recipe's Z points along Y,
+         * which is up when drawn: `(x, y, z)` becomes `(x, z, -y)`.
+         * @default false
+         */
+        adjustZtoY?: boolean | undefined = false;
+        /**
+         * When true, a root that cannot be built draws as its surface if it is triangles alone, else
+         * draws nothing; when false, it stops the build.
+         * @default false
+         */
+        emptyWhenFailed?: boolean | undefined = false;
+        /**
+         * Edges sharper than this, in degrees, keep a normal on each side; 0 shades every face flat.
+         * @default 40
+         * @minimum 0
+         * @maximum 180
+         * @step 5
+         */
+        minSharpAngle?: number | undefined = 40;
+    }
+
+    /**
+     * Where one recipe root draws: which mesh, placed by which matrix, with the root's tag and group.
+     * Experimental: the recipe format may still change.
+     * @beta
+     */
+    export class RecipeMeshPlacementDto {
+        /**
+         * The index of the root's mesh among the meshes, or -1 when the root gives nothing to draw.
+         */
+        mesh!: number;
+        /**
+         * The column-major 4 x 4 matrix taking the mesh's coordinates to where the root draws it.
+         */
+        matrix!: Base.TransformMatrix;
+        /**
+         * The root's tag, as the recipe gives it.
+         */
+        tag!: Record<string, Base.RecipeTagValue>;
+        /**
+         * The root's group, a position in the recipe's groups.
+         * @optional true
+         */
+        group?: number | undefined;
+    }
+
+    /**
+     * The meshes a recipe draws, each shared one once, and one placement per root, in root order.
+     * Experimental: the recipe format may still change.
+     * @beta
+     */
+    export class RecipeMeshesDto {
+        /**
+         * The meshes, positions and normals per vertex, each in its own coordinates.
+         */
+        meshes!: DecomposedManifoldMeshDto[];
+        /**
+         * Where each root draws, in root order.
+         */
+        placements!: RecipeMeshPlacementDto[];
     }
 }

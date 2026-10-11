@@ -24,7 +24,21 @@ What picking reads from a drawn design build: each part entity's `designPart` gi
 component path of each hardware instance, and its faces entity's `faceRanges` where each face's
 triangles sit in each look's mesh, in render order.
 
+## Recipe meshes
+
+A recipe drawn from its meshes is an entity with one child entity per merged batch, each a render
+component of one mesh instance. PlayCanvas draws no instances here: its standard material reads no
+per-instance colour, so a placed mesh is copied into a batch like any other. A batch mesh carries
+colours of four components read as linear (`vertexColorGamma` off), its see-through material blending
+with `opacityVertexColor` from the alpha channel. `pc.Mesh` sets a whole attribute at a time, so a
+state change writes the runs into a copy of the batch's indices or colours and sets the whole array
+once per call. A pick names its element from the mesh instance and a triangle the caller found, since
+the engine's picker reports mesh instances, not triangles.
+
 ## Tests
+
+`lib/api/bitbybit/draw-recipe-meshes.test.ts` draws recipe meshes on the `NullGraphicsDevice` and reads
+the indices and colours back from the mesh after hiding, showing and colouring an element.
 
 - A mocked engine class that the code under test constructs with `new` is written as a `function`
   expression inside `vi.fn`, never an arrow, because an arrow cannot be constructed (`MeshInstance`

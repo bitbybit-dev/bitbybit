@@ -4,8 +4,9 @@ import { ManifoldWorkerManager } from "../../manifold-worker/manifold-worker-man
 
 /**
  * Working with Manifold cross-sections beyond booleans: turning them into solids by extruding along
- * Z or revolving, offsetting their outlines, wrapping them in a convex hull, simplifying them, and
- * composing and decomposing them. Every method returns a new shape.
+ * Z, revolving, lofting through frames or sweeping along a path, offsetting their outlines, wrapping
+ * them in a convex hull, simplifying them, and composing and decomposing them. Every method returns a
+ * new shape.
  */
 export class CrossSectionOperations {
     constructor(
@@ -70,6 +71,49 @@ export class CrossSectionOperations {
      */
     revolve(inputs: Inputs.Manifold.RevolveDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.revolve", inputs);
+    }
+
+    /**
+     * Joins cross-sections placed by frames into a solid, each section to the next by straight
+     * sides, closed at both ends: a taper from one outline to another, or one outline through many
+     * frames.
+     *
+     * Corner `i` of a section joins corner `i` of the next, so differing sections need matching loops;
+     * frames move the sections apart, mirroring all or none.
+     * @param inputs - The cross-sections, one or one per frame, and the frames that place them
+     * @returns The lofted solid
+     * @group basic
+     * @shortname loft
+     * @drawable true
+     * @example
+     * ```typescript
+     * const square = await bitbybit.manifold.crossSection.shapes.square({ size: 2, center: true });
+     * const solid = await bitbybit.manifold.crossSection.operations.loft({ crossSections: [square], frames: [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], [0.5, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 1, 0, 0, 0, 4, 1]] });
+     * ```
+     */
+    loft(inputs: Inputs.Manifold.LoftDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.loft", inputs);
+    }
+
+    /**
+     * Carries a cross-section along a path of points into a solid, square to the path at every
+     * point and turning with it without twisting, like a pipe, a rail or a cable.
+     *
+     * Sharp corners are mitred so the solid keeps its width; `cornerRadius` rounds them instead.
+     * `xDirection` sets where the profile's X axis points at the start.
+     * @param inputs - The cross-section, the path, the corner radius and its segments, and the profile's starting X direction
+     * @returns The swept solid
+     * @group basic
+     * @shortname sweep
+     * @drawable true
+     * @example
+     * ```typescript
+     * const ring = await bitbybit.manifold.crossSection.shapes.circle({ radius: 1, circularSegments: 32 });
+     * const pipe = await bitbybit.manifold.crossSection.operations.sweep({ crossSection: ring, path: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [10, 10, 10]], cornerRadius: 3, circularSegments: 32 });
+     * ```
+     */
+    sweep(inputs: Inputs.Manifold.SweepDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.sweep", inputs);
     }
 
     /**

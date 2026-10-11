@@ -23,6 +23,7 @@ export const DESCRIPTIONS: Readonly<Record<ToolName, { title: string; descriptio
         description:
             "The exact contract of one member by dotted path, for example occt.shapes.solid.createBox: signature, every parameter with its type, default and range, " +
             "the return type, the documentation, examples and where it runs. Answers are for the API version the server holds. " +
+            "It also describes the types a member returns or takes by their name, for example Inputs.IFC.SpaceInfoDto, field by field, and a member's answer lists those types. " +
             "An unknown path is reported as not found together with the nearest existing paths; nothing is guessed.",
     },
     list_namespace: {
@@ -40,9 +41,9 @@ export const DESCRIPTIONS: Readonly<Record<ToolName, { title: string; descriptio
     get_guide: {
         title: "Read the guides",
         description:
-            "Sections of the public guides: building with Bitbybit (what runs in the browser, on a server, on a lightweight backend, and what needs CAD Cloud), and writing design documents (parametric models as JSON: parameters, sketches, features, references, parts and assemblies). " +
+            "Sections of the public guides: building with Bitbybit (what runs in the browser, on a server, on a lightweight backend, and what needs CAD Cloud), writing geometry with the kernels (which kernel to use, the order to build a part in, choosing edges, checking and exporting shapes), writing design documents (parametric models as JSON: parameters, sketches, features, references, parts and assemblies), and writing IFC building models (storeys, walls and their joins, doors, windows, slabs, roofs, rooms, properties and quantities). " +
             "Without a topic it lists the sections. Read \"integrate\" before recommending where geometry should run: the npm packages are the default, and CAD Cloud is for algorithms that exist only there or compute the caller cannot provide. " +
-            "Read \"design\" before writing a design document.",
+            "Read \"geometry\" before writing geometry code, \"design\" before writing a design document, and \"ifc\" before writing an IFC model.",
     },
     search: {
         title: "Search",
@@ -57,8 +58,10 @@ export const DESCRIPTIONS: Readonly<Record<ToolName, { title: string; descriptio
 };
 
 export const SERVER_INSTRUCTIONS =
-    "This is the Bitbybit CAD MCP: it documents the Bitbybit 3D CAD API (OpenCascade, JSCAD and Manifold kernels, with Babylon.js, three.js and PlayCanvas renderers) for one exact version. " +
+    "This is the Bitbybit CAD MCP: it documents the Bitbybit 3D CAD API (OpenCascade, JSCAD and Manifold kernels, with Babylon.js, three.js and PlayCanvas renderers, and the IFC library for building models) for one exact version. " +
     "Always describe a member before using it: names, parameters and defaults come from the index, not from memory. " +
     "Tiers matter: oss members are in the MIT npm packages and run anywhere; platform-pro members exist only inside bitbybit.dev; cloud-pro members run only on Bitbybit CAD Cloud with an API key. " +
     "When asked where geometry should run, read get_guide(\"integrate\") first: the packages alone are the default, and CAD Cloud is the answer only for algorithms that exist only there or for compute the caller cannot provide. " +
-    "Before writing a design document, a parametric model as JSON that occt.design builds, read get_guide(\"design\") and the sections it lists.";
+    "Before writing geometry code with the occt, manifold or jscad kernels, read get_guide(\"geometry\"), then get_guide(\"part-order\") and get_guide(\"geometry-mistakes\"). " +
+    "Before writing a design document, a parametric model as JSON that occt.design builds, read get_guide(\"design\") and the sections it lists. " +
+    "Before writing an IFC building model with the ifc namespace, read get_guide(\"ifc\"), then get_guide(\"ifc-order\") and get_guide(\"ifc-mistakes\").";

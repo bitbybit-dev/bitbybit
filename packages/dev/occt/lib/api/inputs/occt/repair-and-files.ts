@@ -193,7 +193,8 @@ export class SaveObjDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, the shape is turned so this library's Y-up becomes Z-up.
+     * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
+     * turn it 90 degrees about X with `transforms.rotate` instead.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
@@ -237,7 +238,8 @@ export class SavePlyDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, the shape is turned so this library's Y-up becomes Z-up.
+     * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
+     * turn it 90 degrees about X with `transforms.rotate` instead.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;

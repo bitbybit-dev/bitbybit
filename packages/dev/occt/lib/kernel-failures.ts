@@ -1,7 +1,7 @@
 import { KernelOperationError, fillFailureMessage } from "@bitbybit-dev/base";
-import type { DesignCrashDetails } from "./kernel-failure-details";
+import type { DesignCrashDetails, RecipeFailureDetails } from "./kernel-failure-details";
 
-export type { DesignCrashDetails } from "./kernel-failure-details";
+export type { DesignCrashDetails, RecipeFailureDetails } from "./kernel-failure-details";
 
 /**
  * Every failure an OCCT operation names, by its stable code, with the values its message names: a
@@ -11,6 +11,7 @@ export type { DesignCrashDetails } from "./kernel-failure-details";
 export type OcctFailureDetails = {
     "occt.boolean.failed": undefined;
     "occt.boolean.mixedDimensions": undefined;
+    "occt.boolean.tessellated": undefined;
     "occt.fillet.failed": undefined;
     "occt.fillet.failedOnEdges": { readonly edges: readonly number[] };
     "occt.fillet.failedAtCorners": { readonly corners: readonly number[] };
@@ -22,6 +23,7 @@ export type OcctFailureDetails = {
     "occt.pipe.failed": undefined;
     "occt.pipe.notValid": { readonly trihedron: string };
     "occt.design.crashed": DesignCrashDetails;
+    "occt.recipe.failed": RecipeFailureDetails;
 };
 
 /** The code of a failure an OCCT operation names, such as `occt.fillet.failedOnEdges`. */
@@ -36,6 +38,7 @@ export type OcctFailureCode = keyof OcctFailureDetails;
 export const OCCT_FAILURES: Readonly<Record<OcctFailureCode, string>> = {
     "occt.boolean.failed": "The boolean operation could not be computed. One of the shapes may be broken, open or passing through itself.",
     "occt.boolean.mixedDimensions": "The boolean operation cannot combine shapes of different dimensions, such as a solid and an edge. Give it shapes of one kind; to divide a solid by a wire or an edge, split it instead.",
+    "occt.boolean.tessellated": "The boolean operation cannot use a shape that holds only triangles, such as a mesh a recipe kept as it is. Build the recipe with facetedMeshes to cut or join its meshes.",
     "occt.fillet.failed": "The fillet could not be built. A radius may be too large for the faces beside an edge, or the edges may meet at a corner the fillet cannot round.",
     "occt.fillet.failedOnEdges": "The fillet could not be built at these edges of the shape, counted from 0: {edges}. A radius may be too large for the faces beside them, or the edges may meet at a corner the fillet cannot round.",
     "occt.fillet.failedAtCorners": "The fillet could not round these corners, counted from 1: {corners}. The radius may be too large for the edges that meet there.",
@@ -47,6 +50,7 @@ export const OCCT_FAILURES: Readonly<Record<OcctFailureCode, string>> = {
     "occt.pipe.failed": "The pipe could not be built. The profile may be too large for the bends of the path, or the path may turn a corner the profile cannot follow.",
     "occt.pipe.notValid": "The pipe came out as a shape that is not valid, part of its side missing. With the {trihedron} trihedron OCCT can do that on a path that is straight or nearly so; the discrete trihedron (isDiscreteTrihedron) builds such paths.",
     "occt.design.crashed": "The kernel crashed while a design build made the feature {feature} ({path}), and every shape made before it is gone. Leave that feature out, or change it, to build the rest.",
+    "occt.recipe.failed": "The recipe could not build node {node}, which root {root} places: {reason}.",
 };
 
 /**

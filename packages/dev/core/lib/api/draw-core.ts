@@ -73,6 +73,7 @@ export class DrawCore {
             { kind: "decomposedMesh", phase: "async", matches: (e) => this.detectDecomposedMesh(e) },
             { kind: "manifoldMesh", phase: "async", matches: (e) => this.detectManifoldMesh(e) },
             { kind: "manifoldMeshes", phase: "async", matches: (e) => this.detectManifoldMeshes(e) },
+            { kind: "recipeMeshes", phase: "async", matches: (e) => this.detectRecipeMeshes(e) },
             { kind: "line", phase: "sync", matches: (e) => this.detectLine(e) },
             { kind: "point", phase: "sync", matches: (e) => this.detectPoint(e) },
             { kind: "jscadPath", phase: "sync", matches: (e) => this.detectJscadPath(e) },
@@ -424,6 +425,19 @@ export class DrawCore {
         return Array.isArray(entity) && entity.length > 0 && entity.every(el => this.detectManifoldMesh(el));
     }
 
+    /**
+     * Whether the entity is what `manifold.recipes.meshes` gives: meshes, and placements that each
+     * name one of them or -1, place it by sixteen finite numbers and carry a tag.
+     */
+    detectRecipeMeshes(entity: unknown): entity is Inputs.Manifold.RecipeMeshesDto {
+        if (!isRecord(entity) || !Array.isArray(entity["meshes"]) || !Array.isArray(entity["placements"])) {
+            return false;
+        }
+        const meshes = entity["meshes"];
+        return meshes.every((mesh) => this.detectManifoldMesh(mesh))
+            && entity["placements"].every((placement) => isRecipePlacement(placement, meshes.length));
+    }
+
     detectTag(entity: unknown): entity is Inputs.Tag.TagDto {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) {
             return false;
@@ -515,6 +529,14 @@ function isAppearance(value: unknown): boolean {
         && (value["edgeColor"] === undefined || typeof value["edgeColor"] === "string")
         && isEntryList(value["faces"], isLookValues)
         && isEntryList(value["edges"], entry => entry["color"] === undefined || typeof entry["color"] === "string");
+}
+
+const TRANSFORM_MATRIX_SIZE = 16;
+
+function isRecipePlacement(value: unknown, meshCount: number): boolean {
+    return isRecord(value) && Number.isInteger(value["mesh"]) && (value["mesh"] as number) >= -1 && (value["mesh"] as number) < meshCount
+        && Array.isArray(value["matrix"]) && value["matrix"].length === TRANSFORM_MATRIX_SIZE && value["matrix"].every(isFiniteNumber)
+        && isRecord(value["tag"]) && (value["group"] === undefined || Number.isInteger(value["group"]));
 }
 
 function isPlacedComponent(value: unknown): boolean {

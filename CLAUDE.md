@@ -110,7 +110,8 @@ plus `check:references`, `check:exports`, `rebuild-all-packages`, `check:strict-
 the scaffolder's and the MCP server's own builds and tests, `check:openapi`, `api:check`, `check:tarballs`, and last -
 on a red run too - `test:report`, which puts every suite's results on the summary page. It needs no
 secrets and must never gain any. `nightly.yml` runs the build and tests on every Node line the
-packages should keep working on. Neither publishes.
+packages should keep working on, and `ifc.yml` twice a week runs the `ifc` package's `validate` and
+`npm run ifc:corpus` against IfcOpenShell. None of the three publishes.
 
 `publish.yml` does, by hand-dispatch only, through npm trusted publishing: the job's OIDC token is
 exchanged for a short-lived publish token per package, so no npm token is stored anywhere and every

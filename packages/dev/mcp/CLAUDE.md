@@ -31,10 +31,17 @@ package outside the browser bundle conventions of `packages/dev/CLAUDE.md`:
   root (`src/index.ts`) imports no Node built-in, so a bundler can take it into an edge runtime;
   only `index-loader.ts`, `installed-version.ts` and `stdio.ts` may, and the dependency test holds
   that line. `src/index-reader.ts` is the lookup, search and
-  nearest-path logic; `src/render.ts` turns a record into the markdown a model reads.
-- `src/guides.generated.ts` is generated from `docs/learn/using-ai-with-bitbybit/agentic-cad.md` and
-  `design-documents.md` beside it by `npm run sync:guides`; `npm run check:guides` and
-  `src/guides.test.ts` fail when the pages and the file disagree. Edit a page, then regenerate.
+  nearest-path logic, and finds the types a member returns or takes in the index's `types` (the
+  `Inputs` and `Models` data classes and interfaces; a bare name is read in the namespace that names
+  it first);
+  `src/render.ts` turns a record into the markdown a model reads.
+- `src/guides.generated.ts` is generated from `docs/learn/using-ai-with-bitbybit/agentic-cad.md`,
+  `cad-geometry.md`, `design-documents.md` and `ifc-models.md` beside it by `npm run sync:guides`;
+  `npm run check:guides` and `src/guides.test.ts` fail when the pages and the file disagree. Edit a
+  page, then regenerate. The worked examples of the geometry and IFC pages are run from the page
+  itself by `packages/dev/occt/lib/geometry-guide.test.ts` and
+  `packages/dev/ifc/lib/ifc-guide.test.ts`, so a change to one is a change to what those tests
+  build.
   Each section carries the URL of its page, `GUIDE_PAGE_URL` stays the first page's, and a section
   id may be used once across all the pages: the sync refuses a repeat, so retitle one.
 

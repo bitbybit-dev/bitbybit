@@ -12,6 +12,7 @@ import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { CACHE_CONFIG, DEFAULT_COLORS, BABYLONJS_MATERIAL_DEFAULTS } from "./constants";
 import type * as Resolved from "./resolved-inputs";
+import { RecipeMeshesDrawer } from "./draw-recipe-meshes";
 
 const POSITION_SIZE = 3;
 const SIXTEEN_BIT_VERTICES = 65536;
@@ -47,6 +48,12 @@ export class DrawHelper extends DrawHelperCore {
     private readonly designStates = new WeakMap<BABYLON.Mesh, DesignDrawState>();
 
     private readonly designMeshes = new DesignMeshCache<Inputs.OCCT.DecomposedMeshDto>();
+
+    private readonly recipeDrawer = new RecipeMeshesDrawer({
+        scene: () => this.context.scene,
+        entityId: (type) => this.generateEntityId(type),
+        material: (transparent, metallic, roughness) => this.recipeMaterial(transparent, metallic, roughness),
+    });
 
     private readonly unlitMaterialCache = new Map<string, BABYLON.StandardMaterial>();
 
@@ -1122,6 +1129,38 @@ export class DrawHelper extends DrawHelperCore {
     drawManifoldMeshes(meshes: Inputs.Manifold.DecomposedManifoldMeshDto[], options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): BABYLON.Mesh {
         const resolved = resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
         return this.manifoldMeshContainer(meshes.map(mesh => this.handleDecomposedManifold(mesh, resolved)));
+    }
+
+    drawRecipeMeshes(meshes: Inputs.Manifold.RecipeMeshesDto, options: Inputs.Draw.DrawRecipeMeshesOptions): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.Draw.DrawRecipeMeshesOptions, options) as Resolved.Draw.DrawRecipeMeshesOptions;
+        return this.recipeDrawer.draw(meshes, resolved);
+    }
+
+    setRecipeElementsVisible(resolved: Resolved.Draw.RecipeElementsVisibilityDto<BABYLON.Mesh>): void {
+        this.recipeDrawer.setVisible(resolved.drawn, resolved.keys, resolved.visible);
+    }
+
+    setRecipeElementsColour(resolved: Resolved.Draw.RecipeElementsColourDto<BABYLON.Mesh>): void {
+        this.recipeDrawer.setColour(resolved.drawn, resolved.keys, resolved.colour, resolved.opacity);
+    }
+
+    recipeElementOfPick(inputs: Inputs.Draw.RecipeElementPickDto<BABYLON.Mesh, BABYLON.AbstractMesh>): string | undefined {
+        return this.recipeDrawer.elementOfPick(inputs.drawn, inputs.mesh, inputs.triangle, inputs.instance);
+    }
+
+    private recipeMaterial(transparent: boolean, metallic: number, roughness: number): BABYLON.PBRMetallicRoughnessMaterial {
+        return this.getOrCreateMaterial(`recipe:${transparent}:${metallic}:${roughness}`, 1, 0, () => {
+            const material = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("recipeMaterial"), this.context.scene);
+            material.baseColor = BABYLON.Color3.White();
+            material.metallic = metallic;
+            material.roughness = roughness;
+            material.backFaceCulling = true;
+            material.doubleSided = false;
+            if (transparent) {
+                material.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
+            }
+            return material;
+        });
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {

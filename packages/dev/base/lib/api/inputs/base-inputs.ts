@@ -108,14 +108,16 @@ export namespace Base {
      */
     export type Line3 = { start: Base.Point3, end: Base.Point3 };
     /**
-     * A connected chain of points in space, optionally closed, with an optional color. Closing it
-     * turns the chain into an outline that can become a face.
+     * A connected chain of points in space, optionally closed, with an optional color: a hex text
+     * such as `#ff0000`, or `[r, g, b]` values from 0 to 1. Closing it turns the chain into an
+     * outline that can become a face.
      */
-    export type Polyline3 = { points: Base.Point3[], isClosed?: boolean, color?: number[] };
+    export type Polyline3 = { points: Base.Point3[], isClosed?: boolean, color?: string | number[] };
     /**
-     * A connected chain of points in the plane, optionally closed, with an optional color.
+     * A connected chain of points in the plane, optionally closed, with an optional color: a hex
+     * text such as `#ff0000`, or `[r, g, b]` values from 0 to 1.
      */
-    export type Polyline2 = { points: Base.Point2[], isClosed?: boolean, color?: number[] };
+    export type Polyline2 = { points: Base.Point2[], isClosed?: boolean, color?: string | number[] };
     /**
      * A 3x3 transformation matrix as 9 numbers, for transforms in the plane.
      */
@@ -148,8 +150,9 @@ export namespace Base {
      */
     export interface RecipeBuffers {
         /**
-         * Coordinates: flat `x, y` pairs for polygons and `x, y, z` triples for triangle positions.
-         * Every number in it is a coordinate, finite and between minus and plus one billion.
+         * Coordinates: flat `x, y` pairs for polygons, `x, y, z` triples for triangle positions and
+         * sixteen numbers for each frame of a loft. Every number in it is a coordinate, finite and
+         * between minus and plus one billion.
          */
         f64: Float64Array;
         /**
@@ -328,10 +331,90 @@ export namespace Base {
         of: number[];
     }
     /**
+     * Several solids joined into one, filling the space any of them fills, with no faces left where
+     * they meet.
+     * @beta
+     */
+    export interface RecipeUnionNode {
+        /**
+         * Always `union`.
+         */
+        op: "union";
+        /**
+         * The indices of the solids, at least one.
+         */
+        of: number[];
+    }
+    /**
+     * The space every one of several solids fills.
+     * @beta
+     */
+    export interface RecipeIntersectionNode {
+        /**
+         * Always `intersection`.
+         */
+        op: "intersection";
+        /**
+         * The indices of the solids, at least two.
+         */
+        of: number[];
+    }
+    /**
+     * A solid made by turning a polygon or circle node about an axis in the XY plane, such as a pipe
+     * bend or a round column's capital. The profile must lie on one side of the axis.
+     * @beta
+     */
+    export interface RecipeRevolveNode {
+        /**
+         * Always `revolve`.
+         */
+        op: "revolve";
+        /**
+         * The index of the polygon or circle node to turn.
+         */
+        profile: number;
+        /**
+         * A point on the axis, as `[x, y]`.
+         */
+        origin: Point2;
+        /**
+         * The axis direction, as `[x, y]`; not a zero vector.
+         */
+        direction: Vector2;
+        /**
+         * How far to turn, in radians, above zero and at most a whole turn. The turn follows the
+         * right-hand rule about `direction`.
+         */
+        angle: number;
+    }
+    /**
+     * A solid made by placing polygon or circle nodes one after another by frames and joining each to
+     * the next by straight sides, closed at both ends: a profile swept along a path when one profile
+     * is placed by many frames, or a taper from one profile to another.
+     * @beta
+     */
+    export interface RecipeLoftNode {
+        /**
+         * Always `loft`.
+         */
+        op: "loft";
+        /**
+         * The indices of the polygon or circle nodes: one, placed by every frame, or one per frame.
+         * Profiles that differ should have as many corners in each loop, so a mesh kernel can join
+         * them corner to corner.
+         */
+        profiles: number[];
+        /**
+         * A range of `f64` holding sixteen numbers per frame, at least two frames: each a column-major
+         * matrix with 0, 0, 0, 1 as its bottom row, placing a profile's XY plane.
+         */
+        frames: RecipeRange;
+    }
+    /**
      * One step of a recipe. A node refers only to nodes before it, by their position in the list.
      * @beta
      */
-    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode;
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode;
     /**
      * A value a recipe carries through to its results untouched.
      * @beta
@@ -356,10 +439,38 @@ export namespace Base {
          * Labels handed back with the result unchanged, such as an element's `globalId`.
          */
         tag: Record<string, RecipeTagValue>;
+        /**
+         * The index of the group the result belongs to, such as the storey an element stands on;
+         * left out for a result that belongs to none.
+         */
+        group?: number | undefined;
     }
     /**
-     * Solids described as data rather than built: a list of steps (polygons, extrusions, cuts,
-     * transforms, meshes) and the results to build from them. Every number is already resolved, so
+     * A named group of a recipe's results, such as a storey or an assembly of parts, which may lie
+     * in another group. An executor that builds a structure, such as an assembly document, nests its
+     * results by their groups; one that only builds shapes ignores them.
+     *
+     * Experimental: the recipe format may still change before it is declared stable.
+     * @beta
+     */
+    export interface RecipeGroup {
+        /**
+         * What the group is called, such as `Ground floor`.
+         */
+        name: string;
+        /**
+         * The index of the group this one lies in, which comes earlier in the list; left out for a
+         * group at the top.
+         */
+        parent?: number | undefined;
+        /**
+         * Labels handed back with the group unchanged, such as a storey's `globalId`.
+         */
+        tag: Record<string, RecipeTagValue>;
+    }
+    /**
+     * Solids described as data rather than built: a list of steps (polygons, extrusions, turns and
+     * lofts, cuts and unions, transforms, meshes) and the results to build from them. Every number is already resolved, so
      * a recipe has no variables or expressions; how finely circles are divided is left to the kernel
      * that builds it.
      *
@@ -397,6 +508,11 @@ export namespace Base {
          * The results to build.
          */
         roots: RecipeRoot[];
+        /**
+         * The groups the results belong to, each after the group it lies in; left out when the
+         * results are not grouped.
+         */
+        groups?: RecipeGroup[] | undefined;
     }
 
     /**

@@ -3,6 +3,7 @@ import { constraintKinds as k, DtoConstraints, DtoRegistry } from "@bitbybit-dev
 import * as Inputs from "./inputs";
 
 const Manifold_BuildRecipeDto: DtoConstraints = { recipe: k.required(k.opaque), circularSegments: k.between(k.number, { min: 3 }), adjustZtoY: k.boolean, emptyWhenFailed: k.boolean };
+const Manifold_BuildRecipeMeshesDto: DtoConstraints = { recipe: k.required(k.opaque), circularSegments: k.between(k.number, { min: 3 }), adjustZtoY: k.boolean, emptyWhenFailed: k.boolean, minSharpAngle: k.between(k.number, { min: 0, max: 180 }) };
 const Manifold_CalculateCurvatureDto: DtoConstraints = { manifold: k.required(k.opaque), gaussianIdx: k.between(k.number, { min: 0 }), meanIdx: k.between(k.number, { min: 0 }) };
 const Manifold_CalculateNormalsDto: DtoConstraints = { manifold: k.required(k.opaque), normalIdx: k.between(k.number, { min: 0 }), minSharpAngle: k.between(k.number, { min: 0 }) };
 const Manifold_CircleDto: DtoConstraints = { radius: k.between(k.number, { min: 0 }), circularSegments: k.between(k.number, { min: 0 }) };
@@ -22,6 +23,7 @@ const Manifold_DecomposeManifoldsOrCrossSectionsDto: DtoConstraints = { manifold
 const Manifold_ExtrudeDto: DtoConstraints = { crossSection: k.required(k.opaque), height: k.between(k.number, { min: 0 }), nDivisions: k.between(k.number, { min: 0 }), twistDegrees: k.number, scaleTopX: k.between(k.number, { min: 0 }), scaleTopY: k.between(k.number, { min: 0 }), center: k.boolean };
 const Manifold_FromPolygonPointsDto: DtoConstraints = { polygonPoints: k.required(k.list(k.list(k.point3))) };
 const Manifold_HullPointsDto: DtoConstraints = { points: k.required(k.opaque) };
+const Manifold_LoftDto: DtoConstraints = { crossSections: k.required(k.list(k.opaque)), frames: k.required(k.list(k.opaque)) };
 const Manifold_ManifoldDto: DtoConstraints = { manifold: k.required(k.opaque) };
 const Manifold_ManifoldRefineDto: DtoConstraints = { manifold: k.required(k.opaque), number: k.between(k.number, { min: 0 }) };
 const Manifold_ManifoldRefineLengthDto: DtoConstraints = { manifold: k.required(k.opaque), length: k.between(k.number, { min: 0 }) };
@@ -60,6 +62,7 @@ const Manifold_SplitByPlaneDto: DtoConstraints = { manifold: k.required(k.opaque
 const Manifold_SplitByPlaneOnOffsetsDto: DtoConstraints = { manifold: k.required(k.opaque), normal: k.vector3, originOffsets: k.list(k.number) };
 const Manifold_SplitManifoldsDto: DtoConstraints = { manifoldToSplit: k.required(k.opaque), manifoldCutter: k.required(k.opaque) };
 const Manifold_SquareDto: DtoConstraints = { center: k.boolean, size: k.between(k.number, { min: 0 }) };
+const Manifold_SweepDto: DtoConstraints = { crossSection: k.required(k.opaque), path: k.required(k.list(k.point3)), cornerRadius: k.between(k.number, { min: 0 }), circularSegments: k.between(k.number, { min: 3 }), xDirection: k.vector3 };
 const Manifold_TransformCrossSectionDto: DtoConstraints = { crossSection: k.required(k.opaque), transform: k.required(k.opaque) };
 const Manifold_TransformDto: DtoConstraints = { manifold: k.required(k.opaque), transform: k.required(k.opaque) };
 const Manifold_TransformsDto: DtoConstraints = { manifold: k.required(k.opaque), transforms: k.required(k.opaque) };
@@ -105,9 +108,11 @@ export const manifoldDtoRegistry: DtoRegistry = {
     "crossSection.operations.decompose": { dto: Inputs.Manifold.CrossSectionDto, constraints: Manifold_CrossSectionDto },
     "crossSection.operations.extrude": { dto: Inputs.Manifold.ExtrudeDto, constraints: Manifold_ExtrudeDto },
     "crossSection.operations.hull": { dto: Inputs.Manifold.CrossSectionDto, constraints: Manifold_CrossSectionDto },
+    "crossSection.operations.loft": { dto: Inputs.Manifold.LoftDto, constraints: Manifold_LoftDto },
     "crossSection.operations.offset": { dto: Inputs.Manifold.OffsetDto, constraints: Manifold_OffsetDto },
     "crossSection.operations.revolve": { dto: Inputs.Manifold.RevolveDto, constraints: Manifold_RevolveDto },
     "crossSection.operations.simplify": { dto: Inputs.Manifold.SimplifyDto, constraints: Manifold_SimplifyDto },
+    "crossSection.operations.sweep": { dto: Inputs.Manifold.SweepDto, constraints: Manifold_SweepDto },
     "crossSection.shapes.circle": { dto: Inputs.Manifold.CircleDto, constraints: Manifold_CircleDto },
     "crossSection.shapes.create": { dto: Inputs.Manifold.CreateContourSectionDto, constraints: Manifold_CreateContourSectionDto },
     "crossSection.shapes.rectangle": { dto: Inputs.Manifold.RectangleDto, constraints: Manifold_RectangleDto },
@@ -202,6 +207,7 @@ export const manifoldDtoRegistry: DtoRegistry = {
     "mesh.evaluate.verts": { dto: Inputs.Manifold.MeshTriangleIndexDto, constraints: Manifold_MeshTriangleIndexDto },
     "mesh.operations.merge": { dto: Inputs.Manifold.MeshDto, constraints: Manifold_MeshDto },
     "recipes.build": { dto: Inputs.Manifold.BuildRecipeDto, constraints: Manifold_BuildRecipeDto },
+    "recipes.meshes": { dto: Inputs.Manifold.BuildRecipeMeshesDto, constraints: Manifold_BuildRecipeMeshesDto },
     "recipes.surfaceMeshes": { dto: Inputs.Manifold.RecipeSurfaceMeshesDto, constraints: Manifold_RecipeSurfaceMeshesDto },
     "toPolygonPoints": { dto: Inputs.Manifold.ManifoldDto, constraints: Manifold_ManifoldDto },
 };

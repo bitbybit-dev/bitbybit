@@ -50,6 +50,25 @@ the helpers themselves stay internal and can change shape freely.
 - **An arc through three points runs from the first through the second to the third**, about the
   normal of the three, so the same formula serves points in a plane and in space. Points on one line,
   or two at one place, fix no circle and give nothing.
+- **`paths` carries a profile along a polyline.** A section stands square to the tangent, which at a
+  corner is the bisector and at an end the tangent the caller gives (a curve's own) or the last
+  segment's. Its axes are carried from point to point by double reflection, so a path that turns does
+  not twist the profile, and a corner's section is stretched across the bend by one over the cosine of
+  half the turn, so a tube keeps its width through a mitre. `roundedPath3` rounds a polyline's corners
+  in space by a radius, shrunk where two corners would overlap.
+- **`nurbs` evaluates B-spline curves and surfaces** by de Boor's algorithm in homogeneous coordinates,
+  so rational and plain splines share one path; a parameter outside the knot domain is held at its
+  end.
+- **`surface-triangulation` meshes a face of a curved surface from its boundary in parameter space.**
+  The boundary's points and their positions are given; the face is cut by `triangulateFace`, the flat
+  triangles a straight parameter line leaves are flipped away, and then, until nothing changes,
+  interior edges are flipped to Delaunay and those whose surface bends more than a 32nd of a turn,
+  and leaves the chord by more than an arc of that turn would, are split at their middle. Boundary
+  edges are never split, so a neighbouring face that shares an edge shares its points and the shell
+  stays closed. Delaunay is judged in a metric of how fast the normal turns along each parameter, plus
+  a little of the surface's own length so flat directions still shape the triangles: along a cylinder
+  the normal does not turn, so a pipe's face becomes straight strips with no points inside. Each pass
+  flips until no edge flips, since splitting before the flips settle grows points without end.
 
 ## DXF export
 
@@ -89,7 +108,25 @@ the Manifold kernel builds one is in `packages/dev/manifold/ARCHITECTURE.md`.
   executor's choice, so two kernels build close solids, not identical ones. `tolerance` and
   `millimetresPerUnit` describe the data for whoever reads the results; an executor builds in the
   recipe's own units and need not apply either. A compound is the space its parts fill together, so
-  an overlap counts once.
+  an overlap counts once, though an exact kernel may keep its parts apart; a `union` joins them into
+  one solid in every kernel, and an `intersection` keeps the space all its solids share.
+- **Turns and lofts are generic.** A `revolve` turns a profile about an axis in its plane by the
+  right-hand rule, and the profile must lie on one side of the axis. A `loft` places profiles by
+  frames held in `f64`, sixteen numbers each, and joins each section to the next by straight sides:
+  one profile placed by many frames is a sweep along a path, two profiles a taper. Whatever decides
+  the frames (a pipe's bends, a curve's reference surface, an alignment) is the producer's, so an
+  executor only places what it is given. A mesh executor joins sections corner to corner, so
+  profiles that differ must have as many corners in each loop.
+- **A recipe read from JSON has lists where its buffers are.** JSON carries no typed arrays, so a
+  recipe sent to CAD Cloud or read from a file holds `f64` and `i32` as lists of numbers. The executors
+  read every recipe through `toRecipe`, which turns such lists into the typed arrays and then checks
+  the result as `assertRecipe` does; an index list holding a number a 32-bit integer cannot hold stays
+  a list and is refused, rather than wrapped. The value it is given is left as it was.
+- **Groups are structure, not geometry.** `groups` names the parts of a structure (a storey, an
+  assembly), each in an earlier one or at the top, and a root may say which it belongs to. An executor
+  that builds an assembly document nests its results by them; one that only builds shapes, such as
+  Manifold's, ignores them, and a recipe without groups is as before. A group's parent comes earlier
+  in the list for the same reason a node's inputs do: the tree is acyclic by construction.
 - **A polygon is its boundary's region less its holes' regions.** The boundary and the holes may run
   either way round, a boundary that crosses itself keeps every loop, and holes may overlap each other
   or reach past the boundary: only the part of the holes inside the boundary is removed.
@@ -107,13 +144,22 @@ the Manifold kernel builds one is in `packages/dev/manifold/ARCHITECTURE.md`.
   of its length). Which buffer reads are safe is decided by the range checks themselves, never by
   searching the issue list, which is capped at `MAX_ISSUES` so a hostile recipe cannot make the report
   large. A half-space is accepted only as a difference's tool, and a polygon or circle only as what an
-  extrusion sweeps.
+  extrusion, a turn or a loft builds from. A turn's angle is above zero and at most a whole turn, an
+  intersection has two solids at least, and every loft frame is affine, does not flatten and mirrors
+  exactly when the first frame does: frames that disagree twist the sections through themselves
+  into a solid of no volume in an exact kernel and a mesh one alike.
 - **The validator cannot see every failure.** Transforms that compose past what a double holds, or a
   boolean the kernel cannot complete, surface only when the kernel evaluates the result, so an
   executor checks what it built and names the node that failed.
 - **A root made of triangles alone needs no kernel.** `recipeSurfaceMeshes` follows a root through
-  transforms and compounds to its triangle nodes and places them by the composed matrices, turning a
+  transforms, compounds and unions to its triangle nodes (a union of surfaces is all of them) and places them by the composed matrices, turning a
   triangle round under a mirroring one as a kernel's transform does; any other step makes the root
   undefined. It exists for meshes a solid kernel refuses, such as a building model's open furniture
   surfaces, which can still be drawn as the surfaces they are. It checks the recipe once with
   `assertRecipe` for all the roots it is asked for, so asking root by root costs a check each time.
+- **A root's source is found by folding rigid transforms.** `recipeSourceOf` follows transform steps
+  whose matrices only turn and move (`isRigidMatrix`: columns of length 1 at right angles within
+  `1e-7`, keeping handedness) into the placing matrix, so roots that place one step through
+  different moves share it. A transform that mirrors, scales or stretches stays a step of its own,
+  since an instance drawn by it would turn its normals or its winding. An exact kernel's assembly
+  document and a mesh drawer's instances both read sharing from it.

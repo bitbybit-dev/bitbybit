@@ -104,7 +104,7 @@ export namespace BabylonGltf {
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace BabylonGui {
-    export type AddControlsToContainerDto = WithDefaults<Inputs.BabylonGui.AddControlsToContainerDto, "clearControlsFirst">;
+    export type AddControlsToContainerDto<C extends Inputs.BabylonGui.ControlsParent = Inputs.BabylonGui.ControlsParent> = WithDefaults<Inputs.BabylonGui.AddControlsToContainerDto<C>, "clearControlsFirst">;
     export type AlignmentDto<T> = WithDefaults<Inputs.BabylonGui.AlignmentDto<T>, "horizontalAlignment" | "verticalAlignment">;
     export type ButtonDto = Inputs.BabylonGui.ButtonDto;
     export type CheckboxDto = Inputs.BabylonGui.CheckboxDto;
@@ -420,7 +420,11 @@ export namespace Draw {
     export type DrawOcctShapeMaterialOptions = WithDefaults<Inputs.Draw.DrawOcctShapeMaterialOptions, "precision" | "drawEdges" | "edgeColour" | "edgeWidth">;
     export type DrawOcctShapeOptions = WithDefaults<Inputs.Draw.DrawOcctShapeOptions, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "vertexColour" | "edgeWidth" | "vertexSize" | "drawEdges" | "drawFaces" | "drawVertices" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "edgeArrowSize" | "edgeArrowAngle" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     export type DrawOcctShapeSimpleOptions = WithDefaults<Inputs.Draw.DrawOcctShapeSimpleOptions, "precision" | "drawFaces" | "faceColour" | "drawEdges" | "edgeColour" | "edgeWidth" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    export type DrawRecipeMeshesOptions = WithDefaults<Inputs.Draw.DrawRecipeMeshesOptions, "elementKey" | "instancing" | "minInstances" | "maxBatchVertices" | "defaultColour" | "defaultOpacity" | "metallic" | "roughness">;
     export type GenericPBRMaterialDto = WithDefaults<Inputs.Draw.GenericPBRMaterialDto, "name" | "baseColor" | "metallic" | "roughness" | "alpha" | "emissiveColor" | "emissiveIntensity" | "zOffset" | "zOffsetUnits" | "alphaMode" | "alphaCutoff" | "doubleSided" | "wireframe" | "unlit">;
     export type GenericTextureDto = WithDefaults<Inputs.Draw.GenericTextureDto, "name" | "uScale" | "vScale" | "uOffset" | "vOffset" | "wAng" | "invertY" | "invertZ" | "samplingMode">;
+    export type RecipeElementPickDto<T, M> = Inputs.Draw.RecipeElementPickDto<T, M>;
+    export type RecipeElementsColourDto<T> = WithDefaults<Inputs.Draw.RecipeElementsColourDto<T>, "opacity">;
+    export type RecipeElementsVisibilityDto<T> = WithDefaults<Inputs.Draw.RecipeElementsVisibilityDto<T>, "visible">;
     export type SceneDrawGridMeshDto = WithDefaults<Inputs.Draw.SceneDrawGridMeshDto, "width" | "height" | "subdivisions" | "majorUnitFrequency" | "minorUnitVisibility" | "gridRatio" | "opacity" | "backFaceCulling" | "mainColor" | "secondaryColor">;
 }

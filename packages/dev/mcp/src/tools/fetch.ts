@@ -32,7 +32,7 @@ export const fetchTool: ToolDefinition<typeof input, DocsContext> = {
         const document = {
             id: member.path,
             title: member.path,
-            text: renderMember(member, resolved.version, resolved.reader.examplesOf(member.path)),
+            text: renderMember(member, resolved.version, resolved.reader.examplesOf(member.path), resolved.reader.typesUsedBy(member)),
             url: member.docUrl ?? context.guideUrl,
             metadata: { tier: member.tier, kind: member.kind, version: resolved.version, engines: member.engines.join(",") },
         };

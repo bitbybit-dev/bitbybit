@@ -6,6 +6,7 @@ import type { EntitiesService } from "./entities.service";
 import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import { checkedShapes } from "./input-checks";
+import { readKernelException } from "../../kernel-exception";
 
 const smallestScale = 1e-100;
 
@@ -249,6 +250,9 @@ export class TransformsService {
             } finally {
                 trsf.delete();
             }
+        }
+        if (typeof this.occ.TransformByMatrix === "function" && this.holdsFaceWithoutSurface(inputs.shape)) {
+            return this.stretchedMesh(inputs.shape, matrix);
         }
         const gtrsf = this.matrixToGTrsf(matrix);
         let shp: TopoDS_Shape;
@@ -500,6 +504,37 @@ export class TransformsService {
 
     private isUsableScale(factor: number): boolean {
         return Number.isFinite(factor) && Math.abs(factor) >= smallestScale;
+    }
+
+    private stretchedMesh(shape: TopoDS_Shape, matrix: Inputs.Base.TransformMatrix): TopoDS_Shape {
+        let placed: TopoDS_Shape;
+        try {
+            placed = this.occ.TransformByMatrix(shape, matrix);
+        } catch (thrown) {
+            throw readKernelException(this.occ, thrown);
+        }
+        const shp = this.converterService.getActualTypeOfShape(placed);
+        placed.delete();
+        return shp;
+    }
+
+    private holdsFaceWithoutSurface(shape: TopoDS_Shape): boolean {
+        const explorer = new this.occ.TopExp_Explorer(shape, this.occ.TopAbs_ShapeEnum.FACE, this.occ.TopAbs_ShapeEnum.SHAPE);
+        try {
+            for (; explorer.More(); explorer.Next()) {
+                const current = explorer.Current();
+                const face = this.occ.CastToFace(current);
+                const kind = this.occ.GetFaceSurfaceType(face);
+                current.delete();
+                face.delete();
+                if (kind === "unknown") {
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            explorer.delete();
+        }
     }
 
     private isSimilarity(m: Inputs.Base.TransformMatrix): boolean {

@@ -2867,6 +2867,7 @@ interface EmbindModule {
   FixShell(_0: TopoDS_Shape): TopoDS_Shape;
   FixSolid(_0: TopoDS_Shape): TopoDS_Shape;
   OrientClosedSolid(_0: TopoDS_Shape): TopoDS_Shape;
+  PurgeInternalEdges(_0: TopoDS_Shape): TopoDS_Shape;
   SewWithReport(_0: TopoDS_Shape[], _1: number, _2: boolean): { shape: TopoDS_Shape; freeEdges: TopoDS_Compound; freeEdgeCount: number; multipleEdgeCount: number; contiguousEdgeCount: number; degeneratedCount: number };
   GeomFill_FillingStyle: {StretchStyle: GeomFill_FillingStyleValue<number>, CoonsStyle: GeomFill_FillingStyleValue<number>, CurvedStyle: GeomFill_FillingStyleValue<number>};
   FaceThroughPointGrid(_0: ArrayLike<number>, _1: number, _2: number, _3: boolean, _4: boolean, _5: number, _6: number, _7: number): TopoDS_Face;
@@ -2908,6 +2909,9 @@ interface EmbindModule {
   ClashesBetween(_0: TopoDS_Shape[], _1: number): { indexA: number; indexB: number; distance: number; volume: number; pointA: [number, number, number]; pointB: [number, number, number] }[];
   FacesWithin(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: number): { indexA: number; indexB: number; distance: number; volume: number; pointA: [number, number, number]; pointB: [number, number, number] }[];
   SelfIntersections(_0: TopoDS_Shape, _1: number): { indexA: number; indexB: number; distance: number; volume: number; pointA: [number, number, number]; pointB: [number, number, number] }[];
+  BuildRecipes(_0: EmbindString, _1: Float64Array, _2: Int32Array, _3: boolean, _4: boolean, _5: number): { shapes: (TopoDS_Shape | null)[]; report: string };
+  FacesFromOutline(_0: gp_Pnt, _1: gp_Dir, _2: gp_Dir, _3: ArrayLike<number>, _4: ArrayLike<number>): TopoDS_Shape;
+  TransformByMatrix(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Shape;
 }
 
 export type MainModule = WasmModule & typeof RuntimeExports & EmbindModule;

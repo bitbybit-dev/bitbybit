@@ -1,4 +1,6 @@
 import type * as Inputs from "../../inputs";
+import { LINEAR_COLUMN_STARTS, RIGID_TOLERANCE } from "./matrices.constants";
+import { dot3 } from "./vectors";
 
 type Vec3 = Inputs.Base.Vector3;
 
@@ -21,6 +23,18 @@ export const followedBy = (first: readonly number[], second: readonly number[]):
 export const linearDeterminant = (matrix: readonly number[]): number => {
     const [a, b, c, , d, e, f, , g, h, i] = matrix as [number, number, number, number, number, number, number, number, number, number, number];
     return a * (e * i - f * h) - d * (b * i - c * h) + g * (b * f - c * e);
+};
+
+/**
+ * Whether a column-major 4 x 4 matrix only turns and moves: its rotation and scale part has columns
+ * of length 1 and at right angles, within `tolerance` on their squared lengths and dot products, and
+ * keeps its handedness.
+ */
+export const isRigidMatrix = (matrix: readonly number[], tolerance = RIGID_TOLERANCE): boolean => {
+    const [x, y, z] = LINEAR_COLUMN_STARTS.map((start): Vec3 => [matrix[start]!, matrix[start + 1]!, matrix[start + 2]!]) as [Vec3, Vec3, Vec3];
+    return [x, y, z].every((column) => Math.abs(dot3(column, column) - 1) <= tolerance)
+        && Math.abs(dot3(x, y)) <= tolerance && Math.abs(dot3(x, z)) <= tolerance && Math.abs(dot3(y, z)) <= tolerance
+        && linearDeterminant(matrix) > 0;
 };
 
 /** One column-major 4 x 4 matrix that applies a list of them first to last; the identity for an empty list. */

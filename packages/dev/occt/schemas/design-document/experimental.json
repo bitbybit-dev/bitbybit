@@ -209,6 +209,23 @@
             ],
             "additionalProperties": false
         },
+        "DesignAxis": {
+            "description": "An axis through `origin` along `direction`, in the coordinates of the document that names it.",
+            "type": "object",
+            "properties": {
+                "origin": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "direction": {
+                    "$ref": "#/$defs/DesignPoint"
+                }
+            },
+            "required": [
+                "origin",
+                "direction"
+            ],
+            "additionalProperties": false
+        },
         "DesignBooleanFeature": {
             "description": "Combines bodies: `body` goes on as the union, the difference or the intersection with `tools`,\nwhich are used up. Faces no input owned are named `new`.",
             "type": "object",
@@ -424,7 +441,7 @@
             "additionalProperties": false
         },
         "DesignComponent": {
-            "description": "One placed occurrence of a part or of another assembly: its `source`, and where it goes, `at` a\nframe (its own origin, X and Z axes moved onto the frame's origin, direction and normal), by the\njoint that moves it, or where its source has it when neither places it. `replicate` places it\ninstead once on every member of a connector set, each occurrence named `<id>.<member>` and\ncounted in the bill of materials. `suppressed` leaves it out, and `properties` describe this\noccurrence, such as a position code.",
+            "description": "One placed occurrence of a part or of another assembly: its `source`, and where it goes, `at` a\nframe (its own origin, X and Z axes moved onto the frame's origin, direction and normal), by the\njoint that moves it, or where its source has it when neither places it. `replicate` places it\ninstead once on every member of a connector set, each occurrence named `<id>.<member>` and\ncounted in the bill of materials. `pattern` places copies of it where it is placed, turned about\nan axis or moved along a direction, each occurrence named `<id>.<number>` from 1; a patterned\ncomponent is not moved by a joint, joined to or published. `suppressed` leaves it out, and\n`properties` describe this occurrence, such as a position code.",
             "type": "object",
             "properties": {
                 "id": {
@@ -442,6 +459,9 @@
                 },
                 "replicate": {
                     "$ref": "#/$defs/DesignReplicate"
+                },
+                "pattern": {
+                    "$ref": "#/$defs/DesignComponentPattern"
                 },
                 "suppressed": {
                     "anyOf": [
@@ -470,6 +490,35 @@
                 "source"
             ],
             "additionalProperties": false
+        },
+        "DesignComponentPattern": {
+            "description": "How a component is placed several times: copies turned about an axis (`polar`) or moved along a\ndirection (`linear`), each counted in the bill of materials.",
+            "anyOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "linear": {
+                            "$ref": "#/$defs/DesignLinearComponentPattern"
+                        }
+                    },
+                    "required": [
+                        "linear"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "polar": {
+                            "$ref": "#/$defs/DesignPolarComponentPattern"
+                        }
+                    },
+                    "required": [
+                        "polar"
+                    ],
+                    "additionalProperties": false
+                }
+            ]
         },
         "DesignComponentSource": {
             "description": "Where a component comes from: the `id` of a document given to the build beside this one, the\n`part` of it when it is a part document (an assembly document is placed whole), its\n`configuration`, and `parameters` replacing its values, each read by the kind of parameter it\nsets: for a number or boolean parameter, a number, a boolean or an expression over this assembly's\nparameters; for a text or choice parameter, text as it is written, or `{ \"expr\": \"...\" }` for text\nthis assembly's parameters compute. `version`, when given, pins the source: the document's\nversion (`design.versionOf`, the SHA-256 of its canonical JSON without what only editors and tools\nread) or the store revision in its `meta.revision`. A document with other contents is refused, and\nwhen several versions of one document are given, a component without a `version` is refused too.",
@@ -1409,6 +1458,27 @@
                     "type": "string"
                 }
             ]
+        },
+        "DesignLinearComponentPattern": {
+            "description": "Copies of a component moved along `direction`: `count` occurrences, each `spacing` further on than\nthe one before, the first where the component is placed.",
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "spacing": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "count": {
+                    "$ref": "#/$defs/DesignNumber"
+                }
+            },
+            "required": [
+                "direction",
+                "spacing",
+                "count"
+            ],
+            "additionalProperties": false
         },
         "DesignLinearPatternFeature": {
             "description": "Repeats `body` `count` times, the original included, `spacing` apart along `direction`, and\nfuses the copies. Copy `i` (from 1) keeps its faces' names, picked with `copy`.",
@@ -2467,6 +2537,29 @@
             ],
             "minItems": 3,
             "maxItems": 3
+        },
+        "DesignPolarComponentPattern": {
+            "description": "Copies of a component turned about `axis`, spaced as a polar pattern feature spaces its copies:\n`count` occurrences through `angle` degrees (360 by default), a whole turn shared out evenly and\na part of one with both ends included, the first turned `start` degrees (0 by default) from where\nthe component is placed. The axis is in the assembly's own coordinates.",
+            "type": "object",
+            "properties": {
+                "axis": {
+                    "$ref": "#/$defs/DesignAxis"
+                },
+                "count": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "angle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "start": {
+                    "$ref": "#/$defs/DesignNumber"
+                }
+            },
+            "required": [
+                "axis",
+                "count"
+            ],
+            "additionalProperties": false
         },
         "DesignPolarPatternFeature": {
             "description": "Repeats `body` `count` times, the original included, turned evenly through `angle` degrees (360\nby default) about `axis`, and fuses the copies. Copies are picked with `copy`, as for\n`linearPattern`.",

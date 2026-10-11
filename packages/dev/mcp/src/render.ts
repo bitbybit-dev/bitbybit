@@ -1,5 +1,12 @@
 import type { IndexExample, IndexField, IndexMember, IndexParam } from "./index-types.js";
+import type { NamedType } from "./index-reader.js";
 import { TIER_MEANING } from "./descriptions.js";
+
+type IndexOption = NonNullable<IndexField["options"]>[number];
+
+function renderOption(option: IndexOption): string {
+    return option.label === option.value ? option.value : `${option.label} = ${JSON.stringify(option.value)}`;
+}
 
 function renderField(field: IndexField): string {
     const parts = [`${field.name}${field.optional ? "?" : ""}: ${field.type}`];
@@ -13,7 +20,7 @@ function renderField(field: IndexField): string {
         parts.push(`step ${field.step}`);
     }
     if (field.options) {
-        parts.push(`one of ${field.options.map((option) => option.value).join(", ")}`);
+        parts.push(`one of ${field.options.map(renderOption).join(", ")}`);
     }
     const doc = field.doc ? ` - ${field.doc.replace(/\s+/g, " ")}` : "";
     return `- ${parts.join("; ")}${doc}`;
@@ -31,7 +38,20 @@ function renderExample(example: IndexExample): string {
     return ["```typescript", example.code, "```"].join("\n");
 }
 
-export function renderMember(member: IndexMember, version: string, examples: IndexExample[]): string {
+function renderTypes(types: readonly NamedType[]): string[] {
+    return types.length === 0 ? [] : ["## Types", "", "Describe one by its name for its fields:", ...types.map(({ key, type }) => `- \`${key}\`${type.summary ? `: ${type.summary}` : ""}`), ""];
+}
+
+export function renderType(named: NamedType, version: string, used: readonly NamedType[]): string {
+    const lines = [`# ${named.key}`, "", "- kind: type", `- version: ${version}`, ""];
+    if (named.type.doc) {
+        lines.push(named.type.doc, "");
+    }
+    lines.push("## Fields", "", ...named.type.fields.map(renderField), "", ...renderTypes(used));
+    return lines.join("\n").trimEnd() + "\n";
+}
+
+export function renderMember(member: IndexMember, version: string, examples: IndexExample[], types: readonly NamedType[] = []): string {
     const lines: string[] = [`# ${member.path}`, ""];
     const facts = [`kind: ${member.kind}`, `tier: ${member.tier} (${TIER_MEANING[member.tier]})`, `version: ${version}`];
     if (member.engines.length > 0) {
@@ -84,6 +104,7 @@ export function renderMember(member: IndexMember, version: string, examples: Ind
     if (member.returns) {
         lines.push(`## Returns`, "", `\`${member.returns}\`${member.async ? " (async)" : ""}`, "");
     }
+    lines.push(...renderTypes(types));
     if (examples.length > 0) {
         lines.push("## Examples", "", ...examples.map(renderExample), "");
     }

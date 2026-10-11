@@ -32,8 +32,8 @@ so it can never satisfy a check for the engine's own object type. Routing a draw
 written for scene objects fails for every tag rather than some, which is why the tag path has its own.
 
 The renderers' entry points now say so in their types: `Inputs.Draw.Drawn<E, T>` maps the entity a
-caller passes to what drawing it produces - a tag to the drawn tag, a list of tags to the list, a
-host-resolved overlay to something disposable, everything else to the renderer's own object. A layer
+caller passes to what drawing it produces - a tag to the drawn tag, a list of tags to the list, an
+overlay the application resolves to something disposable, everything else to the renderer's own object. A subclass
 that adds entity kinds overrides the protected `drawResolved` / `drawResolvedAsync` seam rather than
 the public method: two unresolved conditional types over the same `E` have no provable relation, so a
 narrower override of the public signature cannot typecheck however correct it is.

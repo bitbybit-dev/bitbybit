@@ -447,12 +447,15 @@ export class WiresService {
 
         const tangents = new this.occ.VectorDouble();
         const flags = new this.occ.VectorInt();
+        const enforced = (tangent: Inputs.Base.Vector3 | undefined): tangent is Inputs.Base.Vector3 =>
+            tangent !== undefined && Math.hypot(tangent[0], tangent[1], tangent[2]) > inputs.tolerance;
         if (inputs.tangents && inputs.tangents.length === inputs.points.length) {
             for (const t of inputs.tangents) {
-                tangents.push_back(t ? t[0] : 0); tangents.push_back(t ? t[1] : 0); tangents.push_back(t ? t[2] : 0);
-                flags.push_back(t ? 1 : 0);
+                const used = enforced(t);
+                tangents.push_back(used ? t[0] : 0); tangents.push_back(used ? t[1] : 0); tangents.push_back(used ? t[2] : 0);
+                flags.push_back(used ? 1 : 0);
             }
-        } else if (!periodic && inputs.startTangent && inputs.endTangent) {
+        } else if (!periodic && enforced(inputs.startTangent) && enforced(inputs.endTangent)) {
             const s = inputs.startTangent; const e = inputs.endTangent;
             tangents.push_back(s[0]); tangents.push_back(s[1]); tangents.push_back(s[2]);
             tangents.push_back(e[0]); tangents.push_back(e[1]); tangents.push_back(e[2]);

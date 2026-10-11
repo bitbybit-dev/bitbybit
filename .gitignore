@@ -9,3 +9,6 @@ test-results/
 # Coverage reports. Each package ignores its own; this catches the whole tree, including a report
 # written at the root by a coverage run started from here rather than from inside a package.
 coverage/
+
+packages/dev/ifc/corpus/files/
+packages/dev/ifc/corpus/.cache/

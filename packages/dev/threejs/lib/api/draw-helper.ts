@@ -18,6 +18,7 @@ import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { CACHE_CONFIG, DEFAULT_COLORS, MATERIAL_DEFAULTS } from "./constants";
 import type * as Resolved from "./resolved-inputs";
 import { batchedLineShader, matricesTexture, writeMatrices } from "./batched-lines";
+import { RecipeMeshesDrawer } from "./draw-recipe-meshes";
 
 const NORMAL_ITEM_SIZE = 3;
 
@@ -63,6 +64,12 @@ export class DrawHelper extends DrawHelperCore {
 
     private readonly designMeshes = new DesignMeshCache<Inputs.OCCT.DecomposedMeshDto>();
     private readonly scratchMatrix = new THREEJS.Matrix4();
+
+    private readonly recipeDrawer = new RecipeMeshesDrawer({
+        scene: () => this.context.scene,
+        entityId: (type) => this.generateEntityId(type),
+        material: (transparent, opacity, vertexColors, metallic, roughness) => this.recipeMaterial(transparent, opacity, vertexColors, metallic, roughness),
+    });
 
     private entityIdCounter = 0;
     private readonly instanceId = `three-${Date.now()}`;
@@ -165,6 +172,38 @@ export class DrawHelper extends DrawHelperCore {
     drawManifoldMeshes(meshes: Inputs.Manifold.DecomposedManifoldMeshDto[], options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): THREEJS.Group {
         const resolved = resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
         return this.manifoldMeshContainer(meshes.map(mesh => this.handleDecomposedManifold(mesh, resolved)));
+    }
+
+    drawRecipeMeshes(meshes: Inputs.Manifold.RecipeMeshesDto, options: Inputs.Draw.DrawRecipeMeshesOptions): THREEJS.Group {
+        const resolved = resolveDto(Inputs.Draw.DrawRecipeMeshesOptions, options) as Resolved.Draw.DrawRecipeMeshesOptions;
+        return this.recipeDrawer.draw(meshes, resolved);
+    }
+
+    setRecipeElementsVisible(resolved: Resolved.Draw.RecipeElementsVisibilityDto<THREEJS.Group>): void {
+        this.recipeDrawer.setVisible(resolved.drawn, resolved.keys, resolved.visible);
+    }
+
+    setRecipeElementsColour(resolved: Resolved.Draw.RecipeElementsColourDto<THREEJS.Group>): void {
+        this.recipeDrawer.setColour(resolved.drawn, resolved.keys, resolved.colour, resolved.opacity);
+    }
+
+    recipeElementOfPick(inputs: Inputs.Draw.RecipeElementPickDto<THREEJS.Group, THREEJS.Object3D>): string | undefined {
+        return this.recipeDrawer.elementOfPick(inputs.drawn, inputs.mesh, inputs.triangle, inputs.instance);
+    }
+
+    private recipeMaterial(transparent: boolean, opacity: number, vertexColors: boolean, metallic: number, roughness: number): THREEJS.MeshPhysicalMaterial {
+        return this.getOrCreateMaterial(`recipe:${transparent}:${vertexColors}:${metallic}:${roughness}`, opacity, 0, () => {
+            const material = new THREEJS.MeshPhysicalMaterial();
+            material.name = this.generateEntityId("recipeMaterial");
+            material.color = new THREEJS.Color(1, 1, 1);
+            material.vertexColors = vertexColors;
+            material.metalness = metallic;
+            material.roughness = roughness;
+            material.transparent = transparent;
+            material.opacity = opacity;
+            material.depthWrite = !transparent;
+            return material;
+        });
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<THREEJS.Group> {

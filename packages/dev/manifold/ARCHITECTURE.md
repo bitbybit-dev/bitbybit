@@ -22,8 +22,26 @@ root by transforming its node's solid with the root's matrix.
   holes that overlap are joined rather than cancelling each other, and that cross section is
   subtracted from the boundary's.
 - **A compound is a union.** `Manifold.union` of its parts, since the kernel's own compose joins
-  overlapping parts anyway; a `voids` node subtracts the union of its `openings` from its `host`
-  solid.
+  overlapping parts anyway, and a `union` node is the same call; an `intersection` is
+  `Manifold.intersection`. A `voids` node subtracts the union of its `openings` from its `host` solid.
+- **A turn is the kernel's revolve, moved into place.** `Manifold.revolve` turns a cross section about
+  its Y axis, which becomes Z. The profile is first carried into the axis's frame (distance from the
+  axis as X, along it as Y, on whichever side it lies), revolved with `circularSegments` scaled by the
+  angle, and placed back by one proper rotation whose X is the profile's side, Y the axis crossed with
+  it and Z the axis, so the profile starts where it lies and turns by the right-hand rule. A profile
+  on both sides of its axis fails, since the kernel would keep only one side.
+- **A loft is a mesh built here** (`recipe-loft.ts`), since the kernel has no loft. Every section is the
+  profile's loops placed by its frame (a circle divided into `circularSegments` corners from angle 0),
+  each corner joined to the same corner of the next section by two triangles, and both ends capped by
+  the kernel's `triangulate`; the mesh is turned outwards by its signed volume, so frames that run
+  backwards or mirror close as well; it is closed by construction, and the kernel collapses what is
+  degenerate in it, such as a profile with no area. Profiles whose loops hold different numbers of
+  corners are refused, and so is a loft no thicker than its coordinates' precision: its volume over
+  its largest placed section's area at most `2^-20` of its farthest coordinate, sixteen times the
+  float32 rounding of a vertex there. Frames that coincide, or that slide a profile within its own
+  plane, would otherwise give a mesh of no volume that draws as a sheet; the exact kernel fails the
+  same lofts by its own precision. Frames that mirror where the first does not are refused before
+  any of this, by the validator.
 - **A half-space is never built as a solid.** It stays a node until a difference applies it, as
   `trimByPlane` against its reversed normal, which keeps the side the normal points away from.
 - **`adjustZtoY` is folded into each root's matrix**, as the rotation taking (x, y, z) to (x, z, -y),
@@ -36,7 +54,7 @@ root by transforming its node's solid with the root's matrix.
   Strict is the default, since a viewer wants the rest of a building but a modelling step wants to
   know.
 - **Memory bounds a single build.** The 32-bit WASM holds at most 4 GB, and every placed root is a
-  mesh of its own, however many roots share a node: a model of 167 thousand elements (16 million
+  mesh of its own, however many roots share a node: a model of over a hundred thousand elements (some 16 million
   triangles) does not fit in one build. Build such a recipe in parts.
 - **Nothing outlives a failure.** Every node's result is released once the roots are placed, and when
   anything throws, the roots already placed are released too, so a recipe that fails halfway leaks no
@@ -45,6 +63,27 @@ root by transforming its node's solid with the root's matrix.
   the roots a caller names, typically the ones `build` gave back empty, and returns them in the shape
   `manifoldToMesh` gives (positions only, so the renderer computes their normals), with an empty mesh
   for a root that holds a solid step. The renderers draw that shape through `drawAnyAsync` directly.
+- **`recipes.meshes` gives a drawer what it batches.** Each root is followed to its source with
+  base's `recipeSourceOf`, its rigid transforms folded into the placement, and the executor builds
+  the recipe once and hands back a copy of each source's solid (`executeRecipeNodes`), undefined for
+  one that failed. Each solid is meshed once with creased normals (`creasedMeshData`, which
+  `decomposeManifoldOrCrossSection` uses too), and every root becomes a placement: its mesh or -1,
+  its matrix with `adjustZtoY` folded in, its tag and group. A root whose source failed and that is
+  triangles alone is drawn as its surface (`recipeSurfaceMeshes`, placed already); a root built
+  empty, such as a host its openings cut away, draws nothing, so a cut host never comes back uncut.
+  A door type placed a hundred times is one mesh, which is what lets the renderers instance it.
+
+## Lofts and sweeps
+
+`crossSection.operations.loft` and `sweep` give that mesh loft to any caller. `loft` takes
+cross-sections (one, or one per frame) and frames, checks the frames as the validator checks a
+recipe's (affine, not flattening, mirroring all or none) and lofts each cross-section's polygons
+(`toPolygons`, outer loops counterclockwise and holes clockwise, as `triangulate` expects).
+`sweep` drops repeated points from a path, rounds its corners by `roundedPath3` when given a corner
+radius, in enough segments to keep each within `2 pi / circularSegments` of a turn, and places the
+cross-section along it with base's sweep frames: tangents that halve each corner, X axes carried
+along the path without twisting (from `xDirection` when given), and a corner frame stretched by the
+mitre so the solid keeps its width through it. Both return the kernel's manifold, built by `ofMesh`.
 
 ## Drawing
 

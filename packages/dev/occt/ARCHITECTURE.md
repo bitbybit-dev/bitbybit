@@ -12,7 +12,8 @@ build - so it detects what the loaded kernel has instead of assuming it.
 
 - **A missing function** is checked by presence. Without `DocumentToMeshBuffers` a shape is meshed
   through the kernel's JSON instead, which carries no iso curves and no surface analysis; without
-  `IsoCurvePolylines` or `SurfaceAnalysisAtMeshNodes` the mesh comes back without what they add.
+  `IsoCurvePolylines` or `SurfaceAnalysisAtMeshNodes` the mesh comes back without what they add;
+  without `TransformByMatrix` a stretched kept mesh goes through the general transform as before.
 - **A function that gained trailing arguments** is recognised by its arity (`fn.length`), and the new
   arguments are passed only when the call takes them (`finenessFor`, `upFor`). A buffer mesh call
   without the fineness arguments meshes at 0.5 rad with an absolute precision. A glTF export call
@@ -80,6 +81,15 @@ nested, and return any compound that also holds a face or a wire as it is.
 - A scale factor that is not finite or is below 1e-100 in size is never handed to the exact
   transform: a curved shape scaled that close to 0 shrinks to a point, and the kernel never returns
   from building it.
+- `transformByMatrix` stretches and shears a shape that holds a face without a surface (a mesh kept as
+  its triangles, found by `GetFaceSurfaceType` reading `unknown`) through the kernel's
+  `TransformByMatrix`, the transform step recipes place their roots with. The general transform moves
+  such a mesh's triangles but leaves their normals as they were, and under a mirror it leaves the
+  triangles wound the old way, so the mesh comes out inside out (a volume of -1/3 for a tetrahedron of
+  1/6 stretched to twice its width). Every other matrix keeps the path it always had: moves, turns,
+  mirrors and even scales go through the exact transform, whose triangulations move with the shape,
+  and stretches of ordinary shapes through the general one, with its B-splines and its handling of
+  factors near 0 and past 1e13, which `TransformByMatrix` would refuse.
 
 ## Wires
 
@@ -194,6 +204,66 @@ for its distance from the origin, would otherwise loop for a very long time.
   writes into a `//` comment: a line break would end the comment and run the rest as code. It
   parenthesises the operand of a unary `-` or `!` unless that is an atom or another sign, because
   TypeScript refuses a sign directly before `**`.
+
+## Recipes
+
+- `recipes.build` hands the whole recipe to the kernel's `BuildRecipes` in one call: the steps and
+  the roots' placements as JSON, the buffers as they are, the tags left out. One call per step from
+  TypeScript cost 0.1 to 0.5 ms each, and a triangle mesh built face by face about 0.2 ms per
+  triangle; inside the kernel the steps of one depth also build in parallel on the multithreaded
+  kernel. A kernel without `BuildRecipes` is refused with a message, since nothing else builds a
+  recipe here.
+- The kernel reports each root as built or failed, naming the step that failed first in its chain
+  and the reason. The package turns the first failed root into `occt.recipe.failed`, or an empty
+  compound in its place when asked.
+- A step whose `op` the kernel does not know fails the roots resting on it with "'<op>' is not a step
+  this kernel builds; a newer kernel does", and the other roots build: a recipe written for a newer
+  kernel loses only what it needs the newer kernel for. `checkRecipe` in `base` decides whether such a
+  recipe reaches the kernel through `build` at all.
+- An opening of a voids step that cannot be built is left uncut: the host is cut by the openings that
+  were, and the kernel lists the left-out openings under the root's `uncut`. Without
+  `emptyWhenFailed` the package treats such a root as failed, naming the opening and its reason, so a
+  strict build still stops; with it the root comes back with the hole missing.
+- A revolution is `BRepPrimAPI_MakeRevol` of the profile face, a whole turn being OCCT's closed
+  revolution. A loft places a copy of its profile by each frame and joins the sections with a ruled
+  `BRepOffsetAPI_ThruSections`, corner to corner (OCCT's compatibility check off when the sections have
+  as many edges, since it would untwist what the frames twist), each hole lofted alike and cut out; a
+  circle stays a circle in every section, so a loft of circles gives a cylinder or a cone. A union is
+  one fuse, an intersection one common after another.
+- A triangle mesh keeps its triangles by default: a shell holding one face with no surface, only its
+  triangulation, which draws, bounds, measures and writes to STEP as AP242 tessellated geometry. A mesh
+  turned into a faceted solid instead (`facetedMeshes`, or wherever a cut, a union or an intersection
+  needs it, since a boolean cannot use a face without a surface) costs a B-rep face per plane, a few microseconds per triangle,
+  and its validity depends on the mesh: exported meshes carry cracks and slivers. On a large exported
+  building model of about three million mesh triangles, Manifold builds in 7 s, the kept triangles
+  in 12 s and the faceted solids in 41 s, a few dozen of which fail OCCT's validity check.
+- `maxTriangles` bounds the faceted build only: one mesh of millions (a scanned or vegetation
+  stand-in) would otherwise hold up every other root. An infinite limit is passed as the largest whole
+  number the kernel takes.
+- A placement that only moves and turns shares its step's geometry, placing it by the shape's location
+  rather than copying it, and a step's shape is let go once its last user is built: a building model
+  places one mesh many times, through a mapped item and then the element's placement, and copying at
+  both held three solids of every mesh. One chunk of furniture needed more than the 2 GB of the 32-bit
+  kernel that way. A mirror or a scale still copies, since a location carries neither.
+- A compound keeps its parts apart, so their volumes add: a door whose leaf and frame overlap measures
+  the overlap twice, where Manifold's executor unions a compound and counts it once. Part by part the
+  two agree.
+- `booleans` refuses a shape holding a face without a surface (`occt.boolean.tessellated`): OCCT's
+  boolean dereferences the missing surface and crashes the kernel.
+- `recipes.buildDocument` builds parts, not placed roots. A placement in a document moves and turns
+  only, so a root whose matrix does is an instance of its step's part, and a step placed by many
+  such roots (a door type) is one part; a root that mirrors or scales is built in place as a part of
+  its own. The plan looks through transforms that only move and turn (a mapped item) to the step
+  under them and folds them into the root's matrix: the kernel would place that step by a location,
+  and XCAF stores a located part as a reference to the same shape unlocated, a label without a name,
+  which STEP then names after the translator. A recipe in a unit STEP cannot state (feet, say) is scaled to millimetres, which makes
+  every root such a part. Instance properties are not written to STEP, so the tags become
+  properties of a product assembly per group, which holds the instances.
+- The recipe's groups become assemblies above the products, each in the assembly of its parent group
+  and the top-level ones in the document's top assembly, with the group's tags as properties; a
+  product sits in the assembly of its first root's group. A group none of whose products was built is
+  left out, so a document of a few elements carries only the structure around them, and a group
+  without a name is called `Group <n>`.
 
 ## Tests
 

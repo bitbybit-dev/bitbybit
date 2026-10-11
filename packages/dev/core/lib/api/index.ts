@@ -3,6 +3,8 @@ export * from "./constants";
 export * from "./context";
 export * from "./draw-core";
 export * from "./draw-appearance";
+export * from "./draw-recipe";
+export * from "./draw-recipe-types";
 export * from "./draw-helper-core";
 export * from "./draw-helper-types";
 export * from "./worker-types";

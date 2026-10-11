@@ -126,6 +126,73 @@ export class RevolveDto<T> {
     circularSegments?: number | undefined = 32;
 }
 /**
+ * Cross-sections and the frames that place them for `crossSection.operations.loft`, which joins them
+ * in order into a solid.
+ */
+export class LoftDto<T> {
+    constructor(crossSections?: T[], frames?: Base.TransformMatrix[]) {
+        if (crossSections !== undefined) { this.crossSections = crossSections; }
+        if (frames !== undefined) { this.frames = frames; }
+    }
+    /**
+     * One cross-section, placed by every frame, or one for each frame. Cross-sections that differ
+     * need as many loops with as many corners each, as a moved or scaled copy has.
+     */
+    crossSections!: T[];
+    /**
+     * Where each section stands, at least two: sixteen numbers in column-major order that place the
+     * cross-section's XY plane, with 0, 0, 0, 1 as the bottom row.
+     */
+    frames!: Base.TransformMatrix[];
+}
+
+/**
+ * A cross-section, a path and the corner settings for `crossSection.operations.sweep`, which
+ * carries the cross-section along the path into a solid.
+ */
+export class SweepDto<T> {
+    constructor(crossSection?: T, path?: Base.Point3[], cornerRadius?: number, circularSegments?: number, xDirection?: Base.Vector3) {
+        if (crossSection !== undefined) { this.crossSection = crossSection; }
+        if (path !== undefined) { this.path = path; }
+        if (cornerRadius !== undefined) { this.cornerRadius = cornerRadius; }
+        if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
+        if (xDirection !== undefined) { this.xDirection = xDirection; }
+    }
+    /**
+     * The profile to carry, drawn around the origin of its XY plane, which follows the path.
+     */
+    crossSection!: T;
+    /**
+     * The points the path runs through, at least two.
+     */
+    path!: Base.Point3[];
+    /**
+     * How much the path's corners are rounded; 0 keeps them sharp, mitred so the solid keeps its
+     * width.
+     * @default 0
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.1
+     */
+    cornerRadius?: number | undefined = 0;
+    /**
+     * How many segments a whole turn of a rounded corner is divided into; more is rounder.
+     * @default 32
+     * @minimum 3
+     * @maximum Infinity
+     * @step 1
+     */
+    circularSegments?: number | undefined = 32;
+    /**
+     * Where the profile's X axis points at the start of the path, turned square to it; left out,
+     * one is chosen. The profile then follows the path's turns without twisting.
+     * @default undefined
+     * @optional true
+     */
+    xDirection?: Base.Vector3 | undefined;
+}
+
+/**
  * A cross-section and the offset settings for `crossSection.operations.offset`.
  */
 export class OffsetDto<T> {

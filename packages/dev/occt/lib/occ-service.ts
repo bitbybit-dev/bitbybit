@@ -21,6 +21,7 @@ import { OCCTPath } from "./services/path";
 import { OCCTSVG } from "./services/svg";
 import { OCCTSketch } from "./services/sketch/sketch";
 import { OCCTDesign } from "./services/design/design";
+import { OCCTRecipes } from "./services/recipes/recipes";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "./api/resolved-inputs";
 
@@ -28,10 +29,10 @@ import type * as Resolved from "./api/resolved-inputs";
  * The entry point to the OpenCascade kernel: every OCCT feature is reached through one of its
  * properties. `shapes` builds and reads vertices, edges, wires, faces, shells, solids and
  * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners`, `draft` and `features`
- * change shapes; `select` picks faces and edges by what they are and where they lie; `analysis`
- * measures shapes; `geom` handles curves and surfaces; `io` reads and writes STEP, IGES, STL and
- * other files; `sketch` draws flat outlines with a pen; `design` builds models kept as data;
- * `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations, topology
+ * change shapes; `select` picks faces and edges by kind and place; `analysis` measures shapes;
+ * `geom` handles curves and surfaces; `io` reads and writes STEP, IGES, STL and other files;
+ * `sketch` draws flat outlines with a pen; `design` and `recipes` build models and solids kept as
+ * data; `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations, topology
  * graphs, machining paths and SVG. The methods on the service itself turn shapes into triangle
  * meshes for drawing.
  */
@@ -57,6 +58,8 @@ export class OCCTService {
     public readonly svg: OCCTSVG;
     /** Experimental: parametric parts and assemblies kept as data, whose format may still change. @beta */
     public readonly design: OCCTDesign;
+    /** Experimental: solids described as data, built exactly, whose format may still change. @beta */
+    public readonly recipes: OCCTRecipes;
     public plugins?: { dependencies: { [key: string]: unknown }, [key: string]: unknown };
 
     constructor(
@@ -83,6 +86,7 @@ export class OCCTService {
         this.sketch = new OCCTSketch(occ, och, this.shapes, this.operations, this.booleans);
         this.svg = new OCCTSVG(occ, och);
         this.design = new OCCTDesign(occ, () => this, och.base);
+        this.recipes = new OCCTRecipes(occ, och, this.assembly.manager);
     }
 
     /**

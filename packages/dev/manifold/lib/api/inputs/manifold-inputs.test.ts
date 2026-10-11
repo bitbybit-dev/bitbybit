@@ -43,6 +43,8 @@ const DTOS: [string, AnyDto][] = [
     ["CrossSectionsDto", Inputs.Manifold.CrossSectionsDto<unknown>],
     ["ExtrudeDto", Inputs.Manifold.ExtrudeDto<unknown>],
     ["RevolveDto", Inputs.Manifold.RevolveDto<unknown>],
+    ["LoftDto", Inputs.Manifold.LoftDto<unknown>],
+    ["SweepDto", Inputs.Manifold.SweepDto<unknown>],
     ["OffsetDto", Inputs.Manifold.OffsetDto<unknown>],
     ["SimplifyDto", Inputs.Manifold.SimplifyDto<unknown>],
     ["ComposeDto", Inputs.Manifold.ComposeDto<unknown>],
@@ -79,6 +81,9 @@ const DTOS: [string, AnyDto][] = [
     ["ManifoldsOrCrossSectionsDto", Inputs.Manifold.ManifoldsOrCrossSectionsDto<unknown>],
     ["DecomposeManifoldsOrCrossSectionsDto", Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<unknown>],
     ["BuildRecipeDto", Inputs.Manifold.BuildRecipeDto],
+    ["BuildRecipeMeshesDto", Inputs.Manifold.BuildRecipeMeshesDto],
+    ["RecipeMeshPlacementDto", Inputs.Manifold.RecipeMeshPlacementDto],
+    ["RecipeMeshesDto", Inputs.Manifold.RecipeMeshesDto],
     ["RecipeSurfaceMeshesDto", Inputs.Manifold.RecipeSurfaceMeshesDto],
 ];
 

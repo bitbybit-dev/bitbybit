@@ -315,6 +315,7 @@ export class Draw extends DrawCore {
             decomposedMesh: (i) => this.handleDecomposedMeshShape(i),
             manifoldMesh: (i) => this.handleManifoldMesh(i),
             manifoldMeshes: (i) => this.handleManifoldMeshes(i),
+            recipeMeshes: (i) => this.handleRecipeMeshes(i),
         };
     }
 
@@ -519,6 +520,80 @@ export class Draw extends DrawCore {
      */
     optionsManifoldShapeMaterial(inputs: Inputs.Draw.DrawManifoldOrCrossSectionOptions): Inputs.Draw.DrawManifoldOrCrossSectionOptions {
         return resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, inputs);
+    }
+
+    /**
+     * Builds drawing options for the meshes of a recipe, as `manifold.recipes.meshes` gives them:
+     * the tag naming an element, when repeated meshes become instances, the batch size, and the
+     * color and surface of roots without a color.
+     * @param inputs - The options to start from
+     * @returns The drawing options
+     * @group options
+     * @shortname recipe meshes draw options
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsRecipeMeshes({ elementKey: "globalId", instancing: true, minInstances: 2, maxBatchVertices: 1000000, defaultColour: "#cccccc", defaultOpacity: 1, metallic: 0, roughness: 0.8 });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: meshes, options });
+     * ```
+     */
+    optionsRecipeMeshes(inputs: Inputs.Draw.DrawRecipeMeshesOptions): Inputs.Draw.DrawRecipeMeshesOptions {
+        return resolveDto(Inputs.Draw.DrawRecipeMeshesOptions, inputs);
+    }
+
+    /**
+     * Shows or hides elements of a recipe drawn from its meshes, such as one storey's walls, by the
+     * values of their element tag, changing only their own triangles and instances.
+     * @param inputs - The drawn recipe, the elements and whether they are shown
+     * @group recipe elements
+     * @shortname show recipe elements
+     * @drawable false
+     * @example
+     * ```typescript
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: meshes });
+     * bitbybit.draw.setRecipeElementsVisible({ drawn, keys: ["2O2Fr$t4X7Zf8NOew3FLOH"], visible: false });
+     * ```
+     */
+    setRecipeElementsVisible(inputs: Inputs.Draw.RecipeElementsVisibilityDto<BABYLON.Mesh>): void {
+        const resolved = resolveDto(Inputs.Draw.RecipeElementsVisibilityDto, inputs) as Resolved.Draw.RecipeElementsVisibilityDto<BABYLON.Mesh>;
+        this.drawHelper.setRecipeElementsVisible(resolved);
+    }
+
+    /**
+     * Shows elements of a recipe drawn from its meshes in one color, such as the ones selected, or
+     * with no color gives each its own back, by the values of their element tag.
+     * @param inputs - The drawn recipe, the elements, and the color and opacity, or none
+     * @group recipe elements
+     * @shortname color recipe elements
+     * @drawable false
+     * @example
+     * ```typescript
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: meshes });
+     * bitbybit.draw.setRecipeElementsColour({ drawn, keys: ["2O2Fr$t4X7Zf8NOew3FLOH"], colour: "#ffaa00" });
+     * bitbybit.draw.setRecipeElementsColour({ drawn, keys: ["2O2Fr$t4X7Zf8NOew3FLOH"] });
+     * ```
+     */
+    setRecipeElementsColour(inputs: Inputs.Draw.RecipeElementsColourDto<BABYLON.Mesh>): void {
+        const resolved = resolveDto(Inputs.Draw.RecipeElementsColourDto, inputs) as Resolved.Draw.RecipeElementsColourDto<BABYLON.Mesh>;
+        this.drawHelper.setRecipeElementsColour(resolved);
+    }
+
+    /**
+     * Gives the element a pick hit in a recipe drawn from its meshes, as the value of its element
+     * tag, from the mesh and the face or thin instance the scene's pick reports.
+     * @param inputs - The drawn recipe, the mesh hit, and its triangle or instance
+     * @returns The value of the element's tag, or undefined when the pick hit no element of it
+     * @group recipe elements
+     * @shortname recipe element of pick
+     * @drawable false
+     * @example
+     * ```typescript
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: meshes });
+     * const pick = scene.pick(scene.pointerX, scene.pointerY);
+     * const globalId = bitbybit.draw.recipeElementOfPick({ drawn, mesh: pick.pickedMesh, triangle: pick.faceId, instance: pick.thinInstanceIndex });
+     * ```
+     */
+    recipeElementOfPick(inputs: Inputs.Draw.RecipeElementPickDto<BABYLON.Mesh, BABYLON.AbstractMesh>): string | undefined {
+        return this.drawHelper.recipeElementOfPick(inputs);
     }
 
     /**
@@ -983,6 +1058,14 @@ export class Draw extends DrawCore {
         }
         const drawn = this.drawHelper.drawManifoldMeshes(inputs.entity as Inputs.Manifold.DecomposedManifoldMeshDto[], this.manifoldOptions(options));
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, drawn);
+        return Promise.resolve(drawn);
+    }
+
+    private handleRecipeMeshes(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
+        const options = (inputs.options ?? inputs.babylonMesh?.metadata?.options ?? new Inputs.Draw.DrawRecipeMeshesOptions()) as Inputs.Draw.DrawRecipeMeshesOptions;
+        const drawn = this.drawHelper.drawRecipeMeshes(inputs.entity as Inputs.Manifold.RecipeMeshesDto, options);
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.recipeMeshes, options, drawn);
+        drawn.getChildMeshes().forEach((mesh) => { mesh.isPickable = true; });
         return Promise.resolve(drawn);
     }
 

@@ -220,6 +220,128 @@ describe("design assemblies", () => {
         });
     });
 
+    describe("patterning components", () => {
+        const ROW_ID = "77777777-7777-4777-8777-777777777777";
+        const AROUND_Z = { origin: [0, 0, 0] as [number, number, number], direction: [0, 0, 1] as [number, number, number] };
+        const OUT_ON_X = { origin: [10, 0, 0] as [number, number, number], normal: [0, 0, 1] as [number, number, number], direction: [1, 0, 0] as [number, number, number] };
+        const ring = (pattern: Models.OCCT.DesignComponentPattern, extra: Partial<Assembly> = {}): Assembly => ({
+            schemaVersion: 1,
+            kind: "assembly",
+            components: [{ id: "posts", name: "Post", source: { document: POST_ID, part: "post" }, at: OUT_ON_X, pattern }],
+            ...extra,
+        });
+
+        it("should turn copies evenly through a whole turn about the axis, name each by its number and count each in the bill of materials", () => {
+            // Act
+            const built = occt.design.build({ document: ring({ polar: { axis: AROUND_Z, count: 4 } }), documents: [post] });
+
+            // Assert
+            expect(built.components!.map(component => [component.path, component.name])).toEqual([["posts.1", "Post 1"], ["posts.2", "Post 2"], ["posts.3", "Post 3"], ["posts.4", "Post 4"]]);
+            expect(["posts.1", "posts.2", "posts.3", "posts.4"].map(path => placedBox(built, path))).toEqual([
+                { min: [8, -2, 0], max: [12, 2, 6] },
+                { min: [-2, 8, 0], max: [2, 12, 6] },
+                { min: [-12, -2, 0], max: [-8, 2, 6] },
+                { min: [-2, -12, 0], max: [2, -8, 6] },
+            ]);
+            expect(built.bom!.map(line => [line.part, line.quantity])).toEqual([[POST_6, 4]]);
+        });
+
+        it("should spread copies over a part of a turn with both ends included, starting where start turns the first", () => {
+            // Act
+            const built = occt.design.build({ document: ring({ polar: { axis: AROUND_Z, count: 3, angle: 90, start: 45 } }), documents: [post] });
+
+            // Assert
+            expect(["posts.1", "posts.2", "posts.3"].map(path => placedBox(built, path))).toEqual([
+                { min: [4.242641, 4.242641, 0], max: [9.899495, 9.899495, 6] },
+                { min: [-2, 8, 0], max: [2, 12, 6] },
+                { min: [-9.899495, 4.242641, 0], max: [-4.242641, 9.899495, 6] },
+            ]);
+        });
+
+        it("should step copies along a direction of any length, as many as a parameter says, so a new value adds or removes occurrences", () => {
+            // Arrange
+            const document = ring({ linear: { direction: [0, 2, 0], spacing: "gap", count: "n" } }, { parameters: { n: 3, gap: 10 } });
+
+            // Act
+            const three = occt.design.build({ document, documents: [post] });
+            const five = occt.design.build({ document, documents: [post], parameters: { n: 5 } });
+
+            // Assert
+            expect(["posts.1", "posts.2", "posts.3"].map(path => placedBox(three, path).min)).toEqual([[8, -2, 0], [8, 8, 0], [8, 18, 0]]);
+            expect(five.components!.map(component => component.path)).toEqual(["posts.1", "posts.2", "posts.3", "posts.4", "posts.5"]);
+            expect(five.bom!.map(line => line.quantity)).toEqual([5]);
+        });
+
+        it("should pattern a component inside a sub-assembly and carry every copy where the sub-assembly is placed", () => {
+            // Arrange
+            const row: Assembly = { ...ring({ polar: { axis: AROUND_Z, count: 2 } }), id: ROW_ID };
+            const top: Assembly = { schemaVersion: 1, kind: "assembly", components: [{ id: "row", source: { document: ROW_ID }, at: { origin: [100, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] } }] };
+
+            // Act
+            const built = occt.design.build({ document: top, documents: [post, row] });
+
+            // Assert
+            expect(built.components!.map(component => [component.path, component.parent])).toEqual([["row", undefined], ["row/posts.1", "row"], ["row/posts.2", "row"]]);
+            expect(placedBox(built, "row/posts.1")).toEqual({ min: [108, -2, 0], max: [112, 2, 6] });
+            expect(placedBox(built, "row/posts.2")).toEqual({ min: [88, -2, 0], max: [92, 2, 6] });
+        });
+
+        it("should count every copy toward the occurrence limit, before building anything", () => {
+            // Arrange
+            const row: Assembly = { ...ring({ polar: { axis: AROUND_Z, count: 1000 } }), id: ROW_ID };
+            const rows: Assembly = { schemaVersion: 1, kind: "assembly", components: [{ id: "rows", source: { document: ROW_ID }, pattern: { linear: { direction: [0, 0, 1], spacing: 10, count: 200 } } }] };
+
+            // Act
+            const attempt = (): unknown => occt.design.build({ document: rows, documents: [post, row] });
+
+            // Assert
+            expect(attempt).toThrow("/components: the assembly places more than 100000 occurrences through its levels");
+        });
+
+        it("should fail a pattern whose computed count or angle cannot be used, saying where", () => {
+            // Act
+            const noCopies = occt.design.build({ document: ring({ polar: { axis: AROUND_Z, count: "n" } }, { parameters: { n: 0 } }), documents: [post] });
+            const noTurn = occt.design.build({ document: ring({ polar: { axis: AROUND_Z, count: 2, angle: "a" } }, { parameters: { a: 0 } }), documents: [post] });
+
+            // Assert
+            expect(noCopies.report.map(entry => [entry.id, entry.status])).toEqual([["posts", "failed"]]);
+            expect(noCopies.report[0]!.messages[0]).toMatch(/^\/components\/0\/pattern\/polar\/count: /);
+            expect(noTurn.report[0]!.messages).toEqual(["/components/0/pattern/polar/angle: the angle is not 0 and at most 360 either way, not 0"]);
+        });
+
+        it("should refuse a pattern with both kinds, a count that is not a whole number from 1, a replicate beside it, and a patterned component moved, joined to, replicated onto or published", () => {
+            // Arrange
+            const drilled: Part = {
+                ...plate,
+                features: [...plate.features, { id: "holes", type: "hole", body: "plate", on: { of: "plate", role: "end" }, origin: [20, 10, 10], at: [{ id: "left", x: -10, y: 0 }, { id: "right", x: 10, y: 0 }], diameter: 4 }],
+                parts: [{ ...plate.parts![0]!, connectors: [...plate.parts![0]!.connectors!, { id: "bolt", on: { of: "plate", role: "end" }, axis: { of: "holes", role: "wall" } }] }],
+            };
+            const issuesOf = (document: Assembly): string[] => occt.design.validate({ document, documents: [drilled, post] }).map(issue => `${issue.path}: ${issue.message}`);
+            const polar = { polar: { axis: AROUND_Z, count: 2 } };
+            const plateFirst = (extra: Partial<Assembly>): Assembly => ({ ...ring(polar), components: [{ id: "plate", source: { document: PLATE_ID, part: "plate" } }, { id: "posts", source: { document: POST_ID, part: "post" }, pattern: polar }], ...extra });
+
+            // Act
+            const both = issuesOf(ring(Object.assign({}, polar, { linear: { direction: [1, 0, 0] as [number, number, number], spacing: 5, count: 2 } })));
+            const zero = issuesOf(ring({ polar: { axis: AROUND_Z, count: 0 } }));
+            const half = issuesOf(ring({ linear: { direction: [1, 0, 0], spacing: 5, count: 2.5 } }));
+            const replicated = issuesOf({ ...plateFirst({}), components: [{ id: "plate", source: { document: PLATE_ID, part: "plate" } }, { id: "posts", source: { document: POST_ID, part: "post" }, pattern: polar, replicate: { connector: "bottom", to: { component: "plate", connector: "bolt" } } }] });
+            const moved = issuesOf(plateFirst({ joints: [{ id: "onPlate", type: "fastened", component: "posts", connector: "bottom", to: { component: "plate", connector: "top" } }] }));
+            const joinedTo = issuesOf(plateFirst({ joints: [{ id: "onPost", type: "fastened", component: "plate", connector: "bottom", to: { component: "posts", connector: "top" } }] }));
+            const onto = issuesOf({ ...plateFirst({}), components: [{ id: "posts", source: { document: POST_ID, part: "post" }, pattern: polar }, { id: "pins", source: { document: POST_ID, part: "post" }, replicate: { connector: "bottom", to: { component: "posts", connector: "top" } } }] });
+            const published = issuesOf(plateFirst({ connectors: [{ id: "tip", component: "posts", connector: "top" }] }));
+
+            // Assert
+            expect(both).toEqual(["/components/0/pattern: a pattern is either { polar } or { linear }"]);
+            expect(zero).toEqual(["/components/0/pattern/polar/count: a count is a whole number from 1 to 1000, not 0"]);
+            expect(half).toEqual(["/components/0/pattern/linear/count: a count is a whole number from 1 to 1000, not 2.5"]);
+            expect(replicated).toEqual(["/components/1/pattern: a component is placed by replicate or by a pattern, not both"]);
+            expect(moved).toEqual(["/joints/0/component: \"posts\" is patterned, so no joint can move it: place it at a frame, or join the assembly it sits in"]);
+            expect(joinedTo).toEqual(["/joints/0/to/component: \"posts\" is patterned, so it has no one place to be joined to"]);
+            expect(onto).toEqual(["/components/1/replicate/to/component: \"posts\" is patterned: replicate onto a component placed once"]);
+            expect(published).toEqual(["/connectors/0/component: \"posts\" is patterned, so it has no one connector to publish"]);
+        });
+    });
+
     describe("building", () => {
         it("should join posts by their connectors, build each part once per parameter set, and count them in the bill of materials", () => {
             // Act

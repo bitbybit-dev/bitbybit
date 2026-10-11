@@ -69,12 +69,14 @@ describe("splitGuidePages", () => {
 describe("the generated guides", () => {
     it("equal the sections of the published pages, the integration guide first", () => {
         // Act
-        const fromPages = splitGuidePages(["agentic-cad", "design-documents"].map((name) => ({ url: `${LEARN}/${name}`, markdown: page(name) })));
+        const fromPages = splitGuidePages(["agentic-cad", "cad-geometry", "design-documents", "ifc-models"].map((name) => ({ url: `${LEARN}/${name}`, markdown: page(name) })));
 
         // Assert
         expect(GUIDES).toEqual(fromPages);
         expect(GUIDE_PAGE_URL).toBe(`${LEARN}/agentic-cad`);
         expect(GUIDES.find((section) => section.id === "what-a-design-document-is")?.page).toBe(`${LEARN}/design-documents`);
+        expect(GUIDES.find((section) => section.id === GUIDE_ALIASES["ifc"])?.page).toBe(`${LEARN}/ifc-models`);
+        expect(GUIDES.find((section) => section.id === GUIDE_ALIASES["geometry"])?.page).toBe(`${LEARN}/cad-geometry`);
     });
 
     it("cover every alias the guide tool offers", () => {

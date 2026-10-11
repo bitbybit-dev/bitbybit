@@ -120,6 +120,33 @@ describe("DrawCore entity detection", () => {
             expect(core.detectManifoldMeshes([mesh, { hash: 1, type: "manifold-shape" }])).toBe(false);
         });
     });
+
+    describe("the meshes a recipe draws are told by their placements", () => {
+        const mesh = { numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) };
+        const identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+        const placement = { mesh: 0, matrix: identity, tag: { globalId: "a" } };
+
+        it("should detect meshes with placements that name a mesh or none, with a group or without", () => {
+            expect(core.detectRecipeMeshes({ meshes: [mesh], placements: [placement, { ...placement, mesh: -1, group: 2 }] })).toBe(true);
+            expect(core.detectRecipeMeshes({ meshes: [], placements: [] })).toBe(true);
+        });
+
+        it("should refuse a placement naming a mesh past the list, a short or unfinished matrix, no tag or a fractional group, and a mesh that is not one", () => {
+            const refused = [
+                { meshes: [mesh], placements: [{ ...placement, mesh: 1 }] },
+                { meshes: [mesh], placements: [{ ...placement, mesh: -2 }] },
+                { meshes: [mesh], placements: [{ ...placement, mesh: 0.5 }] },
+                { meshes: [mesh], placements: [{ ...placement, matrix: identity.slice(1) }] },
+                { meshes: [mesh], placements: [{ ...placement, matrix: [...identity.slice(1), Number.NaN] }] },
+                { meshes: [mesh], placements: [{ mesh: 0, matrix: identity }] },
+                { meshes: [mesh], placements: [{ ...placement, group: 1.5 }] },
+                { meshes: [{ ...mesh, triVerts: [0, 1, 2] }], placements: [placement] },
+                { meshes: [mesh] },
+                [mesh],
+            ];
+            expect(refused.map((entity) => core.detectRecipeMeshes(entity))).toEqual(refused.map(() => false));
+        });
+    });
 });
 
 describe("shapes with their appearance and design builds are told apart", () => {
@@ -364,7 +391,7 @@ describe("the order a draw call tries kinds in", () => {
         expect(probe.kinds().map(k => k.kind)).toEqual([
             "jscadMesh", "occtShape", "occtShapes",
             "occtShapeWithAppearance", "occtShapesWithAppearance", "designBuild", "jscadMeshes",
-            "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh", "manifoldMesh", "manifoldMeshes",
+            "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh", "manifoldMesh", "manifoldMeshes", "recipeMeshes",
             "line", "point", "jscadPath", "polyline", "frame", "node", "verbCurve", "verbSurface",
             "jscadPaths", "polylines", "frames", "lines", "points", "nodes",
             "verbCurves", "verbSurfaces", "tag", "tags",
@@ -375,7 +402,7 @@ describe("the order a draw call tries kinds in", () => {
         const async = probe.kinds().filter(k => k.phase === "async").map(k => k.kind);
         expect(async).toEqual(["jscadMesh", "occtShape", "occtShapes",
             "occtShapeWithAppearance", "occtShapesWithAppearance", "designBuild", "jscadMeshes",
-            "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh", "manifoldMesh", "manifoldMeshes"]);
+            "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh", "manifoldMesh", "manifoldMeshes", "recipeMeshes"]);
     });
 
     it("should read a pair of points as a segment, because line is tried before points", () => {

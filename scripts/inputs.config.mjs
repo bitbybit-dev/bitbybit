@@ -40,6 +40,7 @@ export const targets = [
             "sections-features-and-sweeps",
             "repair-and-files",
             "design-documents",
+            "recipes",
         ],
     },
     {

@@ -486,6 +486,9 @@ describe("design document check", () => {
         expect(keysOf("DesignFaceAppearance")).toEqual([...DOCUMENT_KEYS.faceAppearance].sort());
         expect(keysOf("DesignEdgeAppearance")).toEqual([...DOCUMENT_KEYS.edgeAppearance].sort());
         expect(keysOf("DesignAsset")).toEqual(extensible(DOCUMENT_KEYS.asset));
+        expect(keysOf("DesignPolarComponentPattern")).toEqual([...DOCUMENT_KEYS.polarComponentPattern].sort());
+        expect(keysOf("DesignAxis")).toEqual([...DOCUMENT_KEYS.axis].sort());
+        expect(keysOf("DesignLinearComponentPattern")).toEqual([...DOCUMENT_KEYS.linearComponentPattern].sort());
         features.forEach(([fromSchema, fromCheck]) => expect(fromSchema).toEqual(fromCheck));
     });
 

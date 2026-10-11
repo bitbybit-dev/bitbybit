@@ -35,3 +35,18 @@ export interface SurfacePiece {
     readonly node: Base.RecipeTrianglesNode;
     readonly matrix: Base.TransformMatrix;
 }
+
+/**
+ * The step a recipe node finally places and the matrix that places it there.
+ * @beta
+ */
+export interface RecipeSource {
+    /**
+     * The index of the step, a node that is not a rigid transform.
+     */
+    readonly node: number;
+    /**
+     * The column-major 4 x 4 matrix taking the step's coordinates to where the node puts it.
+     */
+    readonly matrix: Base.TransformMatrix;
+}

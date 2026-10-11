@@ -199,6 +199,8 @@
   "operations.splitShapeWithShapes": {"localFuzzyTolerance":0.0001,"nonDestructive":true},
   "operations.sweepEvolved": {"makeSolid":true},
   "path.shapeFromPath": {"makeFaces":false,"joinSegments":true,"tolerance":1e-7,"scale":1,"flipY":true,"origin":[0,0,0]},
+  "recipes.build": {"adjustZtoY":false,"emptyWhenFailed":false,"facetedMeshes":false,"maxTriangles":100000},
+  "recipes.buildDocument": {"name":"Recipe","groupBy":"globalId","emptyWhenFailed":false,"facetedMeshes":false,"maxTriangles":100000},
   "select.edges.along": {"direction":[0,0,1],"angle":0},
   "select.edges.between": {},
   "select.edges.byLength": {"min":0,"max":1},

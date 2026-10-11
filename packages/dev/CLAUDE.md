@@ -129,7 +129,7 @@ npm run lint
   `copy-package` drops the map (and `devDependencies`, `scripts`) from `dist/package.json`,
   and `npm run check:exports` holds both sides to the shape `scripts/dist-manifest.mjs` expects.
 - `threejs` and `playcanvas` take their engine as an ordinary **dependency**; `babylonjs` takes
-  its engine as a **peer dependency**. The runner tooling reads `peerDependencies` to decide
+  its engine as a **peer dependency**. Consumers read `peerDependencies` to decide
   which engine version to install, so the distinction is not cosmetic. Both also run a
   `delete-mocks` step during packaging.
 

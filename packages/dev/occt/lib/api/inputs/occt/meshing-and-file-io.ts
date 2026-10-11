@@ -464,13 +464,14 @@ export class SaveStepDto<T> {
      */
     fileName?: string | undefined = "shape.step";
     /**
-     * When true, the shape is turned so this library's Y-up becomes STEP's Z-up.
+     * When true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape. To keep it as
+     * built, turn it 90 degrees about X with `transforms.rotate` instead.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
     /**
-     * When true, the axis swap skips its mirror step, for shapes that were built in a right-handed
-     * system.
+     * When true, the swap of `adjustYtoZ` becomes a turn of -90 degrees about X: the shape is not
+     * mirrored but stands upside down in a Z-up tool.
      * @default false
      */
     fromRightHanded?: boolean | undefined = false;
@@ -511,7 +512,8 @@ export class SaveStlDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, the shape is turned so this library's Y-up becomes Z-up.
+     * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
+     * turn it 90 degrees about X with `transforms.rotate` instead.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;

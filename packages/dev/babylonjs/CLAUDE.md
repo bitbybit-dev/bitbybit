@@ -5,17 +5,16 @@ up in `packages/dev/CLAUDE.md`.
 
 **The engine is a peer dependency here, not a hard one** - `@babylonjs/core`, `gui`, `havok`,
 `loaders`, `materials`, `serializers`, plus `earcut`. Its siblings `threejs` and `playcanvas` take
-their engines as ordinary dependencies instead. That asymmetry is load-bearing: the tooling that
-provisions a runtime reads **`peerDependencies`** as the source of truth for which engine version
-to install. Moving an engine between `dependencies` and `peerDependencies`
-therefore changes how the runners resolve it.
+their engines as ordinary dependencies instead. That asymmetry is load-bearing: applications that
+install the engine themselves read **`peerDependencies`** to know which engine version to install,
+so moving an engine between `dependencies` and `peerDependencies` changes what they get.
 
 Because the engine is a peer, the consuming application supplies it. A version skew between the app's
 Babylon and the one this package was built against surfaces at runtime, not at build time.
 
 Adding a feature area follows a fixed shape: a class, its inputs, two index entries and the
-aggregator. JSDoc tags on the public surface drive code generation downstream, so a missing tag
-produces a wrong result there rather than an error here.
+aggregator. JSDoc tags on the public surface are read as data by documentation tooling, so a missing
+tag produces a wrong result there rather than an error here.
 
 The shared draw rules live in `core`'s `CLAUDE.md`. What Babylon itself forces:
 

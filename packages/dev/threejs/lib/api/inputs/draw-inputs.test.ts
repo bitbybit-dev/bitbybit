@@ -501,4 +501,38 @@ describe("Draw DTO unit tests", () => {
             expect(result.unlit).toBe(false);
         });
     });
+
+    describe("the recipe meshes options and element DTOs", () => {
+        it("should set every property from its constructor parameter", () => {
+            // Arrange
+            const drawn = { name: "drawn" };
+            const mesh = { name: "mesh" };
+
+            // Act
+            const options = new Draw.DrawRecipeMeshesOptions("name", false, 5, 1000, "#123456", 0.5, 0.3, 0.2);
+            const visibility = new Draw.RecipeElementsVisibilityDto(drawn, ["a"], false);
+            const colour = new Draw.RecipeElementsColourDto(drawn, ["a"], "#ffaa00", 0.4);
+            const pick = new Draw.RecipeElementPickDto(drawn, mesh, 7, 3);
+
+            // Assert
+            expect({ ...options }).toEqual({ elementKey: "name", instancing: false, minInstances: 5, maxBatchVertices: 1000, defaultColour: "#123456", defaultOpacity: 0.5, metallic: 0.3, roughness: 0.2 });
+            expect({ ...visibility }).toEqual({ drawn, keys: ["a"], visible: false });
+            expect({ ...colour }).toEqual({ drawn, keys: ["a"], colour: "#ffaa00", opacity: 0.4 });
+            expect({ ...pick }).toEqual({ drawn, mesh, triangle: 7, instance: 3 });
+        });
+
+        it("should take the defaults when no parameters are given", () => {
+            // Arrange & Act
+            const options = new Draw.DrawRecipeMeshesOptions();
+            const visibility = new Draw.RecipeElementsVisibilityDto();
+            const colour = new Draw.RecipeElementsColourDto();
+            const pick = new Draw.RecipeElementPickDto();
+
+            // Assert
+            expect({ ...options }).toEqual({ elementKey: "globalId", instancing: true, minInstances: 2, maxBatchVertices: 1000000, defaultColour: "#cccccc", defaultOpacity: 1, metallic: 0, roughness: 0.8 });
+            expect({ ...visibility }).toEqual({ visible: true });
+            expect({ ...colour }).toEqual({ opacity: 1 });
+            expect({ ...pick }).toEqual({});
+        });
+    });
 });

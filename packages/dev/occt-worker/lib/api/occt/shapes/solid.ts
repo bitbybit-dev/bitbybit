@@ -17,11 +17,11 @@ export class OCCTSolid {
     }
 
     /**
-     * Collects diagnostic facts about a solid: whether it is valid, how many faces and edges it
-     * has, its surface area and volume, and for every face the surface type, degrees, control point
-     * counts, bounds and area.
+     * Collects diagnostic facts about a solid: how many faces and edges it has, its surface area and
+     * volume, and for every face the surface type, degrees, control point counts, bounds and area.
      *
-     * An empty or null shape gives a report marked invalid with zero counts.
+     * `valid` is false only for an empty or null shape, which gives zero counts; it does not check
+     * the geometry, which `shapeFix.isValid` does.
      * @param inputs - The solid to inspect
      * @returns The report with counts, area, volume and one entry per face
      * @group debug

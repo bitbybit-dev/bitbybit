@@ -122,7 +122,11 @@ export class BooleansService {
 
     private resultOf(result: { shape: TopoDS_Shape | null, errorAlerts: string }): TopoDS_Shape {
         if (result.shape === null) {
-            throw result.errorAlerts.split(" ").includes("BOPAlgo_AlertBOPNotAllowed") ? occtFailure("occt.boolean.mixedDimensions") : occtFailure("occt.boolean.failed");
+            const alerts = result.errorAlerts.split(" ");
+            if (alerts.includes("BitbybitBool_AlertFaceWithoutSurface")) {
+                throw occtFailure("occt.boolean.tessellated");
+            }
+            throw alerts.includes("BOPAlgo_AlertBOPNotAllowed") ? occtFailure("occt.boolean.mixedDimensions") : occtFailure("occt.boolean.failed");
         }
         return result.shape;
     }

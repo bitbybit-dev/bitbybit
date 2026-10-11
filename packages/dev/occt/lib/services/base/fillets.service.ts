@@ -8,6 +8,7 @@ import type { ShapeGettersService } from "./shape-getters";
 import type * as Resolved from "../../api/resolved-inputs";
 import { InputError, KernelOperationError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
+import { isStraightCorner, straightCorners, withoutStraightCorners } from "./straight-corners";
 
 export class FilletsService {
 
@@ -447,14 +448,17 @@ export class FilletsService {
                 cornerVertices.pop();
             }
         }
+        const straight = (isShapeFace ? this.shapeGettersService.getWires({ shape: face }) : [inputs.shape])
+            .flatMap(wire => straightCorners(this.occ, wire));
         let radiusAddedCounter = 0;
         const failedCorners: number[] = [];
         cornerVertices.forEach((cvx, index) => {
+            const skip = isStraightCorner(straight, this.converterService.vertexToPoint({ shape: cvx }));
             let added = false;
             if (!inputs.indexes) {
-                added = this.applyRadiusToVertex(inputs, filletMaker, cvx, index);
+                added = !skip && this.applyRadiusToVertex(inputs, filletMaker, cvx, index);
             } else if (inputs.indexes.includes(index + 1)) {
-                added = this.applyRadiusToVertex(inputs, filletMaker, cvx, radiusAddedCounter);
+                added = !skip && this.applyRadiusToVertex(inputs, filletMaker, cvx, radiusAddedCounter);
                 radiusAddedCounter++;
             }
             if (added && !filletMaker.CornerDone()) {
@@ -557,7 +561,7 @@ export class FilletsService {
     }
 
     private filletWireCorners(wire: TopoDS_Wire, radii: number[]): TopoDS_Wire {
-        const { wire: rounded, failedCorners } = this.occ.FilletWireCorners(wire, radii);
+        const { wire: rounded, failedCorners } = this.occ.FilletWireCorners(wire, withoutStraightCorners(radii, straightCorners(this.occ, wire)));
         if (rounded === null) {
             throw failedCorners.length > 0
                 ? occtFailure("occt.fillet.failedAtCorners", { corners: Array.from(failedCorners, corner => corner + 1) })

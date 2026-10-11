@@ -213,6 +213,8 @@ const DELEGATIONS: [string, (occt: OCCT) => unknown][] = [
     ["operations.splitShapeWithShapes", (o) => o.operations.splitShapeWithShapes(asInputs())],
     ["operations.sweepEvolved", (o) => o.operations.sweepEvolved(asInputs())],
     ["path.shapeFromPath", (o) => o.path.shapeFromPath(asInputs())],
+    ["recipes.build", (o) => o.recipes.build(asInputs())],
+    ["recipes.buildDocument", (o) => o.recipes.buildDocument(asInputs())],
     ["select.edges.along", (o) => o.select.edges.along(asInputs())],
     ["select.edges.between", (o) => o.select.edges.between(asInputs())],
     ["select.edges.byLength", (o) => o.select.edges.byLength(asInputs())],

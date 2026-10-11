@@ -36,6 +36,8 @@ export namespace OCCT {
     export type BSplineDto = WithDefaults<Inputs.OCCT.BSplineDto, "closed">;
     export type BSplinesDto = WithDefaults<Inputs.OCCT.BSplinesDto, "returnCompound">;
     export type BuildAssemblyDocumentDto<T, D> = Inputs.OCCT.BuildAssemblyDocumentDto<T, D>;
+    export type BuildRecipeDocumentDto = WithDefaults<Inputs.OCCT.BuildRecipeDocumentDto, "name" | "groupBy" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
+    export type BuildRecipeDto = WithDefaults<Inputs.OCCT.BuildRecipeDto, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
     export type Chamfer2dVertexDto<T> = WithDefaults<Inputs.OCCT.Chamfer2dVertexDto<T>, "distance" | "angle">;
     export type ChamferCornerByPointDto<T> = WithDefaults<Inputs.OCCT.ChamferCornerByPointDto<T>, "points" | "distance" | "angle" | "snapTolerance" | "mode">;
     export type ChamferDto<T> = WithDefaults<Inputs.OCCT.ChamferDto<T>, "distance">;

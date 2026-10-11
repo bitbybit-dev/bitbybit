@@ -14,6 +14,7 @@ import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as pc from "playcanvas";
 import { DEFAULT_COLORS, CACHE_CONFIG } from "./constants";
 import type * as Resolved from "./resolved-inputs";
+import { RecipeMeshesDrawer } from "./draw-recipe-meshes";
 
 function float32ViewOf(locked: ArrayBuffer | ArrayBufferView): Float32Array {
     if (ArrayBuffer.isView(locked)) {
@@ -52,6 +53,13 @@ export class DrawHelper extends DrawHelperCore {
     private readonly materialCache = new Map<string, pc.StandardMaterial>();
 
     private readonly designStates = new WeakMap<pc.Entity, DesignDrawState>();
+
+    private readonly recipeDrawer = new RecipeMeshesDrawer({
+        scene: () => this.context.scene,
+        device: () => this.context.app.graphicsDevice,
+        entityId: (type) => this.generateEntityId(type),
+        material: (transparent, metallic, roughness) => this.recipeMaterial(transparent, metallic, roughness),
+    });
 
     private readonly designMeshes = new DesignMeshCache<Inputs.OCCT.DecomposedMeshDto>();
     
@@ -110,6 +118,43 @@ export class DrawHelper extends DrawHelperCore {
     drawManifoldMeshes(meshes: Inputs.Manifold.DecomposedManifoldMeshDto[], options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): pc.Entity {
         const resolved = resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
         return this.manifoldMeshContainer(meshes.map(mesh => this.handleDecomposedManifold(mesh, resolved)));
+    }
+
+    drawRecipeMeshes(meshes: Inputs.Manifold.RecipeMeshesDto, options: Inputs.Draw.DrawRecipeMeshesOptions): pc.Entity {
+        const resolved = resolveDto(Inputs.Draw.DrawRecipeMeshesOptions, options) as Resolved.Draw.DrawRecipeMeshesOptions;
+        return this.recipeDrawer.draw(meshes, resolved);
+    }
+
+    setRecipeElementsVisible(resolved: Resolved.Draw.RecipeElementsVisibilityDto<pc.Entity>): void {
+        this.recipeDrawer.setVisible(resolved.drawn, resolved.keys, resolved.visible);
+    }
+
+    setRecipeElementsColour(resolved: Resolved.Draw.RecipeElementsColourDto<pc.Entity>): void {
+        this.recipeDrawer.setColour(resolved.drawn, resolved.keys, resolved.colour, resolved.opacity);
+    }
+
+    recipeElementOfPick(inputs: Inputs.Draw.RecipeElementPickDto<pc.Entity, pc.MeshInstance>): string | undefined {
+        return this.recipeDrawer.elementOfPick(inputs.drawn, inputs.mesh, inputs.triangle);
+    }
+
+    private recipeMaterial(transparent: boolean, metallic: number, roughness: number): pc.StandardMaterial {
+        return this.getOrCreateMaterial(`recipe:${transparent}:${metallic}:${roughness}`, 1, 0, () => {
+            const material = new pc.StandardMaterial();
+            material.name = this.generateEntityId("recipeMaterial");
+            material.diffuse = new pc.Color(1, 1, 1);
+            material.diffuseVertexColor = true;
+            material.useMetalness = true;
+            material.metalness = metallic;
+            material.gloss = 1 - roughness;
+            if (transparent) {
+                material.blendType = pc.BLEND_NORMAL;
+                material.opacityVertexColor = true;
+                material.opacityVertexColorChannel = "a";
+                material.depthWrite = false;
+            }
+            material.update();
+            return material;
+        });
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<pc.Entity> {

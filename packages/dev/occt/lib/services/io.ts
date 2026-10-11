@@ -36,9 +36,9 @@ export class OCCTIO {
      * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and returns the
      * file's text.
      *
-     * With `adjustYtoZ` true the shape is turned so this library's Y-up becomes STEP's Z-up;
-     * `fromRightHanded` skips the mirror that swap otherwise includes. `fileName` and `tryDownload`
-     * matter only where a browser download can be started.
+     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape;
+     * turn it 90 degrees about X with `transforms.rotate` first to keep it as built. `fileName` and
+     * `tryDownload` matter only where a browser download can be started.
      * @param inputs - The shape, the file name, the axis adjustment and the download options
      * @returns The STEP file as text
      * @group io
@@ -108,8 +108,8 @@ export class OCCTIO {
      * returning the file's text, or its bytes when `binary` is true.
      *
      * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
-     * more closely. `adjustYtoZ` turns Y-up into Z-up. `fileName` and `tryDownload` only matter
-     * where a download can start.
+     * more closely. `adjustYtoZ` swaps Y and Z, which mirrors the shape. `fileName` and
+     * `tryDownload` matter only for a download.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment, the form and the download options
      * @returns The STL file as text, or as bytes when `binary` is true
      * @group io
@@ -191,9 +191,9 @@ export class OCCTIO {
      * Triangulates a shape and writes it as OBJ, the mesh format most 3D programs read, returning
      * the file's text.
      *
-     * `precision` is the meshing tolerance in model units, `adjustYtoZ` turns Y-up into Z-up, and
-     * coordinates keep six decimals. `mtl` stays empty, since a shape carries no colors;
-     * `assembly.manager.exportDocumentToObj` writes colored parts.
+     * `precision` is the meshing tolerance in model units, `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape, and coordinates keep six decimals. `mtl` stays empty, since a shape
+     * carries no colors; `assembly.manager.exportDocumentToObj` writes colored parts.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns The OBJ text, with an empty material library text
      * @group io
@@ -221,7 +221,8 @@ export class OCCTIO {
      * scanning tools read, returning the file's text.
      *
      * Coordinates keep six significant digits, so past 1000 units they keep two decimals.
-     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up.
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` swaps Y and Z, which
+     * mirrors the shape.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns The PLY file as text
      * @group io

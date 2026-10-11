@@ -3,7 +3,7 @@ import { InputError } from "../kernel-calls/errors";
 import { followedBy, linearDeterminant } from "../services/helpers/matrices";
 import { POINT3_SIZE, TRIANGLE_CORNERS } from "./limits.constants";
 import type { RecipeSurfaceMesh, SurfacePiece } from "./recipe-types";
-import { assertRecipe } from "./validate";
+import { toRecipe } from "./validate";
 
 const Z_TO_Y: Base.TransformMatrix = [1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1];
 const X = 0;
@@ -21,7 +21,10 @@ function collectPieces(nodes: readonly Base.RecipeNode[], index: number, matrix:
         case "transform":
             return collectPieces(nodes, node.of, followedBy(node.matrix, matrix), pieces);
         case "compound":
+        case "union":
             return node.of.every((child) => collectPieces(nodes, child, matrix, pieces));
+        case "voids":
+            return collectPieces(nodes, node.host, matrix, pieces);
         default:
             return false;
     }
@@ -61,9 +64,10 @@ function meshOfPieces(buffers: Base.RecipeBuffers, pieces: readonly SurfacePiece
 
 /**
  * The triangle meshes a recipe's roots describe, for the roots built from triangle nodes alone
- * (through transforms and compounds), placed by their matrices; no kernel is needed. A root that
- * holds any other step, such as an extrusion or a cut, gives undefined. This is how an open mesh
- * no solid kernel accepts, such as a building model's furniture surfaces, can still be drawn.
+ * (through transforms, compounds and unions), placed by their matrices; no kernel is needed. Openings cut
+ * through such a mesh are left uncut, since a surface has no inside to cut. A root that holds any
+ * other step, such as an extrusion or a cut, gives undefined. This is how an open mesh no solid
+ * kernel accepts, such as a building model's furniture surfaces, can still be drawn.
  *
  * Experimental: the recipe format may still change before it is declared stable.
  * @param recipe - The recipe, checked as `assertRecipe` checks it
@@ -72,8 +76,8 @@ function meshOfPieces(buffers: Base.RecipeBuffers, pieces: readonly SurfacePiece
  * @returns One mesh per asked root, in the order asked, or undefined where the root is not made of triangles alone
  * @beta
  */
-export function recipeSurfaceMeshes(recipe: unknown, roots?: readonly number[], adjustZtoY = false): (RecipeSurfaceMesh | undefined)[] {
-    assertRecipe(recipe);
+export function recipeSurfaceMeshes(value: unknown, roots?: readonly number[], adjustZtoY = false): (RecipeSurfaceMesh | undefined)[] {
+    const recipe = toRecipe(value);
     const asked = roots ?? recipe.roots.map((_, index) => index);
     const bad = asked.find((index) => !Number.isSafeInteger(index) || index < 0 || index >= recipe.roots.length);
     if (bad !== undefined) {

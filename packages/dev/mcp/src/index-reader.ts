@@ -1,8 +1,13 @@
-import type { ApiIndex, Engine, IndexExample, IndexMember } from "./index-types.js";
+import type { ApiIndex, Engine, IndexExample, IndexMember, IndexType } from "./index-types.js";
 
 export interface SearchHit {
     member: IndexMember;
     score: number;
+}
+
+export interface NamedType {
+    key: string;
+    type: IndexType;
 }
 
 export interface SearchOptions {
@@ -24,6 +29,8 @@ const MAX_LIMIT = 50;
 const NEAREST_LIMIT = 5;
 const MIN_EDIT_TOLERANCE = 2;
 const EDIT_TOLERANCE_DIVISOR = 3;
+const TYPE_NAME = /[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*/g;
+const INPUTS = "Inputs.";
 
 export function tokenize(text: string): string[] {
     return text
@@ -31,6 +38,16 @@ export function tokenize(text: string): string[] {
         .toLowerCase()
         .split(/[^a-z0-9]+/)
         .filter((token) => token.length > 0);
+}
+
+function namespaceOf(typeText: string): string | undefined {
+    const name = typeText.match(TYPE_NAME)?.[0] ?? "";
+    const dot = name.lastIndexOf(".");
+    return dot > 0 ? name.slice(0, dot) : undefined;
+}
+
+function uniqueTypes(found: readonly NamedType[]): NamedType[] {
+    return [...new Map(found.map((named) => [named.key, named])).values()];
 }
 
 interface MemberTokens {
@@ -46,9 +63,13 @@ export class IndexReader {
     readonly version: string;
     private readonly byPath = new Map<string, IndexMember>();
     private readonly tokens = new Map<string, MemberTokens>();
+    private readonly typeKeysByName = new Map<string, string[]>();
 
     constructor(readonly index: ApiIndex) {
         this.version = index.version;
+        for (const [key, type] of Object.entries(index.types ?? {})) {
+            this.typeKeysByName.set(type.name, [...(this.typeKeysByName.get(type.name) ?? []), key]);
+        }
         for (const member of index.members) {
             this.byPath.set(member.path, member);
             this.tokens.set(member.path, {
@@ -61,6 +82,40 @@ export class IndexReader {
 
     get(path: string): IndexMember | undefined {
         return this.byPath.get(path);
+    }
+
+    type(name: string, near?: string): NamedType | undefined {
+        const types = this.index.types ?? {};
+        const bare = name.replace(/^Bit\./, "").replace(/\[\]$/, "");
+        for (const key of [bare, ...(near === undefined ? [] : [`${near}.${bare}`]), `${INPUTS}${bare}`]) {
+            const type = types[key];
+            if (type) {
+                return { key, type };
+            }
+        }
+        const keys = this.typeKeysByName.get(bare) ?? [];
+        const only = keys.length === 1 ? keys[0] : undefined;
+        const type = only === undefined ? undefined : types[only];
+        return only === undefined || !type ? undefined : { key: only, type };
+    }
+
+    typeKeysNamed(name: string): string[] {
+        return this.typeKeysByName.get(name.replace(/^Bit\./, "").replace(/\[\]$/, "")) ?? [];
+    }
+
+    typesIn(texts: readonly (string | null | undefined)[], near?: string): NamedType[] {
+        return uniqueTypes(texts.flatMap((text) => (text?.match(TYPE_NAME) ?? []).flatMap((name) => this.type(name, near) ?? [])));
+    }
+
+    typesUsedBy(member: IndexMember): NamedType[] {
+        return uniqueTypes([
+            ...this.typesIn([member.returns]),
+            ...member.params.flatMap((param) => this.typesIn((param.fields ?? []).map((field) => field.type), namespaceOf(param.type))),
+        ]);
+    }
+
+    typesUsedByType(named: NamedType): NamedType[] {
+        return this.typesIn(named.type.fields.map((field) => field.type), namespaceOf(named.key)).filter((used) => used.key !== named.key);
     }
 
     all(): IndexMember[] {

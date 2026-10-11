@@ -34,13 +34,44 @@ export const GUIDE_ALIASES: Readonly<Record<string, string>> = {
     references: "references-naming-faces-and-edges",
     sketch: "sketches",
     assembly: "assemblies",
-    mistakes: "mistakes-to-avoid",
+    "design-mistakes": "mistakes-to-avoid",
+    geometry: "geometry-in-bitbybit",
+    cad: "geometry-in-bitbybit",
+    occt: "how-the-occt-kernel-thinks",
+    kernels: "which-kernel-to-use",
+    manifold: "manifold-and-jscad",
+    jscad: "manifold-and-jscad",
+    "part-order": "the-order-to-build-a-part-in",
+    part: "a-part-to-start-from",
+    edges: "choosing-edges-and-faces",
+    fillets: "choosing-edges-and-faces",
+    check: "checking-a-shape",
+    export: "drawing-and-exporting-a-part",
+    step: "drawing-and-exporting-a-part",
+    mistakes: "mistakes-to-avoid-in-geometry-code",
+    "geometry-mistakes": "mistakes-to-avoid-in-geometry-code",
+    ifc: "ifc-models-in-bitbybit",
+    bim: "ifc-models-in-bitbybit",
+    building: "ifc-models-in-bitbybit",
+    buildings: "ifc-models-in-bitbybit",
+    "ifc-node": "two-ways-to-call-the-ifc-api",
+    "ifc-worker": "two-ways-to-call-the-ifc-api",
+    "ifc-order": "the-order-to-write-a-building-in",
+    "ifc-house": "a-house-to-start-from",
+    "ifc-example": "a-house-to-start-from",
+    "ifc-check": "checking-an-ifc-model",
+    "ifc-validate": "checking-an-ifc-model",
+    "ifc-read": "reading-and-changing-ifc-files",
+    "ifc-edit": "reading-and-changing-ifc-files",
+    "ifc-draw": "drawing-an-ifc-model-and-exporting-step",
+    "ifc-step": "drawing-an-ifc-model-and-exporting-step",
+    "ifc-mistakes": "mistakes-to-avoid-in-ifc-models",
 };
 
 const MAX_TOPIC_LENGTH = 128;
 
 const input = z.object({
-    topic: z.string().max(MAX_TOPIC_LENGTH).optional().describe("A section id or a short name such as integrate, browser, backend, server-side, pro, start, design, references, assembly; omit to list the sections"),
+    topic: z.string().max(MAX_TOPIC_LENGTH).optional().describe("A section id or a short name such as integrate, browser, backend, server-side, pro, start, geometry, part-order, geometry-mistakes, design, references, assembly, ifc, ifc-order, ifc-mistakes; omit to list the sections"),
 });
 
 function findSection(guides: readonly GuideSection[], topic: string): GuideSection | undefined {

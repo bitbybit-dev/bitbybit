@@ -26,6 +26,8 @@ const OCCT_BRepGraphReconstructDto: DtoConstraints = { shape: k.required(k.opaqu
 const OCCT_BSplineDto: DtoConstraints = { points: k.required(k.list(k.point3)), closed: k.boolean };
 const OCCT_BSplinesDto: DtoConstraints = { bSplines: k.required(k.list(k.opaque)), returnCompound: k.boolean };
 const OCCT_BuildAssemblyDocumentDto: DtoConstraints = { structure: k.required(k.opaque), existingDocument: k.opaque, sourceDocuments: k.list(k.opaque) };
+const OCCT_BuildRecipeDocumentDto: DtoConstraints = { recipe: k.required(k.opaque), name: k.string, groupBy: k.string, emptyWhenFailed: k.boolean, facetedMeshes: k.boolean, maxTriangles: k.between(k.number, { min: 0 }) };
+const OCCT_BuildRecipeDto: DtoConstraints = { recipe: k.required(k.opaque), adjustZtoY: k.boolean, emptyWhenFailed: k.boolean, facetedMeshes: k.boolean, maxTriangles: k.between(k.number, { min: 0 }) };
 const OCCT_Chamfer2dVertexDto: DtoConstraints = { shape: k.required(k.opaque), distance: k.between(k.number, { min: 0, exclusiveMin: true }), angle: k.number, indexes: k.list(k.number) };
 const OCCT_ChamferCornerByPointDto: DtoConstraints = { shape: k.required(k.opaque), points: k.list(k.point3), distance: k.number, angle: k.number, snapTolerance: k.number, mode: k.oneOf(["auto", "planarOnly"]) };
 const OCCT_ChamferDto: DtoConstraints = { shape: k.required(k.opaque), distance: k.between(k.number, { min: 0, exclusiveMin: true }), distanceList: k.list(k.number), indexes: k.list(k.number) };
@@ -590,6 +592,8 @@ export const occtDtoRegistry: DtoRegistry = {
     "operations.splitShapeWithShapes": { dto: Inputs.OCCT.SplitDto, constraints: OCCT_SplitDto },
     "operations.sweepEvolved": { dto: Inputs.OCCT.SweepEvolvedDto, constraints: OCCT_SweepEvolvedDto },
     "path.shapeFromPath": { dto: Inputs.OCCT.ShapeFromPathDto, constraints: OCCT_ShapeFromPathDto },
+    "recipes.build": { dto: Inputs.OCCT.BuildRecipeDto, constraints: OCCT_BuildRecipeDto },
+    "recipes.buildDocument": { dto: Inputs.OCCT.BuildRecipeDocumentDto, constraints: OCCT_BuildRecipeDocumentDto },
     "select.edges.along": { dto: Inputs.OCCT.SelectByDirectionDto, constraints: OCCT_SelectByDirectionDto },
     "select.edges.between": { dto: Inputs.OCCT.SelectBetweenDto, constraints: OCCT_SelectBetweenDto },
     "select.edges.byLength": { dto: Inputs.OCCT.SelectInRangeDto, constraints: OCCT_SelectInRangeDto },

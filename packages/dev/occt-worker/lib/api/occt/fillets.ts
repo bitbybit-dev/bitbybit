@@ -393,9 +393,9 @@ export class OCCTFillets {
     /**
      * Rounds the corners of a flat wire or face with arcs of a given radius.
      *
-     * Without `indexes` every corner is rounded with `radius`. With `indexes`, counted from 1 along
-     * the outline, only those corners are rounded, each with `radius` or the matching entry of
-     * `radiusList`, as long as `indexes`. Wires with free-form edges use `fillet3DWire`.
+     * Without `indexes` every corner is rounded with `radius`. With `indexes`, counted from 1, only
+     * those corners are rounded, each with `radius` or the matching entry of `radiusList`, as long
+     * as `indexes`. Straight corners stay; free-form wires use `fillet3DWire`.
      * @param inputs - The flat wire or face, the radius or radius list, and the optional 1-based corner indexes
      * @returns The rounded wire or face
      * @group 2d fillets

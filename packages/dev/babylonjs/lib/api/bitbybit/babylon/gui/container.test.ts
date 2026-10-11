@@ -59,6 +59,21 @@ describe("BabylonGuiContainer", () => {
             expect(container.children).toEqual([added]);
         });
 
+        it("should put the controls at the root of a full-screen UI, emptied first when asked", () => {
+            // Arrange
+            const screen = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("screen", true, headless.scene);
+            screen.addControl(new BABYLON.GUI.TextBlock("existing", "a"));
+            const title = new BABYLON.GUI.TextBlock("title", "b");
+
+            // Act
+            const result = service.addControls(new Inputs.BabylonGui.AddControlsToContainerDto(screen, [title], true));
+
+            // Assert
+            expect(result).toBe(screen);
+            expect(screen.rootContainer.children).toEqual([title]);
+            screen.dispose();
+        });
+
         it("should hand the container back", () => {
             // Act
             const result = service.addControls(new Inputs.BabylonGui.AddControlsToContainerDto(container, []));

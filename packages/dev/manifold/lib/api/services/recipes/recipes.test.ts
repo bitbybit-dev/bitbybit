@@ -66,6 +66,18 @@ describe("ManifoldRecipes.build", () => {
         expect(volumes(solids)).toEqual([24]);
     });
 
+    it("should build a recipe whose buffers arrived as lists of numbers, as JSON carries them", () => {
+        // Arrange
+        const recipe = recipeOf(BOX, [root(1)]);
+        const parsed = JSON.parse(JSON.stringify({ ...recipe, buffers: { f64: [...recipe.buffers.f64], i32: [...recipe.buffers.i32] } })) as Base.Recipe;
+
+        // Act
+        const solids = manifold.recipes.build({ recipe: parsed });
+
+        // Assert
+        expect(volumes(solids)).toEqual([24]);
+    });
+
     it("should build a mirrored root as a valid solid of the same volume, not turned inside out", () => {
         // Act
         const [solid] = manifold.recipes.build({ recipe: recipeOf(BOX, [root(1, [-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])]) });
@@ -358,7 +370,7 @@ describe("ManifoldRecipes.build", () => {
         expect(volumes(solids)).toEqual([expect.closeTo(24, 9), 0, expect.closeTo(24, 9)]);
     });
 
-    it("should leave every node built from a failed one unbuilt, so each root resting on it comes back empty", () => {
+    it("should leave every node built from a failed one unbuilt, so each root resting on it comes back empty, but cut a host by its openings that did build", () => {
         // Arrange
         const nodes: Base.RecipeNode[] = [
             ...BOX,
@@ -376,8 +388,29 @@ describe("ManifoldRecipes.build", () => {
         const solids = manifold.recipes.build({ recipe, emptyWhenFailed: true });
 
         // Assert
-        expect(volumes(solids)).toEqual([0, 0, 0, expect.closeTo(24, 9)]);
+        expect(volumes(solids)).toEqual([0, 0, expect.closeTo(24, 9), expect.closeTo(24, 9)]);
         expect(extrude).toHaveBeenCalledTimes(1);
+    });
+
+    it("should cut a host by the openings that built and leave one that failed uncut, when asked to go on", () => {
+        // Arrange
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 8], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: 2 },
+            { op: "polygon", points: [8, 8], holes: [] },
+            { op: "extrude", profile: 2, direction: [0, 0, 1], depth: 4 },
+            { op: "transform", of: 3, matrix: moved(0, 0, -1) },
+            { op: "triangles", positions: [16, 9], indices: [0, 3] },
+            { op: "voids", host: 1, openings: [5, 4] },
+            { op: "voids", host: 1, openings: [5] },
+        ];
+        const recipe = recipeOf(nodes, [root(6), root(7)], [...FOUR_BY_FOUR, 1, 1, 2, 1, 2, 2, 1, 2, 0, 0, 0, 1, 0, 0, 0, 1, 0], [0, 1, 2]);
+
+        // Act
+        const solids = manifold.recipes.build({ recipe, emptyWhenFailed: true });
+
+        // Assert
+        expect(volumes(solids)).toEqual([expect.closeTo(30, 9), expect.closeTo(32, 9)]);
     });
 
     it("should still build what does not rest on a node that failed before it", () => {

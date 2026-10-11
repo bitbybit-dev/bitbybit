@@ -813,12 +813,51 @@ export interface DesignReplicate {
 }
 
 /**
+ * An axis through `origin` along `direction`, in the coordinates of the document that names it.
+ */
+export interface DesignAxis {
+    origin: DesignPoint;
+    direction: DesignPoint;
+}
+
+/**
+ * Copies of a component turned about `axis`, spaced as a polar pattern feature spaces its copies:
+ * `count` occurrences through `angle` degrees (360 by default), a whole turn shared out evenly and
+ * a part of one with both ends included, the first turned `start` degrees (0 by default) from where
+ * the component is placed. The axis is in the assembly's own coordinates.
+ */
+export interface DesignPolarComponentPattern {
+    axis: DesignAxis;
+    count: DesignNumber;
+    angle?: DesignNumber;
+    start?: DesignNumber;
+}
+
+/**
+ * Copies of a component moved along `direction`: `count` occurrences, each `spacing` further on than
+ * the one before, the first where the component is placed.
+ */
+export interface DesignLinearComponentPattern {
+    direction: DesignPoint;
+    spacing: DesignNumber;
+    count: DesignNumber;
+}
+
+/**
+ * How a component is placed several times: copies turned about an axis (`polar`) or moved along a
+ * direction (`linear`), each counted in the bill of materials.
+ */
+export type DesignComponentPattern = { polar: DesignPolarComponentPattern } | { linear: DesignLinearComponentPattern };
+
+/**
  * One placed occurrence of a part or of another assembly: its `source`, and where it goes, `at` a
  * frame (its own origin, X and Z axes moved onto the frame's origin, direction and normal), by the
  * joint that moves it, or where its source has it when neither places it. `replicate` places it
  * instead once on every member of a connector set, each occurrence named `<id>.<member>` and
- * counted in the bill of materials. `suppressed` leaves it out, and `properties` describe this
- * occurrence, such as a position code.
+ * counted in the bill of materials. `pattern` places copies of it where it is placed, turned about
+ * an axis or moved along a direction, each occurrence named `<id>.<number>` from 1; a patterned
+ * component is not moved by a joint, joined to or published. `suppressed` leaves it out, and
+ * `properties` describe this occurrence, such as a position code.
  */
 export interface DesignComponent extends DesignExtensible {
     id: string;
@@ -826,6 +865,7 @@ export interface DesignComponent extends DesignExtensible {
     source: DesignComponentSource;
     at?: DesignFrame;
     replicate?: DesignReplicate;
+    pattern?: DesignComponentPattern;
     suppressed?: boolean | DesignNumber;
     properties?: DesignProperties;
 }

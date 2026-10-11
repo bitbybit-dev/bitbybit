@@ -2,10 +2,10 @@ import type * as Models from "../../api/models";
 import type { DtoRegistry } from "@bitbybit-dev/base";
 import { isRecord } from "@bitbybit-dev/base";
 import type { Known } from "./document-check";
-import { DOCUMENT_KEYS, checkBoolean, checkFrame, checkHeader, checkNumber, checkParameters, checkProperties, checkSwitch, documentIssues, knownFor, lengthUnitOf, oneOf, recorderOf } from "./document-check";
+import { DOCUMENT_KEYS, checkAxis, checkBoolean, checkFrame, checkHeader, checkNumber, checkParameters, checkPoint, checkProperties, checkSwitch, documentIssues, knownFor, lengthUnitOf, oneOf, recorderOf } from "./document-check";
 import { DesignProblem, pointer } from "./problems";
 import { checkIdList, checkKeys, checkObject, checkText } from "./structure";
-import { isExpressionObject, parameterTypeOf } from "./values";
+import { MAX_PATTERN_COUNT, isExpressionObject, parameterTypeOf } from "./values";
 import type { DesignLibrary } from "./library";
 import { sourceEntry, sourceOf } from "./library";
 import { connectorIdsOf } from "./connectors";
@@ -115,6 +115,9 @@ function checkTarget(to: unknown, moved: string, path: string, known: Known, lib
     if (other["replicate"] !== undefined) {
         throw new DesignProblem(pointer(path, "component"), `"${id}" is replicated, so it has no one place to be joined to`);
     }
+    if (other["pattern"] !== undefined) {
+        throw new DesignProblem(pointer(path, "component"), `"${id}" is patterned, so it has no one place to be joined to`);
+    }
     const targetConnector = checkText(target["connector"], pointer(path, "connector"), "a connector id");
     const theirs = connectorsOf(other, library);
     if (theirs !== undefined && !theirs.includes(targetConnector)) {
@@ -162,6 +165,9 @@ function checkJoint(value: unknown, path: string, known: Known, library: DesignL
     }
     if (component["replicate"] !== undefined) {
         throw new DesignProblem(pointer(path, "component"), `"${moved}" is placed on its set by replicate, so no joint can move it`);
+    }
+    if (component["pattern"] !== undefined) {
+        throw new DesignProblem(pointer(path, "component"), `"${moved}" is patterned, so no joint can move it: place it at a frame, or join the assembly it sits in`);
     }
     const earlier = movedBy.get(moved);
     if (earlier !== undefined) {
@@ -252,6 +258,9 @@ function checkPublished(connectors: unknown, library: DesignLibrary, byId: Reado
         if (component["replicate"] !== undefined) {
             throw new DesignProblem(pointer(path, "component"), `"${id}" is replicated, so it has no one connector to publish`);
         }
+        if (component["pattern"] !== undefined) {
+            throw new DesignProblem(pointer(path, "component"), `"${id}" is patterned, so it has no one connector to publish`);
+        }
         const name = checkText(connector["connector"], pointer(path, "connector"), "a connector id");
         const theirs = connectorsOf(component, library);
         if (theirs !== undefined && !theirs.includes(name)) {
@@ -280,6 +289,9 @@ function checkReplicate(component: Record<string, unknown>, path: string, known:
     if (other["replicate"] !== undefined) {
         throw new DesignProblem(pointer(path, "to", "component"), `"${id}" is replicated itself: replicate onto a component placed once`);
     }
+    if (other["pattern"] !== undefined) {
+        throw new DesignProblem(pointer(path, "to", "component"), `"${id}" is patterned: replicate onto a component placed once`);
+    }
     const name = checkText(target["connector"], pointer(path, "to", "connector"), "a connector id");
     const theirs = connectorsOf(other, library);
     if (theirs !== undefined && !theirs.some(theirId => theirId === name || theirId.startsWith(`${name}.`))) {
@@ -293,6 +305,41 @@ function checkReplicate(component: Record<string, unknown>, path: string, known:
             checkNumber(replicate[key], pointer(path, key), known);
         }
     }
+}
+
+function checkCount(value: unknown, path: string, known: Known): void {
+    checkNumber(value, path, known);
+    if (typeof value === "number" && (!Number.isInteger(value) || value < 1 || value > MAX_PATTERN_COUNT)) {
+        throw new DesignProblem(path, `a count is a whole number from 1 to ${MAX_PATTERN_COUNT}, not ${value}`);
+    }
+}
+
+function checkPattern(component: Record<string, unknown>, path: string, known: Known): void {
+    const pattern = checkObject(component["pattern"], ["polar", "linear"], path, false, "a pattern { polar } or { linear }");
+    const kinds = Object.keys(pattern);
+    if (kinds.length !== 1) {
+        throw new DesignProblem(path, "a pattern is either { polar } or { linear }");
+    }
+    if (component["replicate"] !== undefined) {
+        throw new DesignProblem(path, "a component is placed by replicate or by a pattern, not both");
+    }
+    if (pattern["polar"] !== undefined) {
+        const at = pointer(path, "polar");
+        const polar = checkObject(pattern["polar"], DOCUMENT_KEYS.polarComponentPattern, at, false, "a polar pattern { axis, count, angle?, start? }");
+        checkAxis(polar["axis"], pointer(at, "axis"), known);
+        checkCount(polar["count"], pointer(at, "count"), known);
+        for (const key of ["angle", "start"]) {
+            if (polar[key] !== undefined) {
+                checkNumber(polar[key], pointer(at, key), known);
+            }
+        }
+        return;
+    }
+    const at = pointer(path, "linear");
+    const linear = checkObject(pattern["linear"], DOCUMENT_KEYS.linearComponentPattern, at, false, "a linear pattern { direction, spacing, count }");
+    checkPoint(linear["direction"], pointer(at, "direction"), known);
+    checkNumber(linear["spacing"], pointer(at, "spacing"), known);
+    checkCount(linear["count"], pointer(at, "count"), known);
 }
 
 function checkJointLoops(moving: ReadonlyMap<string, MovingJoint>): void {
@@ -352,6 +399,11 @@ export function assemblyIssues(document: Record<string, unknown>, registry: DtoR
     components.forEach((component: unknown, index) => record(() => {
         if (isRecord(component) && component["replicate"] !== undefined) {
             checkReplicate(component, pointer("/components", index, "replicate"), known, library, byId);
+        }
+    }));
+    components.forEach((component: unknown, index) => record(() => {
+        if (isRecord(component) && component["pattern"] !== undefined) {
+            checkPattern(component, pointer("/components", index, "pattern"), known);
         }
     }));
     const moving = checkJoints(document["joints"], known, library, byId, record);

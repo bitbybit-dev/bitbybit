@@ -178,10 +178,10 @@ Any other host that speaks MCP over Streamable HTTP or stdio works the same way;
 | Tool | What it answers | Example arguments |
 |---|---|---|
 | `search_api` | members by keywords or a partial path: path, summary, tier, engines | `{ "query": "box with rounded edges" }` |
-| `describe` | the full contract of one member by dotted path; an unknown path comes back with the nearest existing ones | `{ "path": "occt.shapes.solid.createBox" }` |
+| `describe` | the full contract of one member by dotted path, naming the types it returns or takes; such a type by its name, field by field; an unknown path comes back with the nearest existing ones | `{ "path": "occt.shapes.solid.createBox" }`, `{ "path": "Inputs.IFC.SpaceInfoDto" }` |
 | `list_namespace` | the members one level below a namespace | `{ "path": "occt.fillets" }` |
 | `get_examples` | code examples for a member, a namespace or a topic | `{ "path": "occt.fillets.filletEdges" }` |
-| `get_guide` | sections of [Agentic CAD](../agentic-cad), the guide on where geometry should run, and of [Design documents](../design-documents), the guide to writing parametric models as JSON | `{ "topic": "integrate" }`, `{ "topic": "design" }` |
+| `get_guide` | sections of [Agentic CAD](../agentic-cad), the guide on where geometry should run, of [Geometry with the kernels](../cad-geometry), the guide to building, checking and exporting parts, of [Design documents](../design-documents), the guide to writing parametric models as JSON, and of [IFC building models](../ifc-models), the guide to writing BIM | `{ "topic": "integrate" }`, `{ "topic": "geometry" }`, `{ "topic": "design" }`, `{ "topic": "ifc" }` |
 | `search`, `fetch` | the same lookups in the shape ChatGPT's connectors require | `{ "query": "fillet" }`, `{ "id": "occt.fillets.filletEdges" }` |
 
 Every tool is read-only and every answer names the version it describes. The tiers: `oss` is in the npm packages under the MIT licence and runs anywhere, `platform-pro` is available inside the bitbybit.dev editors on a Silver or Gold plan, `cloud-pro` runs only on [CAD Cloud](https://bitbybit.dev/cad-cloud) with an API key. `describe` also says whether a member runs on CAD Cloud, so the agent knows what the [cloud server](./cad-cloud-mcp) could execute for you.

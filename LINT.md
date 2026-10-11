@@ -26,7 +26,7 @@ note.
 
    The DTOs are public API: the input classes in `lib/api/inputs` and the models in `lib/api/models`
    keep their class, constructor and property JSDoc, tags included (`@default`, `@optional`,
-   `@minimum`, `@maximum`, `@step`), because tools generate documentation and input forms from them.
+   `@minimum`, `@maximum`, `@step`), because tools generate documentation from them.
 
    That JSDoc is not commentary. Tooling reads it: the API reference, the published declarations, the
    worker classes generated from the kernel, and the tags (`@default`, `@optional`, `@group`,

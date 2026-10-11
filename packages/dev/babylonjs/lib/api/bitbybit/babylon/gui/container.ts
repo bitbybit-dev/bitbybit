@@ -25,12 +25,14 @@ export class BabylonGuiContainer {
      * bitbybit.babylon.gui.container.addControls({ container: panel, controls: [title, slider, button], clearControlsFirst: true });
      * ```
      */
-    addControls(inputs: Inputs.BabylonGui.AddControlsToContainerDto): BABYLON.GUI.Container {
-        const resolved = resolveDto(Inputs.BabylonGui.AddControlsToContainerDto, inputs) as Resolved.BabylonGui.AddControlsToContainerDto;
-        if(resolved.clearControlsFirst && resolved.container.clearControls){
-            resolved.container.clearControls();
+    addControls<C extends Inputs.BabylonGui.ControlsParent>(inputs: Inputs.BabylonGui.AddControlsToContainerDto<C>): C {
+        const resolved = resolveDto(Inputs.BabylonGui.AddControlsToContainerDto, inputs) as Resolved.BabylonGui.AddControlsToContainerDto<C>;
+        const target: Inputs.BabylonGui.ControlsParent = resolved.container;
+        const parent = "rootContainer" in target ? target.rootContainer : target;
+        if (resolved.clearControlsFirst) {
+            parent.clearControls();
         }
-        resolved.controls.forEach(control => resolved.container.addControl(control));
+        resolved.controls.forEach(control => parent.addControl(control));
         return resolved.container;
     }
 

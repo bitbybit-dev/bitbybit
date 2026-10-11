@@ -1,7 +1,8 @@
+import { runInNewContext } from "node:vm";
 import { describe, expect, it } from "vitest";
 import type { Base } from "../inputs/base-inputs";
 import { InputError } from "../kernel-calls/errors";
-import { assertRecipe, checkRecipe } from "./validate";
+import { assertRecipe, checkRecipe, toRecipe } from "./validate";
 
 const IDENTITY: Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 const BEYOND_COORDINATES = 2e10;
@@ -40,7 +41,7 @@ function chainOfTransforms(length: number): Base.Recipe {
 }
 
 function afterAFullIssueList(node: unknown): unknown {
-    return { ...wallRecipe(), nodes: [...Array.from({ length: 150 }, () => ({ op: "loft" })), node], roots: [] };
+    return { ...wallRecipe(), nodes: [...Array.from({ length: 150 }, () => ({ op: "fillet" })), node], roots: [] };
 }
 
 function countingReads(values: Float64Array): { buffer: Float64Array; reads: () => number } {
@@ -93,6 +94,33 @@ describe("checkRecipe", () => {
     it("should refuse buffers that are not typed arrays, without looking at the nodes", () => {
         // Act
         const issues = checkRecipe({ ...wallRecipe(), buffers: { f64: [0, 1], i32: new Int32Array() } });
+
+        // Assert
+        expect(issues).toEqual([{ path: "buffers", message: "must hold an f64 Float64Array and an i32 Int32Array" }]);
+    });
+
+    it("should accept typed arrays made in another realm, as a frame or a test environment makes them", () => {
+        // Arrange
+        const recipe = wallRecipe();
+        const f64 = runInNewContext("new Float64Array(20)") as Float64Array;
+        const i32 = runInNewContext("new Int32Array(6)") as Int32Array;
+        f64.set(recipe.buffers.f64);
+        i32.set(recipe.buffers.i32);
+
+        // Act
+        const issues = checkRecipe({ ...recipe, buffers: { f64, i32 } });
+
+        // Assert
+        expect(f64 instanceof Float64Array).toBe(false);
+        expect(issues).toEqual([]);
+    });
+
+    it("should refuse an object that only names itself a typed array", () => {
+        // Arrange
+        const named = { [Symbol.toStringTag]: "Float64Array", length: 0 };
+
+        // Act
+        const issues = checkRecipe({ ...wallRecipe(), buffers: { f64: named, i32: new Int32Array() } });
 
         // Assert
         expect(issues).toEqual([{ path: "buffers", message: "must hold an f64 Float64Array and an i32 Int32Array" }]);
@@ -412,6 +440,49 @@ describe("checkRecipe", () => {
         expect(perspective).toEqual([{ path: "nodes[6].matrix", message }]);
     });
 
+    it("should accept groups nested in earlier groups and results that belong to them", () => {
+        // Arrange
+        const groups: Base.RecipeGroup[] = [
+            { name: "Ground floor", tag: { globalId: "31q4tS44zFEhsULAcqoAYn" } },
+            { name: "Walls", parent: 0, tag: { type: "IfcWall" } },
+        ];
+
+        // Act
+        const issues = checkRecipe({ ...wallRecipe(), groups, roots: [{ node: 9, matrix: IDENTITY, tag: {}, group: 1 }, { node: 9, matrix: IDENTITY, tag: {} }] });
+
+        // Assert
+        expect(issues).toEqual([]);
+    });
+
+    it("should refuse groups that are not a list, a group without a name or a tag, and a parent that is not an earlier group", () => {
+        // Act
+        const notAList = checkRecipe({ ...wallRecipe(), groups: { name: "Ground floor" } });
+        const malformed = checkRecipe({ ...wallRecipe(), groups: [{ name: "Site", tag: {}, parent: 0 }, { tag: {} }, { name: "Walls" }, { name: "Slabs", tag: {}, parent: 3 }, { name: "Roof", tag: {}, parent: 1.5 }, "Doors"] });
+
+        // Assert
+        expect(notAList).toEqual([{ path: "groups", message: "must be left out or be a list of at most 10000000 groups" }]);
+        expect(malformed).toEqual([
+            { path: "groups[0].parent", message: "must be left out, since no group comes before the first one" },
+            { path: "groups[1].name", message: "must be text" },
+            { path: "groups[2].tag", message: "must be an object" },
+            { path: "groups[3].parent", message: "must be left out or be the index of an earlier group, from 0 to 2" },
+            { path: "groups[4].parent", message: "must be left out or be the index of an earlier group, from 0 to 3" },
+            { path: "groups[5]", message: "must be an object with a name and a tag" },
+        ]);
+    });
+
+    it("should refuse a result that names a group the recipe does not have", () => {
+        // Act
+        const beyond = checkRecipe({ ...wallRecipe(), groups: [{ name: "Ground floor", tag: {} }], roots: [{ node: 9, matrix: IDENTITY, tag: {}, group: 1 }] });
+        const ungrouped = checkRecipe({ ...wallRecipe(), roots: [{ node: 9, matrix: IDENTITY, tag: {}, group: 0 }] });
+        const negative = checkRecipe({ ...wallRecipe(), groups: [{ name: "Ground floor", tag: {} }], roots: [{ node: 9, matrix: IDENTITY, tag: {}, group: -1 }] });
+
+        // Assert
+        expect(beyond).toEqual([{ path: "roots[0].group", message: "must be left out or be the index of one of the recipe's groups, from 0 to 0" }]);
+        expect(ungrouped).toEqual([{ path: "roots[0].group", message: "must be left out, since the recipe has no groups" }]);
+        expect(negative).toEqual([{ path: "roots[0].group", message: "must be left out or be the index of one of the recipe's groups, from 0 to 0" }]);
+    });
+
     it("should refuse a root matrix that projects", () => {
         // Act
         const issues = checkRecipe({ ...wallRecipe(), roots: [{ node: 9, matrix: [1, 0, 0, 0, 0, 1, 0, 0.1, 0, 0, 1, 0, 0, 0, 0, 1], tag: {} }] });
@@ -447,11 +518,11 @@ describe("checkRecipe", () => {
     it("should refuse a node that is not an object and an operation recipes do not know", () => {
         // Act
         const missing = checkRecipe(withNode(9, "compound"));
-        const unknown = checkRecipe(withNode(9, { op: "loft", of: [7] }));
+        const unknown = checkRecipe(withNode(9, { op: "fillet", of: [7] }));
 
         // Assert
         expect(missing).toContainEqual({ path: "nodes[9]", message: "must be an object with an op" });
-        expect(unknown).toContainEqual({ path: "nodes[9].op", message: "'loft' is not an operation recipes know" });
+        expect(unknown).toContainEqual({ path: "nodes[9].op", message: "'fillet' is not an operation recipes know" });
     });
 
     it("should accept nodes nested as deep as the limit", () => {
@@ -540,7 +611,7 @@ describe("checkRecipe", () => {
 
     it("should stop listing after a hundred issues", () => {
         // Act
-        const issues = checkRecipe({ ...wallRecipe(), nodes: Array.from({ length: 150 }, () => ({ op: "loft" })), roots: [] });
+        const issues = checkRecipe({ ...wallRecipe(), nodes: Array.from({ length: 150 }, () => ({ op: "fillet" })), roots: [] });
 
         // Assert
         expect(issues).toHaveLength(100);
@@ -555,15 +626,75 @@ describe("assertRecipe", () => {
 
     it("should throw an input error naming the first three problems", () => {
         // Act
-        const attempt = (): void => assertRecipe({ ...wallRecipe(), millimetresPerUnit: -1, tolerance: 0, nodes: [{ op: "loft" }, { op: "loft" }], roots: [] });
+        const attempt = (): void => assertRecipe({ ...wallRecipe(), millimetresPerUnit: -1, tolerance: 0, nodes: [{ op: "fillet" }, { op: "fillet" }], roots: [] });
 
         // Assert
         expect(attempt).toThrow(InputError);
-        expect(attempt).toThrow("The recipe cannot be built: millimetresPerUnit must be a finite number above zero; tolerance must be a finite number above zero; nodes[0].op 'loft' is not an operation recipes know");
+        expect(attempt).toThrow("The recipe cannot be built: millimetresPerUnit must be a finite number above zero; tolerance must be a finite number above zero; nodes[0].op 'fillet' is not an operation recipes know");
     });
 
     it("should leave out the path when the problem is the whole value", () => {
         // Act & Assert
         expect(() => assertRecipe(null)).toThrow("The recipe cannot be built: a recipe must be an object");
+    });
+});
+
+describe("toRecipe", () => {
+    it("should turn buffers given as lists of numbers, as JSON carries them, into typed arrays and leave the value it was given as it was", () => {
+        // Arrange
+        const parsed = JSON.parse(JSON.stringify({ ...wallRecipe(), buffers: { f64: [...wallRecipe().buffers.f64], i32: [...wallRecipe().buffers.i32] } })) as unknown;
+
+        // Act
+        const recipe = toRecipe(parsed);
+
+        // Assert
+        expect(recipe.buffers.f64).toBeInstanceOf(Float64Array);
+        expect(recipe.buffers.i32).toBeInstanceOf(Int32Array);
+        expect([...recipe.buffers.f64]).toEqual([...wallRecipe().buffers.f64]);
+        expect([...recipe.buffers.i32]).toEqual([...wallRecipe().buffers.i32]);
+        expect(Array.isArray((parsed as Base.Recipe).buffers.f64)).toBe(true);
+        expect(checkRecipe(recipe)).toEqual([]);
+    });
+
+    it("should turn the indices alone into a typed array when only they arrive as a list", () => {
+        // Arrange
+        const listed = { ...wallRecipe(), buffers: { f64: wallRecipe().buffers.f64, i32: [...wallRecipe().buffers.i32] } };
+
+        // Act
+        const recipe = toRecipe(listed);
+
+        // Assert
+        expect(recipe.buffers.i32).toBeInstanceOf(Int32Array);
+        expect(recipe.buffers.f64).toBe(listed.buffers.f64);
+    });
+
+    it("should hand back a recipe with typed buffers as it is", () => {
+        // Arrange
+        const recipe = wallRecipe();
+
+        // Act
+        const read = toRecipe(recipe);
+
+        // Assert
+        expect(read).toBe(recipe);
+    });
+
+    it("should refuse indices a 32-bit integer cannot hold rather than wrap them, and keep the largest and smallest it can", () => {
+        // Arrange
+        const listed = { ...wallRecipe(), buffers: { f64: [...wallRecipe().buffers.f64], i32: [0, 1, 2 ** 31] } };
+        const edges = { ...wallRecipe(), buffers: { f64: wallRecipe().buffers.f64, i32: [...wallRecipe().buffers.i32, 2 ** 31 - 1, -(2 ** 31)] } };
+
+        // Act
+        const attempt = (): Base.Recipe => toRecipe(listed);
+        const kept = toRecipe(edges);
+
+        // Assert
+        expect(attempt).toThrow("The recipe cannot be built: buffers must hold an f64 Float64Array and an i32 Int32Array");
+        expect([...kept.buffers.i32].slice(-2)).toEqual([2 ** 31 - 1, -(2 ** 31)]);
+    });
+
+    it("should refuse what is not a recipe as assertRecipe does", () => {
+        // Act & Assert
+        expect(() => toRecipe(null)).toThrow("The recipe cannot be built: a recipe must be an object");
     });
 });

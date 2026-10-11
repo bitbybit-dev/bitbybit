@@ -16,6 +16,8 @@
     "babylon",
     "babylon.meshBuilder",
     "draw",
+    "ifc",
+    "ifc.model",
     "math",
     "occt",
     "occt.fillets",
@@ -423,6 +425,87 @@
         "threejs": "drawAnyAsync(inputs: Inputs.Draw.DrawAny<THREEJS.Group, E>): Promise<Inputs.Draw.Drawn<E, THREEJS.Group>>",
         "playcanvas": "drawAnyAsync(inputs: Inputs.Draw.DrawAny<pc.Entity, E>): Promise<Inputs.Draw.Drawn<E, Inputs.Draw.BitByBitEntity>>"
       }
+    },
+    {
+      "path": "ifc",
+      "kind": "namespace",
+      "name": "ifc",
+      "className": "IFCW",
+      "signature": null,
+      "async": false,
+      "params": [],
+      "returns": null,
+      "summary": "IFC building models as reached from a script: every method of the `ifc` worker, asynchronous, with models living in the worker and passed around as references, plus `geometry.toShapes`, `geometry.toDocument` and `geometry.toStep`, which build a model's elements with OpenCascade.",
+      "doc": "IFC building models as reached from a script: every method of the `ifc` worker, asynchronous,\nwith models living in the worker and passed around as references, plus `geometry.toShapes`,\n`geometry.toDocument` and `geometry.toStep`, which build a model's elements with OpenCascade.\nExperimental, as the IFC library is.",
+      "docUrl": "https://docs.bitbybit.dev/classes/Bit.IFCW",
+      "engines": [
+        "babylonjs",
+        "threejs",
+        "playcanvas"
+      ],
+      "tier": "oss",
+      "onApi3d": false,
+      "weight": null,
+      "examples": []
+    },
+    {
+      "path": "ifc.model",
+      "kind": "namespace",
+      "name": "model",
+      "className": "IFCModels",
+      "signature": null,
+      "async": false,
+      "params": [],
+      "returns": null,
+      "summary": "Creates, reads, writes and inspects whole IFC models.",
+      "doc": "Creates, reads, writes and inspects whole IFC models. A model is a value: every method that\nchanges one returns a new model and leaves the one it was given as it was, so a change can be\nundone by keeping the earlier model.\n\nObjects are found by their GlobalId or by the id given when they were added, such as `north-wall`,\nwhich the model turns into a GlobalId of its own. Storeys are in `spatial`, building elements in\n`walls`, `slabs`, `doors` and the rest.",
+      "docUrl": "https://docs.bitbybit.dev/classes/Bit.IFCModels",
+      "engines": [
+        "babylonjs",
+        "threejs",
+        "playcanvas"
+      ],
+      "tier": "oss",
+      "onApi3d": false,
+      "weight": null,
+      "examples": []
+    },
+    {
+      "path": "ifc.model.summary",
+      "kind": "method",
+      "name": "summary",
+      "className": "IFCModels",
+      "signature": "summary(inputs: Inputs.IFC.ModelDto<Inputs.IFC.IfcModelPointer>): Promise<Inputs.IFC.ModelSummaryDto>",
+      "async": true,
+      "params": [
+        {
+          "name": "inputs",
+          "type": "Inputs.IFC.ModelDto<Inputs.IFC.IfcModelPointer>",
+          "optional": false,
+          "fields": [
+            {
+              "name": "model",
+              "type": "Inputs.IFC.IfcModelPointer",
+              "optional": false,
+              "doc": "The model to read, as `model.create` or `model.read` returned it."
+            }
+          ]
+        }
+      ],
+      "returns": "Inputs.IFC.ModelSummaryDto",
+      "summary": "Describes what a model holds: its schema, its project, its unit, its storeys and how many elements of each type.",
+      "doc": "Describes what a model holds: its schema, its project, its unit, its storeys and how many\nelements of each type.",
+      "docUrl": "https://docs.bitbybit.dev/classes/Bit.IFCModels#summary",
+      "engines": [
+        "babylonjs",
+        "threejs",
+        "playcanvas"
+      ],
+      "tier": "oss",
+      "onApi3d": false,
+      "weight": null,
+      "examples": [],
+      "group": "query"
     },
     {
       "path": "math",
@@ -1847,6 +1930,184 @@
         {
           "key": "cutout",
           "value": "cutout"
+        }
+      ]
+    }
+  },
+  "types": {
+    "Inputs.IFC.ModelSummaryDto": {
+      "name": "ModelSummaryDto",
+      "summary": "What a model holds, as `model.summary` describes it.",
+      "doc": "What a model holds, as `model.summary` describes it.",
+      "fields": [
+        {
+          "name": "schema",
+          "type": "string",
+          "optional": false,
+          "doc": "The schema the model's file names, such as `IFC4`.",
+          "default": ""
+        },
+        {
+          "name": "editable",
+          "type": "boolean",
+          "optional": false,
+          "doc": "Whether the model can be changed: false for an `IFC2X3` file, which is read through `IFC4`\nto be shown and queried.",
+          "default": true
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "optional": false,
+          "doc": "What the project is called.",
+          "default": ""
+        },
+        {
+          "name": "millimetresPerUnit",
+          "type": "number",
+          "optional": false,
+          "doc": "How many millimetres one length unit of the model is.",
+          "default": 1
+        },
+        {
+          "name": "entities",
+          "type": "number",
+          "optional": false,
+          "doc": "How many entities the model holds, geometry and relationships included.",
+          "default": 0
+        },
+        {
+          "name": "storeys",
+          "type": "StoreyInfoDto[]",
+          "optional": false,
+          "doc": "The storeys, lowest first.",
+          "default": []
+        },
+        {
+          "name": "elementCounts",
+          "type": "Record<string, number>",
+          "optional": false,
+          "doc": "How many elements of each IFC type the model holds, such as `{ IfcWall: 8 }`.",
+          "default": {}
+        }
+      ]
+    },
+    "Inputs.IFC.StoreyInfoDto": {
+      "name": "StoreyInfoDto",
+      "summary": "A storey as `spatial.storeys` and `model.summary` list it: its GlobalId, name and elevation.",
+      "doc": "A storey as `spatial.storeys` and `model.summary` list it: its GlobalId, name and elevation.",
+      "fields": [
+        {
+          "name": "globalId",
+          "type": "string",
+          "optional": false,
+          "doc": "The GlobalId that identifies the storey.",
+          "default": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "optional": false,
+          "doc": "What the storey is called.",
+          "default": ""
+        },
+        {
+          "name": "elevation",
+          "type": "number",
+          "optional": false,
+          "doc": "How high its floor is above the building's origin, in the model's length unit.",
+          "default": 0
+        }
+      ]
+    },
+    "Inputs.OCCT.DecomposedManifoldMeshDto": {
+      "name": "DecomposedManifoldMeshDto",
+      "summary": "An indexed triangle mesh as `shapeToManifoldMesh` returns it, in the form `manifold.shapes.manifoldFromMesh` takes: the vertex positions and the triangles that index them.",
+      "doc": "An indexed triangle mesh as `shapeToManifoldMesh` returns it, in the form\n`manifold.shapes.manifoldFromMesh` takes: the vertex positions and the triangles that index them.",
+      "fields": [
+        {
+          "name": "numProp",
+          "type": "number",
+          "optional": false,
+          "doc": "How many numbers each vertex carries in `vertProperties`: 3, its position."
+        },
+        {
+          "name": "vertProperties",
+          "type": "Float32Array",
+          "optional": false,
+          "doc": "The x, y and z of every vertex, one vertex after another."
+        },
+        {
+          "name": "triVerts",
+          "type": "Uint32Array",
+          "optional": false,
+          "doc": "The triangles as vertex indexes, three per triangle, wound so that they face out of the shape."
+        }
+      ]
+    },
+    "Inputs.Manifold.DecomposedManifoldMeshDto": {
+      "name": "DecomposedManifoldMeshDto",
+      "summary": "A Manifold solid taken apart into plain arrays - vertex properties, triangle indices and the run structure that groups them.",
+      "doc": "A Manifold solid taken apart into plain arrays - vertex properties, triangle indices and the\nrun structure that groups them. The form the kernel hands back when geometry has to cross out of\nWebAssembly for rendering or export.",
+      "fields": [
+        {
+          "name": "numProp",
+          "type": "number",
+          "optional": false,
+          "doc": "How many numbers each vertex carries in `vertProperties`; the position takes the first three."
+        },
+        {
+          "name": "vertProperties",
+          "type": "Float32Array",
+          "optional": false,
+          "doc": "All vertex properties in one flat list, `numProp` numbers per vertex, position first."
+        },
+        {
+          "name": "triVerts",
+          "type": "Uint32Array",
+          "optional": false,
+          "doc": "The triangles as a flat list of vertex indexes, three per triangle."
+        },
+        {
+          "name": "mergeFromVert",
+          "type": "Uint32Array",
+          "optional": true,
+          "doc": "For each merged vertex, the index of the property vertex that is merged away; pairs with\n`mergeToVert`."
+        },
+        {
+          "name": "mergeToVert",
+          "type": "Uint32Array",
+          "optional": true,
+          "doc": "For each merged vertex, the index of the property vertex it is merged into; pairs with\n`mergeFromVert`."
+        },
+        {
+          "name": "runIndex",
+          "type": "Uint32Array",
+          "optional": true,
+          "doc": "Where each triangle run starts in `triVerts`, one entry per run plus a final end marker."
+        },
+        {
+          "name": "runOriginalID",
+          "type": "Uint32Array",
+          "optional": true,
+          "doc": "The id of the original shape each run of triangles came from, one per run."
+        },
+        {
+          "name": "runTransform",
+          "type": "Float32Array",
+          "optional": true,
+          "doc": "The placement of each run as 12 numbers of a column-major 3x4 matrix, one per run."
+        },
+        {
+          "name": "faceID",
+          "type": "Uint32Array",
+          "optional": true,
+          "doc": "For each triangle, the id of the flat face it belongs to, so coplanar triangles can be\ngrouped."
+        },
+        {
+          "name": "halfedgeTangent",
+          "type": "Float32Array",
+          "optional": true,
+          "doc": "The smoothing tangent of each half-edge as four numbers, direction and weight, when the solid\nwas smoothed."
         }
       ]
     }

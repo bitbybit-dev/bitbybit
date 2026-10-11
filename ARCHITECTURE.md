@@ -111,14 +111,14 @@ flowchart LR
     kernel["a kernel service<br/>(occt, jscad, manifold)"] -->|gen:worker-api| workerapi["that package's worker lib/api"]
     hand["lib/api-hand fragments<br/>marker lines place each member"] --> workerapi
     frag["lib/api/inputs fragments"] -->|gen:inputs| ns["the assembled inputs namespace"]
-    openapi["the CAD API's OpenAPI<br/>+ operation catalog"] -->|API-side generators| sdk["cad-cloud-sdk generated types"]
+    openapi["the CAD API's OpenAPI<br/>+ operation catalog"] -->|generated from it| sdk["cad-cloud-sdk generated types"]
 ```
 
 | Generated | By | Change it here instead |
 |---|---|---|
 | each worker package's `lib/api/**` | `npm run gen:worker-api` | the kernel service, or the `lib/api-hand/**` fragment |
 | the assembled inputs namespaces | `npm run gen:inputs` | the fragments under `lib/api/inputs/` |
-| `cad-cloud-sdk` generated types and request schemas | the API's own generators, writing across the repository boundary | the API's OpenAPI document or operation catalog |
+| `cad-cloud-sdk` generated types and request schemas | generated from the CAD API's OpenAPI document | the API's OpenAPI document or operation catalog |
 
 `npm run check:worker-api` compares the worker API byte for byte against generator output, so a hand
 edit there fails before it can confuse anyone. The inputs fragments and the worker fragments both use
