@@ -1,0 +1,10 @@
+{
+    "label": "TypeScript",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "Getting Started With the TypeScript Editor",
+        "description": "The TypeScript editor gives you the whole Bitbybit API in code, with the suggestions, hovers and error marks you would get in VS Code. If you already write code, it is the fastest and least constrained way to use the platform: loops, functions, classes and your own abstractions all work as they do anywhere. These pages tour the editor, offer three showcase scripts, write two scripts step by step, and explain the API in code, files and imports, IntelliSense and errors, with the keys worth knowing.",
+        "slug": "/getting-started/typescript"
+    }
+}

@@ -1,81 +1,42 @@
 ---
-sidebar_position: 6
-title: Understanding and Handling Errors
+sidebar_position: 8
+title: Understanding and handling errors
 sidebar_label: Dealing with Errors
-description: Learn why errors happen in Bitbybit, how they are reported in different editors (Rete, Blockly, TypeScript), and how to approach fixing them.
+description: Where Rete, Blockly and TypeScript scripts on bitbybit.dev tell you what went wrong - the console, the node or block marked in red, the underlined code - and how to find and fix the cause.
+topic: platform.basics.errors
+type: how-to
+verified: 2026-10-09
 tags: [getting-started, typescript, blockly, rete]
 ---
 
-# Understanding and Handling Errors
+# Understanding and handling errors
 
-## Why Do Errors Happen?
+Mistakes are part of programming, and a computer never overlooks one: it stops, or it does something you did not mean. The editors on bitbybit.dev tell you what went wrong in the same few places.
 
-We're all human, and making mistakes is a natural part of learning and creating – even for professional software developers! Computers, on the other hand, are very precise. They won't overlook mistakes and will usually report them through an error message or by behaving unexpectedly.
+## The console says what failed
 
-In this section, we'll explore how errors are reported in Bitbybit editors and how you can approach fixing them.
+Every error a script meets at run time goes to the <Ui>Console</Ui> under the editor, in red, with a count beside the console's title. An error from the geometry kernels names the operation that failed and the values it was given, which is usually enough to find the cause. The Rete and Blockly examples below both ask for a box of width 0, and the kernel answers that every size must be more than 1e-7.
 
-## How Do I Know an Error Occurred?
+## Rete: the node turns red
 
-Most of the time, errors will be brought to your attention through a **modal** (a pop-up window). This modal will display a message describing the problem the computer encountered. You'll typically need to close this modal before you can continue working on a fix.
+{/* shot: platform.basics.errors/rete */}
 
-Different editors in Bitbybit handle error reporting in slightly different ways:
+Rete runs as you change the graph, so an error shows as soon as you make it: the node that failed turns red, and the console says why. Change the input that caused it, and the node runs again at once; when it succeeds, it takes its normal colour back.
 
-*   **Blockly and Rete Editors:** These visual editors often highlight the specific component(s) causing the error, usually by turning them reddish.
-*   **Monaco Editor (TypeScript):**
-    *   **As you type:** The editor provides real-time feedback, underlining potential mistakes in red. You can hover over the underlined code to see the error message.
-    *   **When you run code:** If an error occurs during execution, you might also see a pop-up modal with error details.
+## Blockly: after you run it
 
-## Errors in the Rete Editor
+{/* shot: platform.basics.errors/blockly */}
 
-The Rete editor is highly interactive, so you often see errors very quickly. If you change an input on a component and it immediately turns red, you know there's a problem.
+Blockly shows errors after you press <Ui>Run The Code</Ui>. The block that failed is marked, and the console lists every error of the run, often several: the box that could not be made, then the draw block that had nothing to draw.
 
-Here's an example of an error in the Rete editor:
+## TypeScript: before you run it
 
-![A Rete editor component highlighted in red, indicating an error.](https://bitbybit.dev/files/site/start/general/running-code/rete-error-component.jpeg "Example of a component with an error in Rete editor")
-*Example of a component with an error in Rete editor*
+{/* shot: platform.basics.errors/typescript */}
 
-In this specific case, the "chirpy chalet" component has its `width` set to `0`. The underlying algorithm can't compute geometry with a zero width.
-To see the detailed error message, click the button marked with an exclamation mark (`!`) on the component. This will open a modal like the one below:
+TypeScript checks your code as you type. A mistake it can see, such as a name that does not exist or text where a number belongs, is underlined in red; point at it to read what is wrong. In the picture, a misspelled `box` is caught before anything runs. Fix those first: they are the cheapest errors to find.
 
-![An error modal in Rete, showing details about why a component failed.](https://bitbybit.dev/files/site/start/general/running-code/rete-error.jpeg "Example of an error modal in Rete editor")
-*Example of an error modal containing information about the error that happened in Rete editor*
+Code with underlines still runs, and what it gets wrong at run time goes to the console like any other error.
 
-This error message clearly states that the interior width cannot be 0. To fix this, you would change the width input on the component to a valid, non-zero value. The Rete component will then re-trigger its execution immediately. If the fix is correct, the component will return to its normal color.
+## When nothing tells you
 
-## Errors in the Blockly Editor
-
-The Blockly editor also highlights components that cause errors. Here's an example of an error modal you might see in Blockly:
-
-![An error modal in Blockly, listing errors that occurred after running the script.](https://bitbybit.dev/files/site/start/general/running-code/blockly-error-modal.jpeg "Example of an error modal in Blockly editor")
-*Example of an error modal containing information about the error that happened in Blockly editor*
-
-A key difference between Rete and Blockly regarding errors is:
-*   **Rete:** Shows errors almost immediately as they happen (after the initial script run).
-*   **Blockly:** Shows errors *only after* you click the **"Run" button**.
-
-If there are multiple errors in your Blockly script, it will try to collect them and display them in a list. The problematic blocks on the canvas will also turn red and may show specific error messages if you click on the triangle icons with an exclamation mark (`!`).
-
-## Errors in the Monaco Editor (TypeScript)
-
-TypeScript is a powerful programming language that's great for both beginners and professionals. One of its key features is **strong typing**. This means TypeScript helps prevent many common mistakes *before you even run your code*, such as:
-*   Trying to use variables that don't exist.
-*   Accidentally changing a variable's type (e.g., from text to a number).
-*   Countless other potential pitfalls.
-
-This real-time error reporting can sometimes feel a bit strict, but it ultimately saves a lot of time and effort by catching bugs early. TypeScript will underline problematic code with a red squiggle. Hover your mouse over the underlined part to see the error message.
-
-Here's what an error might look like in the Monaco editor:
-
-![The Monaco editor showing TypeScript code with a red underline, indicating an error, and a tooltip with the error message.](https://bitbybit.dev/files/site/start/general/running-code/typescript-error.jpeg "Example of an error in Monaco editor")
-*Example of an error in Monaco editor*
-
-### When All Else Fails: Check the Browser Console
-
-If you suspect an error has occurred but don't see an obvious message in the editor, it's always a good idea to check your web browser's **developer console**.
-
-*   **How to open:** In most browsers like Chrome, you can press `F12` to open the developer tools.
-*   **What to look for:** The console tab might contain useful error messages or warnings that weren't displayed directly by the Bitbybit editor.
-
-The developer console offers many other powerful tools, like performance profiling, but for now, just knowing it can show hidden error messages is helpful. For more details on using developer tools, refer to the official documentation for your browser (e.g., [Chrome DevTools](https://developers.google.com/web/tools/chrome-devtools)).
-
-Learning to read and understand error messages is a crucial skill in programming. Don't be discouraged by them – they are your guides to making your code work!
+If a script does not do what you expect and no error appears, check its result step by step: draw what a step makes, or print a value with `console.log` in TypeScript. As a last resort, the browser's own developer tools (<kbd>F12</kbd> in most browsers) show messages from the page that the editor's console does not.

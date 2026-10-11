@@ -1,10 +1,10 @@
 {
     "label": "Projects",
-    "position": 1,
+    "position": 2,
     "link": {
         "type": "generated-index",
         "title": "Managing Cloud Projects",
-        "description": "Projects are how work is organised in the Bitbybit cloud - a container holding related scripts, the assets they use, and the settings they share. Getting the structure right early matters, because scripts inside a project can reach each other's assets and are published and shared together. These pages cover creating a project, understanding what belongs in one, adding cover images so your work is recognisable in a gallery, and publishing a project so other people can open, run and learn from it.",
+        "description": "Projects are how work is kept on bitbybit.dev: each holds scripts, in any of the editors, and the files they load. A project lives in the cloud, where it opens on any device and can be shared, or in this browser, where nothing leaves the device. These pages cover what a project is and who can open it, creating one, giving it a cover image, and publishing it to everyone or to a plan's community.",
         "slug": "/getting-started/basics/projects"
     }
 }

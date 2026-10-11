@@ -1,0 +1,125 @@
+---
+sidebar_position: 6
+slug: /getting-started/typescript/tutorials/drone/landing-gear
+title: "Build a drone: landing gear"
+sidebar_label: 6. Landing gear
+description: The sixth chapter of the TypeScript drone - a landing leg swept along a bent path, a revolved damper with a helical spring, a lofted rubber foot and the leg's bolts, each made once and repeated for every leg.
+topic: typescript.tutorials.drone.landing-gear
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, typescript, occt]
+---
+
+# Build a drone: landing gear
+
+Each leg is made once, along the x axis, in `parts/landing-gear.ts`, and `around` repeats it as many times as `sizes.legs` says.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. A leg is a carbon tube bent twice on its way down: a polyline whose corners are filleted, with a circle swept along it, and a flange and a boss that pass through the leg opening. `around` repeats it once per leg.
+
+   - **Make `parts/landing-gear.ts`:**
+
+   ```typescript
+   export async function leg() {
+       const path = await bitbybit.occt.shapes.wire.createPolylineWire({ points: [[52, 0, 0], [58, -18, 0], [78, -34, 0], [78, -48, 0]] });
+       const bent = await bitbybit.occt.fillets.fillet3DWire({ shape: path, radiusList: [12, 6], indexes: [0, 1], direction: [0, 0, 1] });
+       const tube = await bitbybit.occt.operations.pipeWireCylindrical({ shape: bent, radius: 4, makeSolid: true, trihedronEnum: Bit.Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal, forceApproxC1: false });
+       const flange = await bitbybit.occt.shapes.solid.createBox({ width: 20, length: 12, height: 3, center: [52, -1.5, 0] });
+       const boss = await bitbybit.occt.shapes.solid.createCylinder({ radius: 5.5, height: 6.4, center: [52, -3, 0], direction: [0, 1, 0] });
+       return bitbybit.occt.booleans.union({ shapes: [tube, flange, boss], keepEdges: false });
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { leg } from "./parts/landing-gear";
+   ```
+
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   await draw(looks.carbon, await around(await leg(), sizes.legs));
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: typescript.tutorials.drone/legs */}
+
+2. At the end of each leg a damper: an aluminium body revolved from a profile of twelve points, and a steel spring, a pipe swept along a helix.
+
+   - **Add at the end of `parts/landing-gear.ts`:**
+
+   ```typescript
+   export async function damper() {
+       const profile: Bit.Inputs.Base.Point3[] = [
+           [0, 0, 0], [6.5, 0, 0], [6.5, -4, 0], [5.5, -4.5, 0], [5.5, -14, 0], [6.2, -14, 0],
+           [6.2, -16.5, 0], [4, -16.5, 0], [4, -18, 0], [2.2, -18, 0], [2.2, -30, 0], [0, -30, 0],
+       ];
+       const outline = await bitbybit.occt.shapes.wire.createPolygonWire({ points: profile });
+       const face = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: outline, planar: true });
+       const body = await bitbybit.occt.operations.revolve({ shape: face, angle: 360, direction: [0, 1, 0], copy: false });
+       return bitbybit.occt.transforms.translate({ shape: body, translation: [78, -46, 0] });
+   }
+
+   export async function spring() {
+       const helix = await bitbybit.occt.shapes.wire.createHelixWire({ radius: 4.2, pitch: 2.8, height: 12.5, center: [78, -75.8, 0], direction: [0, 1, 0], clockwise: false, tolerance: 0.0001 });
+       return bitbybit.occt.operations.pipeWireCylindrical({ shape: helix, radius: 0.9, makeSolid: true, trihedronEnum: Bit.Inputs.OCCT.geomFillTrihedronEnum.isCorrectedFrenet, forceApproxC1: false });
+   }
+   ```
+
+   - **In `main.ts`, change** `import { leg } from "./parts/landing-gear";` **to** `import { damper, leg, spring } from "./parts/landing-gear";`.
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   await draw(looks.aluminium, await around(await damper(), sizes.legs));
+   await draw(looks.steel, await around(await spring(), sizes.legs));
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: typescript.tutorials.drone/dampers */}
+
+3. A rubber foot is lofted through five circles, and two M3 bolts fix each leg's flange to the plate.
+
+   - **Import at the top of `parts/landing-gear.ts`:**
+
+   ```typescript
+   import { m3Bolt } from "./bolt";
+   ```
+
+   - **Add at the end of `parts/landing-gear.ts`:**
+
+   ```typescript
+   export async function foot() {
+       const rings: Bit.Inputs.OCCT.TopoDSShapePointer[] = [];
+       for (const [y, radius] of [[0, 3.2], [-2, 7], [-5, 9.5], [-8, 9], [-10, 7]]) {
+           rings.push(await bitbybit.occt.shapes.wire.createCircleWire({ radius, center: [78, -76 + y, 0], direction: [0, 1, 0] }));
+       }
+       return bitbybit.occt.operations.loft({ shapes: rings, makeSolid: true });
+   }
+
+   export async function legBolts() {
+       const bolt = await m3Bolt(8);
+       const inner = await bitbybit.occt.transforms.translate({ shape: bolt, translation: [44.5, -3, 0] });
+       const outer = await bitbybit.occt.transforms.translate({ shape: bolt, translation: [59.5, -3, 0] });
+       return bitbybit.occt.shapes.compound.makeCompound({ shapes: [inner, outer] });
+   }
+   ```
+
+   - **In `main.ts`, change** `import { damper, leg, spring } from "./parts/landing-gear";` **to** `import { damper, foot, leg, legBolts, spring } from "./parts/landing-gear";`.
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   await draw(looks.rubber, await around(await foot(), sizes.legs));
+   await draw(looks.steel, await around(await legBolts(), sizes.legs));
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: typescript.tutorials.drone/feet */}
+
+{/* steps:end */}
+
+Next: [payload and sizes](./finish.mdx).

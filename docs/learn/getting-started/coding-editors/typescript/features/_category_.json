@@ -1,0 +1,10 @@
+{
+    "label": "Working in TypeScript",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "Working in TypeScript",
+        "description": "How the bitbybit API looks in code, how to split a script into files and import between them, and how IntelliSense, hovers and error marks help as you type.",
+        "slug": "/getting-started/typescript/working-in-typescript"
+    }
+}

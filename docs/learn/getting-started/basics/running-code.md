@@ -1,69 +1,43 @@
 ---
-sidebar_position: 4
-title: Running Your Code in Bitbybit
+sidebar_position: 5
+title: Running your code
 sidebar_label: Running Code
-description: Learn when and how to run your code in Bitbybit using TypeScript, Blockly, or Rete editors, and what to expect.
+description: When a Rete, Blockly or TypeScript script runs on bitbybit.dev, where its 3D result and its console appear, how the split view and Swap Canvas work, and how to tell the kernels are still working.
+topic: platform.basics.running-code
+type: how-to
+verified: 2026-10-09
 tags: [getting-started, typescript, blockly, rete]
 ---
 
-# Running Your Code
+# Running your code
 
-## When and Why Do You Need to Run Code?
+Whether you type TypeScript, snap Blockly blocks or connect Rete nodes, you are writing a program, and a program does nothing until it runs.
 
-Let's get straight to it: whether you're typing TypeScript in our Monaco editor, or connecting visual blocks in Blockly or Rete, you are **programming**. Programming means you're creating instructions (code) that a computer needs to execute and interpret.
+## Run the code
 
-For your program to work, the code must be correct. If it's not, you'll likely see an error message during execution, or the results might be incorrect or simply not appear at all.
+{/* shot: platform.basics.running-code/editor */}
 
-To see the outcome of your programming efforts, you'll need to click the magic **"Run" button**. This action tells the computer to execute your program.
+<Ui>Run The Code</Ui>, the play button at the lower left of the editor, runs the script. On a small screen the same buttons sit in a bar along the bottom.
 
-*   **For Blockly and TypeScript (Monaco editor):** Clicking "Run" is a mandatory step. You must click this button *every time* you want to see an update or the result of your changes.
-*   **For the Rete editor:** Rete behaves a bit differently. It's designed to react to any change you make on the canvas and *automatically* re-runs the script for you.
-    *   **However, the very first time you open a script in Rete, it will *not* execute automatically.** This is a safety measure. Imagine opening a complex script that takes a long time to compute; you wouldn't want to be stuck waiting every time you just wanted to inspect it. Running the script initially should be your choice.
-    *   So, in Rete, you can also click the "Run" button. This click primarily has an effect the first time you load the script. After that initial run, Rete will typically update automatically as you interact with the visual blocks.
+- **TypeScript and Blockly** run only when you press it, so press it after every change you want to see.
+- **Rete** runs again by itself whenever you change a node or a connection. It does not run when a script opens, so that a heavy script never keeps you waiting just to look at it: press <Ui>Run The Code</Ui> once to see its result, and from then on it follows your changes.
 
-## Where is the "Run" Button?
+There is no message when a script succeeds. Look at the result, and at the console.
 
-The "Run" button is located in the bottom menu of the editor. Depending on your screen size and layout, this menu might appear horizontally at the bottom or vertically on the left side of your screen.
+## Where the result appears
 
-It looks like this:
+On a computer the editor and the 3D view sit side by side, and the line between them can be dragged to give either one more room.
 
-![The "Run" button used to execute scripts in Bitbybit editors.](https://bitbybit.dev/files/site/start/general/running-code/run-button.jpeg "Button To Run The Code")
-*Button To Run The Code*
+{/* shot: platform.basics.running-code/swap */}
 
-## What Happens if My Program Fails to Run?
+To give each the whole window instead, turn off **Split-screen mode** in <Ui>More</Ui> > <Ui>Settings</Ui>. <Ui>Swap Canvas</Ui> then switches between the editor and the 3D view. On a phone the editor always works this way.
 
-This depends on a few things:
+## The console
 
-*   **Infinite Loops or Impossible Tasks:** Sometimes, your code might ask the computer to do something impossible or get stuck in an infinite loop (yes, even in visual programming!). If this happens, the program may never finish computing.
-    *   Your browser tab might become unresponsive ("hang"), and you may even need to close it.
-    *   **Recommendation:** Save your work often! If you're a subscribed user on our platform, your work is automatically saved to our database every 15 seconds. If not, manual saves are crucial to avoid losing progress.
+The <Ui>Console</Ui> under the editor shows what a script prints, such as `console.log` in TypeScript, and every error, each with what failed and the values it was given. A count beside its title says how many errors the last run had. The filters choose which lines show, and <Ui>Clear the console</Ui> empties it. [Errors](./errors.md) explains how to read them.
 
-*   **Errors During Execution:** Many times, the program will detect an issue and stop, often displaying an error message.
+## While it works
 
-:::tip Learn More About Errors
-Check out our section on [understanding errors in scripts](/learn/getting-started/basics/errors) to learn more about what can go wrong and how to interpret error messages.
-:::
+The geometry kernels run beside the page, so the editor stays usable while they work. A spinner in place of <Ui>Run The Code</Ui> (its tip says <Ui>Worker busy</Ui>) shows they are busy: the kernels starting when the editor opens, or a script that takes a while to compute. Some CAD operations, such as booleans or fillets on large solids, take seconds even when the script is right.
 
-## How Do I Know if My Code Works Correctly?
-
-Even if your code runs without errors, the result might not be what you expected. This is a common part of programming!
-
-**Always verify the output:**
-*   **Visual Feedback:** The best way is often to draw something on the screen – a 3D object, some text, etc.
-*   **Console Output:** You can also print text messages to the developer console to check values or program flow.
-
-If you're using the Monaco (TypeScript), Blockly, or Rete editors and your script is supposed to create 3D objects, you can check the result by clicking the **"Swap Canvas" button**. This will switch you to the 3D environment where you can see and interact with what your code has produced.
-
-Here's the "Swap Canvas" button:
-
-![The "Swap Canvas" button used to switch between the coding environment and the 3D view.](https://bitbybit.dev/files/site/start/general/running-code/swap-canvas-button.jpeg "Button to swap the canvas and switch between 3D and coding environments")
-*Button to swap the canvas and switch between 3D and coding environments*
-
-## What Happens if the Script Runs Correctly?
-
-We generally **do not display a "success" message** if your script executes without explicit errors. It's up to you to inspect the output (visual or console) and confirm that everything looks as intended.
-
-*   **Loading Spinner:** For time-consuming algorithms, you might see a spinner icon replace the "Run" button while the computation is in progress. If the spinner appears, it usually means the computer is still working.
-*   **Patience is Key:** Keep in mind that even correct code can take a while to compute, especially for complex programs. Some CAD (Computer-Aided Design) algorithms, in particular, can be computationally intensive.
-
-Happy coding, and don't forget to hit "Run"!
+A script can also ask for something that never ends, such as a loop with no way out. The browser tab may then stop answering and need closing, so keep your work saved: a cloud script saves itself as you work, and [Saving](./scripts/auto-save.md) explains how.

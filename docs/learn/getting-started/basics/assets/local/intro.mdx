@@ -1,30 +1,29 @@
 ---
 sidebar_position: 1
-title: Using Local Assets in Bitbybit
-sidebar_label: Local Assets
-description: Learn how to upload and use local assets (stored in your browser) within your Bitbybit scripts, and understand their limitations and use cases.
+title: The Browser Asset Catalog
+sidebar_label: Asset Catalog
+description: The browser asset catalog keeps files in this browser for every script you open here - the quick way to test a file in any project - why it cannot move to the cloud, and when to add the file to its project instead.
+topic: platform.assets.local
+type: explanation
+verified: 2026-10-09
 tags: [getting-started, assets]
 ---
 
-# Using Local Assets (Stored in Your Browser)
+# The browser asset catalog
 
-## When to Use Local Assets
+The editor's <Ui>Assets</Ui> dialog, the folder button at the lower left of the coding editors, keeps files in **this browser, for every script you open here**, whatever its project, signed in or not. That makes it the quick way to try a file: upload a STEP model once and load it from any project while you experiment.
 
-If you prefer not to use our cloud services for storing your assets, or if you want to keep certain files entirely on your own machine for privacy or testing, Bitbybit offers a **local asset** feature. This allows you to upload assets directly to your web browser's local storage. Once uploaded, you can import and use these assets in your scripts.
+It is not the place to keep a project's files. [Keep them with the project](/learn/getting-started/basics/assets/project-files) instead, for three reasons:
 
-**Key Characteristics and Considerations for Local Assets:**
+*   **They belong to no project.** An export of a project does not carry them, and someone who opens your script will not have them.
+*   **They cannot move to the cloud.** When a project kept in this browser moves to the cloud, its own files go with it; catalog files stay behind. To keep one, download it from the dialog and add it to the project's <Ui>Files</Ui>.
+*   **They stay in this browser.** Another browser or device does not see them, and clearing the site's data removes them.
 
-*   **Browser-Specific:** Local assets are stored within the specific browser you used to upload them. They are **not** shared across different browsers (e.g., Chrome vs. Firefox) or different devices.
-*   **Sharing Limitations:**
-    *   If your script relies on local assets and you [export the script to a file](/learn/getting-started/basics/scripts/save-to-file) to share with others, those users will **not** automatically have the asset. You would need to provide them with the asset file separately, and they would have to upload it as a local asset in their own browser.
-*   **Persistence (Within the Same Browser):** Local assets generally persist within your browser even after you close and reopen the browser window. However, clearing your browser's cache or site data could potentially remove them.
-*   **No Account Needed:** You can use the local asset feature without needing a Bitbybit account.
-
-This tutorial will guide you through using local assets in your Bitbybit projects.
+Scripts load catalog files with the <Ui>get local file</Ui> component or block, `bitbybit.asset.getLocalFile` in TypeScript, by the name you gave them. The same call finds a file of the project when the catalog has none of that name, so a script can start on the catalog and keep working once the file is added to its project.
 
 ## Learn Through Examples
 
-We'll demonstrate how to use local assets with a few practical examples. You'll download sample asset files, upload them to Bitbybit as local assets, and then use specific Input/Output (IO) components within our Rete, Blockly, and Monaco (TypeScript) editors to draw these assets as visible BabylonJS meshes.
+We'll demonstrate the catalog with a few practical examples. You'll download sample asset files, upload them to the catalog, and then use specific Input/Output (IO) components within our Rete, Blockly, and Monaco (TypeScript) editors to draw these assets as visible BabylonJS meshes.
 
 Each example will focus on a different common file type so you can see the process in action.
 

@@ -1,0 +1,56 @@
+---
+sidebar_position: 2
+slug: /getting-started/blockly/tutorials/drone/around
+title: "Build a drone: around, bolts and standoffs"
+sidebar_label: 2. Around, bolts and standoffs
+description: The second chapter of the Blockly drone - a function with a count loop that repeats one shape evenly around the drone, its first use cutting the leg openings, an M3 bolt revolved from a profile with a hexagon socket, and the standoffs with their bolts between the arms.
+topic: blockly.tutorials.drone.around
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, blockly, occt]
+---
+
+# Build a drone: around, bolts and standoffs
+
+Four arms, four legs and four standoffs stand evenly around the drone. One function places a shape that many times, and every part that repeats calls it from here on; it does for the Blockly drone what the Around module does for the Rete one.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. Arms, motors, propellers, legs and standoffs all stand evenly around the drone, so one function, around, repeats a shape count times around the upright axis. A count loop makes the angles, half a step off the axes: 45, 135, 225 and 315 degrees for four. Its first use cuts the plate's leg openings, snapped in right under the plate so the cut comes before the plate is drawn.
+
+   - **Make the function** ***around*** with the inputs *shape*, *count*:
+     - set *angles* to **empty list**
+     - **count with** *i* from 0 to (*count* - 1) by 1:
+       - set *angles* to **add item**(list *angles*, item (((*i* + 0.5) × 360) ÷ *count*), clone false)
+     - **return** **rotate shapes**(shapes **repeat**(item *shape*, times *count*), axes **repeat**(item **vector xyz**(0, 1, 0), times *count*), angles *angles*)
+   - **Make the function** ***leg openings*** with the inputs *legs*:
+     - **return** **make compound**(***around***(**cylinder**(radius 6, height 3, center **point xyz**(52, 0, 0), direction **vector xyz**(0, 1, 0)), *legs*))
+   - **Snap under** the block set *plate* to ***frame plate***():
+     - set *plate* to **difference**(shape *plate*, shapes [***leg openings***(*legs*)], keep edges false)
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: blockly.tutorials.drone/openings */}
+
+2. An M3 bolt is a profile of eight points revolved into its body, with a hexagon socket cut into its head; the standoffs, the arms and the legs all use it. A standoff is a post between the plates with a bolt from below and a flipped one from above, turned back half a step so they stand between the arms.
+
+   - **Make the function** ***m3 bolt*** with the inputs *length*:
+     - set *profile* to [**point xyz**(0, -3, 0), **point xyz**(2.35, -3, 0), **point xyz**(2.75, -2.6, 0), **point xyz**(2.75, 0, 0), **point xyz**(1.5, 0, 0), **point xyz**(1.5, (*length* - 0.4), 0), **point xyz**(1.1, *length*, 0), **point xyz**(0, *length*, 0)]
+     - set *body* to **revolve**(shape **face from wire**(shape **polygon wire**(*profile*), planar true), angle 360, direction **vector xyz**(0, 1, 0), copy false)
+     - set *socket* to **extrude**(shape **face from wire**(shape **ngon wire**(nr corners 6, radius 1.45, center **point xyz**(0, -3.5, 0), direction **vector xyz**(0, 1, 0)), planar true), direction **vector xyz**(0, 2.5, 0))
+     - **return** **difference**(shape *body*, shapes [*socket*], keep edges false)
+   - **Add a stack under the others:**
+     - set *half back* to (-180 ÷ *arms*)
+     - set *post* to **rotate**(shape **cylinder**(radius 3.2, height 10, center **point xyz**(40, 3, 0), direction **vector xyz**(0, 1, 0)), axis **vector xyz**(0, 1, 0), angle *half back*)
+     - set *bolt* to ***m3 bolt***(8)
+     - set *bolt pair* to **rotate**(shape **make compound**([**translate**(shape *bolt*, translation **vector xyz**(40, 0, 0)), **translate**(shape **rotate**(shape *bolt*, axis **vector xyz**(1, 0, 0), angle 180), translation **vector xyz**(40, 16, 0))]), axis **vector xyz**(0, 1, 0), angle *half back*)
+     - set *accent* to ***look***("accent", `#f0cebb`, 0.85, 0.35, `#000000`, `#0d0e10`, 4)
+     - set *steel* to ***look***("steel", `#1c1c1e`, 0.9, 0.42, `#000000`, `#f2f2f2`, 4)
+     - **draw any async no return**(entity ***around***(*post*, *arms*), options *accent*)
+     - **draw any async no return**(entity ***around***(*bolt pair*, *arms*), options *steel*)
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: blockly.tutorials.drone/standoffs */}
+
+{/* steps:end */}
+
+Next: [one arm](./arm.mdx).

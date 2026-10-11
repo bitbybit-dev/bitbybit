@@ -1,8 +1,11 @@
 ---
-sidebar_position: 5
+sidebar_position: 7
 title: Understanding How Drawing Works in Bitbybit
 sidebar_label: Drawing Explained
-description: Learn the concepts behind drawing 3D objects in Bitbybit, the role of BabylonJS, and what you can draw and manipulate.
+description: Why a shape on bitbybit.dev only appears once it is drawn, what drawing turns it into, which game engine draws it, and what you can do with a drawn object.
+topic: platform.basics.drawing
+type: explanation
+verified: 2026-10-09
 tags: [getting-started, typescript, blockly, rete]
 ---
 
@@ -20,9 +23,7 @@ Think of it this way: in Bitbybit, 3D objects initially exist in a kind of "Plat
 
 The act of **drawing** is the process that creates a visual representation of these abstract, "Platonic" objects. It takes a snapshot of their current geometric state and translates it into a visual description that can be displayed on your screen.
 
-You may have seen terms like "Draw Babylon Mesh" on some drawing components.
-*   **What is a "Babylon Mesh"?** [BabylonJS](https://babylonjs.com) is a powerful, open-source 3D game engine that runs directly in your web browser. Everything you see rendered on the screen within the Bitbybit platform is handled by BabylonJS. Our NPM Packages support ThreeJS game engine as well, where the same principles apply - you draw ThreeJS Mesh objects and use them as Group objects inside the game engine.
-*   **The Drawing Process:** Drawing transforms your abstract, "Platonic" objects into visual "mesh" representations that BabylonJS can understand and display.
+Drawing turns an abstract object into a mesh: the triangles and lines a game engine can put on the screen. That is why you may see "Babylon mesh" on some drawing components.
 
 This diagram illustrates the process:
 
@@ -33,23 +34,13 @@ As the image suggests, you have control over which objects you choose to draw. F
 
 This selective drawing approach offers a significant performance benefit. You can perform many transformations or complex operations (like boolean operations on solids) on your abstract "Platonic" models without needing to create a visual representation at every intermediate step. You only draw the final result, or specific snapshots you care about. You'll learn more about these operations in later guides.
 
-### The Role of BabylonJS
+### The game engine that draws
 
-![BabylonJS Game Engine Logo](https://bitbybit.dev/files/site/start/blockly/drawing/babylonjs-logo.webp "BabylonJS Game Engine")
-*BabylonJS Game Engine*
+The editors on bitbybit.dev draw with [BabylonJS](https://babylonjs.com), an open-source 3D engine that runs in the browser: a drawn object is a BabylonJS mesh, and the "babylon" category of the visual editors holds what you can do with one. Bitbybit makes the common things simple. Create a light with shadows, for instance, and every object drawn after it casts and receives them.
 
-BabylonJS is a vast and capable 3D engine. In Bitbybit, we expose essential parts of it, primarily under the "babylon" category in our visual editors, to allow you to create engaging and interactive 3D experiences. We also strive to abstract and simplify some of its more complex aspects.
+In TypeScript you also have the whole BabylonJS API, for anything the editors' own commands do not cover. Outside bitbybit.dev, the same CAD algorithms draw with [three.js](../engines/threejs.mdx), [BabylonJS](../engines/babylonjs.mdx) or [PlayCanvas](../engines/playcanvas.mdx) through the npm packages, by the same rule: you draw what you want to see.
 
-For example, if you create a light source, we make it straightforward to enable shadows. Once enabled, any subsequently drawn objects will automatically cast and receive shadows. This shields you from some of the lower-level complexities of shadow setup in a 3D engine.
-Over time, we are gradually exposing more native BabylonJS behaviors through our Blockly and Rete visual editors. For those using the Monaco (TypeScript) editor, you have full, direct access to the BabylonJS API, allowing for more intricate custom behaviors. However, Bitbybit's own algorithms also offer helpful abstractions to ease the use of the game engine natively, giving you the flexibility to choose your preferred coding approach.
-
-The power of BabylonJS allows us to bridge the gap between precise CAD (Computer-Aided Design) kernels and interactive gaming/simulation contexts. This means you can construct detailed geometric models and then use them in games or simulations that require user interaction within the same environment. We anticipate enabling more features like physics in the future, thanks to BabylonJS's capabilities.
-
-### WebGL and WebGPU: The Graphics Backbone
-
-BabylonJS is built upon [WebGL](https://en.wikipedia.org/wiki/WebGL), the standard web graphics library. Excitingly, BabylonJS also has robust support for [WebGPU](https://www.w3.org/TR/webgpu/), the next-generation graphics API for the web. WebGPU promises better performance and more efficient use of your computer's graphics card.
-
-Because Bitbybit leverages BabylonJS, we inherently support these technologies too. When your browser fully supports WebGPU (it's still experimental in some browsers and might require enabling special flags in settings), Bitbybit will automatically switch to using it for an enhanced experience.
+BabylonJS draws with WebGL by default. It can also use [WebGPU](https://www.w3.org/TR/webgpu/), the newer graphics API: choose it under <Ui>More</Ui> > <Ui>Settings</Ui> as the rendering engine. The editor reloads to switch, and stays on WebGL where the browser has no WebGPU.
 
 ## What Can You Draw?
 
@@ -64,19 +55,17 @@ Bitbybit supports many methods for creating these geometric primitives, allowing
 
 While creating these primitives is crucial, especially for parametric CAD modeling, it's also important to know that you can **import and draw ready-made 3D assets** created in other software packages.
 
-Here are a few examples of imported assets drawn in Bitbybit:
+Here are a few examples of imported assets drawn in Bitbybit, each running in a preview of its public script:
 
 ---
 
 **Drawn GLTF Unicorns**
 *   [View Project: Unicorn Luma AI 3D Scan](https://bitbybit.dev/projects/public/xLIaP6Y15CzAzAdS6VOK/project-unicorn-luma-ai-3d-scan-asset-by-author-bitbybit)
 
-![Screenshot showing 3D rendered unicorns, originally a GLB asset.](https://bitbybit.dev/files/site/start/blockly/drawing/draw-unicorns.webp "Drawn GLTF Unicorns")
-
 <BitByBitRenderCanvas
   requireManualStart={true}
-  iframeUrl="https://bitbybit.dev/app/bitbybit/xLIaP6Y15CzAzAdS6VOK/hWxiMwlKQfqqHJKavGex?editor=blockly"
-  title="Blockly Editor - Drawn Unicorns"
+  iframeUrl="https://bitbybit.dev/app/bitbybit/xLIaP6Y15CzAzAdS6VOK/hWxiMwlKQfqqHJKavGex/preview"
+  title="Drawn unicorns, a preview of a Blockly script"
   description="Draws imported unicorn models."
 />
 
@@ -85,12 +74,10 @@ Here are a few examples of imported assets drawn in Bitbybit:
 **Drawn STEP Spaceship**
 *   [View Project: Imported STEP Spaceship](https://bitbybit.dev/projects/public/tLD2zROxkCaBnB8kTOLg/project-import-step-spaceship-example-by-author-matas)
 
-![Screenshot showing a 3D rendered spaceship, originally a STEP file.](https://bitbybit.dev/files/site/start/blockly/drawing/draw-spaceship.webp "Drawn STEP Spaceship")
-
 <BitByBitRenderCanvas
   requireManualStart={true}
-  iframeUrl="https://bitbybit.dev/app/matas/tLD2zROxkCaBnB8kTOLg/AbgpIT9Fu0pAPrDLZv1k?editor=blockly"
-  title="Blockly Editor - Draw Imported STEP File"
+  iframeUrl="https://bitbybit.dev/app/matas/tLD2zROxkCaBnB8kTOLg/AbgpIT9Fu0pAPrDLZv1k/preview"
+  title="A STEP spaceship drawn in parts, a preview of a Blockly script"
   description="Draws imported spaceship 3D model as STEP file in parts. Original model parts were created in Rhino."
 />
 
@@ -99,12 +86,10 @@ Here are a few examples of imported assets drawn in Bitbybit:
 **Drawn GLTF Flight Helmet**
 *   [View Project: Flight Helmet (Asset by Patrick Ryan)](https://bitbybit.dev/projects/public/ZggYngpuD5uYq9en9mog/project-flight-helmet---pro-3rd-party-asset-by-author-bitbybit)
 
-![Screenshot showing a detailed 3D rendered flight helmet, originally a GLTF asset.](https://bitbybit.dev/files/site/start/blockly/drawing/draw-helmet.webp "Drawn GLTF Flight Helmet")
-
 <BitByBitRenderCanvas
   requireManualStart={true}
-  iframeUrl="https://bitbybit.dev/app/bitbybit/ZggYngpuD5uYq9en9mog/OlHDOEP3MBYSNOuDUdXt?editor=blockly"
-  title="Blockly Editor - Draw Imported Helmet File"
+  iframeUrl="https://bitbybit.dev/app/bitbybit/ZggYngpuD5uYq9en9mog/OlHDOEP3MBYSNOuDUdXt/preview"
+  title="A glTF flight helmet, a preview of a Blockly script"
   description="Draws imported helmet 3D model."
 />
 

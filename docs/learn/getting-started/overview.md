@@ -2,136 +2,78 @@
 sidebar_position: 1
 title: Getting Started Overview
 sidebar_label: Overview
-description: Learn about the different ways to use our platform, including 3D Model Configurators, Rete, Blockly, and Monaco (TypeScript) editors, CAD Cloud API, and 3D Bits for Shopify.
-tags: [getting-started, typescript, occt, jscad, manifold, rete, blockly, cad-cloud, shopify]
+description: What bitbybit.dev offers and where to begin - projects and scripts, the Rete, Blockly and TypeScript coding editors, the Designer, the open-source packages, CAD Cloud, 3D Bits for Shopify and the model configurators.
+topic: platform.start.overview
+type: landing
+verified: 2026-10-09
+tags: [getting-started, typescript, occt, jscad, manifold, rete, blockly, designer, cad-cloud, shopify]
 ---
 
 import Admonition from '@theme/Admonition';
 
 # Getting Started
 
-This section introduces the different ways you can use our platform. We'll explore our **3D Model Configurators** and our three distinct creative editors: **Rete**, **Blockly**, and **Monaco (TypeScript)**. We'll also cover their strengths, weaknesses, and typical use cases. Information common across editors or relevant to the platform itself is integrated within these descriptions.
+bitbybit.dev is a platform for parametric 3D: you describe a shape by its rules, and changing a rule rebuilds it. Four editors build on one set of CAD kernels - OpenCascade, JSCAD and Manifold - and your work is kept in projects, in the cloud or in this browser.
 
-## 3D Model Configurators
+## Where to begin
 
-Our 3D Model Configurators provide access to a variety of pre-defined 3D models, allowing you to create unique parametric representations with just a few button clicks.
+1. **[Basics](/learn/getting-started/basics/intro)** covers what every editor shares: projects and scripts, how your work is saved, assets, running your code, drawing and errors. Read it first.
+2. **Pick an editor.** The three [coding editors](/learn/getting-started/coding-editors) build with nodes, blocks or code; [the Designer](/learn/getting-started/designer) builds by clicking.
+3. **Take it further** with the open-source packages, CAD Cloud or 3D Bits, below.
 
-**Key Features:**
-*   **Intuitive:** Each configurator is specifically tuned for its model.
-*   **Interactive:** Often include model-specific 3D interactions to help you shape your designs intuitively.
+## The editors
 
-**Export Capabilities:**
-You can export your configured models into industry-standard file types for use in third-party software. Supported formats include:
-*   STEP
-*   IGES
-*   STL
-*   GLTF
+| Editor | How you build | Plan |
+|---|---|---|
+| [Rete](/learn/getting-started/rete) | connect nodes into a graph; the scene follows every change | every plan |
+| [Blockly](/learn/getting-started/blockly) | snap blocks together, then run them | every plan |
+| [TypeScript](/learn/getting-started/typescript) | write code in the Monaco editor, with IntelliSense over the whole API | every plan |
+| [Designer](/learn/getting-started/designer) | click: sketches, features, parts and assemblies with joints | Gold |
 
-<Admonition type="caution" title="Important Limitations">
-  <ul>
-    <li>You <strong>cannot</strong> import other models directly into a configurator.</li>
-    <li>You <strong>cannot</strong> combine multiple parametric models within the same configurator space.</li>
-  </ul>
-  <p>If you need to combine multiple parametric models in a single 3D environment, consider using our parametric editors: Rete, Blockly, or Monaco (TypeScript).</p>
-</Admonition>
+**Rete** is a visual, node-based editor, familiar if you have used Grasshopper, Dynamo or Blender's nodes. It is reactive: change a node or a value and the scene updates on its own.
 
-## [Rete Editor](https://bitbybit.dev/app?editor=rete)
+**Blockly** composes scripts from blocks that stand for values, loops and functions. It reads much like code, which makes it a good way to learn programming. Press <Ui>Run The Code</Ui> to see the result.
 
-The Rete editor offers a visual, node-based approach to parametric design. It's simple enough for beginners yet powerful and versatile enough for professional computational designers.
+**TypeScript** gives you the whole platform in code: the `bitbybit` API, the BabylonJS engine, the Havok physics engine and BabylonJS GUI. Press <Ui>Run The Code</Ui> after a change.
 
-**Key Features:**
-*   **Familiar Interface:** If you've used tools like Grasshopper, Dynamo, or Blender Nodes, Rete's visual scripting will feel familiar.
-*   **Linear Flow:** Define parametric relationships by connecting components (nodes) through inputs and outputs, creating a clear data flow.
-*   **Reactive Engine:** This is a **reactive editor**. Changes you make to the script (e.g., adding a node, modifying a parameter) automatically trigger an update in the 3D scene. You see results immediately without needing to click a "Run" button. This makes it easy to iterate and understand the modeling process.
+**The Designer** is parametric CAD without code: every feature is kept in order and rebuilt when a parameter changes, and AI agents can work in the same document. It is part of the Gold plan.
 
-## [Blockly Editor](https://bitbybit.dev/app?editor=blockly)
+All four call the same algorithms, so much of what one editor does can be done in another.
 
-Blockly is designed for users who want to create complex 3D models, time-based simulations, or even games, using a visual block-based programming approach without writing traditional code.
+## Open-source packages (MIT)
 
-**Key Features:**
-*   **Visual Programming:** Compose scripts by connecting blocks that represent variables, inputs, outputs, and functions.
-*   **Educational Tool:** Great for teaching programming concepts to children and beginners due to its intuitive nature and resemblance to actual code structures (more so than Rete scripts).
+The CAD algorithms behind the editors are open-source npm packages you can use in your own web app, with BabylonJS, ThreeJS or PlayCanvas:
 
-<Admonition type="note" title="Non-Reactive Editor">
-  <p>Blockly is <strong>not</strong> a reactive editor. Scripts do not re-compute automatically when you add new components or change configuration inputs. You must click the <strong>"Run"</strong> button to see a preview of your creation in the 3D space.</p>
-</Admonition>
+- `@bitbybit-dev/babylonjs` - [getting started](/learn/getting-started/engines/babylonjs)
+- `@bitbybit-dev/threejs` - [getting started](/learn/getting-started/engines/threejs)
+- `@bitbybit-dev/playcanvas` - [getting started](/learn/getting-started/engines/playcanvas)
 
-## [Monaco (TypeScript) Editor](https://bitbybit.dev/app?editor=typescript)
+<Admonition type="tip" title="Quick start with any engine">
+The fastest way to start is the scaffolding tool:
 
-The Monaco editor provides a full code-based environment using TypeScript, aimed at professional programmers.
-
-**Key Features:**
-*   **Maximum Freedom:** Fully exposes the capabilities of:
-    *   BabylonJS game engine
-    *   Havok physics engine
-    *   BabylonJS GUI
-*   **Platform API:** All platform capabilities are accessible via the global `bitbybit` variable.
-*   **Versatile:** Create your own 3D experiences from scratch or even build custom editors.
-
-<Admonition type="note" title="Non-Reactive Editor">
-  <p>Similar to Blockly, Monaco is <strong>not</strong> a reactive editor. You need to click the <strong>"Run"</strong> button for your 3D scene to update after making changes to your code.</p>
-</Admonition>
-
-
-## Open-Source NPM Packages (MIT Licensed)
-
-For developers who want to integrate our core geometric algorithms and functionalities directly into their own web applications, we offer a suite of **open-source NPM packages**. Our game engine-based libraries include:
-
-*   `@bitbybit-dev/babylonjs` - [Getting Started Guide](/learn/getting-started/engines/babylonjs)
-*   `@bitbybit-dev/threejs` - [Getting Started Guide](/learn/getting-started/engines/threejs)
-*   `@bitbybit-dev/playcanvas` - [Getting Started Guide](/learn/getting-started/engines/playcanvas)
-
-These allow you to leverage our CAD capabilities within your preferred 3D rendering environment.
-
-**Key Features & Benefits:**
-*   **Flexibility:** Build custom 3D tools, viewers, or applications tailored to your specific needs.
-*   **Integration:** Seamlessly incorporate our computational geometry capabilities into your existing JavaScript or TypeScript projects.
-*   **Community & Control:** Leverage the power of open-source, contribute, or fork as needed.
-*   **MIT Licensed:** All our core NPM packages are licensed under the permissive MIT license, granting you broad freedom to use, modify, and distribute your projects.
-
-<Admonition type="tip" title="Quick Start with Any Engine">
-The fastest way to get started is using our NPX scaffolding tool:
 ```bash
 npx @bitbybit-dev/create-app my-project --engine babylonjs
 # or --engine threejs
 # or --engine playcanvas
 ```
-The CLI also supports scaffolding **CAD Cloud** backend projects. Run it without arguments and select the **cloud** app type to generate a full-stack project with your choice of backend (Hono, Node.js, or .NET) and a React + Three.js frontend. See the [CAD Cloud API docs](/api/cloud-api) for details.
+
+Run it without arguments and choose the **cloud** app type to scaffold a CAD Cloud project instead: a backend (Hono, Node.js or .NET) and a React + ThreeJS frontend.
 </Admonition>
 
-<Admonition type="info" title="What's Included (and Not Included)">
-  <p>Our NPM packages provide the foundational geometric algorithms and data structures that power our platform, along with rendering integrations for ThreeJS and BabylonJS.</p>
-  <p>They generally **do not** include:</p>
-  <ul>
-    <li>The pre-built 3D Model Configurators (those are part of our online platform services).</li>
-    <li>The proprietary advanced algorithms or specific models found in the "3D Models" section of our platform that require a subscription.</li>
-    <li>The UI of our online editors (Rete, Blockly, Monaco).</li>
-  </ul>
-  <p>The packages offer the core engine, empowering you to build your own UIs and applications on top.</p>
-</Admonition>
-
-For a comprehensive list of available NPM packages and more detailed guides, please visit our [**NPM Packages documentation page**](/learn/npm-packages/intro).
+The packages hold the algorithms and the engine integrations. The editors' user interface, the model configurators and the algorithms of the Silver and Gold plans are not in them. [NPM packages](/learn/npm-packages/intro) has the full list, and [runners](/learn/runners) run a script made in an editor on any website.
 
 ## CAD Cloud API
 
-If your workflow requires server-side CAD operations - for example, generating models on demand from a backend, converting STEP files to glTF at scale, or running boolean and fillet operations without shipping WASM to the browser - our **CAD Cloud API** handles the heavy lifting on managed infrastructure.
+For CAD work on a server - models generated on demand by a backend, STEP converted to glTF at scale, booleans and fillets without shipping WASM to the browser - the **CAD Cloud API** runs it on managed infrastructure. Every request is a task: submit it, poll it, download the result as glTF, STEP or mesh JSON. Manage it in [Bitbybit Studio](https://studio.bitbybit.dev) or from code with the [TypeScript SDK](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk); the [CAD Cloud API documentation](/api/cloud-api) has the details.
 
-Every request follows an asynchronous task model: submit a job, receive a task ID, poll for completion, and download the result in your preferred format (glTF, STEP, or decomposed mesh JSON). You can manage everything through the [**Bitbybit Studio**](https://studio.bitbybit.dev) dashboard or integrate programmatically using our [**TypeScript SDK**](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk).
+## 3D Bits for Shopify
 
-For full details, see our [**CAD Cloud API documentation**](/api/cloud-api).
+[3D Bits](https://apps.shopify.com/3d-bits-1) puts interactive 3D viewers, product configurators and Gaussian splatting scans on Shopify product pages, through theme app blocks. The [quick start](/learn/3d-bits/quick-start) takes you from installing the app to a first product live.
 
-## 3D Bits App for Shopify
+## 3D model configurators
 
-Selling physical products online? Our [**3D Bits app for Shopify**](https://apps.shopify.com/3d-bits-1) lets you embed interactive 3D product viewers, parametric configurators, and Gaussian Splatting scans directly into your Shopify storefront. Design your 3D experience in any of our editors, then drop it onto a product page using theme app extension blocks - no theme code changes needed.
+The [3D model configurators](/learn/getting-started/configurators) on bitbybit.dev shape ready-made parametric models by a few choices and export them as STEP, IGES, STL or glTF.
 
-Learn how to set it up in our [**3D Bits tutorials**](/learn/3d-bits/tutorials/videos-tutorials/set-up).
+## API reference
 
-## API Documentation
-
-All our editors (Rete, Blockly, Monaco) are built upon the same core set of algorithms. This means that much of the underlying functionality overlaps between them. While each editor excels in its specific use cases, it's often possible to implement similar features across any of the editors.
-
-For a comprehensive explanation of our entire API surface, which powers all these tools, please visit our dedicated API documentation site:
-
-➡️ **[docs.bitbybit.dev](https://docs.bitbybit.dev)**
-
----
+Every editor builds on the same API, documented in full at [docs.bitbybit.dev](https://docs.bitbybit.dev).

@@ -1,0 +1,108 @@
+---
+sidebar_position: 6
+slug: /getting-started/rete/tutorials/drone/landing-gear
+title: "Build a drone: landing gear"
+sidebar_label: 6. Landing gear
+description: The sixth chapter of the Rete drone - a landing leg swept along a bent path, a revolved damper with a helical spring, a lofted rubber foot and the leg's bolts, each made once and repeated four times by Around.
+topic: rete.tutorials.drone.landing-gear
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, rete, occt]
+---
+
+# Build a drone: landing gear
+
+Four legs stand under the arms. Each part of a leg is made once, 52 millimetres out along the x axis, and the Around module repeats it four times; the count comes from the *legs* number in the Sizes group, which also made the openings the legs pass through.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. A leg is a carbon tube bent twice on its way down, with a flange and a boss that pass through the leg opening. A code component sweeps a circle along the bent path, and Around repeats the leg four times, under the arms.
+
+   - Add **typescript editor** as *leg*: hidden, with the code below.
+   - Add **Module Instance** as *legs around*: module *Around*.
+   - Wire **leg** › result into **legs around** › shape.
+   - Wire **legs** › result into **legs around** › count.
+   - Wire **legs around** › copies into **carbon** › entity.
+   - Press <Ui>Add a comment</Ui>, double-click the comment and write:
+
+     > ### Landing gear
+     > One leg is made along the x axis, 52 mm out: a bent carbon tube, a damper with its spring, and a rubber foot. Around repeats each part four times, under the arms.
+
+   - Select the comment, *leg* and *legs around*, press <Ui>Group selected components</Ui> and title the group *Landing gear*.
+
+   ```typescript
+   const start = async (inputs: any, index: number) => {
+       const path = await bitbybit.occt.shapes.wire.createPolylineWire({ points: [[52, 0, 0], [58, -18, 0], [78, -34, 0], [78, -48, 0]] });
+       const bent = await bitbybit.occt.fillets.fillet3DWire({ shape: path, radiusList: [12, 6], indexes: [0, 1], direction: [0, 0, 1] });
+       const tube = await bitbybit.occt.operations.pipeWireCylindrical({ shape: bent, radius: 4, makeSolid: true, trihedronEnum: "isConstantNormal", forceApproxC1: false });
+       const flange = await bitbybit.occt.shapes.solid.createBox({ width: 20, length: 12, height: 3, center: [52, -1.5, 0] });
+       const boss = await bitbybit.occt.shapes.solid.createCylinder({ radius: 5.5, height: 6.4, center: [52, -3, 0], direction: [0, 1, 0] });
+       return bitbybit.occt.booleans.union({ shapes: [tube, flange, boss], keepEdges: false });
+   }
+   ```
+
+   {/* shot: rete.tutorials.drone/legs */}
+
+2. At the end of each leg a damper. Its aluminium body is a profile of twelve points revolved around its rod, which a code component says most plainly. The steel spring around it is two nodes: a helix wire, and a pipe swept along it. Each repeats four times like the leg.
+
+   - Add **typescript editor** as *damper*: hidden, in the *Landing gear* group, with the code below.
+   - Add **create helix wire** as *spring helix*: radius 4.2, pitch 2.8, height 12.5, center [78, -75.8, 0], direction [0, 1, 0], clockwise off, tolerance 0.0001, hidden, in the *Landing gear* group.
+   - Add **pipe wire cylindrical** as *spring*: radius 0.9, make solid on, trihedron enum isCorrectedFrenet, force approx c1 off, hidden, in the *Landing gear* group.
+   - Wire **spring helix** › result into **spring** › shape.
+   - Add **Module Instance** as *dampers around*: module *Around*, in the *Landing gear* group.
+   - Wire **damper** › result into **dampers around** › shape.
+   - Wire **legs** › result into **dampers around** › count.
+   - Add **Module Instance** as *springs around*: module *Around*, in the *Landing gear* group.
+   - Wire **spring** › result into **springs around** › shape.
+   - Wire **legs** › result into **springs around** › count.
+   - Wire **dampers around** › copies into **aluminium** › entity.
+   - Wire **springs around** › copies into **steel** › entity.
+
+   ```typescript
+   const start = async (inputs: any, index: number) => {
+       const profile = [[0, 0, 0], [6.5, 0, 0], [6.5, -4, 0], [5.5, -4.5, 0], [5.5, -14, 0], [6.2, -14, 0], [6.2, -16.5, 0], [4, -16.5, 0], [4, -18, 0], [2.2, -18, 0], [2.2, -30, 0], [0, -30, 0]];
+       const outline = await bitbybit.occt.shapes.wire.createPolygonWire({ points: profile });
+       const face = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: outline, planar: true });
+       const body = await bitbybit.occt.operations.revolve({ shape: face, angle: 360, direction: [0, 1, 0], copy: false });
+       return bitbybit.occt.transforms.translate({ shape: body, translation: [78, -46, 0] });
+   }
+   ```
+
+   {/* shot: rete.tutorials.drone/dampers */}
+
+3. A rubber foot is lofted through five circles, and two of the M3 bolts fix each leg's flange to the plate.
+
+   - Add **typescript editor** as *foot*: hidden, in the *Landing gear* group, with the code below.
+   - Add **Module Instance** as *feet around*: module *Around*, in the *Landing gear* group.
+   - Wire **foot** › result into **feet around** › shape.
+   - Wire **legs** › result into **feet around** › count.
+   - Wire **feet around** › copies into **rubber** › entity.
+   - Add **translate** as *inner leg bolt*: translation [44.5, -3, 0], hidden, in the *Landing gear* group.
+   - Add **translate** as *outer leg bolt*: translation [59.5, -3, 0], hidden, in the *Landing gear* group.
+   - Wire **M3 bolt** › result into **inner leg bolt** › shape.
+   - Wire **M3 bolt** › result into **outer leg bolt** › shape.
+   - Add **create list** as *leg bolts* in the *Landing gear* group.
+   - Wire **inner leg bolt** › result into **leg bolts** › listElements.
+   - Wire **outer leg bolt** › result into **leg bolts** › listElements.
+   - Add **make compound** as *leg bolt pair*: hidden, in the *Landing gear* group.
+   - Wire **leg bolts** › list into **leg bolt pair** › shapes.
+   - Add **Module Instance** as *leg bolts around*: module *Around*, in the *Landing gear* group.
+   - Wire **leg bolt pair** › result into **leg bolts around** › shape.
+   - Wire **legs** › result into **leg bolts around** › count.
+   - Wire **leg bolts around** › copies into **steel** › entity.
+
+   ```typescript
+   const start = async (inputs: any, index: number) => {
+       const rings = [];
+       for (const [y, radius] of [[0, 3.2], [-2, 7], [-5, 9.5], [-8, 9], [-10, 7]]) {
+           rings.push(await bitbybit.occt.shapes.wire.createCircleWire({ radius, center: [78, -76 + y, 0], direction: [0, 1, 0] }));
+       }
+       return bitbybit.occt.operations.loft({ shapes: rings, makeSolid: true });
+   }
+   ```
+
+   {/* shot: rete.tutorials.drone/feet */}
+
+{/* steps:end */}
+
+Next: [payload and sliders](./finish.mdx).

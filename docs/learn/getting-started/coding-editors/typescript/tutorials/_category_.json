@@ -1,0 +1,11 @@
+{
+    "label": "Tutorials",
+    "key": "typescript-tutorials",
+    "position": 4,
+    "link": {
+        "type": "generated-index",
+        "title": "TypeScript Tutorials",
+        "description": "Scripts written step by step in the TypeScript editor, with a picture of the editor after every step and the finished script to run on the page.",
+        "slug": "/getting-started/typescript/tutorials"
+    }
+}

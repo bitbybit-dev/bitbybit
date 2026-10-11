@@ -1,0 +1,11 @@
+{
+    "label": "Build a drone",
+    "key": "typescript-drone",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "Build a drone in TypeScript",
+        "description": "The quadcopter the Rete and Blockly tutorials build, written in the TypeScript editor as a script of many files, with a picture after every step: its sizes and a lit stage, a carbon frame with hexagon vents, a function that repeats a part around the drone, an arm with its motor, propeller, bolts and light, a canopy with a honeycomb and the bitbybit logo, sprung landing legs and a camera. The finished drone is the TypeScript showcase.",
+        "slug": "/getting-started/typescript/tutorials/drone"
+    }
+}

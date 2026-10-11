@@ -3,6 +3,9 @@ sidebar_position: 4
 title: Importing Local STEP Files into Bitbybit
 sidebar_label: Using Local STEP Files
 description: Learn how to upload a local STEP (.stp) file to your browser storage and then import, parse, and display it in Bitbybit using OCCT with Rete, Blockly, and TypeScript editors.
+topic: platform.assets.local-step
+type: tutorial
+verified: 2026-10-09
 tags: [getting-started, assets]
 ---
 
@@ -61,8 +64,7 @@ That's it! Your Rete graph should be set up. It might take a moment for the Kuka
 
 
 **Expected Result (Rete):**
-![The Kuka Robot 3D model rendered in the Bitbybit Rete editor environment after importing and processing the local .stp asset.](https://bitbybit.dev/files/site/start/general/assets/local/kuka-robot-rete.jpeg "Result of imported local STEP asset in Rete editor")
-*The result of imported local asset in Rete editor*
+{/* shot: platform.assets.local-step/rete */}
 
 ---
 
@@ -90,7 +92,7 @@ You can open a fresh Blockly editor session here: [`https://bitbybit.dev/app?edi
     *   Connect the `load step or iges` block (which now contains the `get local file` block) to the "entity" input slot of the `draw any async no return` block.
     *   Ensure the `draw any async no return` block is connected in sequence (e.g., below an initial `start` block if you're using one, or it can be the top block if no other setup is needed).
 
-After assembling the blocks, click "Run".
+After assembling the blocks, press <Ui>Run The Code</Ui>.
 
 **Blockly Editor Example:**
 <BitByBitRenderCanvas
@@ -102,8 +104,7 @@ After assembling the blocks, click "Run".
 
 
 **Expected Result (Blockly):**
-![The Kuka Robot 3D model rendered in the Bitbybit Blockly editor environment after importing and processing the local .stp asset.](https://bitbybit.dev/files/site/start/general/assets/local/kuka-robot-blockly.jpeg "Result of imported local STEP asset in Blockly editor")
-*The result of imported local asset in Blockly editor*
+{/* shot: platform.assets.local-step/blockly */}
 
 ---
 
@@ -122,14 +123,13 @@ Here's an example of how to do that:
 **TypeScript Editor Example:**
 <BitByBitRenderCanvas
   requireManualStart={true}
-  script={{"script":"const start = async () => {\n\n    const file = await bitbybit.asset.getLocalFile({\n        fileName: \"KukaRobot\"\n    }) as File;\n\n    const shape = await bitbybit.occt.io.loadSTEPorIGES({\n        assetFile: file,\n        adjustZtoY: true,\n    });\n\n    bitbybit.draw.drawAnyAsync({\n        entity: shape\n    })\n}\n\nstart();\n","type":"typescript"}}
+  script={{"script":"\nconst file = await bitbybit.asset.getLocalFile({\n    fileName: \"KukaRobot\"\n}) as File;\n\nconst shape = await bitbybit.occt.io.loadSTEPorIGES({\n    assetFile: file,\n    adjustZtoY: true,\n});\n\nbitbybit.draw.drawAnyAsync({\n    entity: shape\n})\n","type":"typescript"}}
   title="Bitbybit TypeScript Editor - Using Local STEP Asset"
   description="Upload local asset from tutorial named accordingly and it will appear in 3D scene after you hit run."
 />
 
 **Expected Result (TypeScript):**
-![The Kuka Robot 3D model rendered in the Bitbybit TypeScript editor environment after importing and processing the local .stp asset.](https://bitbybit.dev/files/site/start/general/assets/local/kuka-robot-typescript.jpeg "Result of imported local STEP asset in TypeScript editor")
-*The result of imported local asset in TypeScript editor*
+{/* shot: platform.assets.local-step/typescript */}
 
 ---
 

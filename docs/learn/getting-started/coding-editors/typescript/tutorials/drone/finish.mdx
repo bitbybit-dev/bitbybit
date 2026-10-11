@@ -1,0 +1,91 @@
+---
+sidebar_position: 7
+slug: /getting-started/typescript/tutorials/drone/finish
+title: "Build a drone: payload and sizes"
+sidebar_label: 7. Payload and sizes
+description: The last chapter of the TypeScript drone - the camera on its gimbal, its lens and the strapped battery, then one number changed to rebuild the drone with six arms and a propeller that shrinks to fit.
+topic: typescript.tutorials.drone.finish
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, typescript, occt]
+---
+
+# Build a drone: payload and sizes
+
+The last parts hang under the frame: a camera on its gimbal and the battery in its straps. Then one number shows what the functions were written for.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. The payload hangs under the frame: a camera on its gimbal at the front, its lens in glass, and the battery in two straps.
+
+   - **Make `parts/payload.ts`:**
+
+   ```typescript
+   export async function gimbal() {
+       const outline = await bitbybit.occt.shapes.wire.createPolygonWire({ points: [[-4, 19, -4], [19.5, 19, -4], [19.5, -7, -4], [14.5, -7, -4], [14.5, 15, -4], [-4, 15, -4]] });
+       const rounded = await bitbybit.occt.fillets.fillet2d({ shape: outline, radius: 1.5 });
+       const face = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: rounded, planar: true });
+       const bracket = await bitbybit.occt.operations.extrude({ shape: face, direction: [0, 0, 8] });
+       const yaw = await bitbybit.occt.shapes.solid.createCylinder({ radius: 9, height: 8, center: [0, 18, 0], direction: [0, 1, 0] });
+       const roll = await bitbybit.occt.shapes.solid.createCylinder({ radius: 6, height: 5, center: [14.5, 0, 0], direction: [-1, 0, 0] });
+       const whole = await bitbybit.occt.booleans.union({ shapes: [yaw, bracket, roll], keepEdges: false });
+       return bitbybit.occt.transforms.translate({ shape: whole, translation: [0, -26, 55] });
+   }
+
+   export async function camera() {
+       const box = await bitbybit.occt.shapes.solid.createBox({ width: 24, length: 20, height: 18, center: [0, -26, 55] });
+       const body = await bitbybit.occt.fillets.filletEdges({ shape: box, radius: 3 });
+       const barrel = await bitbybit.occt.shapes.solid.createCylinder({ radius: 6.5, height: 9, center: [0, -26, 63], direction: [0, 0, 1] });
+       return {
+           camera: await bitbybit.occt.booleans.union({ shapes: [body, barrel], keepEdges: false }),
+           lens: await bitbybit.occt.shapes.solid.createCylinder({ radius: 5.2, height: 1.5, center: [0, -26, 71.5], direction: [0, 0, 1] }),
+       };
+   }
+
+   export async function battery() {
+       const box = await bitbybit.occt.shapes.solid.createBox({ width: 36, length: 72, height: 26, center: [0, -16, -20] });
+       return bitbybit.occt.fillets.filletEdges({ shape: box, radius: 3 });
+   }
+
+   export async function straps() {
+       const outer = await bitbybit.occt.shapes.solid.createBox({ width: 40, length: 10, height: 30, center: [0, 0, 0] });
+       const inner = await bitbybit.occt.shapes.solid.createBox({ width: 36.5, length: 12, height: 26.5, center: [0, 0, 0] });
+       const strap = await bitbybit.occt.booleans.difference({ shape: outer, shapes: [inner], keepEdges: false });
+       const pair: Bit.Inputs.OCCT.TopoDSShapePointer[] = [];
+       for (const z of [-42, 2]) {
+           pair.push(await bitbybit.occt.transforms.translate({ shape: strap, translation: [0, -16, z] }));
+       }
+       return bitbybit.occt.shapes.compound.makeCompound({ shapes: pair });
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { battery, camera, gimbal, straps } from "./parts/payload";
+   ```
+
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   const view = await camera();
+   await draw(looks.aluminium, await gimbal());
+   await draw(looks.polymer, [view.camera, await battery()]);
+   await draw(looks.glass, view.lens);
+   await draw(looks.accent, await straps());
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: typescript.tutorials.drone/payload */}
+
+2. Change one number: with six arms the drone rebuilds, everything `around` repeats follows, and the propeller shrinks to fit between its neighbours.
+
+   - **In `sizes.ts`, change** `arms: 4,` **to** `arms: 6,`.
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: typescript.tutorials.drone/six-arms */}
+
+{/* steps:end */}
+
+The finished script is also the [TypeScript showcase](../../showcases.md), to download and open.

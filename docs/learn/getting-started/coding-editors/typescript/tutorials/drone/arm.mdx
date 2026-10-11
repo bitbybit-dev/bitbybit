@@ -1,0 +1,215 @@
+---
+sidebar_position: 3
+slug: /getting-started/typescript/tutorials/drone/arm
+title: "Build a drone: one arm"
+sidebar_label: 3. One arm
+description: The third chapter of the TypeScript drone - a folder for the arm with its body with a pad for the motor and hexagonal cut-outs, a motor revolved from a profile with cooling slots and its stator, a lofted two-blade propeller, and the bolts and the light, each a function in a file of its own, drawn one arm at a time.
+topic: typescript.tutorials.drone.arm
+type: tutorial
+verified: 2026-10-10
+tags: [getting-started, typescript, occt]
+---
+
+# Build a drone: one arm
+
+An arm carries most of the drone's detail, so it gets a folder of its own, `parts/arm`, with a file for each part. This chapter draws one arm along the x axis; the next one repeats it.
+
+{/* steps:start - generated from the tutorial's steps, which the capture plays in the editor; edits between these markers are overwritten */}
+
+1. An arm and everything on it get a folder, `parts/arm`. The arm narrows from 26 millimetres at the root to 16 at the tip, is rounded and extruded 10 millimetres onto the plate, and carries a round pad for the motor at its tip. A loop makes a rounded hexagon every 24 millimetres, sized to the arm's width where it sits, and the difference cuts them all away.
+
+   - **Make `parts/arm/body.ts`:**
+
+   ```typescript
+   export async function armBody(length: number) {
+       const tip = length - 12;
+       const outline = await bitbybit.occt.shapes.wire.createPolygonWire({ points: [[28, 0, -13], [tip, 0, -8], [tip, 0, 8], [28, 0, 13]] });
+       const rounded = await bitbybit.occt.fillets.fillet2d({ shape: outline, radius: 4 });
+       const face = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: rounded, planar: true });
+       const slab = await bitbybit.occt.operations.extrude({ shape: face, direction: [0, 10, 0] });
+       const onPlate = await bitbybit.occt.transforms.translate({ shape: slab, translation: [0, 3, 0] });
+       const pad = await bitbybit.occt.shapes.solid.createCylinder({ radius: 15, height: 10, center: [length, 3, 0], direction: [0, 1, 0] });
+       const arm = await bitbybit.occt.booleans.union({ shapes: [onPlate, pad], keepEdges: false });
+       return bitbybit.occt.booleans.difference({ shape: arm, shapes: await cutouts(length), keepEdges: false });
+   }
+
+   async function cutouts(length: number) {
+       const tip = length - 12;
+       const holes: Bit.Inputs.OCCT.TopoDSShapePointer[] = [];
+       for (let x = 62; x < length - 34; x += 24) {
+           const half = 13 + (8 - 13) * (x - 28) / (tip - 28);
+           const hexagon = await bitbybit.occt.shapes.wire.createNGonWire({ nrCorners: 6, radius: Math.max(half - 3.5, 2.5), center: [x, 3, 0], direction: [0, 1, 0] });
+           const rounded = await bitbybit.occt.fillets.fillet2d({ shape: hexagon, radius: 1.2 });
+           const face = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: rounded, planar: true });
+           holes.push(await bitbybit.occt.operations.extrude({ shape: face, direction: [0, 10, 0] }));
+       }
+       return holes;
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { armBody } from "./parts/arm/body";
+   ```
+
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   const arm = await armBody(sizes.armLength);
+   await draw(looks.carbon, arm);
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: typescript.tutorials.drone/arm-body */}
+
+2. The motor's body is a profile revolved around its shaft, with a cavity and eight cooling slots cut away and the propeller nut on top. Inside it a copper stator shows through the slots. Both move to the arm's tip.
+
+   - **Make `parts/arm/motor.ts`:**
+
+   ```typescript
+   async function revolved(points: Bit.Inputs.Base.Point3[]) {
+       const outline = await bitbybit.occt.shapes.wire.createPolygonWire({ points });
+       const face = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: outline, planar: true });
+       return bitbybit.occt.operations.revolve({ shape: face, angle: 360, direction: [0, 1, 0], copy: false });
+   }
+
+   export async function motor(length: number) {
+       const body = await revolved([[0, 0, 0], [13, 0, 0], [13, 3, 0], [8, 3, 0], [8, 6, 0], [14, 6, 0], [14, 19, 0], [12.8, 20, 0], [6, 20, 0], [6, 22, 0], [2.5, 22, 0], [2.5, 28, 0], [0, 28, 0]]);
+       const cavity = await bitbybit.occt.shapes.solid.createCylinder({ radius: 12.4, height: 12, center: [0, 6, 0], direction: [0, 1, 0] });
+       const bearing = await bitbybit.occt.shapes.solid.createCylinder({ radius: 4, height: 14, center: [0, 5, 0], direction: [0, 1, 0] });
+       const cuts = [await bitbybit.occt.booleans.difference({ shape: cavity, shapes: [bearing], keepEdges: false })];
+       for (let i = 0; i < 8; i++) {
+           const slot = await bitbybit.occt.shapes.solid.createBox({ width: 2.2, length: 8, height: 9, center: [0, 13, 12] });
+           cuts.push(await bitbybit.occt.transforms.rotate({ shape: slot, axis: [0, 1, 0], angle: i * 45 }));
+       }
+       const housing = await bitbybit.occt.booleans.difference({ shape: body, shapes: cuts, keepEdges: false });
+       const hexagon = await bitbybit.occt.shapes.wire.createNGonWire({ nrCorners: 6, radius: 3.6, center: [0, 34, 0], direction: [0, 1, 0] });
+       const hexFace = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: hexagon, planar: true });
+       const hex = await bitbybit.occt.operations.extrude({ shape: hexFace, direction: [0, 3.5, 0] });
+       const chamfer = await revolved([[0, 34, 0], [2.9, 34, 0], [3.7, 34.7, 0], [3.7, 36.8, 0], [2.9, 37.5, 0], [0, 37.5, 0]]);
+       const nut = await bitbybit.occt.booleans.intersection({ shapes: [hex, chamfer], keepEdges: false });
+       const whole = await bitbybit.occt.shapes.compound.makeCompound({ shapes: [housing, nut] });
+       const stator = await bitbybit.occt.shapes.solid.createCylinder({ radius: 11.8, height: 11, center: [0, 6.5, 0], direction: [0, 1, 0] });
+       return {
+           motor: await bitbybit.occt.transforms.translate({ shape: whole, translation: [length, 13, 0] }),
+           stator: await bitbybit.occt.transforms.translate({ shape: stator, translation: [length, 13, 0] }),
+       };
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { motor } from "./parts/arm/motor";
+   ```
+
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   const motorParts = await motor(sizes.armLength);
+   await draw(looks.aluminium, motorParts.motor);
+   await draw(looks.copper, motorParts.stator);
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: typescript.tutorials.drone/arm-motor */}
+
+3. A blade is lofted through five twisted ellipses, from a thick root to a thin, swept tip; the stations are numbers in a list, and the loop turns each into a section. A second blade half a turn round and a revolved hub complete the propeller, which sits on the motor's shaft, at the diameter `fitPropeller` worked out.
+
+   - **Make `parts/arm/propeller.ts`:**
+
+   ```typescript
+   async function blade(diameter: number) {
+       const stations = [[0, 12, 3.2, 38, 0], [0.25, 17, 2.4, 24, 0.6], [0.5, 15.5, 1.8, 16, 1.8], [0.78, 11, 1.4, 11, 3.6], [1, 4.5, 1, 8, 6]];
+       const root = 6;
+       const span = diameter / 2 - root;
+       const sections: Bit.Inputs.OCCT.TopoDSShapePointer[] = [];
+       for (const [t, chord, thickness, twist, sweep] of stations) {
+           const r = root + span * t;
+           const ellipse = await bitbybit.occt.shapes.wire.createEllipseWire({ center: [r, 0, sweep], direction: [1, 0, 0], radiusMinor: thickness / 2, radiusMajor: chord / 2 });
+           sections.push(await bitbybit.occt.transforms.rotateAroundCenter({ shape: ellipse, angle: twist, center: [r, 0, sweep], axis: [1, 0, 0] }));
+       }
+       return bitbybit.occt.operations.loft({ shapes: sections, makeSolid: true });
+   }
+
+   export async function propeller(length: number, diameter: number) {
+       const first = await blade(diameter);
+       const second = await bitbybit.occt.transforms.rotate({ shape: first, axis: [0, 1, 0], angle: 180 });
+       const outline = await bitbybit.occt.shapes.wire.createPolygonWire({ points: [[0, -5, 0], [8, -5, 0], [8, 4.5, 0], [6.5, 6.2, 0], [4.5, 7, 0], [0, 7, 0]] });
+       const face = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: outline, planar: true });
+       const hub = await bitbybit.occt.operations.revolve({ shape: face, angle: 360, direction: [0, 1, 0], copy: false });
+       const whole = await bitbybit.occt.booleans.union({ shapes: [hub, first, second], keepEdges: false });
+       return bitbybit.occt.transforms.translate({ shape: whole, translation: [length, 40, 0] });
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { propeller } from "./parts/arm/propeller";
+   ```
+
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   const blades = await propeller(sizes.armLength, diameter);
+   await draw(looks.accent, blades);
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: typescript.tutorials.drone/arm-propeller */}
+
+4. Six bolts hold the arm, two clamping it between the plates and four fixing the motor from below, all the M3 bolt from `parts/bolt.ts`; a file one folder down imports it with `../bolt`. An LED dome hangs under the arm.
+
+   - **Make `parts/arm/fittings.ts`:**
+
+   ```typescript
+   import { m3Bolt } from "../bolt";
+
+   export async function armBolts(length: number) {
+       const clamp = await bitbybit.occt.transforms.rotate({ shape: await m3Bolt(16), axis: [1, 0, 0], angle: 180 });
+       const motorBolt = await m3Bolt(12);
+       const placed: Bit.Inputs.OCCT.TopoDSShapePointer[] = [];
+       for (const x of [34, 44]) {
+           placed.push(await bitbybit.occt.transforms.translate({ shape: clamp, translation: [x, 16, 0] }));
+       }
+       for (const angle of [45, 135, 225, 315]) {
+           const a = angle * Math.PI / 180;
+           placed.push(await bitbybit.occt.transforms.translate({ shape: motorBolt, translation: [length + 8 * Math.cos(a), 3, 8 * Math.sin(a)] }));
+       }
+       return bitbybit.occt.shapes.compound.makeCompound({ shapes: placed });
+   }
+
+   export async function light(length: number) {
+       const dome = await bitbybit.occt.shapes.solid.createSphere({ radius: 3, center: [length - 24, 3, 0] });
+       const above = await bitbybit.occt.shapes.solid.createBox({ width: 8, length: 8, height: 4, center: [length - 24, 5, 0] });
+       return bitbybit.occt.booleans.difference({ shape: dome, shapes: [above], keepEdges: false });
+   }
+   ```
+
+   - **Import at the top of `main.ts`:**
+
+   ```typescript
+   import { armBolts, light } from "./parts/arm/fittings";
+   ```
+
+   - **Add at the end of `main.ts`:**
+
+   ```typescript
+   const bolts = await armBolts(sizes.armLength);
+   await draw(looks.steel, bolts);
+   const lamp = await light(sizes.armLength);
+   await draw(looks.green, lamp);
+   ```
+
+   - **Run it** with <Ui>Run The Code</Ui>.
+
+   {/* shot: typescript.tutorials.drone/arm-fittings */}
+
+{/* steps:end */}
+
+Next: [arms around the frame](./arms.mdx).

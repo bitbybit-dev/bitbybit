@@ -1,0 +1,10 @@
+{
+    "label": "Working in Blockly",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "Working in Blockly",
+        "description": "How to find blocks and put them together, what a block's menu offers, how variables and functions work, and how to see the code behind the blocks.",
+        "slug": "/getting-started/blockly/working-in-blockly"
+    }
+}
