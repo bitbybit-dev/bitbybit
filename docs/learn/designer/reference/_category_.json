@@ -1,0 +1,11 @@
+{
+    "label": "Reference",
+    "key": "designer-reference",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "Designer reference",
+        "description": "Reference pages for the Designer, generated from the Designer itself: every command with where to find it and the values it takes, every keyboard shortcut, and every tool it offers AI agents.",
+        "slug": "/designer/reference"
+    }
+}
