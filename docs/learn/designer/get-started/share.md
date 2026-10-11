@@ -19,7 +19,7 @@ tags: [designer]
 4. Under <Ui>Visitors can download</Ui>, choose what people below Gold may download: <Ui>Nothing</Ui>, the default; <Ui>Model</Ui>, a GLB or STL to view or 3D print; or <Ui>Everything</Ui>, STEP for other CAD tools and the project file as well. Then <Ui>Save</Ui>.
 5. Send the link of the script, as your browser shows it while the design is open.
 
-{/* shot: designer.get-started.share/visibility */}
+<Shot id="designer.get-started.share/visibility" />
 
 Who sees what:
 
@@ -40,7 +40,7 @@ Export the project with <Ui>File</Ui> > <Ui>Export...</Ui> > <Ui>Project</Ui> an
 
 A preview shows the design on its own, without the Designer around it: the model to turn and inspect, a choice of its configurations, the values you let visitors try, and <Ui>Open on bitbybit.dev</Ui>. It opens for anyone who can open the project and is view only for everyone, Gold members included.
 
-{/* shot: designer.get-started.share/preview */}
+<Shot id="designer.get-started.share/preview" />
 
 1. With the design open, choose the share button at the left of the bitbybit.dev header (<Ui>Share script preview</Ui>), or <Ui>Share a preview</Ui> beside the script in <Ui>My Projects</Ui>.
 2. Copy the preview's link, or choose <Ui>Embed Code</Ui> and paste it into your own page: [Embedding Scripts](/learn/getting-started/basics/scripts/embed) explains the rest.

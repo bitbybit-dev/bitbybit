@@ -17,7 +17,7 @@ A parameter is a named value, such as `length` or `width`. Any number in a featu
 
 Choose <Ui>Insert</Ui> > <Ui>Parameter</Ui>, or click <Ui>Add parameter</Ui> at the foot of the <Ui>Parameters</Ui> group in the <Ui>Features</Ui> panel. The new parameter is selected, and <Ui>Properties</Ui> shows it:
 
-{/* shot: designer.modelling.parameters/parameter */}
+<Shot id="designer.modelling.parameters/parameter" />
 
 - <Ui>Name</Ui>: what expressions call it. Rename it while nothing uses it yet.
 - <Ui>Value</Ui>: a number, or an expression of other parameters, such as `length / 2`.
@@ -30,7 +30,7 @@ The picture shows the desk arm link's `length`, which its sketches and its end h
 
 ## Drag and watch
 
-{/* shot: designer.modelling.parameters/changed */}
+<Shot id="designer.modelling.parameters/changed" />
 
 Type a new value, or drag the slider, and the part rebuilds as you go: every feature that reads the parameter, and everything built after it. Here the link's `length` went from 160 to 220, and its outline, its slot and the hole at its end followed. <Ui>Undo</Ui> puts the old value back.
 
@@ -59,11 +59,11 @@ When you share a design, you can let its visitors try other values of some param
 1. Give the parameter a min and a max under <Ui>Limits and description</Ui>. The slider runs between them, by the step you set there.
 2. Tick <Ui>Visitors can change it</Ui>.
 
-{/* shot: designer.modelling.parameters/offer */}
+<Shot id="designer.modelling.parameters/offer" />
 
 Visitors see the parameters you chose in <Ui>Try other values</Ui>, at the top left of the view, whether they open the design to view or open its [preview](../get-started/share.md#share-a-preview-or-embed-it). A parameter's label names its slider, and its description is the slider's tip.
 
-{/* shot: designer.modelling.parameters/try */}
+<Shot id="designer.modelling.parameters/try" />
 
 Nothing a visitor tries is saved, and <Ui>Back to the author's values</Ui> returns to yours. You keep editing as usual: the sliders are for visitors only.
 

@@ -21,7 +21,7 @@ A fan has twenty-two blades, a bearing thirty-six balls. A pattern places copies
    - **<Ui>Polar, about an axis</Ui>**: <Ui>Axis through</Ui> a point and <Ui>Axis direction</Ui>, the <Ui>Count</Ui> of copies, the <Ui>Angle</Ui> they spread over (a whole turn when empty) and the <Ui>Start</Ui> angle of the first;
    - **<Ui>Linear, along a direction</Ui>**: the <Ui>Direction</Ui>, the <Ui>Spacing</Ui> between copies and their <Ui>Count</Ui>.
 
-{/* shot: designer.assemblies.patterns/fan */}
+<Shot id="designer.assemblies.patterns/fan" />
 
 Every number can be an expression of the assembly's parameters, so a count can follow a size. The picture shows the jet engine's fan rotor: one fan blade component, patterned twenty-two times about the engine's axis, and selected so all twenty-two glow.
 

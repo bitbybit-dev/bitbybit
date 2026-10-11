@@ -15,7 +15,7 @@ tags: [designer]
 
 Choose <Ui>File</Ui> > <Ui>Export...</Ui>. The dialog offers the whole project or the document that is open:
 
-{/* shot: designer.tour/export */}
+<Shot id="designer.tour/export" />
 
 | Choice | What you get |
 |---|---|

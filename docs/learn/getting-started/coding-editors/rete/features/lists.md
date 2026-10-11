@@ -16,7 +16,7 @@ Most of geometry is repetition: a row of holes, a grid of cells, a ring of blade
 
 ## Several wires into one input
 
-{/* shot: rete.nodes.lists/badge */}
+<Shot id="rete.nodes.lists/badge" />
 
 When an input made for one value receives several, the node runs once for each, and a badge on the input says how many items it received. Here two sliders, at 0 and 4, are each wired into both <code>x</code> and <code>z</code> of one point. The point runs for every x with every z and gives four points; the cube's center receives the four and runs once per point, so four cubes stand in a square.
 
@@ -24,7 +24,7 @@ What comes out is a list too, so the repetition carries on down the graph withou
 
 ## Pair them 1:1
 
-{/* shot: rete.nodes.lists/one-to-one */}
+<Shot id="rete.nodes.lists/one-to-one" />
 
 By default a node combines its lists every value against every value, as above. Open the node options with ⌄ and tick <Ui>1:1</Ui> to pair them by position instead: the first x with the first z, the second with the second. The same point now gives two points, and two cubes stand on the diagonal. When the lists differ in length, the last item of the shorter one is repeated. The options show <Ui>1:1</Ui> only on a node with more than one input.
 

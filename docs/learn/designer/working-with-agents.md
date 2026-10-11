@@ -24,7 +24,7 @@ An agent that works outside the browser, such as a coding agent in your terminal
 
 ## See it working
 
-{/* shot: designer.agents/working */}
+<Shot id="designer.agents/working" />
 
 - While one of its tools runs, the status bar says which agent is working.
 - Faces and edges an agent picks are drawn in an agent colour, so you can tell its picks from yours.
@@ -32,7 +32,7 @@ An agent that works outside the browser, such as a coding agent in your terminal
 
 ## Review {#review}
 
-{/* shot: designer.agents/review */}
+<Shot id="designer.agents/review" />
 
 An agent's change is applied at once, because its next step needs the last one built. It also waits for you in the dock's <Ui>Review</Ui> tab, which opens when the change arrives. The tab lists each change by what it touched (a feature, a part, a component, a joint, a configuration, a material or a parameter) as added, removed or changed, with what changed.
 
@@ -44,7 +44,7 @@ Both are in the <Ui>Edit</Ui> menu as well as the tab. An agent cannot review it
 
 ## Whose camera it moves
 
-{/* shot: designer.agents/follow */}
+<Shot id="designer.agents/follow" />
 
 An agent often needs to look at the model from another side. <Ui>View</Ui> > <Ui>Follow agent</Ui> decides whose camera that moves, and it is off each time the page loads.
 

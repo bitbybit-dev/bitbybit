@@ -19,7 +19,7 @@ tags: [designer]
 - **<Ui>Look at</Ui>** turns the view to face a picked flat face straight on.
 - **<Ui>Perspective</Ui>** switches between perspective and a flat, measured-drawing look, **<Ui>Lock rotation</Ui>** stops a drag from turning the view, and **<Ui>Show or hide the grid</Ui>** does what it says.
 
-{/* shot: designer.modelling.views/view-menu */}
+<Shot id="designer.modelling.views/view-menu" />
 
 <Ui>View</Ui> holds all of them with their keys, and the named views: <Ui>Iso view</Ui>, <Ui>Front view</Ui>, <Ui>Back view</Ui>, <Ui>Left view</Ui>, <Ui>Right view</Ui>, <Ui>Top view</Ui> and <Ui>Bottom view</Ui>, and <Ui>Turn up</Ui>, <Ui>Turn down</Ui>, <Ui>Turn left</Ui>, <Ui>Turn right</Ui>, <Ui>Roll left</Ui> and <Ui>Roll right</Ui> to step around.
 
@@ -29,7 +29,7 @@ The view bar's last buttons choose the look: <Ui>Faces</Ui> and <Ui>Edges</Ui> o
 
 ## Pick faces and edges
 
-{/* shot: designer.modelling.views/picked */}
+<Shot id="designer.modelling.views/picked" />
 
 Click a face or an edge in the view to pick it, and <kbd>Shift</kbd>+click to add more. What the pointer is over is named in the status bar before you click, such as "Face: link end".
 

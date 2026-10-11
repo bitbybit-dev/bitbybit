@@ -14,7 +14,7 @@ tags: [getting-started, blockly]
 
 ## A block's menu
 
-{/* shot: blockly.blocks.menu/context */}
+<Shot id="blockly.blocks.menu/context" />
 
 Right-click a block to open its menu:
 
@@ -32,7 +32,7 @@ Right-click an empty spot of the workspace for what applies to the whole script:
 
 ## A block's tip
 
-{/* shot: blockly.blocks.menu/tip */}
+<Shot id="blockly.blocks.menu/tip" />
 
 Rest the pointer on a block to read what it does, the path of its function in the API and what it gives back. Rest it on an input's name for what that input expects.
 

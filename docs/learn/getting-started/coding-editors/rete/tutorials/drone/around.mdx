@@ -30,7 +30,7 @@ Once Around exists, it cuts the plate's four leg openings and places the standof
 
    - Select the comment and *Around*, press <Ui>Group selected components</Ui> and title the group *Modules*.
 
-   {/* shot: rete.tutorials.drone/around-definition */}
+   <Shot id="rete.tutorials.drone/around-definition" />
 
 2. Go inside the module. It starts with one input and one output; their titles become the ports of every instance, so name them shape and copies, and add a second input, count, with a sample of 4.
 
@@ -45,7 +45,7 @@ Once Around exists, it cuts the plate's four leg openings and places the standof
 
    - Select the comment, *shape*, *copies* and *count*, press <Ui>Group selected components</Ui> and title the group *Around*.
 
-   {/* shot: rete.tutorials.drone/around-ports */}
+   <Shot id="rete.tutorials.drone/around-ports" />
 
 3. The shape is repeated count times, and so is the axis to turn around, straight up. A list wired into an input that takes one value would arrive whole, so the copies are made as lists.
 
@@ -57,7 +57,7 @@ Once Around exists, it cuts the plate's four leg openings and places the standof
    - Wire **up** › result into **repeat axis** › item.
    - Wire **count** › value into **repeat axis** › times.
 
-   {/* shot: rete.tutorials.drone/around-repeat */}
+   <Shot id="rete.tutorials.drone/around-repeat" />
 
 4. A code component works out the angles, half a step off the axes: 45, 135, 225 and 315 for four. A few lines say this more plainly than a dozen nodes.
 
@@ -71,7 +71,7 @@ Once Around exists, it cuts the plate's four leg openings and places the standof
    }
    ```
 
-   {/* shot: rete.tutorials.drone/around-angles */}
+   <Shot id="rete.tutorials.drone/around-angles" />
 
 5. Rotate shapes turns each copy by its own angle around its own axis, pairing the three lists by position, and its result leaves through the module's output.
 
@@ -81,7 +81,7 @@ Once Around exists, it cuts the plate's four leg openings and places the standof
    - Wire **angles** › result into **turn copies** › angles.
    - Wire **turn copies** › result into **copies** › value.
 
-   {/* shot: rete.tutorials.drone/around-turn */}
+   <Shot id="rete.tutorials.drone/around-turn" />
 
 6. Back on the main graph, the definition now shows the module's ports.
 
@@ -98,7 +98,7 @@ Once Around exists, it cuts the plate's four leg openings and places the standof
    - Wire **leg openings around** › copies into **leg openings** › shapes.
    - Wire **leg openings** › result into **cut-outs** › listElements.
 
-   {/* shot: rete.tutorials.drone/openings */}
+   <Shot id="rete.tutorials.drone/openings" />
 
 8. A bolt for the standoffs: a code component revolves its profile and cuts the hexagon socket into its head. A number gives its length, 8 millimetres.
 
@@ -126,7 +126,7 @@ Once Around exists, it cuts the plate's four leg openings and places the standof
    }
    ```
 
-   {/* shot: rete.tutorials.drone/bolt */}
+   <Shot id="rete.tutorials.drone/bolt" />
 
 9. A standoff is a post 10 millimetres tall, 40 from the centre, with a bolt from below and a flipped bolt from above. A code component turns them back half a step, between the arms, and two Around instances repeat them as many times as there are arms.
 
@@ -181,7 +181,7 @@ Once Around exists, it cuts the plate's four leg openings and places the standof
    }
    ```
 
-   {/* shot: rete.tutorials.drone/standoffs */}
+   <Shot id="rete.tutorials.drone/standoffs" />
 
 {/* steps:end */}
 

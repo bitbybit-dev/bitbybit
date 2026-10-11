@@ -16,7 +16,7 @@ Rete holds more than 1,700 components, one for every function of the Bitbybit AP
 
 ## Search with a right-click
 
-{/* shot: rete.nodes.add/search */}
+<Shot id="rete.nodes.add/search" />
 
 1. Right-click an empty spot on the canvas. The search opens in <Ui>Add components</Ui> mode, its field ready for typing.
 2. Type part of the name, such as `cube`, or part of the path, such as `solid.create`. Every result shows its name, and below it the rest of its path.
@@ -34,7 +34,7 @@ The same search finds what is already on the canvas: switch it to <Ui>Find on ca
 
 ## Browse the palette
 
-{/* shot: rete.nodes.add/palette */}
+<Shot id="rete.nodes.add/palette" />
 
 The palette along the top of the canvas follows the API. Its icons are the top categories (draw, occt, math, lists and the rest); hover one to read its name, click it to open it.
 

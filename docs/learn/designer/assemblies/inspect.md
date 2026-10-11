@@ -13,7 +13,7 @@ tags: [designer]
 
 ## Bill of materials
 
-{/* shot: designer.assemblies.inspect/bom */}
+<Shot id="designer.assemblies.inspect/bom" />
 
 The dock's <Ui>Bill of materials</Ui> tab lists every part the assembly places, with its <Ui>Quantity</Ui>, counted through every sub-assembly, [replicate](./replicate.md) and [pattern](./patterns.md). It follows the assembly as you change it.
 
@@ -21,7 +21,7 @@ A part placed at different sizes is a different part to make, so it has a line f
 
 ## Check clashes
 
-{/* shot: designer.assemblies.inspect/clashes */}
+<Shot id="designer.assemblies.inspect/clashes" />
 
 <Ui>Check clashes</Ui>, in <Ui>Inspect</Ui>, on the toolbar or in the dock's <Ui>Clashes</Ui> tab, builds the assembly as it stands and lists every pair of parts that:
 

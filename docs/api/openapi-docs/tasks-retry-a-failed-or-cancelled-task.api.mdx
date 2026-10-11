@@ -66,5 +66,33 @@ Re-queues a failed or cancelled task with the same parameters.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/tasks/{taskId}/retry`
+
+Re-queues a failed or cancelled task with the same parameters.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `taskId` | path | string | yes | Task ID |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `202` | Task re-queued |
+| `404` | Not found |
+| `409` | Task is not in a retryable state |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/tasks/{taskId}/retry" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

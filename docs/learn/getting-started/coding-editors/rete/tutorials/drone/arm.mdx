@@ -22,7 +22,7 @@ While you edit a module, its inputs have no values: only an instance gives them 
 
    - Add **Module Definition** as *Arm* in the *Modules* group.
 
-   {/* shot: rete.tutorials.drone/arm-definition */}
+   <Shot id="rete.tutorials.drone/arm-definition" />
 
 2. Inside, name the ports: length and propeller in, and arm, motor, stator, propeller, bolts and light out. Give the inputs samples, 185 and 230: while you edit a module, a sample stands in for the value an instance will give, so you can see what the module makes.
 
@@ -48,7 +48,7 @@ While you edit a module, its inputs have no values: only an instance gives them 
 
    - Select the comment, *arm*, *motor*, *stator*, *propeller*, *bolts* and *light*, press <Ui>Group selected components</Ui> and title the group *Outputs*.
 
-   {/* shot: rete.tutorials.drone/arm-ports */}
+   <Shot id="rete.tutorials.drone/arm-ports" />
 
 3. A code component turns the length into the arm's four corner points, wide at the root and narrow at the tip; a polygon joins them, its corners are rounded, and it is extruded 10 millimetres and lifted onto the plate.
 
@@ -78,7 +78,7 @@ While you edit a module, its inputs have no values: only an instance gives them 
    }
    ```
 
-   {/* shot: rete.tutorials.drone/arm-body */}
+   <Shot id="rete.tutorials.drone/arm-body" />
 
 4. A round pad at the tip carries the motor: a cylinder whose centre takes the length as its x, joined to the arm.
 
@@ -92,7 +92,7 @@ While you edit a module, its inputs have no values: only an instance gives them 
    - Add **union** as *arm and pad*: hidden, in the *Arm* group.
    - Wire **arm parts** › list into **arm and pad** › shapes.
 
-   {/* shot: rete.tutorials.drone/arm-pad */}
+   <Shot id="rete.tutorials.drone/arm-pad" />
 
 5. Hexagonal cut-outs lighten the arm. A code component makes one rounded hexagon prism every 24 millimetres, each sized to the arm's width where it sits, and the difference cuts them all away.
 
@@ -119,7 +119,7 @@ While you edit a module, its inputs have no values: only an instance gives them 
    }
    ```
 
-   {/* shot: rete.tutorials.drone/arm-cutouts */}
+   <Shot id="rete.tutorials.drone/arm-cutouts" />
 
 6. The motor is a profile revolved around its shaft, with a cavity and eight cooling slots cut away and its propeller nut on top, all in one code component. A cylinder makes the copper stator, and a vector that takes the length as its x moves both to the tip.
 
@@ -168,7 +168,7 @@ While you edit a module, its inputs have no values: only an instance gives them 
    }
    ```
 
-   {/* shot: rete.tutorials.drone/arm-motor */}
+   <Shot id="rete.tutorials.drone/arm-motor" />
 
 7. Each blade is lofted through five twisted ellipses, from a thick root to a thin, swept tip, in a code component that calls the same loft the graph has. A second blade turned half a turn and a revolved hub complete the propeller, which sits on the motor's shaft.
 
@@ -219,7 +219,7 @@ While you edit a module, its inputs have no values: only an instance gives them 
    }
    ```
 
-   {/* shot: rete.tutorials.drone/arm-propeller */}
+   <Shot id="rete.tutorials.drone/arm-propeller" />
 
 8. Six bolts hold the arm: two clamp it between the plates and four fix the motor from below. An LED dome hangs under the arm. Both take the length, so they follow the tip.
 
@@ -267,7 +267,7 @@ While you edit a module, its inputs have no values: only an instance gives them 
    }
    ```
 
-   {/* shot: rete.tutorials.drone/arm-fittings */}
+   <Shot id="rete.tutorials.drone/arm-fittings" />
 
 9. Back on the main graph, the Arm definition shows its ports.
 

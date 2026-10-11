@@ -26,7 +26,7 @@ Nothing is stored until the script holds something. From your first change, it i
 
 ## In a project
 
-{/* shot: platform.scripts.create/new-script */}
+<Shot id="platform.scripts.create/new-script" />
 
 1. In [My Projects](https://bitbybit.dev/projects/my), choose the project: one in the cloud or one in this browser.
 2. Choose <Ui>New script</Ui>.

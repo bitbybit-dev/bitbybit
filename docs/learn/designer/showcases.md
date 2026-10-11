@@ -18,7 +18,7 @@ Three projects modelled in the Designer, each in two forms:
 
 ## Robot arm
 
-{/* shot: designer.showcases/robot-arm-cover */}
+<Shot id="designer.showcases/robot-arm-cover" />
 
 A six-axis industrial arm on a pedestal, with cable harnesses along its links and a three-finger gripper.
 
@@ -28,11 +28,11 @@ A six-axis industrial arm on a pedestal, with cable harnesses along its links an
 
 <OpenInDesigner showcase="robot-arm" />
 
-{/* shot: designer.showcases/robot-arm-project */}
+<Download id="designer.showcases/robot-arm-project" />
 
 ## Jet engine
 
-{/* shot: designer.showcases/jet-engine-cover */}
+<Shot id="designer.showcases/jet-engine-cover" />
 
 A turbofan: the fan, the compressor and turbine stages, the casing halves, the pipes and boxes outside them, on a stand.
 
@@ -44,11 +44,11 @@ Imported from its file, a model this size takes a while to open, since each diff
 
 <OpenInDesigner showcase="jet-engine" />
 
-{/* shot: designer.showcases/jet-engine-project */}
+<Download id="designer.showcases/jet-engine-project" />
 
 ## Desk arm
 
-{/* shot: designer.showcases/desk-arm-cover */}
+<Shot id="designer.showcases/desk-arm-cover" />
 
 The desk arm that [the tutorial](./tutorials/desk-arm.md) builds step by step: a weighted base, a turntable, two links, a wrist and a gripper driven by a lead screw.
 
@@ -58,4 +58,4 @@ The desk arm that [the tutorial](./tutorials/desk-arm.md) builds step by step: a
 
 <OpenInDesigner showcase="desk-arm" />
 
-{/* shot: designer.showcases/desk-arm-project */}
+<Download id="designer.showcases/desk-arm-project" />

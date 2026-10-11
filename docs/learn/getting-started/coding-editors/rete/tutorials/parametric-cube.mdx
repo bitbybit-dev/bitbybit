@@ -28,31 +28,31 @@ Open [an empty Rete editor](https://bitbybit.dev/app?editor=rete). If this is yo
 
    The palette follows the API: occt, then shapes, then solid. Cube sits among the primitives. Its path, occt.shapes.solid.createCube, is printed on the node and links to its documentation.
 
-   {/* shot: rete.tutorials.parametric-cube/cube */}
+   <Shot id="rete.tutorials.parametric-cube/cube" />
 
 2. **Run the script.** Press <Ui>Run The Code</Ui>, the play button at the lower left.
 
    Run the script once. The cube is a solid made by OCCT, the CAD kernel, and Rete draws it for you.
 
-   {/* shot: rete.tutorials.parametric-cube/run */}
+   <Shot id="rete.tutorials.parametric-cube/run" />
 
 3. **Add number slider from the palette.** Open <Ui>math</Ui> along the top of the canvas and click <Ui>number slider</Ui> under create.
 
    A number slider gives a value you can drag. It starts at 5, between 0 and 10.
 
-   {/* shot: rete.tutorials.parametric-cube/slider */}
+   <Shot id="rete.tutorials.parametric-cube/slider" />
 
 4. **Connect number slider to the size of cube.** Drag from the output on the right of number slider to the size input of cube.
 
    Wire the slider's output into the cube's size. The cube takes the slider's 5 at once.
 
-   {/* shot: rete.tutorials.parametric-cube/connected */}
+   <Shot id="rete.tutorials.parametric-cube/connected" />
 
 5. **Set number to `2.5`** on number slider.
 
    Drag the slider, or focus it and use the arrow keys: the cube follows every value, because its size now comes from the slider.
 
-   {/* shot: rete.tutorials.parametric-cube/smaller */}
+   <Shot id="rete.tutorials.parametric-cube/smaller" />
 
 ### The finished script
 

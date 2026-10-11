@@ -15,7 +15,7 @@ A part keeps the list of features that make it, never the shape itself, so nothi
 
 ## Change a feature
 
-{/* shot: designer.modelling.history/menu */}
+<Shot id="designer.modelling.history/menu" />
 
 Right-click a feature in the <Ui>Features</Ui> panel, or select it and use the buttons in <Ui>Properties</Ui>:
 
@@ -31,7 +31,7 @@ Drag a feature up or down the list. Features are built in order, so a move that 
 
 ## Roll back
 
-{/* shot: designer.modelling.history/rolled-back */}
+<Shot id="designer.modelling.history/rolled-back" />
 
 <Ui>Roll back to here</Ui> builds the part only up to the feature you chose. A <Ui>Rolled back here</Ui> row marks the place, and the features after it are greyed and left out. New features go in at that point, so you can add something early in the part's life without moving every later feature by hand.
 
@@ -43,7 +43,7 @@ Drag a feature up or down the list. Features are built in order, so a move that 
 
 ## The History tab
 
-{/* shot: designer.modelling.history/history */}
+<Shot id="designer.modelling.history/history" />
 
 The dock's <Ui>History</Ui> tab lists the changes of this session in order, each with who made it. <Ui>Save the steps</Ui> saves them as a step file that makes the documents again.
 

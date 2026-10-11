@@ -24,7 +24,7 @@ Drag any selected node to move them all. Drag the empty canvas to pan, and use t
 
 ## Groups
 
-{/* shot: rete.canvas.organise/group */}
+<Shot id="rete.canvas.organise/group" />
 
 Select the nodes that belong together and press <Ui>Group selected components</Ui> in the toolbar: a frame is drawn around them. Name it in its title, and give it a <Ui>Description</Ui> below. Dragging the group moves everything in it.
 
@@ -34,13 +34,13 @@ With a group selected, the toolbar offers <Ui>Remove selected group(s)</Ui>, whi
 
 ## Comments
 
-{/* shot: rete.canvas.organise/comment */}
+<Shot id="rete.canvas.organise/comment" />
 
 <Ui>Add a comment</Ui> puts a note on the canvas. Double-click it to edit its text in <Ui>Edit comment (Markdown)</Ui>: headings, bold, lists and links all render on the canvas. With a comment selected, the toolbar sets its <Ui>Comment text color</Ui>, <Ui>Comment background color</Ui> and <Ui>Comment text scale</Ui>.
 
 ## Find on canvas
 
-{/* shot: rete.canvas.organise/find */}
+<Shot id="rete.canvas.organise/find" />
 
 Right-click the canvas and switch the search to <Ui>Find on canvas</Ui>. Type at least three letters: every node whose component, title, inputs, outputs, group or comment matches is listed, with where it matched, and the canvas moves to the first one and makes it pulse. <kbd>Enter</kbd> or the arrows step to the next match.
 

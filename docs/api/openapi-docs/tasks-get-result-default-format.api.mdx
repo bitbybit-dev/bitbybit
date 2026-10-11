@@ -66,5 +66,33 @@ Returns a download URL for the task's primary result. For compound tasks, return
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`GET /api/v1/tasks/{taskId}/result`
+
+Returns a download URL for the task's primary result. For compound tasks, returns a manifest with per-sub-task download links.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `taskId` | path | string | yes | Task ID |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | Result download link (standard) or compound manifest |
+| `404` | Not found |
+| `409` | Task is not yet completed |
+
+### Example request
+
+```bash
+curl -X GET "https://api.bitbybit.dev/api/v1/tasks/{taskId}/result" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

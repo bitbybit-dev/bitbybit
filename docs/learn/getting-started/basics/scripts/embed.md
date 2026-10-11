@@ -22,7 +22,7 @@ Embedding shows a script's [preview](/learn/start/general/script-preview-mode) i
 
 ## Embed a preview
 
-{/* shot: platform.scripts.embed/embed-code */}
+<Shot id="platform.scripts.embed/embed-code" />
 
 1. Open the script and choose the share button at the left of the bitbybit.dev header (<Ui>Share script preview</Ui>).
 2. Choose the kernels and the renderer the preview loads, as [Script Preview Mode](/learn/start/general/script-preview-mode#share-a-preview) explains.

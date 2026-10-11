@@ -75,7 +75,7 @@ Later calls refer to what earlier calls made, so this order avoids every "not fo
 
 [A family house in IFC](/learn/code/common/ifc/family-house) shows where this order leads: a whole two-storey house written with the same calls, which opens in the TypeScript editor.
 
-{/* shot: code.ifc.family-house/morning */}
+<Shot id="code.ifc.family-house/morning" />
 
 A two-storey house in Node, with the package alone. It follows the order above and writes a file other BIM tools open:
 

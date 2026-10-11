@@ -12,7 +12,7 @@ tags: [getting-started, typescript]
 
 # A tour of the TypeScript editor
 
-{/* shot: typescript.start.tour/window */}
+<Shot id="typescript.start.tour/window" />
 
 The numbers match the picture, which shows the script [Hello World](./tutorials/hello-world.mdx) writes.
 

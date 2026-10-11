@@ -24,7 +24,7 @@ One arm becomes as many as *arms* says: each draw gets a call of ***around*** in
    - **In** **draw any async no return**(entity *arm fixings*, options *steel*), **replace** *arm fixings* **with** ***around***(*arm fixings*, *arms*).
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: blockly.tutorials.drone/arms */}
+   <Shot id="blockly.tutorials.drone/arms" />
 
 2. Neighbouring propellers turn opposite ways, so the drone does not spin. alternate spin is an async function: it awaits the propellers it is given, then a count loop awaits each one's centre, turns it a little around it, and mirrors every second one across its own arm. A function with an await block in it runs as async; a set block that keeps its result waits for it, so the blocks after it can use the result.
 
@@ -45,7 +45,7 @@ One arm becomes as many as *arms* says: each draw gets a call of ***around*** in
    - **In** **draw any async no return**(entity *one propeller*, options *accent*), **replace** *one propeller* **with** *spun*.
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: blockly.tutorials.drone/propellers */}
+   <Shot id="blockly.tutorials.drone/propellers" />
 
 3. The lights repeat too. lights on side awaits each light's centre and keeps the ones on the side it is asked for; two set blocks keep the front ones and the back ones, drawn green and red, as on an aircraft.
 
@@ -65,7 +65,7 @@ One arm becomes as many as *arms* says: each draw gets a call of ***around*** in
      - **draw any async no return**(entity *back lights*, options ***look***("red", `#ff2a2a`, 0, 0.2, `#ff2a2a`, `#0d0e10`, 0))
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: blockly.tutorials.drone/lights */}
+   <Shot id="blockly.tutorials.drone/lights" />
 
 {/* steps:end */}
 

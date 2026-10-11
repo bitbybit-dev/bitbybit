@@ -15,7 +15,7 @@ A sketch is a flat outline that other features use: an extrude or a revolve take
 
 ## Start a sketch
 
-{/* shot: designer.modelling.sketches/new */}
+<Shot id="designer.modelling.sketches/new" />
 
 1. In a part document, choose <Ui>Insert</Ui> > <Ui>Sketch</Ui>, or <Ui>Sketch</Ui> on the toolbar. An empty part offers it in the middle of the view too.
 2. Its dialog opens in <Ui>Properties</Ui>. Under <Ui>Placement</Ui>, choose the <Ui>Plane</Ui>, XY, XZ or YZ, and an <Ui>Offset</Ui> along it if you like. With Y up, XZ is the ground. To sketch on a flat face of the part instead, click that face in the view.
@@ -45,7 +45,7 @@ Pick a tool, then click in the view. Each tool has a key as well:
 
 ## Every point is a pen command
 
-{/* shot: designer.modelling.sketches/pen */}
+<Shot id="designer.modelling.sketches/pen" />
 
 What you draw is kept as a list of pen commands, which the dialog shows under <Ui>Pen</Ui>: where the pen starts, then each line and arc and where it goes. Right-click a sketch and choose <Ui>Edit feature</Ui> to change any of them; while you do, the view shows the part only as far as the sketch. The picture shows the side outline of the desk arm's link, from [the showcases](../showcases.md).
 

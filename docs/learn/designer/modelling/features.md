@@ -13,11 +13,11 @@ tags: [designer]
 
 A part is a list of features, built in order. You add one from <Ui>Insert</Ui> or the toolbar, fill in its dialog, and <Ui>OK</Ui> adds it after the features already there.
 
-{/* shot: designer.modelling.features/insert */}
+<Shot id="designer.modelling.features/insert" />
 
 ## How a dialog works
 
-{/* shot: designer.modelling.features/extrude */}
+<Shot id="designer.modelling.features/extrude" />
 
 A feature's dialog opens in <Ui>Properties</Ui>, with a line on what the feature does and its fields under it. The picture shows the desk arm link's extrude.
 
@@ -50,7 +50,7 @@ The features that make shape start a new body, named after the feature, unless y
 
 ## Features that change shape
 
-{/* shot: designer.modelling.features/hole */}
+<Shot id="designer.modelling.features/hole" />
 
 | Feature | What it does |
 |---|---|

@@ -13,7 +13,7 @@ tags: [designer]
 
 After every change the Designer builds the part again. When a feature cannot be built, such as a fillet too large for its edges or a hole on a face that is gone, the build carries on as far as it can and tells you what went wrong.
 
-{/* shot: designer.modelling.problems/problems */}
+<Shot id="designer.modelling.problems/problems" />
 
 ## Where it shows
 

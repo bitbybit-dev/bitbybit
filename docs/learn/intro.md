@@ -59,23 +59,23 @@ A quadcopter with its frame, arms, motors, propellers, canopy, landing gear and 
   altPrefix="The drone built in the Rete editor: the node graph on the left, organised in groups, and the finished quadcopter on the right"
 />
 
-{/* shot: rete.start.showcases/drone blockly.start.showcases/drone typescript.start.showcases/drone */}
+<Shot ids={["rete.start.showcases/drone", "blockly.start.showcases/drone", "typescript.start.showcases/drone"]} columns={3} />
 
 ### Assemblies in the Designer
 
 A robot arm of 77 components and 73 joints, the same jet engine as design documents with its casing that opens, and a desk arm built step by step: modelled by clicking in [the Designer](/learn/designer/intro), where every sketch, feature and joint stays editable. [Open the showcases](/learn/designer/showcases).
 
-{/* shot: designer.tour/window */}
+<Shot id="designer.tour/window" />
 
-{/* shot: designer.showcases/robot-arm-cover designer.showcases/jet-engine-cover designer.showcases/desk-arm-cover */}
+<Shot ids={["designer.showcases/robot-arm-cover", "designer.showcases/jet-engine-cover", "designer.showcases/desk-arm-cover"]} columns={3} />
 
 ### A house as BIM
 
 A two-storey family house written as an IFC building model, the open format architects' tools share: walls with their layers, floors, windows and doors, a flat roof with a solar array, a carport and a garden, each part knowing what it is. It is a TypeScript project you can open and change, drawn under a sky whose sun follows a slider. [Open the family house](/learn/code/common/ifc/family-house).
 
-{/* shot: code.ifc.family-house/editor */}
+<Shot id="code.ifc.family-house/editor" />
 
-{/* shot: code.ifc.family-house/afternoon code.ifc.family-house/dusk */}
+<Shot ids={["code.ifc.family-house/afternoon", "code.ifc.family-house/dusk"]} columns={2} />
 
 ## Designing with AI
 
@@ -90,7 +90,7 @@ Bitbybit is built for that way of working:
 
 Here an agent has changed a parameter of the desk arm in the Designer, and its change waits in the Review tab to be kept or undone:
 
-{/* shot: designer.agents/working */}
+<Shot id="designer.agents/working" />
 
 [Using AI with Bitbybit](/learn/using-ai-with-bitbybit/intro) shows how to connect an agent, and the [AI path](./paths/ai-agent) where to start.
 

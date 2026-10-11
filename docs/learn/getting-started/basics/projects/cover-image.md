@@ -19,7 +19,7 @@ Scripts can have covers of their own. Without one, a script shows a placeholder.
 
 ## Add a cover
 
-{/* shot: platform.projects.cover/form */}
+<Shot id="platform.projects.cover/form" />
 
 1. Take a picture of your work: a screenshot of the model works well (<kbd>Cmd+Shift+4</kbd> on macOS, the Snipping Tool on Windows).
 2. In [My Projects](https://bitbybit.dev/projects/my), choose the cloud project.

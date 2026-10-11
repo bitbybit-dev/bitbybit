@@ -15,7 +15,7 @@ An assembly document has no geometry of its own. It places parts from part docum
 
 ## Insert a component
 
-{/* shot: designer.assemblies.components/insert */}
+<Shot id="designer.assemblies.components/insert" />
 
 Choose <Ui>Insert</Ui> > <Ui>Insert component</Ui>, or the toolbar button. <Ui>Insert a part</Ui> in <Ui>Properties</Ui> lists every part of the project's part documents, and every other assembly; click one to place it. It lands beside what is already there, ready to be joined.
 
@@ -23,7 +23,7 @@ One part document can be placed many times, and in many assemblies. The bill of 
 
 ## A component's own sizes
 
-{/* shot: designer.assemblies.components/component */}
+<Shot id="designer.assemblies.components/component" />
 
 The <Ui>Components</Ui> group nests each component under the one a joint holds it to, with the joint's type beside it, so the tree reads like the assembly's chain. Select a component there, or click it in the view, and <Ui>Properties</Ui> shows it:
 

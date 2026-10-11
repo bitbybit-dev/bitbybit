@@ -20,7 +20,7 @@ A Blockly script is a set of blocks snapped together on the workspace. [Hello Wo
 
 **By search.**
 
-{/* shot: blockly.blocks.build/search */}
+<Shot id="blockly.blocks.build/search" />
 
 Type part of a block's name into the search field at the top of the toolbox. The flyout lists every block that matches, from every category. Clear the field with its cross.
 

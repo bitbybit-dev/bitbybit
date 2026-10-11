@@ -30,7 +30,7 @@ One arm becomes as many as `sizes.arms` says. Wrapping a part's shape in `around
    - **In `main.ts`, change** `await draw(looks.steel, bolts);` **to** `await draw(looks.steel, await around(bolts, sizes.arms));`.
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: typescript.tutorials.drone/arms */}
+   <Shot id="typescript.tutorials.drone/arms" />
 
 2. Neighbouring propellers turn opposite ways, so the drone does not spin. `alternateSpin` mirrors every second propeller across its own arm and turns each a little, so the blades do not all line up.
 
@@ -60,7 +60,7 @@ One arm becomes as many as `sizes.arms` says. Wrapping a part's shape in `around
    - **In `main.ts`, change** `await draw(looks.accent, blades);` **to** `await draw(looks.accent, await alternateSpin(await around(blades, sizes.arms)));`.
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: typescript.tutorials.drone/propellers */}
+   <Shot id="typescript.tutorials.drone/propellers" />
 
 3. The lights repeat too, and `bySide` sorts them by the side of the drone they are on, so the front ones are drawn green and the back ones red, as on an aircraft.
 
@@ -100,7 +100,7 @@ One arm becomes as many as `sizes.arms` says. Wrapping a part's shape in `around
 
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: typescript.tutorials.drone/lights */}
+   <Shot id="typescript.tutorials.drone/lights" />
 
 {/* steps:end */}
 

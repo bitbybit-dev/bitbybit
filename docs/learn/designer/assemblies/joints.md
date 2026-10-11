@@ -15,7 +15,7 @@ A joint puts one component's connector onto another's and says how the component
 
 ## Add a joint
 
-{/* shot: designer.assemblies.joints/new */}
+<Shot id="designer.assemblies.joints/new" />
 
 Choose <Ui>Insert</Ui> > <Ui>Joint</Ui>, or the toolbar button. <Ui>New joint</Ui> opens in <Ui>Properties</Ui>:
 
@@ -37,7 +37,7 @@ A component lists only the connectors its part has; one without any says so, and
 
 ## Angle, offset and limits
 
-{/* shot: designer.assemblies.joints/joint */}
+<Shot id="designer.assemblies.joints/joint" />
 
 Select a joint in the <Ui>Joints</Ui> group to see it in <Ui>Properties</Ui>. A revolute joint has an <Ui>Angle</Ui>, a slider an <Ui>Offset</Ui>, a cylindrical joint both, each with a slider to try it:
 
@@ -48,7 +48,7 @@ Select a joint in the <Ui>Joints</Ui> group to see it in <Ui>Properties</Ui>. A 
 
 ## Pose the assembly
 
-{/* shot: designer.tour/configuration */}
+<Shot id="designer.tour/configuration" />
 
 With its joints driven by parameters, the whole assembly poses from a few numbers: drag a parameter's slider and the chain moves. A configuration keeps a set of those values under a name, and clicking it in the <Ui>Configurations</Ui> group builds the assembly that way. The robot arm from [the showcases](../showcases.md) keeps its rest, reach, strike and grasp poses as configurations.
 

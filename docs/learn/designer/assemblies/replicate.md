@@ -20,7 +20,7 @@ A flange with eight bolt holes needs eight bolts. Rather than eight components a
 3. Choose its connector, the one that sits on each hole, such as the underside of a screw's head.
 4. Choose the component and the connector set to place it on.
 
-{/* shot: designer.assemblies.replicate/set */}
+<Shot id="designer.assemblies.replicate/set" />
 
 The component now stands on every hole. The <Ui>Components</Ui> group shows it once, with how many it places, such as "×4", and its occurrences fold open under it. The picture shows the desk arm's base screws: one screw component on the four holes of the base's `bolts` set, each set two millimetres down its hole by an <Ui>Offset</Ui> of -2.
 

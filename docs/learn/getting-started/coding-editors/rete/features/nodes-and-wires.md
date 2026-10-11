@@ -24,7 +24,7 @@ Wires run in straight lines with rounded corners: out of an output, along to a t
 
 ## What a wire accepts
 
-{/* shot: rete.nodes.wires/refused */}
+<Shot id="rete.nodes.wires/refused" />
 
 Every socket has a type: a number, a point, a text, an OCCT shape, a list of them, and so on. A wire is refused when the output's type cannot feed the input, and a message at the bottom of the window says what the input needs, where such values come from, and what the output gives instead. Here a text output was dropped on the size of a cube, which needs a number.
 
@@ -32,7 +32,7 @@ A list socket has a stripe across it, and a list of lists has several, so you ca
 
 ## See a value
 
-{/* shot: rete.nodes.wires/value */}
+<Shot id="rete.nodes.wires/value" />
 
 Rest the pointer on a socket. A tip names its type, says what the input is for, and after a run shows the value it holds. When you zoom far out, the nodes shrink to coloured boxes; rest the pointer on one to read its inputs and outputs in a tip.
 
@@ -40,13 +40,13 @@ To keep a value in sight, wire it into a preview component: search for `preview 
 
 ## Which node made which geometry
 
-{/* shot: rete.nodes.wires/selected */}
+<Shot id="rete.nodes.wires/selected" />
 
 Click a node and its geometry glows in the 3D view; a node hidden with its <Ui>Visible</Ui> switch is drawn while it is selected, so you can still find it. Double-click a node, or use the focus button beside <Ui>Visible</Ui>, to turn the camera to its geometry.
 
 ## Red wires in an opened script
 
-{/* shot: rete.nodes.wires/red */}
+<Shot id="rete.nodes.wires/red" />
 
 A script you open, import or paste may hold wires the editor would refuse today: written by hand, or saved by an older version. They are kept, so nothing is lost, but drawn red and dashed, and a message counts them. Such a wire may not compute: replace it with one the editor accepts, or put a component between that turns one type into the other.
 

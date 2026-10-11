@@ -37,7 +37,7 @@ The drone above is built step by step in the [Rete tutorial](/learn/getting-star
 
 The [Designer](../designer/intro.md) is a parametric CAD modeller in the style of desktop CAD programs: sketch, extrude, fillet and assemble parts with the mouse, while every step stays editable. It is part of the Gold plan, and [Make your first part](../designer/tutorials/first-part.md) is the place to start.
 
-{/* shot: designer.showcases/robot-arm-cover designer.showcases/desk-arm-cover */}
+<Shot ids={["designer.showcases/robot-arm-cover", "designer.showcases/desk-arm-cover"]} columns={2} />
 
 ## Deploying Your Work
 

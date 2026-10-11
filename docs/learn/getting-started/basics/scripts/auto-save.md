@@ -21,7 +21,7 @@ An empty script is never saved over the cloud's: if everything is deleted, the c
 
 ## The status beside the title
 
-{/* shot: platform.scripts.saving/status */}
+<Shot id="platform.scripts.saving/status" />
 
 A mark beside the script's title, in the bitbybit.dev header, says where your work stands. Hover over it for its words; click it to open the history. On a small screen the same words are in the menu.
 
@@ -40,7 +40,7 @@ A mark beside the script's title, in the bitbybit.dev header, says where your wo
 
 ## History
 
-{/* shot: platform.scripts.saving/history */}
+<Shot id="platform.scripts.saving/history" />
 
 The history keeps earlier versions of the script in this browser. A version is kept:
 

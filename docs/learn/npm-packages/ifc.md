@@ -118,7 +118,7 @@ The `vite/threejs/ifc-house` example in the repository authors a modern family h
 
 The same house runs in the TypeScript editor on bitbybit.dev as [a family house in IFC](/learn/code/common/ifc/family-house), drawn under a sky whose sun follows a time-of-day slider:
 
-{/* shot: code.ifc.family-house/dusk */}
+<Shot id="code.ifc.family-house/dusk" />
 
 ## Exact shapes and STEP
 

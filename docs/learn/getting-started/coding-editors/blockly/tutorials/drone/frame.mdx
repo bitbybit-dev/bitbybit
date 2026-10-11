@@ -12,7 +12,7 @@ tags: [getting-started, blockly, occt]
 
 # Build a drone: sizes, stage and the frame
 
-{/* shot: blockly.start.showcases/drone */}
+<Shot id="blockly.start.showcases/drone" />
 
 Over seven chapters you build this drone in the Blockly editor: a carbon frame of two plates, arms that carry motors, propellers, bolts and lights, a canopy traced with a honeycomb and marked with the bitbybit logo, sprung landing legs and a camera, all sized by four variables. It is the same drone the [Rete](../../../rete/tutorials/drone/frame.mdx) and [TypeScript](../../../typescript/tutorials/drone/frame.mdx) tutorials build, made of blocks: every part is a function, and short stacks call the functions and draw what they return. It is the [showcase](../../showcases.md) of the Blockly editor.
 
@@ -44,7 +44,7 @@ This chapter sets the sizes, lights the stage and makes the frame.
      - set *diameter* to ***fit propeller***(*arms*, *arm length*, *propeller size*)
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: blockly.tutorials.drone/sizes */}
+   <Shot id="blockly.tutorials.drone/sizes" />
 
 2. Set the stage before the first part: a dark background, a city environment that metal reflects with its picture hidden, a sun that casts shadows and a wide ground under the feet. The function look makes the drawing options of one material, physically based and drawn a little behind its edges, so the white edges on the dark parts stay sharp; every part is drawn through one of its calls.
 
@@ -57,7 +57,7 @@ This chapter sets the sizes, lights the stage and makes the frame.
      - **draw any async no return**(entity **rectangle face**(width 2500, length 2500, center **point xyz**(0, -86.2, 0), direction **vector xyz**(0, 1, 0)), options ***look***("ground", `#050506`, 0, 1, `#000000`, `#f2f2f2`, 0))
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: blockly.tutorials.drone/stage */}
+   <Shot id="blockly.tutorials.drone/stage" />
 
 3. The frame plate is a function too: a rounded rectangle, 96 by 150 millimetres, made into a face and extruded 3 millimetres, with hexagon vents from a grid cut through it at the front and the back. The main stack places a second plate 13 millimetres above the first and draws both in carbon.
 
@@ -74,7 +74,7 @@ This chapter sets the sizes, lights the stage and makes the frame.
      - **draw any async no return**(entity [*plate*, *top plate*], options *carbon*)
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: blockly.tutorials.drone/plates */}
+   <Shot id="blockly.tutorials.drone/plates" />
 
 {/* steps:end */}
 

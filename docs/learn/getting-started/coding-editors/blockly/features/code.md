@@ -14,7 +14,7 @@ tags: [getting-started, blockly]
 
 Blockly is a visual layer over JavaScript: every block turns into code when the script runs. To see that code, open <Ui>More</Ui> > <Ui>Export to runner</Ui>.
 
-{/* shot: blockly.blocks.code/runner */}
+<Shot id="blockly.blocks.code/runner" />
 
 <Ui>Runner Code Preview</Ui> shows the script's type, its version and its code:
 

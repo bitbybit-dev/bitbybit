@@ -15,7 +15,7 @@ The features of a part document make bodies. A body becomes a part, which is wha
 
 ## Part properties
 
-{/* shot: designer.modelling.parts/part */}
+<Shot id="designer.modelling.parts/part" />
 
 Click a part in the <Ui>Parts</Ui> group of the <Ui>Features</Ui> panel, and <Ui>Properties</Ui> shows it:
 
@@ -30,6 +30,6 @@ The picture shows the desk arm's link: aluminium, white, matt, 0.173 kg.
 
 ## See the materials
 
-{/* shot: designer.modelling.parts/realistic */}
+<Shot id="designer.modelling.parts/realistic" />
 
 <Ui>Realistic</Ui> on the view bar draws every part as its material and finish look, with reflections and soft shadows. The plain look, with it off, is easier to model in: edges read better and nothing reflects. A STEP or GLB export carries the names and colours either way.

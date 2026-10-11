@@ -12,7 +12,7 @@ tags: [getting-started, rete]
 
 # A tour of the Rete editor
 
-{/* shot: rete.start.tour/window */}
+<Shot id="rete.start.tour/window" />
 
 The numbers match the picture, which shows the script [Hello World](./tutorials/hello-world.mdx) builds.
 
@@ -28,7 +28,7 @@ The console sits under the canvas; [Running code](../../basics/running-code.md) 
 
 ## The parts of a node
 
-{/* shot: rete.start.tour/node */}
+<Shot id="rete.start.tour/node" />
 
 1. **The name.** Click it to rename the node; empty it to get the component's own name back.
 2. **Help, copy and delete.** The question mark shows what the component does and opens its page in the API documentation; copy puts a duplicate with the same values beside your pointer; the cross deletes the node and its wires.

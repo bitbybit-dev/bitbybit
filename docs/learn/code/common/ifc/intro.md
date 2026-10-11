@@ -20,7 +20,7 @@ The IFC functions are experimental: what they cover grows, and an input may stil
 
 A whole building is written the same way: [a family house in IFC](/learn/code/common/ifc/family-house) is a two-storey house of some 700 elements, in a project you can open, run and change.
 
-{/* shot: code.ifc.family-house/afternoon */}
+<Shot id="code.ifc.family-house/afternoon" />
 
 ## A model, step by step
 

@@ -13,13 +13,13 @@ tags: [designer]
 
 The Designer is where you model parts and assemblies the way a CAD program works: draw a sketch, extrude it, round its edges, drill holes, then put parts together with joints. Every step is kept, so changing a size later rebuilds everything that depends on it. The OpenCascade kernel does the modelling in your browser, so there is nothing to install.
 
-{/* shot: designer.tour/window */}
+<Shot id="designer.tour/window" />
 
 The Designer is made for two kinds of author at once. You work with the mouse and the keyboard, and an AI agent can work in the same document through the tools the Designer offers it. You see what the agent changes as it happens, and you keep or undo each change.
 
 ## What you can make
 
-{/* shot: designer.start/features designer.start/parameters designer.start/parts designer.start/joints designer.start/bom designer.start/export */}
+<Shot ids={["designer.start/features", "designer.start/parameters", "designer.start/parts", "designer.start/joints", "designer.start/bom", "designer.start/export"]} columns={3} />
 
 - **[Parts from features](./modelling/features.md).** [Sketch](./modelling/sketches.md) an outline, then extrude, revolve, loft or sweep it, and round, chamfer, shell, drill and pattern the result. Each feature keeps its dialog, so you edit it later as you made it.
 - **[Parameters and configurations](./modelling/parameters.md).** Name the sizes that matter, write others as expressions of them, and drag a slider to see the part follow. A configuration keeps a set of values under a name.
@@ -32,7 +32,7 @@ The Designer is made for two kinds of author at once. You work with the mouse an
 
 ## Showcases
 
-{/* shot: designer.showcases/robot-arm-cover designer.showcases/jet-engine-cover designer.showcases/desk-arm-cover */}
+<Shot ids={["designer.showcases/robot-arm-cover", "designer.showcases/jet-engine-cover", "designer.showcases/desk-arm-cover"]} columns={3} />
 
 A six-axis robot arm, a turbofan engine and the desk arm of the tutorial, each modelled in the Designer. [The showcases](./showcases.md) say what each one shows, and offer them to download and open.
 

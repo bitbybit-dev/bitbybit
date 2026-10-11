@@ -28,15 +28,15 @@ Open [an empty Blockly editor](https://bitbybit.dev/app?editor=blockly). If this
 
    A variable is a named value you set once and use anywhere. Making one adds its blocks to the variables category.
 
-   {/* shot: blockly.tutorials.parametric-cube/variable */}
+   <Shot id="blockly.tutorials.parametric-cube/variable" />
 
 2. **Add set size to.** Open **variables** in the toolbox and drag **set size to** onto the workspace.
 
-   {/* shot: blockly.tutorials.parametric-cube/set */}
+   <Shot id="blockly.tutorials.parametric-cube/set" />
 
 3. **Add number.** Open **math blockly** in the toolbox and drag **number** onto the workspace.
 
-   {/* shot: blockly.tutorials.parametric-cube/number */}
+   <Shot id="blockly.tutorials.parametric-cube/number" />
 
 4. **Plug number into the value of set size to.** Drag it by its left edge onto that input until it snaps in.
 
@@ -44,7 +44,7 @@ Open [an empty Blockly editor](https://bitbybit.dev/app?editor=blockly). If this
 
    The variable now holds 3.
 
-   {/* shot: blockly.tutorials.parametric-cube/three */}
+   <Shot id="blockly.tutorials.parametric-cube/three" />
 
 6. **Add draw any async no return.** Open **draw** > **draw async** in the toolbox and drag **draw any async no return** onto the workspace.
 
@@ -52,23 +52,23 @@ Open [an empty Blockly editor](https://bitbybit.dev/app?editor=blockly). If this
 
    Stacked under the variable, the drawing runs after it is set.
 
-   {/* shot: blockly.tutorials.parametric-cube/draw */}
+   <Shot id="blockly.tutorials.parametric-cube/draw" />
 
 8. **Add cube.** Open **occt** > **shapes** > **solid** > **primitives** in the toolbox and drag **cube** onto the workspace.
 
    The toolbox follows the API: occt, then shapes, then solid. The cube is a solid made by OCCT, the CAD kernel.
 
-   {/* shot: blockly.tutorials.parametric-cube/cube */}
+   <Shot id="blockly.tutorials.parametric-cube/cube" />
 
 9. **Plug cube into the entity of draw any async no return.** Drag it by its left edge onto that input until it snaps in.
 
-   {/* shot: blockly.tutorials.parametric-cube/plugged */}
+   <Shot id="blockly.tutorials.parametric-cube/plugged" />
 
 10. **Take the value out of the size of cube.** Drag the block out of that input and drop it on the trash can.
 
    Drag the number out of the cube's size and drop it on the trash can: the variable will give the size instead.
 
-   {/* shot: blockly.tutorials.parametric-cube/removed */}
+   <Shot id="blockly.tutorials.parametric-cube/removed" />
 
 11. **Add size.** Open **variables** in the toolbox and drag **size** onto the workspace.
 
@@ -76,13 +76,13 @@ Open [an empty Blockly editor](https://bitbybit.dev/app?editor=blockly). If this
 
    The cube's size is now whatever the variable holds.
 
-   {/* shot: blockly.tutorials.parametric-cube/size */}
+   <Shot id="blockly.tutorials.parametric-cube/size" />
 
 13. **Run the script.** Press <Ui>Run The Code</Ui>, the play button at the lower left.
 
    Run it. Change the 3 and run again, and the cube follows: every block that reads size gets the new value.
 
-   {/* shot: blockly.tutorials.parametric-cube/done */}
+   <Shot id="blockly.tutorials.parametric-cube/done" />
 
 ### The finished script
 

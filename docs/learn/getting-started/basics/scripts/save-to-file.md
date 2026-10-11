@@ -19,7 +19,7 @@ A file keeps a copy of your work outside bitbybit.dev:
 
 ## Export a script
 
-{/* shot: platform.scripts.export/more-menu */}
+<Shot id="platform.scripts.export/more-menu" />
 
 1. In the editor, open <Ui>More</Ui>, the last button of the editor's left bar.
 2. Choose <Ui>Export</Ui>.

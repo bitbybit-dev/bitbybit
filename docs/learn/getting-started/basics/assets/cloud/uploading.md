@@ -35,7 +35,7 @@ Cloud assets belong to a project, so you add them where the project's scripts ar
 
 1.  **Open the project.** On [My Projects](https://bitbybit.dev/projects/my), choose the project on the left. Below its scripts is <Ui>Files</Ui>, with the number of files the project holds and, under it, how many files your plan keeps in a project and how much of your cloud storage is used.
 
-    {/* shot: platform.assets.cloud-upload/files */}
+    <Shot id="platform.assets.cloud-upload/files" />
 
     From an editor, click the script's title at the top: the same projects list opens over the editor, where you choose the project the same way.
 
@@ -47,11 +47,11 @@ Cloud assets belong to a project, so you add them where the project's scripts ar
     *   A title cannot be the name of another file, and a file name can be in the project only once.
     *   <Ui>Leave this file out</Ui> takes a file off before anything is uploaded.
 
-    {/* shot: platform.assets.cloud-upload/titles */}
+    <Shot id="platform.assets.cloud-upload/titles" />
 
 4.  **Upload.** Click **Add 2 files**, the button that counts the files you chose. The files upload to the project, and the list shows each one under its title, with its file name and size.
 
-    {/* shot: platform.assets.cloud-upload/list */}
+    <Shot id="platform.assets.cloud-upload/list" />
 
 Your cloud assets are now ready to be used by any of the scripts within this specific project! In the following sections, we'll show you how to import and utilize these assets in your Rete, Blockly, and TypeScript scripts.
 

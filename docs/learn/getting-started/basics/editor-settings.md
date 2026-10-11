@@ -11,7 +11,7 @@ tags: [getting-started, rete, blockly, typescript]
 
 # Editor settings
 
-{/* shot: platform.basics.settings/dialog */}
+<Shot id="platform.basics.settings/dialog" />
 
 Rete, Blockly and the TypeScript editor share one set of settings: open <Ui>More</Ui> > <Ui>Settings</Ui> in any of them. They are kept in this browser, so they follow you from script to script but not to another computer.
 

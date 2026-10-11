@@ -16,7 +16,7 @@ A project holds your work on bitbybit.dev: scripts, each written in one of the e
 - **Scripts** can be Rete, Blockly, TypeScript or [Designer](/learn/designer/intro) scripts, and one project can mix them.
 - **Files** are the models, images and other files a project's scripts load, added under <Ui>Files</Ui>, in the cloud or in this browser. [Files of a project](/learn/getting-started/basics/assets/project-files) shows how.
 
-{/* shot: platform.projects.intro/my-projects */}
+<Shot id="platform.projects.intro/my-projects" />
 
 ## Where a project lives
 

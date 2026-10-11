@@ -12,7 +12,7 @@ tags: [getting-started, typescript]
 
 # Files and imports
 
-{/* shot: typescript.files.imports/project */}
+<Shot id="typescript.files.imports/project" />
 
 A TypeScript script can be more than one file. Keep a part, a set of helpers or your data in its own file, export what other files need, and import it where you use it. The picture shows a script of two files: `parts/plate.ts` exports a function that makes a plate, and `main.ts` imports it (2), calls it and draws the result.
 
@@ -59,7 +59,7 @@ A script imports only its own files. An import of a package name, a path outside
 
 Right-click a file or a folder, or press its <Ui>More actions</Ui> button, for its menu:
 
-{/* shot: typescript.files.imports/menu */}
+<Shot id="typescript.files.imports/menu" />
 
 - <Ui>Open</Ui> opens the file in a tab.
 - <Ui>Rename or move</Ui> edits its path in place: change the name, or the folders before it to move it.

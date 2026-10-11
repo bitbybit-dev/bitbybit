@@ -66,5 +66,34 @@ Returns a paginated list of your tasks, newest first, each with its id, kind, st
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`GET /api/v1/tasks`
+
+Returns a paginated list of your tasks, newest first, each with its id, kind, status, creation time and result link when finished. Filter by status to poll only what is still running, or by kind to separate model generation, STEP conversion, pipelines and compound runs. This is the endpoint to build a job dashboard on rather than polling every task id individually.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `page` | query | integer | no | 1-based page number. Defaults to the first page. |
+| `limit` | query | integer | no | How many tasks to return per page. |
+| `status` | query | `waiting` \| `queued` \| `processing` \| `completed` \| `failed` \| `cancelled` \| `expired` | no | Return only tasks in this state. waiting and queued are not started yet, processing is running, completed has a downloadable result, failed carries an error, cancelled was stopped by you, and expired means the result has been cleaned up. |
+| `kind` | query | `cad` \| `model` \| `convert-simple` \| `convert-advanced` \| `pipeline` \| `compound` | no | Return only tasks of this kind: cad for a single operation, model for a registered parametric model, convert-simple and convert-advanced for STEP conversions, pipeline for a chained run, compound for a parallel run. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | Task list |
+
+### Example request
+
+```bash
+curl -X GET "https://api.bitbybit.dev/api/v1/tasks" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

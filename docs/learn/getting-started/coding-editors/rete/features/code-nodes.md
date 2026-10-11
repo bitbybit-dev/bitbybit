@@ -16,7 +16,7 @@ Some things are easier to say in a few lines of code than in a dozen nodes: a fo
 
 ## Write the code
 
-{/* shot: rete.nodes.code/editor */}
+<Shot id="rete.nodes.code/editor" />
 
 A typescript editor node holds one function, whose name ends with the node's own id, and its first line says not to remove it:
 

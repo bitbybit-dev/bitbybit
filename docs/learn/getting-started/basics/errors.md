@@ -19,19 +19,19 @@ Every error a script meets at run time goes to the <Ui>Console</Ui> under the ed
 
 ## Rete: the node turns red
 
-{/* shot: platform.basics.errors/rete */}
+<Shot id="platform.basics.errors/rete" />
 
 Rete runs as you change the graph, so an error shows as soon as you make it: the node that failed turns red, and the console says why. Change the input that caused it, and the node runs again at once; when it succeeds, it takes its normal colour back.
 
 ## Blockly: after you run it
 
-{/* shot: platform.basics.errors/blockly */}
+<Shot id="platform.basics.errors/blockly" />
 
 Blockly shows errors after you press <Ui>Run The Code</Ui>. The block that failed is marked, and the console lists every error of the run, often several: the box that could not be made, then the draw block that had nothing to draw.
 
 ## TypeScript: before you run it
 
-{/* shot: platform.basics.errors/typescript */}
+<Shot id="platform.basics.errors/typescript" />
 
 TypeScript checks your code as you type. A mistake it can see, such as a name that does not exist or text where a number belongs, is underlined in red; point at it to read what is wrong. In the picture, a misspelled `box` is caught before anything runs. Fix those first: they are the cheapest errors to find.
 

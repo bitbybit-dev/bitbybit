@@ -11,7 +11,7 @@ tags: [getting-started, projects]
 
 # Creating a New Project
 
-{/* shot: platform.projects.create/form */}
+<Shot id="platform.projects.create/form" />
 
 1. Open <Ui>My Projects</Ui> in the bitbybit.dev header. While an editor is open, the button with the script's title beside it opens the same list.
 2. Choose <Ui>New project</Ui>.

@@ -13,7 +13,7 @@ tags: [designer]
 
 A project holds scripts, and a Designer script holds a whole design: every part and assembly document in it. You can keep a project in the cloud, where you reach it from any device, or in this browser only.
 
-{/* shot: designer.get-started.create-project/form */}
+<Shot id="designer.get-started.create-project/form" />
 
 ## A new project with a Designer script
 

@@ -28,55 +28,55 @@ Open [an empty Rete editor](https://bitbybit.dev/app?editor=rete) in your browse
 
    A grid on the ground gives the scene a sense of scale. Its inputs already hold sensible values, so it needs no wires.
 
-   {/* shot: rete.tutorials.hello-world/grid */}
+   <Shot id="rete.tutorials.hello-world/grid" />
 
 2. **Run the script.** Press <Ui>Run The Code</Ui>, the play button at the lower left.
 
    A new script does not run by itself. Run it once, and from then on Rete runs again whenever you change a value or a wire.
 
-   {/* shot: rete.tutorials.hello-world/run */}
+   <Shot id="rete.tutorials.hello-world/run" />
 
 3. **Add text 3d from the palette.** Open <Ui>advanced</Ui> > <Ui>text 3d</Ui> along the top of the canvas and click <Ui>text 3d</Ui> under create.
 
    This time take the component from the palette. Text 3d draws itself, so the words appear in the view as soon as it lands.
 
-   {/* shot: rete.tutorials.hello-world/text */}
+   <Shot id="rete.tutorials.hello-world/text" />
 
 4. **Set text to `Hello World!`** on text 3d.
 
    Every input without a wire has a field on the node. Type into it and the 3D text follows.
 
-   {/* shot: rete.tutorials.hello-world/words */}
+   <Shot id="rete.tutorials.hello-world/words" />
 
 5. **Set origin alignment to `centerBottom`** on text 3d.
 
    Centre the words over the origin, standing on their baseline.
 
-   {/* shot: rete.tutorials.hello-world/alignment */}
+   <Shot id="rete.tutorials.hello-world/alignment" />
 
 6. **Set rotation to `-90`** on text 3d.
 
    Turn the text so that it stands up from the grid.
 
-   {/* shot: rete.tutorials.hello-world/rotation */}
+   <Shot id="rete.tutorials.hello-world/rotation" />
 
 7. **Add vector xyz.** Right-click an empty spot on the canvas, type `vector xyz` into <Ui>Add components</Ui> and pick <Ui>vector xyz</Ui>.
 
    A vector says which way the text faces. Search finds a component by any part of its name or its path.
 
-   {/* shot: rete.tutorials.hello-world/vector */}
+   <Shot id="rete.tutorials.hello-world/vector" />
 
 8. **Set z to `-1`** on vector xyz.
 
    Point the vector towards the default camera.
 
-   {/* shot: rete.tutorials.hello-world/towards-camera */}
+   <Shot id="rete.tutorials.hello-world/towards-camera" />
 
 9. **Connect vector xyz to the direction of text 3d.** Drag from the output on the right of vector xyz to the direction input of text 3d.
 
    A wired input hides its field, because the wire now gives its value. The text turns to face you.
 
-   {/* shot: rete.tutorials.hello-world/connected */}
+   <Shot id="rete.tutorials.hello-world/connected" />
 
 ### The finished script
 

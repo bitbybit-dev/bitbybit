@@ -48,7 +48,7 @@ The canopy covers the electronics between the plates. It is a loft, a solid stre
    }
    ```
 
-   {/* shot: rete.tutorials.drone/canopy */}
+   <Shot id="rete.tutorials.drone/canopy" />
 
 2. A honeycomb is traced on the canopy's sides: a code component takes the loft, grows it a little, and divides each side face into hexagon wires, eight across the long sides and five across the short ones. A draw of its own shows the wires as white lines, over the canopy's own material.
 
@@ -83,7 +83,7 @@ The canopy covers the electronics between the plates. It is a loft, a solid stre
    }
    ```
 
-   {/* shot: rete.tutorials.drone/honeycomb */}
+   <Shot id="rete.tutorials.drone/honeycomb" />
 
 3. A hatch closes the top: a rounded rectangle on the canopy's crown, made into a face and extruded 1.4 millimetres. It is drawn in the next step, once the logo is cut into it.
 
@@ -95,7 +95,7 @@ The canopy covers the electronics between the plates. It is a loft, a solid stre
    - Add **extrude** as *hatch*: direction [0, 1.4, 0], hidden, in the *Canopy* group.
    - Wire **hatch face** › result into **hatch** › shape.
 
-   {/* shot: rete.tutorials.drone/hatch */}
+   <Shot id="rete.tutorials.drone/hatch" />
 
 4. The bitbybit logo goes on the hatch. A fetch text component downloads the logo's STEP file and load STEP reads it into a shape; a code component mirrors it, scales it to 26 millimetres and centres it on the hatch. Extruded, the logo is cut through the hatch, and a copy a little smaller, extruded 1.1 millimetres, sits in the cut as a white emblem.
 
@@ -139,7 +139,7 @@ The canopy covers the electronics between the plates. It is a loft, a solid stre
    }
    ```
 
-   {/* shot: rete.tutorials.drone/logo */}
+   <Shot id="rete.tutorials.drone/logo" />
 
 5. The GPS stands on a mast behind the canopy, built from nodes because it is a few simple shapes: two cylinders, the puck's edges rounded, the two joined. The two antennas angle down and back from the bottom plate; a code component makes them, because a short loop places the pair.
 
@@ -186,7 +186,7 @@ The canopy covers the electronics between the plates. It is a loft, a solid stre
    }
    ```
 
-   {/* shot: rete.tutorials.drone/electronics */}
+   <Shot id="rete.tutorials.drone/electronics" />
 
 {/* steps:end */}
 

@@ -26,17 +26,17 @@ The Assets dialog is the same in Rete, Blockly and TypeScript.
 
 1.  **Open the Assets dialog.** Click <Ui>Assets</Ui>, the folder button at the lower left of the editor. The dialog lists the <Ui>Local assets stored in browser cache:</Ui>, none at first.
 
-    {/* shot: platform.assets.local-upload/dialog */}
+    <Shot id="platform.assets.local-upload/dialog" />
 
 2.  **Start an upload.** Click <Ui>Upload Local Asset</Ui>.
 3.  **Name the asset.** Type **BoomBox** under <Ui>Asset Name</Ui>. Scripts find the asset by this name, so it must be one no other local asset has.
 4.  **Choose the file.** Click <Ui>Click to choose files or drop them here</Ui> and pick `BoomBox.glb` where you saved it, or drop the file there. It appears below with its size. The allowed formats are listed under the drop area.
 
-    {/* shot: platform.assets.local-upload/form */}
+    <Shot id="platform.assets.local-upload/form" />
 
 5.  **Upload.** Click <Ui>Upload</Ui>. The file is kept in this browser, and the dialog lists it under its name, with buttons to download it again or delete it.
 
-    {/* shot: platform.assets.local-upload/list */}
+    <Shot id="platform.assets.local-upload/list" />
 
 6.  **Close the dialog** with <Ui>Close</Ui>.
 

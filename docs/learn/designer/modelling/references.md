@@ -27,7 +27,7 @@ So when `length` changes, or a feature earlier in the list changes, the fillet s
 
 ## When a change takes a face away
 
-{/* shot: designer.modelling.references/lost */}
+<Shot id="designer.modelling.references/lost" />
 
 Some changes really do remove what a reference names: a pocket deleted, a sketch line taken out, a feature suppressed. Then:
 

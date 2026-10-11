@@ -66,5 +66,32 @@ Confirms that the file was successfully uploaded to the pre-signed URL.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/files/{fileId}/confirm`
+
+Confirms that the file was successfully uploaded to the pre-signed URL.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `fileId` | path | string | yes | File ID |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | File confirmed |
+| `404` | Not found |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/files/{fileId}/confirm" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

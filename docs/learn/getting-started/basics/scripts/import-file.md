@@ -25,7 +25,7 @@ The file must come from the same editor: Rete scripts import into the Rete edito
 
 ## Into this browser
 
-{/* shot: platform.scripts.import/my-projects */}
+<Shot id="platform.scripts.import/my-projects" />
 
 [My Projects](https://bitbybit.dev/projects/my) brings files into the projects kept in this browser:
 

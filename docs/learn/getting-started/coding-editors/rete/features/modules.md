@@ -16,13 +16,13 @@ A module is a graph you can use as a single component: it takes values through i
 
 ## Define a module
 
-{/* shot: rete.canvas.modules/definition */}
+<Shot id="rete.canvas.modules/definition" />
 
 Search for `module definition` and add <Ui>Module Definition</Ui>. The node is the module: name it in its title, here *My Module*. Its download button saves it to a file, and its cross deletes it.
 
 ## Build its graph
 
-{/* shot: rete.canvas.modules/inside */}
+<Shot id="rete.canvas.modules/inside" />
 
 Double-click the definition to go inside. The canvas now holds the module's own graph, and a bar at its foot shows where you are: *Main › My Module*. A new module starts with a <Ui>Module Input</Ui> and a <Ui>Module Output</Ui>, named *input* and *output*.
 
@@ -34,7 +34,7 @@ Press the back arrow in the bar, <Ui>Back to parent</Ui>, to return to the main 
 
 ## Use it
 
-{/* shot: rete.canvas.modules/instance */}
+<Shot id="rete.canvas.modules/instance" />
 
 Search for `module instance`, add <Ui>Module Instance</Ui>, and choose the module in its list. The instance takes the module's inputs and outputs as its sockets, under their names. Wire values into it and its results onwards, like any other component. A module draws nothing by itself: wire its output into a component that draws, such as <Ui>draw any async</Ui>, to see the result.
 

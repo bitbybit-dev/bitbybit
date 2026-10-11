@@ -14,9 +14,9 @@ import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 
 The [IFC page](/learn/code/common/ifc/intro) builds a wall with a window. This project builds a whole house with the same functions: a two-storey family house with some 700 elements, as an architect's tool would write it, under a sky whose sun follows a slider. Run it, move the slider through the day, then open it in the editor to read and change it.
 
-{/* shot: code.ifc.family-house/editor */}
+<Shot id="code.ifc.family-house/editor" />
 
-{/* shot: code.ifc.family-house/afternoon code.ifc.family-house/dusk code.ifc.family-house/morning */}
+<Shot ids={["code.ifc.family-house/afternoon", "code.ifc.family-house/dusk", "code.ifc.family-house/morning"]} columns={3} />
 
 {/* house:start - generated from the IFC house example's sources; edits between these markers are overwritten */}
 

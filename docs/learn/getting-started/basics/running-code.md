@@ -15,7 +15,7 @@ Whether you type TypeScript, snap Blockly blocks or connect Rete nodes, you are 
 
 ## Run the code
 
-{/* shot: platform.basics.running-code/editor */}
+<Shot id="platform.basics.running-code/editor" />
 
 <Ui>Run The Code</Ui>, the play button at the lower left of the editor, runs the script. On a small screen the same buttons sit in a bar along the bottom.
 
@@ -28,7 +28,7 @@ There is no message when a script succeeds. Look at the result, and at the conso
 
 On a computer the editor and the 3D view sit side by side, and the line between them can be dragged to give either one more room.
 
-{/* shot: platform.basics.running-code/swap */}
+<Shot id="platform.basics.running-code/swap" />
 
 To give each the whole window instead, turn off **Split-screen mode** in <Ui>More</Ui> > <Ui>Settings</Ui>. <Ui>Swap Canvas</Ui> then switches between the editor and the 3D view. On a phone the editor always works this way.
 

@@ -80,7 +80,7 @@ The Designer is a parametric CAD modeller in the browser: sketches, features, pa
 
 **Use when:** You want to model parts and assemblies the way CAD programs do, without writing code.
 
-{/* shot: designer.showcases/robot-arm-cover designer.showcases/jet-engine-cover */}
+<Shot ids={["designer.showcases/robot-arm-cover", "designer.showcases/jet-engine-cover"]} columns={2} />
 
 [The Designer →](./designer/intro)
 

@@ -12,7 +12,7 @@ tags: [getting-started, blockly]
 
 # A tour of the Blockly editor
 
-{/* shot: blockly.start.tour/window */}
+<Shot id="blockly.start.tour/window" />
 
 The numbers match the picture, which shows the script [Hello World](./tutorials/hello-world.mdx) builds.
 

@@ -14,7 +14,7 @@ tags: [getting-started, scripts, projects]
 
 Every script is in a project, so you find a script by its project.
 
-{/* shot: platform.scripts.find/projects-dialog */}
+<Shot id="platform.scripts.find/projects-dialog" />
 
 1. Open [My Projects](https://bitbybit.dev/projects/my). While an editor is open, the button with the script's title, at the left of the bitbybit.dev header, opens the same list over the editor.
 2. On the left, choose the project. The list has:

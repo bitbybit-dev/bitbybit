@@ -21,7 +21,7 @@ Publishing a project lets others open, run and learn from its scripts. Others le
 
 ## Change its visibility
 
-{/* shot: platform.projects.share/visibility */}
+<Shot id="platform.projects.share/visibility" />
 
 1. In [My Projects](https://bitbybit.dev/projects/my), choose the project.
 2. Choose <Ui>Edit details</Ui>.

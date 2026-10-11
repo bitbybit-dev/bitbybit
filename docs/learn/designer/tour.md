@@ -11,7 +11,7 @@ tags: [designer]
 
 # A tour of the Designer
 
-{/* shot: designer.tour/window */}
+<Shot id="designer.tour/window" />
 
 The numbers match the picture, which shows the robot arm from [the showcases](./showcases.md).
 
@@ -28,34 +28,34 @@ Each panel can dock on either side or float: use its placement buttons, or drag 
 
 ## Select, then change
 
-{/* shot: designer.tour/parameter designer.tour/part */}
+<Shot ids={["designer.tour/parameter", "designer.tour/part"]} columns={2} />
 
 Click a row of the tree or a face in the view, and <Ui>Properties</Ui> shows it. A parameter has a value and a slider: drag it and the part rebuilds as you go. A part has its name, material and colour, with the volume and mass worked out.
 
-{/* shot: designer.tour/feature-dialog */}
+<Shot id="designer.tour/feature-dialog" />
 
 To change a feature, right-click it and choose <Ui>Edit feature</Ui>. Its dialog opens as you left it, the view shows handles to drag, and <Ui>OK</Ui> rebuilds everything after it.
 
 ## Assemblies at a glance
 
-{/* shot: designer.tour/joint designer.tour/configuration designer.tour/bom */}
+<Shot ids={["designer.tour/joint", "designer.tour/configuration", "designer.tour/bom"]} columns={3} />
 
 Select a joint to see what it joins and how far it may move. A configuration poses the whole assembly at once, and the bill of materials counts every part it places.
 
 ## How the model is drawn
 
-{/* shot: designer.tour/realistic */}
+<Shot id="designer.tour/realistic" />
 
 <Ui>Realistic</Ui> lights the parts as their materials look, with reflections and soft shadows; off, the view is the matte CAD look that is easier to model in. <Ui>Edges</Ui> draws the edges in either.
 
 ## Find a command
 
-{/* shot: designer.tour/palette */}
+<Shot id="designer.tour/palette" />
 
 <Ui>Find a command</Ui> (<kbd>Ctrl+K</kbd>, <kbd>⌘K</kbd> on macOS) lists every command that matches what you type, with its key, and runs the one you choose.
 
 ## Learn by doing
 
-{/* shot: designer.tour/tutorials */}
+<Shot id="designer.tour/tutorials" />
 
 <Ui>Help</Ui> > <Ui>Tutorials</Ui> plays a tutorial in the Designer, step by step. [Make your first part](./tutorials/first-part.md) is the place to start.

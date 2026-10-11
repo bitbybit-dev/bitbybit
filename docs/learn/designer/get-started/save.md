@@ -13,7 +13,7 @@ tags: [designer]
 
 Every change is saved as you make it. It is written to this browser at once, and to the cloud about three seconds after you stop, or every 15 seconds while you keep working. A large script waits for a longer pause. <Ui>File</Ui> > <Ui>Save</Ui> (<kbd>Ctrl+S</kbd>, <kbd>⌘S</kbd> on macOS) sends it to the cloud straight away.
 
-{/* shot: designer.get-started.save/status */}
+<Shot id="designer.get-started.save/status" />
 
 ## The status beside the title
 
@@ -30,7 +30,7 @@ A mark beside the script's title in the bitbybit.dev header says where your work
 
 ## History
 
-{/* shot: designer.get-started.save/history */}
+<Shot id="designer.get-started.save/history" />
 
 The history keeps versions of the script in this browser: one when it was opened, one every two minutes while you work, and one before a change that removes much of it or replaces it.
 

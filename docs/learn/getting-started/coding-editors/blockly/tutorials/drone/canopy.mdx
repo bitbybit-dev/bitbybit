@@ -29,7 +29,7 @@ The canopy covers the electronics on the top plate. Its honeycomb and the logo o
      - **draw any async no return**(entity **translate**(shape *shell*, translation **vector xyz**(0, 16, 0)), options *paint*)
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: blockly.tutorials.drone/canopy */}
+   <Shot id="blockly.tutorials.drone/canopy" />
 
 2. A honeycomb is traced on the canopy's sides by an async function. It awaits the canopy's faces and their areas, then a count loop awaits each face's normal, leaves out the top and the bottom, and divides each side into hexagon wires, eight across the long sides and five across the short ones. The wires are drawn as white lines over the canopy.
 
@@ -50,7 +50,7 @@ The canopy covers the electronics on the top plate. Its honeycomb and the logo o
      - **draw any async no return**(entity **translate**(shape *canopy cells*, translation **vector xyz**(0, 16, 0)), options ***look***("honeycomb", `#1f2b4d`, 0.1, 0.25, `#000000`, `#f2f2f2`, 8))
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: blockly.tutorials.drone/honeycomb */}
+   <Shot id="blockly.tutorials.drone/honeycomb" />
 
 3. A hatch closes the top, with the bitbybit logo in it. logo on hatch fetches the logo's STEP file from the CDN, reads it into a shape and awaits its bounding box, so it can scale it to 26 millimetres and centre it on the hatch. Extruded, the logo is cut through the hatch, and a copy a little smaller sits in the cut as a white emblem.
 
@@ -68,7 +68,7 @@ The canopy covers the electronics on the top plate. Its honeycomb and the logo o
      - **draw any async no return**(entity **extrude**(shape **scale 3d**(shape *placed logo*, scale **vector xyz**(0.96, 1, 0.96), center **point xyz**(0, 47.9, 10)), direction **vector xyz**(0, 1.1, 0)), options ***look***("emblem", `#f4f4f4`, 0.2, 0.5, `#000000`, `#0d0e10`, 4))
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: blockly.tutorials.drone/logo */}
+   <Shot id="blockly.tutorials.drone/logo" />
 
 4. The GPS stands on a mast behind the canopy, its puck's edges rounded, and two antennas angle down and back from the bottom plate.
 
@@ -83,7 +83,7 @@ The canopy covers the electronics on the top plate. Its honeycomb and the logo o
      - **draw any async no return**(entity ***antennas***(), options *rubber*)
    - **Run it** with <Ui>Run The Code</Ui>.
 
-   {/* shot: blockly.tutorials.drone/electronics */}
+   <Shot id="blockly.tutorials.drone/electronics" />
 
 {/* steps:end */}
 

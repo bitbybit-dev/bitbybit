@@ -20,13 +20,13 @@ Type a dot after `bitbybit` or any name the API holds, and a list of what can fo
 
 ## Hovers
 
-{/* shot: typescript.code.checks/hover */}
+<Shot id="typescript.code.checks/hover" />
 
 Rest the pointer on a name to see what it is. For a function, the hover shows what it takes, what it gives back and what it does: the same text as [the API reference](https://docs.bitbybit.dev). The picture rests on `create` in `bitbybit.advanced.text3d.create`.
 
 ## Mistakes before the run
 
-{/* shot: typescript.code.checks/error */}
+<Shot id="typescript.code.checks/error" />
 
 A mistake the editor can see is underlined in red as you type: a misspelled name, a missing option, a number where text belongs. Rest the pointer on the underline for what is wrong; here the script draws `txt`, and the editor answers "Cannot find name 'txt'. Did you mean 'text'?". The file shows how many mistakes it has, in <Ui>Files</Ui> and on its tab (1), so you can find them in a script of many files.
 

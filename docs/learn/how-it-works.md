@@ -38,7 +38,7 @@ The same drone, a graph of nodes in Rete, and the same jet engine, a TypeScript 
   altPrefix="A drone as a node graph in the Rete editor, and a turbofan engine as a multi-file project in the TypeScript editor with its controls"
 />
 
-{/* shot: blockly.start.showcases/drone designer.tour/window */}
+<Shot ids={["blockly.start.showcases/drone", "designer.tour/window"]} columns={2} />
 
 The [Code](/learn/code/intro) section maps the whole API. [docs.bitbybit.dev](https://docs.bitbybit.dev) is its full reference, and the [Bitbybit CAD MCP](/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp) answers the same questions for AI agents.
 

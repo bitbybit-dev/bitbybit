@@ -13,7 +13,7 @@ tags: [designer]
 
 The Designer runs in your browser on bitbybit.dev and is part of the Gold plan.
 
-{/* shot: designer.get-started.open/apps-menu */}
+<Shot id="designer.get-started.open/apps-menu" />
 
 ## From the Apps menu
 
@@ -32,13 +32,13 @@ Make a project whose first script is a Designer script, or add a Designer script
 
 ## Below the Gold plan
 
-{/* shot: designer.get-started.open/gold-plan */}
+<Shot id="designer.get-started.open/gold-plan" />
 
 The Designer is marked <Ui>Gold</Ui> wherever bitbybit.dev offers it. Below Gold, the start dialog and the project forms show it greyed out, with <Ui>See the plans</Ui> beside it.
 
 A Designer project that someone shares with you still opens in the Designer, to view. <Ui>View only</Ui> at the top says so:
 
-{/* shot: designer.get-started.open/view-only */}
+<Shot id="designer.get-started.open/view-only" />
 
 - **It opens as its author last built it**, from the geometry kept with the project, so even a large design is quick to open.
 - **Look at it as you like:** turn and zoom the view, select parts, open its documents, and read the tree, the parts list, the clashes and each part's mass.

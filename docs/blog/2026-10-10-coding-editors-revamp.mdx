@@ -17,7 +17,7 @@ To show what that adds up to, we built one drone in all three editors: a quadcop
 
 ## A drone, built three ways
 
-{/* shot: rete.start.showcases/drone */}
+<Shot id="rete.start.showcases/drone" />
 
 The drone is the showcase of each editor, and the tutorials build it in seven chapters: sizes and the frame, a way to repeat a part around the drone, one arm, arms around the frame, the canopy, the landing gear and the payload. Every chapter has a picture of the editor after every step.
 
@@ -29,7 +29,7 @@ Change the number of arms to six and the drone rebuilds, and the propeller shrin
 
 ## Rete: wires you can read
 
-{/* shot: rete.tutorials.drone/arms */}
+<Shot id="rete.tutorials.drone/arms" />
 
 In a large graph, curved wires cross the canvas and turn it into a tangle. Rete now draws wires **right-angled**: each output turns in a lane of its own, so wires that leave one node run side by side instead of on top of each other.
 
@@ -37,7 +37,7 @@ A wire between two **groups** is no longer drawn across the canvas at all. It be
 
 ## Groups, comments and an arrange that keeps them
 
-{/* shot: rete.canvas.organise/group */}
+<Shot id="rete.canvas.organise/group" />
 
 **Groups** frame the nodes that belong together, with a title, a colour and a description; drag the group and everything in it moves. **Comments** hold Markdown, so a group can say in a sentence what it makes and how.
 
@@ -45,7 +45,7 @@ A wire between two **groups** is no longer drawn across the canvas at all. It be
 
 ## A colour-coded, typed graph
 
-{/* shot: rete.start.tour/window */}
+<Shot id="rete.start.tour/window" />
 
 The whole graph is colour-coded by category. The colour runs from the category you pick a component from, through the component on the canvas, to its sockets, so you can tell at a glance which nodes are OCCT solids, which are meshes and which are points.
 
@@ -53,7 +53,7 @@ Sockets now carry **types**. Each socket is tinted for the kind of data it carri
 
 ## Socket coaching instead of silent failures
 
-{/* shot: rete.nodes.wires/refused */}
+<Shot id="rete.nodes.wires/refused" />
 
 With typed sockets, the editor can help you wire things correctly:
 
@@ -63,31 +63,31 @@ With typed sockets, the editor can help you wire things correctly:
 
 ## Modules: graphs you use many times
 
-{/* shot: rete.canvas.modules/instance */}
+<Shot id="rete.canvas.modules/instance" />
 
 A **module** packages part of a graph with its own inputs and outputs. Define it once, then drop instances of it wherever you need it, the way you call a function in code. Double-click a module to edit the graph inside, with a breadcrumb back to the main canvas; an input's sample value stands in for what an instance gives it, so you can see what the module makes while you build it. The drone uses two modules: Around repeats any part evenly around the drone, and Arm makes a whole arm from its length and the propeller's diameter.
 
 ## Find anything on the canvas
 
-{/* shot: rete.canvas.organise/find */}
+<Shot id="rete.canvas.organise/find" />
 
 The component search now does two jobs. **Add components** searches the catalogue as before, and **Find on canvas** searches the script in front of you. It matches component names, titles, inputs, outputs, group titles and comment text, counts the matches, and steps through them with the arrows. Each match is framed and pulses so your eye goes straight to it.
 
 ## Selection that shows its geometry
 
-{/* shot: rete.nodes.wires/selected */}
+<Shot id="rete.nodes.wires/selected" />
 
 Selecting a node highlights the geometry it made in the 3D view, with a glow that draws on top of everything else. If the node's geometry is hidden, it is drawn while the node stays selected. Double-click a node to frame its geometry and centre the canvas on the node itself.
 
 ## Code where code is clearer
 
-{/* shot: rete.nodes.code/editor */}
+<Shot id="rete.nodes.code/editor" />
 
 Some things are easier to say in a few lines than in a dozen nodes: a formula, a loop with a condition, a list reshaped. A **typescript editor** node holds a function that receives what is wired into it and returns what it gives out, with the same IntelliSense as the TypeScript editor. The drone mixes both: simple shapes are nodes, and parts with a profile of many points or a loop are code nodes.
 
 ## Settings and split screen
 
-{/* shot: platform.basics.settings/dialog */}
+<Shot id="platform.basics.settings/dialog" />
 
 Work on the graph and the 3D view side by side, with a divider you can drag, or swap the canvas to give the model the whole screen. The **Settings** dialog holds split screen, monochrome colours, the camera gizmo, right-angled wires and labelled wire ends, the language, the rendering engine (WebGL or WebGPU) and the OCCT kernel. Settings are remembered on your device.
 
@@ -101,7 +101,7 @@ We also fixed a long-standing bug on the way: a function whose return was a bitb
 
 ## TypeScript: scripts of many files
 
-{/* shot: typescript.start.showcases/drone */}
+<Shot id="typescript.start.showcases/drone" />
 
 A TypeScript script can now be many files in folders, with `main.ts` as the file the run starts from. Files import each other by relative path, every file is checked as you type, and a mistake in a file you have closed still shows its count in the tree. The TypeScript drone keeps each part in a file of its own.
 

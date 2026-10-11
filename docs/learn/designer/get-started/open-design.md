@@ -11,7 +11,7 @@ tags: [designer]
 
 # Open a design again
 
-{/* shot: designer.get-started.open-design/project */}
+<Shot id="designer.get-started.open-design/project" />
 
 1. Open <Ui>My Projects</Ui> in the bitbybit.dev header.
 2. On the left, choose the project: your cloud projects are listed first, then the ones in this browser. Drafts you started from the Apps menu are in <Ui>Drafts</Ui>, in this browser.

@@ -40,7 +40,7 @@ When the agent has to produce a file or an answer rather than code, connect the 
 
 In [the Designer](../designer/working-with-agents), an agent runs the same commands you do: it sketches, extrudes, adds joints and changes parameters in the view while you watch, and each change waits in the Review tab until you keep it or undo it. An agent outside the browser can write a [design document](../using-ai-with-bitbybit/design-documents) instead, which you import and keep editing by hand. Either way the result is a parametric model, not a mesh: you can still measure it, change it and export it to STEP.
 
-{/* shot: designer.agents/working */}
+<Shot id="designer.agents/working" />
 
 ## Know where geometry should run
 

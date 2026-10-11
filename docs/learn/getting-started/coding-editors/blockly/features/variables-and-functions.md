@@ -14,7 +14,7 @@ tags: [getting-started, blockly]
 
 ## Variables
 
-{/* shot: blockly.tutorials.parametric-cube/variable */}
+<Shot id="blockly.tutorials.parametric-cube/variable" />
 
 A variable holds a value under a name, so you can set it once and use it in many places, and change the script by changing one block.
 
@@ -26,7 +26,7 @@ Stack the **set** block above the blocks that read the variable, since blocks ru
 
 ## Functions
 
-{/* shot: blockly.blocks.variables/functions */}
+<Shot id="blockly.blocks.variables/functions" />
 
 A function wraps a stack of blocks under a name, so you can run it from several places.
 
