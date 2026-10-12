@@ -110,7 +110,7 @@
         "@bitbybit-dev/base": "1.5.0"
     },
     "devDependencies": {
-        "@microsoft/api-extractor": "7.59.1",
+        "@microsoft/api-extractor": "7.59.4",
         "@vitest/coverage-v8": "4.1.11",
         "shx": "0.4.0",
         "typescript": "5.9.3",
