@@ -93,7 +93,7 @@
         "zod": "4.6.5"
     },
     "devDependencies": {
-        "@modelcontextprotocol/client": "2.0.0",
+        "@modelcontextprotocol/client": "2.2.0",
         "@types/node": "^22.10.2",
         "@vitest/coverage-v8": "4.1.11",
         "typescript": "5.9.3",
