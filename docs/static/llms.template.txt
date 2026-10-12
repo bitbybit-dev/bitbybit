@@ -147,11 +147,13 @@ CAD Kernel Packages (Main Thread):
 - @bitbybit-dev/occt - OpenCascade for industrial B-rep CAD
 - @bitbybit-dev/jscad - JSCAD for CSG modeling
 - @bitbybit-dev/manifold - Manifold for fast mesh booleans
+- @bitbybit-dev/ifc - IFC building models (BIM): author, write and read IFC4 files in TypeScript, Node.js and browser (beta)
 
 Web Worker Packages (Non-blocking, Recommended):
 - @bitbybit-dev/occt-worker - OpenCascade via web worker
 - @bitbybit-dev/jscad-worker - JSCAD via web worker
 - @bitbybit-dev/manifold-worker - Manifold via web worker
+- @bitbybit-dev/ifc-worker - IFC via web worker (beta)
 
 Tooling Packages:
 - @bitbybit-dev/create-app - CLI that scaffolds a frontend or full-stack CAD Cloud project

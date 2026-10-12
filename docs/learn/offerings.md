@@ -22,7 +22,7 @@ Bitbybit combines open-source geometry libraries with managed services and busin
 
 **Free · MIT License**
 
-Our NPM packages are the foundation of everything we build. They wrap powerful geometry kernels - OpenCASCADE, JSCAD, and Manifold - in a clean TypeScript API and run them entirely in the browser via WebAssembly. No server calls, no latency. All packages authored by Bitbybit in our [GitHub monorepo](https://github.com/bitbybit-dev/bitbybit) are published under the MIT license. Note that these packages depend on third-party libraries (such as OpenCASCADE under LGPL or BabylonJS under Apache 2.0) which retain their own licenses.
+Our NPM packages are the foundation of everything we build. They wrap powerful geometry kernels - OpenCASCADE, JSCAD, and Manifold - in a clean TypeScript API and run them entirely in the browser via WebAssembly, and an [IFC library](./npm-packages/ifc.md) authors, writes and reads building models (BIM) in plain TypeScript. No server calls, no latency. All packages authored by Bitbybit in our [GitHub monorepo](https://github.com/bitbybit-dev/bitbybit) are published under the MIT license. Note that these packages depend on third-party libraries (such as OpenCASCADE under LGPL or BabylonJS under Apache 2.0) which retain their own licenses.
 
 **Use when:** You are building a custom web application and want full control over your geometry pipeline. You are comfortable with modern JavaScript tooling and want to integrate with Three.js, Babylon.js, or PlayCanvas.
 

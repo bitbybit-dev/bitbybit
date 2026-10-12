@@ -49,6 +49,7 @@ Choose your game engine and start coding immediately.
 | @bitbybit-dev/occt | OpenCascade B-rep CAD wrapper | https://www.npmjs.com/package/@bitbybit-dev/occt |
 | @bitbybit-dev/jscad | JSCAD CSG modeling wrapper | https://www.npmjs.com/package/@bitbybit-dev/jscad |
 | @bitbybit-dev/manifold | Manifold mesh booleans wrapper | https://www.npmjs.com/package/@bitbybit-dev/manifold |
+| @bitbybit-dev/ifc | IFC building models (BIM): author, write and read IFC4 files in TypeScript, Node.js and browser (beta) | https://www.npmjs.com/package/@bitbybit-dev/ifc |
 
 ### Web Worker Packages (Non-blocking, Recommended)
 
@@ -59,6 +60,7 @@ These packages run geometry computations in web workers for non-blocking UI. Sam
 | @bitbybit-dev/occt-worker | OpenCascade via web worker | https://www.npmjs.com/package/@bitbybit-dev/occt-worker |
 | @bitbybit-dev/jscad-worker | JSCAD via web worker | https://www.npmjs.com/package/@bitbybit-dev/jscad-worker |
 | @bitbybit-dev/manifold-worker | Manifold via web worker | https://www.npmjs.com/package/@bitbybit-dev/manifold-worker |
+| @bitbybit-dev/ifc-worker | IFC via web worker (beta) | https://www.npmjs.com/package/@bitbybit-dev/ifc-worker |
 
 ### Tooling Packages
 
