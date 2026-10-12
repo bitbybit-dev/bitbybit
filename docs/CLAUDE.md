@@ -48,9 +48,10 @@ packages and the two openapi plugins move together - the plugins require `@docus
 
 ## The Designer pages
 
-`learn/designer/reference/*.md`, the region between the `steps:start` and `steps:end` markers of each
-`learn/designer/tutorials` page, and the renders in `static/img/generated/designer/` with their
-`manifest.json` are generated: edits there are overwritten, so change only the prose around the markers.
+`learn/designer/reference/*.md` and the region between the `steps:start` and `steps:end` markers of each
+`learn/designer/tutorials` page (the desk arm has one page per chapter under `tutorials/desk-arm/`) are
+generated: edits there are overwritten, so change only the prose around the markers. Every step there
+carries its own `<Shot>`, published like any other.
 Every Designer page carries `topic` and `type` in its frontmatter, and `verified` (the date of the last full
 check against the Designer) when it is written by hand. `<Ui>` marks a label exactly as the Designer or
 bitbybit.dev shows it.

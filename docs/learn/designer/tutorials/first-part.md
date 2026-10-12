@@ -5,7 +5,7 @@ sidebar_label: Make your first part
 description: A first Designer tutorial - a mounting plate made from three parameters, a sketch, an extrude, rounded edges and four holes, then one change of a parameter that the whole plate follows.
 topic: designer.tutorials.first-part
 type: tutorial
-verified: 2026-10-08
+verified: 2026-10-12
 tags: [designer]
 ---
 
@@ -33,7 +33,7 @@ The steps below come from the same tutorial the card plays, so the page and the 
 
 ## The steps
 
-Each step names its command, where to find it, and the values to give it. Click a command's name for everything it takes. A value such as `width / 2` is an expression: type it as it is, and the Designer works it out from the parameters.
+Each step names its command, where to find it, and the values to give it, and a picture shows it in the Designer: a feature's dialog filled in, with the tutorial card ringing <Ui>OK</Ui>, or what the step made. The first time a command appears, a picture shows where it is. Click a command's name for everything it takes. A value such as `width / 2` is an expression: type it as it is, and the Designer works it out from the parameters.
 
 {/* steps:start - generated from the tutorial the Designer plays; edits between these markers are overwritten */}
 
@@ -43,23 +43,47 @@ Each step names its command, where to find it, and the values to give it. Click 
 
    Every design starts as a document. A part document holds the features that build a part, in order.
 
+   {/* shot: designer.tutorials.first-part/where-file-new-part */}
+
+   {/* shot: designer.tutorials.first-part/step-1 */}
+
 2. **[Parameter](../reference/commands.md#designer-parameter-add)**, from <Ui>Insert</Ui> > <Ui>Parameter</Ui>: name width, value 80, unit mm.
 
    Parameters are named values the features can read. Change one later and everything that uses it follows.
 
+   {/* shot: designer.tutorials.first-part/where-parameter-add */}
+
+   {/* shot: designer.tutorials.first-part/step-2 */}
+
 3. **[Parameter](../reference/commands.md#designer-parameter-add)**, from <Ui>Insert</Ui> > <Ui>Parameter</Ui>: name depth, value 50, unit mm.
 
+   A second parameter, depth, for how deep the plate is.
+
+   {/* shot: designer.tutorials.first-part/step-3 */}
+
 4. **[Parameter](../reference/commands.md#designer-parameter-add)**, from <Ui>Insert</Ui> > <Ui>Parameter</Ui>: name thickness, value 6, unit mm.
+
+   And a third, thickness, for how thick it is.
+
+   {/* shot: designer.tutorials.first-part/step-4 */}
 
 5. **[Sketch](../reference/commands.md#designer-part-sketch)**, from <Ui>Insert</Ui> > <Ui>Sketch</Ui>: id outline, on the XZ plane, start -width / 2, -depth / 2.
 
    A sketch is a flat outline on a plane. This one lies on the ground plane, XZ: a rectangle centred on the origin, width wide and depth deep, its sides measured by the parameters instead of fixed numbers.
 
+   {/* shot: designer.tutorials.first-part/where-part-sketch */}
+
+   {/* shot: designer.tutorials.first-part/step-5 */}
+
 6. **[Extrude](../reference/commands.md#designer-part-extrude)**, from <Ui>Insert</Ui> > <Ui>Extrude</Ui>: id plate, profile outline, distance thickness.
 
    An extrude pushes the outline up into a solid. The plate is as thick as the thickness parameter.
 
-![Plate, after step 6](/img/generated/designer/first-part/extruded-plate.webp)
+   {/* shot: designer.tutorials.first-part/where-part-extrude */}
+
+   {/* shot: designer.tutorials.first-part/step-6 */}
+
+{/* shot: designer.tutorials.first-part/extruded-plate */}
 
 ### Rounded edges and holes
 
@@ -67,11 +91,19 @@ Each step names its command, where to find it, and the values to give it. Click 
 
    A fillet rounds edges. These are the four edges where the top face meets the sides, named by the faces they lie between, so they stay the same edges when the plate changes size.
 
+   {/* shot: designer.tutorials.first-part/where-part-fillet */}
+
+   {/* shot: designer.tutorials.first-part/step-7 */}
+
 8. **[Hole](../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id mounts, body plate, on the end face of plate, diameter 5.
 
    Holes go into a face. Each position is an expression, 8 mm in from the plate's corner, so the holes keep their place when the plate grows.
 
-![Rounded edges and holes, after step 8](/img/generated/designer/first-part/rounded-edges-and-holes.webp)
+   {/* shot: designer.tutorials.first-part/where-part-hole */}
+
+   {/* shot: designer.tutorials.first-part/step-8 */}
+
+{/* shot: designer.tutorials.first-part/rounded-edges-and-holes */}
 
 ### Wider plate
 
@@ -79,7 +111,9 @@ Each step names its command, where to find it, and the values to give it. Click 
 
    Now make the plate wider. The sketch, the extrude, the rounded edges and the holes all follow the new width.
 
-![Wider plate, after step 9](/img/generated/designer/first-part/wider-plate.webp)
+   {/* shot: designer.tutorials.first-part/step-9 */}
+
+{/* shot: designer.tutorials.first-part/wider-plate */}
 
 {/* steps:end */}
 
@@ -98,4 +132,4 @@ Two more things kept the plate right when it grew:
 
 - Select `thickness` in the <Ui>Features</Ui> panel and change its value in <Ui>Properties</Ui>.
 - Undo the last change with <kbd>Ctrl+Z</kbd> (<kbd>⌘Z</kbd> on macOS), and look at the <Ui>History</Ui> tab.
-- Move on to [Model a desk robot arm](./desk-arm.md), where parts come together in an assembly.
+- Move on to [Model a desk robot arm](./desk-arm/index.md), where parts come together in an assembly.
