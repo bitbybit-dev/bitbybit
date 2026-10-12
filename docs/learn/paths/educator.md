@@ -30,4 +30,4 @@ Use the [Blockly](https://bitbybit.dev/app?editor=blockly) editor for younger or
 
 ## Cloud Services for Classrooms
 
-If you need cloud-based project saving for your entire class, or if you would like to become a teacher in the Bitbybit School to share your own curriculum, contact us at [info@bitbybit.dev](mailto:info@bitbybit.dev).
+If you need cloud-based project saving for your entire class, or if you would like to share your own curriculum with other teachers, contact us at [info@bitbybit.dev](mailto:info@bitbybit.dev).

@@ -51,5 +51,6 @@ Your agent can look up the exact API while it writes, and run geometry on CAD Cl
 
 ## Level Up
 
-- [Introduction To Programming 3D In TypeScript](https://bitbybit.dev/school/courses/introduction-to-programming-3d-in-typescript)
-- [Bitbybit For BabylonJS Developers](https://bitbybit.dev/school/courses/bitbybit-for-babylonjs-developers)
+- [Build a drone in TypeScript](/learn/getting-started/typescript/tutorials/drone), a whole model step by step
+- [The Code section](../code/intro.md), every kernel and what it is for, with examples in all three editors
+- [Quick start with Babylon.js](../npm-packages/babylonjs/start-with-babylon-js.md), for Babylon.js developers

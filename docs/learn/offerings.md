@@ -2,7 +2,7 @@
 sidebar_position: 5
 title: Platform & Products
 sidebar_label: Platform & Products
-description: A complete guide to Bitbybit's products - npm packages, runners, the coding editors, the Designer, CAD Cloud and Studio, the plans, the converter and inspector, 3D Bits, the School and the MCP servers - with what each costs and when to choose it.
+description: A complete guide to Bitbybit's products - npm packages, runners, the coding editors, the Designer, CAD Cloud and Studio, the plans, the converter and inspector, 3D Bits and the MCP servers - with what each costs and when to choose it.
 topic: platform.start.products
 type: explanation
 verified: 2026-10-11
@@ -173,17 +173,7 @@ The app includes the **[Composer](/learn/3d-bits/composer/intro)** - a no-code t
 
 ---
 
-## 10. Bitbybit School - Structured Learning
-
-**Free & Paid courses**
-
-Comprehensive modules covering 3D programming, mathematics, parametric design, and virtual reality concepts. Suitable for beginners through advanced practitioners.
-
-[Bitbybit School →](https://bitbybit.dev/school)
-
----
-
-## 11. MCP Servers - Bitbybit for AI Coding Agents
+## 10. MCP Servers - Bitbybit for AI Coding Agents
 
 **Free docs server · CAD Cloud server included with any CAD Cloud plan**
 

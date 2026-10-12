@@ -26,7 +26,7 @@ The drone above is built step by step in the [Rete tutorial](/learn/getting-star
 
 1. Open the [Blockly editor](https://bitbybit.dev/app?editor=blockly). It uses drag-and-drop blocks to teach geometry logic without syntax errors.
 2. Browse [public projects](https://bitbybit.dev/projects/public) to see how other users approach problems.
-3. Take structured courses in the [Bitbybit School](https://bitbybit.dev/school).
+3. Follow the [Designer tutorials](/learn/designer/tutorials) step by step, from a first part to a whole robot arm.
 
 ## If You Are Experienced
 
