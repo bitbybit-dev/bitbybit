@@ -4,6 +4,8 @@ title: "Reaching Out Is Super Important"
 sidebar_label: Please Reach Out
 description: Why talking to us improves your 3D product experience, what support your plan includes, and where to find us.
 tags: [shopify, 3d-bits, help]
+topic: shopify.start.support
+type: explanation
 ---
 import Admonition from '@theme/Admonition';
 

@@ -4,6 +4,8 @@ title: "Composer"
 sidebar_label: What Composer Is
 description: Composer is the visual editor where you build a 3D Bits configurator. No code, and everything about a configurator lives in one place.
 tags: [3d-bits, composer, shopify]
+topic: composer.intro
+type: landing
 ---
 
 # Composer

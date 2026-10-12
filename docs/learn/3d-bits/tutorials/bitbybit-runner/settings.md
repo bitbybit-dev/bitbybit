@@ -4,6 +4,8 @@ title: "BITBYBIT RUNNER (legacy) Theme App Extension Block Settings"
 sidebar_label: Block Settings (legacy)
 description: Settings reference for the deprecated BITBYBIT RUNNER theme app extension block. New configurators are built in Composer instead.
 tags: [shopify, 3d-bits]
+topic: shopify.theme-blocks.runner-settings
+type: reference
 ---
 
 # Block Settings
@@ -82,7 +84,7 @@ All editors are accessible through the **3D Bits admin dashboard** in your Shopi
 
 ---
 
-### Inline Script
+### Inline Script {#inline-script}
 
 The Inline Script setting allows you to embed your parametric script directly into the theme block. This is the recommended approach for most use cases.
 
@@ -159,7 +161,7 @@ For most use cases, [Inline Script](#inline-script) is recommended as it's faste
 
 ---
 
-### Execute JavaScript
+### Execute JavaScript {#execute-javascript}
 
 **Default:** `dispose(previousMeshes);const res = await runner.executeScript(script, inputs);update(previousMeshes, (res && res.meshes) ? res.meshes : []);`
 
@@ -275,7 +277,7 @@ BITBYBIT RUNNER supports multiple CAD geometry kernels. These kernels provide th
 
 ---
 
-### Enable OCCT
+### Enable OCCT {#enable-occt}
 
 **Default:** `true`
 
@@ -319,7 +321,7 @@ Check the [bitbybit.dev tutorials](/learn/code/common/occt) to learn OCCT geomet
 
 ---
 
-### Enable JSCAD
+### Enable JSCAD {#enable-jscad}
 
 **Default:** `false`
 
@@ -354,7 +356,7 @@ JSCAD features are also accessible through bitbybit.dev **Low-Code** editors (Bl
 
 ---
 
-### Enable Manifold
+### Enable Manifold {#enable-manifold}
 
 **Default:** `false`
 
@@ -390,7 +392,7 @@ Enabling multiple geometry kernels (OCCT + JSCAD + Manifold) increases loading t
 
 ---
 
-### Enable Key Event Listeners
+### Enable Key Event Listeners {#enable-key-event-listeners}
 
 **Default:** `false`
 
@@ -433,7 +435,7 @@ Leave this disabled (default) for standard configurators to reduce loading time 
 
 ---
 
-### Fonts to Include
+### Fonts to Include {#fonts-to-include}
 
 **Default:** `["Roboto"]`
 

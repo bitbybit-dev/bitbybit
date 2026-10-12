@@ -4,6 +4,8 @@ title: Scaffold a project with create-app
 sidebar_label: Create App
 description: npm init @bitbybit-dev/app scaffolds a browser app on Three.js, Babylon.js or PlayCanvas, a complete app template such as a product configurator or a laser-cut box generator, or a CAD Cloud backend with its frontend. Every project ships with a strict TypeScript and ESLint setup, a headless smoke test, and is configured for AI coding agents.
 tags: [npm-packages, ai, threejs, babylonjs, playcanvas]
+topic: npm.create-app
+type: how-to
 ---
 
 # Scaffold a project with create-app

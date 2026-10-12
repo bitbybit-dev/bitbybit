@@ -4,6 +4,8 @@ title: "3D Bits Shopify App - FAQ"
 sidebar_label: "FAQ"
 description: "Common questions about 3D Bits: building configurators without code, pricing what shoppers configure, the app embed, and working with your existing theme and apps."
 tags: [shopify, 3d-bits]
+topic: shopify.start.faq
+type: reference
 ---
 
 import Admonition from '@theme/Admonition';

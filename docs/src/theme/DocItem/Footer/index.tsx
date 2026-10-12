@@ -1,7 +1,7 @@
 import React, { type ReactNode } from "react";
 import Footer from "@theme-original/DocItem/Footer";
 import Link from "@docusaurus/Link";
-import { useDocsSidebar } from "@docusaurus/plugin-content-docs/client";
+import { useDoc, useDocsSidebar } from "@docusaurus/plugin-content-docs/client";
 import { useLocation } from "@docusaurus/router";
 
 // 164 of the 344 hand-written pages carried no in-content internal link at all, and the
@@ -83,13 +83,27 @@ export function relatedFor(items: SidebarItem[], pathname: string): RelatedLink[
     return related.slice(0, MAX_RELATED + 1);
 }
 
+export function verifiedMonth(verified: unknown): string | undefined {
+    const text = verified instanceof Date ? verified.toISOString() : verified;
+    const match = typeof text === "string" ? /^(\d{4})-(\d{2})-\d{2}/.exec(text) : null;
+    if (!match) return undefined;
+    const month = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, 1));
+    return month.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
+}
+
 export default function FooterWrapper(props: Record<string, unknown>): ReactNode {
     const sidebar = useDocsSidebar();
     const { pathname } = useLocation();
     const related = sidebar ? relatedFor(sidebar.items as SidebarItem[], pathname) : [];
+    const verified = verifiedMonth((useDoc().frontMatter as Record<string, unknown>).verified);
 
     return (
         <>
+            {verified && (
+                <p className="doc-verified" title="The last time the whole page was checked against the product, not the last edit">
+                    Verified against the product in {verified}
+                </p>
+            )}
             {related.length > 0 && (
                 <nav className="related-pages" aria-label="Related pages">
                     <h2>Related pages</h2>

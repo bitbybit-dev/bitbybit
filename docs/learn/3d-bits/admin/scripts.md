@@ -4,6 +4,8 @@ title: "Scripts"
 sidebar_label: Scripts
 description: Parametric programs that calculate geometry, how they connect to your configurators, and why one cannot be deleted while a project uses it.
 tags: [shopify, 3d-bits, scripts, scripting]
+topic: shopify.app.scripts
+type: how-to
 ---
 
 # Scripts

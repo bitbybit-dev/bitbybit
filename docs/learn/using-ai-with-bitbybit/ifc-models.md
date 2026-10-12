@@ -4,6 +4,8 @@ title: "IFC building models: writing BIM with an agent"
 sidebar_label: IFC building models
 description: How an agent writes IFC4 building models with Bitbybit - storeys, layered walls with their joins, doors, windows, slabs, roofs, rooms, properties and quantities - in Node or in the browser, how it checks them, and the mistakes to avoid.
 tags: [ai, ifc]
+topic: ai.ifc-models
+type: how-to
 ---
 
 # IFC building models: writing BIM with an agent

@@ -4,6 +4,8 @@ title: "Subscription Plans"
 sidebar_label: Plans and Features
 description: The three 3D Bits plans, what each one includes, and how to work out which one your products need.
 tags: [shopify, 3d-bits]
+topic: shopify.plans
+type: reference
 ---
 
 import { PlanIncludedIcon, PlanExcludedIcon, PlanConditionalIcon } from "@site/src/components/Icons";

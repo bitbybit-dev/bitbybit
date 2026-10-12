@@ -4,6 +4,8 @@ title: "How 3D Bits Works"
 sidebar_label: How It Works
 description: What happens on your product page, the two ways to drive a configurator, and how to keep it working when your theme or apps change.
 tags: [shopify, 3d-bits, architecture]
+topic: shopify.start.how-it-works
+type: explanation
 ---
 
 # How 3D Bits Works

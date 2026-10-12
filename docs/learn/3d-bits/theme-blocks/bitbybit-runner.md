@@ -4,6 +4,8 @@ title: "BITBYBIT RUNNER (legacy) Block for Shopify's '3D Bits' App"
 sidebar_label: BITBYBIT RUNNER (legacy)
 description: The legacy RUNNER theme block, what it still does for existing setups, and what to build instead.
 tags: [shopify, 3d-bits, scripting]
+topic: shopify.theme-blocks.runner
+type: reference
 ---
 
 # The "BITBYBIT RUNNER" Block for Shopify

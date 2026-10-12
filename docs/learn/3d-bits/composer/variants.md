@@ -4,6 +4,8 @@ title: "Variants: Making the Model React"
 sidebar_label: Variants
 description: The seven ways a 3D scene can change in response to what your shopper picks, and which panel each one lives in.
 tags: [3d-bits, composer, variants]
+topic: composer.variants
+type: explanation
 ---
 
 # Variants

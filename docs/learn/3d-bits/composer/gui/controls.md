@@ -4,6 +4,8 @@ title: "Controls"
 sidebar_label: Controls
 description: The dropdowns, swatches, sliders and fields your shoppers use to configure your product.
 tags: [3d-bits, composer, gui, controls]
+topic: composer.gui.controls
+type: how-to
 ---
 
 # Controls

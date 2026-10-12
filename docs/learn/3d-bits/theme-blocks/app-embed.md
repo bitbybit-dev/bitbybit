@@ -4,6 +4,8 @@ title: "App Embed Settings"
 sidebar_label: App Embed
 description: Reference for the 3D Bits app embed, the two settings that still live in the theme editor, and the ones a published project overrides.
 tags: [shopify, 3d-bits, app-embed]
+topic: shopify.theme-blocks.app-embed
+type: reference
 ---
 
 # App Embed

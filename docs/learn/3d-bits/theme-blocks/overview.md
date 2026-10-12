@@ -4,6 +4,8 @@ title: "Theme Blocks Overview"
 sidebar_label: Overview
 description: When to use the app embed, when to place theme blocks yourself, and what each 3D Bits block does.
 tags: [shopify, 3d-bits, theme-blocks]
+topic: shopify.theme-blocks.overview
+type: explanation
 ---
 
 # Theme Blocks

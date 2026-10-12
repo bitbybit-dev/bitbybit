@@ -49,6 +49,32 @@ It runs against `build/` after `docusaurus build`. Every indexable page (not `no
 page) must carry a description that does not start like code and is at least 50 characters long;
 each page that fails is listed with the reason.
 
+## topics.js
+
+Every page under `learn/` carries two front-matter keys besides its title and description:
+
+- `topic`, the page's stable id, `<product>.<area>[.<sub>].<name>` in lowercase with dots and dashes
+  (`composer.gui.controls`, `runners.engines.threejs.full`). An id is never reused for another page
+  and never changes when the page moves, so a link built on it survives a reorganisation.
+- `type`, what kind of page it is: `landing`, `tutorial`, `how-to`, `reference` or `explanation`.
+
+A section whose index page Docusaurus generates from its `_category_.json` can carry a topic too, as
+`customProps.topic`, when its link has an absolute `slug`. An optional `verified` key is the date of
+the last full check of the page against the product, written `yyyy-mm-dd`; the doc footer shows it.
+
+`npm run topics` writes what the ids give the site, both committed:
+
+- `src/data/topics.json`: every topic's id, title, type, address, source file and `verified` date.
+  The address is derived the way the docs plugin routes a page (an absolute `slug`, a relative one,
+  an index page, an `id`), so it is the page's live URL.
+- the `/help/<topic>` block of `static/_redirects`, between its two marker lines: one 301 per topic
+  to its page. `learn.bitbybit.dev/help/<topic>` is the address an app or another site links to;
+  the page behind it can move, and a `#anchor` on the link survives the redirect.
+
+`npm run check-topics` (`topics.js --check`, the first step of `npm run build`) reads only the
+sources, so it needs no build: it lists every page without a valid topic or type, every id or address
+taken twice, and fails when either generated file differs from what `npm run topics` would write.
+
 ## The search index (`index-search`) and check-search-index.js
 
 The site's search needs no service: `npm run index-search` runs Pagefind over `build/` after

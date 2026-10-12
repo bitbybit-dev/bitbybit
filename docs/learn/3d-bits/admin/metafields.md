@@ -4,6 +4,8 @@ title: "Metafields (Legacy)"
 sidebar_label: Metafields
 description: The original per-product setup, kept for stores that already use it.
 tags: [shopify, 3d-bits]
+topic: shopify.app.metafields
+type: how-to
 ---
 
 # Metafields

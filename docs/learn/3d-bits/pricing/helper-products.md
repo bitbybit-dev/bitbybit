@@ -4,6 +4,8 @@ title: "The Hidden Helper Products 3D Bits Creates in Your Shopify Catalogue"
 sidebar_label: Helper products
 description: Learn what the 3D Bits Fee products in your catalogue are for, and the rules for living with them safely.
 tags: [shopify, 3d-bits, pricing, fees, ecommerce]
+topic: shopify.pricing.helper-products
+type: explanation
 ---
 
 # Helper Products

@@ -195,6 +195,7 @@ const config: Config = {
     projectName: "bitbybit", // Usually your repo name.
 
     onBrokenLinks: "throw",
+    onBrokenAnchors: "throw",
     onBrokenMarkdownLinks: "warn",
 
     // Even if you don't use internationalization, you can use this field to set

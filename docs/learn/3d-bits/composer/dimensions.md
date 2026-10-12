@@ -4,6 +4,8 @@ title: "Dimensions"
 sidebar_label: Dimensions
 description: Measurement annotations drawn on the model itself, from fixed dimension lines to a bounding box that re-measures as the configuration changes.
 tags: [3d-bits, composer, dimensions]
+topic: composer.dimensions
+type: how-to
 ---
 
 # Dimensions

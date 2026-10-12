@@ -4,6 +4,8 @@ title: Understanding the Bitbybit GitHub Monorepo
 sidebar_label: GitHub Monorepo Overview
 description: An overview of the Bitbybit main GitHub monorepo, its structure, contents, and the technologies used.
 tags: [github, npm-packages, typescript]
+topic: platform.github.monorepo
+type: explanation
 ---
 
 # Understanding the Bitbybit GitHub Monorepo

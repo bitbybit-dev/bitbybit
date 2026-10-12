@@ -4,6 +4,8 @@ title: "When Something Is Not Working"
 sidebar_label: Troubleshooting
 description: The handful of things that go wrong in Composer, and what each one actually means.
 tags: [3d-bits, composer, troubleshooting, errors]
+topic: composer.troubleshooting
+type: how-to
 ---
 
 # When Something Is Not Working

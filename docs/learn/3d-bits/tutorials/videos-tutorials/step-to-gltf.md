@@ -4,6 +4,8 @@ title: "From STEP to GLTF - Convert PRO CAD 3D Models For 3D Bits Shopify App"
 sidebar_label: Preparing GLTF Assets
 description: Merchants often have product files created for manufacturing in professional CAD software such as FreeCAD, Fusion 360, CATIA, SolidWorks, Rhino, and others. But preparing these precise CAD models for web configurators is not straightforward.
 tags: [shopify, 3d-bits]
+topic: shopify.videos.step-to-gltf
+type: tutorial
 ---
 
 # FreeCAD → Blender → Khronos Compressor → 3D Bits App for Shopify

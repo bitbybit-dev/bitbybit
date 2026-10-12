@@ -4,6 +4,8 @@ title: "About PlayCanvas"
 sidebar_label: "About PlayCanvas"
 description: "An overview of PlayCanvas, a powerful WebGL game engine for creating and displaying 3D graphics in web browsers, and how it's integrated with Bitbybit."
 tags: [npm-packages, playcanvas]
+topic: npm.playcanvas.about
+type: explanation
 ---
 
 import Admonition from '@theme/Admonition';

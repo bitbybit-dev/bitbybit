@@ -4,6 +4,8 @@ title: "Common Settings Across 3D Bits Blocks"
 sidebar_label: Common Settings
 description: The settings shared across the 3D Bits app embed and theme blocks, what each one does, and which of them your published project overrides.
 tags: [shopify, 3d-bits, theme-blocks, app-embed]
+topic: shopify.theme-blocks.common-settings
+type: reference
 ---
 
 import Version from '@site/src/components/Version';
@@ -208,7 +210,7 @@ None of this applies to the **placed** blocks. A BITBYBIT VIEWER, PREVIEW, RUNNE
 
 ## Setting Details
 
-### Runner CDN Link
+### Runner CDN Link {#runner-cdn-link}
 
 **Available in:** app embed, VIEWER, RUNNER  
 **Default:** <b>{'https://git-cdn.bitbybit.dev/v'}<Version /></b>
@@ -334,7 +336,7 @@ Visit [Find Release Info on our GitHub](https://github.com/bitbybit-dev/bitbybit
 
 ---
 
-### Camera Position
+### Camera Position {#camera-position}
 
 **Available in:** VIEWER, RUNNER  
 **Default:** `[3, 1, 3]` (VIEWER), `[30, 10, 30]` (RUNNER)
@@ -388,7 +390,7 @@ In the RUNNER block, your parametric scripts can also control the camera program
 
 ---
 
-### Camera Target
+### Camera Target {#camera-target}
 
 **Available in:** VIEWER, RUNNER  
 **Default:** `[0, 0, 0]` (VIEWER), `[0, 15, 0]` (RUNNER)
@@ -441,7 +443,7 @@ Like camera position, your parametric scripts can control the camera target prog
 
 ---
 
-### Background Color
+### Background Color {#background-color}
 
 **Available in:** VIEWER, RUNNER  
 **Default:** `#ffffff` (white)
@@ -502,7 +504,7 @@ If you are using a scene configuration with a skybox or an advanced background, 
 
 ---
 
-### Public Script URL
+### Public Script URL {#public-script-url}
 
 **Available in:** RUNNER, APPS  
 **Default:** Empty
@@ -559,7 +561,7 @@ If you are writing parametric scripts for a store today, add them under **Script
 
 ---
 
-### Show Fullscreen Button
+### Show Fullscreen Button {#show-fullscreen-button}
 
 **Available in:** app embed, VIEWER, RUNNER, PREVIEW, APPS  
 **Default:** `true`
@@ -579,7 +581,7 @@ The embed's copy of this setting is overridden by the project. Change **Show ful
 
 ---
 
-### Show Spinner
+### Show Spinner {#show-spinner}
 
 **Available in:** app embed, VIEWER, RUNNER, APPS  
 **Default:** `true`
@@ -606,7 +608,7 @@ If a Composer project runs scripts, the Scripting tab has a separate **While com
 
 ---
 
-### Receive Input Names As Variants
+### Receive Input Names As Variants {#receive-input-names-as-variants}
 
 **Available in:** app embed, VIEWER, RUNNER, APPS  
 **Default:** `true`
@@ -740,7 +742,7 @@ We are working with partner app developers on dedicated integration strategies f
 
 ---
 
-### Input Collection Mode
+### Input Collection Mode {#input-collection-mode}
 
 **Available in:** app embed, VIEWER, RUNNER, APPS  
 **Default:** `standard`
@@ -789,7 +791,7 @@ As we add support for more apps, they appear in that Scraper Profile list.
 
 ---
 
-### Enable Debug Mode
+### Enable Debug Mode {#enable-debug-mode}
 
 **Available in:** VIEWER, RUNNER, APPS (on the app embed, it is a project setting)  
 **Default:** `false`
@@ -857,7 +859,7 @@ Always disable debug mode before your changes go live. The panel is visible to e
 
 ---
 
-### Try to Prepend
+### Try to Prepend {#try-to-prepend}
 
 **Available in:** VIEWER, RUNNER, PREVIEW, APPS  
 **Default:** `false`
@@ -892,7 +894,7 @@ The app embed always relocates the canvas, so it has no on/off switch. It has a 
 
 ---
 
-### Prepend With Query Selector
+### Prepend With Query Selector {#prepend-with-query-selector}
 
 **Available in:** VIEWER, RUNNER, PREVIEW, APPS  
 **Default:** `div.product__media-wrapper`
@@ -985,7 +987,7 @@ This setting only takes effect when [Try to Prepend](#try-to-prepend) is enabled
 
 ---
 
-### Remove Children Before Prepend
+### Remove Children Before Prepend {#remove-children-before-prepend}
 
 **Available in:** VIEWER, RUNNER, PREVIEW, APPS  
 **Default:** `false`
@@ -1034,7 +1036,7 @@ When enabled, the existing contents of the target element stop being visible. Ma
 
 ---
 
-### Disable Inputs When Computing
+### Disable Inputs When Computing {#disable-inputs-when-computing}
 
 **Available in:** RUNNER, APPS  
 **Default:** `false`

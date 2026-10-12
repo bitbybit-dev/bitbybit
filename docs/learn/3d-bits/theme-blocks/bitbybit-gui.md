@@ -4,6 +4,8 @@ title: "BITBYBIT GUI CONTROLS Block"
 sidebar_label: GUI Controls Block
 description: Host one area of your configurator's option panel exactly where you want it in your product template.
 tags: [shopify, 3d-bits, theme-blocks, gui]
+topic: shopify.theme-blocks.gui
+type: how-to
 ---
 
 # BITBYBIT GUI CONTROLS

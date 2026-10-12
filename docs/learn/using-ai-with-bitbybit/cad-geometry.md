@@ -4,6 +4,8 @@ title: "Geometry with the CAD kernels: writing parts with an agent"
 sidebar_label: Geometry with the kernels
 description: How an agent writes 3D geometry with Bitbybit's kernels - OpenCascade for exact parts, Manifold for fast meshes, JSCAD for quick solids - in the browser, in the editors or in Node, how it chooses edges, checks a shape and exports it, and the mistakes to avoid.
 tags: [ai, occt, manifold, jscad]
+topic: ai.cad-geometry
+type: how-to
 ---
 
 # Geometry with the CAD kernels: writing parts with an agent

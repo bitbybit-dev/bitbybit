@@ -4,6 +4,8 @@ title: "Navigation"
 sidebar_label: Navigation
 description: Markers your shopper can click to see a detail, and camera moves that fire when they choose an option.
 tags: [3d-bits, composer, navigation]
+topic: composer.navigation
+type: how-to
 ---
 
 # Navigation

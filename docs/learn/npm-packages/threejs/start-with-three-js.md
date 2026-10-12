@@ -4,6 +4,8 @@ title: Quick Start with ThreeJS
 sidebar_label: Quick Start
 description: Learn how to set up and use the @bitbybit-dev/threejs package with Vite to create 3D CAD applications, and control which geometry kernels (OCCT, JSCAD, Manifold) are initialized.
 tags: [npm-packages, threejs, occt, manifold, jscad]
+topic: npm.threejs.start
+type: tutorial
 ---
 
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';

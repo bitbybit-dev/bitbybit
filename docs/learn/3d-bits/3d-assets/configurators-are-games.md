@@ -4,6 +4,8 @@ title: "Configurators Are Games"
 sidebar_label: Configurators Are Games
 description: Learn how to think like a game designer when creating 3D product configurators for Shopify using the "3D Bits" app.
 tags: [shopify, 3d-bits, configurators]
+topic: shopify.assets.configurators-are-games
+type: explanation
 ---
 
 # Configurators Are Games

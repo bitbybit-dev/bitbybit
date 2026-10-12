@@ -4,6 +4,8 @@ title: "Configuring Settings for the '3D Bits' Shopify App"
 sidebar_label: App Settings Configuration
 description: A video tutorial explaining the key settings of the "3D Bits" Shopify app, including how to position the 3D canvas on your product page and other relevant configurations.
 tags: [shopify, 3d-bits]
+topic: shopify.videos.settings
+type: tutorial
 ---
 
 # Configuring Settings for the "3D Bits" Shopify App

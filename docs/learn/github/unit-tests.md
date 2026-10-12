@@ -4,6 +4,8 @@ title: Unit Testing in Bitbybit
 sidebar_label: Unit Testing Approach
 description: Learn about the importance of unit testing in Bitbybit, our practical approach to testing 3D algorithms (including E2E-like tests), and explore our live unit test reports.
 tags: [getting-started, github, unit-tests, development]
+topic: platform.github.unit-tests
+type: explanation
 ---
 
 # Unit Testing in Bitbybit (WIP)

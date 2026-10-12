@@ -5,6 +5,8 @@ sidebar_label: Preview with 3D Scan
 description: Learn how to use the BITBYBIT PREVIEW block in Shopify's "3D Bits" app to embed a Bitbybit project featuring a 3D scanned product onto your e-commerce store.
 slug: /shopify/tutorials/preview-3d-scan # Or adjust as needed
 tags: [shopify, 3d-bits]
+topic: shopify.videos.preview-3d-scans
+type: tutorial
 ---
 
 # Using BITBYBIT PREVIEW With a 3D Scanned Product

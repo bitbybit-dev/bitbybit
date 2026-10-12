@@ -1,8 +1,9 @@
 # CLAUDE.md - the Docusaurus site for learn.bitbybit.dev
 
-`npm run build` is the gate: it regenerates the API pages from `static/openapi.json`, injects the
-static reference sections, builds, indexes the built pages for search with Pagefind, then runs
-`scripts/check-search-index.js` and `scripts/check-descriptions.js`. `llms.txt` is generated from
+`npm run build` is the gate: it checks every learn page's topic (`check-topics`), regenerates the
+API pages from `static/openapi.json`, injects the static reference sections, builds, indexes the
+built pages for search with Pagefind, then runs `scripts/check-search-index.js` and
+`scripts/check-descriptions.js`. `llms.txt` is generated from
 `static/llms.template.txt` - edit the template, never the output.
 
 Search has no service: the index is files in `build/pagefind/` (a local start serves the last build's copy
@@ -21,7 +22,14 @@ commit the injected form.
 This site is live and linked from outside. `trailingSlash: false` and every category's explicit
 `slug` are what hold URLs still - never change either to satisfy a build error. Prove a dependency
 change kept them: build before, save `build/sitemap.xml`, build after, diff the two `<loc>` sets.
-Anything removed is a broken inbound link. `onBrokenLinks: "throw"` already covers internal ones.
+Anything removed is a broken inbound link. `onBrokenLinks: "throw"` and `onBrokenAnchors: "throw"`
+already cover internal ones.
+
+Every learn page carries a `topic` id and a `type` (`scripts/README.md`, `topics.js`). The id is the
+stable name of the page: `learn.bitbybit.dev/help/<topic>` redirects to it wherever it moves, so an
+app links to `/help/...` and never to a path. After adding, moving or renaming a page run
+`npm run topics` and commit `src/data/topics.json` and `static/_redirects`; `npm run check-topics`,
+the first step of the build, fails until you do. Never change a published id.
 
 Two sidebar categories may not share a label within one sidebar - Docusaurus derives an i18n key
 from the label and refuses the duplicate. The `npm-packages/*` and `runners/engines/*` trees both

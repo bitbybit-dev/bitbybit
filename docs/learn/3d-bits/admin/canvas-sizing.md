@@ -4,6 +4,8 @@ title: "Canvas Size and Layout"
 sidebar_label: Canvas Size
 description: How tall the 3D view is, how wide it goes and where the options panel sits, set per project from Storefront settings.
 tags: [shopify, 3d-bits, canvas, layout]
+topic: shopify.app.canvas-sizing
+type: how-to
 ---
 
 # Canvas Size and Layout

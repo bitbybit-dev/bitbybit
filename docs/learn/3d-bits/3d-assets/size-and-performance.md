@@ -4,6 +4,8 @@ title: "Model Size and Performance Limits"
 sidebar_label: Size and Performance
 description: The three file size limits in 3D Bits - Composer's warning bands, the iPhone Safari block on the storefront, and the upload cap - and exactly what each one does.
 tags: [shopify, 3d-bits, assets, performance, optimization, mobile]
+topic: shopify.assets.size-and-performance
+type: reference
 ---
 
 # Model Size and Performance Limits

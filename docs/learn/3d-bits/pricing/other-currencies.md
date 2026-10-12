@@ -4,6 +4,8 @@ title: "Selling Configured Products in Other Currencies with Shopify Markets"
 sidebar_label: Other currencies
 description: Learn how configured prices behave in Shopify Markets, which markets can be priced exactly, and what to publish again after changing your Markets setup.
 tags: [shopify, 3d-bits, pricing, markets, ecommerce]
+topic: shopify.pricing.other-currencies
+type: how-to
 ---
 
 # Other Currencies

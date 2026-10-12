@@ -4,6 +4,8 @@ title: "Helpers"
 sidebar_label: Helpers
 description: The CAD converter, the 3D inspector, and the metafields page you need once at the very end.
 tags: [shopify, 3d-bits, cad, metafields]
+topic: shopify.app.helpers
+type: how-to
 ---
 
 # Helpers

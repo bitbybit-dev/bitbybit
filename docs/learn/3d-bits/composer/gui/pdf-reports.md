@@ -4,6 +4,8 @@ title: "PDF Reports"
 sidebar_label: PDF Reports
 description: A summary your shopper can download, and a production document attached to the order.
 tags: [3d-bits, composer, gui, pdf]
+topic: composer.gui.pdf
+type: how-to
 ---
 
 # PDF Reports

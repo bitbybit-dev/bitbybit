@@ -4,6 +4,8 @@ title: "Troubleshooting Configurator Pricing: What Each Message Means"
 sidebar_label: Troubleshooting
 description: Learn what to do when a shopper cannot check out a configured product, or a publish is refused.
 tags: [shopify, 3d-bits, pricing, checkout, validation]
+topic: shopify.pricing.troubleshooting
+type: how-to
 ---
 
 # Troubleshooting

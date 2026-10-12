@@ -4,6 +4,8 @@ title: "BITBYBIT APPS Block for Shopify's '3D Bits' App"
 sidebar_label: BITBYBIT APPS
 description: Learn how to use the BITBYBIT APPS theme app extension block to develop and deploy professional 3D & 2D product presentations on Shopify
 tags: [shopify, 3d-bits, typescript]
+topic: shopify.theme-blocks.apps
+type: how-to
 ---
 
 # Unlock Professional 3D & 2D Experiences with the BITBYBIT APPS Block

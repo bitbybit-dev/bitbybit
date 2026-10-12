@@ -4,6 +4,8 @@ title: "Pricing in the Panel"
 sidebar_label: Pricing
 description: The Pricing tab in Composer - the base price, formulas, the floor your product's own price sets, and where to read about charging properly.
 tags: [3d-bits, composer, gui, pricing]
+topic: composer.gui.pricing
+type: how-to
 ---
 
 # Pricing in the Panel

@@ -5,6 +5,8 @@ title: Bitbybit CAD Cloud MCP
 sidebar_label: Bitbybit CAD Cloud MCP
 description: The MCP server that lets an AI agent run Bitbybit geometry on CAD Cloud with an API key, from a single operation to a full pipeline, a parametric model or a STEP conversion, with the results back as files.
 tags: [ai]
+topic: ai.mcp.cad-cloud
+type: how-to
 ---
 
 # Bitbybit CAD Cloud MCP

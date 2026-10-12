@@ -4,6 +4,8 @@ title: "Your First Configurator"
 sidebar_label: Your First Configurator
 description: Take one product from a 3D file to a live configurator on your storefront, start to finish.
 tags: [shopify, 3d-bits]
+topic: shopify.quick-start.first-configurator
+type: tutorial
 ---
 
 # Your First Configurator

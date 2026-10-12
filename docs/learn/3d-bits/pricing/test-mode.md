@@ -4,6 +4,8 @@ title: "Testing Your Prices Before 3D Bits Creates Anything"
 sidebar_label: Pricing test mode
 description: Check that your configurator charges the right amounts on your real product page, without creating helper products in your Shopify catalogue.
 tags: [shopify, 3d-bits, pricing, testing, ecommerce]
+topic: shopify.pricing.test-mode
+type: how-to
 ---
 
 # Pricing test mode

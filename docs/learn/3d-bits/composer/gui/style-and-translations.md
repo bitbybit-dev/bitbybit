@@ -4,6 +4,8 @@ title: "Style and Translations"
 sidebar_label: Style and Translations
 description: Making the option panel look like your store, in light and in dark, and offering it in the languages you sell in.
 tags: [3d-bits, composer, gui, styling]
+topic: composer.gui.style
+type: how-to
 ---
 
 # Style and Translations

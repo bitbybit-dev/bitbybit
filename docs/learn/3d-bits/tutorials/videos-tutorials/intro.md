@@ -4,6 +4,8 @@ title: "Tutorials for Shopify '3D Bits' E-Commerce App"
 sidebar_label: Shopify App Tutorials
 description: Get started with the "3D Bits" Shopify app through our series of video tutorials, covering installation, setup, 3D model linking, and custom model creation.
 tags: [shopify, 3d-bits]
+topic: shopify.videos.intro
+type: landing
 ---
 
 # Tutorials for the "3D Bits" Shopify E-Commerce App

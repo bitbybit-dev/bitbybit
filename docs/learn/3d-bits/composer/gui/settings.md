@@ -4,6 +4,8 @@ title: "Settings: Remembering a Configuration"
 sidebar_label: Settings
 description: The Settings tab - an image of the configured product attached to the order, and a link that reopens the exact configuration.
 tags: [3d-bits, composer, gui, orders]
+topic: composer.gui.settings
+type: how-to
 ---
 
 # Settings

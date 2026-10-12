@@ -151,6 +151,12 @@
  * Half the hand-written pages had no in-content internal link at all; this gives every
  * page a real, per-page set of links to its siblings and its parent.
  */
+.doc-verified {
+    margin: 32px 0 0;
+    font-size: 0.85rem;
+    color: var(--ifm-color-emphasis-700);
+}
+
 .related-pages {
     margin: 48px 0 0;
     padding-top: 24px;

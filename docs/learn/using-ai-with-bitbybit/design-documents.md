@@ -4,6 +4,8 @@ title: "Design documents: parametric models as JSON"
 sidebar_label: Design documents
 description: How to write a Bitbybit design document - parameters, sketches, features, references that survive edits, parts and assemblies - and the validate, build and fix loop an agent should follow.
 tags: [ai, occt]
+topic: ai.design-documents
+type: reference
 ---
 
 # Design documents: parametric models as JSON

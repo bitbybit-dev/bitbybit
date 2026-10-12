@@ -4,6 +4,8 @@ title: Quick Start with BabylonJS
 sidebar_label: Quick Start
 description: Learn how to set up and use the @bitbybit-dev/babylonjs package with Vite to create 3D CAD applications, and control which geometry kernels (OCCT, JSCAD, Manifold) are initialized.
 tags: [npm-packages, babylonjs, occt, manifold, jscad]
+topic: npm.babylonjs.start
+type: tutorial
 ---
 
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';

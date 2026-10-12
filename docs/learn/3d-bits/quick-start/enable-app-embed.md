@@ -4,6 +4,8 @@ title: "Enable 3D on Your Store"
 sidebar_label: Enable the App Embed
 description: Turn the 3D Bits app embed on once, and every product you publish shows its configurator automatically.
 tags: [shopify, 3d-bits, app-embed]
+topic: shopify.quick-start.enable-app-embed
+type: how-to
 ---
 
 # Enable 3D on Your Store

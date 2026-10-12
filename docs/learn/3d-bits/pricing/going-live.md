@@ -4,6 +4,8 @@ title: "Going Live with Configurator Pricing: Testing and Order Review"
 sidebar_label: Going live
 description: Learn what to test before selling a configured product, how to sell in several currencies, and how to review configured orders.
 tags: [shopify, 3d-bits, pricing, orders, markets]
+topic: shopify.pricing.going-live
+type: how-to
 ---
 
 # Going Live

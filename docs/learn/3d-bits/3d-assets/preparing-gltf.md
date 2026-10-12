@@ -5,6 +5,8 @@ sidebar_label: Preparing GLTF 3D Assets
 description: Learn about the best practices and solutions when preparing 3D GLTF assets for your 3D configurators.
 tags: [shopify, 3d-bits, configurators]
 image: https://bitbybit.dev/files/site/start/shopify/preparing-gltf-assets/preparing-gltf-assets-for-3d-bits-app-for-shopify.jpeg
+topic: shopify.assets.preparing-gltf
+type: how-to
 ---
 
 # Where to Start

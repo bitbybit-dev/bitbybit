@@ -4,6 +4,8 @@ title: "Logic"
 sidebar_label: Logic
 description: Rules that connect choices to each other, so the configurator only ever offers combinations you can actually make.
 tags: [3d-bits, composer, logic]
+topic: composer.logic
+type: how-to
 ---
 
 # Logic

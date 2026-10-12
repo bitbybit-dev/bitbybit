@@ -4,6 +4,8 @@ title: "BITBYBIT PREVIEW Theme App Extension Block Settings"
 sidebar_label: Block Settings
 description: Learn about various settings that BITBYBIT PREVIEW theme app extension block provides to embed full bitbybit.dev projects via iframe.
 tags: [shopify, 3d-bits]
+topic: shopify.theme-blocks.preview-settings
+type: reference
 ---
 
 # Block Settings
@@ -85,7 +87,7 @@ Understanding which settings should be product-specific vs. global is important 
 
 ## Product-Specific Settings
 
-### Project Preview URL
+### Project Preview URL {#project-preview-url}
 
 The Project Preview URL setting specifies which bitbybit.dev project to embed in the iframe.
 

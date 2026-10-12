@@ -4,6 +4,8 @@ title: "Installing 3D Bits App for Shopify"
 sidebar_label: Install 3D Bits App
 description: Learn how to install the 3D Bits app for Shopify on your store and confirm that the installation was successful.
 tags: [shopify, 3d-bits]
+topic: shopify.quick-start.install
+type: how-to
 ---
 
 # Installing 3D Bits App

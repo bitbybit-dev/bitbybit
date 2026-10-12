@@ -4,6 +4,8 @@ title: "Setting Up the '3D Bits' App for Your Shopify Store"
 sidebar_label: Initial App Setup
 description: A step-by-step video tutorial on installing the "3D Bits" Shopify app, approving subscriptions, creating metafields, setting up product templates, and linking the BITBYBIT RUNNER block.
 tags: [shopify, 3d-bits]
+topic: shopify.videos.set-up
+type: tutorial
 ---
 
 # Setting Up the "3D Bits" App for Your Shopify Store

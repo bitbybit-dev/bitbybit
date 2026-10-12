@@ -4,6 +4,8 @@ title: "Parametric Hex House Concept with BabylonJS & Bitbybit"
 sidebar_label: "Hex House (BabylonJS)"
 description: "Explore how to construct a parametric 'Hex House' architectural concept using Bitbybit with BabylonJS, OCCT, and a dynamic GUI for customization."
 tags: [npm-packages, babylonjs]
+topic: npm.babylonjs.hex-house
+type: tutorial
 ---
 
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';

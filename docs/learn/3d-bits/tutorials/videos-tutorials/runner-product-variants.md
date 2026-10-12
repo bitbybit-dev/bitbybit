@@ -5,6 +5,8 @@ sidebar_label: 3D Product Variants
 description: A video tutorial demonstrating how to create a basic 3D configurable product (a cube) on Shopify that responds to product variant inputs using the "3D Bits" app.
 slug: /shopify/tutorials/3d-product-variants # Or adjust as needed
 tags: [shopify, 3d-bits]
+topic: shopify.videos.runner-variants
+type: tutorial
 ---
 
 # Creating 3D Product Variants with "3D Bits" on Shopify

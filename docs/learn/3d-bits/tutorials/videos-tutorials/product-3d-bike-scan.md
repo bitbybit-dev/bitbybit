@@ -4,6 +4,8 @@ title: "Tutorial: Using a 3D Bike Scan as a Shopify Product with '3D Bits'"
 sidebar_label: Product - Bike 3D Scan
 description: Learn how to 3D scan a bike, process the scan, upload it to Shopify, and display it as an interactive 3D product using the "3D Bits" app.
 tags: [shopify, 3d-bits]
+topic: shopify.videos.bike-scan
+type: tutorial
 ---
 
 # Tutorial: Using a 3D Bike Scan as a Shopify Product
