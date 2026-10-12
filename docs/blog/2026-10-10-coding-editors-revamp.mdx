@@ -7,7 +7,7 @@ description: "We rebuilt the Bitbybit coding editors. Rete gets a typed, colour-
 image: /img/blog/coding-editors-revamp/hero.webp
 ---
 
-<img src="/img/blog/coding-editors-revamp/hero.webp" alt="The whole Rete script of a detailed drone, every part in a group of its own and the groups laid out side by side by Arrange, beside the drone it builds in the 3D view" title="The drone's whole script in the Rete node editor" style={{maxWidth: '100%'}} />
+<img src="/img/blog/coding-editors-revamp/hero.webp" alt="The drone the coding-editor tutorials build, finished in white with orange accents: a carbon frame with hexagon vents, four arms with motors and two-blade propellers, a honeycombed canopy with the bitbybit logo, sprung legs and a camera on its gimbal" title="The drone, built in the TypeScript editor" style={{maxWidth: '100%'}} />
 
 Bitbybit has three coding editors: **Rete**, where you wire nodes together; **Blockly**, where you snap blocks; and **TypeScript**, where you write code against the same API. This release rebuilds a large part of all three. Most of the work went into Rete, which now stays readable when a script grows to hundreds of nodes. Blockly functions can await geometry, TypeScript scripts can span many files, and an AI agent can drive any of the three editors.
 
@@ -21,7 +21,7 @@ To show what that adds up to, we built one drone in all three editors: a quadcop
 
 The drone is the showcase of each editor, and the tutorials build it in seven chapters: sizes and the frame, a way to repeat a part around the drone, one arm, arms around the frame, the canopy, the landing gear and the payload. Every chapter has a picture of the editor after every step.
 
-- **[In Rete](/learn/getting-started/rete/tutorials/drone/frame)**: 205 components in commented groups, two modules (one repeats a part around the drone, one makes an arm with its motor, propeller, bolts and light), and code components where a few lines say more than a dozen nodes.
+- **[In Rete](/learn/getting-started/rete/tutorials/drone/frame)**: 202 components in commented groups, two modules (one repeats a part around the drone, one makes an arm with its motor, propeller, bolts and light), and code components where a few lines say more than a dozen nodes.
 - **[In Blockly](/learn/getting-started/blockly/tutorials/drone/frame)**: variables for the sizes, a function for every part, loops that repeat parts and cut their holes, and async functions for the parts that measure geometry. The functions are collapsed, so the stacks that call them read like a list of parts.
 - **[In TypeScript](/learn/getting-started/typescript/tutorials/drone/frame)**: a script of nineteen files, one function per part and a folder for the arm, put together in `main.ts`.
 
@@ -111,7 +111,7 @@ While an editor is open, it offers its tools to AI agents, through `window.bitby
 
 ## Faster, and lighter on your machine
 
-Under all of this, the editors were rebuilt. The 3D scene renders only when something changes instead of 60 times a second. Zoomed far out, Rete nodes simplify to placeholders so the canvas stays smooth. Rete keeps each node's last result and runs again only what a change affects. Large graphs like the drone's 205 nodes stay quick to pan, zoom and edit.
+Under all of this, the editors were rebuilt. The 3D scene renders only when something changes instead of 60 times a second. Zoomed far out, Rete nodes simplify to placeholders so the canvas stays smooth. Rete keeps each node's last result and runs again only what a change affects. Large graphs like the drone's 202 nodes stay quick to pan, zoom and edit.
 
 ## New pages on learn.bitbybit.dev
 
