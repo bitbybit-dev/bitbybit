@@ -1,13 +1,15 @@
 import * as THREE from "three";
-import { Inputs, type BitByBitBase } from "@bitbybit-dev/threejs";
+import type { BitByBitBase, Inputs } from "@bitbybit-dev/threejs";
 import { ROOF } from "../house/house-plan";
 import type { HouseModel, Layer } from "../house/house-types";
-import type { DrawnElement, ElementInfo, Look } from "./scene-types";
+import type { DrawnHouse, ElementInfo, Look } from "./scene-types";
 
 const SHARP_ANGLE = 40;
 const FALLBACK_COLOUR = "#d6d3cc";
 const MATTE: Look = { roughness: 0.88, metalness: 0 };
 const FOLIAGE: Look = { roughness: 0.95, metalness: 0, faceted: true };
+const GLASS: Look = { roughness: 0.04, metalness: 0, glass: true };
+const GLASS_ENVIRONMENT = 1.8;
 const LOOKS: Record<string, Look> = {
     "#3b342e": { roughness: 0.86, metalness: 0 },
     "#161514": { roughness: 0.7, metalness: 0 },
@@ -29,64 +31,63 @@ function hexOf(rgba: readonly number[]): string {
     return `#${rgba.slice(0, 3).map((channel) => Math.round(channel * 255).toString(16).padStart(2, "0")).join("")}`;
 }
 
-class Materials {
-    private readonly made = new Map<string, THREE.Material>();
-
-    of(rgba: readonly number[] | undefined): THREE.Material {
-        const colour = rgba ? hexOf(rgba) : FALLBACK_COLOUR;
-        const alpha = rgba?.[3] ?? 1;
-        const key = `${colour}/${alpha}`;
-        let material = this.made.get(key);
-        if (!material) {
-            material = alpha < 1 ? this.glass(colour, alpha) : this.solid(colour, LOOKS[colour] ?? MATTE);
-            this.made.set(key, material);
-        }
-        return material;
+function lookOf(rgba: readonly number[] | undefined): Look {
+    if (!rgba) {
+        return MATTE;
     }
-
-    private solid(colour: string, look: Look): THREE.Material {
-        return new THREE.MeshStandardMaterial({ color: colour, roughness: look.roughness, metalness: look.metalness, flatShading: look.faceted ?? false });
-    }
-
-    private glass(colour: string, alpha: number): THREE.Material {
-        return new THREE.MeshPhysicalMaterial({
-            color: colour, transparent: true, opacity: Math.max(0.18, alpha), roughness: 0.04, metalness: 0,
-            envMapIntensity: 1.8, depthWrite: false, side: THREE.DoubleSide,
-        });
-    }
+    return (rgba[3] ?? 1) < 1 ? GLASS : LOOKS[hexOf(rgba)] ?? MATTE;
 }
 
-export async function drawHouse(bitbybit: BitByBitBase, house: HouseModel): Promise<DrawnElement[]> {
-    const recipe = await bitbybit.ifc.geometry.recipe({ model: house.model });
-    const solids = await bitbybit.manifold.recipes.build({ recipe, adjustZtoY: true, emptyWhenFailed: true });
-    const meshes = await bitbybit.manifold.decomposeManifoldsOrCrossSections({ manifoldsOrCrossSections: solids, minSharpAngle: SHARP_ANGLE });
-    const materials = new Materials();
-    const drawn: DrawnElement[] = [];
-    for (const [index, root] of recipe.roots.entries()) {
-        const mesh = meshes[index];
-        if (!mesh) {
-            continue;
-        }
-        const tag = root.tag;
-        const rgba = Array.isArray(tag["rgba"]) ? tag["rgba"] : undefined;
-        const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
-        options.faceMaterial = materials.of(rgba);
-        options.drawTwoSided = false;
-        options.minSharpAngle = SHARP_ANGLE;
-        const object = await bitbybit.draw.drawAnyAsync({ entity: mesh as Inputs.Manifold.DecomposedManifoldMeshDto, options });
-        const info: ElementInfo = {
-            globalId: String(tag["globalId"]),
-            type: String(tag["type"]),
-            name: String(tag["name"] ?? ""),
-            layer: house.layers.get(String(tag["globalId"])) ?? LAYERS_BY_NAME[String(tag["name"])] ?? "ground",
-        };
-        const seeThrough = rgba !== undefined && (rgba[3] ?? 1) < 1;
-        object.traverse((part) => {
-            part.userData = { ...part.userData, element: info };
-            part.castShadow = !seeThrough;
-            part.receiveShadow = true;
-        });
-        drawn.push({ info, object });
+function styled(material: THREE.Material, look: Look): THREE.Material {
+    if (!look.glass && !look.faceted) {
+        return material;
     }
-    return drawn;
+    const own = material.clone() as THREE.MeshPhysicalMaterial;
+    if (look.glass) {
+        own.envMapIntensity = GLASS_ENVIRONMENT;
+        own.side = THREE.DoubleSide;
+    }
+    own.flatShading = look.faceted ?? false;
+    return own;
+}
+
+export async function drawHouse(bitbybit: BitByBitBase, house: HouseModel): Promise<DrawnHouse> {
+    const recipe = await bitbybit.ifc.geometry.recipe({ model: house.model });
+    const built = await bitbybit.manifold.recipes.meshes({ recipe, adjustZtoY: true, emptyWhenFailed: true, minSharpAngle: SHARP_ANGLE });
+    const elements = new Map<string, ElementInfo>();
+    const rootsByLook = new Map<Look, Set<number>>();
+    built.placements.forEach((placement, root) => {
+        if (placement.mesh < 0) {
+            return;
+        }
+        const tag = placement.tag;
+        const globalId = String(tag["globalId"]);
+        if (!elements.has(globalId)) {
+            elements.set(globalId, {
+                globalId,
+                type: String(tag["type"]),
+                name: String(tag["name"] ?? ""),
+                layer: house.layers.get(globalId) ?? LAYERS_BY_NAME[String(tag["name"])] ?? "ground",
+            });
+        }
+        const look = lookOf(Array.isArray(tag["rgba"]) ? tag["rgba"] : undefined);
+        rootsByLook.set(look, (rootsByLook.get(look) ?? new Set()).add(root));
+    });
+    const groups: THREE.Group[] = [];
+    for (const [look, roots] of rootsByLook) {
+        const entity: Inputs.Manifold.RecipeMeshesDto = {
+            meshes: built.meshes,
+            placements: built.placements.map((placement, root) => roots.has(root) ? placement : { ...placement, mesh: -1 }),
+        };
+        const options = bitbybit.draw.optionsRecipeMeshes({ defaultColour: FALLBACK_COLOUR, metallic: look.metalness, roughness: look.roughness });
+        const group = await bitbybit.draw.drawAnyAsync({ entity, options });
+        group.traverse((part) => {
+            if (part instanceof THREE.Mesh) {
+                part.material = styled(part.material as THREE.Material, look);
+                part.castShadow = !look.glass;
+            }
+        });
+        groups.push(group);
+    }
+    return { groups, elements };
 }

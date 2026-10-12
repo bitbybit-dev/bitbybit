@@ -39,7 +39,7 @@ over typed arrays, counting and then filling (offsets per row and the ids that r
 millions of rows costs two arrays rather than a map of sets. Each row's `#` signs are counted first
 with the native byte search: a row with none, such as a coordinate list that can run to tens of
 megabytes, is passed over without walking its bytes, and the scratch for a row's references is sized
-by that count rather than by the row's length. A 677 MB file of 10.9 million rows reads
+by that count rather than by the row's length. A synthetic file of 677 MB and 10.9 million rows, one block of entities repeated, reads
 in under 4 s and builds both lookups in about 4 s more, with half a gigabyte of JavaScript heap beside
 its bytes.
 
@@ -51,8 +51,8 @@ schema (`schemaName` is `IFC2X3`) and is not `editable`: a change would be writt
 a file that says IFC2X3, so `IfcTransaction` refuses to start. `upgradeToIfc4` makes it an IFC4 model:
 every row is checked against IFC4, attributes IFC4 added are left unset, a newly required enumeration
 takes `NOTDEFINED`, a set loses repeated members, and an entity IFC4 merged into its parent
-(`IfcRelOccupiesSpaces`) becomes that parent. Only the rows a rule changed go into the overlay - 16
-thousand of the 10.4 million - so the others are still written as read; anything no rule covers stops
+(`IfcRelOccupiesSpaces`) becomes that parent. Only the rows a rule changed go into the overlay - a small
+fraction of a large file's - so the others are still written as read; anything no rule covers stops
 the upgrade, naming the entity. The writer copies the file's header only when it is the one the file was
 read with, so an upgraded model's header says IFC4.
 

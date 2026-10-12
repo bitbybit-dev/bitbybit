@@ -150,11 +150,13 @@ Read the model back before handing it over; every check here is cheap:
 
 ## Reading and changing IFC files
 
-- `model.read` takes the text or the bytes of an `.ifc` file, such as `readFileSync("in.ifc")` or `await file.arrayBuffer()`. It indexes the file without decoding it, so files of hundreds of megabytes open in seconds.
+- `model.read` takes the text or the bytes of an `.ifc` file, or the bytes of an `.ifczip` archive, such as `readFileSync("in.ifc")` or `await file.arrayBuffer()`. It indexes the file without decoding it, so files of hundreds of megabytes open in seconds.
 - `model.elements` lists objects by IFC type, its subtypes included (`IfcWall`, `IfcBuildingElement`, or `IfcElement` for every element), optionally of one storey; `model.element` describes one; `model.getAttribute` and `model.setAttribute` read and set one attribute such as `Name` or `Tag`.
 - `properties.getSets` reads an object's property sets; `properties.setValues` changes one object's values, copying a set it shares with others first, so the others keep theirs.
 - `walls.parameters` and `walls.edit` read and change walls other tools wrote with an axis and layers; joined walls are trimmed again and the wall's openings move with it. `model.move` moves and turns any element, and `model.remove` takes it away with what only it uses.
 - **IFC2X3 files** are read, queried and written back, but not changed: `model.upgradeToIfc4` gives a model that can be.
+- **IFC4X3 files** are read with their own schema, queried, drawn and written back, but not changed. `model.summary` gives `editable` false for both.
+- `model.georeference` reads a model's map conversion (`crs`, `eastings`, `northings`) and its site's latitude and longitude.
 - `model.writeBytes` writes untouched entities back byte for byte, so a small change to a large file stays small. Prefer it to `model.write` for files read from elsewhere: a JavaScript string holds about 512 MB.
 
 ## Drawing an IFC model and exporting STEP
@@ -181,5 +183,5 @@ The solids come back one per root of the recipe, and `recipe.roots[i].tag` carri
 - **The roof before its walls are clipped, or a roof that is not a rectangle.** `roofs.add` takes four corners, and walls are clipped with `walls.clipByRoof` after the roof exists.
 - **Quantities computed too early.** They are a snapshot; compute them once the model is finished, or again after a change.
 - **An assembly of a user-defined kind without words.** `assemblies.add` with `predefinedType` `userDefined` needs an `objectType` that says what it is, such as `"Cladding"`.
-- **Changing an IFC2X3 model.** It refuses every change until `model.upgradeToIfc4`.
+- **Changing an IFC2X3 or IFC4X3 model.** An IFC2X3 model refuses every change until `model.upgradeToIfc4`; an IFC4X3 model refuses every change.
 - **Fields that do not exist.** Look each method up with `describe`; its inputs, defaults and ranges come from the index, not from memory.
