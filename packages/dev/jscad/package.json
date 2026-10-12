@@ -122,7 +122,7 @@
         "@jscad/modeling": "2.13.0",
         "@jscad/stl-serializer": "2.1.23",
         "@jscad/dxf-serializer": "2.1.23",
-        "@jscad/3mf-serializer": "2.1.17"
+        "fflate": "0.8.3"
     },
     "devDependencies": {
         "@microsoft/api-extractor": "7.59.1",

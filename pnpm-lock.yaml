@@ -302,9 +302,6 @@ importers:
       '@bitbybit-dev/base':
         specifier: 1.5.0
         version: link:../base
-      '@jscad/3mf-serializer':
-        specifier: 2.1.17
-        version: 2.1.17
       '@jscad/dxf-serializer':
         specifier: 2.1.23
         version: 2.1.23
@@ -317,6 +314,9 @@ importers:
       '@jscad/stl-serializer':
         specifier: 2.1.23
         version: 2.1.23
+      fflate:
+        specifier: 0.8.3
+        version: 0.8.3
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
@@ -1107,9 +1107,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
-
-  '@jscad/3mf-serializer@2.1.17':
-    resolution: {integrity: sha512-n6rfk7m1unRucB0TdGs+YzplsKI4TE75N+pu2WXOoUNqWYRuuIOU/igGCNAuws5/FKJ9/zMQaZ0GTRJJIrH/nA==}
 
   '@jscad/array-utils@2.1.4':
     resolution: {integrity: sha512-c31r4zSKsE+4Xfwk2V8monDA0hx5G89QGzaakWVUvuGNowYS9WSsYCwHiTIXodjR+HEnDu4okQ7k/whmP0Ne2g==}
@@ -1924,9 +1921,6 @@ packages:
       picomatch:
         optional: true
 
-  fflate@0.7.3:
-    resolution: {integrity: sha512-0Zz1jOzJWERhyhsimS54VTqOteCNwRtIlh8isdL0AXLo0g7xNTfTL7oWrkmCnPhZGocKIkWHBistBrrpoNH3aw==}
-
   fflate@0.8.3:
     resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
@@ -2399,9 +2393,6 @@ packages:
     resolution: {integrity: sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==}
     engines: {node: '>=18'}
 
-  onml@1.2.0:
-    resolution: {integrity: sha512-olqYAg18XoHAhm7tK9DdBCOVdts70DGmMgCNLOWyqZokht2utgGSKBB4JHi6pBZpmioAhcYlxK+91L3tsrz+GA==}
-
   openapi-typescript@7.13.0:
     resolution: {integrity: sha512-EFP392gcqXS7ntPvbhBzbF8TyBA+baIYEm791Hy5YkjDYKTnk/Tn5OQeKm5BIZvJihpp8Zzr4hzx0Irde1LNGQ==}
     hasBin: true
@@ -2569,10 +2560,6 @@ packages:
     resolution: {integrity: sha512-yDA+1aIG3EHgN4V/BvuhCvu61FF6hEd4e+9DxikUm9U0CAGuvdIZ/UYy7qbOxjhbbWQraoyLlMuzdRGOSV5Bmw==}
     engines: {node: '>=20.19.0'}
     hasBin: true
-
-  sax@1.6.1:
-    resolution: {integrity: sha512-42tBVwLWnaQvW5zc4HbZrTuWccECCZfBi92FDuwtqxasH+JbPB3/FOKb1m222K42R4WxuxzzMsTswfzgtSu64Q==}
-    engines: {node: '>=11.0.0'}
 
   saxes@6.0.0:
     resolution: {integrity: sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA==}
@@ -3408,13 +3395,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
-
-  '@jscad/3mf-serializer@2.1.17':
-    dependencies:
-      '@jscad/array-utils': 2.1.4
-      '@jscad/modeling': 2.13.0
-      fflate: 0.7.3
-      onml: 1.2.0
 
   '@jscad/array-utils@2.1.4': {}
 
@@ -4252,8 +4232,6 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.7
 
-  fflate@0.7.3: {}
-
   fflate@0.8.3: {}
 
   file-entry-cache@11.1.5:
@@ -4693,10 +4671,6 @@ snapshots:
     dependencies:
       mimic-function: 5.0.1
 
-  onml@1.2.0:
-    dependencies:
-      sax: 1.6.1
-
   openapi-typescript@7.13.0(typescript@5.9.3):
     dependencies:
       '@redocly/openapi-core': 1.34.19(supports-color@10.2.2)
@@ -4893,8 +4867,6 @@ snapshots:
       source-map-js: 1.2.1
     optionalDependencies:
       '@parcel/watcher': 2.6.0
-
-  sax@1.6.1: {}
 
   saxes@6.0.0:
     dependencies:

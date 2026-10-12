@@ -469,7 +469,8 @@ export namespace JSCAD {
          */
         fileName?: string | undefined = "jscad-geometry";
         /**
-         * Options handed to the DXF or 3MF writer as they are; leave it out for the defaults
+         * Options for the file writer, left out for the defaults; 3MF takes `unit` (`millimeter` unless
+         * given), `defaultcolor`, `metadata` and `compress`
          * @default undefined
          * @optional true
          */

@@ -168,7 +168,8 @@ export class JSCAD {
      * Writes a solid, a 2D shape, a path or a list of them as a 3MF file, a modern 3D printing
      * format, and downloads it in the browser as `fileName` plus `.3mf`.
      *
-     * `options` is passed to the 3MF writer as it is and can stay out.
+     * Each solid becomes an object of its own, with its name and color; 2D shapes and paths are
+     * left out.
      * @param inputs - The geometry, the file name and the optional writer options
      * @returns The 3MF file as a blob; the asynchronous API starts the download instead and returns nothing
      * @group io
