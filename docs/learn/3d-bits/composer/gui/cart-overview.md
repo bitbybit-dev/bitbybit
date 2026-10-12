@@ -4,6 +4,8 @@ title: "Cart Overview"
 sidebar_label: Cart Overview
 description: The summary card 3D Bits draws under each configured line on the cart page, and how to make it match your theme.
 tags: [3d-bits, composer, gui, cart]
+topic: composer.gui.cart-overview
+type: how-to
 ---
 
 # Cart Overview

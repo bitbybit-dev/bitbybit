@@ -4,6 +4,8 @@ title: "Linking Your Own Shopify Products to Configurator Options"
 sidebar_label: Linked products
 description: Learn how to charge an option through the real products you already sell, link several of them to one choice, and keep the links healthy when prices change.
 tags: [shopify, 3d-bits, pricing, product-options, ecommerce]
+topic: shopify.pricing.linked-products
+type: how-to
 ---
 
 # Linking Your Own Products

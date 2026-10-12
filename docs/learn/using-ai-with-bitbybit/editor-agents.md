@@ -4,6 +4,8 @@ title: "Agents in the coding editors"
 sidebar_label: Agents in the editors
 description: The tools the Rete, Blockly and TypeScript editors on bitbybit.dev offer AI agents while they are open - through WebMCP and on the page - to search components and blocks, build and change a script in checked batches that one undo reverses, run it, read what failed and look at the result.
 tags: [ai, rete, blockly, typescript]
+topic: ai.editor-agents
+type: reference
 ---
 
 # Agents in the coding editors

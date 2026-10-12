@@ -4,6 +4,8 @@ title: "Parametric Hex House Concept with ThreeJS & Bitbybit"
 sidebar_label: "Hex House (ThreeJS)"
 description: "Explore how to construct a parametric 'Hex House' architectural concept using Bitbybit with ThreeJS, OCCT, and a dynamic GUI for customization."
 tags: [npm-packages, threejs]
+topic: npm.threejs.hex-house
+type: tutorial
 ---
 
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas'; // Assuming this component exists

@@ -4,6 +4,8 @@ title: "No-Code Gaussian Splat Configurators with Composer on Shopify"
 sidebar_label: No-Code 3D Scan Configurators
 description: Learn how to create interactive 3D product configurators on Shopify using 3D scanned Gaussian Splatting (.splat) assets and Composer, all without writing any code.
 tags: [shopify, 3d-bits]
+topic: shopify.videos.no-code-splat
+type: tutorial
 ---
 
 # No-Code Gaussian Splat Configurators with Composer on Shopify

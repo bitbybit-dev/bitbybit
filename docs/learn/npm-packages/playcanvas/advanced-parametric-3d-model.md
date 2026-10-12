@@ -4,6 +4,8 @@ title: "Advanced Parametric 3D Model with PlayCanvas & Bitbybit"
 sidebar_label: "Parametric Model (PlayCanvas)"
 description: "Learn how to build an advanced, interactive parametric 3D model using Bitbybit with PlayCanvas, OCCT, and a GUI for real-time control."
 tags: [npm-packages, playcanvas]
+topic: npm.playcanvas.advanced-model
+type: tutorial
 ---
 
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';

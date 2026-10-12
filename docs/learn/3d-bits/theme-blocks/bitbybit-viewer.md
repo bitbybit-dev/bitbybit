@@ -4,6 +4,8 @@ title: "BITBYBIT VIEWER Block for Shopify's '3D Bits' App"
 sidebar_label: BITBYBIT VIEWER
 description: Place a published project's 3D view in an exact spot in your product template, and the older by-hand metafield route it grew out of.
 tags: [shopify, 3d-bits, theme-blocks, metafields]
+topic: shopify.theme-blocks.viewer
+type: how-to
 ---
 
 import Version from '@site/src/components/Version';

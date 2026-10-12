@@ -4,6 +4,8 @@ title: "Storefront Display"
 sidebar_label: Storefront Display
 description: Switching 3D on for your store, checking whether it is actually on, and what to clear up before uninstalling.
 tags: [shopify, 3d-bits, app-embed, theme-blocks]
+topic: shopify.app.storefront-display
+type: how-to
 ---
 
 # Storefront Display

@@ -4,6 +4,8 @@ title: "Logic Without a Panel"
 sidebar_label: Logic Without a Panel
 description: What Composer's Logic rules still do when 3D Bits draws no option panel and every choice comes from your theme or another app.
 tags: [3d-bits, shopify, logic, integration]
+topic: shopify.integrations.logic-without-a-panel
+type: explanation
 ---
 
 # Logic Without a Panel

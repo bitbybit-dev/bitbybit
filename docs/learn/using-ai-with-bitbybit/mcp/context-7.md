@@ -5,6 +5,8 @@ title: Context7, a third-party alternative
 sidebar_label: Context7 (third party)
 description: Context7 indexes the Bitbybit documentation site for AI assistants. It is a reasonable addition when you already use it; the Bitbybit CAD MCP server knows the API more exactly.
 tags: [ai]
+topic: ai.mcp.context7
+type: how-to
 ---
 
 # Context7, a third-party alternative

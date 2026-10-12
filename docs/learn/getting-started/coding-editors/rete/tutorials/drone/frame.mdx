@@ -59,30 +59,24 @@ This chapter makes the sliders, lights the stage and makes the frame.
 
    <Shot id="rete.tutorials.drone/fit" />
 
-3. Set the stage before the first part, so every part looks as it will in the end: a dark background, a city environment that metal reflects (its picture hidden), a sun that casts shadows, and a wide ground under where the feet will stand, drawn by the first component of a Materials group. A shape drawn anywhere in the graph casts and catches shadows once a light makes them.
+3. Set the stage before the first part, so every part looks as it will in the end: a dark background, a city environment that metal reflects (its picture hidden), a sun that casts shadows, and the camera placed outside the drone, far enough to see all of it. The Materials group waits empty beside them: each part's material joins it as the part is drawn. A shape drawn anywhere in the graph casts and catches shadows once a light makes them.
 
    - Add **background colour** as *background*: colour #15171a.
    - Add **enable skybox** as *environment*: skybox city, environment intensity 0.4, hide skybox on.
    - Add **draw directional light** as *sun*: direction [-0.45, -1, -0.3], intensity 2, shadow generator map size 4096, shadow bias 0.0003, shadow normal bias 1, shadow min z -1000, shadow max z 1000.
-   - Add **rectangle face** as *ground*: width 2500, length 2500, center [0, -86.2, 0], direction [0, 1, 0], hidden.
-   - Add **pbr metallic roughness** as *ground material*: name ground, base color #050506, metallic 0, roughness 1, z offset 2.
-   - Add **options occt shape** as *ground look*: precision 0.05, draw two sided off, draw edges off.
-   - Wire **ground material** › result into **ground look** › faceMaterial.
-   - Add **draw any async** as *ground*.
-   - Wire **ground look** › result into **ground** › options.
-   - Wire **ground** › result into **ground** › entity.
+   - Add **adjust active arc rotate camera** as *view*: position [620, 380, 760], look at [0, -20, 0], max z 20000, panning sensibility 2.
    - Press <Ui>Add a comment</Ui>, double-click the comment and write:
 
      > ### Scene
-     > A dark background, a city environment the metal reflects, a sun that casts shadows and a ground under the feet that catches them.
+     > A dark background, a city environment the metal reflects, a sun that casts shadows, and a camera that starts outside the drone.
 
-   - Select the comment, *background*, *environment*, *sun* and *ground*, press <Ui>Group selected components</Ui> and title the group *Scene*.
+   - Select the comment, *background*, *environment*, *sun* and *view*, press <Ui>Group selected components</Ui> and title the group *Scene*.
    - Press <Ui>Add a comment</Ui>, double-click the comment and write:
 
      > ### Materials
      > Each material is physically based: a colour, how metallic and how rough. It sits a little behind its edges, so the edges drawn over it stay sharp: white on dark materials, black on light ones. Parts from anywhere in the graph can share a draw.
 
-   - Select the comment, *ground material*, *ground look* and *ground*, press <Ui>Group selected components</Ui> and title the group *Materials*.
+   - Select the comment, press <Ui>Group selected components</Ui> and title the group *Materials*.
 
    <Shot id="rete.tutorials.drone/stage" />
 

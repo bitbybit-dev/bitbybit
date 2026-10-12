@@ -4,6 +4,8 @@ title: "Custom HTML"
 sidebar_label: Custom HTML
 description: What a Custom HTML element keeps, what it removes, and how its CSS is scoped.
 tags: [3d-bits, composer, gui, layout, html]
+topic: composer.gui.custom-html
+type: reference
 ---
 
 # Custom HTML

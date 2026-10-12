@@ -4,6 +4,8 @@ title: "Why Publishing Was Refused"
 sidebar_label: Publish Blockers
 description: Every reason 3D Bits refuses to publish a project, and what to change to clear it.
 tags: [3d-bits, composer, troubleshooting, deployment, errors]
+topic: composer.publish-blockers
+type: reference
 ---
 
 # Why Publishing Was Refused

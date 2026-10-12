@@ -46,7 +46,7 @@ This chapter sets the sizes, lights the stage and makes the frame.
 
    <Shot id="blockly.tutorials.drone/sizes" />
 
-2. Set the stage before the first part: a dark background, a city environment that metal reflects with its picture hidden, a sun that casts shadows and a wide ground under the feet. The function look makes the drawing options of one material, physically based and drawn a little behind its edges, so the white edges on the dark parts stay sharp; every part is drawn through one of its calls.
+2. Set the stage before the first part: a dark background, a city environment that metal reflects with its picture hidden, a sun that casts shadows, and the camera placed outside the drone, far enough to see all of it. The function look makes the drawing options of one material, physically based and drawn a little behind its edges, so the white edges on the dark parts stay sharp; every part is drawn through one of its calls.
 
    - **Make the function** ***look*** with the inputs *name*, *colour*, *metallic*, *roughness*, *glow*, *edge colour*, *edge width*:
      - **return** **options occt shape**(face material **pbr metallic roughness**(name *name*, base color *colour*, emissive color *glow*, metallic *metallic*, roughness *roughness*, alpha 1, back face culling false, z offset 2), precision 0.05, draw two sided false, draw edges (*edge width* > 0), edge colour *edge colour*, edge width *edge width*)
@@ -54,7 +54,7 @@ This chapter sets the sizes, lights the stage and makes the frame.
      - **background colour**(`#15171a`)
      - **enable skybox**(skybox city, environment intensity 0.4, hide skybox true)
      - **draw directional light no return**(direction **vector xyz**(-0.45, -1, -0.3), intensity 2, shadow generator map size 4096, shadow bias 0.0003, shadow normal bias 1, shadow min z -1000, shadow max z 1000)
-     - **draw any async no return**(entity **rectangle face**(width 2500, length 2500, center **point xyz**(0, -86.2, 0), direction **vector xyz**(0, 1, 0)), options ***look***("ground", `#050506`, 0, 1, `#000000`, `#f2f2f2`, 0))
+     - **adjust active arc rotate camera**(position **point xyz**(620, 380, 760), look at **point xyz**(0, -20, 0), max z 20000, panning sensibility 2)
    - **Run it** with <Ui>Run The Code</Ui>.
 
    <Shot id="blockly.tutorials.drone/stage" />

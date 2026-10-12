@@ -4,6 +4,8 @@ title: "Order Review"
 sidebar_label: Order Review
 description: See exactly what each shopper configured, and confirm the price on the order is right.
 tags: [shopify, 3d-bits]
+topic: shopify.app.order-review
+type: how-to
 ---
 
 # Order Review

@@ -4,6 +4,8 @@ title: "No-Code GLTF Configurators with Composer on Shopify"
 sidebar_label: No-Code GLTF Configurators
 description: Learn how to create interactive 3D product configurators on Shopify using GLTF assets and Composer, all without writing any code.
 tags: [shopify, 3d-bits]
+topic: shopify.videos.no-code-gltf
+type: tutorial
 ---
 
 # No-Code GLTF Configurators with Composer on Shopify

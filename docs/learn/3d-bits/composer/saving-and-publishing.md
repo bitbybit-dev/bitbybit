@@ -4,6 +4,8 @@ title: "Saving and Publishing"
 sidebar_label: Saving and Publishing
 description: The difference between saving, publishing and exporting a file, and why they are three separate things.
 tags: [3d-bits, composer, deployment, export]
+topic: composer.publishing
+type: explanation
 ---
 
 # Saving and Publishing

@@ -4,6 +4,8 @@ title: "BITBYBIT PREVIEW Block for Shopify's '3D Bits' App"
 sidebar_label: BITBYBIT PREVIEW
 description: Learn how to use the BITBYBIT PREVIEW theme app extension block in Shopify's "3D Bits" app to embed publicly available Bitbybit project scripts into your product pages.
 tags: [shopify, 3d-bits]
+topic: shopify.theme-blocks.preview
+type: how-to
 ---
 
 # The "BITBYBIT PREVIEW" Block for Shopify

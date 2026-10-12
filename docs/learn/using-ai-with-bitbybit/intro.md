@@ -4,6 +4,8 @@ title: Bitbybit for AI coding agents
 sidebar_label: Introduction
 description: Bitbybit is built to be used by AI coding agents as much as by people. Two MCP servers give an agent the exact API and hosted CAD compute; context files and Context7 cover the tools that cannot speak MCP yet.
 tags: [ai]
+topic: ai.intro
+type: landing
 ---
 
 # Bitbybit for AI coding agents

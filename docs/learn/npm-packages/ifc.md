@@ -4,6 +4,8 @@ title: IFC Building Models
 sidebar_label: IFC
 description: Author, write and read IFC4 building models in TypeScript with @bitbybit-dev/ifc, and draw them in Three.js, Babylon.js or PlayCanvas through the Manifold kernel.
 tags: [npm-packages, ifc, manifold, threejs]
+topic: npm.ifc
+type: how-to
 ---
 
 # IFC Building Models

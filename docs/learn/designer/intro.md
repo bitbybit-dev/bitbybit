@@ -59,7 +59,7 @@ Menus and a toolbar along the top, the <Ui>Features</Ui> panel on the left, the 
 ## Where to go next
 
 - [Make your first part](./tutorials/first-part.md): a plate with rounded edges and holes, driven by parameters. Start here.
-- [Model a desk robot arm](./tutorials/desk-arm.md): nine parts, an assembly, joints with limits, and fasteners on every hole.
+- [Model a desk robot arm](./tutorials/desk-arm/index.md): eight parts, an assembly, joints with limits, and fasteners on every hole, a picture for every step.
 - [How the Designer works](./concepts.md): documents, features, references, parameters, parts and assemblies.
 - [Working with agents](./working-with-agents.md): how an agent works beside you, and how you review what it does.
 - The reference: every [command](./reference/commands.md), every [keyboard shortcut](./reference/shortcuts.md), and every [tool for agents](./reference/agent-tools.md).

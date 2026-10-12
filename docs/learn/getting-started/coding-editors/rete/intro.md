@@ -12,7 +12,7 @@ tags: [getting-started, rete, occt]
 
 # Rete Editor
 
-<Shot id="rete.start.showcases/drone" />
+<Shot id="platform.start.welcome/drone" />
 
 Rete is the node editor of Bitbybit. You build a program by putting components on a canvas and wiring the output of one into the input of the next, and the 3D result beside the canvas follows every change. Each component is a function of the Bitbybit API: a solid from OCCT, a point grid, a colour, a list operation, a way to draw. The graph makes the flow of data visible, so you can see exactly what feeds a shape and change any value along the way.
 

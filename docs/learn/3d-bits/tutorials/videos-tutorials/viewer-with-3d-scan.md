@@ -4,6 +4,8 @@ title: "Tutorial: Using BITBYBIT VIEWER with a 3D Scanned Product (Gaussian Spla
 sidebar_label: Viewer with 3D Scan
 description: Learn how to use the BITBYBIT VIEWER block in Shopify's "3D Bits" app to display a 3D scanned product (Gaussian Splatting model) on your e-commerce store.
 tags: [shopify, 3d-bits]
+topic: shopify.videos.viewer-3d-scan
+type: tutorial
 ---
 
 # Using BITBYBIT VIEWER With a 3D Scanned Product (Gaussian Splat)

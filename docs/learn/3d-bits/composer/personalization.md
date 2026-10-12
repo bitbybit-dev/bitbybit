@@ -4,6 +4,8 @@ title: "Personalisation"
 sidebar_label: Personalisation
 description: Putting a shopper's own text or image onto the product itself, printed or engraved on the surface.
 tags: [3d-bits, composer, personalization]
+topic: composer.personalization
+type: how-to
 ---
 
 # Personalisation

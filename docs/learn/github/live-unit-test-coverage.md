@@ -4,6 +4,8 @@ title: Live Unit Test Coverage Reports
 sidebar_label: Live Coverage Reports
 description: Read the test and coverage report Bitbybit publishes on every CI run - every suite, every number, on the run that produced it.
 tags: [github, unit-tests, coverage, development]
+topic: platform.github.coverage
+type: reference
 ---
 
 # Live Unit Test Coverage Reports

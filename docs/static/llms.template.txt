@@ -513,20 +513,6 @@ All geometry kernels have web worker variants (-worker packages) for non-blockin
 - Recommended for production applications
 - Same API as main thread packages
 
-## School & Courses
-
-Educational content organized by topic and skill level:
-
-- DIY 3D Model Configurators for Makers
-- Introduction to Programming 3D in TypeScript
-- OpenCascade in Rete Editor
-- Control Flow in Rete Editor
-- TypeScript Component for Magical Powers in Rete
-- STEM Lessons for Kids and Beginners (Rete Editor)
-- Using AI with Bitbybit
-- Make 3D Websites with Runners
-- Shopify 3D Bits App
-
 ## Optional
 
 - Main site llms.txt: https://bitbybit.dev/llms.txt

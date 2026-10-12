@@ -4,6 +4,8 @@ title: "Driving 3D Bits from Your Own Form"
 sidebar_label: Custom Forms
 description: The contract between your own product form and 3D Bits - what each element reports, how a change is noticed, and how field names become keys.
 tags: [shopify, 3d-bits, integration, developer]
+topic: shopify.integrations.custom-forms
+type: reference
 ---
 
 # Driving 3D Bits from Your Own Form

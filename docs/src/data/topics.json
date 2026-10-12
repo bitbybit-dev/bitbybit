@@ -1,0 +1,3076 @@
+[
+  {
+    "id": "ai.agentic-cad",
+    "title": "Agentic CAD: how Bitbybit fits AI-driven 3D development",
+    "type": "explanation",
+    "url": "/learn/using-ai-with-bitbybit/agentic-cad",
+    "path": "learn/using-ai-with-bitbybit/agentic-cad.md"
+  },
+  {
+    "id": "ai.cad-geometry",
+    "title": "Geometry with the CAD kernels: writing parts with an agent",
+    "type": "how-to",
+    "url": "/learn/using-ai-with-bitbybit/cad-geometry",
+    "path": "learn/using-ai-with-bitbybit/cad-geometry.md"
+  },
+  {
+    "id": "ai.design-documents",
+    "title": "Design documents: parametric models as JSON",
+    "type": "reference",
+    "url": "/learn/using-ai-with-bitbybit/design-documents",
+    "path": "learn/using-ai-with-bitbybit/design-documents.md"
+  },
+  {
+    "id": "ai.editor-agents",
+    "title": "Agents in the coding editors",
+    "type": "reference",
+    "url": "/learn/using-ai-with-bitbybit/editor-agents",
+    "path": "learn/using-ai-with-bitbybit/editor-agents.md"
+  },
+  {
+    "id": "ai.ifc-models",
+    "title": "IFC building models: writing BIM with an agent",
+    "type": "how-to",
+    "url": "/learn/using-ai-with-bitbybit/ifc-models",
+    "path": "learn/using-ai-with-bitbybit/ifc-models.md"
+  },
+  {
+    "id": "ai.intro",
+    "title": "Bitbybit for AI coding agents",
+    "type": "landing",
+    "url": "/learn/using-ai-with-bitbybit/intro",
+    "path": "learn/using-ai-with-bitbybit/intro.md"
+  },
+  {
+    "id": "ai.mcp.bitbybit",
+    "title": "Bitbybit CAD MCP",
+    "type": "how-to",
+    "url": "/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp",
+    "path": "learn/using-ai-with-bitbybit/mcp/bitbybit-mcp.md"
+  },
+  {
+    "id": "ai.mcp.cad-cloud",
+    "title": "Bitbybit CAD Cloud MCP",
+    "type": "how-to",
+    "url": "/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp",
+    "path": "learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp.md"
+  },
+  {
+    "id": "ai.mcp.context7",
+    "title": "Context7, a third-party alternative",
+    "type": "how-to",
+    "url": "/learn/using-ai-with-bitbybit/mcp/context-7",
+    "path": "learn/using-ai-with-bitbybit/mcp/context-7.md"
+  },
+  {
+    "id": "ai.prompt-contexts",
+    "title": "AI Prompt Context Files",
+    "type": "how-to",
+    "url": "/learn/using-ai-with-bitbybit/prompt-contexts",
+    "path": "learn/using-ai-with-bitbybit/prompt-contexts.mdx"
+  },
+  {
+    "id": "blockly.blocks.build",
+    "title": "Building a Script in Blockly",
+    "type": "how-to",
+    "url": "/learn/getting-started/blockly/build-a-script",
+    "path": "learn/getting-started/coding-editors/blockly/features/build-a-script.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.blocks.code",
+    "title": "The Code Behind the Blocks",
+    "type": "how-to",
+    "url": "/learn/getting-started/blockly/code",
+    "path": "learn/getting-started/coding-editors/blockly/features/code.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.blocks.menu",
+    "title": "Working with Blocks in Blockly",
+    "type": "how-to",
+    "url": "/learn/getting-started/blockly/blocks",
+    "path": "learn/getting-started/coding-editors/blockly/features/blocks.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.blocks.variables",
+    "title": "Variables and Functions in Blockly",
+    "type": "how-to",
+    "url": "/learn/getting-started/blockly/variables-and-functions",
+    "path": "learn/getting-started/coding-editors/blockly/features/variables-and-functions.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.reference.shortcuts",
+    "title": "Blockly Keyboard Shortcuts",
+    "type": "reference",
+    "url": "/learn/getting-started/blockly/shortcuts",
+    "path": "learn/getting-started/coding-editors/blockly/shortcuts.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.start.intro",
+    "title": "Blockly Editor",
+    "type": "landing",
+    "url": "/learn/getting-started/blockly/intro",
+    "path": "learn/getting-started/coding-editors/blockly/intro.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.start.showcases",
+    "title": "Blockly Showcases",
+    "type": "landing",
+    "url": "/learn/getting-started/blockly/showcases",
+    "path": "learn/getting-started/coding-editors/blockly/showcases.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.start.tour",
+    "title": "A Tour of the Blockly Editor",
+    "type": "explanation",
+    "url": "/learn/getting-started/blockly/tour",
+    "path": "learn/getting-started/coding-editors/blockly/tour.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.tutorials.drone.arm",
+    "title": "Build a drone: one arm",
+    "type": "tutorial",
+    "url": "/learn/getting-started/blockly/tutorials/drone/arm",
+    "path": "learn/getting-started/coding-editors/blockly/tutorials/drone/arm.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.tutorials.drone.arms",
+    "title": "Build a drone: arms around the frame",
+    "type": "tutorial",
+    "url": "/learn/getting-started/blockly/tutorials/drone/arms",
+    "path": "learn/getting-started/coding-editors/blockly/tutorials/drone/arms.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.tutorials.drone.around",
+    "title": "Build a drone: around, bolts and standoffs",
+    "type": "tutorial",
+    "url": "/learn/getting-started/blockly/tutorials/drone/around",
+    "path": "learn/getting-started/coding-editors/blockly/tutorials/drone/around.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.tutorials.drone.canopy",
+    "title": "Build a drone: canopy and electronics",
+    "type": "tutorial",
+    "url": "/learn/getting-started/blockly/tutorials/drone/canopy",
+    "path": "learn/getting-started/coding-editors/blockly/tutorials/drone/canopy.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.tutorials.drone.finish",
+    "title": "Build a drone: payload and sizes",
+    "type": "tutorial",
+    "url": "/learn/getting-started/blockly/tutorials/drone/finish",
+    "path": "learn/getting-started/coding-editors/blockly/tutorials/drone/finish.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.tutorials.drone.frame",
+    "title": "Build a drone: sizes, stage and the frame",
+    "type": "tutorial",
+    "url": "/learn/getting-started/blockly/tutorials/drone/frame",
+    "path": "learn/getting-started/coding-editors/blockly/tutorials/drone/frame.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.tutorials.drone.landing-gear",
+    "title": "Build a drone: landing gear",
+    "type": "tutorial",
+    "url": "/learn/getting-started/blockly/tutorials/drone/landing-gear",
+    "path": "learn/getting-started/coding-editors/blockly/tutorials/drone/landing-gear.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.tutorials.hello-world",
+    "title": "Your First 3D \"Hello World\" with Blockly",
+    "type": "tutorial",
+    "url": "/learn/getting-started/blockly/hello-world",
+    "path": "learn/getting-started/coding-editors/blockly/tutorials/hello-world.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "blockly.tutorials.parametric-cube",
+    "title": "Creating a Parametric Cube with Blockly",
+    "type": "tutorial",
+    "url": "/learn/getting-started/blockly/parametric-cube",
+    "path": "learn/getting-started/coding-editors/blockly/tutorials/parametric-cube.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "code.advanced.dimensions",
+    "title": "Dimensions and Camera Navigation",
+    "type": "explanation",
+    "url": "/learn/code/common/advanced/dimensions-and-navigation",
+    "path": "learn/code/common/advanced/dimensions-and-navigation.md"
+  },
+  {
+    "id": "code.advanced.intro",
+    "title": "Advanced - 3D Text and Patterns",
+    "type": "explanation",
+    "url": "/learn/code/common/advanced/intro",
+    "path": "learn/code/common/advanced/intro.md"
+  },
+  {
+    "id": "code.babylon.files",
+    "title": "Loading and Exporting with BabylonJS",
+    "type": "reference",
+    "url": "/learn/code/common/babylon/files",
+    "path": "learn/code/common/babylon/files.md"
+  },
+  {
+    "id": "code.babylon.gui",
+    "title": "The GUI - Buttons, Sliders and Text over the Scene",
+    "type": "explanation",
+    "url": "/learn/code/common/babylon/gui",
+    "path": "learn/code/common/babylon/gui.md"
+  },
+  {
+    "id": "code.babylon.interaction",
+    "title": "Picking, Gizmos and XR",
+    "type": "reference",
+    "url": "/learn/code/common/babylon/interaction",
+    "path": "learn/code/common/babylon/interaction.md"
+  },
+  {
+    "id": "code.babylon.intro",
+    "title": "BabylonJS in Scripts",
+    "type": "explanation",
+    "url": "/learn/code/common/babylon/intro",
+    "path": "learn/code/common/babylon/intro.md"
+  },
+  {
+    "id": "code.babylon.materials",
+    "title": "Materials, Textures and Decals",
+    "type": "reference",
+    "url": "/learn/code/common/babylon/materials-and-textures",
+    "path": "learn/code/common/babylon/materials-and-textures.md"
+  },
+  {
+    "id": "code.babylon.meshes",
+    "title": "Meshes and Nodes",
+    "type": "reference",
+    "url": "/learn/code/common/babylon/meshes-and-nodes",
+    "path": "learn/code/common/babylon/meshes-and-nodes.md"
+  },
+  {
+    "id": "code.babylon.the-scene",
+    "title": "The Scene, Lights and Camera",
+    "type": "reference",
+    "url": "/learn/code/common/babylon/the-scene",
+    "path": "learn/code/common/babylon/the-scene.md"
+  },
+  {
+    "id": "code.base.asset",
+    "title": "Files and Assets in Scripts",
+    "type": "explanation",
+    "url": "/learn/code/common/base/asset/intro",
+    "path": "learn/code/common/base/asset/intro.md"
+  },
+  {
+    "id": "code.base.color",
+    "title": "Colors in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/color/intro",
+    "path": "learn/code/common/base/color/intro.md"
+  },
+  {
+    "id": "code.base.color.usage-examples",
+    "title": "Color Usage Examples",
+    "type": "how-to",
+    "url": "/learn/code/common/base/color/color-usage-examples",
+    "path": "learn/code/common/base/color/color-usage-examples.md"
+  },
+  {
+    "id": "code.base.csv",
+    "title": "CSV in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/csv/intro",
+    "path": "learn/code/common/base/csv/intro.md"
+  },
+  {
+    "id": "code.base.dates",
+    "title": "Dates in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/dates/intro",
+    "path": "learn/code/common/base/dates/intro.md"
+  },
+  {
+    "id": "code.base.frame",
+    "title": "Frames in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/frame/intro",
+    "path": "learn/code/common/base/frame/intro.md"
+  },
+  {
+    "id": "code.base.intro",
+    "title": "Introduction to Base Algorithms of Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/intro",
+    "path": "learn/code/common/base/intro.md"
+  },
+  {
+    "id": "code.base.json",
+    "title": "JSON in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/json/intro",
+    "path": "learn/code/common/base/json/intro.md"
+  },
+  {
+    "id": "code.base.line",
+    "title": "Lines in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/line/intro",
+    "path": "learn/code/common/base/line/intro.md"
+  },
+  {
+    "id": "code.base.lists",
+    "title": "Lists in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/lists/intro",
+    "path": "learn/code/common/base/lists/intro.md"
+  },
+  {
+    "id": "code.base.logic",
+    "title": "Logic in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/logic/intro",
+    "path": "learn/code/common/base/logic/intro.md"
+  },
+  {
+    "id": "code.base.math",
+    "title": "Math in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/math/intro",
+    "path": "learn/code/common/base/math/intro.md"
+  },
+  {
+    "id": "code.base.mesh",
+    "title": "Mesh Utilities",
+    "type": "explanation",
+    "url": "/learn/code/common/base/mesh/intro",
+    "path": "learn/code/common/base/mesh/intro.md"
+  },
+  {
+    "id": "code.base.point",
+    "title": "Points in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/point/intro",
+    "path": "learn/code/common/base/point/intro.md"
+  },
+  {
+    "id": "code.base.point.hex-grid-example",
+    "title": "Point Hex Grid Examples",
+    "type": "how-to",
+    "url": "/learn/code/common/base/point/point-hex-grid-example",
+    "path": "learn/code/common/base/point/point-hex-grid-example.md"
+  },
+  {
+    "id": "code.base.point.spiral-examples",
+    "title": "Point Spiral Examples",
+    "type": "how-to",
+    "url": "/learn/code/common/base/point/point-spiral-examples",
+    "path": "learn/code/common/base/point/point-spiral-examples.md"
+  },
+  {
+    "id": "code.base.polyline",
+    "title": "Polylines in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/polyline/intro",
+    "path": "learn/code/common/base/polyline/intro.md"
+  },
+  {
+    "id": "code.base.text",
+    "title": "Text in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/text/intro",
+    "path": "learn/code/common/base/text/intro.md"
+  },
+  {
+    "id": "code.base.text.usage-examples",
+    "title": "Text Usage Examples",
+    "type": "how-to",
+    "url": "/learn/code/common/base/text/text-usage-examples",
+    "path": "learn/code/common/base/text/text-usage-examples.md"
+  },
+  {
+    "id": "code.base.vector",
+    "title": "Vectors in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/vector/intro",
+    "path": "learn/code/common/base/vector/intro.md"
+  },
+  {
+    "id": "code.base.vector.usage-examples",
+    "title": "Vector Span and Ease Examples",
+    "type": "how-to",
+    "url": "/learn/code/common/base/vector/vector-usage-examples",
+    "path": "learn/code/common/base/vector/vector-usage-examples.md"
+  },
+  {
+    "id": "code.concepts.checking-a-shape",
+    "title": "Checking a Shape",
+    "type": "explanation",
+    "url": "/learn/code/common/concepts/checking-a-shape",
+    "path": "learn/code/common/concepts/checking-a-shape.md"
+  },
+  {
+    "id": "code.concepts.choosing-a-kernel",
+    "title": "Choosing a Kernel",
+    "type": "explanation",
+    "url": "/learn/code/common/concepts/choosing-a-kernel",
+    "path": "learn/code/common/concepts/choosing-a-kernel.md"
+  },
+  {
+    "id": "code.concepts.getting-a-model-out",
+    "title": "Getting a Model Out",
+    "type": "how-to",
+    "url": "/learn/code/common/concepts/getting-a-model-out",
+    "path": "learn/code/common/concepts/getting-a-model-out.md"
+  },
+  {
+    "id": "code.concepts.lists",
+    "title": "Lists in Every Editor",
+    "type": "explanation",
+    "url": "/learn/code/common/concepts/lists",
+    "path": "learn/code/common/concepts/lists.md"
+  },
+  {
+    "id": "code.concepts.materials-and-looks",
+    "title": "Materials and the Look of a Model",
+    "type": "explanation",
+    "url": "/learn/code/common/concepts/materials-and-looks",
+    "path": "learn/code/common/concepts/materials-and-looks.md"
+  },
+  {
+    "id": "code.concepts.picking-faces-and-edges",
+    "title": "Picking Faces and Edges",
+    "type": "explanation",
+    "url": "/learn/code/common/concepts/picking-faces-and-edges",
+    "path": "learn/code/common/concepts/picking-faces-and-edges.md"
+  },
+  {
+    "id": "code.concepts.shapes-live-in-a-worker",
+    "title": "Shapes Live in a Worker",
+    "type": "explanation",
+    "url": "/learn/code/common/concepts/shapes-live-in-a-worker",
+    "path": "learn/code/common/concepts/shapes-live-in-a-worker.md"
+  },
+  {
+    "id": "code.concepts.text-in-3d",
+    "title": "Text in 3D Compared",
+    "type": "explanation",
+    "url": "/learn/code/common/concepts/text-in-3d",
+    "path": "learn/code/common/concepts/text-in-3d.md"
+  },
+  {
+    "id": "code.concepts.units-and-precision",
+    "title": "Units, Tolerance and Precision",
+    "type": "explanation",
+    "url": "/learn/code/common/concepts/units-and-precision",
+    "path": "learn/code/common/concepts/units-and-precision.md"
+  },
+  {
+    "id": "code.draw.examples",
+    "title": "Utilizing Draw Components and Functions",
+    "type": "how-to",
+    "url": "/learn/code/common/draw/examples",
+    "path": "learn/code/common/draw/examples.mdx"
+  },
+  {
+    "id": "code.draw.frame-loop",
+    "title": "Changing the Scene Every Frame",
+    "type": "explanation",
+    "url": "/learn/code/common/draw/frame-loop",
+    "path": "learn/code/common/draw/frame-loop.md"
+  },
+  {
+    "id": "code.draw.intro",
+    "title": "Understanding the \"Draw\" Category in Bitbybit Editors",
+    "type": "explanation",
+    "url": "/learn/code/common/draw/intro",
+    "path": "learn/code/common/draw/intro.md"
+  },
+  {
+    "id": "code.draw.options",
+    "title": "Drawing Options and Materials",
+    "type": "reference",
+    "url": "/learn/code/common/draw/options",
+    "path": "learn/code/common/draw/options.md"
+  },
+  {
+    "id": "code.draw.tags",
+    "title": "Text Tags Pinned to Points",
+    "type": "explanation",
+    "url": "/learn/code/common/draw/tags",
+    "path": "learn/code/common/draw/tags.md"
+  },
+  {
+    "id": "code.ifc.family-house",
+    "title": "A Family House in IFC",
+    "type": "tutorial",
+    "url": "/learn/code/common/ifc/family-house",
+    "path": "learn/code/common/ifc/family-house.md"
+  },
+  {
+    "id": "code.ifc.intro",
+    "title": "IFC Building Models",
+    "type": "explanation",
+    "url": "/learn/code/common/ifc/intro",
+    "path": "learn/code/common/ifc/intro.md"
+  },
+  {
+    "id": "code.jscad.intro",
+    "title": "The JSCAD Kernel",
+    "type": "explanation",
+    "url": "/learn/code/common/jscad/intro",
+    "path": "learn/code/common/jscad/intro.md"
+  },
+  {
+    "id": "code.manifold.intro",
+    "title": "The Manifold Kernel",
+    "type": "explanation",
+    "url": "/learn/code/common/manifold/intro",
+    "path": "learn/code/common/manifold/intro.md"
+  },
+  {
+    "id": "code.occt.analysis",
+    "title": "Measuring and Analysing Shapes",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/analysis/intro",
+    "path": "learn/code/common/occt/analysis/intro.md"
+  },
+  {
+    "id": "code.occt.assembly",
+    "title": "Introduction to Assemblies",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/assembly/intro",
+    "path": "learn/code/common/occt/assembly/intro.mdx"
+  },
+  {
+    "id": "code.occt.assembly.create-assembly",
+    "title": "Build and Export Assemblies",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/assembly/create-assembly",
+    "path": "learn/code/common/occt/assembly/create-assembly.mdx"
+  },
+  {
+    "id": "code.occt.assembly.shape-to-step-with-color-assembly",
+    "title": "Export Shapes with Color",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/assembly/shape-to-step-with-color-assembly",
+    "path": "learn/code/common/occt/assembly/shape-to-step-with-color-assembly.mdx"
+  },
+  {
+    "id": "code.occt.assembly.step-to-gltf",
+    "title": "Convert STEP to GLTF",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/assembly/step-to-gltf",
+    "path": "learn/code/common/occt/assembly/step-to-gltf.mdx"
+  },
+  {
+    "id": "code.occt.assembly.structure",
+    "title": "Parse Assembly Structure",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/assembly/assembly-structure",
+    "path": "learn/code/common/occt/assembly/assembly-structure.mdx"
+  },
+  {
+    "id": "code.occt.booleans.operations",
+    "title": "Understanding OCCT Boolean Operations",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/booleans/operations",
+    "path": "learn/code/common/occt/booleans/operations.mdx"
+  },
+  {
+    "id": "code.occt.dimensions.angular-dimension",
+    "title": "Angular Dimension",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/dimensions/angular-dimension",
+    "path": "learn/code/common/occt/dimensions/angular-dimension.md"
+  },
+  {
+    "id": "code.occt.dimensions.linear-dimension",
+    "title": "Linear Dimension",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/dimensions/linear-dimension",
+    "path": "learn/code/common/occt/dimensions/linear-dimension.md"
+  },
+  {
+    "id": "code.occt.dimensions.pin-with-label",
+    "title": "Pin with Label",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/dimensions/pin-with-label",
+    "path": "learn/code/common/occt/dimensions/pin-with-label.md"
+  },
+  {
+    "id": "code.occt.features",
+    "title": "Features: Holes, Bosses, Pockets and More",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/features/intro",
+    "path": "learn/code/common/occt/features/intro.md"
+  },
+  {
+    "id": "code.occt.fillets",
+    "title": "Introduction to OCCT Fillets",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/fillets/fillets-intro",
+    "path": "learn/code/common/occt/fillets/fillets-intro.mdx"
+  },
+  {
+    "id": "code.occt.fillets.3d-wires",
+    "title": "OCCT Fillets: Applying to 3D Wires",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/fillets/fillet-3d-wires",
+    "path": "learn/code/common/occt/fillets/fillet-3d-wires.mdx"
+  },
+  {
+    "id": "code.occt.fillets.chamfer-circular-edges",
+    "title": "OCCT Chamfers: Applying to Circular and Curved Edges",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/fillets/chamfer-circular-edges",
+    "path": "learn/code/common/occt/fillets/chamfer-circular-edges.mdx"
+  },
+  {
+    "id": "code.occt.fillets.chamfers",
+    "title": "Understanding OCCT Chamfers",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/fillets/chamfers-intro",
+    "path": "learn/code/common/occt/fillets/chamfers-intro.mdx"
+  },
+  {
+    "id": "code.occt.fillets.chamfers-var-radius-on-spec-edges",
+    "title": "OCCT Chamfers: Variable Distance on Specific Edges",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/fillets/chamfers-var-radius-on-spec-edges",
+    "path": "learn/code/common/occt/fillets/chamfers-var-radius-on-spec-edges.mdx"
+  },
+  {
+    "id": "code.occt.fillets.on-2d-wire-corners",
+    "title": "OCCT Fillets: Variable Radius on Specific Wire Corners",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/fillets/fillets-on-2d-wire-corners",
+    "path": "learn/code/common/occt/fillets/fillets-on-2d-wire-corners.mdx"
+  },
+  {
+    "id": "code.occt.fillets.on-2d-wires",
+    "title": "OCCT Fillets: Applying to 2D Wires",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/fillets/fillets-on-2d-wires",
+    "path": "learn/code/common/occt/fillets/fillets-on-2d-wires.mdx"
+  },
+  {
+    "id": "code.occt.fillets.var-radius-on-spec-edges",
+    "title": "OCCT Fillets: Variable Radius on Specific Edges",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/fillets/fillets-var-radius-on-spec-edges",
+    "path": "learn/code/common/occt/fillets/fillets-var-radius-on-spec-edges.mdx"
+  },
+  {
+    "id": "code.occt.io.dxf-file-format-for-2d-drawings",
+    "title": "DXF",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/io/dxf-file-format-for-2d-drawings",
+    "path": "learn/code/common/occt/io/dxf-file-format-for-2d-drawings.md"
+  },
+  {
+    "id": "code.occt.io.step-and-iges",
+    "title": "STEP & IGES Import",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/io/step-and-iges",
+    "path": "learn/code/common/occt/io/step-and-iges.md"
+  },
+  {
+    "id": "code.occt.io.svg-import",
+    "title": "SVG Import",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/io/svg-import",
+    "path": "learn/code/common/occt/io/svg-import.md"
+  },
+  {
+    "id": "code.occt.io.technical-drawings",
+    "title": "Technical Drawings from a Model",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/io/technical-drawings",
+    "path": "learn/code/common/occt/io/technical-drawings.md"
+  },
+  {
+    "id": "code.occt.modeling.festive-decor.frost-flower",
+    "title": "Frost Flower",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/festive-decor/frost-flower",
+    "path": "learn/code/common/occt/modeling/festive-decor/frost-flower.md"
+  },
+  {
+    "id": "code.occt.modeling.festive-decor.frozen-snowflake",
+    "title": "Frozen Snowflake",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/festive-decor/frozen-snowflake",
+    "path": "learn/code/common/occt/modeling/festive-decor/frozen-snowflake.md"
+  },
+  {
+    "id": "code.occt.modeling.festive-decor.gem-star",
+    "title": "Gem Star",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/festive-decor/gem-star",
+    "path": "learn/code/common/occt/modeling/festive-decor/gem-star.md"
+  },
+  {
+    "id": "code.occt.modeling.festive-decor.star-ornament",
+    "title": "Star Ornament",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/festive-decor/star-ornament",
+    "path": "learn/code/common/occt/modeling/festive-decor/star-ornament.md"
+  },
+  {
+    "id": "code.occt.modeling.festive-decor.tree",
+    "title": "Christmas Tree",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/festive-decor/tree",
+    "path": "learn/code/common/occt/modeling/festive-decor/tree.md"
+  },
+  {
+    "id": "code.occt.modeling.festive-decor.tree-decoration",
+    "title": "Tree Decoration",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/festive-decor/tree-decoration",
+    "path": "learn/code/common/occt/modeling/festive-decor/tree-decoration.md"
+  },
+  {
+    "id": "code.occt.modeling.festive-decor.twisted-polygon-ornament",
+    "title": "Twisted Polygon Ornament",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/festive-decor/twisted-polygon-ornament",
+    "path": "learn/code/common/occt/modeling/festive-decor/twisted-polygon-ornament.md"
+  },
+  {
+    "id": "code.occt.modeling.hollow-shapes.hexagon-hive",
+    "title": "Hexagon Hive",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/hollow-shapes/hexagon-hive",
+    "path": "learn/code/common/occt/modeling/hollow-shapes/hexagon-hive.md"
+  },
+  {
+    "id": "code.occt.modeling.hollow-shapes.hexagon-hive-flat",
+    "title": "Hexagon Hive Flat",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/hollow-shapes/hexagon-hive-flat",
+    "path": "learn/code/common/occt/modeling/hollow-shapes/hexagon-hive-flat.md"
+  },
+  {
+    "id": "code.occt.modeling.hollow-shapes.hexagon-holes-on-face",
+    "title": "Hexagon Holes On Face",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/hollow-shapes/hexagon-holes-on-face",
+    "path": "learn/code/common/occt/modeling/hollow-shapes/hexagon-holes-on-face.md"
+  },
+  {
+    "id": "code.occt.modeling.hollow-shapes.rectangle-holes-on-face",
+    "title": "Rectangle Holes On Face",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/hollow-shapes/rectangle-holes-on-face",
+    "path": "learn/code/common/occt/modeling/hollow-shapes/rectangle-holes-on-face.md"
+  },
+  {
+    "id": "code.occt.modeling.hollow-shapes.simple-hole",
+    "title": "Simple Holes",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/hollow-shapes/simple-hole",
+    "path": "learn/code/common/occt/modeling/hollow-shapes/simple-hole.md"
+  },
+  {
+    "id": "code.occt.modeling.hollow-shapes.simple-hollow-grids",
+    "title": "Simple Hollow Grids",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/hollow-shapes/simple-hollow-grids",
+    "path": "learn/code/common/occt/modeling/hollow-shapes/simple-hollow-grids.md"
+  },
+  {
+    "id": "code.occt.modeling.parametric-art.simple-flower",
+    "title": "Simple Flower",
+    "type": "tutorial",
+    "url": "/learn/code/common/occt/modeling/parametric-art/simple-flower",
+    "path": "learn/code/common/occt/modeling/parametric-art/simple-flower.md"
+  },
+  {
+    "id": "code.occt.operations.advanced-loft",
+    "title": "Creating Advanded Loft",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/operations/advanced-loft",
+    "path": "learn/code/common/occt/operations/advanced-loft.md"
+  },
+  {
+    "id": "code.occt.operations.extrusions",
+    "title": "Extruding Wires And Faces",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/operations/extrusions",
+    "path": "learn/code/common/occt/operations/extrusions.md"
+  },
+  {
+    "id": "code.occt.operations.offset-operations",
+    "title": "Offset Operations",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/operations/offset-operations",
+    "path": "learn/code/common/occt/operations/offset-operations.md"
+  },
+  {
+    "id": "code.occt.operations.pipes-and-sweeps",
+    "title": "Pipes and Sweeps",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/operations/pipes-and-sweeps",
+    "path": "learn/code/common/occt/operations/pipes-and-sweeps.md"
+  },
+  {
+    "id": "code.occt.operations.rotated-extrusions",
+    "title": "Rotated Extrude",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/operations/rotated-extrusions",
+    "path": "learn/code/common/occt/operations/rotated-extrusions.md"
+  },
+  {
+    "id": "code.occt.operations.sections-and-slices",
+    "title": "Sections, Slices and Drawings",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/operations/sections-and-slices",
+    "path": "learn/code/common/occt/operations/sections-and-slices.md"
+  },
+  {
+    "id": "code.occt.operations.simple-loft",
+    "title": "Creating a Simple Loft",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/operations/simple-loft",
+    "path": "learn/code/common/occt/operations/simple-loft.md"
+  },
+  {
+    "id": "code.occt.operations.thick-solids",
+    "title": "Thick Solids from Complex Faces",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/operations/thick-solids",
+    "path": "learn/code/common/occt/operations/thick-solids.md"
+  },
+  {
+    "id": "code.occt.operations.wire-offset-multiple",
+    "title": "Multiple Wire Offsets",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/operations/wire-offset-multiple",
+    "path": "learn/code/common/occt/operations/wire-offset-multiple.md"
+  },
+  {
+    "id": "code.occt.select",
+    "title": "Selecting Faces and Edges by Rule",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/select/intro",
+    "path": "learn/code/common/occt/select/intro.md"
+  },
+  {
+    "id": "code.occt.shapes",
+    "title": "Understanding OCCT Shape Types and Hierarchy",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/shapes/intro",
+    "path": "learn/code/common/occt/shapes/intro.md"
+  },
+  {
+    "id": "code.occt.shapes.compound",
+    "title": "Compound Shapes",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/shapes/compound/intro",
+    "path": "learn/code/common/occt/shapes/compound/intro.md"
+  },
+  {
+    "id": "code.occt.shapes.compound.compounded-drawing",
+    "title": "Compounded Drawing",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/compound/compounded-drawing",
+    "path": "learn/code/common/occt/shapes/compound/compounded-drawing.md"
+  },
+  {
+    "id": "code.occt.shapes.edge",
+    "title": "Working with Edges in OCCT",
+    "type": "explanation",
+    "url": "/learn/editors/categories/occt/edge",
+    "path": "learn/code/common/occt/shapes/edge/intro.md"
+  },
+  {
+    "id": "code.occt.shapes.edge.constraints",
+    "title": "Tangent Lines and Circles",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/edge/edge-constraints",
+    "path": "learn/code/common/occt/shapes/edge/edge-constraints.md"
+  },
+  {
+    "id": "code.occt.shapes.edge.indexes",
+    "title": "Understanding and Visualizing OCCT Edge Indexing",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/edge/edge-indexes",
+    "path": "learn/code/common/occt/shapes/edge/edge-indexes.mdx"
+  },
+  {
+    "id": "code.occt.shapes.edge.primitives",
+    "title": "Edge Primitives",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/edge/edge-primitives",
+    "path": "learn/code/common/occt/shapes/edge/edge-primitives.md"
+  },
+  {
+    "id": "code.occt.shapes.face",
+    "title": "Working with Faces in OCCT",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/shapes/face/intro-face",
+    "path": "learn/code/common/occt/shapes/face/intro-face.md"
+  },
+  {
+    "id": "code.occt.shapes.face.basic-primitives",
+    "title": "Face Basic Primitives",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/face/face-basic-primitives",
+    "path": "learn/code/common/occt/shapes/face/face-basic-primitives.md"
+  },
+  {
+    "id": "code.occt.shapes.face.from-points",
+    "title": "Face From Points",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/face/face-from-points",
+    "path": "learn/code/common/occt/shapes/face/face-from-points.md"
+  },
+  {
+    "id": "code.occt.shapes.face.from-wire",
+    "title": "Face From Wire",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/face/face-from-wire",
+    "path": "learn/code/common/occt/shapes/face/face-from-wire.md"
+  },
+  {
+    "id": "code.occt.shapes.face.hex-grid-pattern",
+    "title": "Face Hexagons Grid",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/face/face-hex-grid-pattern",
+    "path": "learn/code/common/occt/shapes/face/face-hex-grid-pattern.md"
+  },
+  {
+    "id": "code.occt.shapes.shape",
+    "title": "Asking a Shape About Itself",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/shapes/shape",
+    "path": "learn/code/common/occt/shapes/shape.md"
+  },
+  {
+    "id": "code.occt.shapes.shells",
+    "title": "Shells",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/shapes/shells/intro-shells",
+    "path": "learn/code/common/occt/shapes/shells/intro-shells.md"
+  },
+  {
+    "id": "code.occt.shapes.solids",
+    "title": "Solids",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/shapes/solids/intro-solids",
+    "path": "learn/code/common/occt/shapes/solids/intro-solids.md"
+  },
+  {
+    "id": "code.occt.shapes.solids.volume-and-surface-area",
+    "title": "Solids",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/solids/volume-and-surface-area",
+    "path": "learn/code/common/occt/shapes/solids/volume-and-surface-area.md"
+  },
+  {
+    "id": "code.occt.shapes.structure",
+    "title": "Inside a Shape - Its Graph and Its Geometry",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/shapes/structure",
+    "path": "learn/code/common/occt/shapes/structure.md"
+  },
+  {
+    "id": "code.occt.shapes.vertex",
+    "title": "OCCT Vertices",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/shapes/vertex/intro",
+    "path": "learn/code/common/occt/shapes/vertex/intro.md"
+  },
+  {
+    "id": "code.occt.shapes.wire",
+    "title": "Working with Wires in OCCT",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/shapes/wire/intro",
+    "path": "learn/code/common/occt/shapes/wire/intro.md"
+  },
+  {
+    "id": "code.occt.shapes.wire.basic-primitives",
+    "title": "Wire Basic Primitives",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/wire/wire-basic-primitives",
+    "path": "learn/code/common/occt/shapes/wire/wire-basic-primitives.md"
+  },
+  {
+    "id": "code.occt.shapes.wire.bezier-weights",
+    "title": "Wire Bezier Weights",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/wire/wire-bezier-weights",
+    "path": "learn/code/common/occt/shapes/wire/wire-bezier-weights.md"
+  },
+  {
+    "id": "code.occt.shapes.wire.from-edges",
+    "title": "Wire From Edges",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/wire/wire-from-edges",
+    "path": "learn/code/common/occt/shapes/wire/wire-from-edges.md"
+  },
+  {
+    "id": "code.occt.shapes.wire.helix-spirals",
+    "title": "Wire Helix Spirals",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/wire/wire-helix-spirals",
+    "path": "learn/code/common/occt/shapes/wire/wire-helix-spirals.md"
+  },
+  {
+    "id": "code.occt.shapes.wire.hexagons-advanced-pattern",
+    "title": "Hexagons Advanced Pattern",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/wire/wire-hexagons-advanced-pattern",
+    "path": "learn/code/common/occt/shapes/wire/wire-hexagons-advanced-pattern.md"
+  },
+  {
+    "id": "code.occt.shapes.wire.hexagons-in-grid",
+    "title": "Hexagons Grid",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/wire/wire-hexagons-in-grid",
+    "path": "learn/code/common/occt/shapes/wire/wire-hexagons-in-grid.md"
+  },
+  {
+    "id": "code.occt.shapes.wire.shape-primitives",
+    "title": "Wire Shape Primitives",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/wire/wire-shape-primitives",
+    "path": "learn/code/common/occt/shapes/wire/wire-shape-primitives.md"
+  },
+  {
+    "id": "code.occt.shapes.wire.via-points",
+    "title": "Wire Via Points",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/shapes/wire/wire-via-points",
+    "path": "learn/code/common/occt/shapes/wire/wire-via-points.md"
+  },
+  {
+    "id": "code.occt.sketch.pen-sketcher",
+    "title": "Pen Sketcher",
+    "type": "how-to",
+    "url": "/learn/code/common/occt/sketch/pen-sketcher",
+    "path": "learn/code/common/occt/sketch/pen-sketcher.md"
+  },
+  {
+    "id": "code.occt.transforms",
+    "title": "Moving, Turning and Placing Shapes",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/transforms/intro",
+    "path": "learn/code/common/occt/transforms/intro.md"
+  },
+  {
+    "id": "code.occt.what-is-occt",
+    "title": "Understanding the OCCT (OpenCascade Technology) Category",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/what-is-occt",
+    "path": "learn/code/common/occt/what-is-occt.md"
+  },
+  {
+    "id": "code.start.conventions",
+    "title": "Conventions",
+    "type": "reference",
+    "url": "/learn/code/common/conventions",
+    "path": "learn/code/common/conventions.md"
+  },
+  {
+    "id": "code.start.intro",
+    "title": "Code in Bitbybit - the API at a Glance",
+    "type": "landing",
+    "url": "/learn/code/intro",
+    "path": "learn/code/intro.md"
+  },
+  {
+    "id": "code.things.intro",
+    "title": "Things - Finished Parametric Models",
+    "type": "explanation",
+    "url": "/learn/code/common/things/intro",
+    "path": "learn/code/common/things/intro.md"
+  },
+  {
+    "id": "composer.dimensions",
+    "title": "Dimensions",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/dimensions",
+    "path": "learn/3d-bits/composer/dimensions.md"
+  },
+  {
+    "id": "composer.gui",
+    "title": "The Option Panel",
+    "type": "landing",
+    "url": "/learn/3d-bits/composer/gui",
+    "path": "learn/3d-bits/composer/gui/_category_.json"
+  },
+  {
+    "id": "composer.gui.camera-controls",
+    "title": "Camera controls",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/gui/camera-controls",
+    "path": "learn/3d-bits/composer/gui/camera-controls.md"
+  },
+  {
+    "id": "composer.gui.cart-overview",
+    "title": "Cart Overview",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/gui/cart-overview",
+    "path": "learn/3d-bits/composer/gui/cart-overview.md"
+  },
+  {
+    "id": "composer.gui.controls",
+    "title": "Controls",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/gui/controls",
+    "path": "learn/3d-bits/composer/gui/controls.md"
+  },
+  {
+    "id": "composer.gui.custom-html",
+    "title": "Custom HTML",
+    "type": "reference",
+    "url": "/learn/3d-bits/composer/gui/custom-html",
+    "path": "learn/3d-bits/composer/gui/custom-html.md"
+  },
+  {
+    "id": "composer.gui.elements",
+    "title": "GUI Elements at a Glance",
+    "type": "reference",
+    "url": "/learn/3d-bits/composer/gui/elements",
+    "path": "learn/3d-bits/composer/gui/elements.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "composer.gui.layout",
+    "title": "Layout",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/gui/layout",
+    "path": "learn/3d-bits/composer/gui/layout.md"
+  },
+  {
+    "id": "composer.gui.parts",
+    "title": "Parts: The Bill of Materials Behind a Configured Product",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/gui/parts",
+    "path": "learn/3d-bits/composer/gui/parts.md"
+  },
+  {
+    "id": "composer.gui.pdf",
+    "title": "PDF Reports",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/gui/pdf-reports",
+    "path": "learn/3d-bits/composer/gui/pdf-reports.md"
+  },
+  {
+    "id": "composer.gui.pricing",
+    "title": "Pricing in the Panel",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/gui/pricing",
+    "path": "learn/3d-bits/composer/gui/pricing.md"
+  },
+  {
+    "id": "composer.gui.settings",
+    "title": "Settings: Remembering a Configuration",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/gui/settings",
+    "path": "learn/3d-bits/composer/gui/settings.md"
+  },
+  {
+    "id": "composer.gui.style",
+    "title": "Style and Translations",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/gui/style-and-translations",
+    "path": "learn/3d-bits/composer/gui/style-and-translations.md"
+  },
+  {
+    "id": "composer.interface",
+    "title": "The Composer Interface",
+    "type": "explanation",
+    "url": "/learn/3d-bits/composer/interface",
+    "path": "learn/3d-bits/composer/interface.md"
+  },
+  {
+    "id": "composer.intro",
+    "title": "Composer",
+    "type": "landing",
+    "url": "/learn/3d-bits/composer/intro",
+    "path": "learn/3d-bits/composer/intro.md"
+  },
+  {
+    "id": "composer.logic",
+    "title": "Logic",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/logic",
+    "path": "learn/3d-bits/composer/logic.md"
+  },
+  {
+    "id": "composer.models",
+    "title": "Managing 3D Models",
+    "type": "landing",
+    "url": "/learn/3d-bits/composer/models",
+    "path": "learn/3d-bits/composer/models/_category_.json"
+  },
+  {
+    "id": "composer.models.adding",
+    "title": "Adding Models",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/models/adding-models",
+    "path": "learn/3d-bits/composer/models/adding-models.md"
+  },
+  {
+    "id": "composer.models.formats",
+    "title": "Supported 3D Formats",
+    "type": "reference",
+    "url": "/learn/3d-bits/composer/models/supported-formats",
+    "path": "learn/3d-bits/composer/models/supported-formats.md"
+  },
+  {
+    "id": "composer.models.properties",
+    "title": "Model Properties",
+    "type": "reference",
+    "url": "/learn/3d-bits/composer/models/model-properties",
+    "path": "learn/3d-bits/composer/models/model-properties.md"
+  },
+  {
+    "id": "composer.navigation",
+    "title": "Navigation",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/navigation",
+    "path": "learn/3d-bits/composer/navigation.md"
+  },
+  {
+    "id": "composer.personalization",
+    "title": "Personalisation",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/personalization",
+    "path": "learn/3d-bits/composer/personalization.md"
+  },
+  {
+    "id": "composer.preview-vs-play",
+    "title": "Edit Mode and Play",
+    "type": "explanation",
+    "url": "/learn/3d-bits/composer/preview-vs-play",
+    "path": "learn/3d-bits/composer/preview-vs-play.md"
+  },
+  {
+    "id": "composer.publish-blockers",
+    "title": "Why Publishing Was Refused",
+    "type": "reference",
+    "url": "/learn/3d-bits/composer/publish-blockers",
+    "path": "learn/3d-bits/composer/publish-blockers.md"
+  },
+  {
+    "id": "composer.publishing",
+    "title": "Saving and Publishing",
+    "type": "explanation",
+    "url": "/learn/3d-bits/composer/saving-and-publishing",
+    "path": "learn/3d-bits/composer/saving-and-publishing.md"
+  },
+  {
+    "id": "composer.scene",
+    "title": "Scene",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/scene",
+    "path": "learn/3d-bits/composer/scene.md"
+  },
+  {
+    "id": "composer.scripting",
+    "title": "Scripting",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/scripting",
+    "path": "learn/3d-bits/composer/scripting.md"
+  },
+  {
+    "id": "composer.troubleshooting",
+    "title": "When Something Is Not Working",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/troubleshooting",
+    "path": "learn/3d-bits/composer/troubleshooting.md"
+  },
+  {
+    "id": "composer.variants",
+    "title": "Variants: Making the Model React",
+    "type": "explanation",
+    "url": "/learn/3d-bits/composer/variants",
+    "path": "learn/3d-bits/composer/variants.md"
+  },
+  {
+    "id": "designer.agents",
+    "title": "Working with agents in the Designer",
+    "type": "how-to",
+    "url": "/learn/designer/working-with-agents",
+    "path": "learn/designer/working-with-agents.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.assemblies.components",
+    "title": "Components and sub-assemblies",
+    "type": "how-to",
+    "url": "/learn/designer/assemblies/components",
+    "path": "learn/designer/assemblies/components.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.assemblies.connectors",
+    "title": "Connectors",
+    "type": "how-to",
+    "url": "/learn/designer/assemblies/connectors",
+    "path": "learn/designer/assemblies/connectors.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.assemblies.inspect",
+    "title": "Inspect an assembly: parts list, clashes and mass",
+    "type": "how-to",
+    "url": "/learn/designer/assemblies/inspect",
+    "path": "learn/designer/assemblies/inspect.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.assemblies.joints",
+    "title": "Joints",
+    "type": "how-to",
+    "url": "/learn/designer/assemblies/joints",
+    "path": "learn/designer/assemblies/joints.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.assemblies.patterns",
+    "title": "Patterns of components",
+    "type": "how-to",
+    "url": "/learn/designer/assemblies/patterns",
+    "path": "learn/designer/assemblies/patterns.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.assemblies.replicate",
+    "title": "Replicate: a part on every hole",
+    "type": "how-to",
+    "url": "/learn/designer/assemblies/replicate",
+    "path": "learn/designer/assemblies/replicate.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.concepts",
+    "title": "How the Designer works",
+    "type": "explanation",
+    "url": "/learn/designer/concepts",
+    "path": "learn/designer/concepts.md",
+    "verified": "2026-10-08"
+  },
+  {
+    "id": "designer.get-started.create-project",
+    "title": "Create a Designer project",
+    "type": "how-to",
+    "url": "/learn/designer/get-started/create-project",
+    "path": "learn/designer/get-started/create-project.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.get-started.export-import",
+    "title": "Export and import design files",
+    "type": "how-to",
+    "url": "/learn/designer/get-started/export-import",
+    "path": "learn/designer/get-started/export-import.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.get-started.open",
+    "title": "Open the Designer",
+    "type": "how-to",
+    "url": "/learn/designer/get-started/open",
+    "path": "learn/designer/get-started/open.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.get-started.open-design",
+    "title": "Open a design again",
+    "type": "how-to",
+    "url": "/learn/designer/get-started/open-design",
+    "path": "learn/designer/get-started/open-design.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.get-started.save",
+    "title": "How your work is saved",
+    "type": "how-to",
+    "url": "/learn/designer/get-started/save",
+    "path": "learn/designer/get-started/save.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.get-started.share",
+    "title": "Share a design",
+    "type": "how-to",
+    "url": "/learn/designer/get-started/share",
+    "path": "learn/designer/get-started/share.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.modelling.features",
+    "title": "Features and their dialogs",
+    "type": "how-to",
+    "url": "/learn/designer/modelling/features",
+    "path": "learn/designer/modelling/features.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.modelling.history",
+    "title": "History: undo, edit, suppress, reorder and roll back",
+    "type": "how-to",
+    "url": "/learn/designer/modelling/history",
+    "path": "learn/designer/modelling/history.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.modelling.parameters",
+    "title": "Parameters and expressions",
+    "type": "how-to",
+    "url": "/learn/designer/modelling/parameters",
+    "path": "learn/designer/modelling/parameters.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.modelling.parts",
+    "title": "Parts and materials",
+    "type": "how-to",
+    "url": "/learn/designer/modelling/parts",
+    "path": "learn/designer/modelling/parts.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.modelling.problems",
+    "title": "When a build has problems",
+    "type": "how-to",
+    "url": "/learn/designer/modelling/problems",
+    "path": "learn/designer/modelling/problems.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.modelling.references",
+    "title": "References to faces and edges",
+    "type": "explanation",
+    "url": "/learn/designer/modelling/references",
+    "path": "learn/designer/modelling/references.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.modelling.sketches",
+    "title": "Sketches",
+    "type": "how-to",
+    "url": "/learn/designer/modelling/sketches",
+    "path": "learn/designer/modelling/sketches.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.modelling.views",
+    "title": "The view, picking and panels",
+    "type": "how-to",
+    "url": "/learn/designer/modelling/views",
+    "path": "learn/designer/modelling/views.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.reference.agent-tools",
+    "title": "Designer tools for agents",
+    "type": "reference",
+    "url": "/learn/designer/reference/agent-tools",
+    "path": "learn/designer/reference/agent-tools.md"
+  },
+  {
+    "id": "designer.reference.commands",
+    "title": "Designer commands",
+    "type": "reference",
+    "url": "/learn/designer/reference/commands",
+    "path": "learn/designer/reference/commands.md"
+  },
+  {
+    "id": "designer.reference.shortcuts",
+    "title": "Designer keyboard shortcuts",
+    "type": "reference",
+    "url": "/learn/designer/reference/shortcuts",
+    "path": "learn/designer/reference/shortcuts.md"
+  },
+  {
+    "id": "designer.showcases",
+    "title": "Showcases",
+    "type": "landing",
+    "url": "/learn/designer/showcases",
+    "path": "learn/designer/showcases.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.start",
+    "title": "The Designer: parametric CAD by clicking",
+    "type": "landing",
+    "url": "/learn/designer/intro",
+    "path": "learn/designer/intro.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.tour",
+    "title": "A tour of the Designer",
+    "type": "explanation",
+    "url": "/learn/designer/tour",
+    "path": "learn/designer/tour.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "designer.tutorials.desk-arm",
+    "title": "Model a desk robot arm",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/desk-arm",
+    "path": "learn/designer/tutorials/desk-arm/index.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "designer.tutorials.desk-arm.arm",
+    "title": "Model a desk robot arm: the assembly",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/desk-arm/assembly",
+    "path": "learn/designer/tutorials/desk-arm/assembly.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "designer.tutorials.desk-arm.base",
+    "title": "Model a desk robot arm: the base",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/desk-arm/base",
+    "path": "learn/designer/tutorials/desk-arm/base.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "designer.tutorials.desk-arm.gripper",
+    "title": "Model a desk robot arm: the gripper",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/desk-arm/gripper",
+    "path": "learn/designer/tutorials/desk-arm/gripper.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "designer.tutorials.desk-arm.jaw",
+    "title": "Model a desk robot arm: the jaw",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/desk-arm/jaw",
+    "path": "learn/designer/tutorials/desk-arm/jaw.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "designer.tutorials.desk-arm.link",
+    "title": "Model a desk robot arm: the link",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/desk-arm/link",
+    "path": "learn/designer/tutorials/desk-arm/link.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "designer.tutorials.desk-arm.nut",
+    "title": "Model a desk robot arm: the nut",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/desk-arm/nut",
+    "path": "learn/designer/tutorials/desk-arm/nut.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "designer.tutorials.desk-arm.screw",
+    "title": "Model a desk robot arm: the screw",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/desk-arm/screw",
+    "path": "learn/designer/tutorials/desk-arm/screw.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "designer.tutorials.desk-arm.turntable",
+    "title": "Model a desk robot arm: the shoulder",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/desk-arm/shoulder",
+    "path": "learn/designer/tutorials/desk-arm/shoulder.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "designer.tutorials.desk-arm.wrist",
+    "title": "Model a desk robot arm: the wrist",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/desk-arm/wrist",
+    "path": "learn/designer/tutorials/desk-arm/wrist.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "designer.tutorials.first-part",
+    "title": "Make your first part",
+    "type": "tutorial",
+    "url": "/learn/designer/tutorials/first-part",
+    "path": "learn/designer/tutorials/first-part.md",
+    "verified": "2026-10-12"
+  },
+  {
+    "id": "npm.babylonjs.about",
+    "title": "About BabylonJS",
+    "type": "explanation",
+    "url": "/learn/npm-packages/babylonjs/about-babylonjs",
+    "path": "learn/npm-packages/babylonjs/about-babylonjs.md"
+  },
+  {
+    "id": "npm.babylonjs.advanced-model",
+    "title": "Advanced Parametric 3D Model with BabylonJS & Bitbybit",
+    "type": "tutorial",
+    "url": "/learn/npm-packages/babylonjs/advanced-parametric-3d-model",
+    "path": "learn/npm-packages/babylonjs/advanced-parametric-3d-model.md"
+  },
+  {
+    "id": "npm.babylonjs.hex-house",
+    "title": "Parametric Hex House Concept with BabylonJS & Bitbybit",
+    "type": "tutorial",
+    "url": "/learn/npm-packages/babylonjs/hex-house-concept",
+    "path": "learn/npm-packages/babylonjs/hex-house-concept.md"
+  },
+  {
+    "id": "npm.babylonjs.start",
+    "title": "Quick Start with BabylonJS",
+    "type": "tutorial",
+    "url": "/learn/npm-packages/babylonjs/start-with-babylon-js",
+    "path": "learn/npm-packages/babylonjs/start-with-babylon-js.md"
+  },
+  {
+    "id": "npm.create-app",
+    "title": "Scaffold a project with create-app",
+    "type": "how-to",
+    "url": "/learn/npm-packages/create-app",
+    "path": "learn/npm-packages/create-app.md"
+  },
+  {
+    "id": "npm.engine-agnostic",
+    "title": "Bitbybit's Engine-Agnostic Architecture",
+    "type": "explanation",
+    "url": "/learn/npm-packages/game-engine-agnostic",
+    "path": "learn/npm-packages/game-engine-agnostic.md"
+  },
+  {
+    "id": "npm.ifc",
+    "title": "IFC Building Models",
+    "type": "how-to",
+    "url": "/learn/npm-packages/ifc",
+    "path": "learn/npm-packages/ifc.md"
+  },
+  {
+    "id": "npm.intro",
+    "title": "Our NPM Packages",
+    "type": "landing",
+    "url": "/learn/npm-packages/intro",
+    "path": "learn/npm-packages/intro.md"
+  },
+  {
+    "id": "npm.playcanvas.about",
+    "title": "About PlayCanvas",
+    "type": "explanation",
+    "url": "/learn/npm-packages/playcanvas/about-playcanvas",
+    "path": "learn/npm-packages/playcanvas/about-playcanvas.md"
+  },
+  {
+    "id": "npm.playcanvas.advanced-model",
+    "title": "Advanced Parametric 3D Model with PlayCanvas & Bitbybit",
+    "type": "tutorial",
+    "url": "/learn/npm-packages/playcanvas/advanced-parametric-3d-model",
+    "path": "learn/npm-packages/playcanvas/advanced-parametric-3d-model.md"
+  },
+  {
+    "id": "npm.playcanvas.hex-house",
+    "title": "Parametric Hex House Concept with PlayCanvas & Bitbybit",
+    "type": "tutorial",
+    "url": "/learn/npm-packages/playcanvas/hex-house-concept",
+    "path": "learn/npm-packages/playcanvas/hex-house-concept.md"
+  },
+  {
+    "id": "npm.playcanvas.start",
+    "title": "Quick Start with PlayCanvas",
+    "type": "tutorial",
+    "url": "/learn/npm-packages/playcanvas/start-with-playcanvas",
+    "path": "learn/npm-packages/playcanvas/start-with-playcanvas.md"
+  },
+  {
+    "id": "npm.threejs.about",
+    "title": "About ThreeJS",
+    "type": "explanation",
+    "url": "/learn/npm-packages/threejs/about-threejs",
+    "path": "learn/npm-packages/threejs/about-threejs.md"
+  },
+  {
+    "id": "npm.threejs.advanced-model",
+    "title": "Advanced Parametric 3D Model with ThreeJS & Bitbybit",
+    "type": "tutorial",
+    "url": "/learn/npm-packages/threejs/advanced-parametric-3d-model",
+    "path": "learn/npm-packages/threejs/advanced-parametric-3d-model.md"
+  },
+  {
+    "id": "npm.threejs.hex-house",
+    "title": "Parametric Hex House Concept with ThreeJS & Bitbybit",
+    "type": "tutorial",
+    "url": "/learn/npm-packages/threejs/hex-house-concept",
+    "path": "learn/npm-packages/threejs/hex-house-concept.md"
+  },
+  {
+    "id": "npm.threejs.start",
+    "title": "Quick Start with ThreeJS",
+    "type": "tutorial",
+    "url": "/learn/npm-packages/threejs/start-with-three-js",
+    "path": "learn/npm-packages/threejs/start-with-three-js.md"
+  },
+  {
+    "id": "platform.about.hosting",
+    "title": "Hosting Bitbybit Assets on Your Own CDN",
+    "type": "how-to",
+    "url": "/learn/hosting-and-cdn",
+    "path": "learn/hosting-and-cdn.md"
+  },
+  {
+    "id": "platform.about.open-source",
+    "title": "Bitbybit's Open Source Approach",
+    "type": "explanation",
+    "url": "/learn/open-source-approach",
+    "path": "learn/open-source-approach.md"
+  },
+  {
+    "id": "platform.about.security",
+    "title": "Security Policy",
+    "type": "reference",
+    "url": "/learn/security-policy",
+    "path": "learn/security-policy.md"
+  },
+  {
+    "id": "platform.about.vision",
+    "title": "Our Vision",
+    "type": "explanation",
+    "url": "/learn/about-us",
+    "path": "learn/about-us.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "platform.assets.cloud",
+    "title": "Using Cloud Assets in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/getting-started/basics/assets/cloud/intro",
+    "path": "learn/getting-started/basics/assets/cloud/intro.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.assets.cloud-textures",
+    "title": "Using Image Cloud Assets as Textures in Bitbybit",
+    "type": "tutorial",
+    "url": "/learn/getting-started/basics/assets/cloud/using-textures",
+    "path": "learn/getting-started/basics/assets/cloud/using-textures.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.assets.cloud-upload",
+    "title": "Uploading Cloud Assets to Your Projects",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/assets/cloud/uploading",
+    "path": "learn/getting-started/basics/assets/cloud/uploading.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.assets.cloud-use",
+    "title": "Using Your Uploaded Cloud Assets in Bitbybit",
+    "type": "tutorial",
+    "url": "/learn/getting-started/basics/assets/cloud/using",
+    "path": "learn/getting-started/basics/assets/cloud/using.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.assets.intro",
+    "title": "Working with Assets in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/getting-started/basics/assets/intro",
+    "path": "learn/getting-started/basics/assets/intro.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.assets.local",
+    "title": "The Browser Asset Catalog",
+    "type": "explanation",
+    "url": "/learn/getting-started/basics/assets/local/intro",
+    "path": "learn/getting-started/basics/assets/local/intro.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.assets.local-gltf",
+    "title": "Importing Local glTF Files into Bitbybit",
+    "type": "tutorial",
+    "url": "/learn/getting-started/basics/assets/local/gltf",
+    "path": "learn/getting-started/basics/assets/local/gltf.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.assets.local-step",
+    "title": "Importing Local STEP Files into Bitbybit",
+    "type": "tutorial",
+    "url": "/learn/getting-started/basics/assets/local/step",
+    "path": "learn/getting-started/basics/assets/local/step.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.assets.local-upload",
+    "title": "Uploading Local Assets to Browser Storage",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/assets/local/uploading",
+    "path": "learn/getting-started/basics/assets/local/uploading.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.assets.project-files",
+    "title": "Files of a Project",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/assets/project-files",
+    "path": "learn/getting-started/basics/assets/project-files.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "platform.basics.3d-view",
+    "title": "The 3D View",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/3d-view",
+    "path": "learn/getting-started/basics/3d-view.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "platform.basics.drawing",
+    "title": "Understanding How Drawing Works in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/getting-started/basics/drawing",
+    "path": "learn/getting-started/basics/drawing.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.basics.errors",
+    "title": "Understanding and handling errors",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/errors",
+    "path": "learn/getting-started/basics/errors.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.basics.intro",
+    "title": "Basics",
+    "type": "landing",
+    "url": "/learn/getting-started/basics/intro",
+    "path": "learn/getting-started/basics/intro.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.basics.running-code",
+    "title": "Running your code",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/running-code",
+    "path": "learn/getting-started/basics/running-code.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.basics.settings",
+    "title": "Editor settings",
+    "type": "reference",
+    "url": "/learn/getting-started/basics/editor-settings",
+    "path": "learn/getting-started/basics/editor-settings.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "platform.configurators.intro",
+    "title": "3D Model Configurators",
+    "type": "explanation",
+    "url": "/learn/getting-started/configurators",
+    "path": "learn/getting-started/configurators.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.engines.babylonjs",
+    "title": "Getting Started with BabylonJS",
+    "type": "explanation",
+    "url": "/learn/getting-started/engines/babylonjs",
+    "path": "learn/getting-started/engines/babylonjs.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.engines.playcanvas",
+    "title": "Getting Started with PlayCanvas",
+    "type": "explanation",
+    "url": "/learn/getting-started/engines/playcanvas",
+    "path": "learn/getting-started/engines/playcanvas.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.engines.threejs",
+    "title": "Getting Started with ThreeJS",
+    "type": "explanation",
+    "url": "/learn/getting-started/engines/threejs",
+    "path": "learn/getting-started/engines/threejs.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.github.coverage",
+    "title": "Live Unit Test Coverage Reports",
+    "type": "reference",
+    "url": "/learn/github/live-unit-test-coverage",
+    "path": "learn/github/live-unit-test-coverage.md"
+  },
+  {
+    "id": "platform.github.monorepo",
+    "title": "Understanding the Bitbybit GitHub Monorepo",
+    "type": "explanation",
+    "url": "/learn/github/intro",
+    "path": "learn/github/intro.md"
+  },
+  {
+    "id": "platform.github.unit-tests",
+    "title": "Unit Testing in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/github/unit-tests",
+    "path": "learn/github/unit-tests.md"
+  },
+  {
+    "id": "platform.paths.ai-agent",
+    "title": "AI Coding Agents",
+    "type": "landing",
+    "url": "/learn/paths/ai-agent",
+    "path": "learn/paths/ai-agent.md"
+  },
+  {
+    "id": "platform.paths.designer",
+    "title": "Computational Designers",
+    "type": "landing",
+    "url": "/learn/paths/designer",
+    "path": "learn/paths/designer.md"
+  },
+  {
+    "id": "platform.paths.educator",
+    "title": "Educators & Teachers",
+    "type": "landing",
+    "url": "/learn/paths/educator",
+    "path": "learn/paths/educator.md"
+  },
+  {
+    "id": "platform.paths.enterprise",
+    "title": "Enterprise & B2B",
+    "type": "landing",
+    "url": "/learn/paths/enterprise",
+    "path": "learn/paths/enterprise.md"
+  },
+  {
+    "id": "platform.paths.programmer",
+    "title": "Software Developers",
+    "type": "landing",
+    "url": "/learn/paths/programmer",
+    "path": "learn/paths/programmer.md"
+  },
+  {
+    "id": "platform.paths.shopify-merchant",
+    "title": "Shopify Merchants",
+    "type": "landing",
+    "url": "/learn/paths/shopify-merchant",
+    "path": "learn/paths/shopify-merchant.md"
+  },
+  {
+    "id": "platform.projects.cover",
+    "title": "Using Cover Images for Your Projects and Scripts",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/projects/cover-image",
+    "path": "learn/getting-started/basics/projects/cover-image.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.projects.create",
+    "title": "Creating a New Project in Bitbybit",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/projects/create-project",
+    "path": "learn/getting-started/basics/projects/create-project.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.projects.intro",
+    "title": "Understanding Projects in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/getting-started/basics/projects/intro",
+    "path": "learn/getting-started/basics/projects/intro.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.projects.share",
+    "title": "Publishing Your Projects in Bitbybit",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/projects/publish",
+    "path": "learn/getting-started/basics/projects/publish.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.scripts.create",
+    "title": "Creating Scripts in Bitbybit",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/scripts/create-script",
+    "path": "learn/getting-started/basics/scripts/create-script.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.scripts.embed",
+    "title": "Embedding Bitbybit Scripts in Your Website",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/scripts/embed",
+    "path": "learn/getting-started/basics/scripts/embed.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.scripts.export",
+    "title": "Saving Your Scripts to a Local File",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/scripts/save-to-file",
+    "path": "learn/getting-started/basics/scripts/save-to-file.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.scripts.find",
+    "title": "Finding Your Scripts in Bitbybit",
+    "type": "how-to",
+    "url": "/learn/start/general/find-script",
+    "path": "learn/getting-started/basics/scripts/find-script.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.scripts.import",
+    "title": "Importing Scripts From a Local File",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/scripts/import-file",
+    "path": "learn/getting-started/basics/scripts/import-file.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.scripts.intro",
+    "title": "Understanding Scripts in Bitbybit Projects",
+    "type": "explanation",
+    "url": "/learn/getting-started/basics/scripts/intro",
+    "path": "learn/getting-started/basics/scripts/intro.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.scripts.preview",
+    "title": "Using Script Preview Mode in Bitbybit",
+    "type": "how-to",
+    "url": "/learn/start/general/script-preview-mode",
+    "path": "learn/getting-started/basics/scripts/preview.mdx",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.scripts.saving",
+    "title": "Understanding Auto Save in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/getting-started/basics/scripts/auto-save",
+    "path": "learn/getting-started/basics/scripts/auto-save.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.scripts.search-public",
+    "title": "Searching Public Scripts in Bitbybit",
+    "type": "how-to",
+    "url": "/learn/getting-started/basics/scripts/search-public",
+    "path": "learn/getting-started/basics/scripts/search-public.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.start.designer",
+    "title": "The Designer",
+    "type": "explanation",
+    "url": "/learn/getting-started/designer",
+    "path": "learn/getting-started/designer.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.start.glossary",
+    "title": "Glossary",
+    "type": "reference",
+    "url": "/learn/glossary",
+    "path": "learn/glossary.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "platform.start.how-it-works",
+    "title": "How Bitbybit Works",
+    "type": "explanation",
+    "url": "/learn/how-it-works",
+    "path": "learn/how-it-works.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "platform.start.overview",
+    "title": "Getting Started Overview",
+    "type": "landing",
+    "url": "/learn/getting-started/overview",
+    "path": "learn/getting-started/overview.md",
+    "verified": "2026-10-09"
+  },
+  {
+    "id": "platform.start.plans",
+    "title": "Plans and What They Unlock",
+    "type": "reference",
+    "url": "/learn/plans",
+    "path": "learn/plans.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "platform.start.products",
+    "title": "Platform & Products",
+    "type": "explanation",
+    "url": "/learn/offerings",
+    "path": "learn/offerings.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "platform.start.welcome",
+    "title": "Start Your Journey",
+    "type": "landing",
+    "url": "/learn/intro",
+    "path": "learn/intro.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "platform.tools.converter",
+    "title": "STEP to glTF Converter",
+    "type": "how-to",
+    "url": "/learn/tools/converter",
+    "path": "learn/tools/converter.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "platform.tools.inspector",
+    "title": "3D Inspector",
+    "type": "how-to",
+    "url": "/learn/tools/3d-inspector",
+    "path": "learn/tools/3d-inspector.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "rete.canvas.modules",
+    "title": "Modules in Rete",
+    "type": "how-to",
+    "url": "/learn/getting-started/rete/modules",
+    "path": "learn/getting-started/coding-editors/rete/features/modules.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.canvas.organise",
+    "title": "Organising a Rete Script",
+    "type": "how-to",
+    "url": "/learn/getting-started/rete/organise",
+    "path": "learn/getting-started/coding-editors/rete/features/organise.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.nodes.add",
+    "title": "Adding Components in Rete",
+    "type": "how-to",
+    "url": "/learn/getting-started/rete/add-components",
+    "path": "learn/getting-started/coding-editors/rete/features/add-components.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.nodes.code",
+    "title": "Code Nodes in Rete",
+    "type": "how-to",
+    "url": "/learn/getting-started/rete/typescript-editor-component",
+    "path": "learn/getting-started/coding-editors/rete/features/code-nodes.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.nodes.flow",
+    "title": "Flow and Interactivity in Rete",
+    "type": "explanation",
+    "url": "/learn/getting-started/rete/flow",
+    "path": "learn/getting-started/coding-editors/rete/features/flow.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "rete.nodes.lists",
+    "title": "Lists and Node Options in Rete",
+    "type": "how-to",
+    "url": "/learn/getting-started/rete/lists",
+    "path": "learn/getting-started/coding-editors/rete/features/lists.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.nodes.wires",
+    "title": "Nodes, Wires and Values in Rete",
+    "type": "how-to",
+    "url": "/learn/getting-started/rete/nodes-and-wires",
+    "path": "learn/getting-started/coding-editors/rete/features/nodes-and-wires.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.reference.shortcuts",
+    "title": "Rete Keyboard Shortcuts",
+    "type": "reference",
+    "url": "/learn/getting-started/rete/shortcuts",
+    "path": "learn/getting-started/coding-editors/rete/shortcuts.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.start.intro",
+    "title": "Rete Editor",
+    "type": "landing",
+    "url": "/learn/getting-started/rete/intro",
+    "path": "learn/getting-started/coding-editors/rete/intro.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.start.showcases",
+    "title": "Rete Showcases",
+    "type": "landing",
+    "url": "/learn/getting-started/rete/showcases",
+    "path": "learn/getting-started/coding-editors/rete/showcases.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.start.tour",
+    "title": "A Tour of the Rete Editor",
+    "type": "explanation",
+    "url": "/learn/getting-started/rete/tour",
+    "path": "learn/getting-started/coding-editors/rete/tour.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.tutorials.drone.arm",
+    "title": "Build a drone: the arm module",
+    "type": "tutorial",
+    "url": "/learn/getting-started/rete/tutorials/drone/arm",
+    "path": "learn/getting-started/coding-editors/rete/tutorials/drone/arm.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.tutorials.drone.arms",
+    "title": "Build a drone: arms around the frame",
+    "type": "tutorial",
+    "url": "/learn/getting-started/rete/tutorials/drone/arms",
+    "path": "learn/getting-started/coding-editors/rete/tutorials/drone/arms.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.tutorials.drone.around",
+    "title": "Build a drone: a module that repeats",
+    "type": "tutorial",
+    "url": "/learn/getting-started/rete/tutorials/drone/around",
+    "path": "learn/getting-started/coding-editors/rete/tutorials/drone/around.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.tutorials.drone.canopy",
+    "title": "Build a drone: canopy and electronics",
+    "type": "tutorial",
+    "url": "/learn/getting-started/rete/tutorials/drone/canopy",
+    "path": "learn/getting-started/coding-editors/rete/tutorials/drone/canopy.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.tutorials.drone.finish",
+    "title": "Build a drone: payload and sliders",
+    "type": "tutorial",
+    "url": "/learn/getting-started/rete/tutorials/drone/finish",
+    "path": "learn/getting-started/coding-editors/rete/tutorials/drone/finish.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.tutorials.drone.frame",
+    "title": "Build a drone: sliders and the frame",
+    "type": "tutorial",
+    "url": "/learn/getting-started/rete/tutorials/drone/frame",
+    "path": "learn/getting-started/coding-editors/rete/tutorials/drone/frame.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.tutorials.drone.landing-gear",
+    "title": "Build a drone: landing gear",
+    "type": "tutorial",
+    "url": "/learn/getting-started/rete/tutorials/drone/landing-gear",
+    "path": "learn/getting-started/coding-editors/rete/tutorials/drone/landing-gear.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.tutorials.hello-world",
+    "title": "Your First 3D \"Hello World\" with Rete",
+    "type": "tutorial",
+    "url": "/learn/getting-started/rete/hello-world",
+    "path": "learn/getting-started/coding-editors/rete/tutorials/hello-world.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "rete.tutorials.parametric-cube",
+    "title": "Creating a Parametric Cube with Rete",
+    "type": "tutorial",
+    "url": "/learn/getting-started/rete/parametric-cube",
+    "path": "learn/getting-started/coding-editors/rete/tutorials/parametric-cube.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "runners.engines.babylonjs.bottle",
+    "title": "OCCT Bottle Example",
+    "type": "tutorial",
+    "url": "/learn/runners/engines/babylonjs/hello-world-occt-bottle-demo",
+    "path": "learn/runners/engines/babylonjs/hello-world-occt-bottle-demo.mdx"
+  },
+  {
+    "id": "runners.engines.babylonjs.full",
+    "title": "BabylonJS Full Runner",
+    "type": "how-to",
+    "url": "/learn/runners/engines/babylonjs/full-runner",
+    "path": "learn/runners/engines/babylonjs/full-runner.mdx"
+  },
+  {
+    "id": "runners.engines.babylonjs.lite",
+    "title": "BabylonJS Lite Runner",
+    "type": "how-to",
+    "url": "/learn/runners/engines/babylonjs/lite-runner",
+    "path": "learn/runners/engines/babylonjs/lite-runner.mdx"
+  },
+  {
+    "id": "runners.engines.playcanvas.bottle",
+    "title": "OCCT Bottle Example",
+    "type": "tutorial",
+    "url": "/learn/runners/engines/playcanvas/hello-world-occt-bottle-demo",
+    "path": "learn/runners/engines/playcanvas/hello-world-occt-bottle-demo.mdx"
+  },
+  {
+    "id": "runners.engines.playcanvas.full",
+    "title": "PlayCanvas Full Runner",
+    "type": "how-to",
+    "url": "/learn/runners/engines/playcanvas/full-runner",
+    "path": "learn/runners/engines/playcanvas/full-runner.mdx"
+  },
+  {
+    "id": "runners.engines.playcanvas.lite",
+    "title": "PlayCanvas Lite Runner",
+    "type": "how-to",
+    "url": "/learn/runners/engines/playcanvas/lite-runner",
+    "path": "learn/runners/engines/playcanvas/lite-runner.mdx"
+  },
+  {
+    "id": "runners.engines.playcanvas.text-on-face",
+    "title": "PlayCanvas 3D Text on Face Example",
+    "type": "tutorial",
+    "url": "/learn/runners/engines/playcanvas/text-3d-on-face",
+    "path": "learn/runners/engines/playcanvas/text-3d-on-face.mdx"
+  },
+  {
+    "id": "runners.engines.threejs.bottle",
+    "title": "OCCT Bottle Example",
+    "type": "tutorial",
+    "url": "/learn/runners/engines/threejs/hello-world-occt-bottle-demo",
+    "path": "learn/runners/engines/threejs/hello-world-occt-bottle-demo.mdx"
+  },
+  {
+    "id": "runners.engines.threejs.full",
+    "title": "ThreeJS Full Runner",
+    "type": "how-to",
+    "url": "/learn/runners/engines/threejs/full-runner",
+    "path": "learn/runners/engines/threejs/full-runner.mdx"
+  },
+  {
+    "id": "runners.engines.threejs.lite",
+    "title": "ThreeJS Lite Runner",
+    "type": "how-to",
+    "url": "/learn/runners/engines/threejs/lite-runner",
+    "path": "learn/runners/engines/threejs/lite-runner.mdx"
+  },
+  {
+    "id": "runners.examples.configurable-part",
+    "title": "Interactive 3D Models with Runner & Inputs",
+    "type": "tutorial",
+    "url": "/learn/runners/live-examples/configurable-cad-part",
+    "path": "learn/runners/live-examples/configurable-cad-part.mdx"
+  },
+  {
+    "id": "runners.examples.static-model",
+    "title": "Running Visual Scripts with Bitbybit Runner",
+    "type": "tutorial",
+    "url": "/learn/runners/live-examples/static-3d-model-script",
+    "path": "learn/runners/live-examples/static-3d-model-script.mdx"
+  },
+  {
+    "id": "runners.intro",
+    "title": "Introducing Bitbybit Runner - Execute Visual 3D Scripts Anywhere",
+    "type": "landing",
+    "url": "/learn/runners/intro",
+    "path": "learn/runners/intro.mdx"
+  },
+  {
+    "id": "runners.licensing",
+    "title": "Runner Licensing - Understanding the Bitbybit Runner License",
+    "type": "reference",
+    "url": "/learn/runners/licensing",
+    "path": "learn/runners/licensing.mdx"
+  },
+  {
+    "id": "runners.start.blockly",
+    "title": "Introduction to Bitbybit Runner with Blockly",
+    "type": "tutorial",
+    "url": "/learn/runners/intro-blockly",
+    "path": "learn/runners/intro-blockly.mdx"
+  },
+  {
+    "id": "runners.start.rete",
+    "title": "Introduction to Bitbybit Runner - Your First 3D Website",
+    "type": "tutorial",
+    "url": "/learn/runners/intro-rete",
+    "path": "learn/runners/intro-rete.mdx"
+  },
+  {
+    "id": "runners.start.typescript",
+    "title": "Introduction to Bitbybit Runner with TypeScript",
+    "type": "tutorial",
+    "url": "/learn/runners/intro-typescript",
+    "path": "learn/runners/intro-typescript.mdx"
+  },
+  {
+    "id": "runners.table.blockly",
+    "title": "Building a 3D Table Configurator with Blockly & Bitbybit Runner",
+    "type": "tutorial",
+    "url": "/learn/runners/table-configurator-blockly",
+    "path": "learn/runners/table-configurator-blockly.mdx"
+  },
+  {
+    "id": "runners.table.rete",
+    "title": "Building a 3D Table Configurator with Rete & Bitbybit Runner",
+    "type": "tutorial",
+    "url": "/learn/runners/table-configurator-rete",
+    "path": "learn/runners/table-configurator-rete.mdx"
+  },
+  {
+    "id": "runners.table.typescript",
+    "title": "Building a 3D Table Configurator with TypeScript & Bitbybit Runner",
+    "type": "tutorial",
+    "url": "/learn/runners/table-configurator-typescript",
+    "path": "learn/runners/table-configurator-typescript.mdx"
+  },
+  {
+    "id": "runners.worker-protocol",
+    "title": "OCCT Worker Protocol - Replace or Customize the CAD Kernel",
+    "type": "reference",
+    "url": "/learn/runners/worker-protocol",
+    "path": "learn/runners/worker-protocol.mdx"
+  },
+  {
+    "id": "shopify.app.assets",
+    "title": "Assets",
+    "type": "how-to",
+    "url": "/learn/3d-bits/admin/assets",
+    "path": "learn/3d-bits/admin/assets.md"
+  },
+  {
+    "id": "shopify.app.canvas-sizing",
+    "title": "Canvas Size and Layout",
+    "type": "how-to",
+    "url": "/learn/3d-bits/admin/canvas-sizing",
+    "path": "learn/3d-bits/admin/canvas-sizing.md"
+  },
+  {
+    "id": "shopify.app.helpers",
+    "title": "Helpers",
+    "type": "how-to",
+    "url": "/learn/3d-bits/admin/helpers",
+    "path": "learn/3d-bits/admin/helpers.md"
+  },
+  {
+    "id": "shopify.app.metafields",
+    "title": "Metafields (Legacy)",
+    "type": "how-to",
+    "url": "/learn/3d-bits/admin/metafields",
+    "path": "learn/3d-bits/admin/metafields.md"
+  },
+  {
+    "id": "shopify.app.order-review",
+    "title": "Order Review",
+    "type": "how-to",
+    "url": "/learn/3d-bits/admin/order-review",
+    "path": "learn/3d-bits/admin/order-review.md"
+  },
+  {
+    "id": "shopify.app.overview",
+    "title": "Finding Your Way Around the App",
+    "type": "landing",
+    "url": "/learn/3d-bits/admin/overview",
+    "path": "learn/3d-bits/admin/overview.md"
+  },
+  {
+    "id": "shopify.app.projects",
+    "title": "Projects",
+    "type": "how-to",
+    "url": "/learn/3d-bits/admin/projects",
+    "path": "learn/3d-bits/admin/projects.md"
+  },
+  {
+    "id": "shopify.app.scripts",
+    "title": "Scripts",
+    "type": "how-to",
+    "url": "/learn/3d-bits/admin/scripts",
+    "path": "learn/3d-bits/admin/scripts.md"
+  },
+  {
+    "id": "shopify.app.storefront-display",
+    "title": "Storefront Display",
+    "type": "how-to",
+    "url": "/learn/3d-bits/admin/storefront-display",
+    "path": "learn/3d-bits/admin/storefront-display.md"
+  },
+  {
+    "id": "shopify.app.subscription",
+    "title": "Subscription",
+    "type": "how-to",
+    "url": "/learn/3d-bits/admin/subscription",
+    "path": "learn/3d-bits/admin/subscription.md"
+  },
+  {
+    "id": "shopify.assets",
+    "title": "3D Assets",
+    "type": "landing",
+    "url": "/learn/3d-bits/3d-assets",
+    "path": "learn/3d-bits/3d-assets/_category_.json"
+  },
+  {
+    "id": "shopify.assets.configurators-are-games",
+    "title": "Configurators Are Games",
+    "type": "explanation",
+    "url": "/learn/3d-bits/3d-assets/configurators-are-games",
+    "path": "learn/3d-bits/3d-assets/configurators-are-games.md"
+  },
+  {
+    "id": "shopify.assets.intro",
+    "title": "3D Assets for Shopify's '3D Bits' App",
+    "type": "landing",
+    "url": "/learn/3d-bits/3d-assets/intro",
+    "path": "learn/3d-bits/3d-assets/intro.md"
+  },
+  {
+    "id": "shopify.assets.preparing-gltf",
+    "title": "Preparing GLTF 3D Assets",
+    "type": "how-to",
+    "url": "/learn/3d-bits/3d-assets/preparing-gltf",
+    "path": "learn/3d-bits/3d-assets/preparing-gltf.md"
+  },
+  {
+    "id": "shopify.assets.security",
+    "title": "Asset Security and Public Access",
+    "type": "explanation",
+    "url": "/learn/3d-bits/3d-assets/asset-security",
+    "path": "learn/3d-bits/3d-assets/asset-security.md"
+  },
+  {
+    "id": "shopify.assets.size-and-performance",
+    "title": "Model Size and Performance Limits",
+    "type": "reference",
+    "url": "/learn/3d-bits/3d-assets/size-and-performance",
+    "path": "learn/3d-bits/3d-assets/size-and-performance.md"
+  },
+  {
+    "id": "shopify.integrations.another-app",
+    "title": "When You Need Another Options App",
+    "type": "explanation",
+    "url": "/learn/3d-bits/integrations/when-you-need-another-app",
+    "path": "learn/3d-bits/integrations/when-you-need-another-app.md"
+  },
+  {
+    "id": "shopify.integrations.custom-forms",
+    "title": "Driving 3D Bits from Your Own Form",
+    "type": "reference",
+    "url": "/learn/3d-bits/integrations/custom-forms",
+    "path": "learn/3d-bits/integrations/custom-forms.md"
+  },
+  {
+    "id": "shopify.integrations.logic-without-a-panel",
+    "title": "Logic Without a Panel",
+    "type": "explanation",
+    "url": "/learn/3d-bits/integrations/logic-without-a-panel",
+    "path": "learn/3d-bits/integrations/logic-without-a-panel.md"
+  },
+  {
+    "id": "shopify.plans",
+    "title": "Subscription Plans",
+    "type": "reference",
+    "url": "/learn/3d-bits/plans/subscription-plans",
+    "path": "learn/3d-bits/plans/subscription-plans.md"
+  },
+  {
+    "id": "shopify.pricing",
+    "title": "Pricing with 3D Bits",
+    "type": "landing",
+    "url": "/learn/3d-bits/pricing",
+    "path": "learn/3d-bits/pricing/_category_.json"
+  },
+  {
+    "id": "shopify.pricing.charging-methods",
+    "title": "Charging Methods: Product Lines, Bundled Parts, Variant Matrix and Single Line",
+    "type": "explanation",
+    "url": "/learn/3d-bits/pricing/charging-methods",
+    "path": "learn/3d-bits/pricing/charging-methods.md"
+  },
+  {
+    "id": "shopify.pricing.complexity",
+    "title": "How Complex Can a Configurator Be? Parts, Options and Checkout Limits",
+    "type": "explanation",
+    "url": "/learn/3d-bits/pricing/complexity",
+    "path": "learn/3d-bits/pricing/complexity.md"
+  },
+  {
+    "id": "shopify.pricing.going-live",
+    "title": "Going Live with Configurator Pricing: Testing and Order Review",
+    "type": "how-to",
+    "url": "/learn/3d-bits/pricing/going-live",
+    "path": "learn/3d-bits/pricing/going-live.md"
+  },
+  {
+    "id": "shopify.pricing.helper-products",
+    "title": "The Hidden Helper Products 3D Bits Creates in Your Shopify Catalogue",
+    "type": "explanation",
+    "url": "/learn/3d-bits/pricing/helper-products",
+    "path": "learn/3d-bits/pricing/helper-products.md"
+  },
+  {
+    "id": "shopify.pricing.linked-products",
+    "title": "Linking Your Own Shopify Products to Configurator Options",
+    "type": "how-to",
+    "url": "/learn/3d-bits/pricing/linked-products",
+    "path": "learn/3d-bits/pricing/linked-products.md"
+  },
+  {
+    "id": "shopify.pricing.other-currencies",
+    "title": "Selling Configured Products in Other Currencies with Shopify Markets",
+    "type": "how-to",
+    "url": "/learn/3d-bits/pricing/other-currencies",
+    "path": "learn/3d-bits/pricing/other-currencies.md"
+  },
+  {
+    "id": "shopify.pricing.overview",
+    "title": "Configurator Pricing for Shopify: Charge for What Shoppers Choose",
+    "type": "explanation",
+    "url": "/learn/3d-bits/pricing/overview",
+    "path": "learn/3d-bits/pricing/overview.md"
+  },
+  {
+    "id": "shopify.pricing.setting-up",
+    "title": "Set Up Configurator Pricing on a Shopify Product, Step by Step",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/pricing/setting-up-pricing",
+    "path": "learn/3d-bits/pricing/setting-up-pricing.md"
+  },
+  {
+    "id": "shopify.pricing.test-mode",
+    "title": "Testing Your Prices Before 3D Bits Creates Anything",
+    "type": "how-to",
+    "url": "/learn/3d-bits/pricing/test-mode",
+    "path": "learn/3d-bits/pricing/test-mode.md"
+  },
+  {
+    "id": "shopify.pricing.troubleshooting",
+    "title": "Troubleshooting Configurator Pricing: What Each Message Means",
+    "type": "how-to",
+    "url": "/learn/3d-bits/pricing/troubleshooting",
+    "path": "learn/3d-bits/pricing/troubleshooting.md"
+  },
+  {
+    "id": "shopify.quick-start",
+    "title": "Quick Start with 3D Bits",
+    "type": "landing",
+    "url": "/learn/3d-bits/quick-start",
+    "path": "learn/3d-bits/quick-start/_category_.json"
+  },
+  {
+    "id": "shopify.quick-start.enable-app-embed",
+    "title": "Enable 3D on Your Store",
+    "type": "how-to",
+    "url": "/learn/3d-bits/quick-start/enable-app-embed",
+    "path": "learn/3d-bits/quick-start/enable-app-embed.md"
+  },
+  {
+    "id": "shopify.quick-start.first-configurator",
+    "title": "Your First Configurator",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/quick-start/first-configurator",
+    "path": "learn/3d-bits/quick-start/first-configurator.md"
+  },
+  {
+    "id": "shopify.quick-start.install",
+    "title": "Installing 3D Bits App for Shopify",
+    "type": "how-to",
+    "url": "/learn/3d-bits/quick-start/install",
+    "path": "learn/3d-bits/quick-start/install.md"
+  },
+  {
+    "id": "shopify.quick-start.what-to-expect",
+    "title": "What to Expect",
+    "type": "explanation",
+    "url": "/learn/3d-bits/quick-start/what-to-expect",
+    "path": "learn/3d-bits/quick-start/what-to-expect.md"
+  },
+  {
+    "id": "shopify.start.faq",
+    "title": "3D Bits Shopify App - FAQ",
+    "type": "reference",
+    "url": "/learn/3d-bits/faq",
+    "path": "learn/3d-bits/faq.md"
+  },
+  {
+    "id": "shopify.start.how-it-works",
+    "title": "How 3D Bits Works",
+    "type": "explanation",
+    "url": "/learn/3d-bits/how-it-works",
+    "path": "learn/3d-bits/how-it-works.md"
+  },
+  {
+    "id": "shopify.start.intro",
+    "title": "3D Bits: Interactive 3D Product Configurators for Shopify",
+    "type": "landing",
+    "url": "/learn/3d-bits/intro",
+    "path": "learn/3d-bits/intro.mdx"
+  },
+  {
+    "id": "shopify.start.support",
+    "title": "Reaching Out Is Super Important",
+    "type": "explanation",
+    "url": "/learn/3d-bits/reaching-out",
+    "path": "learn/3d-bits/reaching-out.md"
+  },
+  {
+    "id": "shopify.theme-blocks",
+    "title": "Theme Blocks",
+    "type": "landing",
+    "url": "/learn/3d-bits/theme-blocks",
+    "path": "learn/3d-bits/theme-blocks/_category_.json"
+  },
+  {
+    "id": "shopify.theme-blocks.app-embed",
+    "title": "App Embed Settings",
+    "type": "reference",
+    "url": "/learn/3d-bits/theme-blocks/app-embed",
+    "path": "learn/3d-bits/theme-blocks/app-embed.md"
+  },
+  {
+    "id": "shopify.theme-blocks.apps",
+    "title": "BITBYBIT APPS Block for Shopify's '3D Bits' App",
+    "type": "how-to",
+    "url": "/learn/3d-bits/theme-blocks/bitbybit-apps",
+    "path": "learn/3d-bits/theme-blocks/bitbybit-apps.md"
+  },
+  {
+    "id": "shopify.theme-blocks.apps-settings",
+    "title": "BITBYBIT APPS Theme App Extension Block Settings",
+    "type": "reference",
+    "url": "/learn/3d-bits/tutorials/bitbybit-apps/settings",
+    "path": "learn/3d-bits/tutorials/bitbybit-apps/settings.md"
+  },
+  {
+    "id": "shopify.theme-blocks.common-settings",
+    "title": "Common Settings Across 3D Bits Blocks",
+    "type": "reference",
+    "url": "/learn/3d-bits/tutorials/getting-started/common-settings",
+    "path": "learn/3d-bits/tutorials/getting-started/common-settings.md"
+  },
+  {
+    "id": "shopify.theme-blocks.gui",
+    "title": "BITBYBIT GUI CONTROLS Block",
+    "type": "how-to",
+    "url": "/learn/3d-bits/theme-blocks/bitbybit-gui",
+    "path": "learn/3d-bits/theme-blocks/bitbybit-gui.md"
+  },
+  {
+    "id": "shopify.theme-blocks.overview",
+    "title": "Theme Blocks Overview",
+    "type": "explanation",
+    "url": "/learn/3d-bits/theme-blocks/overview",
+    "path": "learn/3d-bits/theme-blocks/overview.md"
+  },
+  {
+    "id": "shopify.theme-blocks.preview",
+    "title": "BITBYBIT PREVIEW Block for Shopify's '3D Bits' App",
+    "type": "how-to",
+    "url": "/learn/3d-bits/theme-blocks/bitbybit-preview",
+    "path": "learn/3d-bits/theme-blocks/bitbybit-preview.md"
+  },
+  {
+    "id": "shopify.theme-blocks.preview-settings",
+    "title": "BITBYBIT PREVIEW Theme App Extension Block Settings",
+    "type": "reference",
+    "url": "/learn/3d-bits/tutorials/bitbybit-preview/settings",
+    "path": "learn/3d-bits/tutorials/bitbybit-preview/settings.md"
+  },
+  {
+    "id": "shopify.theme-blocks.runner",
+    "title": "BITBYBIT RUNNER (legacy) Block for Shopify's '3D Bits' App",
+    "type": "reference",
+    "url": "/learn/3d-bits/theme-blocks/bitbybit-runner",
+    "path": "learn/3d-bits/theme-blocks/bitbybit-runner.md"
+  },
+  {
+    "id": "shopify.theme-blocks.runner-settings",
+    "title": "BITBYBIT RUNNER (legacy) Theme App Extension Block Settings",
+    "type": "reference",
+    "url": "/learn/3d-bits/tutorials/bitbybit-runner/settings",
+    "path": "learn/3d-bits/tutorials/bitbybit-runner/settings.md"
+  },
+  {
+    "id": "shopify.theme-blocks.viewer",
+    "title": "BITBYBIT VIEWER Block for Shopify's '3D Bits' App",
+    "type": "how-to",
+    "url": "/learn/3d-bits/theme-blocks/bitbybit-viewer",
+    "path": "learn/3d-bits/theme-blocks/bitbybit-viewer.md"
+  },
+  {
+    "id": "shopify.theme-blocks.viewer-settings",
+    "title": "BITBYBIT VIEWER Theme App Extension Block Settings",
+    "type": "reference",
+    "url": "/learn/3d-bits/tutorials/bitbybit-viewer/settings",
+    "path": "learn/3d-bits/tutorials/bitbybit-viewer/settings.md"
+  },
+  {
+    "id": "shopify.videos.bike-scan",
+    "title": "Tutorial: Using a 3D Bike Scan as a Shopify Product with '3D Bits'",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/product-3d-bike-scan",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/product-3d-bike-scan.md"
+  },
+  {
+    "id": "shopify.videos.changing-materials",
+    "title": "Change Materials, Colours and Textures of 3D Shopify Products",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/changing-materials",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/changing-materials.md"
+  },
+  {
+    "id": "shopify.videos.customizable-text",
+    "title": "Tutorial: Creating Customizable 3D Text for Shopify Products",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/product-customizable-text",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/product-customizable-text.mdx"
+  },
+  {
+    "id": "shopify.videos.intro",
+    "title": "Tutorials for Shopify '3D Bits' E-Commerce App",
+    "type": "landing",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/intro",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/intro.md"
+  },
+  {
+    "id": "shopify.videos.laptop-holder",
+    "title": "Tutorial: Building a 3D Laptop Holder Configurator for Shopify (TypeScript)",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/product-laptop-holder",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/product-laptop-holder.mdx"
+  },
+  {
+    "id": "shopify.videos.no-code-gltf",
+    "title": "No-Code GLTF Configurators with Composer on Shopify",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/viewer-no-code-gltf-configurators",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/viewer-no-code-gltf-configurators.md"
+  },
+  {
+    "id": "shopify.videos.no-code-splat",
+    "title": "No-Code Gaussian Splat Configurators with Composer on Shopify",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/viewer-no-code-3d-scan-configurators",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/viewer-no-code-3d-scan-configurators.md"
+  },
+  {
+    "id": "shopify.videos.palm-table",
+    "title": "Tutorial: Creating a Parametric Palm Table Configurator for Shopify",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/product-palm-table",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/product-palm-table.mdx"
+  },
+  {
+    "id": "shopify.videos.preview-3d-scans",
+    "title": "Tutorial: Using BITBYBIT PREVIEW with a 3D Scanned Product",
+    "type": "tutorial",
+    "url": "/learn/shopify/tutorials/preview-3d-scan",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/preview-3d-scans.md"
+  },
+  {
+    "id": "shopify.videos.runner-variants",
+    "title": "Creating 3D Product Variants with '3D Bits' on Shopify",
+    "type": "tutorial",
+    "url": "/learn/shopify/tutorials/3d-product-variants",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/runner-product-variants.md"
+  },
+  {
+    "id": "shopify.videos.set-up",
+    "title": "Setting Up the '3D Bits' App for Your Shopify Store",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/set-up",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/set-up.md"
+  },
+  {
+    "id": "shopify.videos.settings",
+    "title": "Configuring Settings for the '3D Bits' Shopify App",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/settings",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/settings.md"
+  },
+  {
+    "id": "shopify.videos.step-to-gltf",
+    "title": "From STEP to GLTF - Convert PRO CAD 3D Models For 3D Bits Shopify App",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/step-to-gltf",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/step-to-gltf.md"
+  },
+  {
+    "id": "shopify.videos.variants-gltf",
+    "title": "Pack Multiple Product Variants into a Single glTF File for 3D Bits on Shopify",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/product-variants-gltf",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/product-variants-gltf.md"
+  },
+  {
+    "id": "shopify.videos.viewer-3d-scan",
+    "title": "Tutorial: Using BITBYBIT VIEWER with a 3D Scanned Product (Gaussian Splat)",
+    "type": "tutorial",
+    "url": "/learn/3d-bits/tutorials/videos-tutorials/viewer-with-3d-scan",
+    "path": "learn/3d-bits/tutorials/videos-tutorials/viewer-with-3d-scan.md"
+  },
+  {
+    "id": "typescript.code.checks",
+    "title": "IntelliSense, Hovers and Errors",
+    "type": "how-to",
+    "url": "/learn/getting-started/typescript/intellisense-and-errors",
+    "path": "learn/getting-started/coding-editors/typescript/features/intellisense-and-errors.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.code.runtime",
+    "title": "What a Script Runs In",
+    "type": "reference",
+    "url": "/learn/getting-started/typescript/script-runtime",
+    "path": "learn/getting-started/coding-editors/typescript/features/script-runtime.md",
+    "verified": "2026-10-11"
+  },
+  {
+    "id": "typescript.files.imports",
+    "title": "Files and Imports",
+    "type": "how-to",
+    "url": "/learn/getting-started/typescript/files-and-imports",
+    "path": "learn/getting-started/coding-editors/typescript/features/files-and-imports.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.reference.shortcuts",
+    "title": "TypeScript Editor Keyboard Shortcuts",
+    "type": "reference",
+    "url": "/learn/getting-started/typescript/shortcuts",
+    "path": "learn/getting-started/coding-editors/typescript/shortcuts.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.start.coding",
+    "title": "The Bitbybit API in TypeScript",
+    "type": "explanation",
+    "url": "/learn/getting-started/typescript/how-to-code-in-monaco",
+    "path": "learn/getting-started/coding-editors/typescript/features/how-to-code-in-monaco.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.start.intro",
+    "title": "TypeScript Editor",
+    "type": "landing",
+    "url": "/learn/getting-started/typescript/intro",
+    "path": "learn/getting-started/coding-editors/typescript/intro.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.start.showcases",
+    "title": "TypeScript Showcases",
+    "type": "landing",
+    "url": "/learn/getting-started/typescript/showcases",
+    "path": "learn/getting-started/coding-editors/typescript/showcases.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.start.tour",
+    "title": "A Tour of the TypeScript Editor",
+    "type": "explanation",
+    "url": "/learn/getting-started/typescript/tour",
+    "path": "learn/getting-started/coding-editors/typescript/tour.md",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.tutorials.drone.arm",
+    "title": "Build a drone: one arm",
+    "type": "tutorial",
+    "url": "/learn/getting-started/typescript/tutorials/drone/arm",
+    "path": "learn/getting-started/coding-editors/typescript/tutorials/drone/arm.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.tutorials.drone.arms",
+    "title": "Build a drone: arms around the frame",
+    "type": "tutorial",
+    "url": "/learn/getting-started/typescript/tutorials/drone/arms",
+    "path": "learn/getting-started/coding-editors/typescript/tutorials/drone/arms.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.tutorials.drone.around",
+    "title": "Build a drone: around, bolts and standoffs",
+    "type": "tutorial",
+    "url": "/learn/getting-started/typescript/tutorials/drone/around",
+    "path": "learn/getting-started/coding-editors/typescript/tutorials/drone/around.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.tutorials.drone.canopy",
+    "title": "Build a drone: canopy and electronics",
+    "type": "tutorial",
+    "url": "/learn/getting-started/typescript/tutorials/drone/canopy",
+    "path": "learn/getting-started/coding-editors/typescript/tutorials/drone/canopy.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.tutorials.drone.finish",
+    "title": "Build a drone: payload and sizes",
+    "type": "tutorial",
+    "url": "/learn/getting-started/typescript/tutorials/drone/finish",
+    "path": "learn/getting-started/coding-editors/typescript/tutorials/drone/finish.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.tutorials.drone.frame",
+    "title": "Build a drone: sizes, stage and the frame",
+    "type": "tutorial",
+    "url": "/learn/getting-started/typescript/tutorials/drone/frame",
+    "path": "learn/getting-started/coding-editors/typescript/tutorials/drone/frame.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.tutorials.drone.landing-gear",
+    "title": "Build a drone: landing gear",
+    "type": "tutorial",
+    "url": "/learn/getting-started/typescript/tutorials/drone/landing-gear",
+    "path": "learn/getting-started/coding-editors/typescript/tutorials/drone/landing-gear.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.tutorials.hello-world",
+    "title": "Your First 3D \"Hello World\" with TypeScript",
+    "type": "tutorial",
+    "url": "/learn/getting-started/typescript/hello-world",
+    "path": "learn/getting-started/coding-editors/typescript/tutorials/hello-world.mdx",
+    "verified": "2026-10-10"
+  },
+  {
+    "id": "typescript.tutorials.parametric-cube",
+    "title": "Creating a Parametric Cube with TypeScript",
+    "type": "tutorial",
+    "url": "/learn/tutorials/parametric-cube-bitbybit",
+    "path": "learn/getting-started/coding-editors/typescript/tutorials/parametric-cube.mdx",
+    "verified": "2026-10-10"
+  }
+]

@@ -55,12 +55,12 @@ This chapter sets the sizes, lights the stage and makes the frame.
 
    <Shot id="typescript.tutorials.drone/sizes" />
 
-2. Set the stage before the first part: a dark background, a city environment that metal reflects with its picture hidden, a sun that casts shadows and a wide ground under the feet. `materials.ts` holds every material the drone uses, each physically based and drawn a little behind its edges, so the white edges on the dark parts stay sharp; `draw` shows shapes in one of them.
+2. Set the stage before the first part: a dark background, a city environment that metal reflects with its picture hidden, a sun that casts shadows, and the camera placed outside the drone, far enough to see all of it. `materials.ts` holds every material the drone uses, each physically based and drawn a little behind its edges, so the white edges on the dark parts stay sharp; `draw` shows shapes in one of them.
 
    - **Make `stage.ts`:**
 
    ```typescript
-   export async function setStage() {
+   export function setStage() {
        bitbybit.babylon.scene.backgroundColour({ colour: "#15171a" });
        bitbybit.babylon.scene.enableSkybox({ skybox: Bit.Inputs.Base.skyboxEnum.city, environmentIntensity: 0.4, hideSkybox: true });
        bitbybit.babylon.scene.drawDirectionalLight({
@@ -72,7 +72,7 @@ This chapter sets the sizes, lights the stage and makes the frame.
            shadowMinZ: -1000,
            shadowMaxZ: 1000,
        });
-       return bitbybit.occt.shapes.face.createRectangleFace({ width: 2500, length: 2500, center: [0, -86.2, 0], direction: [0, 1, 0] });
+       bitbybit.babylon.scene.adjustActiveArcRotateCamera({ position: [620, 380, 760], lookAt: [0, -20, 0], maxZ: 20000, panningSensibility: 2 });
    }
    ```
 
@@ -103,7 +103,6 @@ This chapter sets the sizes, lights the stage and makes the frame.
        emblem: { colour: "#f4f4f4", metallic: 0.2, roughness: 0.5, edgeWidth: 4 },
        green: { colour: "#22ff66", metallic: 0, roughness: 0.2, emissive: "#22ff66" },
        red: { colour: "#ff2a2a", metallic: 0, roughness: 0.2, emissive: "#ff2a2a" },
-       ground: { colour: "#050506", metallic: 0, roughness: 1 },
    } satisfies Record<string, Finish>;
 
    type Look = keyof typeof FINISHES;
@@ -151,7 +150,7 @@ This chapter sets the sizes, lights the stage and makes the frame.
 
    ```typescript
    const looks = makeLooks();
-   await draw(looks.ground, await setStage());
+   setStage();
    ```
 
    - **Run it** with <Ui>Run The Code</Ui>.

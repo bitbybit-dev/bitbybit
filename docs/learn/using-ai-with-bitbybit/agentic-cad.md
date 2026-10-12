@@ -4,6 +4,8 @@ title: "Agentic CAD: how Bitbybit fits AI-driven 3D development"
 sidebar_label: Agentic CAD - our approach
 description: Where Bitbybit geometry should run when an AI agent writes the code - the open-source packages first, CAD Cloud only for what needs it - and how an agent finds the exact API for the version you use.
 tags: [ai]
+topic: ai.agentic-cad
+type: explanation
 ---
 
 # Agentic CAD: how Bitbybit fits AI-driven 3D development

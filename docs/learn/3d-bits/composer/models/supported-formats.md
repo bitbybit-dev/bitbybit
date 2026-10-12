@@ -4,6 +4,8 @@ title: Supported 3D Formats
 sidebar_label: Supported Formats
 description: Complete reference for supported 3D file formats, their features, and when to use each.
 tags: [3d-bits, composer, formats, gltf, glb]
+topic: composer.models.formats
+type: reference
 ---
 
 # Supported 3D File Formats

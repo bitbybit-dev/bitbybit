@@ -4,6 +4,8 @@ title: Adding Models
 sidebar_label: Adding Models
 description: Learn how to add 3D models to your scene, including supported formats and hosting requirements.
 tags: [3d-bits, composer, models, gltf, glb]
+topic: composer.models.adding
+type: how-to
 ---
 
 # Adding Models to Your Scene

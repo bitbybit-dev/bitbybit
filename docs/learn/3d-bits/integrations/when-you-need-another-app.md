@@ -4,6 +4,8 @@ title: "When You Need Another Options App"
 sidebar_label: Using Another Options App
 description: 3D Bits builds your option panel and prices it. Here is when a separate product options app still makes sense, and how to run one alongside.
 tags: [shopify, 3d-bits]
+topic: shopify.integrations.another-app
+type: explanation
 ---
 
 # When You Need Another Options App

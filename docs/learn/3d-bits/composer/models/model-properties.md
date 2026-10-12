@@ -4,6 +4,8 @@ title: Model Properties
 sidebar_label: Model Properties
 description: Every setting on a model - transforms, transform variants, glTF nodes, material variants, materials, textures, animations and instancing.
 tags: [3d-bits, composer, models, properties, transform, variants]
+topic: composer.models.properties
+type: reference
 ---
 
 # Model Properties

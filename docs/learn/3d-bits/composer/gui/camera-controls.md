@@ -4,6 +4,8 @@ title: "Camera controls"
 sidebar_label: Camera controls
 description: Zoom buttons, orbit and tilt sliders and an axis gizmo shoppers use instead of dragging, and how to switch the default pointer navigation off.
 tags: [3d-bits, composer, gui, layout, camera]
+topic: composer.gui.camera-controls
+type: how-to
 ---
 
 # Camera controls

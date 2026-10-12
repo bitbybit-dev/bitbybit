@@ -4,6 +4,8 @@ title: "Assets"
 sidebar_label: Assets
 description: Your library of 3D models, images and textures, how files get in, and where they actually live.
 tags: [shopify, 3d-bits, assets, cdn]
+topic: shopify.app.assets
+type: how-to
 ---
 
 # Assets

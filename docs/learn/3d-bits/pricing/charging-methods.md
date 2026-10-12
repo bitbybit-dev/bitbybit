@@ -4,6 +4,8 @@ title: "Charging Methods: Product Lines, Bundled Parts, Variant Matrix and Singl
 sidebar_label: Charging methods
 description: Learn the four ways 3D Bits turns a configured price into a real Shopify charge, and how to choose between them.
 tags: [shopify, 3d-bits, pricing, charging-modes, cart]
+topic: shopify.pricing.charging-methods
+type: explanation
 ---
 
 # Charging Methods

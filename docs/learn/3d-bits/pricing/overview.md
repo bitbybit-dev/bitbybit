@@ -4,6 +4,8 @@ title: "Configurator Pricing for Shopify: Charge for What Shoppers Choose"
 sidebar_label: Overview
 description: Learn how 3D Bits builds a price from the options a shopper picks and charges it through Shopify at checkout.
 tags: [shopify, 3d-bits, pricing, ecommerce]
+topic: shopify.pricing.overview
+type: explanation
 ---
 
 # Configurator Pricing for Shopify

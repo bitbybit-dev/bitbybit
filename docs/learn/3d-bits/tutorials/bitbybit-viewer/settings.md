@@ -4,6 +4,8 @@ title: "BITBYBIT VIEWER Theme App Extension Block Settings"
 sidebar_label: Block Settings
 description: Learn about various settings that BITBYBIT VIEWER theme app extension block provides to configure the 3D canvas, models and environment configuration.
 tags: [shopify, 3d-bits]
+topic: shopify.theme-blocks.viewer-settings
+type: reference
 ---
 
 import Version from '@site/src/components/Version';
@@ -80,7 +82,7 @@ This is a common setting shared across multiple blocks. See the [Common Settings
 
 ---
 
-## Model URL
+## Model URL {#model-url}
 
 The Model URL setting allows you to load a single 3D model file into your viewer. This is the simplest way to display 3D content on your product page.
 
@@ -123,7 +125,7 @@ Note: Variant matching and advanced features availability depends on your [subsc
 
 ---
 
-## Scene JSON Configuration
+## Scene JSON Configuration {#scene-json-configuration}
 
 Scene JSON Configuration provides advanced control over your 3D scene. You can either provide a JSON configuration directly or a URL to a JSON file.
 

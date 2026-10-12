@@ -4,6 +4,8 @@ title: "Projects"
 sidebar_label: Projects
 description: Creating configurators, linking them to products, publishing, and reading the warnings the project page raises.
 tags: [shopify, 3d-bits, projects]
+topic: shopify.app.projects
+type: how-to
 ---
 
 # Projects

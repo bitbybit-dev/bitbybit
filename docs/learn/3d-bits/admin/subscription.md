@@ -4,6 +4,8 @@ title: "Subscription"
 sidebar_label: Subscription
 description: Your current plan, what your storefront has been told about it, and what to do when the two disagree.
 tags: [shopify, 3d-bits, subscription, plans]
+topic: shopify.app.subscription
+type: how-to
 ---
 
 # Subscription

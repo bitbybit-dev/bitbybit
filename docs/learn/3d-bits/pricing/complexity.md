@@ -4,6 +4,8 @@ title: "How Complex Can a Configurator Be? Parts, Options and Checkout Limits"
 sidebar_label: Managing complexity
 description: How many parts and priced options a configurator can carry, which choices are cheap and which are expensive, and what to do when publishing is refused for being too complex.
 tags: [shopify, 3d-bits, pricing, parts, limits, performance]
+topic: shopify.pricing.complexity
+type: explanation
 ---
 
 # Managing complexity

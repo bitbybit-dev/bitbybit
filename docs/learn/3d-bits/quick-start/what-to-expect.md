@@ -4,6 +4,8 @@ title: "What to Expect"
 sidebar_label: What to Expect
 description: How long a first configurator takes, what the 3D model needs to be like, and where the real effort goes.
 tags: [shopify, 3d-bits]
+topic: shopify.quick-start.what-to-expect
+type: explanation
 ---
 
 # What to Expect

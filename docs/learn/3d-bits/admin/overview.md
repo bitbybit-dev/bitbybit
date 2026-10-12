@@ -4,6 +4,8 @@ title: "Finding Your Way Around the App"
 sidebar_label: Overview
 description: What each section of the 3D Bits app in your Shopify admin is for.
 tags: [shopify, 3d-bits, overview]
+topic: shopify.app.overview
+type: landing
 ---
 
 # Finding Your Way Around

@@ -4,6 +4,8 @@ title: "The Composer Interface"
 sidebar_label: The Interface
 description: How Composer is laid out, what edit mode and Play mode do, what the buttons along the bottom are for, and which bar is telling you something is wrong.
 tags: [3d-bits, composer, interface]
+topic: composer.interface
+type: explanation
 ---
 
 # The Interface

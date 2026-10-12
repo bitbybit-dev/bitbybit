@@ -4,6 +4,8 @@ title: "Scripting"
 sidebar_label: Scripting
 description: Linking a parametric program into a project, for products whose shape has to be calculated.
 tags: [3d-bits, composer, scripting]
+topic: composer.scripting
+type: how-to
 ---
 
 # Scripting

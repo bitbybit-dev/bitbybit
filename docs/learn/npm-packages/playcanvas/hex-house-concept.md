@@ -4,6 +4,8 @@ title: "Parametric Hex House Concept with PlayCanvas & Bitbybit"
 sidebar_label: "Hex House (PlayCanvas)"
 description: "Explore how to construct a parametric 'Hex House' architectural concept using Bitbybit with PlayCanvas, OCCT, and a dynamic GUI for customization."
 tags: [npm-packages, playcanvas]
+topic: npm.playcanvas.hex-house
+type: tutorial
 ---
 
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';

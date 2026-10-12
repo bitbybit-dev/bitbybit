@@ -4,6 +4,8 @@ title: "Change Materials, Colours and Textures of 3D Shopify Products"
 sidebar_label: Changing Materials
 description: Change materials, colors, and textures of your 3D products on Shopify with 3D Bits app - in 41 minutes you’ll learn everything you need to know!
 tags: [shopify, 3d-bits]
+topic: shopify.videos.changing-materials
+type: tutorial
 ---
 
 # Change Materials, Colours, Textures of 3D Shopify Products

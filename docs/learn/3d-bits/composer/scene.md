@@ -4,6 +4,8 @@ title: "Scene"
 sidebar_label: Scene
 description: Camera, lighting, background, canvas frame, skybox, the loading screen and parameter bindings. Everything around the product rather than the product itself.
 tags: [3d-bits, composer, scene]
+topic: composer.scene
+type: how-to
 ---
 
 # Scene

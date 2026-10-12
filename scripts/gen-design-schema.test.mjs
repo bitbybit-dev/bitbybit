@@ -162,7 +162,7 @@ describe("the release gate", () => {
 
     it("should address an experimental schema under the release that ships it, and a released one under latest", () => {
         // Assert
-        assert.equal(schemaIdOf(experimental, "1.5.0"), "https://git-cdn.bitbybit.dev/v1.5.0/schemas/design-document/experimental.json");
+        assert.equal(schemaIdOf(experimental, "9.8.7"), "https://git-cdn.bitbybit.dev/v9.8.7/schemas/design-document/experimental.json");
         assert.equal(schemaIdOf(released, "1.7.2"), "https://git-cdn.bitbybit.dev/latest/schemas/design-document/v1.1.json");
     });
 

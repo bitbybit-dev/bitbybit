@@ -4,6 +4,8 @@ title: "Set Up Configurator Pricing on a Shopify Product, Step by Step"
 sidebar_label: Set up pricing
 description: Learn how to turn on configurator pricing, set a base price, price your first option, preview it and publish.
 tags: [shopify, 3d-bits, pricing, getting-started]
+topic: shopify.pricing.setting-up
+type: tutorial
 ---
 
 # Set Up Your First Price

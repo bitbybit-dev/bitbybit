@@ -50,7 +50,7 @@ Imported from its file, a model this size takes a while to open, since each diff
 
 <Shot id="designer.showcases/desk-arm-cover" />
 
-The desk arm that [the tutorial](./tutorials/desk-arm.md) builds step by step: a weighted base, a turntable, two links, a wrist and a gripper driven by a lead screw.
+The desk arm that [the tutorial](./tutorials/desk-arm/index.md) builds step by step: a revolved base, a shoulder, two links from one document, a wrist and a gripper whose two jaws slide in its rails.
 
 - **9 documents**: 8 parts and one assembly, with 26 components that place 14 different parts.
 - **Joints**: the turntable turns, the links and the wrist swing within limits, and the jaws slide.

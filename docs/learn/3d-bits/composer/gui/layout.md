@@ -4,6 +4,8 @@ title: "Layout"
 sidebar_label: Layout
 description: Arranging your controls into sections, tabs and accordions, and placing parts of the panel elsewhere on the product page.
 tags: [3d-bits, composer, gui, layout]
+topic: composer.gui.layout
+type: how-to
 ---
 
 # Layout

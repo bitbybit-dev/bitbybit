@@ -4,6 +4,8 @@ title: "BITBYBIT APPS Theme App Extension Block Settings"
 sidebar_label: Block Settings
 description: Learn about various settings that BITBYBIT APPS theme app extension block provides to develop and run custom TypeScript applications.
 tags: [shopify, 3d-bits]
+topic: shopify.theme-blocks.apps-settings
+type: reference
 ---
 
 # Block Settings

@@ -4,6 +4,8 @@ title: "About BabylonJS"
 sidebar_label: "About BabylonJS"
 description: "An overview of BabylonJS, a powerful and easy-to-use WebGL-based 3D game engine, and its integration with Bitbybit."
 tags: [npm-packages, babylonjs]
+topic: npm.babylonjs.about
+type: explanation
 ---
 
 import Admonition from '@theme/Admonition';

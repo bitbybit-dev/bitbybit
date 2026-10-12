@@ -4,6 +4,8 @@ title: "Asset Security and Public Access"
 sidebar_label: Asset Security
 description: Critical information about how 3D assets are hosted and accessed in 3D Bits, including public accessibility, intellectual property considerations, and best practices for protecting sensitive information.
 tags: [shopify, 3d-bits, security]
+topic: shopify.assets.security
+type: explanation
 ---
 
 # Your Assets & Security: What You Need to Know

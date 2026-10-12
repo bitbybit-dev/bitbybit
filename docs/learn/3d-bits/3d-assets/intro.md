@@ -4,6 +4,8 @@ title: "3D Assets for Shopify's '3D Bits' App"
 sidebar_label: Intro
 description: Learn about the 3D asset formats supported by the "3D Bits" app and how to prepare your models for interactive configurators and static displays on Shopify.
 tags: [shopify, 3d-bits]
+topic: shopify.assets.intro
+type: landing
 ---
 
 # 3D Assets for Shopify's "3D Bits" App

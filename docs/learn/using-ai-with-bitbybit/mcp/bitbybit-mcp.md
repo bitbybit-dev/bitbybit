@@ -5,6 +5,8 @@ title: Bitbybit CAD MCP
 sidebar_label: Bitbybit CAD MCP
 description: The free MCP server that documents the exact Bitbybit API for AI coding agents. Connect Claude Code, Codex, Cursor, VS Code, Gemini CLI, Windsurf, Zed, the JetBrains IDEs, claude.ai, ChatGPT or the Claude API, remotely or with one npx command.
 tags: [ai]
+topic: ai.mcp.bitbybit
+type: how-to
 ---
 
 # Bitbybit CAD MCP

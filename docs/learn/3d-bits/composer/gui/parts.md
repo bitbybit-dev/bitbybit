@@ -4,6 +4,8 @@ title: "Parts: The Bill of Materials Behind a Configured Product"
 sidebar_label: Parts
 description: List what the configured product is made of, charge for the pieces you ship, and record the ones you only need on the works order.
 tags: [3d-bits, composer, gui, pricing]
+topic: composer.gui.parts
+type: how-to
 ---
 
 # Parts

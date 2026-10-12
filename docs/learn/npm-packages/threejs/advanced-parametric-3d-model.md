@@ -4,6 +4,8 @@ title: "Advanced Parametric 3D Model with ThreeJS & Bitbybit"
 sidebar_label: "Parametric Model (ThreeJS)"
 description: "Learn how to build an advanced, interactive parametric 3D model using Bitbybit with ThreeJS, OCCT, and a GUI for real-time control."
 tags: [npm-packages, threejs]
+topic: npm.threejs.advanced-model
+type: tutorial
 ---
 
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';

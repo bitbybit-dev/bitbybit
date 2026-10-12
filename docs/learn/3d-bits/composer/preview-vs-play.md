@@ -4,6 +4,8 @@ title: "Edit Mode and Play"
 sidebar_label: Edit vs Play
 description: What the editor shows you, what only Play shows you, and how to preview each kind of behaviour while you are still authoring.
 tags: [3d-bits, composer, variants, troubleshooting]
+topic: composer.preview-vs-play
+type: explanation
 ---
 
 # Edit Mode and Play
