@@ -1144,6 +1144,14 @@
     "path": "learn/3d-bits/composer/gui/custom-html.md"
   },
   {
+    "id": "composer.gui.elements",
+    "title": "GUI Elements at a Glance",
+    "type": "reference",
+    "url": "/learn/3d-bits/composer/gui/elements",
+    "path": "learn/3d-bits/composer/gui/elements.md",
+    "verified": "2026-10-12"
+  },
+  {
     "id": "composer.gui.layout",
     "title": "Layout",
     "type": "how-to",

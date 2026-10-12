@@ -10,7 +10,7 @@ type: how-to
 
 # Controls
 
-Controls are what your shopper touches. Each one asks a question about the product, and the answer drives the 3D model, the price, or both.
+Controls are what your shopper touches. Each one asks a question about the product, and the answer drives the 3D model, the price, or both. [GUI Elements at a Glance](./elements.md) shows every control type as the panel draws it.
 
 You add them in the **Controls** tab of the GUI section. Give each one a label, since that is what your shopper reads, and a set of choices where it has them.
 
