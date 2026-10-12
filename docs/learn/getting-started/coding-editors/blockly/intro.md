@@ -12,7 +12,7 @@ tags: [getting-started, blockly, occt]
 
 # Blockly Editor
 
-{/* shot: platform.start.welcome/drone */}
+<Shot id="platform.start.welcome/drone" />
 
 Blockly is the block editor of Bitbybit. You build a program by dragging blocks out of a toolbox and snapping them together: a block that does something stacks under another, and a block that gives a value plugs into an input. The blocks only fit where they make sense, so a whole kind of mistake cannot happen, which makes Blockly the gentlest way into programming 3D geometry. Every function of the Bitbybit API has its block, beside Blockly's own variables, loops, logic, lists and functions.
 

@@ -12,7 +12,7 @@ tags: [getting-started, typescript, occt]
 
 # TypeScript Editor
 
-{/* shot: platform.start.welcome/drone */}
+<Shot id="platform.start.welcome/drone" />
 
 The TypeScript editor gives you the whole Bitbybit API in code. It is Monaco, the editor of VS Code, set up for the API: it suggests what fits as you type, explains every function on hover, and marks a mistake before you run. If you already write code, it is the fastest and least constrained way to use the platform: loops, functions, classes and your own abstractions all work as they do anywhere.
 

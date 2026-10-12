@@ -14,7 +14,7 @@ tags: [designer]
 
 This tutorial builds a small desk robot arm: a base, a shoulder, two arm links, a wrist, a gripper with two jaws, and the screws and nuts that hold it together. Then an assembly puts the parts on joints that turn within limits. It is long, so it comes in nine chapters, one for each part and one for the assembly, with a picture of every step.
 
-{/* shot: designer.tutorials.desk-arm/arm */}
+<Shot id="designer.tutorials.desk-arm/arm" />
 
 Along the way you will:
 

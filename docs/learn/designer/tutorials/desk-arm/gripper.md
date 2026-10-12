@@ -22,110 +22,110 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
     The gripper housing carries two jaw rails, four cover screws and a neck that is blended into the palm.
 
-    {/* shot: designer.tutorials.desk-arm/step-70 */}
+    <Shot id="designer.tutorials.desk-arm/step-70" />
 
 71. **[Sketch](../../reference/commands.md#designer-part-sketch)**, from <Ui>Insert</Ui> > <Ui>Sketch</Ui>: id outline, on the XZ plane, start -29, -16.
 
     Sketch the palm's outline on the ground plane: a rounded rectangle, 70 by 32 mm.
 
-    {/* shot: designer.tutorials.desk-arm/step-71 */}
+    <Shot id="designer.tutorials.desk-arm/step-71" />
 
 72. **[Extrude](../../reference/commands.md#designer-part-extrude)**, from <Ui>Insert</Ui> > <Ui>Extrude</Ui>: id palm, profile outline, distance 16.
 
     Extrude the outline 16 mm.
 
-    {/* shot: designer.tutorials.desk-arm/step-72 */}
+    <Shot id="designer.tutorials.desk-arm/step-72" />
 
 73. **[Fillet](../../reference/commands.md#designer-part-fillet)**, from <Ui>Insert</Ui> > <Ui>Fillet</Ui>: id frontRim, body palm, radius 2.
 
     Round the top face's rim by 2 mm.
 
-    {/* shot: designer.tutorials.desk-arm/step-73 */}
+    <Shot id="designer.tutorials.desk-arm/step-73" />
 
 74. **[Fillet](../../reference/commands.md#designer-part-fillet)**, from <Ui>Insert</Ui> > <Ui>Fillet</Ui>: id backRim, body palm, radius 2.
 
     Round the bottom face's rim the same way.
 
-    {/* shot: designer.tutorials.desk-arm/step-74 */}
+    <Shot id="designer.tutorials.desk-arm/step-74" />
 
 75. **[Sketch](../../reference/commands.md#designer-part-sketch)**, from <Ui>Insert</Ui> > <Ui>Sketch</Ui>: id guideA, on the end face of palm, start -31, -4.
 
     On the top face, sketch the first jaw's rail: a slot 25 by 8 mm in from the left end.
 
-    {/* shot: designer.tutorials.desk-arm/step-75 */}
+    <Shot id="designer.tutorials.desk-arm/step-75" />
 
 76. **[Pocket](../../reference/commands.md#designer-part-pocket)**, from <Ui>Insert</Ui> > <Ui>Pocket</Ui>: id railA, profile guideA, body palm, distance 5.
 
     Pocket the rail 5 mm deep.
 
-    {/* shot: designer.tutorials.desk-arm/step-76 */}
+    <Shot id="designer.tutorials.desk-arm/step-76" />
 
 77. **[Sketch](../../reference/commands.md#designer-part-sketch)**, from <Ui>Insert</Ui> > <Ui>Sketch</Ui>: id guideB, on the end face of palm, start 6, -4.
 
     Sketch the second jaw's rail, in from the right end.
 
-    {/* shot: designer.tutorials.desk-arm/step-77 */}
+    <Shot id="designer.tutorials.desk-arm/step-77" />
 
 78. **[Pocket](../../reference/commands.md#designer-part-pocket)**, from <Ui>Insert</Ui> > <Ui>Pocket</Ui>: id railB, profile guideB, body palm, distance 5.
 
     Pocket it 5 mm deep too.
 
-    {/* shot: designer.tutorials.desk-arm/step-78 */}
+    <Shot id="designer.tutorials.desk-arm/step-78" />
 
 79. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id screws, body palm, on the end face of palm, diameter 3.
 
     Drill four counterbored holes for the cover screws, one near each corner.
 
-    {/* shot: designer.tutorials.desk-arm/step-79 */}
+    <Shot id="designer.tutorials.desk-arm/step-79" />
 
 80. **[Sketch](../../reference/commands.md#designer-part-sketch)**, from <Ui>Insert</Ui> > <Ui>Sketch</Ui>: id mount, on the start face of palm.
 
     On the bottom face, sketch the neck: a circle 24 mm across.
 
-    {/* shot: designer.tutorials.desk-arm/step-80 */}
+    <Shot id="designer.tutorials.desk-arm/step-80" />
 
 81. **[Boss](../../reference/commands.md#designer-part-boss)**, from <Ui>Insert</Ui> > <Ui>Boss</Ui>: id neck, profile mount, body palm, distance 6.
 
     Raise the neck 6 mm as a boss.
 
-    {/* shot: designer.tutorials.desk-arm/step-81 */}
+    <Shot id="designer.tutorials.desk-arm/step-81" />
 
 82. **[Fillet](../../reference/commands.md#designer-part-fillet)**, from <Ui>Insert</Ui> > <Ui>Fillet</Ui>: id neckBlend, body palm, radius 3.
 
     Round the edge where the neck meets the palm by 3 mm, so the two blend into one.
 
-    {/* shot: designer.tutorials.desk-arm/step-82 */}
+    <Shot id="designer.tutorials.desk-arm/step-82" />
 
 83. **[Part properties](../../reference/commands.md#designer-product-set-part)**, from the <Ui>Properties</Ui> panel: id palm, name Gripper, material abs, color #eceef1, metallic 0, roughness 0.4.
 
     Name the part Gripper: white ABS, like the shoulder.
 
-    {/* shot: designer.tutorials.desk-arm/step-83 */}
+    <Shot id="designer.tutorials.desk-arm/step-83" />
 
 84. **[Add connector](../../reference/commands.md#designer-product-add-connector)**, from <Ui>Insert</Ui> > <Ui>Add connector</Ui>: part palm, id mount, on the end face of neck.
 
     Add a connector on the neck's end. The gripper is fastened to the wrist's flange there.
 
-    {/* shot: designer.tutorials.desk-arm/step-84 */}
+    <Shot id="designer.tutorials.desk-arm/step-84" />
 
 85. **[Add connector](../../reference/commands.md#designer-product-add-connector)**, from <Ui>Insert</Ui> > <Ui>Add connector</Ui>: part palm, id jawA, on the side face of railA, origin -6, 13.5, 0.
 
     Add a connector at the end of the first rail, where the first jaw's carriage slides.
 
-    {/* shot: designer.tutorials.desk-arm/step-85 */}
+    <Shot id="designer.tutorials.desk-arm/step-85" />
 
 86. **[Add connector](../../reference/commands.md#designer-product-add-connector)**, from <Ui>Insert</Ui> > <Ui>Add connector</Ui>: part palm, id jawB, on the side face of railB, origin 6, 13.5, 0.
 
     Add a connector in the second rail for the second jaw, facing the other way.
 
-    {/* shot: designer.tutorials.desk-arm/step-86 */}
+    <Shot id="designer.tutorials.desk-arm/step-86" />
 
 87. **[Add connector](../../reference/commands.md#designer-product-add-connector)**, from <Ui>Insert</Ui> > <Ui>Add connector</Ui>: part palm, id screws, on the end face of palm, axis the wall face of screws.
 
     Add a connector on the top face, its axis along the screw holes, for the cover screws.
 
-    {/* shot: designer.tutorials.desk-arm/step-87 */}
+    <Shot id="designer.tutorials.desk-arm/step-87" />
 
-{/* shot: designer.tutorials.desk-arm/gripper */}
+<Shot id="designer.tutorials.desk-arm/gripper" />
 
 {/* steps:end */}
