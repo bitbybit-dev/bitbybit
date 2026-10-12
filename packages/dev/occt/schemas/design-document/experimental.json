@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://git-cdn.bitbybit.dev/v1.5.0-rc.0/schemas/design-document/experimental.json",
+    "$id": "https://git-cdn.bitbybit.dev/v1.5.0/schemas/design-document/experimental.json",
     "title": "Design document (experimental: the format may change before its first stable version)",
     "$ref": "#/$defs/DesignDocument",
     "$defs": {
