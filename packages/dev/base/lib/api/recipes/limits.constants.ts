@@ -21,3 +21,7 @@ export const MAX_ISSUES = 100;
 export const INT32_LOWEST = -(2 ** 31);
 export const INT32_HIGHEST = 2 ** 31 - 1;
 export const ISSUES_IN_MESSAGE = 3;
+export const MAX_BREP_DEGREE = 25;
+export const MAX_BREP_ITEMS = 10_000_000;
+export const PARALLEL_SINE = 1e-9;
+export const QUARTER_TURN = Math.PI / 2;

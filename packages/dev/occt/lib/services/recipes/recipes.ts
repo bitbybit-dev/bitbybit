@@ -8,8 +8,8 @@ import { occtFailure } from "../../kernel-failures";
 import { readKernelException } from "../../kernel-exception";
 import type { OCCTAssemblyManager } from "../assembly/manager";
 import { documentPlan, documentStructure } from "./recipe-document";
-import type { BuiltRoots, FirstFailure, KernelRecipeBuild, RecipeKernelReport, RecipeRootReport, StepFailure } from "./recipe-types";
-import { MAX_KERNEL_COUNT } from "./recipes.constants";
+import type { BuiltRoots, FirstFailure, KernelBrepDescription, KernelRecipeBuild, RecipeKernelReport, RecipeRootReport, StepFailure } from "./recipe-types";
+import { DESCRIBED_TOLERANCE, IDENTITY_MATRIX, MAX_KERNEL_COUNT, STEPS_BEFORE_EXACT_BREPS } from "./recipes.constants";
 
 function failureOf(report: RecipeRootReport): StepFailure | undefined {
     return report.built ? report.uncut : { node: report.node, reason: report.reason };
@@ -97,6 +97,48 @@ export class OCCTRecipes {
         }
     }
 
+    /**
+     * Describes a shape exactly as a recipe of one brep step: its vertices, the curves its edges lie
+     * on and the surfaces its faces lie on.
+     *
+     * Lines, circles, ellipses and the elementary surfaces stay as they are, swept surfaces keep their
+     * curve, and anything else becomes a B-spline. `recipes.build` builds it back.
+     * @param inputs - The shape and its unit
+     * @returns A recipe whose one root is the shape
+     * @group describe
+     * @shortname describe shape
+     * @drawable false
+     * @example
+     * ```typescript
+     * const recipe = await bitbybit.occt.recipes.describe({ shape });
+     * const [again] = await bitbybit.occt.recipes.build({ recipe });
+     * ```
+     */
+    describe(inputs: Inputs.OCCT.DescribeRecipeDto<TopoDS_Shape>): Base.Recipe {
+        const resolved = resolveDto(Inputs.OCCT.DescribeRecipeDto, inputs) as Resolved.OCCT.DescribeRecipeDto<TopoDS_Shape>;
+        if (!(resolved.millimetresPerUnit > 0) || !Number.isFinite(resolved.millimetresPerUnit)) {
+            throw new InputError(`\`millimetresPerUnit\` is ${resolved.millimetresPerUnit}, and a unit has to be a finite length above zero.`, "millimetresPerUnit");
+        }
+        if (typeof this.occ.DescribeShapeExact !== "function") {
+            throw new Error("This OpenCascade kernel cannot describe shapes exactly; a newer kernel can.");
+        }
+        let described: KernelBrepDescription;
+        try {
+            described = this.occ.DescribeShapeExact(resolved.shape);
+        } catch (thrown) {
+            throw readKernelException(this.occ, thrown);
+        }
+        return toRecipe({
+            format: "bitbybit.recipe",
+            version: 1,
+            millimetresPerUnit: resolved.millimetresPerUnit,
+            tolerance: DESCRIBED_TOLERANCE,
+            buffers: { f64: Float64Array.from(described.numbers), i32: new Int32Array(0) },
+            nodes: [JSON.parse(described.description) as Base.RecipeBrepNode],
+            roots: [{ node: 0, matrix: IDENTITY_MATRIX, tag: {} }],
+        });
+    }
+
     private run(recipe: Base.Recipe, roots: readonly Base.RecipeRoot[], adjustZtoY: boolean, facetedMeshes: boolean, maxTriangles: number): BuiltRoots<TopoDS_Shape> {
         if (!(maxTriangles >= 0)) {
             throw new InputError(`\`maxTriangles\` is ${maxTriangles}, and the most triangles a mesh may hold has to be 0 or more.`, "maxTriangles");
@@ -104,7 +146,7 @@ export class OCCTRecipes {
         if (typeof this.occ.BuildRecipes !== "function") {
             throw new Error("This OpenCascade kernel cannot build recipes; a newer kernel can.");
         }
-        const text = JSON.stringify({ tolerance: recipe.tolerance, nodes: recipe.nodes, roots: roots.map(({ node, matrix }) => ({ node, matrix })) });
+        const text = JSON.stringify({ tolerance: recipe.tolerance, nodes: this.kernelNodes(recipe.nodes), roots: roots.map(({ node, matrix }) => ({ node, matrix })) });
         let result: KernelRecipeBuild<TopoDS_Shape>;
         try {
             result = this.occ.BuildRecipes(text, recipe.buffers.f64, recipe.buffers.i32, adjustZtoY, facetedMeshes, Math.min(Math.floor(maxTriangles), MAX_KERNEL_COUNT));
@@ -112,6 +154,18 @@ export class OCCTRecipes {
             throw readKernelException(this.occ, thrown);
         }
         return { shapes: result.shapes, reports: (JSON.parse(result.report) as RecipeKernelReport).roots };
+    }
+
+    private kernelNodes(nodes: readonly Base.RecipeNode[]): readonly Base.RecipeNode[] {
+        const steps = this.kernelSteps();
+        return nodes.map((node) => node.op === "brep" && !steps.has(node.op) && node.fallback !== undefined ? { op: "compound", of: [node.fallback] } : node);
+    }
+
+    private kernelSteps(): ReadonlySet<string> {
+        if (typeof this.occ.RecipeSteps !== "function") {
+            return STEPS_BEFORE_EXACT_BREPS;
+        }
+        return new Set(JSON.parse(this.occ.RecipeSteps()) as string[]);
     }
 
     private failure(failed: StepFailure, root: number): Error {

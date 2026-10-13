@@ -168,14 +168,14 @@ describe("privateFiles", () => {
 
 describe("reportRow", () => {
     const comparison = { compared: 2, agreeing: 1, worst: [{ globalId: "2O2Fr$t4X7Zf8NOew3FLOH" }] };
-    const result = { schema: "IFC2X3", elements: 2, volumes: comparison, boxes: comparison, semantics: comparison };
+    const result = { schema: "IFC2X3", elements: 2, volumes: comparison, boxes: comparison, exactVolumes: comparison, exactBoxes: comparison, semantics: comparison };
 
     it("should keep a public file's exporter and the elements that disagree", () => {
         // Act
         const row = reportRow({ ...entry(), exporter: "Archicad 20" }, result);
 
         // Assert
-        assert.deepEqual(row, { id: "kit-fzk-haus", private: false, schema: "IFC2X3", exporter: "Archicad 20", elements: 2, volumes: comparison, boxes: comparison, semantics: comparison });
+        assert.deepEqual(row, { id: "kit-fzk-haus", private: false, schema: "IFC2X3", exporter: "Archicad 20", elements: 2, volumes: comparison, boxes: comparison, exactVolumes: comparison, exactBoxes: comparison, semantics: comparison });
     });
 
     it("should keep counts only of a private file, naming it by its id and hiding GlobalIds where a failure names them", () => {
@@ -187,7 +187,7 @@ describe("reportRow", () => {
         const failed = reportRow(tower, { failed: "The GlobalId '0000000000000000000001' in /data/models/Model A.ifc, written as Model A.ifc", oracleFailed: "IfcOpenShell could not open /data/models/Model A.ifc" });
 
         // Assert
-        assert.deepEqual(measured, { id: "private-2", private: true, schema: "IFC2X3", elements: 2, volumes: { compared: 2, agreeing: 1 }, boxes: { compared: 2, agreeing: 1 }, semantics: { compared: 2, agreeing: 1 } });
+        assert.deepEqual(measured, { id: "private-2", private: true, schema: "IFC2X3", elements: 2, volumes: { compared: 2, agreeing: 1 }, boxes: { compared: 2, agreeing: 1 }, exactVolumes: { compared: 2, agreeing: 1 }, exactBoxes: { compared: 2, agreeing: 1 }, semantics: { compared: 2, agreeing: 1 } });
         assert.deepEqual([failed.failed, failed.oracleFailed], ["The GlobalId '<GlobalId>' in private-2, written as private-2", "IfcOpenShell could not open private-2"]);
     });
 });

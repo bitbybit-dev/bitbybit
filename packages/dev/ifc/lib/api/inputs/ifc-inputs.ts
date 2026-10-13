@@ -2828,10 +2828,11 @@ export namespace IFC {
      * A model, the elements to describe and how to group them for `geometry.recipe`.
      */
     export class GeometryDto<T> {
-        constructor(model?: T, elements?: string[], groupByClass?: boolean) {
+        constructor(model?: T, elements?: string[], groupByClass?: boolean, propertySets?: boolean) {
             if (model !== undefined) { this.model = model; }
             if (elements !== undefined) { this.elements = elements; }
             if (groupByClass !== undefined) { this.groupByClass = groupByClass; }
+            if (propertySets !== undefined) { this.propertySets = propertySets; }
         }
         /**
          * The model whose elements are described.
@@ -2851,6 +2852,12 @@ export namespace IFC {
          * @default true
          */
         groupByClass?: boolean | undefined = true;
+        /**
+         * When true, each element's property set values join its results' tags, named like
+         * `Pset_WallCommon.IsExternal`, so they reach what the results become, such as STEP properties.
+         * @default false
+         */
+        propertySets?: boolean | undefined = false;
     }
     /**
      * A model and the elements to check for `geometry.unsupported`.
@@ -2931,7 +2938,7 @@ export namespace IFC {
      * model's recipe into an OpenCascade assembly document.
      */
     export class GeometryToDocumentDto<T> {
-        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean) {
+        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean, propertySets?: boolean) {
             if (model !== undefined) { this.model = model; }
             if (elements !== undefined) { this.elements = elements; }
             if (name !== undefined) { this.name = name; }
@@ -2939,6 +2946,7 @@ export namespace IFC {
             if (facetedMeshes !== undefined) { this.facetedMeshes = facetedMeshes; }
             if (maxTriangles !== undefined) { this.maxTriangles = maxTriangles; }
             if (groupByClass !== undefined) { this.groupByClass = groupByClass; }
+            if (propertySets !== undefined) { this.propertySets = propertySets; }
         }
         /**
          * The model whose elements are built.
@@ -2984,13 +2992,19 @@ export namespace IFC {
          * @default true
          */
         groupByClass?: boolean | undefined = true;
+        /**
+         * When true, each element's product carries its property set values as properties, named by set
+         * and property, such as `Pset_WallCommon.IsExternal`, beside its GlobalId and IFC type.
+         * @default true
+         */
+        propertySets?: boolean | undefined = true;
     }
     /**
      * A model, the elements to write, and the file options for `geometry.toStep`, which writes the
      * model's elements as a STEP file of OpenCascade shapes.
      */
     export class GeometryToStepDto<T> {
-        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean) {
+        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean, propertySets?: boolean) {
             if (model !== undefined) { this.model = model; }
             if (elements !== undefined) { this.elements = elements; }
             if (name !== undefined) { this.name = name; }
@@ -3001,6 +3015,7 @@ export namespace IFC {
             if (compress !== undefined) { this.compress = compress; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
             if (groupByClass !== undefined) { this.groupByClass = groupByClass; }
+            if (propertySets !== undefined) { this.propertySets = propertySets; }
         }
         /**
          * The model whose elements are written.
@@ -3062,6 +3077,12 @@ export namespace IFC {
          * @default true
          */
         groupByClass?: boolean | undefined = true;
+        /**
+         * When true, each element's product carries its property set values as properties, named by set
+         * and property, such as `Pset_WallCommon.IsExternal`, beside its GlobalId and IFC type.
+         * @default true
+         */
+        propertySets?: boolean | undefined = true;
     }
     /**
      * An element `geometry.recipe` had to leave out, as `geometry.unsupported` lists it.

@@ -307,7 +307,7 @@ export function reportRow(entry, result) {
     const row = { id: entry.id, private: entry.private === true, schema: entry.schema, exporter: entry.exporter, ...result };
     if (!entry.private) { return row; }
     const scrubbed = (text) => (text === undefined ? undefined : withoutPath(entry, text));
-    return { ...row, failed: scrubbed(result.failed), oracleFailed: scrubbed(result.oracleFailed), volumes: withoutWorst(row.volumes), boxes: withoutWorst(row.boxes), semantics: withoutWorst(row.semantics) };
+    return { ...row, failed: scrubbed(result.failed), oracleFailed: scrubbed(result.oracleFailed), volumes: withoutWorst(row.volumes), boxes: withoutWorst(row.boxes), exactVolumes: withoutWorst(row.exactVolumes), exactBoxes: withoutWorst(row.exactBoxes), semantics: withoutWorst(row.semantics) };
 }
 
 export function oracleJsonOf(stdout) {
@@ -363,8 +363,9 @@ function summaryLine(row) {
     const volumes = row.volumes ? `, volumes ${row.volumes.agreeing}/${row.volumes.compared} and boxes ${row.boxes.agreeing}/${row.boxes.compared} agree, ${row.boxes.missing} built by IfcOpenShell only` : "";
     const oracle = row.oracleFailed === undefined ? "" : `, IfcOpenShell failed: ${row.oracleFailed.trim().split("\n").pop()}`;
     const units = row.unitsAgree === false ? ", length unit read differently from IfcOpenShell" : "";
+    const exact = row.exactMs === undefined ? "" : `, exact ${row.exactMs} ms with ${row.exactEmpty} empty${row.exactVolumes ? `, exact volumes ${row.exactVolumes.agreeing}/${row.exactVolumes.compared} and boxes ${row.exactBoxes.agreeing}/${row.exactBoxes.compared} agree` : ""}`;
     const semantics = row.semantics ? `, types ${row.semantics.types.agreeing}/${row.semantics.types.compared}, storeys ${row.semantics.storeys.agreeing}/${row.semantics.storeys.compared}, property sets ${row.semantics.propertySets.agreeing}/${row.semantics.propertySets.compared}` : "";
-    return `${row.id}: ${Math.round(row.bytes / 1e6)} MB, ${row.elements} elements, open ${row.openMs} ms, recipe ${row.recipeMs} ms, manifold ${row.manifoldMs} ms, ${row.unsupported} unsupported, ${row.emptySolids} empty (${row.surfaceRoots} drawn as surfaces, ${row.cutAway ?? 0} cut away entirely, ${row.emptySolids - row.surfaceRoots - (row.cutAway ?? 0)} lost), data ${row.dataIdentical ? "identical" : "changed"} on write, peak ${row.peakRssMb} MB, store ${row.storeMb} MB beside the file's${volumes}${semantics}${units}${oracle}`;
+    return `${row.id}: ${Math.round(row.bytes / 1e6)} MB, ${row.elements} elements, open ${row.openMs} ms, recipe ${row.recipeMs} ms, manifold ${row.manifoldMs} ms, ${row.unsupported} unsupported, ${row.emptySolids} empty (${row.surfaceRoots} drawn as surfaces, ${row.cutAway ?? 0} cut away entirely, ${row.emptySolids - row.surfaceRoots - (row.cutAway ?? 0)} lost), data ${row.dataIdentical ? "identical" : "changed"} on write, peak ${row.peakRssMb} MB, store ${row.storeMb} MB beside the file's${volumes}${exact}${semantics}${units}${oracle}`;
 }
 
 async function main(args) {

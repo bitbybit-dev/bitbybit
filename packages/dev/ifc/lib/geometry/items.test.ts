@@ -453,7 +453,7 @@ describe("ItemConverter", () => {
         expect(node).toEqual({ op: "transform", of: 1, matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 7, 0, 0, 1] });
     });
 
-    it("should describe a triangulated face set with its indices counted from 0", () => {
+    it("should describe a closed triangulated face set with its indices counted from 0, its triangles turned to wind one way, outward", () => {
         // Arrange
         const rows = [POINT_LIST_ROW, "#11=IFCTRIANGULATEDFACESET(#10,$,.T.,((1,2,3),(1,2,4),(2,3,4),(1,3,4)),$);"];
 
@@ -462,7 +462,7 @@ describe("ItemConverter", () => {
 
         // Assert
         expect(recipe.nodes).toEqual([{ op: "triangles", positions: [0, 12], indices: [0, 12] }]);
-        expect(Array.from(recipe.buffers.i32)).toEqual([0, 1, 2, 0, 1, 3, 1, 2, 3, 0, 2, 3]);
+        expect(Array.from(recipe.buffers.i32)).toEqual([0, 2, 1, 0, 1, 3, 1, 2, 3, 0, 3, 2]);
     });
 
     it("should look a triangulated face set's corners up in its PnIndex, which names the points", () => {

@@ -87,6 +87,7 @@ const OCCT_DataOnGeometryesAtLengthDto: DtoConstraints = { shapes: k.required(k.
 const OCCT_DataOnGeometryesAtParamDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), param: k.between(k.number, { min: 0, max: 1 }) };
 const OCCT_DataOnUVDto: DtoConstraints = { shape: k.required(k.opaque), paramU: k.between(k.number, { min: 0, max: 1 }), paramV: k.between(k.number, { min: 0, max: 1 }) };
 const OCCT_DataOnUVsDto: DtoConstraints = { shape: k.required(k.opaque), paramsUV: k.list(k.opaque) };
+const OCCT_DescribeRecipeDto: DtoConstraints = { shape: k.required(k.opaque), millimetresPerUnit: k.between(k.number, { min: 0 }) };
 const OCCT_DesignBuildDto: DtoConstraints = { document: k.required(k.opaque), configuration: k.string, parameters: k.opaque, assets: k.opaque, documents: k.list(k.opaque), rebind: k.oneOf(["never", "report"]), outcomes: k.list(k.opaque), sketches: k.boolean };
 const OCCT_DesignClashesDto: DtoConstraints = { document: k.required(k.opaque), documents: k.list(k.opaque), configuration: k.string, parameters: k.opaque, assets: k.opaque, clearance: k.between(k.number, { min: 0 }) };
 const OCCT_DesignDocumentDto: DtoConstraints = { document: k.required(k.opaque), documents: k.list(k.opaque) };
@@ -594,6 +595,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "path.shapeFromPath": { dto: Inputs.OCCT.ShapeFromPathDto, constraints: OCCT_ShapeFromPathDto },
     "recipes.build": { dto: Inputs.OCCT.BuildRecipeDto, constraints: OCCT_BuildRecipeDto },
     "recipes.buildDocument": { dto: Inputs.OCCT.BuildRecipeDocumentDto, constraints: OCCT_BuildRecipeDocumentDto },
+    "recipes.describe": { dto: Inputs.OCCT.DescribeRecipeDto, constraints: OCCT_DescribeRecipeDto },
     "select.edges.along": { dto: Inputs.OCCT.SelectByDirectionDto, constraints: OCCT_SelectByDirectionDto },
     "select.edges.between": { dto: Inputs.OCCT.SelectBetweenDto, constraints: OCCT_SelectBetweenDto },
     "select.edges.byLength": { dto: Inputs.OCCT.SelectInRangeDto, constraints: OCCT_SelectInRangeDto },

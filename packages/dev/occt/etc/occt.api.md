@@ -248,6 +248,126 @@ namespace Base {
         version: 1;
     }
     // @beta
+    interface RecipeBrepBound {
+        edges: number[];
+        forward: boolean[];
+        outer: boolean;
+    }
+    // @beta
+    interface RecipeBrepBSplineCurve {
+        degree: number;
+        kind: "bspline";
+        knots: RecipeRange;
+        multiplicities: number[];
+        points: RecipeRange;
+        weights?: RecipeRange | undefined;
+    }
+    // @beta
+    interface RecipeBrepBSplineSurface {
+        kind: "bspline";
+        points: RecipeRange;
+        uCount: number;
+        uDegree: number;
+        uKnots: RecipeRange;
+        uMultiplicities: number[];
+        vCount: number;
+        vDegree: number;
+        vKnots: RecipeRange;
+        vMultiplicities: number[];
+        weights?: RecipeRange | undefined;
+    }
+    // @beta
+    interface RecipeBrepCircle extends RecipeBrepPlacement {
+        kind: "circle";
+        radius: number;
+    }
+    // @beta
+    interface RecipeBrepCone extends RecipeBrepPlacement {
+        kind: "cone";
+        radius: number;
+        semiAngle: number;
+    }
+    // @beta
+    type RecipeBrepCurve = RecipeBrepLine | RecipeBrepCircle | RecipeBrepEllipse | RecipeBrepBSplineCurve;
+    // @beta
+    interface RecipeBrepCylinder extends RecipeBrepPlacement {
+        kind: "cylinder";
+        radius: number;
+    }
+    // @beta
+    interface RecipeBrepEdge {
+        curve: number;
+        end: number;
+        parameters?: [number, number] | undefined;
+        sameSense?: boolean | undefined;
+        start: number;
+    }
+    // @beta
+    interface RecipeBrepEllipse extends RecipeBrepPlacement {
+        kind: "ellipse";
+        xRadius: number;
+        yRadius: number;
+    }
+    // @beta
+    interface RecipeBrepExtrusion {
+        curve: number;
+        direction: Vector3;
+        kind: "extrusion";
+    }
+    // @beta
+    interface RecipeBrepFace {
+        bounds: RecipeBrepBound[];
+        sameSense: boolean;
+        surface: number;
+    }
+    // @beta
+    interface RecipeBrepLine {
+        direction: Vector3;
+        kind: "line";
+        origin: Point3;
+    }
+    // @beta
+    interface RecipeBrepNode {
+        closed: boolean;
+        curves: RecipeBrepCurve[];
+        edges: RecipeBrepEdge[];
+        faces: RecipeBrepFace[];
+        fallback?: number | undefined;
+        op: "brep";
+        surfaces: RecipeBrepSurface[];
+        vertices: RecipeRange;
+    }
+    // @beta
+    interface RecipeBrepPlacement {
+        axis: Vector3;
+        origin: Point3;
+        xDirection: Vector3;
+    }
+    // @beta
+    interface RecipeBrepPlane extends RecipeBrepPlacement {
+        kind: "plane";
+    }
+    // @beta
+    interface RecipeBrepRevolution {
+        axis: Vector3;
+        curve: number;
+        kind: "revolution";
+        origin: Point3;
+    }
+    // @beta
+    interface RecipeBrepSphere extends RecipeBrepPlacement {
+        kind: "sphere";
+        radius: number;
+    }
+    // @beta
+    type RecipeBrepSurface = RecipeBrepPlane | RecipeBrepCylinder | RecipeBrepCone | RecipeBrepSphere | RecipeBrepTorus | RecipeBrepBSplineSurface | RecipeBrepRevolution | RecipeBrepExtrusion;
+    // @beta
+    interface RecipeBrepTorus extends RecipeBrepPlacement {
+        kind: "torus";
+        majorRadius: number;
+        minorRadius: number;
+    }
+    // @beta
     interface RecipeBuffers {
         f64: Float64Array;
         i32: Int32Array;
@@ -300,7 +420,7 @@ namespace Base {
         profiles: number[];
     }
     // @beta
-    type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode;
+    type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode | RecipeBrepNode;
     // @beta
     interface RecipePolygonNode {
         holes: RecipeRange[];
@@ -3853,6 +3973,8 @@ export interface EmbindModule {
     // (undocumented)
     CurvePointsAtNormalizedParameters(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
     // (undocumented)
+    DescribeShapeExact(_0: TopoDS_Shape): { description: string; numbers: Float64Array };
+    // (undocumented)
     DihedralAngle(_0: TopoDS_Shape, _1: number, _2: number): { angle: number; isConvex: boolean; point: [number, number, number]; normalA: [number, number, number]; normalB: [number, number, number]; faceA: number; faceB: number };
     // (undocumented)
     DocumentFreeShapeCount(_0: TDocStd_Document | null): number;
@@ -4592,6 +4714,8 @@ export interface EmbindModule {
     RebuildEdgeDegree(_0: TopoDS_Edge, _1: number, _2: number): TopoDS_Edge;
     // (undocumented)
     RebuildFaceDegree(_0: TopoDS_Face, _1: number, _2: number, _3: number, _4: boolean): TopoDS_Face;
+    // (undocumented)
+    RecipeSteps(): string;
     // (undocumented)
     ReleaseKeptMeshes(): void;
     // (undocumented)
@@ -8336,6 +8460,12 @@ namespace OCCT {
         isoCurveList?: Base.Point3[][] | undefined;
         pointsList: Base.Point3[];
     }
+    // @beta
+    class DescribeRecipeDto<T> {
+        constructor(shape?: T, millimetresPerUnit?: number);
+        millimetresPerUnit?: number | undefined;
+        shape: T;
+    }
     class DesignBuildDto<T> {
         constructor(document?: Models_2.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models_2.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models_2.OCCT.DesignSuppliedOutcome<T>[], sketches?: boolean);
         assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
@@ -11259,6 +11389,8 @@ namespace OCCT_3 {
     type DecomposedManifoldMeshDto = Inputs_2.OCCT.DecomposedManifoldMeshDto;
     // (undocumented)
     type DecomposedMeshDto = Inputs_2.OCCT.DecomposedMeshDto;
+    // (undocumented)
+    type DescribeRecipeDto<T> = WithDefaults<Inputs_2.OCCT.DescribeRecipeDto<T>, "millimetresPerUnit">;
     // (undocumented)
     type DesignBuildDto<T> = Inputs_2.OCCT.DesignBuildDto<T>;
     // (undocumented)

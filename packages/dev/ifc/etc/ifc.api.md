@@ -103,6 +103,126 @@ export namespace Base {
         version: 1;
     }
     // @beta
+    export interface RecipeBrepBound {
+        edges: number[];
+        forward: boolean[];
+        outer: boolean;
+    }
+    // @beta
+    export interface RecipeBrepBSplineCurve {
+        degree: number;
+        kind: "bspline";
+        knots: RecipeRange;
+        multiplicities: number[];
+        points: RecipeRange;
+        weights?: RecipeRange | undefined;
+    }
+    // @beta
+    export interface RecipeBrepBSplineSurface {
+        kind: "bspline";
+        points: RecipeRange;
+        uCount: number;
+        uDegree: number;
+        uKnots: RecipeRange;
+        uMultiplicities: number[];
+        vCount: number;
+        vDegree: number;
+        vKnots: RecipeRange;
+        vMultiplicities: number[];
+        weights?: RecipeRange | undefined;
+    }
+    // @beta
+    export interface RecipeBrepCircle extends RecipeBrepPlacement {
+        kind: "circle";
+        radius: number;
+    }
+    // @beta
+    export interface RecipeBrepCone extends RecipeBrepPlacement {
+        kind: "cone";
+        radius: number;
+        semiAngle: number;
+    }
+    // @beta
+    export type RecipeBrepCurve = RecipeBrepLine | RecipeBrepCircle | RecipeBrepEllipse | RecipeBrepBSplineCurve;
+    // @beta
+    export interface RecipeBrepCylinder extends RecipeBrepPlacement {
+        kind: "cylinder";
+        radius: number;
+    }
+    // @beta
+    export interface RecipeBrepEdge {
+        curve: number;
+        end: number;
+        parameters?: [number, number] | undefined;
+        sameSense?: boolean | undefined;
+        start: number;
+    }
+    // @beta
+    export interface RecipeBrepEllipse extends RecipeBrepPlacement {
+        kind: "ellipse";
+        xRadius: number;
+        yRadius: number;
+    }
+    // @beta
+    export interface RecipeBrepExtrusion {
+        curve: number;
+        direction: Vector3;
+        kind: "extrusion";
+    }
+    // @beta
+    export interface RecipeBrepFace {
+        bounds: RecipeBrepBound[];
+        sameSense: boolean;
+        surface: number;
+    }
+    // @beta
+    export interface RecipeBrepLine {
+        direction: Vector3;
+        kind: "line";
+        origin: Point3;
+    }
+    // @beta
+    export interface RecipeBrepNode {
+        closed: boolean;
+        curves: RecipeBrepCurve[];
+        edges: RecipeBrepEdge[];
+        faces: RecipeBrepFace[];
+        fallback?: number | undefined;
+        op: "brep";
+        surfaces: RecipeBrepSurface[];
+        vertices: RecipeRange;
+    }
+    // @beta
+    export interface RecipeBrepPlacement {
+        axis: Vector3;
+        origin: Point3;
+        xDirection: Vector3;
+    }
+    // @beta
+    export interface RecipeBrepPlane extends RecipeBrepPlacement {
+        kind: "plane";
+    }
+    // @beta
+    export interface RecipeBrepRevolution {
+        axis: Vector3;
+        curve: number;
+        kind: "revolution";
+        origin: Point3;
+    }
+    // @beta
+    export interface RecipeBrepSphere extends RecipeBrepPlacement {
+        kind: "sphere";
+        radius: number;
+    }
+    // @beta
+    export type RecipeBrepSurface = RecipeBrepPlane | RecipeBrepCylinder | RecipeBrepCone | RecipeBrepSphere | RecipeBrepTorus | RecipeBrepBSplineSurface | RecipeBrepRevolution | RecipeBrepExtrusion;
+    // @beta
+    export interface RecipeBrepTorus extends RecipeBrepPlacement {
+        kind: "torus";
+        majorRadius: number;
+        minorRadius: number;
+    }
+    // @beta
     export interface RecipeBuffers {
         f64: Float64Array;
         i32: Int32Array;
@@ -155,7 +275,7 @@ export namespace Base {
         profiles: number[];
     }
     // @beta
-    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode;
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode | RecipeBrepNode;
     // @beta
     export interface RecipePolygonNode {
         holes: RecipeRange[];
@@ -955,10 +1075,11 @@ export namespace IFC {
         type?: string | undefined;
     }
     export class GeometryDto<T> {
-        constructor(model?: T, elements?: string[], groupByClass?: boolean);
+        constructor(model?: T, elements?: string[], groupByClass?: boolean, propertySets?: boolean);
         elements?: string[] | undefined;
         groupByClass?: boolean | undefined;
         model: T;
+        propertySets?: boolean | undefined;
     }
     export class GeometryElementsDto<T> {
         constructor(model?: T, elements?: string[]);
@@ -971,7 +1092,7 @@ export namespace IFC {
         type: string;
     }
     export class GeometryToDocumentDto<T> {
-        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean);
+        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean, propertySets?: boolean);
         elements?: string[] | undefined;
         emptyWhenFailed?: boolean | undefined;
         facetedMeshes?: boolean | undefined;
@@ -979,6 +1100,7 @@ export namespace IFC {
         maxTriangles?: number | undefined;
         model: T;
         name?: string | undefined;
+        propertySets?: boolean | undefined;
     }
     export class GeometryToShapesDto<T> {
         constructor(model?: T, elements?: string[], adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number);
@@ -990,7 +1112,7 @@ export namespace IFC {
         model: T;
     }
     export class GeometryToStepDto<T> {
-        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean);
+        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean, propertySets?: boolean);
         compress?: boolean | undefined;
         elements?: string[] | undefined;
         emptyWhenFailed?: boolean | undefined;
@@ -1000,6 +1122,7 @@ export namespace IFC {
         maxTriangles?: number | undefined;
         model: T;
         name?: string | undefined;
+        propertySets?: boolean | undefined;
         tryDownload?: boolean | undefined;
     }
     export class GeoreferenceDto {
@@ -1309,17 +1432,17 @@ namespace IFC_2 {
     // (undocumented)
     type ElementsDto<T> = WithDefaults<Inputs.IFC.ElementsDto<T>, "type">;
     // (undocumented)
-    type GeometryDto<T> = WithDefaults<Inputs.IFC.GeometryDto<T>, "groupByClass">;
+    type GeometryDto<T> = WithDefaults<Inputs.IFC.GeometryDto<T>, "groupByClass" | "propertySets">;
     // (undocumented)
     type GeometryElementsDto<T> = Inputs.IFC.GeometryElementsDto<T>;
     // (undocumented)
     type GeometryProblemDto = WithDefaults<Inputs.IFC.GeometryProblemDto, "globalId" | "type" | "message">;
     // (undocumented)
-    type GeometryToDocumentDto<T> = WithDefaults<Inputs.IFC.GeometryToDocumentDto<T>, "name" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "groupByClass">;
+    type GeometryToDocumentDto<T> = WithDefaults<Inputs.IFC.GeometryToDocumentDto<T>, "name" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "groupByClass" | "propertySets">;
     // (undocumented)
     type GeometryToShapesDto<T> = WithDefaults<Inputs.IFC.GeometryToShapesDto<T>, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
     // (undocumented)
-    type GeometryToStepDto<T> = WithDefaults<Inputs.IFC.GeometryToStepDto<T>, "name" | "fileName" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "compress" | "tryDownload" | "groupByClass">;
+    type GeometryToStepDto<T> = WithDefaults<Inputs.IFC.GeometryToStepDto<T>, "name" | "fileName" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "compress" | "tryDownload" | "groupByClass" | "propertySets">;
     // (undocumented)
     type GeoreferenceDto = WithDefaults<Inputs.IFC.GeoreferenceDto, "mapped" | "crs" | "eastings" | "northings" | "orthogonalHeight" | "xAxisAbscissa" | "xAxisOrdinate" | "scale" | "located" | "latitude" | "longitude" | "elevation">;
     // (undocumented)

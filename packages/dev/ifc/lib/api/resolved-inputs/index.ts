@@ -40,12 +40,12 @@ export namespace IFC {
     export type ElementDto<T> = Inputs.IFC.ElementDto<T>;
     export type ElementInfoDto = WithDefaults<Inputs.IFC.ElementInfoDto, "globalId" | "type" | "name" | "storey">;
     export type ElementsDto<T> = WithDefaults<Inputs.IFC.ElementsDto<T>, "type">;
-    export type GeometryDto<T> = WithDefaults<Inputs.IFC.GeometryDto<T>, "groupByClass">;
+    export type GeometryDto<T> = WithDefaults<Inputs.IFC.GeometryDto<T>, "groupByClass" | "propertySets">;
     export type GeometryElementsDto<T> = Inputs.IFC.GeometryElementsDto<T>;
     export type GeometryProblemDto = WithDefaults<Inputs.IFC.GeometryProblemDto, "globalId" | "type" | "message">;
-    export type GeometryToDocumentDto<T> = WithDefaults<Inputs.IFC.GeometryToDocumentDto<T>, "name" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "groupByClass">;
+    export type GeometryToDocumentDto<T> = WithDefaults<Inputs.IFC.GeometryToDocumentDto<T>, "name" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "groupByClass" | "propertySets">;
     export type GeometryToShapesDto<T> = WithDefaults<Inputs.IFC.GeometryToShapesDto<T>, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
-    export type GeometryToStepDto<T> = WithDefaults<Inputs.IFC.GeometryToStepDto<T>, "name" | "fileName" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "compress" | "tryDownload" | "groupByClass">;
+    export type GeometryToStepDto<T> = WithDefaults<Inputs.IFC.GeometryToStepDto<T>, "name" | "fileName" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "compress" | "tryDownload" | "groupByClass" | "propertySets">;
     export type GeoreferenceDto = WithDefaults<Inputs.IFC.GeoreferenceDto, "mapped" | "crs" | "eastings" | "northings" | "orthogonalHeight" | "xAxisAbscissa" | "xAxisOrdinate" | "scale" | "located" | "latitude" | "longitude" | "elevation">;
     export type GetAttributeDto<T> = WithDefaults<Inputs.IFC.GetAttributeDto<T>, "attribute">;
     export type GlobalIdOfDto<T> = Inputs.IFC.GlobalIdOfDto<T>;

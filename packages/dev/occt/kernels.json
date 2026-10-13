@@ -2,10 +2,10 @@
     "kernels": [
         {
             "dir": "bitbybit-dev-occt",
-            "file": "bitbybit-dev-occt.ca35ee3e.wasm",
-            "bytes": 31368705,
-            "sha256": "558104795c0d60c2b227fa7411e644f961ff727fbca1ce83916fa9d2ddcd5ea3",
-            "url": "https://github.com/bitbybit-dev/bitbybit-assets/releases/download/kernel-bitbybit-dev-occt.ca35ee3e/bitbybit-dev-occt.ca35ee3e.wasm"
+            "file": "bitbybit-dev-occt.cf874b42.wasm",
+            "bytes": 31480697,
+            "sha256": "8b002207a3f25452053ba2cca42ffedd937e716967f1a3e645c4b007d2fcb89b",
+            "url": ""
         },
         {
             "dir": "bitbybit-dev-occt-64-bit",

@@ -10,6 +10,7 @@ export interface StepFailure {
 export interface BuiltRootReport {
     readonly built: true;
     readonly uncut?: StepFailure;
+    readonly approximated?: StepFailure;
 }
 
 export interface FailedRootReport extends StepFailure {
@@ -50,4 +51,9 @@ export interface RecipeDocumentPlan {
     readonly parts: readonly PlannedPart[];
     readonly instances: readonly PlannedInstance[];
     readonly lengthUnit: StepLengthUnit;
+}
+
+export interface KernelBrepDescription {
+    readonly description: string;
+    readonly numbers: ArrayLike<number>;
 }

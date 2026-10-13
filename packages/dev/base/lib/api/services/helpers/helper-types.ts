@@ -38,3 +38,14 @@ export interface RefinedSurfaceMesh {
     readonly positions: Inputs.Base.Point3[];
     readonly triangles: number[];
 }
+
+export interface WindingComponents {
+    readonly flips: Uint8Array;
+    readonly component: Int32Array;
+    readonly count: number;
+}
+
+export interface EdgeUses {
+    readonly uses: Map<number, number[]>;
+    readonly stride: number;
+}

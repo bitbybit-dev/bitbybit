@@ -55,6 +55,8 @@ function requiredInputsOf(node: Base.RecipeNode): readonly number[] {
             return [node.profile];
         case "loft":
             return node.profiles;
+        case "brep":
+            return node.fallback === undefined ? [] : [node.fallback];
         default:
             return [];
     }
@@ -215,6 +217,11 @@ class RecipeExecutor {
                 return this.revolve(node, index);
             case "loft":
                 return this.loft(node, index);
+            case "brep":
+                if (node.fallback === undefined) {
+                    throw new Error(`Recipe node ${index} describes faces on exact surfaces, which this kernel does not build, and gives no fallback to build instead`);
+                }
+                return this.solid(node.fallback).translate([0, 0, 0]);
         }
     }
 

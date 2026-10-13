@@ -138,7 +138,23 @@ describe("IFC geometry built with OpenCascade", () => {
             await ifc.geometry.toStep({ model, elements: ["floor"], groupByClass: false });
 
             // Assert
-            expect(recipe.mock.calls[0]![0]).toEqual({ model, elements: ["floor"], groupByClass: false });
+            expect(recipe.mock.calls[0]![0]).toEqual({ model, elements: ["floor"], groupByClass: false, propertySets: true });
+        });
+
+        it("should give each product its element's property set values, unless asked not to", async () => {
+            // Arrange
+            const withSet = await ifc.properties.addSet({ model, elements: ["floor"], name: "Pset_SlabCommon", properties: [{ name: "IsExternal", value: false }, { name: "Reference", value: "S-1" }] });
+            const document: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-entity" };
+            const buildDocument = vi.spyOn(occt.recipes, "buildDocument").mockResolvedValue(document);
+
+            // Act
+            await ifc.geometry.toDocument({ model: withSet, elements: ["floor"] });
+            await ifc.geometry.toDocument({ model: withSet, elements: ["floor"], propertySets: false });
+
+            // Assert
+            const [withValues, without] = buildDocument.mock.calls.map((call) => call[0].recipe.roots[0]!.tag);
+            expect(withValues).toMatchObject({ "Pset_SlabCommon.IsExternal": false, "Pset_SlabCommon.Reference": "S-1", type: "IfcSlab" });
+            expect(Object.keys(without!).some((key) => key.startsWith("Pset_"))).toBe(false);
         });
 
         it("should hand the kernel the document options as given or defaulted", async () => {
@@ -172,6 +188,19 @@ describe("IFC geometry built with OpenCascade", () => {
             expect(text).toContain("PRODUCT('Room'");
             expect(text).toContain(`'${wall}'`);
             expect(deleteDocument).toHaveBeenCalledTimes(1);
+        });
+
+        it("should write an element's property set values into the STEP file as its product's properties", async () => {
+            // Arrange
+            const withSet = await ifc.properties.addSet({ model, elements: ["floor"], name: "Pset_SlabCommon", properties: [{ name: "Reference", value: "Slab S-1" }] });
+
+            // Act
+            const step = await ifc.geometry.toStep({ model: withSet, elements: ["floor"], name: "Room", fileName: "room.step" });
+            const text = new TextDecoder().decode(step);
+
+            // Assert
+            expect(text).toContain("'Pset_SlabCommon.Reference'");
+            expect(text).toContain("'Slab S-1'");
         });
 
         it("should let go of the document when the export fails, and pass the failure on", async () => {

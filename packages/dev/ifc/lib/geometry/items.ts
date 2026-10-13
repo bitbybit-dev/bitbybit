@@ -15,6 +15,7 @@ import { operatorMatrix } from "./operators";
 import { profileRegion } from "./profiles";
 import { regionSolid } from "./regions";
 import { SweptSolids } from "./swept-solids";
+import { ExactBreps } from "./exact-brep";
 import type { RecipeBuilder } from "./recipe-builder";
 
 const IDENTITY = axesToMatrix(WORLD_AXES);
@@ -27,6 +28,7 @@ const MESH_ITEMS: ReadonlySet<string> = new Set([
     "IfcTriangulatedFaceSet", "IfcPolygonalFaceSet", "IfcFacetedBrep", "IfcFacetedBrepWithVoids", "IfcAdvancedBrep", "IfcAdvancedBrepWithVoids", "IfcFaceBasedSurfaceModel", "IfcShellBasedSurfaceModel",
 ]);
 const BREPS_WITH_VOIDS: ReadonlySet<string> = new Set(["IfcFacetedBrepWithVoids", "IfcAdvancedBrepWithVoids"]);
+const ADVANCED_BREPS: ReadonlySet<string> = new Set(["IfcAdvancedBrep", "IfcAdvancedBrepWithVoids"]);
 
 function isIdentity(matrix: readonly number[]): boolean {
     return matrix.every((value, index) => value === IDENTITY[index]);
@@ -46,6 +48,7 @@ export class ItemConverter {
     private readonly representations = new Map<number, readonly RecipePart[]>();
     private readonly itemColours = new Map<number, number[] | undefined>();
     private readonly solids: SweptSolids;
+    private exact: ExactBreps | undefined;
 
     constructor(model: ModelSnapshot, builder: RecipeBuilder, reach: number) {
         this.model = model;
@@ -139,11 +142,12 @@ export class ItemConverter {
             case "IfcPolygonalFaceSet":
             case "IfcFacetedBrep":
             case "IfcFacetedBrepWithVoids":
-            case "IfcAdvancedBrep":
-            case "IfcAdvancedBrepWithVoids":
             case "IfcFaceBasedSurfaceModel":
             case "IfcShellBasedSurfaceModel":
                 return this.meshNode(item, this.meshOf(item));
+            case "IfcAdvancedBrep":
+            case "IfcAdvancedBrepWithVoids":
+                return this.advancedBreps(item, [item]);
             default:
                 throw new UnsupportedGeometryError(`An ${type} is not supported yet`);
         }
@@ -266,6 +270,9 @@ export class ItemConverter {
     private groupNode(representation: number, entries: readonly PartEntry[]): number {
         const meshes = entries.flatMap((entry) => ("item" in entry && MESH_ITEMS.has(this.model.typeOf(entry.item) ?? "") ? [entry.item] : []));
         if (entries.length > 1 && meshes.length === entries.length) {
+            if (meshes.every((item) => ADVANCED_BREPS.has(this.model.typeOf(item) ?? ""))) {
+                return this.advancedBreps(representation, meshes);
+            }
             return this.meshNode(representation, concatenated(meshes.map((item) => this.meshOf(item))));
         }
         return this.joined(entries.map((entry) => ("item" in entry ? this.item(entry.item) : entry.node)));
@@ -294,6 +301,28 @@ export class ItemConverter {
         }
         const matrix = operatorMatrix(this.model, target.ref);
         return isIdentity(matrix) ? shared : shared.map((part) => ({ rgba: part.rgba, node: this.builder.node({ op: "transform", of: part.node, matrix }) }));
+    }
+
+    private advancedBreps(owner: number, items: readonly number[]): number {
+        let fallback: number | undefined;
+        let meshFailure: UnsupportedGeometryError | undefined;
+        try {
+            fallback = this.meshNode(owner, concatenated(items.map((item) => this.meshOf(item))));
+        } catch (thrown) {
+            if (!(thrown instanceof UnsupportedGeometryError)) {
+                throw thrown;
+            }
+            meshFailure = thrown;
+        }
+        this.exact ??= new ExactBreps(this.model, this.builder, this.curves);
+        const exact = this.exact.describe(items);
+        if (exact === undefined) {
+            if (fallback === undefined) {
+                throw meshFailure!;
+            }
+            return fallback;
+        }
+        return this.builder.node(fallback === undefined ? exact : { ...exact, fallback });
     }
 
     private meshNode(item: number, mesh: TriangleMesh): number {

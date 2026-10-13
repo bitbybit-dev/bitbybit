@@ -4518,10 +4518,11 @@ namespace IFC {
         type?: string | undefined;
     }
     class GeometryDto<T> {
-        constructor(model?: T, elements?: string[], groupByClass?: boolean);
+        constructor(model?: T, elements?: string[], groupByClass?: boolean, propertySets?: boolean);
         elements?: string[] | undefined;
         groupByClass?: boolean | undefined;
         model: T;
+        propertySets?: boolean | undefined;
     }
     class GeometryElementsDto<T> {
         constructor(model?: T, elements?: string[]);
@@ -4534,7 +4535,7 @@ namespace IFC {
         type: string;
     }
     class GeometryToDocumentDto<T> {
-        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean);
+        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean, propertySets?: boolean);
         elements?: string[] | undefined;
         emptyWhenFailed?: boolean | undefined;
         facetedMeshes?: boolean | undefined;
@@ -4542,6 +4543,7 @@ namespace IFC {
         maxTriangles?: number | undefined;
         model: T;
         name?: string | undefined;
+        propertySets?: boolean | undefined;
     }
     class GeometryToShapesDto<T> {
         constructor(model?: T, elements?: string[], adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number);
@@ -4553,7 +4555,7 @@ namespace IFC {
         model: T;
     }
     class GeometryToStepDto<T> {
-        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean);
+        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean, propertySets?: boolean);
         compress?: boolean | undefined;
         elements?: string[] | undefined;
         emptyWhenFailed?: boolean | undefined;
@@ -4563,6 +4565,7 @@ namespace IFC {
         maxTriangles?: number | undefined;
         model: T;
         name?: string | undefined;
+        propertySets?: boolean | undefined;
         tryDownload?: boolean | undefined;
     }
     class GeoreferenceDto {
@@ -4873,17 +4876,17 @@ namespace IFC_2 {
     // (undocumented)
     type ElementsDto<T> = WithDefaults<Inputs_6.IFC.ElementsDto<T>, "type">;
     // (undocumented)
-    type GeometryDto<T> = WithDefaults<Inputs_6.IFC.GeometryDto<T>, "groupByClass">;
+    type GeometryDto<T> = WithDefaults<Inputs_6.IFC.GeometryDto<T>, "groupByClass" | "propertySets">;
     // (undocumented)
     type GeometryElementsDto<T> = Inputs_6.IFC.GeometryElementsDto<T>;
     // (undocumented)
     type GeometryProblemDto = WithDefaults<Inputs_6.IFC.GeometryProblemDto, "globalId" | "type" | "message">;
     // (undocumented)
-    type GeometryToDocumentDto<T> = WithDefaults<Inputs_6.IFC.GeometryToDocumentDto<T>, "name" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "groupByClass">;
+    type GeometryToDocumentDto<T> = WithDefaults<Inputs_6.IFC.GeometryToDocumentDto<T>, "name" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "groupByClass" | "propertySets">;
     // (undocumented)
     type GeometryToShapesDto<T> = WithDefaults<Inputs_6.IFC.GeometryToShapesDto<T>, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
     // (undocumented)
-    type GeometryToStepDto<T> = WithDefaults<Inputs_6.IFC.GeometryToStepDto<T>, "name" | "fileName" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "compress" | "tryDownload" | "groupByClass">;
+    type GeometryToStepDto<T> = WithDefaults<Inputs_6.IFC.GeometryToStepDto<T>, "name" | "fileName" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "compress" | "tryDownload" | "groupByClass" | "propertySets">;
     // (undocumented)
     type GeoreferenceDto = WithDefaults<Inputs_6.IFC.GeoreferenceDto, "mapped" | "crs" | "eastings" | "northings" | "orthogonalHeight" | "xAxisAbscissa" | "xAxisOrdinate" | "scale" | "located" | "latitude" | "longitude" | "elevation">;
     // (undocumented)
@@ -7968,6 +7971,12 @@ namespace OCCT {
         isoCurveList?: Base.Point3[][] | undefined;
         pointsList: Base.Point3[];
     }
+    // @beta
+    class DescribeRecipeDto<T> {
+        constructor(shape?: T, millimetresPerUnit?: number);
+        millimetresPerUnit?: number | undefined;
+        shape: T;
+    }
     class DesignBuildDto<T> {
         constructor(document?: Models.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[], sketches?: boolean);
         assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
@@ -10685,6 +10694,8 @@ namespace OCCT_3 {
     type DecomposedManifoldMeshDto = Inputs_7.OCCT.DecomposedManifoldMeshDto;
     // (undocumented)
     type DecomposedMeshDto = Inputs_7.OCCT.DecomposedMeshDto;
+    // (undocumented)
+    type DescribeRecipeDto<T> = WithDefaults<Inputs_7.OCCT.DescribeRecipeDto<T>, "millimetresPerUnit">;
     // (undocumented)
     type DesignBuildDto<T> = Inputs_7.OCCT.DesignBuildDto<T>;
     // (undocumented)

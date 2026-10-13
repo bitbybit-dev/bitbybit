@@ -125,3 +125,8 @@ export interface PartGroup {
     readonly rgba: readonly number[] | undefined;
     readonly entries: PartEntry[];
 }
+
+export interface BrepEdgeEnds {
+    readonly start: Base.Point3;
+    readonly end: Base.Point3;
+}

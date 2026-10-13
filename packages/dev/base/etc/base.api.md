@@ -111,6 +111,126 @@ export namespace Base {
         version: 1;
     }
     // @beta
+    export interface RecipeBrepBound {
+        edges: number[];
+        forward: boolean[];
+        outer: boolean;
+    }
+    // @beta
+    export interface RecipeBrepBSplineCurve {
+        degree: number;
+        kind: "bspline";
+        knots: RecipeRange;
+        multiplicities: number[];
+        points: RecipeRange;
+        weights?: RecipeRange | undefined;
+    }
+    // @beta
+    export interface RecipeBrepBSplineSurface {
+        kind: "bspline";
+        points: RecipeRange;
+        uCount: number;
+        uDegree: number;
+        uKnots: RecipeRange;
+        uMultiplicities: number[];
+        vCount: number;
+        vDegree: number;
+        vKnots: RecipeRange;
+        vMultiplicities: number[];
+        weights?: RecipeRange | undefined;
+    }
+    // @beta
+    export interface RecipeBrepCircle extends RecipeBrepPlacement {
+        kind: "circle";
+        radius: number;
+    }
+    // @beta
+    export interface RecipeBrepCone extends RecipeBrepPlacement {
+        kind: "cone";
+        radius: number;
+        semiAngle: number;
+    }
+    // @beta
+    export type RecipeBrepCurve = RecipeBrepLine | RecipeBrepCircle | RecipeBrepEllipse | RecipeBrepBSplineCurve;
+    // @beta
+    export interface RecipeBrepCylinder extends RecipeBrepPlacement {
+        kind: "cylinder";
+        radius: number;
+    }
+    // @beta
+    export interface RecipeBrepEdge {
+        curve: number;
+        end: number;
+        parameters?: [number, number] | undefined;
+        sameSense?: boolean | undefined;
+        start: number;
+    }
+    // @beta
+    export interface RecipeBrepEllipse extends RecipeBrepPlacement {
+        kind: "ellipse";
+        xRadius: number;
+        yRadius: number;
+    }
+    // @beta
+    export interface RecipeBrepExtrusion {
+        curve: number;
+        direction: Vector3;
+        kind: "extrusion";
+    }
+    // @beta
+    export interface RecipeBrepFace {
+        bounds: RecipeBrepBound[];
+        sameSense: boolean;
+        surface: number;
+    }
+    // @beta
+    export interface RecipeBrepLine {
+        direction: Vector3;
+        kind: "line";
+        origin: Point3;
+    }
+    // @beta
+    export interface RecipeBrepNode {
+        closed: boolean;
+        curves: RecipeBrepCurve[];
+        edges: RecipeBrepEdge[];
+        faces: RecipeBrepFace[];
+        fallback?: number | undefined;
+        op: "brep";
+        surfaces: RecipeBrepSurface[];
+        vertices: RecipeRange;
+    }
+    // @beta
+    export interface RecipeBrepPlacement {
+        axis: Vector3;
+        origin: Point3;
+        xDirection: Vector3;
+    }
+    // @beta
+    export interface RecipeBrepPlane extends RecipeBrepPlacement {
+        kind: "plane";
+    }
+    // @beta
+    export interface RecipeBrepRevolution {
+        axis: Vector3;
+        curve: number;
+        kind: "revolution";
+        origin: Point3;
+    }
+    // @beta
+    export interface RecipeBrepSphere extends RecipeBrepPlacement {
+        kind: "sphere";
+        radius: number;
+    }
+    // @beta
+    export type RecipeBrepSurface = RecipeBrepPlane | RecipeBrepCylinder | RecipeBrepCone | RecipeBrepSphere | RecipeBrepTorus | RecipeBrepBSplineSurface | RecipeBrepRevolution | RecipeBrepExtrusion;
+    // @beta
+    export interface RecipeBrepTorus extends RecipeBrepPlacement {
+        kind: "torus";
+        majorRadius: number;
+        minorRadius: number;
+    }
+    // @beta
     export interface RecipeBuffers {
         f64: Float64Array;
         i32: Int32Array;
@@ -163,7 +283,7 @@ export namespace Base {
         profiles: number[];
     }
     // @beta
-    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode;
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode | RecipeBrepNode;
     // @beta
     export interface RecipePolygonNode {
         holes: RecipeRange[];

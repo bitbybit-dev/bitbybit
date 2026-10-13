@@ -212,6 +212,7 @@
     "path.shapeFromPath",
     "recipes.build",
     "recipes.buildDocument",
+    "recipes.describe",
     "select.edges.along",
     "select.edges.between",
     "select.edges.byLength",

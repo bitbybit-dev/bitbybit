@@ -10,6 +10,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const BATCH = 2000;
 const POINT3_SIZE = 3;
 const SET_SAMPLE = 5000;
+const EXACT_BOX_DEFLECTION = 1e-4;
 const MILLIMETRES_PER_METRE = 1000;
 const KILOBYTES_PER_MEGABYTE = 1024;
 const BYTES_PER_MEGABYTE = 1024 * 1024;
@@ -167,20 +168,57 @@ for (const batch of batches(ids)) {
     builtHosts.forEach((host) => host.delete());
 }
 
+function meshedBoxOf(occt, shape) {
+    const loose = occt.operations.boundingBoxOfShape({ shape });
+    const precision = Math.max(Math.hypot(...loose.size) * EXACT_BOX_DEFLECTION, Number.EPSILON);
+    const min = [Infinity, Infinity, Infinity];
+    const max = [-Infinity, -Infinity, -Infinity];
+    for (const face of occt.shapeToMesh({ shape, precision, adjustYtoZ: false }).faceList) {
+        boxOfPositionsInto(face.vertexCoord, min, max);
+    }
+    return { min: min.map((value) => value * metresPerUnit), max: max.map((value) => value * metresPerUnit) };
+}
+
+function boxOfPositionsInto(positions, min, max) {
+    for (let at = 0; at < positions.length; at += POINT3_SIZE) {
+        for (let axis = 0; axis < POINT3_SIZE; axis++) {
+            min[axis] = Math.min(min[axis], positions[at + axis]);
+            max[axis] = Math.max(max[axis], positions[at + axis]);
+        }
+    }
+}
+
 let exactMs;
 let exactEmpty;
+const exactVolumes = new Map();
+const exactBoxes = new Map();
 if (exact) {
     const occt = await occtService();
-    const start = performance.now();
     exactEmpty = 0;
+    let building = 0;
     for (const batch of batches(ids)) {
-        const shapes = occt.recipes.build({ recipe: ifc.geometry.recipe({ model, elements: batch }), emptyWhenFailed: true, facetedMeshes: false });
-        shapes.forEach((shape) => {
-            if (occt.shapes.face.getFaces({ shape }).length === 0) { exactEmpty++; }
+        const part = ifc.geometry.recipe({ model, elements: batch });
+        const start = performance.now();
+        const shapes = occt.recipes.build({ recipe: part, emptyWhenFailed: true, facetedMeshes: false });
+        building += performance.now() - start;
+        shapes.forEach((shape, index) => {
+            const id = String(part.roots[index]?.tag["globalId"]);
+            const faces = occt.shapes.face.getFaces({ shape });
+            if (faces.length === 0) {
+                exactEmpty++;
+            } else {
+                const solids = occt.shapes.solid.getSolids({ shape });
+                if (solids.length > 0) {
+                    exactVolumes.set(id, (exactVolumes.get(id) ?? 0) + solids.reduce((sum, solid) => sum + Math.abs(occt.shapes.solid.getSolidVolume({ shape: solid })), 0) * scale);
+                }
+                solids.forEach((solid) => solid.delete());
+                exactBoxes.set(id, joinBoxes(exactBoxes.get(id), meshedBoxOf(occt, shape)));
+            }
+            faces.forEach((face) => face.delete());
             shape.delete();
         });
     }
-    exactMs = Math.round(performance.now() - start);
+    exactMs = Math.round(building);
 }
 
 const [written, writeMs] = timed(() => ifc.model.writeBytes({ model, fileName: path.basename(file) }));
@@ -225,5 +263,7 @@ console.log(JSON.stringify({
     unitsAgree: inMetres?.unitsAgree,
     volumes: oracleElements === undefined ? undefined : compareVolumes(volumes, oracleElements),
     boxes: oracleElements === undefined ? undefined : compareBoxes(boxes, oracleElements),
+    exactVolumes: oracleElements === undefined || !exact ? undefined : compareVolumes(exactVolumes, oracleElements),
+    exactBoxes: oracleElements === undefined || !exact ? undefined : compareBoxes(exactBoxes, oracleElements),
     semantics: oracle?.semantics === undefined ? undefined : compareSemantics({ counts: summary.elementCounts, storeys: new Map(elements.map((element) => [element.globalId, element.storey])), sets: sampleSets }, oracle.semantics),
 }));

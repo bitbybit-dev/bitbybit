@@ -215,6 +215,7 @@ const DELEGATIONS: [string, (occt: OCCT) => unknown][] = [
     ["path.shapeFromPath", (o) => o.path.shapeFromPath(asInputs())],
     ["recipes.build", (o) => o.recipes.build(asInputs())],
     ["recipes.buildDocument", (o) => o.recipes.buildDocument(asInputs())],
+    ["recipes.describe", (o) => o.recipes.describe(asInputs())],
     ["select.edges.along", (o) => o.select.edges.along(asInputs())],
     ["select.edges.between", (o) => o.select.edges.between(asInputs())],
     ["select.edges.byLength", (o) => o.select.edges.byLength(asInputs())],

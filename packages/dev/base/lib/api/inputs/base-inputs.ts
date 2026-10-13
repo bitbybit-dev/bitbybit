@@ -151,8 +151,9 @@ export namespace Base {
     export interface RecipeBuffers {
         /**
          * Coordinates: flat `x, y` pairs for polygons, `x, y, z` triples for triangle positions and
-         * sixteen numbers for each frame of a loft. Every number in it is a coordinate, finite and
-         * between minus and plus one billion.
+         * vertices, sixteen numbers for each frame of a loft, and the control points, weights and
+         * knots of a brep node's curves and surfaces. Every number in it is finite and between minus
+         * and plus one billion.
          */
         f64: Float64Array;
         /**
@@ -411,10 +412,402 @@ export namespace Base {
         frames: RecipeRange;
     }
     /**
+     * Where a curve or surface of a brep node sits: an origin, its local Z axis and its local X
+     * axis, as IFC's and STEP's axis placements give them. The X axis is made square to the Z axis
+     * before use.
+     * @beta
+     */
+    export interface RecipeBrepPlacement {
+        /**
+         * The local origin.
+         */
+        origin: Point3;
+        /**
+         * The local Z axis: the normal of a plane, the axis of a cylinder, cone, sphere, torus or
+         * circle. Not a zero vector.
+         */
+        axis: Vector3;
+        /**
+         * The local X axis, where a circle's or a surface's parameters start. Not a zero vector, and
+         * not along `axis`.
+         */
+        xDirection: Vector3;
+    }
+    /**
+     * A straight line through `origin` along `direction`.
+     * @beta
+     */
+    export interface RecipeBrepLine {
+        /**
+         * Always `line`.
+         */
+        kind: "line";
+        /**
+         * A point on the line.
+         */
+        origin: Point3;
+        /**
+         * The line's direction, not a zero vector.
+         */
+        direction: Vector3;
+    }
+    /**
+     * A circle about its placement's axis, starting on its X axis.
+     * @beta
+     */
+    export interface RecipeBrepCircle extends RecipeBrepPlacement {
+        /**
+         * Always `circle`.
+         */
+        kind: "circle";
+        /**
+         * The radius, above zero.
+         */
+        radius: number;
+    }
+    /**
+     * An ellipse about its placement's axis, with one semi-axis along its X axis and the other
+     * square to it; either may be the longer.
+     * @beta
+     */
+    export interface RecipeBrepEllipse extends RecipeBrepPlacement {
+        /**
+         * Always `ellipse`.
+         */
+        kind: "ellipse";
+        /**
+         * The semi-axis along the placement's X axis, above zero.
+         */
+        xRadius: number;
+        /**
+         * The semi-axis square to it, above zero.
+         */
+        yRadius: number;
+    }
+    /**
+     * A B-spline curve, rational when it has weights, with its knots and their multiplicities as
+     * STEP and IFC write them: knots rising, and the multiplicities adding up to the number of
+     * control points plus the degree plus one.
+     * @beta
+     */
+    export interface RecipeBrepBSplineCurve {
+        /**
+         * Always `bspline`.
+         */
+        kind: "bspline";
+        /**
+         * The degree, from 1 to 25.
+         */
+        degree: number;
+        /**
+         * A range of `x, y, z` triples in `f64`: the control points, at least the degree plus one.
+         */
+        points: RecipeRange;
+        /**
+         * A range in `f64` with one weight above zero per control point; left out for a curve that
+         * is not rational.
+         */
+        weights?: RecipeRange | undefined;
+        /**
+         * A range in `f64` holding the distinct knots, rising.
+         */
+        knots: RecipeRange;
+        /**
+         * How many times each knot repeats, one whole number above zero per knot.
+         */
+        multiplicities: number[];
+    }
+    /**
+     * A curve an edge of a brep node lies on.
+     * @beta
+     */
+    export type RecipeBrepCurve = RecipeBrepLine | RecipeBrepCircle | RecipeBrepEllipse | RecipeBrepBSplineCurve;
+    /**
+     * A plane through its placement's origin, square to its axis.
+     * @beta
+     */
+    export interface RecipeBrepPlane extends RecipeBrepPlacement {
+        /**
+         * Always `plane`.
+         */
+        kind: "plane";
+    }
+    /**
+     * A cylinder about its placement's axis.
+     * @beta
+     */
+    export interface RecipeBrepCylinder extends RecipeBrepPlacement {
+        /**
+         * Always `cylinder`.
+         */
+        kind: "cylinder";
+        /**
+         * The radius, above zero.
+         */
+        radius: number;
+    }
+    /**
+     * A cone about its placement's axis, widening along it.
+     * @beta
+     */
+    export interface RecipeBrepCone extends RecipeBrepPlacement {
+        /**
+         * Always `cone`.
+         */
+        kind: "cone";
+        /**
+         * The radius in the plane through the origin square to the axis, zero or above.
+         */
+        radius: number;
+        /**
+         * The angle between the axis and the cone's side, in radians, above zero and below a
+         * quarter turn.
+         */
+        semiAngle: number;
+    }
+    /**
+     * A sphere about its placement's origin.
+     * @beta
+     */
+    export interface RecipeBrepSphere extends RecipeBrepPlacement {
+        /**
+         * Always `sphere`.
+         */
+        kind: "sphere";
+        /**
+         * The radius, above zero.
+         */
+        radius: number;
+    }
+    /**
+     * A torus about its placement's axis.
+     * @beta
+     */
+    export interface RecipeBrepTorus extends RecipeBrepPlacement {
+        /**
+         * Always `torus`.
+         */
+        kind: "torus";
+        /**
+         * The distance from the axis to the centre of the tube, above zero.
+         */
+        majorRadius: number;
+        /**
+         * The radius of the tube, above zero.
+         */
+        minorRadius: number;
+    }
+    /**
+     * A B-spline surface, rational when it has weights. Its control points form a net of
+     * `uCount` rows of `vCount` points, row by row, as STEP's list of lists does.
+     * @beta
+     */
+    export interface RecipeBrepBSplineSurface {
+        /**
+         * Always `bspline`.
+         */
+        kind: "bspline";
+        /**
+         * The degree along u, from 1 to 25.
+         */
+        uDegree: number;
+        /**
+         * The degree along v, from 1 to 25.
+         */
+        vDegree: number;
+        /**
+         * How many rows of control points there are along u.
+         */
+        uCount: number;
+        /**
+         * How many control points each row holds, along v.
+         */
+        vCount: number;
+        /**
+         * A range of `x, y, z` triples in `f64`: `uCount` times `vCount` control points.
+         */
+        points: RecipeRange;
+        /**
+         * A range in `f64` with one weight above zero per control point; left out for a surface
+         * that is not rational.
+         */
+        weights?: RecipeRange | undefined;
+        /**
+         * A range in `f64` holding the distinct knots along u, rising.
+         */
+        uKnots: RecipeRange;
+        /**
+         * How many times each knot along u repeats; they add up to `uCount` plus `uDegree` plus one.
+         */
+        uMultiplicities: number[];
+        /**
+         * A range in `f64` holding the distinct knots along v, rising.
+         */
+        vKnots: RecipeRange;
+        /**
+         * How many times each knot along v repeats; they add up to `vCount` plus `vDegree` plus one.
+         */
+        vMultiplicities: number[];
+    }
+    /**
+     * The surface a curve sweeps turning about an axis.
+     * @beta
+     */
+    export interface RecipeBrepRevolution {
+        /**
+         * Always `revolution`.
+         */
+        kind: "revolution";
+        /**
+         * The index of the curve that turns, among the node's curves.
+         */
+        curve: number;
+        /**
+         * A point on the axis.
+         */
+        origin: Point3;
+        /**
+         * The axis direction, not a zero vector.
+         */
+        axis: Vector3;
+    }
+    /**
+     * The surface a curve sweeps moving along a direction.
+     * @beta
+     */
+    export interface RecipeBrepExtrusion {
+        /**
+         * Always `extrusion`.
+         */
+        kind: "extrusion";
+        /**
+         * The index of the curve that moves, among the node's curves.
+         */
+        curve: number;
+        /**
+         * The direction it moves along, not a zero vector.
+         */
+        direction: Vector3;
+    }
+    /**
+     * A surface a face of a brep node lies on.
+     * @beta
+     */
+    export type RecipeBrepSurface = RecipeBrepPlane | RecipeBrepCylinder | RecipeBrepCone | RecipeBrepSphere | RecipeBrepTorus | RecipeBrepBSplineSurface | RecipeBrepRevolution | RecipeBrepExtrusion;
+    /**
+     * An edge of a brep node: the part of a curve between two vertices. Faces that meet along an
+     * edge name the same edge.
+     * @beta
+     */
+    export interface RecipeBrepEdge {
+        /**
+         * The index of the curve, among the node's curves.
+         */
+        curve: number;
+        /**
+         * The index of the vertex the edge starts at.
+         */
+        start: number;
+        /**
+         * The index of the vertex the edge ends at; the same as `start` for a closed edge, such as a
+         * whole circle.
+         */
+        end: number;
+        /**
+         * Whether the edge runs from `start` to `end` the way the curve runs; left out, it does.
+         * A closed edge with no `parameters` takes the whole curve.
+         */
+        sameSense?: boolean | undefined;
+        /**
+         * The curve's parameters at the start and the end; left out, they are found from the
+         * vertices.
+         */
+        parameters?: [number, number] | undefined;
+    }
+    /**
+     * A loop bounding a face: edges in order, each run forward or backward, end to end.
+     * @beta
+     */
+    export interface RecipeBrepBound {
+        /**
+         * Whether this is the face's outer boundary; a face has at most one.
+         */
+        outer: boolean;
+        /**
+         * The indices of the edges, in the order the loop runs.
+         */
+        edges: number[];
+        /**
+         * For each edge, whether the loop runs it from its start to its end.
+         */
+        forward: boolean[];
+    }
+    /**
+     * A face of a brep node: the part of a surface its bounds enclose.
+     * @beta
+     */
+    export interface RecipeBrepFace {
+        /**
+         * The index of the surface, among the node's surfaces.
+         */
+        surface: number;
+        /**
+         * Whether the face's outward side is the surface's normal side.
+         */
+        sameSense: boolean;
+        /**
+         * The loops bounding the face, at least one.
+         */
+        bounds: RecipeBrepBound[];
+    }
+    /**
+     * A boundary representation given exactly, as STEP and IFC describe one: vertices, edges on
+     * curves, and faces on surfaces bounded by loops of those edges. Faces meet on shared edges, so
+     * a closed set of faces is a solid.
+     *
+     * A kernel that builds no exact surfaces builds `fallback` instead, a node describing the same
+     * faces approximately, such as their triangles.
+     * @beta
+     */
+    export interface RecipeBrepNode {
+        /**
+         * Always `brep`.
+         */
+        op: "brep";
+        /**
+         * A range of `x, y, z` triples in `f64`: the vertices.
+         */
+        vertices: RecipeRange;
+        /**
+         * The curves the edges lie on, and the curves surfaces of revolution and extrusion sweep.
+         */
+        curves: RecipeBrepCurve[];
+        /**
+         * The surfaces the faces lie on.
+         */
+        surfaces: RecipeBrepSurface[];
+        /**
+         * The edges.
+         */
+        edges: RecipeBrepEdge[];
+        /**
+         * The faces, at least one.
+         */
+        faces: RecipeBrepFace[];
+        /**
+         * Whether the faces close a volume, so the result is a solid rather than a shell.
+         */
+        closed: boolean;
+        /**
+         * The index of an earlier node to build where exact surfaces cannot be, or are not built.
+         */
+        fallback?: number | undefined;
+    }
+    /**
      * One step of a recipe. A node refers only to nodes before it, by their position in the list.
      * @beta
      */
-    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode;
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode | RecipeUnionNode | RecipeIntersectionNode | RecipeRevolveNode | RecipeLoftNode | RecipeBrepNode;
     /**
      * A value a recipe carries through to its results untouched.
      * @beta

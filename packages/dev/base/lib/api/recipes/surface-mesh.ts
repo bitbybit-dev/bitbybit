@@ -25,6 +25,8 @@ function collectPieces(nodes: readonly Base.RecipeNode[], index: number, matrix:
             return node.of.every((child) => collectPieces(nodes, child, matrix, pieces));
         case "voids":
             return collectPieces(nodes, node.host, matrix, pieces);
+        case "brep":
+            return node.fallback !== undefined && collectPieces(nodes, node.fallback, matrix, pieces);
         default:
             return false;
     }

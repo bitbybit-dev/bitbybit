@@ -48,8 +48,8 @@ export class IFCWGeometry extends IFCGeometry {
 
     /**
      * Builds a model's elements into an OpenCascade assembly document for STEP or glTF: a product
-     * per element with its GlobalId and IFC type as properties, nested in its site, building and
-     * storey, by IFC class unless `groupByClass` is false, one part per type placed many times.
+     * per element, its GlobalId, IFC type and property sets as properties, nested by site, building,
+     * storey and IFC class, one part per type placed many times.
      *
      * Millimetres unless STEP can state the model's unit; delete it with
      * `occt.assembly.manager.deleteDocument`.
@@ -67,7 +67,7 @@ export class IFCWGeometry extends IFCGeometry {
      */
     async toDocument(inputs: Inputs.IFC.GeometryToDocumentDto<Inputs.IFC.IfcModelPointer>): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
         const resolved = resolveDto(Inputs.IFC.GeometryToDocumentDto, inputs) as Resolved.IFC.GeometryToDocumentDto<Inputs.IFC.IfcModelPointer>;
-        const recipe = await this.recipe({ model: resolved.model, elements: resolved.elements, groupByClass: resolved.groupByClass });
+        const recipe = await this.recipe({ model: resolved.model, elements: resolved.elements, groupByClass: resolved.groupByClass, propertySets: resolved.propertySets });
         return this.occt.recipes.buildDocument({
             recipe, name: resolved.name, emptyWhenFailed: resolved.emptyWhenFailed,
             facetedMeshes: resolved.facetedMeshes, maxTriangles: resolved.maxTriangles,
@@ -96,7 +96,7 @@ export class IFCWGeometry extends IFCGeometry {
         const resolved = resolveDto(Inputs.IFC.GeometryToStepDto, inputs) as Resolved.IFC.GeometryToStepDto<Inputs.IFC.IfcModelPointer>;
         const document = await this.toDocument({
             model: resolved.model, elements: resolved.elements, name: resolved.name, emptyWhenFailed: resolved.emptyWhenFailed,
-            facetedMeshes: resolved.facetedMeshes, maxTriangles: resolved.maxTriangles, groupByClass: resolved.groupByClass,
+            facetedMeshes: resolved.facetedMeshes, maxTriangles: resolved.maxTriangles, groupByClass: resolved.groupByClass, propertySets: resolved.propertySets,
         });
         try {
             return await this.occt.assembly.manager.exportDocumentToStep({
