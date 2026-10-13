@@ -596,4 +596,4 @@ camera:
 designer:
   label: Designer
   permalink: /designer
-  description: The Designer, Bitbybit's interactive CAD modeller for parts and assemblies, built by clicking or by an AI agent on the OpenCascade kernel.
+  description: The Designer, Bitbybit's interactive CAD modeller for parts and assemblies, built by clicking or by an AI agent on the Bitbybit OCCT Kernel.

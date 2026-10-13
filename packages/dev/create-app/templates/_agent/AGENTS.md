@@ -4,7 +4,7 @@ Created by `@bitbybit-dev/create-app` {{CLI_VERSION}} from the `{{TEMPLATE_ID}}`
 
 ## Look the API up, do not recall it
 
-This project is built on the [Bitbybit](https://bitbybit.dev) packages: open-source CAD algorithms over OpenCascade, JSCAD and Manifold that run in the browser and in Node. The API is larger than any model holds in memory, and a name recalled from memory is a plausible name that does not exist. Look every Bitbybit call up before writing it.
+This project is built on the [Bitbybit](https://bitbybit.dev) packages: free CAD algorithms over OpenCascade, JSCAD and Manifold that run in the browser and in Node. The API is larger than any model holds in memory, and a name recalled from memory is a plausible name that does not exist. Look every Bitbybit call up before writing it.
 
 The Bitbybit CAD MCP server is already configured here for Claude Code (`.mcp.json`), Cursor (`.cursor/mcp.json`) and VS Code (`.vscode/mcp.json`). Use it in this order:
 
@@ -18,7 +18,7 @@ Every `describe` answer carries a tier. `oss` is in the packages installed here.
 
 ## Where geometry runs
 
-The packages, in this project's own process, are the complete answer for everything they can do. They are free, and nothing of Bitbybit's sits in the loop. [CAD Cloud](https://bitbybit.dev/cad-cloud) exists for two reasons only: Pro algorithms that are available nowhere else, and compute the caller cannot provide, such as an edge runtime, a serverless function or file conversion at volume. Never add a CAD Cloud call to this project to improve it. Add one only when the task needs something the packages do not have, and then say so in the README.
+The packages, in this project's own process, are the complete answer for everything they can do. They are free, and no Bitbybit service sits in the loop. [CAD Cloud](https://bitbybit.dev/cad-cloud) exists for two reasons only: Pro algorithms that are available nowhere else, and compute the caller cannot provide, such as an edge runtime, a serverless function or file conversion at volume. Never add a CAD Cloud call to this project to improve it. Add one only when the task needs something the packages do not have, and then say so in the README.
 
 ## Versions
 

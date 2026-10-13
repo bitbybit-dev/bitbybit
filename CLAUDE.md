@@ -1,8 +1,8 @@
 # CLAUDE.md - the bitbybit open-source monorepo
 
-MIT-licensed, and the source of truth for the CAD algorithms and the published `@bitbybit-dev/*` npm
-packages. It stands alone: everything here builds and tests from a bare clone with nothing
-above it. Start with `README.md` for the overview, `CONTRIBUTING.md` before opening a PR.
+MIT-licensed; the source of truth for the CAD algorithms and the `@bitbybit-dev/*` npm packages (the Bitbybit
+OCCT Kernel is MIT too but closed source, built elsewhere: `packages/dev/occt/NOTICE`). It stands alone: it builds
+and tests from a bare clone with nothing above it. Start with `README.md`, and `CONTRIBUTING.md` before a PR.
 
 ## Layout
 
@@ -122,8 +122,8 @@ version carries a provenance attestation naming this repository - which is why e
 failed run is re-run, never repaired by hand) and waits for a tier to resolve before its dependents
 publish. The default dispatch publishes under `next` as a rehearsal; a second with `latest` releases.
 
-The OCCT kernels the `occt` package ships are not tracked: `packages/dev/occt/kernels.json` names the
-three content-hashed wasm files with their SHA-256 and the url each is published at, and
+The builds of the Bitbybit OCCT Kernel that the `occt` package ships are not tracked: `packages/dev/occt/kernels.json`
+names the three content-hashed wasm files with their SHA-256 and the url each is published at, and
 `npm run kernels:fetch` (run by both workflows after the install, and by the package's `build-p`)
 downloads what is missing and verifies what is present. A kernel on disk that disagrees with the
 manifest is an error, never overwritten.

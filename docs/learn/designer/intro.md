@@ -11,7 +11,7 @@ tags: [designer]
 
 # The Designer: parametric CAD by clicking
 
-The Designer is where you model parts and assemblies the way a CAD program works: draw a sketch, extrude it, round its edges, drill holes, then put parts together with joints. Every step is kept, so changing a size later rebuilds everything that depends on it. The OpenCascade kernel does the modelling in your browser, so there is nothing to install.
+The Designer is where you model parts and assemblies the way a CAD program works: draw a sketch, extrude it, round its edges, drill holes, then put parts together with joints. Every step is kept, so changing a size later rebuilds everything that depends on it. The Bitbybit OCCT Kernel does the modelling in your browser, so there is nothing to install.
 
 <Shot id="designer.tour/window" />
 

@@ -95,7 +95,7 @@ A model describes its geometry; a kernel builds it:
 - `geometry.toStep` writes the model as a STEP file of such shapes, each element a named product, and `geometry.toDocument` gives the assembly document instead.
 - `geometry.recipe` describes the geometry as data, a **recipe**, which `bitbybit.manifold.recipes.build` builds as fast mesh solids for large models, and `bitbybit.occt.recipes.build` exactly.
 
-Building needs the OpenCascade kernel beside the IFC one; the editors on bitbybit.dev start both.
+Building needs the Bitbybit OCCT Kernel beside the IFC one; the editors on bitbybit.dev start both.
 
 ## More
 

@@ -9,7 +9,7 @@ export type WorkerArchitecture = "32" | "64" | "64-mt";
  * Worker configuration containing the Worker instance or undefined
  */
 export interface WorkerInstances {
-    /** The worker running the OCCT kernel */
+    /** The worker running the Bitbybit OCCT Kernel */
     occtWorker?: Worker | undefined;
     /** The worker running the JSCAD kernel */
     jscadWorker?: Worker | undefined;

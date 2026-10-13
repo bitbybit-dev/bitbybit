@@ -379,7 +379,7 @@ const OCCT_XYZDto: DtoConstraints = { x: k.number, y: k.number, z: k.number };
 const OCCT_ZigZagBetweenTwoWiresDto: DtoConstraints = { wire1: k.required(k.opaque), wire2: k.required(k.opaque), nrZigZags: k.between(k.number, { min: 1 }), inverse: k.boolean, divideByEqualDistance: k.boolean, zigZagsPerEdge: k.boolean };
 
 /**
- * Every public operation of the OCCT kernel by its dotted path, the inputs DTO it
+ * Every public operation of the Bitbybit OCCT Kernel by its dotted path, the inputs DTO it
  * takes, and what each property of that DTO accepts. `resolveInputs` from the base package reads
  * it to lay a caller's properties over that DTO's defaults before the kernel runs, and
  * `validateInputs` to check what the call was given.

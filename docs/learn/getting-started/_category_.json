@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Getting started with Bitbybit",
-        "description": "Your first steps with Bitbybit. Start with the basics every editor shares - projects and scripts in the cloud or in this browser, how your work is saved, assets, running your code, drawing and errors - then pick an editor: Rete for node-based visual programming, Blockly for blocks, TypeScript for code with full IntelliSense, or the Designer for parametric CAD by clicking. Further on: the game engines the open-source packages work with, and the ready-made 3D model configurators.",
+        "description": "Your first steps with Bitbybit. Start with the basics every editor shares - projects and scripts in the cloud or in this browser, how your work is saved, assets, running your code, drawing and errors - then pick an editor: Rete for node-based visual programming, Blockly for blocks, TypeScript for code with full IntelliSense, or the Designer for parametric CAD by clicking. Further on: the game engines the npm packages work with, and the ready-made 3D model configurators.",
         "slug": "/getting-started"
     }
 }

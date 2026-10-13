@@ -7,8 +7,8 @@ import { loadKernel } from "./kernel.js";
 const CAD_EXTENSIONS = new Set([".step", ".stp", ".iges", ".igs"]);
 const USAGE = `usage: npm run convert -- <file or directory>... [--out <dir>] [--precision <n>] [--stl-precision <n>] [--no-stl] [--cloud]
 
-  Converts STEP and IGES files to GLB (and STL) in this process, on the open-source OpenCascade
-  kernel, and writes a JSON of facts beside each result. Nothing leaves this machine.
+  Converts STEP and IGES files to GLB (and STL) in this process, on the free Bitbybit OCCT Kernel,
+  and writes a JSON of facts beside each result. Nothing leaves this machine.
 
   --out <dir>        where to write (default: out)
   --precision <n>    glTF mesh precision as a fraction of each edge (default: ${defaultOptions.meshPrecision})

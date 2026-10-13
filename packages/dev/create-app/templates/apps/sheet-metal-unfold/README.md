@@ -1,6 +1,6 @@
 # {{PROJECT_NAME}}
 
-A sheet-metal channel that you shape in the browser and unfold on [Bitbybit CAD Cloud](https://bitbybit.dev/cad-cloud). The part, its measurements, the K-factor estimate of its flat length and the STEP download all run in your browser on the open-source [Bitbybit](https://bitbybit.dev) packages. The exact flat pattern, with its bend lines and bend table, comes from the cloud's sheet-metal unfold, a Pro algorithm that exists only there, and comes back as STEP and as a DXF written in the browser.
+A sheet-metal channel that you shape in the browser and unfold on [Bitbybit CAD Cloud](https://bitbybit.dev/cad-cloud). The part, its measurements, the K-factor estimate of its flat length and the STEP download all run in your browser on the free [Bitbybit](https://bitbybit.dev) packages. The exact flat pattern, with its bend lines and bend table, comes from the cloud's sheet-metal unfold, a Pro algorithm that exists only there, and comes back as STEP and as a DXF written in the browser.
 
 ```bash
 npm install                # both workspaces

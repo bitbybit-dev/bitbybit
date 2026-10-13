@@ -26,7 +26,7 @@ import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "./api/resolved-inputs";
 
 /**
- * The entry point to the OpenCascade kernel: every OCCT feature is reached through one of its
+ * The entry point to the Bitbybit OCCT Kernel: every OCCT feature is reached through one of its
  * properties. `shapes` builds and reads vertices, edges, wires, faces, shells, solids and
  * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners`, `draft` and `features`
  * change shapes; `select` picks faces and edges by kind and place; `analysis` measures shapes;

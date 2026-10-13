@@ -117,7 +117,7 @@ export class BitByBitBase {
      * loads.
      * @param app - The PlayCanvas application
      * @param scene - The entity everything is drawn under, normally the application's root
-     * @param occt - The worker running the OCCT kernel, when OCCT is used
+     * @param occt - The worker running the Bitbybit OCCT Kernel, when OCCT is used
      * @param jscad - The worker running the JSCAD kernel, when JSCAD is used
      * @param manifold - The worker running the Manifold kernel, when Manifold is used
      * @returns Nothing

@@ -10,7 +10,7 @@ type: reference
 
 # Design documents: parametric models as JSON
 
-A design document is a parametric CAD model kept as plain JSON: named parameters, an ordered list of features, and the parts they make. `bitbybit.occt.design.build` turns it into shapes with the OpenCascade kernel, in the browser or in Node, and on CAD Cloud as one pipeline step that returns the parts as one STEP or glTF file, with the build's report. This page is written for agents as much as for people: the [Bitbybit CAD MCP](./mcp/bitbybit-mcp) returns its sections through `get_guide`, and the JSON Schema below lets an editor or an agent check a document before it is built.
+A design document is a parametric CAD model kept as plain JSON: named parameters, an ordered list of features, and the parts they make. `bitbybit.occt.design.build` turns it into shapes with the Bitbybit OCCT Kernel, in the browser or in Node, and on CAD Cloud as one pipeline step that returns the parts as one STEP or glTF file, with the build's report. This page is written for agents as much as for people: the [Bitbybit CAD MCP](./mcp/bitbybit-mcp) returns its sections through `get_guide`, and the JSON Schema below lets an editor or an agent check a document before it is built.
 
 The format is experimental: each release publishes its own schema, for this one at `https://git-cdn.bitbybit.dev/v1.5.0/schemas/design-document/experimental.json` (also in the `@bitbybit-dev/occt` package, under `schemas/design-document/`). Documents carry `"schemaVersion": 1`, and a document written today is not migrated when the format is released.
 

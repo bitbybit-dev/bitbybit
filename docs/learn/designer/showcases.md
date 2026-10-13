@@ -14,7 +14,7 @@ tags: [designer]
 Three projects modelled in the Designer, each in two forms:
 
 - **Open in the Designer** opens the project on bitbybit.dev. It comes with the geometry its author's Designer kept, so even the jet engine usually opens in seconds, and what you change is kept as your own copy. Below Gold it opens to view: you can turn it, inspect it and switch its poses, and changing it is part of the Gold plan.
-- **Download** gives you its design documents, a small file anyone can keep. It opens in the Designer with <Ui>File</Ui> > <Ui>Import design documents</Ui> (its documents join the project you have open, so start from a new project to keep them apart), where every part is built in your browser first. The documents are plain JSON, so they also build in code with the open-source packages and serve an agent as an example: [Design documents](../using-ai-with-bitbybit/design-documents.md) explains the format.
+- **Download** gives you its design documents, a small file anyone can keep. It opens in the Designer with <Ui>File</Ui> > <Ui>Import design documents</Ui> (its documents join the project you have open, so start from a new project to keep them apart), where every part is built in your browser first. The documents are plain JSON, so they also build in code with the free packages and serve an agent as an example: [Design documents](../using-ai-with-bitbybit/design-documents.md) explains the format.
 
 ## Robot arm
 

@@ -1,6 +1,6 @@
 # {{PROJECT_NAME}}
 
-A parametric product configurator built on the open-source [Bitbybit](https://bitbybit.dev) CAD packages and Three.js. The product is a planter with leaning walls, a stepped lip, a rounded rim and a foot rim: the customer sets its dimensions, wall thickness, corner radius, drainage holes and material, sees it rebuilt live in a physically based material, gets a price computed from the measured solid, and downloads it as STEP, STL or GLB. Nothing runs on a server: the OpenCascade kernel runs in the browser as WebAssembly, and there is no account, key or service in the loop.
+A parametric product configurator built on the free [Bitbybit](https://bitbybit.dev) CAD packages and Three.js. The product is a planter with leaning walls, a stepped lip, a rounded rim and a foot rim: the customer sets its dimensions, wall thickness, corner radius, drainage holes and material, sees it rebuilt live in a physically based material, gets a price computed from the measured solid, and downloads it as STEP, STL or GLB. Nothing runs on a server: the Bitbybit OCCT Kernel runs in the browser as WebAssembly, and there is no account, key or service in the loop.
 
 ```bash
 npm install

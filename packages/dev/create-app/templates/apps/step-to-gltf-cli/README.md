@@ -1,6 +1,6 @@
 # {{PROJECT_NAME}}
 
-A command-line converter from STEP and IGES to GLB and STL, built on the open-source [Bitbybit](https://bitbybit.dev) OpenCascade kernel. Files are converted in this process, on this machine; nothing is uploaded and no account is needed. Beside each result it writes a JSON with what the file contained: solids, faces, edges, volume, extents, sizes and timing.
+A command-line converter from STEP and IGES to GLB and STL, built on the free [Bitbybit](https://bitbybit.dev) OCCT Kernel. Files are converted in this process, on this machine; nothing is uploaded and no account is needed. Beside each result it writes a JSON with what the file contained: solids, faces, edges, volume, extents, sizes and timing.
 
 ```bash
 npm install

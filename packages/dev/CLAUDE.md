@@ -92,8 +92,8 @@ npm run lint
   64-bit-mt variants), copied into `dist/` by `copy-occt`. The wasm is not tracked: `kernels.json`
   names each kernel with its SHA-256 and url, and `build-p` starts by fetching what is missing and
   verifying what is present (`npm run kernels:fetch` at the root does the same). A build that skips
-  it produces a package that resolves but cannot run. The tarball also carries `NOTICE` and the
-  OCCT and Draco license texts.
+  it produces a package that resolves but cannot run. Its MIT `LICENSE` also covers the closed-source
+  kernels, and the tarball carries `NOTICE` and the license texts of the third-party code inside them.
 - `cad-cloud-sdk`, `create-app` and `mcp` compile as **NodeNext at ES2022** where their siblings
   target a browser bundle - the only compiler settings any of them states on top of the shared base.
   Part of the SDK's `src/types/` is **generated** from the CAD Cloud API's schemas; do not edit

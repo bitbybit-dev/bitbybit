@@ -1,15 +1,15 @@
 # Bitbybit Monorepo
 
-> Open-source 3D CAD algorithms and NPM packages for web-based parametric modeling and visualization. Build once, run anywhere - no installation required.
+> 3D CAD algorithms and NPM packages for web-based parametric modeling and visualization, free to use in any project. Build once, run anywhere - no installation required.
 
-This monorepo contains the open-source core of Bitbybit platform, including multiple NPM packages for integrating 3D CAD capabilities into web applications using BabylonJS, Three.js, or PlayCanvas game engines.
+This monorepo contains the open-source TypeScript of the Bitbybit npm packages, which integrate 3D CAD capabilities into web applications using BabylonJS, Three.js, or PlayCanvas game engines.
 
 It is written for people and for AI coding agents alike: the whole API is published as an MCP server, as context files and as TypeScript declarations, addressed by exact version. See "AI Context" below.
 
 ## Repository
 
 - GitHub: https://github.com/bitbybit-dev/bitbybit
-- License: MIT
+- License: MIT, including the Bitbybit OCCT Kernel that @bitbybit-dev/occt ships; the source of its C++ kernel layer is not published (closed source); OCCT inside it is LGPL-2.1 with the Open CASCADE exception
 
 ## Documentation
 

@@ -17,7 +17,7 @@ async function run() {
     const kernelDir = dirname(require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/index.js"));
     const wasmFile = readdirSync(kernelDir).find((file) => file.endsWith(".wasm"));
     if (!wasmFile) {
-        throw new Error(`No OCCT kernel found in ${kernelDir}`);
+        throw new Error(`No Bitbybit OCCT Kernel found in ${kernelDir}`);
     }
     const wasmPath = join(kernelDir, wasmFile);
     

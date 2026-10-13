@@ -14,15 +14,15 @@ import ImageGallery from '@site/src/components/ImageGallery';
 
 # Platform & Products
 
-Bitbybit combines open-source geometry libraries with managed services and business applications. This page explains each product, who it is for, and its pricing strategy.
+Bitbybit combines free, MIT-licensed geometry libraries with managed services and business applications. This page explains each product, who it is for, and its pricing strategy.
 
 ---
 
-## 1. NPM Packages - The Open-Source Core
+## 1. NPM Packages - The Free Core
 
 **Free · MIT License**
 
-Our NPM packages are the foundation of everything we build. They wrap powerful geometry kernels - OpenCASCADE, JSCAD, and Manifold - in a clean TypeScript API and run them entirely in the browser via WebAssembly, and an [IFC library](./npm-packages/ifc.md) authors, writes and reads building models (BIM) in plain TypeScript. No server calls, no latency. All packages authored by Bitbybit in our [GitHub monorepo](https://github.com/bitbybit-dev/bitbybit) are published under the MIT license. Note that these packages depend on third-party libraries (such as OpenCASCADE under LGPL or BabylonJS under Apache 2.0) which retain their own licenses.
+Our NPM packages are the foundation of everything we build. They wrap powerful geometry kernels - OpenCASCADE, JSCAD, and Manifold - in a clean TypeScript API and run them entirely in the browser via WebAssembly, and an [IFC library](./npm-packages/ifc.md) authors, writes and reads building models (BIM) in plain TypeScript. No server calls, no latency. All packages authored by Bitbybit in our [GitHub monorepo](https://github.com/bitbybit-dev/bitbybit) are published under the MIT license. Note that these packages depend on third-party libraries (such as OpenCASCADE under LGPL or BabylonJS under Apache 2.0) which retain their own licenses, and that the Bitbybit OCCT Kernel inside `@bitbybit-dev/occt` is [closed source](./open-source-approach#the-occt-kernel): MIT-licensed like the rest, but its C++ layer is not published.
 
 **Use when:** You are building a custom web application and want full control over your geometry pipeline. You are comfortable with modern JavaScript tooling and want to integrate with Three.js, Babylon.js, or PlayCanvas.
 
@@ -36,7 +36,7 @@ Our NPM packages are the foundation of everything we build. They wrap powerful g
 
 A Runner is a single bundled JavaScript file you can load from our CDN or [host on your own infrastructure](./hosting-and-cdn). Add it to a page with a `<script>` tag and you can execute any Bitbybit script - no Node.js, no bundlers, no build step. For production applications, we recommend self-hosting the Runner and all related Bitbybit assets on your own CDN for maximum reliability.
 
-The Runner bundle is governed by the proprietary Bitbybit Runner License - you can use and embed it freely (including commercially), but you cannot reverse-engineer or redistribute it as a standalone product. Open-source components bundled within (OCCT, Three.js, BabylonJS, etc.) retain their original licenses.
+The Runner bundle is governed by the proprietary Bitbybit Runner License - you can use and embed it freely (including commercially), but you cannot reverse-engineer or redistribute it as a standalone product. Open-source components it bundles or loads (Three.js, BabylonJS, etc.) retain their original licenses, and the Bitbybit OCCT Kernel it loads is [MIT-licensed](./open-source-approach#the-occt-kernel).
 
 Runners are the bridge between our geometry engine and the rest of the web. You can execute scripts exported from the coding editors (Rete, Blockly, TypeScript), or write custom JavaScript directly - set up against our type definition files for full IntelliSense during development.
 
@@ -76,7 +76,7 @@ A drone built step by step in all three editors is the tutorial of each: [Rete](
 
 **Gold plan · Free to view what is shared with you**
 
-The Designer is a parametric CAD modeller in the browser: sketches, features, parts and assemblies with joints, every step kept and editable, built on the same OpenCascade kernel. Its documents are JSON that AI agents can read and write, and it exports STEP, GLB, STL and BREP. Anyone a Designer project is shared with opens it to view; creating and editing is part of Gold.
+The Designer is a parametric CAD modeller in the browser: sketches, features, parts and assemblies with joints, every step kept and editable, built on the same Bitbybit OCCT Kernel. Its documents are JSON that AI agents can read and write, and it exports STEP, GLB, STL and BREP. Anyone a Designer project is shared with opens it to view; creating and editing is part of Gold.
 
 **Use when:** You want to model parts and assemblies the way CAD programs do, without writing code.
 
@@ -205,7 +205,7 @@ An agent wrote this turbofan engine of 130 parts placed 4,853 times, looking up 
 
 | Your goal | Recommended product | Cost |
 | :--- | :--- | :--- |
-| Build a custom 3D web app | NPM Packages | Free (MIT) |
+| Build a custom 3D web app | NPM Packages | Free |
 | Embed a 3D experience on any webpage | Runners | Free |
 | Learn geometry programming visually | Blockly / Rete Editors | Free |
 | Write TypeScript geometry code | TypeScript Editor | Free |
@@ -222,8 +222,8 @@ An agent wrote this turbofan engine of 130 parts placed 4,853 times, looking up 
 
 ## Open-Source vs. Proprietary
 
-All packages authored by Bitbybit in our [GitHub monorepo](https://github.com/bitbybit-dev/bitbybit) are MIT-licensed. These packages depend on third-party libraries that retain their own licenses (LGPL for OpenCASCADE, Apache 2.0 for BabylonJS, MIT for Three.js, etc.). This includes all core geometry algorithms, rendering integrations, and utility libraries available as NPM packages.
+All packages authored by Bitbybit in our [GitHub monorepo](https://github.com/bitbybit-dev/bitbybit) are MIT-licensed: the core geometry algorithms, rendering integrations, and utility libraries available as NPM packages. These packages depend on third-party libraries that retain their own licenses (LGPL for OpenCASCADE, Apache 2.0 for BabylonJS, MIT for Three.js, etc.). The Bitbybit OCCT Kernel that `@bitbybit-dev/occt` ships is MIT-licensed too, but closed source: its C++ layer is not published.
 
-Proprietary components include the editors' user interfaces and the Designer, the Runner bundle (governed by the [Bitbybit Runner License](./runners/licensing) - free to use and deploy, but source is closed), the platform infrastructure, the platform algorithm namespaces (`bitbybit.advanced` and `bitbybit.things`), and the 3D Bits Shopify app.
+Proprietary components include the editors' user interfaces and the Designer, the C++ layer of the Bitbybit OCCT Kernel (the compiled kernel is MIT, the source is closed), the Runner bundle (governed by the [Bitbybit Runner License](./runners/licensing) - free to use and deploy, but source is closed), the platform infrastructure, the platform algorithm namespaces (`bitbybit.advanced` and `bitbybit.things`), and the 3D Bits Shopify app.
 
 For the full technical breakdown, see [Our Approach to Open Source](./open-source-approach).

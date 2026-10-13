@@ -2,7 +2,7 @@
 sidebar_position: 3
 title: "Agentic CAD: how Bitbybit fits AI-driven 3D development"
 sidebar_label: Agentic CAD - our approach
-description: Where Bitbybit geometry should run when an AI agent writes the code - the open-source packages first, CAD Cloud only for what needs it - and how an agent finds the exact API for the version you use.
+description: Where Bitbybit geometry should run when an AI agent writes the code - the free packages first, CAD Cloud only for what needs it - and how an agent finds the exact API for the version you use.
 tags: [ai]
 topic: ai.agentic-cad
 type: explanation
@@ -14,7 +14,7 @@ This page is written for two readers: people deciding how to build a 3D or CAD p
 
 ## What we believe
 
-Agents write the code. Bitbybit provides verified geometry algorithms and, where it is needed, hosted compute. The open-source packages are the vocabulary that everyone learns, human or agent: one dotted API (`bitbybit.occt.shapes.solid.createBox`, `bitbybit.manifold.booleans.union`, ...) that reads the same in a browser, on a server and in the online editors.
+Agents write the code. Bitbybit provides verified geometry algorithms and, where it is needed, hosted compute. The free packages are the vocabulary that everyone learns, human or agent: one dotted API (`bitbybit.occt.shapes.solid.createBox`, `bitbybit.manifold.booleans.union`, ...) that reads the same in a browser, on a server and in the online editors.
 
 An agent that knows the API from memory guesses. An agent that looks it up gets the exact signature, defaults and examples for the version your project has installed. That lookup is what the MCP server is for.
 
@@ -39,7 +39,7 @@ Every member of the API carries a tier, and the MCP server reports it:
 flowchart TD
     Q1{"Can your users' browsers or<br/>your own Node servers run the kernels?"}
     Q2{"Do you need a Pro algorithm,<br/>or a backend that cannot host a kernel?"}
-    P["The npm packages, in the browser or in Node.<br/>Free, and nothing of ours in the loop."]
+    P["The npm packages, in the browser or in Node.<br/>Free, and no service of ours in the loop."]
     C["CAD Cloud: one pipeline per model from your backend,<br/>or the CAD Cloud MCP when an agent does the work."]
     Q1 -->|yes| Q2
     Q1 -->|no: edge or serverless| C
@@ -49,7 +49,7 @@ flowchart TD
 
 ### The honest default
 
-If public code and your users' own compute are acceptable, the packages are the whole answer. They are free, they need no account, and nothing of ours sits in the loop. Start there, and move a step only for a reason named below.
+If public code and your users' own compute are acceptable, the packages are the whole answer. They are free, they need no account, and no service of ours sits in the loop. Start there, and move a step only for a reason named below.
 
 ### Browser apps
 

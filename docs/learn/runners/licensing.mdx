@@ -2,13 +2,11 @@
 sidebar_position: 12
 title: Runner Licensing - Understanding the Bitbybit Runner License
 sidebar_label: Runner Licensing
-description: Understand the licensing model for Bitbybit Runners, including the proprietary Runner License, open-source component licenses (MIT, LGPL, Apache), and LGPL compliance for OpenCASCADE.
+description: Understand the licensing model for Bitbybit Runners - the proprietary Runner License, the MIT-licensed, closed-source Bitbybit OCCT Kernel, and the open-source components (MIT, LGPL, Apache).
 tags: [runners, licensing]
 topic: runners.licensing
 type: reference
 ---
-
-import Admonition from '@theme/Admonition';
 
 # Bitbybit Runner Licensing
 
@@ -20,6 +18,7 @@ The Bitbybit Runner has a **dual-origin licensing model**. The Runner bundle con
 - **You can embed it** in your own products, apps, and websites.
 - **You can self-host** the Runner files on your own CDN.
 - **You cannot** reverse-engineer the proprietary parts, modify the bundle, or redistribute it as a standalone product.
+- **The Bitbybit OCCT Kernel** the Runner loads is MIT-licensed and closed source ([details](#the-occt-kernel)).
 - **Open-source components** (OCCT, BabylonJS, Three.js, PlayCanvas, JSCAD, Manifold, etc.) keep their own licenses - your rights under those licenses are not restricted.
 
 ## Bitbybit Runner License
@@ -41,40 +40,33 @@ The Runner incorporates the following open-source software, each governed by its
 
 | Component | License | How It's Used |
 |---|---|---|
-| **OpenCASCADE (OCCT)** | LGPL v2.1 | Separate Web Worker + WASM binary, loaded at runtime |
+| **OpenCASCADE (OCCT)** | LGPL v2.1 with the Open CASCADE exception | Compiled into the Bitbybit OCCT Kernel, a WASM binary loaded at runtime in a separate Web Worker ([see below](#the-occt-kernel)) |
 | **BabylonJS** | Apache 2.0 | Bundled in full BabylonJS runner; excluded from lite |
 | **Three.js** | MIT | Bundled in full Three.js runner; excluded from lite |
 | **PlayCanvas** | MIT | Bundled in full PlayCanvas runner; excluded from lite |
 | **JSCAD** | MIT | Separate Web Worker, loaded at runtime |
 | **Manifold** | Apache 2.0 | Separate Web Worker + WASM binary, loaded at runtime |
-| **Havok Physics** | Havok License | Optional separate script (BabylonJS runner only) |
+| **Havok Physics** | MIT (the WebAssembly build for Babylon.js, `@babylonjs/havok`; closed source) | Optional separate script (BabylonJS runner only) |
 | **opentype.js** | MIT | Used for font parsing in CAD text operations |
 | **JSONPath Plus** | MIT | Bundled via `@bitbybit-dev/core` for JSONPath queries |
-| **Bitbybit Core Libraries** | MIT | `@bitbybit-dev/core`, `@bitbybit-dev/occt`, etc. |
+| **Bitbybit Core Libraries** | MIT | The TypeScript of `@bitbybit-dev/core`, `@bitbybit-dev/occt`, etc. |
 
 A complete listing is provided in the `NOTICE` file distributed with each Runner release.
 
-<Admonition type="info" title="Havok Physics Licensing">
-Havok Physics is available in the BabylonJS runner and Bitbybit does not prevent its use. However, Havok has its own licensing terms - if you use Havok in a commercial product, you are responsible for verifying your compliance with Havok's licensing requirements.
-</Admonition>
+## The Bitbybit OCCT Kernel {#the-occt-kernel}
 
-## LGPL Compliance (OpenCASCADE)
+The Runner loads the Bitbybit OCCT Kernel, our CAD kernel built on OpenCASCADE Technology (OCCT), as separate files next to its bundle: a Web Worker (`bitbybit-dev-occt*-webworker.js`) and a WebAssembly binary (`bitbybit-dev-occt*.wasm`), one pair per [build](/learn/runners/worker-protocol#worker-variants). The WebAssembly binary is one file compiled from two parts:
 
-OpenCASCADE Technology (OCCT) is licensed under **LGPL v2.1**, which requires that users can replace the LGPL-licensed library with their own version. The Bitbybit Runner architecture satisfies this requirement:
+- **OpenCASCADE Technology (OCCT)**, licensed under LGPL v2.1 with the Open CASCADE exception. The OCCT source the kernel is compiled from is public at [github.com/bitbybit-dev/OCCT](https://github.com/bitbybit-dev/OCCT) (branch `bitbybit-main`).
+- **The Bitbybit kernel layer**, our own C++ code, whose source is not published.
 
-### How OCCT Is Separated
+The kernel is licensed under the [MIT License](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/occt/LICENSE), like the rest of the `@bitbybit-dev/occt` npm package, which ships the same kernel: you may use, modify and redistribute it in any project, personal or commercial. It is closed source: the license covers the compiled kernel, and the C++ of the kernel layer is not published.
 
-OCCT is **not compiled into** the Runner bundle. Instead:
+### Using a Modified OCCT
 
-1. The OCCT Web Worker (`bitbybit-dev-occt-webworker.js`) is a **separate JavaScript file** loaded from the CDN at runtime
-2. The OCCT WASM binary (`bitbybit-dev-occt.*.wasm`) is a **separate WebAssembly file** loaded by the worker
-3. Communication between the Runner and the OCCT worker uses a **documented message protocol** - the Runner sends commands, the worker processes them and returns results
+LGPL v2.1 lets you modify OCCT and use your modified version. OCCT and the kernel layer are linked into one WebAssembly file, so using a modified OCCT means relinking that file. Every build of the kernel has a **relinking kit** with the materials to do it: the kernel layer as compiled object files, the Draco build the kernel links, a script that builds OCCT for WebAssembly from the fork, the link command, the toolchain version and a smoke test. The kits are free, published beside the kernel's builds as the `relink-kit-<kernel file name without .wasm>` releases of [bitbybit-assets](https://github.com/bitbybit-dev/bitbybit-assets/releases), and each kit's `README.md` walks through the steps. For a build whose kit is not there, write to [info@bitbybit.dev](mailto:info@bitbybit.dev) and we will provide it; the offer is valid for at least three years after we last distribute that build.
 
-This is **dynamic linking** - the OCCT component is loaded and linked at runtime, not at compile time.
-
-### How to Replace OCCT
-
-You can replace the OCCT worker and WASM binary using the `cdnUrl` configuration option:
+A relinked kernel works together with the JavaScript glue its own link produces. In the npm packages, replace both the glue and the wasm in the build's folder of `@bitbybit-dev/occt`. The Runner's OCCT worker bundles the glue of our kernel, so it needs a worker that works with yours. Either modify the Runner's own OCCT worker, for your own use, so that it loads your glue (the Runner License allows that, and reverse engineering it as far as debugging needs), or build a worker from the MIT `@bitbybit-dev/occt-worker` package around your glue (the [worker protocol](/learn/runners/worker-protocol) says what it must do; such a worker lacks the Runner's advanced OCCT functions, such as 3D text). Then [host the assets yourself](/learn/hosting-and-cdn), put your worker and your kernel in place of ours under the same file names, and point the Runner's `cdnUrl` at that folder:
 
 ```javascript
 const runner = window.bitbybitRunner.getRunnerInstance();
@@ -85,32 +77,19 @@ await runner.run({
 });
 ```
 
-Your custom server must host compatible replacement files:
-```
-https://your-server.com/bitbybit-assets/
-├── workers/
-│   └── bitbybit-dev-occt-webworker.js    ← your custom OCCT worker
-└── wasm/
-    └── bitbybit-dev-occt.*.wasm          ← your custom OCCT WASM
-```
-
-Your replacement worker must implement the same message protocol as the original. See the [Worker Protocol Specification](/learn/runners/worker-protocol) for the complete interface documentation.
-
-### OCCT Source Code
-
-The OpenCASCADE source code is publicly available at [https://dev.opencascade.org/](https://dev.opencascade.org/). You can compile your own modified version to WebAssembly and use it as a drop-in replacement.
+Nothing in the Runner License limits what the MIT License of the kernel or OCCT's license permits.
 
 ## Build Tooling
 
-The build scripts, webpack configurations, and tooling used to compile and assemble the Runner are **proprietary**. They are not included in the Runner distribution and are not part of any license grant. If you want to work with the open-source components independently, their source code is available at [https://github.com/bitbybit-dev/bitbybit](https://github.com/bitbybit-dev/bitbybit).
+The build scripts, webpack configurations, and tooling used to compile and assemble the Runner are **proprietary**. They are not included in the Runner distribution and are not part of any license grant. If you want to work with the open-source components independently, the `NOTICE` file says where the source code of each is available; the Bitbybit open-source libraries are at [https://github.com/bitbybit-dev/bitbybit](https://github.com/bitbybit-dev/bitbybit), and the OCCT the kernel is compiled from at [github.com/bitbybit-dev/OCCT](https://github.com/bitbybit-dev/OCCT).
 
 ## Terms and Conditions
 
-If you have a bitbybit.dev account, the [Terms and Conditions](https://bitbybit.dev/terms-and-conditions) apply to your use of the Platform and Services in addition to the Runner License. Section 9 ("Our License to You") contains specific provisions about the Runner, including:
+If you have a bitbybit.dev account, the [Terms and Conditions](https://bitbybit.dev/terms-and-conditions) apply to your use of the Platform and Services in addition to the Runner License. Section 4 ("Our License to You") contains specific provisions about the Runner, including:
 
 - The relationship between the Runner License and the Terms and Conditions
 - Open-source component obligations
-- LGPL compliance details
+- The Bitbybit OCCT Kernel and relinking it with a modified OCCT
 - CDN availability disclaimers
 - Self-hosting permissions and responsibilities
 

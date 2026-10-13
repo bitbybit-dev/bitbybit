@@ -177,7 +177,7 @@ const zeroRows: ZeroRow[] = [
     ["booleans.meshMeshIntersectionWires", "precision2", ({ box, sphere }) => ({ shape1: box, shape2: sphere })],
 ];
 
-describe("a value of 0 the OCCT kernel cannot build with", () => {
+describe("a value of 0 the Bitbybit OCCT Kernel cannot build with", () => {
     let kernel: OCCTService;
     let shapes: Fixtures;
 

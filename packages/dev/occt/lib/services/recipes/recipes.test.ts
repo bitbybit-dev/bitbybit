@@ -381,7 +381,7 @@ describe("OCCTRecipes", () => {
             const act = (): TopoDS_Shape[] => onOlder.build({ recipe: recipeOf(BOX, [rootOf(1)]) });
 
             // Assert
-            expect(act).toThrow("This OpenCascade kernel cannot build recipes; a newer kernel can.");
+            expect(act).toThrow("This build of the Bitbybit OCCT Kernel cannot build recipes; a newer one can.");
         });
 
         it("should pass on what the kernel throws that is not a C++ exception as it was", () => {

@@ -7,7 +7,7 @@ import type * as Models from "./models";
  * one by hand to color some faces of any shape.
  */
 export interface ShapeWithAppearance {
-    /** The shape to draw, as the OCCT kernel returns it. */
+    /** The shape to draw, as the Bitbybit OCCT Kernel returns it. */
     shape: Inputs.OCCT.TopoDSShapePointer;
     /**
      * How the shape looks. Each `faces` entry gives its values to the faces it lists, numbered as

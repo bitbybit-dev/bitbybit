@@ -11,7 +11,7 @@ import { IFCWGeometry } from "./geometry";
  * `elements.addShape`, which adds an OpenCascade shape as an element.
  * In Node, or anywhere without workers, the IFC package's `IFCService` has the same methods,
  * synchronous and with models as values; there those three are `geometry.recipe` handed to the
- * OpenCascade kernel's `recipes.build` or `recipes.buildDocument`, and `addShape` is its
+ * Bitbybit OCCT Kernel's `recipes.build` or `recipes.buildDocument`, and `addShape` is its
  * `recipes.describe` with `ifcSurfaces` handed to `elements.add`.
  * Experimental, as the IFC library is.
  * @beta

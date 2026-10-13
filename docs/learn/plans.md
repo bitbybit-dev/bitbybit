@@ -11,7 +11,7 @@ tags: [getting-started, pricing, products]
 
 # Plans and what they unlock
 
-Most of Bitbybit costs nothing: the open-source npm packages, the runners, the three coding editors, and the Bitbybit CAD MCP for AI agents. The plans of bitbybit.dev add cloud space and a few tools on top. CAD Cloud and 3D Bits for Shopify are priced on their own, below.
+Most of Bitbybit costs nothing: the npm packages, the runners, the three coding editors, and the Bitbybit CAD MCP for AI agents. The plans of bitbybit.dev add cloud space and a few tools on top. CAD Cloud and 3D Bits for Shopify are priced on their own, below.
 
 Choose or change a plan at [bitbybit.dev/auth/pick-plan](https://bitbybit.dev/auth/pick-plan).
 

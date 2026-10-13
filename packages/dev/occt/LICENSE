@@ -1,5 +1,14 @@
 MIT License
 
+This license covers the TypeScript and JavaScript of @bitbybit-dev/occt, the
+Bitbybit OCCT Kernel it ships (the WebAssembly files bitbybit-dev-occt*.wasm,
+built on Open CASCADE Technology) wherever it is distributed, and, in the
+kernel's relinking kits, the object code of the kernel layer and the scripts.
+The kernel is compiled in part from the Bitbybit kernel layer, C++ whose
+source code is not published; this license grants no right to that source
+code. The kernel also contains open-source components, Open CASCADE
+Technology among them, that keep their own licenses; NOTICE lists them.
+
 Copyright (c) 2026 Bit by bit developers
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: Getting Started Overview
 sidebar_label: Overview
-description: What bitbybit.dev offers and where to begin - projects and scripts, the Rete, Blockly and TypeScript coding editors, the Designer, the open-source packages, CAD Cloud, 3D Bits for Shopify and the model configurators.
+description: What bitbybit.dev offers and where to begin - projects and scripts, the Rete, Blockly and TypeScript coding editors, the Designer, the free npm packages, CAD Cloud, 3D Bits for Shopify and the model configurators.
 topic: platform.start.overview
 type: landing
 verified: 2026-10-09
@@ -19,7 +19,7 @@ bitbybit.dev is a platform for parametric 3D: you describe a shape by its rules,
 
 1. **[Basics](/learn/getting-started/basics/intro)** covers what every editor shares: projects and scripts, how your work is saved, assets, running your code, drawing and errors. Read it first.
 2. **Pick an editor.** The three [coding editors](/learn/getting-started/coding-editors) build with nodes, blocks or code; [the Designer](/learn/getting-started/designer) builds by clicking.
-3. **Take it further** with the open-source packages, CAD Cloud or 3D Bits, below.
+3. **Take it further** with the free npm packages, CAD Cloud or 3D Bits, below.
 
 ## The editors
 
@@ -40,9 +40,9 @@ bitbybit.dev is a platform for parametric 3D: you describe a shape by its rules,
 
 All four call the same algorithms, so much of what one editor does can be done in another.
 
-## Open-source packages (MIT)
+## npm packages (MIT)
 
-The CAD algorithms behind the editors are open-source npm packages you can use in your own web app, with BabylonJS, ThreeJS or PlayCanvas:
+The CAD algorithms behind the editors are free npm packages, with open-source TypeScript, that you can use in your own web app, with BabylonJS, ThreeJS or PlayCanvas:
 
 - `@bitbybit-dev/babylonjs` - [getting started](/learn/getting-started/engines/babylonjs)
 - `@bitbybit-dev/threejs` - [getting started](/learn/getting-started/engines/threejs)

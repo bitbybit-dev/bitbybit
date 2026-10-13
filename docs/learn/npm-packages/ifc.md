@@ -169,7 +169,7 @@ The same house runs in the TypeScript editor on bitbybit.dev as [a family house 
 
 ## Exact shapes and STEP
 
-Manifold builds meshes, fast enough to draw large models. The OpenCascade kernel builds the same recipe exactly, with true circles and arcs, as shapes that measure, cut and fillet like any other and that export to STEP for fabricators. Start it beside the IFC worker (`enableOCCT: true` in `initBitByBit`):
+Manifold builds meshes, fast enough to draw large models. The Bitbybit OCCT Kernel builds the same recipe exactly, with true circles and arcs, as shapes that measure, cut and fillet like any other and that export to STEP for fabricators. Start it beside the IFC worker (`enableOCCT: true` in `initBitByBit`):
 
 ```typescript
 const shapes = await bitbybit.ifc.geometry.toShapes({ model });

@@ -25,7 +25,7 @@
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
-        // ── Initialise OCCT kernel via Core Runner ──────────────────
+        // ── Initialise the Bitbybit OCCT Kernel via Core Runner ──────────────────
         const runner = window.bitbybitRunner.getRunnerInstance();
         const { bitbybit, Bit } = await runner.run({
             enableOCCT: true,
@@ -209,7 +209,7 @@
         <div class="canvas-wrap">
             <canvas id="canvas"></canvas>
         </div>
-        <p id="loading">Initializing OCCT kernel…</p>
+        <p id="loading">Initializing the Bitbybit OCCT Kernel…</p>
     </div>
 </body>
 

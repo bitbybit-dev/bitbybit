@@ -182,6 +182,6 @@ describe("OCCTRecipes.describe and the exact brep step", () => {
 
         // Assert
         expect(nullShape).toThrow("DescribeShapeExact: the shape is null");
-        expect(tooOld).toThrow("This OpenCascade kernel cannot describe shapes exactly; a newer kernel can.");
+        expect(tooOld).toThrow("This build of the Bitbybit OCCT Kernel cannot describe shapes exactly; a newer one can.");
     });
 });

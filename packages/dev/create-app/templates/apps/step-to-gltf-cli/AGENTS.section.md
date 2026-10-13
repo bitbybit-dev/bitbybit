@@ -1,6 +1,6 @@
 ## This template: STEP to glTF command line
 
-A batch converter: STEP and IGES files in, GLB and STL files and a JSON of facts out, in this process, on the open-source OpenCascade kernel. It is the honesty rule as a program: a machine that can run the kernel needs no service to convert a file. The `--cloud` flag exists for the two cases that cannot, and says so.
+A batch converter: STEP and IGES files in, GLB and STL files and a JSON of facts out, in this process, on the free Bitbybit OCCT Kernel. It is the honesty rule as a program: a machine that can run the kernel needs no service to convert a file. The `--cloud` flag exists for the two cases that cannot, and says so.
 
 - `src/kernel.ts` loads the kernel once per run.
 - `src/convert.ts` is the conversion: `convertFile(occt, name, text, options)` reads the file through the kernel, counts its solids, faces and edges, measures its volume and extents, writes the GLB with the kernel's converter and the STL from the loaded shape. It is a pure function over the kernel, so the smoke calls it directly.

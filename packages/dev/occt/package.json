@@ -60,7 +60,7 @@
         "api:update": "api-extractor run --local"
     },
     "author": "Bit by bit developers",
-    "license": "MIT",
+    "license": "MIT AND Apache-2.0 AND LGPL-2.1-only WITH OCCT-exception-1.0",
     "funding": {
         "type": "corporate",
         "url": "https://bitbybit.dev/auth/pick-plan"

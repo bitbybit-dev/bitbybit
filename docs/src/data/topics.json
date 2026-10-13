@@ -2456,7 +2456,7 @@
   },
   {
     "id": "runners.worker-protocol",
-    "title": "OCCT Worker Protocol - Replace or Customize the CAD Kernel",
+    "title": "OCCT Worker Protocol - Build or Customize the OCCT Worker",
     "type": "reference",
     "url": "/learn/runners/worker-protocol",
     "path": "learn/runners/worker-protocol.mdx"

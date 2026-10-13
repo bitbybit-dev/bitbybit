@@ -119,11 +119,11 @@ An AI agent reaches Bitbybit the same ways a person does, through the API and th
 
 [Using AI with Bitbybit](/learn/using-ai-with-bitbybit/intro) shows how to connect one.
 
-## Open source, platform and cloud functions
+## Package, platform and cloud functions
 
 Each function belongs to one of three tiers, and the API reference and the MCP server name it:
 
-- **Open source** (`oss`): almost all of the API. MIT-licensed npm packages; it runs anywhere, with no account and no server.
+- **npm packages** (`oss`): almost all of the API, in the MIT-licensed npm packages (their TypeScript is open source; the C++ layer of the Bitbybit OCCT Kernel they ship is closed source). It runs anywhere, with no account and no server.
 - **Platform** (`platform-pro`): the `bitbybit.advanced` and `bitbybit.things` algorithms, such as 3D text with fonts, patterns on faces, dimensions and ready-made parametric models. Their source is closed, and they run in the editors on bitbybit.dev and in the runners. Some of them, most of the `things` models among them, compute only for members of the Silver and Gold plans; [Plans](/learn/plans) says more.
 - **Cloud** (`cloud-pro`): algorithms that run only on CAD Cloud, with an API key, such as unfolding sheet metal.
 

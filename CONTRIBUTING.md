@@ -25,7 +25,8 @@ Thank you for your interest in contributing to **Bitbybit**! We welcome contribu
 
 We appreciate your willingness to contribute! However, please be aware of the following:
 
-- Bitbybit's core algorithms are open-source under the **MIT License**, but they are used within proprietary tools such as our online coding editors and other software created by the company **Bit by bit developers**
+- The TypeScript of Bitbybit's packages is open source under the **MIT License**, but it is used within proprietary tools such as our online coding editors and other software created by the company **Bit by bit developers**
+- The C++ layer of the Bitbybit OCCT Kernel is not published, so kernel bugs can be reported in an issue but not fixed here in code
 - Our codebase is architected to work with higher-level generators, scripts, and applications. These requirements may not be immediately obvious
 - **By contributing, you acknowledge** that:
   - Your contributions may be used in commercial products

@@ -236,7 +236,7 @@ async function start(): Promise<void> {
     async function rebuild(): Promise<void> {
         const mine = ++generation;
         const started = performance.now();
-        ui.setStatus(current ? "Rebuilding..." : "Building 27 parts on the OpenCascade kernel...");
+        ui.setStatus(current ? "Rebuilding..." : "Building 27 parts on the Bitbybit OCCT Kernel...");
         try {
             const model = await buildModel(bitbybit.occt, params, logo, current);
             if (mine !== generation) return;

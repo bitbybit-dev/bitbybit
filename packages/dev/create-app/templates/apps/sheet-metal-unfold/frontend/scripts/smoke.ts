@@ -24,7 +24,7 @@ function inProcess(service: object): Occt {
 const require = createRequire(import.meta.url);
 const kernelDir = dirname(require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/index.js"));
 const wasmFile = readdirSync(kernelDir).find((file) => file.endsWith(".wasm"));
-if (!wasmFile) throw new Error(`no OCCT kernel (.wasm) found in ${kernelDir}`);
+if (!wasmFile) throw new Error(`no Bitbybit OCCT Kernel (.wasm) found in ${kernelDir}`);
 const occ = await initOpenCascade({ locateFile: (file: string) => (file.endsWith(".wasm") ? join(kernelDir, wasmFile) : file) });
 const occt = inProcess(new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ)));
 

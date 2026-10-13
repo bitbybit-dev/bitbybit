@@ -34,7 +34,7 @@ export interface RunOptionsInterface {
    */
   enableManifold?: boolean;
   /**
-   * OCCT kernel is enabled by default if this property is emitted. If you will set it to false it will be disabled.
+   * The Bitbybit OCCT Kernel is enabled by default if this property is emitted. If you will set it to false it will be disabled.
    */
   enableOCCT?: boolean;
   /**

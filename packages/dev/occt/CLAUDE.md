@@ -13,13 +13,16 @@ at the root) verifies a kernel that is present against the manifest and download
 missing; `kernels:check` only verifies. A kernel on disk whose hash differs from the manifest is an
 error, never overwritten: the deploy folder is the source of truth, and the mismatch means a kernel
 build did not update the manifest. `npm run build-p` then copies all three directories into `dist/`
-via `copy-occt`, with `NOTICE` and `licenses/` (OCCT is LGPL-2.1 with the Open CASCADE exception,
-Draco is Apache-2.0; the package's own code is MIT). `check:tarballs` fails a tarball that lacks any
+via `copy-occt`, with `NOTICE` and `licenses/`. The package is MIT, the Bitbybit OCCT Kernel included
+(`LICENSE` says so; it is closed source: the kernel layer's C++ is not published); OCCT inside it is
+LGPL-2.1 with the Open CASCADE exception, and Draco, RapidJSON and mimalloc keep their own licenses.
+`NOTICE` carries the offer of relinking materials that OCCT's license asks for, so a statement about
+the kernel's licensing anywhere has to agree with it. `check:tarballs` fails a tarball that lacks any
 of it. A build that runs plain `npm run build` produces a package that type-checks and resolves but
 **cannot run** - the kernel is missing.
 
-The wasm is not built here. It is compiled from the OCCT fork and the bindings layer
-(https://github.com/bitbybit-dev/OCCT and its BitbybitOcct module); that build deploys the glue,
+The wasm is not built here. It is compiled from the OCCT fork (https://github.com/bitbybit-dev/OCCT)
+and the kernel layer, whose source is not published; that build deploys the glue,
 the typings and the hashed wasm into the variant directory and rewrites `kernels.json`, and every
 hashed reference in this repository (the `cdn.js` entries, the node examples) is synced to the file
 on disk. Publishing a kernel uploads it as a release asset of the bitbybit-assets repository and

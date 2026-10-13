@@ -10,7 +10,7 @@ type: how-to
 
 # Scaffold a project with create-app
 
-`@bitbybit-dev/create-app` writes a working project for you: install, run, and the geometry is on screen. Every project it creates runs on the open-source packages, is held to the strict compiler flags and lint rules of the Bitbybit code base, has a smoke test that typechecks and lints it and then builds its geometry headlessly in Node, and is ready for a coding agent out of the box.
+`@bitbybit-dev/create-app` writes a working project for you: install, run, and the geometry is on screen. Every project it creates runs on the free packages, is held to the strict compiler flags and lint rules of the Bitbybit code base, has a smoke test that typechecks and lints it and then builds its geometry headlessly in Node, and is ready for a coding agent out of the box.
 
 ```bash
 npm init @bitbybit-dev/app my-project

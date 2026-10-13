@@ -56,7 +56,7 @@ A few members differ between the two. Only the worker has `occt.deleteShape`, `o
 
 `describe` shows the worker form, `createBox(inputs: Inputs.OCCT.BoxDto): Promise<Inputs.OCCT.TopoDSSolidPointer>`; in Node the same method returns the shape itself. A method's answer also names the types it returns, such as `Models.OCCT.SolidDebugInfo` for `occt.shapes.solid.debugInfo`; `describe` with that name lists their fields.
 
-## How the OCCT kernel thinks
+## How the Bitbybit OCCT Kernel thinks
 
 - **Y is up.** The ground is the XZ plane. A box's `height` runs along Y, a cylinder grows along its `direction`, `[0, 1, 0]` unless given, and a rectangle or circle wire lies flat on the ground unless its `direction`, the normal of its plane, says otherwise. Manifold and JSCAD build along Z instead: their cylinders stand on the XY plane.
 - **Shapes nest.** A vertex is a point, an edge a curve between vertices, a wire a chain of edges, a face a surface bounded by wires, a shell faces joined at their edges, a solid the volume a closed shell bounds, and a compound a group of shapes kept apart. Each method says which kinds it takes and gives: `operations.extrude` turns a face into a solid, but a wire only into a shell.

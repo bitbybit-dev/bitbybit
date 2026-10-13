@@ -115,7 +115,7 @@ export class BitByBitBase {
      * A kernel whose worker is left out is unavailable, so pass only the ones your application
      * loads.
      * @param scene - The scene everything is drawn into
-     * @param occt - The worker running the OCCT kernel, when OCCT is used
+     * @param occt - The worker running the Bitbybit OCCT Kernel, when OCCT is used
      * @param jscad - The worker running the JSCAD kernel, when JSCAD is used
      * @param manifold - The worker running the Manifold kernel, when Manifold is used
      * @returns Nothing

@@ -1,12 +1,12 @@
 # Bitbybit Monorepo
 
-Open-source 3D CAD algorithms for the web - MIT licensed. This monorepo contains all Bitbybit NPM packages plus example applications.
+3D CAD algorithms for the web. This monorepo contains all Bitbybit NPM packages plus example applications, all MIT licensed. Their TypeScript is open source; the Bitbybit OCCT Kernel the `@bitbybit-dev/occt` package ships is MIT-licensed WebAssembly whose C++ kernel layer is closed source.
 
 Written to be used by people and by AI coding agents alike: every function is published in a form an agent can look up while it writes - see [Build It With an AI Agent](#build-it-with-an-ai-agent).
 
 ## License
 
-Source code in `packages/`, `languages/`, and `examples/` is [MIT licensed](./LICENSE). Documentation text in `docs/` is [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Logos, trademarks, and media assets are **not** open-source - see [CONTENT-LICENSE.md](./CONTENT-LICENSE.md) for details.
+Source code in `packages/`, `languages/`, and `examples/` is [MIT licensed](./LICENSE). The Bitbybit OCCT Kernel the `occt` package ships is MIT-licensed too ([LICENSE](./packages/dev/occt/LICENSE)), but it is not built from this repository: its C++ kernel layer is closed source, and OCCT and the other open-source components compiled into it keep their own licenses ([NOTICE](./packages/dev/occt/NOTICE)). Documentation text in `docs/` is [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Logos, trademarks, and media assets are **not** open-source - see [CONTENT-LICENSE.md](./CONTENT-LICENSE.md) for details.
 
 # [FULL PLATFORM AT BITBYBIT.DEV](https://bitbybit.dev)   
 # [LEARN BITBYBIT](https://learn.bitbybit.dev)   
@@ -59,7 +59,7 @@ Every answer carries a tier - `oss` runs in these MIT packages anywhere, `platfo
 
 Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1) - interactive 3D product configurators for e-commerce.
 
-Your subscription directly funds continued open-source development of these packages.
+Your subscription directly funds continued development of these packages.
 
 ## Important Topics
 
@@ -67,7 +67,7 @@ Your subscription directly funds continued open-source development of these pack
 |-------|------|
 | Getting Started | https://learn.bitbybit.dev/learn/getting-started/overview |
 | TypeScript API Reference | https://docs.bitbybit.dev |
-| API Reference - OCCT kernel | https://docs.bitbybit.dev/classes/Bit.OCCT |
+| API Reference - OCCT (`bitbybit.occt`) | https://docs.bitbybit.dev/classes/Bit.OCCT |
 | API Reference - JSCAD kernel | https://docs.bitbybit.dev/classes/Bit.JSCAD |
 | API Reference - Manifold kernel | https://docs.bitbybit.dev/classes/Bit.Manifold |
 | NPM Packages Intro | https://learn.bitbybit.dev/learn/npm-packages/intro |
@@ -91,7 +91,7 @@ Your subscription directly funds continued open-source development of these pack
 
 The diagram shows every way a website can reach Bitbybit geometry, and where the NPM packages below sit among them:
 
-- **NPM packages** - this repository. The kernels compile to WebAssembly and run in your users' browsers or in your own Node process, inside your build, MIT licensed and free.
+- **NPM packages** - this repository. The kernels compile to WebAssembly and run in your users' browsers or in your own Node process, inside your build, all MIT licensed.
 - **[Script runners](https://learn.bitbybit.dev/learn/runners/intro)** - one script file loads the same engine and executes scripts exported from the visual editors, with no build step.
 - **Iframe embeds** - a project published on [bitbybit.dev](https://bitbybit.dev) dropped straight into a page.
 - **[CAD Cloud REST API](https://learn.bitbybit.dev/api/cloud-api)** - your backend sends the work to our managed kernels and gets results back as files, for the Pro algorithms and for compute you would rather not host.
@@ -140,7 +140,7 @@ All examples live in the [`examples/`](https://github.com/bitbybit-dev/bitbybit/
 
 ## Bitbybit Platform
 
-Beyond these open-source NPM packages, the Bitbybit platform includes:
+Beyond these free NPM packages, the Bitbybit platform includes:
 
 - **[Visual Programming Editors](https://bitbybit.dev)** - Rete & Blockly drag-and-drop 3D modeling, plus a Monaco TypeScript editor with full IntelliSense  
 - **[CAD Cloud API](https://learn.bitbybit.dev/api/cloud-api)** - Build full [pipelines](https://learn.bitbybit.dev/api/sdk/typescript/pipelines) that compose all Bitbybit algorithms, where each step can reference outputs of previous steps. Supports parametric model generation, STEP-to-glTF conversion, and complex CAD workflows via HTTP. [TypeScript SDK available](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk).  

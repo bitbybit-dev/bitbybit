@@ -140,7 +140,7 @@ it from there on.
 
 The suites run under jsdom because the tag service writes into the page. The IFC suite runs the IFC
 and OCCT kernels through their worker mocks, so a recipe crosses the same message boundary it does in
-a browser; it loads the OCCT kernel through `locateFile`, since under jsdom the glue would read the
+a browser; it loads the Bitbybit OCCT Kernel through `locateFile`, since under jsdom the glue would read the
 wasm from an `http:` URL. Coverage is measured over
 `lib/api/bitbybit`, the API surface; `lib/asset-manager.ts` is outside it on purpose, because its
 suite drives it through the API class rather than directly.

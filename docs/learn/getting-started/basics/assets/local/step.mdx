@@ -43,7 +43,7 @@ You can open a fresh Rete editor session here: [`https://bitbybit.dev/app?editor
     *   In the "file name" input of this "get local file" component, type "**KukaRobot**".
 
 2.  **Load STEP/IGES File (using OCCT):**
-    STEP files require parsing by the OCCT kernel. This component takes the file data and converts it into an OCCT shape representation.
+    STEP files require parsing by the Bitbybit OCCT Kernel. This component takes the file data and converts it into an OCCT shape representation.
     *   Category Path: `occt` -> `io` -> `io` -> `load step or iges`
     *   Connect the output of the "get local file" component to the input socket named "asset file" on the "load step or iges" component.
 
@@ -52,7 +52,7 @@ You can open a fresh Rete editor session here: [`https://bitbybit.dev/app?editor
     *   Category Path: `draw` -> `draw async` -> `draw any async`
     *   Connect the "shape" output of the "load step or iges" component to the "entity" input socket of the "draw any async" component.
 
-That's it! Your Rete graph should be set up. It might take a moment for the Kuka Robot model to appear on the screen after running the script. STEP files are often compact for representing geometry, but it takes computational effort for the OCCT kernel to process them and generate the display meshes.
+That's it! Your Rete graph should be set up. It might take a moment for the Kuka Robot model to appear on the screen after running the script. STEP files are often compact for representing geometry, but it takes computational effort for the Bitbybit OCCT Kernel to process them and generate the display meshes.
 
 **Rete Editor Example:**
 <BitByBitRenderCanvas
@@ -82,7 +82,7 @@ You can open a fresh Blockly editor session here: [`https://bitbybit.dev/app?edi
     *   In the "file name" input field of this block, type "**KukaRobot**".
 
 2.  **Load STEP/IGES File (using OCCT):**
-    Use the OCCT kernel algorithm to parse the STEP file into an actual shape. Add this block:
+    Use the Bitbybit OCCT Kernel to parse the STEP file into an actual shape. Add this block:
     *   Category Path: `occt` -> `io` -> `io` -> `load step or iges`
     *   Place the `Get Local File` block into the "asset file" input slot of the `load step or iges` block.
 

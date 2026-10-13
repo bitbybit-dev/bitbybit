@@ -1,5 +1,5 @@
 /**
- * Every parameter object the OpenCascade kernel accepts. The kernel works on a boundary
+ * Every parameter object the Bitbybit OCCT Kernel accepts. The kernel works on a boundary
  * representation - vertices, edges, wires, faces, shells, solids and compounds - so most DTOs here
  * carry one or more shape handles plus the numbers that drive the operation: radii, lengths,
  * directions, tolerances and fillet or chamfer sizes.

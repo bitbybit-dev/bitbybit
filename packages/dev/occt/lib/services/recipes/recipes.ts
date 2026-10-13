@@ -121,7 +121,7 @@ export class OCCTRecipes {
             throw new InputError(`\`millimetresPerUnit\` is ${resolved.millimetresPerUnit}, and a unit has to be a finite length above zero.`, "millimetresPerUnit");
         }
         if (typeof this.occ.DescribeShapeExact !== "function") {
-            throw new Error("This OpenCascade kernel cannot describe shapes exactly; a newer kernel can.");
+            throw new Error("This build of the Bitbybit OCCT Kernel cannot describe shapes exactly; a newer one can.");
         }
         let described: KernelBrepDescription;
         try {
@@ -147,7 +147,7 @@ export class OCCTRecipes {
             throw new InputError(`\`maxTriangles\` is ${maxTriangles}, and the most triangles a mesh may hold has to be 0 or more.`, "maxTriangles");
         }
         if (typeof this.occ.BuildRecipes !== "function") {
-            throw new Error("This OpenCascade kernel cannot build recipes; a newer kernel can.");
+            throw new Error("This build of the Bitbybit OCCT Kernel cannot build recipes; a newer one can.");
         }
         const text = JSON.stringify({ tolerance: recipe.tolerance, nodes: this.kernelNodes(recipe.nodes), roots: roots.map(({ node, matrix }) => ({ node, matrix })) });
         let result: KernelRecipeBuild<TopoDS_Shape>;

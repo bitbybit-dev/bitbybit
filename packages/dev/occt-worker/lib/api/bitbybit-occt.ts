@@ -2,7 +2,7 @@ import { OCCT } from "./occt/occt";
 import { OCCTWorkerManager } from "../occ-worker/occ-worker-manager";
 
 /**
- * The entry point to the OpenCascade kernel, gathering the shape, geometry, boolean, fillet,
+ * The entry point to the Bitbybit OCCT Kernel, gathering the shape, geometry, boolean, fillet,
  * operation, transform, assembly, dimension and IO groups. Every call is asynchronous because the
  * kernel runs as WebAssembly, usually in a worker, so the main thread stays responsive while a
  * heavy boolean runs.
@@ -19,11 +19,11 @@ export class BitByBitOCCT {
     }
 
     /**
-     * Connects this facade to the web worker that runs the OpenCascade kernel.
+     * Connects this facade to the web worker that runs the Bitbybit OCCT Kernel.
      *
      * Create the worker yourself from the package's worker entry, hand it over here, and wait for the
      * kernel to report that it is loaded before making calls; without a worker every call would hang.
-     * @param occt - The worker running the OpenCascade kernel
+     * @param occt - The worker running the Bitbybit OCCT Kernel
      */
     init(occt: Worker) {
         if (occt) {

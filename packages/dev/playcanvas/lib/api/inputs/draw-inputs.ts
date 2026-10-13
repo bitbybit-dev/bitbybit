@@ -20,7 +20,7 @@ export namespace Draw {
      * one mesh.
      */
     export interface ShapeWithAppearance {
-        /** The shape to draw, as the OCCT kernel returns it. */
+        /** The shape to draw, as the Bitbybit OCCT Kernel returns it. */
         shape: Inputs.OCCT.TopoDSShapePointer;
         /**
          * How the shape looks. Each `faces` entry gives its values to the faces it lists, `edgeColor`

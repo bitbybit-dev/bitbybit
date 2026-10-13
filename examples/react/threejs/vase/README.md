@@ -32,7 +32,7 @@ Facebook: https://www.facebook.com/bitbybitdev
 Medium: https://bitbybit-dev.medium.com/  
 
 # Principles
-Bit By Bit Developers company will keep these core algorithms that you can find in this repository free and opensource for its users. These algorithms are based on other open-source projects, run and are deployed on the browser, thus there is no point of closing them down from public.
+The TypeScript of the Bitbybit packages these examples use is open source under the MIT license, and Bit By Bit Developers company will keep it that way. The Bitbybit OCCT Kernel the packages load is MIT-licensed too, but its C++ layer is closed source.
 
 # About Bit By Bit Developers platform
 Bit By Bit Developers web platform allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This cloud platform can fulfil many practical, educational and artistic needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs. We want to encourage everyone to engage in the future of this tool.
