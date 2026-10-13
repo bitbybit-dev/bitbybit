@@ -334,6 +334,7 @@ namespace Base {
         faces: RecipeBrepFace[];
         fallback?: number | undefined;
         op: "brep";
+        solids?: RecipeBrepSolid[] | undefined;
         surfaces: RecipeBrepSurface[];
         vertices: RecipeRange;
     }
@@ -353,6 +354,11 @@ namespace Base {
         curve: number;
         kind: "revolution";
         origin: Point3;
+    }
+    // @beta
+    interface RecipeBrepSolid {
+        outer: number[];
+        voids?: number[][] | undefined;
     }
     // @beta
     interface RecipeBrepSphere extends RecipeBrepPlacement {
@@ -8462,7 +8468,8 @@ namespace OCCT {
     }
     // @beta
     class DescribeRecipeDto<T> {
-        constructor(shape?: T, millimetresPerUnit?: number);
+        constructor(shape?: T, millimetresPerUnit?: number, ifcSurfaces?: boolean);
+        ifcSurfaces?: boolean | undefined;
         millimetresPerUnit?: number | undefined;
         shape: T;
     }
@@ -11390,7 +11397,7 @@ namespace OCCT_3 {
     // (undocumented)
     type DecomposedMeshDto = Inputs_2.OCCT.DecomposedMeshDto;
     // (undocumented)
-    type DescribeRecipeDto<T> = WithDefaults<Inputs_2.OCCT.DescribeRecipeDto<T>, "millimetresPerUnit">;
+    type DescribeRecipeDto<T> = WithDefaults<Inputs_2.OCCT.DescribeRecipeDto<T>, "millimetresPerUnit" | "ifcSurfaces">;
     // (undocumented)
     type DesignBuildDto<T> = Inputs_2.OCCT.DesignBuildDto<T>;
     // (undocumented)

@@ -9,6 +9,7 @@ export * from "./windows";
 export * from "./slabs";
 export * from "./roofs";
 export * from "./site";
+export * from "./elements";
 export * from "./columns";
 export * from "./beams";
 export * from "./members";

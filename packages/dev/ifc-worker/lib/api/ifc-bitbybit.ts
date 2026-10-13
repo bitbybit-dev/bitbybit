@@ -10,6 +10,7 @@ import { IFCDoors } from "./doors";
 import { IFCWindows } from "./windows";
 import { IFCSlabs } from "./slabs";
 import { IFCRoofs } from "./roofs";
+import { IFCElements } from "./elements";
 import { IFCSite } from "./site";
 import { IFCColumns } from "./columns";
 import { IFCBeams } from "./beams";
@@ -21,14 +22,14 @@ import { IFCGeometry } from "./geometry";
 
 /**
  * The entry point to IFC, the open BIM exchange format: `model` creates, reads, writes and edits
- * models; `spatial`, `spaces`, `materials` and `site` add storeys, rooms, materials and the terrain;
+ * models; `spatial`, `spaces`, `materials` and `site` add storeys, rooms, materials and terrain;
  * `walls`, `openings`, `doors`, `windows`, `slabs`, `roofs`, `columns`, `beams` and `members` add
- * elements, `assemblies` groups them; `properties` attaches property sets, `quantities` measures, and `geometry` describes
- * elements as a recipe a kernel builds.
+ * standard elements and `elements` any other class; `assemblies` groups them, `properties` attaches
+ * property sets, `quantities` measures, and `geometry` describes elements as recipes.
  *
  * A model is a value: every method that changes one returns a new model and leaves the one it was
- * given as it was. Elements are parametric IFC4 that other BIM tools edit as walls, slabs and doors.
- * Experimental: names and inputs may still change before the first stable version.
+ * given as it was. Standard elements are parametric IFC4 that other BIM tools edit as walls, slabs
+ * and doors. Experimental: names and inputs may change before the first stable version.
  * @beta
  */
 export class IFCBitByBit {
@@ -42,6 +43,7 @@ export class IFCBitByBit {
     public readonly windows: IFCWindows;
     public readonly slabs: IFCSlabs;
     public readonly roofs: IFCRoofs;
+    public readonly elements: IFCElements;
     public readonly site: IFCSite;
     public readonly columns: IFCColumns;
     public readonly beams: IFCBeams;
@@ -64,6 +66,7 @@ export class IFCBitByBit {
         this.windows = new IFCWindows(ifcWorkerManager);
         this.slabs = new IFCSlabs(ifcWorkerManager);
         this.roofs = new IFCRoofs(ifcWorkerManager);
+        this.elements = new IFCElements(ifcWorkerManager);
         this.site = new IFCSite(ifcWorkerManager);
         this.columns = new IFCColumns(ifcWorkerManager);
         this.beams = new IFCBeams(ifcWorkerManager);

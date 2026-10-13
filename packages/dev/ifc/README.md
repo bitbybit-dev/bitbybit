@@ -69,6 +69,7 @@ Run it with `npx tsx house.ts`. Compiled to JavaScript, run it as `node --import
 | Openings, doors, windows | rectangular openings in walls, moved or resized; any outline through a slab; door and window types with a lining or frame and one panel or pane, each part in its own material, doors with lever or pull-bar handles, placed many times through mapped geometry |
 | Slabs and roofs | outlines with holes, by thickness or layer set; flat, mono-pitch, gable and hip roofs over a rectangle |
 | Columns, beams and members | rectangle, circle and I sections; braces, rafters, studs, mullions and other members |
+| Any element from a shape | an element of any class whose body is an exact solid (planes, cylinders, spheres, tori and B-splines, as an OpenCascade shape described with `ifcSurfaces` gives) or a triangle mesh |
 | Editing | removing elements with what only they use, moving and turning them |
 | Georeference | the map conversion, its coordinate reference system and the site's latitude, longitude and elevation, read by `model.georeference` |
 | Data | materials with colours, layer sets, property sets on elements and types set and removed value by value, any attribute read and any simple one set |

@@ -388,6 +388,75 @@ describe("checkRecipe and a malformed brep node", () => {
     });
 });
 
+describe("checkRecipe and a brep node's solids", () => {
+    it("should accept a solid naming its outer shell's faces, and one with a cavity", () => {
+        // Arrange
+        const one = withChanges((node) => {
+            node["solids"] = [{ outer: [0, 1, 2] }];
+        });
+        const hollow = withChanges((node) => {
+            node["solids"] = [{ outer: [0, 1], voids: [[2]] }];
+        });
+
+        // Act
+        const issues = [...checkRecipe(one), ...checkRecipe(hollow)];
+
+        // Assert
+        expect(issues).toEqual([]);
+    });
+
+    it("should refuse a face two shells hold, a face the node lacks, an empty outer shell, a solid that is not an object, and solids on an open node", () => {
+        // Arrange
+        const recipe = withChanges((node) => {
+            node["solids"] = [{ outer: [0, 1], voids: [[1], [7]] }, 4, { outer: [] }];
+        });
+        const open = withChanges((node) => {
+            node["closed"] = false;
+            node["solids"] = [{ outer: [0, 1, 2] }];
+        });
+
+        // Act
+        const issues = checkRecipe(recipe).map((issue) => `${issue.path}: ${issue.message}`);
+        const openIssues = checkRecipe(open).map((issue) => `${issue.path}: ${issue.message}`);
+
+        // Assert
+        expect(issues).toEqual([
+            "nodes[1].solids[0].voids[0][0]: names face 1, which another shell already holds",
+            "nodes[1].solids[0].voids[1][0]: must be the index of one of the node's faces, from 0 to 2",
+            "nodes[1].solids[1]: must be an object with an outer shell",
+            "nodes[1].solids[2].outer: must be a list of at least 1 and at most 10000000 items",
+            "nodes[1].solids: must place each of the node's faces in a shell, and leaves face 2 out",
+        ]);
+        expect(openIssues).toEqual(["nodes[1].solids: must be left out of a node whose faces do not close a volume"]);
+    });
+
+    it("should refuse solids that leave a face out of every shell, naming the first one", () => {
+        // Arrange
+        const recipe = withChanges((node) => {
+            node["solids"] = [{ outer: [1] }];
+        });
+
+        // Act
+        const issues = checkRecipe(recipe).map((issue) => `${issue.path}: ${issue.message}`);
+
+        // Assert
+        expect(issues).toEqual(["nodes[1].solids: must place each of the node's faces in a shell, and leaves face 0 out"]);
+    });
+
+    it("should not name a face left out when the solids are not a list at all", () => {
+        // Arrange
+        const recipe = withChanges((node) => {
+            node["solids"] = "all";
+        });
+
+        // Act
+        const issues = checkRecipe(recipe).map((issue) => issue.path);
+
+        // Assert
+        expect(issues).toEqual(["nodes[1].solids"]);
+    });
+});
+
 describe("recipeSurfaceMeshes and the brep node", () => {
     it("should give a brep root the triangles of its fallback, and nothing for one without a fallback", () => {
         // Arrange

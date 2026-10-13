@@ -563,6 +563,7 @@ describe("ItemConverter and a representation of several advanced breps", () => {
             throw new Error("not a brep node");
         }
         expect(node.faces).toHaveLength(12);
+        expect(node.solids).toEqual([{ outer: [0, 1, 2, 3, 4, 5] }, { outer: [6, 7, 8, 9, 10, 11] }]);
         expect(node.vertices[1]).toBe(16 * 3);
         const fallback = recipe.nodes[node.fallback!]!;
         expect(fallback.op === "triangles" && fallback.indices[1]).toBe(2 * 12 * 3);
@@ -677,6 +678,7 @@ describe("ItemConverter and the rarer forms of an exact description", () => {
             throw new Error("not a brep node");
         }
         expect(node.faces).toHaveLength(12);
+        expect(node.solids).toEqual([{ outer: [0, 1, 2, 3, 4, 5], voids: [[6, 7, 8, 9, 10, 11]] }]);
         const fallback = recipe.nodes[node.fallback!]!;
         if (fallback.op !== "triangles") {
             throw new Error("no triangles");

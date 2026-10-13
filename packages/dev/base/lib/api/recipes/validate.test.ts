@@ -83,12 +83,13 @@ describe("checkRecipe", () => {
         expect(issues.map((issue) => issue.path)).toEqual(["format"]);
     });
 
-    it("should refuse units and tolerances that are not above zero", () => {
+    it("should refuse units and tolerances that are not above zero, and a tolerance past what a kernel reads", () => {
         // Act
         const issues = checkRecipe({ ...wallRecipe(), millimetresPerUnit: 0, tolerance: Number.NaN });
 
         // Assert
         expect(issues.map((issue) => issue.path)).toEqual(["millimetresPerUnit", "tolerance"]);
+        expect(checkRecipe({ ...wallRecipe(), tolerance: 2e9 }).map((issue) => `${issue.path} ${issue.message}`)).toEqual(["tolerance must be a number above zero and at most 1000000000"]);
     });
 
     it("should refuse buffers that are not typed arrays, without looking at the nodes", () => {
@@ -630,7 +631,7 @@ describe("assertRecipe", () => {
 
         // Assert
         expect(attempt).toThrow(InputError);
-        expect(attempt).toThrow("The recipe cannot be built: millimetresPerUnit must be a finite number above zero; tolerance must be a finite number above zero; nodes[0].op 'fillet' is not an operation recipes know");
+        expect(attempt).toThrow("The recipe cannot be built: millimetresPerUnit must be a finite number above zero; tolerance must be a number above zero and at most 1000000000; nodes[0].op 'fillet' is not an operation recipes know");
     });
 
     it("should leave out the path when the problem is the whole value", () => {

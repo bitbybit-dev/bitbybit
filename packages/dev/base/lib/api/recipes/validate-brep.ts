@@ -298,6 +298,42 @@ function checkFace(checker: Checker, face: unknown, sizes: BrepSizes, ends: read
     }
 }
 
+function checkShell(checker: Checker, shell: unknown, faces: number, used: Set<number>, path: string): void {
+    const listed = list(checker, shell, path, 1);
+    listed.forEach((face, at) => {
+        if (index(checker, face, faces, `${path}[${at}]`, "faces")) {
+            if (used.has(face)) {
+                report(checker.issues, `${path}[${at}]`, `names face ${face}, which another shell already holds`);
+            }
+            used.add(face);
+        }
+    });
+}
+
+function checkSolids(checker: Checker, value: unknown, faces: number, path: string, closed: boolean): void {
+    if (!closed) {
+        report(checker.issues, path, "must be left out of a node whose faces do not close a volume");
+        return;
+    }
+    const used = new Set<number>();
+    list(checker, value, path, 1).forEach((solid, at) => {
+        if (!isRecord(solid)) {
+            report(checker.issues, `${path}[${at}]`, "must be an object with an outer shell");
+            return;
+        }
+        checkShell(checker, solid["outer"], faces, used, `${path}[${at}].outer`);
+        if (solid["voids"] !== undefined) {
+            list(checker, solid["voids"], `${path}[${at}].voids`, 0).forEach((shell, shellAt) => {
+                checkShell(checker, shell, faces, used, `${path}[${at}].voids[${shellAt}]`);
+            });
+        }
+    });
+    const missing = Array.isArray(value) ? Array.from({ length: faces }, (_, face) => face).find((face) => !used.has(face)) : undefined;
+    if (missing !== undefined) {
+        report(checker.issues, path, `must place each of the node's faces in a shell, and leaves face ${missing} out`);
+    }
+}
+
 export function checkBrep(checker: Checker, node: Record<string, unknown>, at: number, path: string): number {
     const vertices = range(checker, node["vertices"], checker.buffers.f64.length, POINT3_SIZE, POINT3_SIZE, `${path}.vertices`);
     const curves = list(checker, node["curves"], `${path}.curves`, 0);
@@ -317,6 +353,9 @@ export function checkBrep(checker: Checker, node: Record<string, unknown>, at: n
     });
     if (typeof node["closed"] !== "boolean") {
         report(checker.issues, `${path}.closed`, "must be true or false");
+    }
+    if (node["solids"] !== undefined) {
+        checkSolids(checker, node["solids"], faces.length, `${path}.solids`, node["closed"] === true);
     }
     return node["fallback"] === undefined ? 0 : reference(checker, node["fallback"], at, SOLID, `${path}.fallback`);
 }

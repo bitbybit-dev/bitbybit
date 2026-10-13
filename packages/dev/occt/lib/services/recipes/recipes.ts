@@ -8,8 +8,8 @@ import { occtFailure } from "../../kernel-failures";
 import { readKernelException } from "../../kernel-exception";
 import type { OCCTAssemblyManager } from "../assembly/manager";
 import { documentPlan, documentStructure } from "./recipe-document";
-import type { BuiltRoots, FirstFailure, KernelBrepDescription, KernelRecipeBuild, RecipeKernelReport, RecipeRootReport, StepFailure } from "./recipe-types";
-import { DESCRIBED_TOLERANCE, IDENTITY_MATRIX, MAX_KERNEL_COUNT, STEPS_BEFORE_EXACT_BREPS } from "./recipes.constants";
+import type { BuiltRoots, FirstFailure, KernelBrepDescription, KernelDescribedShape, KernelRecipeBuild, RecipeKernelReport, RecipeRootReport, StepFailure } from "./recipe-types";
+import { IDENTITY_MATRIX, MAX_KERNEL_COUNT, SPLINED_FOR_IFC, STEPS_BEFORE_EXACT_BREPS } from "./recipes.constants";
 
 function failureOf(report: RecipeRootReport): StepFailure | undefined {
     return report.built ? report.uncut : { node: report.node, reason: report.reason };
@@ -98,12 +98,13 @@ export class OCCTRecipes {
     }
 
     /**
-     * Describes a shape exactly as a recipe of one brep step: its vertices, the curves its edges lie
-     * on and the surfaces its faces lie on.
+     * Describes a shape exactly as a recipe: a brep step for its solids and their cavities, and one
+     * for the faces outside any solid.
      *
-     * Lines, circles, ellipses and the elementary surfaces stay as they are, swept surfaces keep their
-     * curve, and anything else becomes a B-spline. `recipes.build` builds it back.
-     * @param inputs - The shape and its unit
+     * Lines, circles, ellipses and elementary surfaces stay as they are, swept surfaces keep their
+     * curve, and the rest become B-splines, as do cones and swept surfaces under `ifcSurfaces`.
+     * `recipes.build` builds it back.
+     * @param inputs - The shape, its unit and whether to keep to the surfaces IFC takes
      * @returns A recipe whose one root is the shape
      * @group describe
      * @shortname describe shape
@@ -124,18 +125,20 @@ export class OCCTRecipes {
         }
         let described: KernelBrepDescription;
         try {
-            described = this.occ.DescribeShapeExact(resolved.shape);
+            described = this.occ.DescribeShapeExact(resolved.shape, resolved.ifcSurfaces ? SPLINED_FOR_IFC : 0);
         } catch (thrown) {
             throw readKernelException(this.occ, thrown);
         }
+        const { nodes, tolerance } = JSON.parse(described.description) as KernelDescribedShape;
+        const steps: Base.RecipeNode[] = nodes.length > 1 ? [...nodes, { op: "compound", of: nodes.map((_, at) => at) }] : nodes;
         return toRecipe({
             format: "bitbybit.recipe",
             version: 1,
             millimetresPerUnit: resolved.millimetresPerUnit,
-            tolerance: DESCRIBED_TOLERANCE,
+            tolerance,
             buffers: { f64: Float64Array.from(described.numbers), i32: new Int32Array(0) },
-            nodes: [JSON.parse(described.description) as Base.RecipeBrepNode],
-            roots: [{ node: 0, matrix: IDENTITY_MATRIX, tag: {} }],
+            nodes: steps,
+            roots: [{ node: steps.length - 1, matrix: IDENTITY_MATRIX, tag: {} }],
         });
     }
 

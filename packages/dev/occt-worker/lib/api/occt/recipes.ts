@@ -63,12 +63,13 @@ export class OCCTRecipes {
     }
 
     /**
-     * Describes a shape exactly as a recipe of one brep step: its vertices, the curves its edges lie
-     * on and the surfaces its faces lie on.
+     * Describes a shape exactly as a recipe: a brep step for its solids and their cavities, and one
+     * for the faces outside any solid.
      *
-     * Lines, circles, ellipses and the elementary surfaces stay as they are, swept surfaces keep their
-     * curve, and anything else becomes a B-spline. `recipes.build` builds it back.
-     * @param inputs - The shape and its unit
+     * Lines, circles, ellipses and elementary surfaces stay as they are, swept surfaces keep their
+     * curve, and the rest become B-splines, as do cones and swept surfaces under `ifcSurfaces`.
+     * `recipes.build` builds it back.
+     * @param inputs - The shape, its unit and whether to keep to the surfaces IFC takes
      * @returns A recipe whose one root is the shape
      * @group describe
      * @shortname describe shape

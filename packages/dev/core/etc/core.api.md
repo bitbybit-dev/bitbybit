@@ -1289,6 +1289,10 @@ namespace IFC {
         panelThickness?: number | undefined;
         width?: number | undefined;
     }
+    class AddElementDto<T> extends ElementSharedDto<T> {
+        constructor(model?: T, storey?: string, body?: Base_2.Recipe, id?: string, name?: string, type?: string, predefinedType?: string, objectType?: string, position?: Base_2.Point3, rotation?: number, material?: string);
+        body: Base_2.Recipe;
+    }
     class AddLayerSetDto<T> {
         constructor(model?: T, name?: string, layers?: MaterialLayerDto[]);
         layers: MaterialLayerDto[];
@@ -1340,6 +1344,11 @@ namespace IFC {
         pitch?: number | undefined;
         storey: string;
         thickness?: number | undefined;
+    }
+    class AddShapeElementDto<T, S> extends ElementSharedDto<T> {
+        constructor(model?: T, storey?: string, shape?: S, millimetresPerUnit?: number, id?: string, name?: string, type?: string, predefinedType?: string, objectType?: string, position?: Base_2.Point3, rotation?: number, material?: string);
+        millimetresPerUnit?: number | undefined;
+        shape: S;
     }
     class AddSlabDto<T> {
         constructor(model?: T, storey?: string, id?: string, name?: string, outline?: Base_2.Point2[], holes?: Base_2.Point2[][], thickness?: number, layerSet?: string, topOffset?: number, predefinedType?: slabPredefinedTypeEnum);
@@ -1554,6 +1563,18 @@ namespace IFC {
         constructor(model?: T, type?: string, storey?: string);
         model: T;
         storey?: string | undefined;
+        type?: string | undefined;
+    }
+    abstract class ElementSharedDto<T> {
+        id?: string | undefined;
+        material?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        objectType?: string | undefined;
+        position?: Base_2.Point3 | undefined;
+        predefinedType?: string | undefined;
+        rotation?: number | undefined;
+        storey: string;
         type?: string | undefined;
     }
     class GeometryDto<T> {
@@ -1863,6 +1884,8 @@ namespace IFC_2 {
     // (undocumented)
     type AddDoorTypeDto<T> = WithDefaults<Inputs_4.IFC.AddDoorTypeDto<T>, "name" | "operation" | "handle">;
     // (undocumented)
+    type AddElementDto<T> = WithDefaults<Inputs_4.IFC.AddElementDto<T>, "name" | "type" | "position" | "rotation">;
+    // (undocumented)
     type AddLayerSetDto<T> = WithDefaults<Inputs_4.IFC.AddLayerSetDto<T>, "name">;
     // (undocumented)
     type AddMaterialDto<T> = WithDefaults<Inputs_4.IFC.AddMaterialDto<T>, "name" | "transparency">;
@@ -1874,6 +1897,8 @@ namespace IFC_2 {
     type AddPropertySetDto<T> = WithDefaults<Inputs_4.IFC.AddPropertySetDto<T>, "name">;
     // (undocumented)
     type AddRoofDto<T> = WithDefaults<Inputs_4.IFC.AddRoofDto<T>, "kind" | "pitch" | "overhang" | "baseOffset">;
+    // (undocumented)
+    type AddShapeElementDto<T, S> = WithDefaults<Inputs_4.IFC.AddShapeElementDto<T, S>, "millimetresPerUnit" | "name" | "type" | "position" | "rotation">;
     // (undocumented)
     type AddSlabDto<T> = WithDefaults<Inputs_4.IFC.AddSlabDto<T>, "topOffset" | "predefinedType">;
     // (undocumented)
@@ -1914,6 +1939,8 @@ namespace IFC_2 {
     type ElementInfoDto = WithDefaults<Inputs_4.IFC.ElementInfoDto, "globalId" | "type" | "name" | "storey">;
     // (undocumented)
     type ElementsDto<T> = WithDefaults<Inputs_4.IFC.ElementsDto<T>, "type">;
+    // (undocumented)
+    type ElementSharedDto<T> = WithDefaults<Inputs_4.IFC.ElementSharedDto<T>, "name" | "type" | "position" | "rotation">;
     // (undocumented)
     type GeometryDto<T> = WithDefaults<Inputs_4.IFC.GeometryDto<T>, "groupByClass" | "propertySets">;
     // (undocumented)
@@ -1983,7 +2010,17 @@ export class IFCW extends IFCBitByBit {
     // Warning: (ae-forgotten-export) The symbol "OCCT_4" needs to be exported by the entry point index.d.ts
     constructor(ifcWorkerManager: IFCWorkerManager, occt: OCCT_4);
     // (undocumented)
+    readonly elements: IFCWElements;
+    // (undocumented)
     readonly geometry: IFCWGeometry;
+}
+
+// Warning: (ae-forgotten-export) The symbol "IFCElements" needs to be exported by the entry point index.d.ts
+//
+// @beta
+export class IFCWElements extends IFCElements {
+    constructor(ifcWorkerManager: IFCWorkerManager, occt: OCCT_4);
+    addShape(inputs: Inputs_7.IFC.AddShapeElementDto<Inputs_7.IFC.IfcModelPointer, Inputs_7.OCCT.TopoDSShapePointer>): Promise<Inputs_7.IFC.IfcModelPointer>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "IFCGeometry" needs to be exported by the entry point index.d.ts
@@ -5141,7 +5178,8 @@ namespace OCCT {
     }
     // @beta
     class DescribeRecipeDto<T> {
-        constructor(shape?: T, millimetresPerUnit?: number);
+        constructor(shape?: T, millimetresPerUnit?: number, ifcSurfaces?: boolean);
+        ifcSurfaces?: boolean | undefined;
         millimetresPerUnit?: number | undefined;
         shape: T;
     }
@@ -7863,7 +7901,7 @@ namespace OCCT_3 {
     // (undocumented)
     type DecomposedMeshDto = Inputs_5.OCCT.DecomposedMeshDto;
     // (undocumented)
-    type DescribeRecipeDto<T> = WithDefaults<Inputs_5.OCCT.DescribeRecipeDto<T>, "millimetresPerUnit">;
+    type DescribeRecipeDto<T> = WithDefaults<Inputs_5.OCCT.DescribeRecipeDto<T>, "millimetresPerUnit" | "ifcSurfaces">;
     // (undocumented)
     type DesignBuildDto<T> = Inputs_5.OCCT.DesignBuildDto<T>;
     // (undocumented)

@@ -48,6 +48,8 @@ const DTOS: [string, AnyDto][] = [
     ["AddBeamDto", Inputs.IFC.AddBeamDto<unknown>],
     ["AddMemberDto", Inputs.IFC.AddMemberDto<unknown>],
     ["AddAssemblyDto", Inputs.IFC.AddAssemblyDto<unknown>],
+    ["AddElementDto", Inputs.IFC.AddElementDto<unknown>],
+    ["AddShapeElementDto", Inputs.IFC.AddShapeElementDto<unknown, unknown>],
     ["AddTerrainDto", Inputs.IFC.AddTerrainDto<unknown>],
     ["AddTreeDto", Inputs.IFC.AddTreeDto<unknown>],
     ["PropertyDto", Inputs.IFC.PropertyDto],
@@ -66,7 +68,7 @@ const DTOS: [string, AnyDto][] = [
     ["GeometryProblemDto", Inputs.IFC.GeometryProblemDto],
 ];
 
-const BASE_CLASSES = ["MemberSharedDto"];
+const BASE_CLASSES = ["MemberSharedDto", "ElementSharedDto"];
 
 const sentinels = (count: number): never[] => Array.from({ length: count }, (_, index) => ({ argument: index })) as never[];
 

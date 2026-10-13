@@ -1,6 +1,7 @@
 import type { Base } from "@bitbybit-dev/base";
 import type { IfcModel } from "../index";
 import { IFC, IFCService } from "../index";
+import { cylinderBody, exactRecipe, hollowedBody, meshBoxRecipe, quarterCylinderBody } from "../lib/__test__/exact-bodies";
 import { rehungDoor } from "../lib/__test__/hand-made";
 import { OTHER_TOOL_FILE, WALL_A, WALL_B, WALL_B_PLACED_APART_FROM_ITS_AXIS } from "../lib/__test__/other-tool-file";
 import type { ValidationFixture } from "./validation-types";
@@ -251,6 +252,22 @@ function assemblies(): IfcModel {
     return ifc.assemblies.add({ model, parts: ["chord", "strut"], id: "truss", name: "Truss", predefinedType: IFC.elementAssemblyPredefinedTypeEnum.truss });
 }
 
+function exactElements(): IfcModel {
+    const ifc = new IFCService();
+    let model = ifc.model.create({ name: "Exact elements", seed: "validation-exact-elements" });
+    model = ifc.spatial.addStorey({ model, id: "ground", elevation: 0 });
+    model = ifc.materials.add({ model, name: "Steel", category: "steel", color: "#8899aa" });
+    model = ifc.elements.add({ model, storey: "ground", id: "post", name: "Post", body: exactRecipe(cylinderBody(100, 1000)), position: [1000, 500, 0], rotation: 30, material: "Steel" });
+    model = ifc.elements.add({ model, storey: "ground", id: "tube", name: "Sealed tube", type: "IfcPipeSegment", predefinedType: "RIGIDSEGMENT", body: exactRecipe(hollowedBody(cylinderBody(200, 600), cylinderBody(100, 400, 100))), position: [3000, 0, 0] });
+    model = ifc.elements.add({ model, storey: "ground", id: "bench", name: "Bench", type: "IfcFurniture", objectType: "Quarter bench", body: exactRecipe(quarterCylinderBody(1000, 500)), position: [0, 3000, 0], rotation: -45 });
+    model = ifc.elements.add({ model, storey: "ground", id: "crate", name: "Crate", type: "IfcFurnishingElement", body: meshBoxRecipe([0.5, 0.4, 0.3], 1000), position: [3000, 3000, 0] });
+    const expected: [string, number][] = [["post", Math.PI * 0.01], ["tube", Math.PI * 0.02], ["bench", Math.PI / 8], ["crate", 0.06]];
+    for (const [element, volume] of expected) {
+        model = ifc.properties.addSet({ model, elements: [element], name: "Validation_Expected", properties: [{ name: "NetVolume", value: volume, type: "IfcVolumeMeasure" }] });
+    }
+    return model;
+}
+
 function roofedHouse(kind: IFC.roofKindEnum): () => IfcModel {
     return () => {
         const ifc = new IFCService();
@@ -295,4 +312,5 @@ export const VALIDATION_FIXTURES: readonly ValidationFixture[] = [
     { name: "hip-roof", build: roofedHouse(IFC.roofKindEnum.hip) },
     { name: "mono-pitch-roof", build: roofedHouse(IFC.roofKindEnum.monoPitch) },
     { name: "flat-roof", build: roofedHouse(IFC.roofKindEnum.flat) },
+    { name: "exact-elements", build: exactElements },
 ];

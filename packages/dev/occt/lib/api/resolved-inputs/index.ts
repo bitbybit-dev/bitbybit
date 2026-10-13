@@ -101,7 +101,7 @@ export namespace OCCT {
     export type DecomposedFaceDto = Inputs.OCCT.DecomposedFaceDto;
     export type DecomposedManifoldMeshDto = Inputs.OCCT.DecomposedManifoldMeshDto;
     export type DecomposedMeshDto = Inputs.OCCT.DecomposedMeshDto;
-    export type DescribeRecipeDto<T> = WithDefaults<Inputs.OCCT.DescribeRecipeDto<T>, "millimetresPerUnit">;
+    export type DescribeRecipeDto<T> = WithDefaults<Inputs.OCCT.DescribeRecipeDto<T>, "millimetresPerUnit" | "ifcSurfaces">;
     export type DesignBuildDto<T> = Inputs.OCCT.DesignBuildDto<T>;
     export type DesignClashesDto = WithDefaults<Inputs.OCCT.DesignClashesDto, "clearance">;
     export type DesignDocumentDto = Inputs.OCCT.DesignDocumentDto;

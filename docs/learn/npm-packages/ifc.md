@@ -203,6 +203,15 @@ The site, the building and each storey are assemblies, the elements of a storey 
 
 Elements a file stores as triangle meshes, as Revit exports its families, keep their triangles: they draw and measure, and the STEP file carries them as tessellated geometry (AP242). With `facetedMeshes: true` they become faceted solids instead, one per closed body with the triangles that share a plane merged into one face, which cut and fillet like any other shape but take longer and write larger files; a mesh a cut needs, such as a faceted wall with openings, is built that way regardless.
 
+The other way round, an OpenCascade shape becomes an element of the model. Describe it with `ifcSurfaces`, which keeps to the surfaces IFC's advanced faces take, and add it to a storey as an element of any class:
+
+```typescript
+const body = await bitbybit.occt.recipes.describe({ shape: bracket, ifcSurfaces: true });
+model = await bitbybit.ifc.elements.add({ model, storey: "ground", body, type: "IfcFurniture", name: "Bracket", position: [2000, 1500, 0], rotation: 90 });
+```
+
+The element keeps the exact shape as advanced breps, which other BIM tools read as solids, with any cavities cut from it; a body of triangles becomes a triangulated face set. The body is scaled from the unit its recipe records to the model's.
+
 STEP is a verbose text format, and writing it holds the whole file in memory. A model with a million mesh triangles writes some 280 MB of STEP and needs about 2 GB while it does, which is all the standard 32-bit kernel has; export a model that large in parts, or on the 64-bit kernel, which has up to 16 GB.
 
 ## What version 1 covers
@@ -215,5 +224,5 @@ STEP is a verbose text format, and writing it holds the whole file in memory. A 
 - Rectangular openings in walls and any outline through a slab; door and window types placed many times through shared geometry, each part (frame and glass, lining, panel and handle) in a material of its own; doors with lever or pull-bar handles.
 - Slabs with holes; flat, mono-pitch, gable and hip roofs over a rectangle; columns, beams and members with rectangle, circle and I sections; assemblies of elements, such as a facade's cladding boards.
 - The site around the building: terrain with holes where the building and paving meet it, and trees, as IFC geographic elements.
-- Exact OpenCascade shapes of every element a model describes, and its STEP export, through `occt.recipes`.
+- Exact OpenCascade shapes of every element a model describes, and its STEP export, through `occt.recipes`; and elements of any class from an OpenCascade shape or a mesh (`elements.add`).
 - Materials with colours, layer sets, property sets set and removed value by value, any simple attribute, and the base quantities of every element it builds.

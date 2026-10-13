@@ -191,6 +191,7 @@ export namespace Base {
         faces: RecipeBrepFace[];
         fallback?: number | undefined;
         op: "brep";
+        solids?: RecipeBrepSolid[] | undefined;
         surfaces: RecipeBrepSurface[];
         vertices: RecipeRange;
     }
@@ -210,6 +211,11 @@ export namespace Base {
         curve: number;
         kind: "revolution";
         origin: Point3;
+    }
+    // @beta
+    export interface RecipeBrepSolid {
+        outer: number[];
+        voids?: number[][] | undefined;
     }
     // @beta
     export interface RecipeBrepSphere extends RecipeBrepPlacement {

@@ -2912,7 +2912,7 @@ interface EmbindModule {
   BuildRecipes(_0: EmbindString, _1: Float64Array, _2: Int32Array, _3: boolean, _4: boolean, _5: number): { shapes: (TopoDS_Shape | null)[]; report: string };
   FacesFromOutline(_0: gp_Pnt, _1: gp_Dir, _2: gp_Dir, _3: ArrayLike<number>, _4: ArrayLike<number>): TopoDS_Shape;
   RecipeSteps(): string;
-  DescribeShapeExact(_0: TopoDS_Shape): { description: string; numbers: Float64Array };
+  DescribeShapeExact(_0: TopoDS_Shape, _1: number): { description: string; numbers: Float64Array };
   TransformByMatrix(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Shape;
 }
 

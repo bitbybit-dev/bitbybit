@@ -26,6 +26,17 @@ def volume_of(chosen, product):
     return ifcopenshell.util.shape.get_volume(shape_of(chosen, product).geometry)
 
 
+EXECUTOR_CRASH = "unsupported operand type(s)"
+RULES_THE_EXECUTOR_CRASHES_ON = {
+    "IfcRationalBSplineSurfaceWithKnots.WeightValuesGreaterZero": lambda surface: all(weight > 0 for row in surface.WeightsData for weight in row),
+}
+
+
+def holds_where_the_executor_crashed(statement):
+    rule = RULES_THE_EXECUTOR_CRASHES_ON.get(statement.get("attribute"))
+    return rule is not None and EXECUTOR_CRASH in str(statement.get("message")) and rule(statement.get("instance"))
+
+
 def statements_of(model):
     logger = ifcopenshell.validate.json_logger()
     ifcopenshell.validate.validate(model, logger, express_rules=True)
@@ -37,6 +48,7 @@ def statements_of(model):
             "attribute": statement.get("attribute"),
         }
         for statement in logger.statements
+        if not holds_where_the_executor_crashed(statement)
     ]
 
 
@@ -94,20 +106,40 @@ def regenerated_walls_of(chosen, model):
     return reports, clipped
 
 
+EXPECTED_SET = "Validation_Expected"
+
+
+def is_curved_item(item):
+    if item.is_a("IfcCsgSolid"):
+        return is_curved_item(item.TreeRootExpression)
+    if item.is_a("IfcBooleanResult"):
+        return is_curved_item(item.FirstOperand) or is_curved_item(item.SecondOperand)
+    if item.is_a("IfcSweptAreaSolid"):
+        return item.SweptArea.is_a("IfcCircleProfileDef")
+    if item.is_a("IfcAdvancedBrep"):
+        shells = [item.Outer, *(item.Voids if item.is_a("IfcAdvancedBrepWithVoids") else [])]
+        return any(not face.FaceSurface.is_a("IfcPlane") for shell in shells for face in shell.CfsFaces)
+    return False
+
+
 def is_curved(product):
     body = ifcopenshell.util.representation.get_representation(product, "Model", "Body", "MODEL_VIEW")
     items = body.Items if body is not None else []
-    return any(item.is_a("IfcSweptAreaSolid") and item.SweptArea.is_a("IfcCircleProfileDef") for item in items)
+    return any(is_curved_item(item) for item in items)
+
+
+def stated_volume_of(definition):
+    if definition.is_a("IfcElementQuantity"):
+        return {quantity.Name: quantity.VolumeValue for quantity in definition.Quantities if quantity.is_a("IfcQuantityVolume")}.get("NetVolume")
+    if definition.is_a("IfcPropertySet") and definition.Name == EXPECTED_SET:
+        return {value.Name: value.NominalValue.wrappedValue for value in definition.HasProperties if value.is_a("IfcPropertySingleValue") and value.NominalValue is not None}.get("NetVolume")
+    return None
 
 
 def measured_volumes_of(chosen, model):
     results = []
     for relationship in model.by_type("IfcRelDefinesByProperties"):
-        definition = relationship.RelatingPropertyDefinition
-        if not definition.is_a("IfcElementQuantity"):
-            continue
-        volumes = {quantity.Name: quantity.VolumeValue for quantity in definition.Quantities if quantity.is_a("IfcQuantityVolume")}
-        ours = volumes.get("NetVolume")
+        ours = stated_volume_of(relationship.RelatingPropertyDefinition)
         if ours is None:
             continue
         for product in relationship.RelatedObjects:

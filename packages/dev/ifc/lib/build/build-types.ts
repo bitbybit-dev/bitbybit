@@ -396,3 +396,31 @@ export interface ContextKey {
     readonly identifier: string;
     readonly view: string;
 }
+
+export interface BrepItems {
+    readonly items: number[];
+    readonly carved: boolean;
+}
+
+export interface BodyItems {
+    readonly items: readonly number[];
+    readonly representationType: string;
+}
+
+export interface PlacedSource {
+    readonly node: Base.RecipeNode;
+    readonly matrix: Base.TransformMatrix;
+}
+
+export interface ElementSpec {
+    readonly storey: number;
+    readonly id: string | undefined;
+    readonly name: string;
+    readonly type: string;
+    readonly predefinedType: string | undefined;
+    readonly objectType: string | undefined;
+    readonly body: Base.Recipe;
+    readonly scale: number;
+    readonly frame: Frame3;
+    readonly material: number | undefined;
+}

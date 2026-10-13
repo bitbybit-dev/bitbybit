@@ -109,9 +109,10 @@ export class BuildRecipeDocumentDto {
  * @beta
  */
 export class DescribeRecipeDto<T> {
-    constructor(shape?: T, millimetresPerUnit?: number) {
+    constructor(shape?: T, millimetresPerUnit?: number, ifcSurfaces?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
         if (millimetresPerUnit !== undefined) { this.millimetresPerUnit = millimetresPerUnit; }
+        if (ifcSurfaces !== undefined) { this.ifcSurfaces = ifcSurfaces; }
     }
     /**
      * The shape to describe: a solid, several, a shell, faces or a compound of them.
@@ -127,4 +128,10 @@ export class DescribeRecipeDto<T> {
      * @step 1
      */
     millimetresPerUnit?: number | undefined = 1;
+    /**
+     * Writes cones and swept surfaces as B-splines, so the recipe holds only the surfaces an IFC4
+     * advanced face takes: planes, cylinders, spheres, tori and B-splines.
+     * @default false
+     */
+    ifcSurfaces?: boolean | undefined = false;
 }

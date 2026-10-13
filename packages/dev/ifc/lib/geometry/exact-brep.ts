@@ -59,6 +59,7 @@ class BrepDescription {
     private readonly surfaces: Base.RecipeBrepSurface[] = [];
     private readonly edges: Base.RecipeBrepEdge[] = [];
     private readonly faces: Base.RecipeBrepFace[] = [];
+    private readonly solids: Base.RecipeBrepSolid[] = [];
     private readonly dividedSurfaces = new Map<number, boolean>();
 
     constructor(private readonly model: ModelSnapshot, private readonly sampler: CurveSampler) { }
@@ -72,7 +73,7 @@ class BrepDescription {
         for (const range of this.ranges) {
             range[0] += start + vertexCount;
         }
-        return { op: "brep", vertices: [start, vertexCount], curves: this.curves, surfaces: this.surfaces, edges: this.edges, faces: this.faces, closed: true };
+        return { op: "brep", vertices: [start, vertexCount], curves: this.curves, surfaces: this.surfaces, edges: this.edges, faces: this.faces, closed: true, solids: this.solids };
     }
 
     private item(item: number): void {
@@ -82,11 +83,9 @@ class BrepDescription {
             throw new UnsupportedGeometryError(`#${item} has no outer shell`);
         }
         const voids = BREPS_WITH_VOIDS.has(type) ? this.model.attribute(item, "Voids") : null;
-        for (const shell of [outer, ...(isList(voids) ? voids : []).filter(isReference)]) {
-            for (const face of referencesIn(this.model, shell.ref, "CfsFaces")) {
-                this.faces.push(this.face(face));
-            }
-        }
+        const shells = [outer, ...(isList(voids) ? voids : []).filter(isReference)].map((shell) => referencesIn(this.model, shell.ref, "CfsFaces").map((face) => this.faces.push(this.face(face)) - 1));
+        const [outerFaces, ...voidFaces] = shells;
+        this.solids.push(voidFaces.length ? { outer: outerFaces!, voids: voidFaces } : { outer: outerFaces! });
     }
 
     private range(values: readonly number[]): Base.RecipeRange {

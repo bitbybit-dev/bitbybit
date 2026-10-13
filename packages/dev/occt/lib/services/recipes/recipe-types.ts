@@ -57,3 +57,8 @@ export interface KernelBrepDescription {
     readonly description: string;
     readonly numbers: ArrayLike<number>;
 }
+
+export interface KernelDescribedShape {
+    readonly nodes: Base.RecipeBrepNode[];
+    readonly tolerance: number;
+}

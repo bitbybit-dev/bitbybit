@@ -824,6 +824,7 @@
     "columns.add",
     "doors.add",
     "doors.addType",
+    "elements.add",
     "geometry.recipe",
     "geometry.unsupported",
     "materials.add",

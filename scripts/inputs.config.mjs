@@ -102,6 +102,7 @@ export const targets = [
             "openings-doors-windows",
             "slabs-columns-beams",
             "site",
+            "elements",
             "properties",
             "geometry",
         ],

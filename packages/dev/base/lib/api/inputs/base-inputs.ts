@@ -761,6 +761,21 @@ export namespace Base {
         bounds: RecipeBrepBound[];
     }
     /**
+     * One solid of a brep node: the faces of its outer shell and of each cavity inside it, by their
+     * indices among the node's faces, as STEP's brep with voids gives them.
+     * @beta
+     */
+    export interface RecipeBrepSolid {
+        /**
+         * The faces of the outer shell, at least one.
+         */
+        outer: number[];
+        /**
+         * The faces of each cavity's shell; left out for a solid without cavities.
+         */
+        voids?: number[][] | undefined;
+    }
+    /**
      * A boundary representation given exactly, as STEP and IFC describe one: vertices, edges on
      * curves, and faces on surfaces bounded by loops of those edges. Faces meet on shared edges, so
      * a closed set of faces is a solid.
@@ -798,6 +813,12 @@ export namespace Base {
          * Whether the faces close a volume, so the result is a solid rather than a shell.
          */
         closed: boolean;
+        /**
+         * The solids the faces make, each an outer shell and its cavities; left out, a closed node's
+         * shells are found from the edges the faces share and a shell inside another is its cavity.
+         * Every face belongs to one shell at most.
+         */
+        solids?: RecipeBrepSolid[] | undefined;
         /**
          * The index of an earlier node to build where exact surfaces cannot be, or are not built.
          */

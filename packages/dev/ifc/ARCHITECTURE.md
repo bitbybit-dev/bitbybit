@@ -305,6 +305,26 @@ placed at that structure's origin. The parts keep their own placements, so nothi
 nested wholes included, so a board still lists under its storey; `storeyOf` already looked through
 aggregates. Removing an assembly removes its parts, as removing any aggregate does.
 
+## Elements from shapes
+
+`elements.add` writes an element of any non-abstract subtype of `IfcElement` whose body is given as a
+recipe of brep or triangles steps, such as an OpenCascade shape `occt.recipes.describe` turned into
+one. A closed brep step's solids become `IfcAdvancedBrep` items, an open one's faces an
+`IfcShellBasedSurfaceModel`, and triangles an `IfcTriangulatedFaceSet` marked closed when every edge
+is run once each way. Curves and surfaces are written once however many edges and faces lie on them.
+Advanced faces take planes, cylinders, spheres, tori and B-spline surfaces; IFC4 has no conical
+surface, and its swept surfaces sweep a profile definition rather than a curve, so a cone or a swept
+surface is refused and `ifcSurfaces` on `describe` writes them as B-splines instead. Roots may move
+and turn their steps, never scale or mirror them, and are written in the element's own frame, the body
+scaled from its units to the model's.
+
+A solid with cavities is written as an `IfcCsgSolid` of its outside less each cavity
+(`IfcBooleanResult` DIFFERENCE of `IfcAdvancedBrep` operands, the cavities wound outward), not as an
+`IfcAdvancedBrepWithVoids`. The schema's own rule on that entity (`VoidsHaveAdvancedFaces`, the same in
+IFC4X3) counts the voids made only of advanced faces and requires there to be none, so every valid
+instance fails it, and IfcOpenShell 0.9 builds no brep with voids at all, faceted ones included. The
+reader still reads `IfcAdvancedBrepWithVoids` other tools write.
+
 ## Moving
 
 `model.move` turns an element's absolute frame about the vertical through its origin, moves it, and
@@ -602,7 +622,14 @@ runs on every file it writes. For each file it reports:
   the element's geometry with its openings cut. A circular section is measured by IfcOpenShell as a
   polygon, so it agrees to 1 % rather than exactly.
 
-The suite runs only on request, since it needs a Python with IfcOpenShell 0.9 (`IFC_PYTHON`, or
+- every volume an element's `Validation_Expected` property set states as `NetVolume` that differs from
+  the one IfcOpenShell measures, so a fixture can state the volume of a body no quantity set covers.
+  Advanced breps on curved surfaces are measured from IfcOpenShell's tessellation, to 1 %.
+
+IfcOpenShell 0.9's rule executor fails with a Python error on `IfcSurfaceWeightsPositive` for every
+rational B-spline surface, buildingSMART's own samples included, so `check.py` evaluates that one rule
+itself when the executor fails on it. The executor needs pytest, which `requirements.txt` pins beside
+IfcOpenShell. The suite runs only on request, since it needs a Python with both (`IFC_PYTHON`, or
 `python3`). A new verb adds the fixture that uses it.
 
 ## Measured against real files

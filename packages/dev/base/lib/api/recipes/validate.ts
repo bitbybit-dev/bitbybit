@@ -295,7 +295,7 @@ export function checkRecipe(recipe: unknown): RecipeIssue[] {
         report(issues, "format", `must be ${RECIPE_FORMAT} version ${RECIPE_VERSION}`);
     }
     positive(issues, recipe["millimetresPerUnit"], "millimetresPerUnit");
-    positive(issues, recipe["tolerance"], "tolerance");
+    extent(issues, recipe["tolerance"], "tolerance");
     const buffers = recipe["buffers"];
     const f64 = isRecord(buffers) ? buffers["f64"] : undefined;
     const i32 = isRecord(buffers) ? buffers["i32"] : undefined;

@@ -117,6 +117,45 @@ describe("OCCTRecipes.describe and the exact brep step", () => {
         expect(volumeOf(again)).toBeCloseTo(2, 9);
     });
 
+    it("should list a compound's solids, keep a solid inside another as its own, and give faces outside any solid a step of their own", () => {
+        // Arrange
+        const box = kept(occt.shapes.solid.createBox({ width: 4, length: 4, height: 4, center: ORIGIN }));
+        const ball = kept(occt.shapes.solid.createSphere({ radius: 1, center: ORIGIN }));
+        const sheet = kept(occt.shapes.face.createSquareFace({ size: 1, center: [0, 0, 6], direction: UP }));
+        const compound = kept(occt.shapes.compound.makeCompound({ shapes: [box, ball, sheet] }));
+
+        // Act
+        const { recipe, again } = rebuilt(compound);
+
+        // Assert
+        expect(checkRecipe(recipe)).toEqual([]);
+        expect(recipe.nodes.map((node) => node.op)).toEqual(["brep", "brep", "compound"]);
+        expect(recipe.roots[0]!.node).toBe(2);
+        const [solids, loose] = recipe.nodes;
+        expect(solids?.op === "brep" && solids.solids).toEqual([{ outer: [0, 1, 2, 3, 4, 5] }, { outer: [6] }]);
+        expect(loose?.op === "brep" && [loose.closed, loose.solids]).toEqual([false, undefined]);
+        expect(recipe.tolerance).toBe(1e-7);
+        expect(volumeOf(again)).toBeCloseTo(64 + (4 / 3) * Math.PI, 6);
+    });
+
+    it("should write cones and swept surfaces as B-splines when asked to keep to the surfaces IFC takes", () => {
+        // Arrange
+        const cone = kept(occt.shapes.solid.createCone({ radius1: 2, radius2: 1, height: 3, angle: 360, center: ORIGIN, direction: UP }));
+
+        // Act
+        const exact = occt.recipes.describe({ shape: cone });
+        const forIfc = occt.recipes.describe({ shape: cone, ifcSurfaces: true });
+        const [again] = occt.recipes.build({ recipe: forIfc });
+        kept(again!);
+
+        // Assert
+        const kinds = (recipe: Base.Recipe): string[] => recipe.nodes.flatMap((node) => (node.op === "brep" ? node.surfaces.map((surface) => surface.kind) : []));
+        expect(kinds(exact)).toContain("cone");
+        expect(kinds(forIfc)).not.toContain("cone");
+        expect(kinds(forIfc)).toContain("bspline");
+        expect(volumeOf(again!) / (Math.PI * 3 * (4 + 2 + 1) / 3)).toBeCloseTo(1, 5);
+    });
+
     it("should record the unit it is given, and refuse a unit that is not a length above zero", () => {
         // Arrange
         const box = kept(occt.shapes.solid.createBox({ width: 1, length: 1, height: 1, center: ORIGIN }));

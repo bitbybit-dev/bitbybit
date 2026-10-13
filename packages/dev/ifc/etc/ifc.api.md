@@ -189,6 +189,7 @@ export namespace Base {
         faces: RecipeBrepFace[];
         fallback?: number | undefined;
         op: "brep";
+        solids?: RecipeBrepSolid[] | undefined;
         surfaces: RecipeBrepSurface[];
         vertices: RecipeRange;
     }
@@ -208,6 +209,11 @@ export namespace Base {
         curve: number;
         kind: "revolution";
         origin: Point3;
+    }
+    // @beta
+    export interface RecipeBrepSolid {
+        outer: number[];
+        voids?: number[][] | undefined;
     }
     // @beta
     export interface RecipeBrepSphere extends RecipeBrepPlacement {
@@ -807,6 +813,10 @@ export namespace IFC {
         panelThickness?: number | undefined;
         width?: number | undefined;
     }
+    export class AddElementDto<T> extends ElementSharedDto<T> {
+        constructor(model?: T, storey?: string, body?: Base.Recipe, id?: string, name?: string, type?: string, predefinedType?: string, objectType?: string, position?: Base.Point3, rotation?: number, material?: string);
+        body: Base.Recipe;
+    }
     export class AddLayerSetDto<T> {
         constructor(model?: T, name?: string, layers?: MaterialLayerDto[]);
         layers: MaterialLayerDto[];
@@ -858,6 +868,11 @@ export namespace IFC {
         pitch?: number | undefined;
         storey: string;
         thickness?: number | undefined;
+    }
+    export class AddShapeElementDto<T, S> extends ElementSharedDto<T> {
+        constructor(model?: T, storey?: string, shape?: S, millimetresPerUnit?: number, id?: string, name?: string, type?: string, predefinedType?: string, objectType?: string, position?: Base.Point3, rotation?: number, material?: string);
+        millimetresPerUnit?: number | undefined;
+        shape: S;
     }
     export class AddSlabDto<T> {
         constructor(model?: T, storey?: string, id?: string, name?: string, outline?: Base.Point2[], holes?: Base.Point2[][], thickness?: number, layerSet?: string, topOffset?: number, predefinedType?: slabPredefinedTypeEnum);
@@ -1072,6 +1087,18 @@ export namespace IFC {
         constructor(model?: T, type?: string, storey?: string);
         model: T;
         storey?: string | undefined;
+        type?: string | undefined;
+    }
+    export abstract class ElementSharedDto<T> {
+        id?: string | undefined;
+        material?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        objectType?: string | undefined;
+        position?: Base.Point3 | undefined;
+        predefinedType?: string | undefined;
+        rotation?: number | undefined;
+        storey: string;
         type?: string | undefined;
     }
     export class GeometryDto<T> {
@@ -1380,6 +1407,8 @@ namespace IFC_2 {
     // (undocumented)
     type AddDoorTypeDto<T> = WithDefaults<Inputs.IFC.AddDoorTypeDto<T>, "name" | "operation" | "handle">;
     // (undocumented)
+    type AddElementDto<T> = WithDefaults<Inputs.IFC.AddElementDto<T>, "name" | "type" | "position" | "rotation">;
+    // (undocumented)
     type AddLayerSetDto<T> = WithDefaults<Inputs.IFC.AddLayerSetDto<T>, "name">;
     // (undocumented)
     type AddMaterialDto<T> = WithDefaults<Inputs.IFC.AddMaterialDto<T>, "name" | "transparency">;
@@ -1391,6 +1420,8 @@ namespace IFC_2 {
     type AddPropertySetDto<T> = WithDefaults<Inputs.IFC.AddPropertySetDto<T>, "name">;
     // (undocumented)
     type AddRoofDto<T> = WithDefaults<Inputs.IFC.AddRoofDto<T>, "kind" | "pitch" | "overhang" | "baseOffset">;
+    // (undocumented)
+    type AddShapeElementDto<T, S> = WithDefaults<Inputs.IFC.AddShapeElementDto<T, S>, "millimetresPerUnit" | "name" | "type" | "position" | "rotation">;
     // (undocumented)
     type AddSlabDto<T> = WithDefaults<Inputs.IFC.AddSlabDto<T>, "topOffset" | "predefinedType">;
     // (undocumented)
@@ -1431,6 +1462,8 @@ namespace IFC_2 {
     type ElementInfoDto = WithDefaults<Inputs.IFC.ElementInfoDto, "globalId" | "type" | "name" | "storey">;
     // (undocumented)
     type ElementsDto<T> = WithDefaults<Inputs.IFC.ElementsDto<T>, "type">;
+    // (undocumented)
+    type ElementSharedDto<T> = WithDefaults<Inputs.IFC.ElementSharedDto<T>, "name" | "type" | "position" | "rotation">;
     // (undocumented)
     type GeometryDto<T> = WithDefaults<Inputs.IFC.GeometryDto<T>, "groupByClass" | "propertySets">;
     // (undocumented)
@@ -1523,6 +1556,11 @@ export class IFCDoors {
 //
 // @public
 export const ifcDtoRegistry: DtoRegistry;
+
+// @beta
+export class IFCElements {
+    add(inputs: Inputs.IFC.AddElementDto<IfcModel>): IfcModel;
+}
 
 // @beta
 export interface IfcEntity {
@@ -1642,6 +1680,7 @@ export class IFCService {
     readonly beams: IFCBeams;
     readonly columns: IFCColumns;
     readonly doors: IFCDoors;
+    readonly elements: IFCElements;
     readonly geometry: IFCGeometry;
     readonly materials: IFCMaterials;
     readonly members: IFCMembers;
