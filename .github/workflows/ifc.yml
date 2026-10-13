@@ -1,7 +1,8 @@
 # The ifc package measured against IfcOpenShell, twice a week and by hand. First the files the library
 # writes, through IfcOpenShell's validator (npm run validate in packages/dev/ifc), then the public
-# corpus other tools wrote (npm run ifc:corpus, scripts/README.md): timings, memory, the round trip
-# and every element's volume and box against IfcOpenShell's. Not a pull-request gate: the corpus is
+# corpus other tools wrote (npm run ifc:corpus, scripts/README.md): timings, memory, the round trip,
+# every element's volume and box against IfcOpenShell's, and edits to the editable files through its
+# validator. Not a pull-request gate: the corpus is
 # served by other people, and a file that moved is not the fault of a change. Twice a week because
 # GitHub drops a cache unused for seven days, and the corpus is downloaded from its hosts on a miss.
 name: IFC
@@ -64,7 +65,7 @@ jobs:
         if: success() || failure()
         env:
           IFC_PYTHON: python
-        run: npm run ifc:corpus -- run --exact
+        run: npm run ifc:corpus -- run --exact --edits
 
       - uses: actions/upload-artifact@v7
         if: always()

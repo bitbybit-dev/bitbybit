@@ -1,12 +1,22 @@
 import { describe, expect, it } from "vitest";
 import type * as Inputs from "../../inputs";
-import { pathTangents, roundedPath3, sweepMatrices, transportedAxes } from "./paths";
+import { pathLength3, pathTangents, roundedPath3, sweepMatrices, transportedAxes } from "./paths";
 
 const L_PATH: Inputs.Base.Point3[] = [[0, 0, 0], [1, 0, 0], [1, 1, 0]];
 
 function near(values: readonly number[]): unknown[] {
     return values.map((value) => expect.closeTo(value, 9));
 }
+
+describe("pathLength3", () => {
+    it("should add up the lengths of a path's segments, a lone point or no point measuring nothing", () => {
+        // Act
+        const lengths = [pathLength3([[0, 0, 0], [3, 4, 0], [3, 4, 12]]), pathLength3([[1, 1, 1]]), pathLength3([])];
+
+        // Assert
+        expect(lengths).toEqual([17, 0, 0]);
+    });
+});
 
 describe("pathTangents and transportedAxes", () => {
     it("should point along each segment at the ends and halfway between the segments at a corner", () => {

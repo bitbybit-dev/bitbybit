@@ -12,3 +12,6 @@ coverage/
 
 packages/dev/ifc/corpus/files/
 packages/dev/ifc/corpus/.cache/
+
+# written by Python when validate.py imports the validation checker
+__pycache__/

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BLANK_HEADER_LINES, stepFile } from "../__test__/model-fixtures";
 import { IFCService } from "../api/ifc-service";
+import { OTHER_TOOL_FILE_IFC4X3, WALL_A, WALL_B } from "../__test__/other-tool-file";
 
 const ROAD_ROWS = [
     "#1=IFCPROJECT('0$9GJWJuaHqveC0mNeB3C1',$,'Road project',$,$,$,$,(#2),#20);",
@@ -37,21 +38,52 @@ describe("an IFC4X3 model", () => {
         const { roots } = ifc.geometry.recipe({ model });
 
         // Assert
-        expect([summary.schema, summary.editable, summary.elementCounts]).toEqual(["IFC4X3_ADD2", false, { IfcCourse: 1 }]);
+        expect([summary.schema, summary.editable, summary.elementCounts]).toEqual(["IFC4X3_ADD2", true, { IfcCourse: 1 }]);
         expect(ifc.model.elements({ model, type: "IfcElement" })).toEqual([{ globalId: "3hqIFTRjfV6AWq_bMtnZwI", type: "IfcCourse", name: "Wearing course", storey: "1hqIFTRjfV6AWq_bMtnZwI" }]);
         expect(roots.map((root) => root.tag["type"])).toEqual(["IfcCourse"]);
         const written = ifc.model.write({ model });
         expect(written.slice(written.indexOf("DATA;"))).toBe(text.slice(text.indexOf("DATA;")));
     });
 
-    it("should be shown and queried but not changed, since changes are made to IFC4 models", () => {
+    it("should take changes and write them in the file's own schema, never upgrading it", () => {
         // Arrange
         const ifc = new IFCService();
         const model = ifc.model.read({ data: roadFile("IFC4X3_ADD2") });
 
-        // Act & Assert
-        expect(() => ifc.model.setAttribute({ model, element: "3hqIFTRjfV6AWq_bMtnZwI", attribute: "Name", value: "Binder course" })).toThrow("This IFC4X3_ADD2 model can be shown and queried but not changed; changes are made to IFC4 models");
+        // Act
+        const renamed = ifc.model.setAttribute({ model, element: "3hqIFTRjfV6AWq_bMtnZwI", attribute: "Name", value: "Binder course" });
+        const described = ifc.properties.addSet({ model: renamed, elements: ["3hqIFTRjfV6AWq_bMtnZwI"], name: "Pset_CourseCommon", properties: [{ name: "Reference", value: "B1" }] });
+
+        // Assert
+        const text = ifc.model.write({ model: described });
+        expect(text).toContain("FILE_SCHEMA(('IFC4X3_ADD2'));");
+        expect(text).toContain("#50=IFCCOURSE('3hqIFTRjfV6AWq_bMtnZwI',$,'Binder course',$,$,#31,#60,$,.ARMOUR.);");
+        expect(ifc.properties.getSets({ model: described, element: "3hqIFTRjfV6AWq_bMtnZwI" })).toEqual([{ name: "Pset_CourseCommon", properties: { Reference: "B1" } }]);
         expect(() => ifc.model.upgradeToIfc4({ model })).toThrow("Only an IFC2X3 model is upgraded to IFC4, and this one is IFC4X3_ADD2");
+    });
+
+    it("should join walls and put a door in one, writing the entities IFC4X3 defines", () => {
+        // Arrange
+        const ifc = new IFCService();
+        const model = ifc.model.read({ data: OTHER_TOOL_FILE_IFC4X3 });
+
+        // Act
+        const joined = ifc.walls.connect({ model, wall: WALL_A, other: WALL_B });
+        const withDoor = ifc.doors.add({ model: ifc.doors.addType({ model: joined, id: "door", width: 0.9, height: 2.1 }), wall: WALL_A, doorType: "door", id: "entrance", offset: 1 });
+
+        // Assert
+        expect(ifc.walls.parameters({ model: withDoor, wall: WALL_A }).joins).toEqual([{ other: WALL_B, at: "end", otherAt: "start" }]);
+        expect([withDoor.byType("IfcDoor").length, withDoor.byType("IfcOpeningElement").length, withDoor.byType("IfcDoorType").length]).toEqual([1, 1, 1]);
+        expect(ifc.model.write({ model: withDoor })).toContain("FILE_SCHEMA(('IFC4X3_ADD2'));");
+    });
+
+    it("should leave a file naming the bare IFC4X3 unchanged, since it is read through the ADD2 table", () => {
+        // Arrange
+        const ifc = new IFCService();
+        const model = ifc.model.read({ data: roadFile("IFC4X3") });
+
+        // Act & Assert
+        expect(() => ifc.model.setAttribute({ model, element: "3hqIFTRjfV6AWq_bMtnZwI", attribute: "Name", value: "Binder course" })).toThrow("This IFC4X3 file is read through the IFC4X3_ADD2 schema, so it can be shown and queried but not changed");
     });
 
     it("should read a file naming the bare IFC4X3 through the IFC4X3 ADD2 table", () => {

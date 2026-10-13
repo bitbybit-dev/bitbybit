@@ -94,7 +94,7 @@ export interface WallGeometry {
     readonly height: number;
     readonly base: number;
     readonly body: number | undefined;
-    readonly usage: number;
+    readonly usage: number | undefined;
 }
 
 export interface WallCuts {
@@ -121,12 +121,15 @@ export interface WallChange {
     readonly bottom: number | undefined;
     readonly height: number | undefined;
     readonly layerSet: number | undefined;
+    readonly thickness: number | undefined;
     readonly alignment: Inputs.IFC.wallAlignmentEnum | undefined;
 }
 
 export interface WallBody {
     readonly height: number;
     readonly base: number;
+    readonly low: number;
+    readonly high: number;
     readonly halfSpaces: readonly number[];
 }
 

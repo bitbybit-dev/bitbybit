@@ -1,6 +1,6 @@
 import { strToU8, zipSync } from "fflate";
 import type * as JSCAD from "@jscad/modeling";
-import type { MaybeNamed, ThreeMfMesh, ThreeMfSettings, ThreeMfSolid, ThreeMfUnit } from "./three-mf-types";
+import type { MaybeNamed, ThreeMfGeneralize, ThreeMfMesh, ThreeMfSettings, ThreeMfSolid, ThreeMfUnit } from "./three-mf-types";
 import {
     APPLICATION, CHANNEL_MAX, CORE_NAMESPACE, COLOR_CHANNELS, COLOR_CHANNELS_WITH_ALPHA, CONTENT_TYPES, CONTENT_TYPES_PART, DEFAULT_COLOR,
     DEFAULT_UNIT, HEX_DIGITS, HEX_RADIX, INDENT, ITEM_INDENT, LIST_INDENT, MESH_INDENT, MODEL_PART, OBJECT_INDENT, RELATIONSHIPS, RELATIONSHIPS_PART,
@@ -41,12 +41,20 @@ function flattened(geometry: unknown): unknown[] {
     return Array.isArray(geometry) ? geometry.flatMap(flattened) : [geometry];
 }
 
+function isGeneralize(value: unknown): value is ThreeMfGeneralize {
+    return typeof value === "function";
+}
+
 export function threeMfSolidsOf(jscad: typeof JSCAD, geometry: unknown, defaultColor: number[]): ThreeMfSolid[] {
     const solids = flattened(geometry).filter((entity): entity is JSCAD.geometries.geom3.Geom3 => jscad.geometries.geom3.isA(entity));
     if (solids.length === 0) {
         throw new Error("Only 3D solids can be written to 3MF, and the geometry holds none");
     }
-    const triangulated = flattened(jscad.modifiers.generalize({ snap: true, triangulate: true }, solids)) as JSCAD.geometries.geom3.Geom3[];
+    const generalize: unknown = jscad.modifiers.generalize;
+    if (!isGeneralize(generalize)) {
+        throw new Error("The JSCAD library given has no modifiers.generalize to triangulate the solids with");
+    }
+    const triangulated = flattened(generalize({ snap: true, triangulate: true }, solids)) as JSCAD.geometries.geom3.Geom3[];
     return triangulated
         .map((solid) => ({ solid, polygons: jscad.geometries.geom3.toPolygons(solid).map((polygon) => polygon.vertices.map((vertex) => [...vertex])) }))
         .filter(({ polygons }) => polygons.length > 0)

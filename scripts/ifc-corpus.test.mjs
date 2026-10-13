@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { boxOffset, CACHE, canonicalSets, FILES, fileOf, compareBoxes, compareSemantics, compareVolumes, cutHost, download, joinBoxes, manifestProblems, nodeShape, oracleByGlobalId, oracleCacheDir, oracleInMetres, oracleJsonOf, privateFiles, problemKinds, reportRow, sameDataSection, USER_AGENT, verify } from "./ifc-corpus.mjs";
+import { boxOffset, CACHE, canonicalSets, FILES, fileOf, compareBoxes, compareSemantics, compareVolumes, cutHost, download, editsFailed, isEdited, joinBoxes, manifestProblems, nodeShape, oracleByGlobalId, oracleCacheDir, oracleInMetres, oracleJsonOf, privateFiles, problemKinds, reportRow, sameDataSection, USER_AGENT, verify } from "./ifc-corpus.mjs";
 
 const BODY = "ISO-10303-21;\nHEADER;\nENDSEC;\nDATA;\n#1=IFCPROJECT('x',$,$,$,$,$,$,$,$);\nENDSEC;\nEND-ISO-10303-21;\n";
 const sha = (text) => createHash("sha256").update(text).digest("hex");
@@ -189,6 +189,42 @@ describe("reportRow", () => {
         // Assert
         assert.deepEqual(measured, { id: "private-2", private: true, schema: "IFC2X3", elements: 2, volumes: { compared: 2, agreeing: 1 }, boxes: { compared: 2, agreeing: 1 }, exactVolumes: { compared: 2, agreeing: 1 }, exactBoxes: { compared: 2, agreeing: 1 }, semantics: { compared: 2, agreeing: 1 } });
         assert.deepEqual([failed.failed, failed.oracleFailed], ["The GlobalId '<GlobalId>' in private-2, written as private-2", "IfcOpenShell could not open private-2"]);
+    });
+});
+
+describe("isEdited and editsFailed", () => {
+    it("should edit IFC4, IFC4X3 ADD2 and IFC2X3 files up to 20 MB, and no file of a schema that cannot be edited", () => {
+        // Arrange
+        const limit = 20 * 1024 * 1024;
+
+        // Act
+        const edited = [isEdited(entry(), limit), isEdited(entry({ schema: "IFC2X3" }), 1), isEdited(entry({ schema: "IFC4X3_ADD2" }), 1), isEdited(entry(), limit + 1), isEdited(entry({ schema: "IFC4X3" }), 1)];
+
+        // Assert
+        assert.deepEqual(edited, [true, true, true, false, false]);
+    });
+
+    it("should fail a run only where an edit added a validator error or the validator could not run", () => {
+        // Arrange
+        const rows = [{}, { editing: { added: 0 } }, { editing: { added: 2 } }, { editing: { validationFailed: "no IfcOpenShell" } }];
+
+        // Act
+        const failed = rows.map(editsFailed);
+
+        // Assert
+        assert.deepEqual(failed, [false, false, true, true]);
+    });
+
+    it("should keep of a private file's edits the counts and refusals, never the validator's sample", () => {
+        // Arrange
+        const tower = { id: "private-2", file: "/data/models/Model A.ifc", private: true };
+        const editing = { edits: [{ name: "door" }, { name: "move", refused: "Model A.ifc holds '0000000000000000000001' twice" }], added: 1, baselineErrors: 3, sample: [{ instance: "#5=IfcWall('0000000000000000000001')" }] };
+
+        // Act
+        const row = JSON.parse(JSON.stringify(reportRow(tower, { editing })));
+
+        // Assert
+        assert.deepEqual(row.editing, { edits: [{ name: "door" }, { name: "move", refused: "private-2 holds '<GlobalId>' twice" }], added: 1, baselineErrors: 3 });
     });
 });
 

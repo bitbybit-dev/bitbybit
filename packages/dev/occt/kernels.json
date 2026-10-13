@@ -2,9 +2,9 @@
     "kernels": [
         {
             "dir": "bitbybit-dev-occt",
-            "file": "bitbybit-dev-occt.619d2dca.wasm",
-            "bytes": 31520419,
-            "sha256": "4087efb3bb6e4fe231e2c9a0957b06743cb1c235b82db443580e2c1c2491fcca",
+            "file": "bitbybit-dev-occt.5de26d33.wasm",
+            "bytes": 31535252,
+            "sha256": "824d67daeecea10213a372a2256a2bca70d841b2cae4aee516b4654687128a81",
             "url": ""
         },
         {

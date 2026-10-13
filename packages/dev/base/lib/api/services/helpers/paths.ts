@@ -28,6 +28,9 @@ const anyAcross = (tangent: Vec3): Vec3 => {
     return square(least, tangent)!;
 };
 
+export const pathLength3 = (points: readonly Point3[]): number =>
+    points.reduce((length, point, at) => (at === 0 ? length : length + length3(subtract3(point, points[at - 1]!))), 0);
+
 export const pathTangents = (points: readonly Point3[], start?: Vec3, end?: Vec3): Vec3[] => {
     const directions = points.slice(1).map((point, at) => unit3(subtract3(point, points[at]!)));
     return points.map((_, at) => {

@@ -1,5 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
 import { arcThroughThreePoints, pointsOnArc } from "@bitbybit-dev/base/lib/api/services/helpers/arcs";
+import { pathLength3 } from "@bitbybit-dev/base/lib/api/services/helpers/paths";
 import { pointToLocal, squareFrame, type FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
 import { expandedKnots, knotDomain, nurbsCurvePoint } from "@bitbybit-dev/base/lib/api/services/helpers/nurbs";
 import { newellNormal } from "@bitbybit-dev/base/lib/api/services/helpers/triangulation";
@@ -146,6 +147,24 @@ export class CurveSampler {
         const forward = this.model.attribute(curve, "SenseAgreement") !== false;
         const sweep = sweepBetween(first.parameter * this.radiansPerUnit, second.parameter * this.radiansPerUnit, forward);
         return Math.abs(sweep) / this.radiansPerUnit;
+    }
+
+    lengthSpan(curve: number): number | undefined {
+        const type = this.model.entity(curve).type;
+        if (type === "IfcPolyline") {
+            return pathLength3(this.polylinePoints(curve));
+        }
+        const basis = type === "IfcTrimmedCurve" ? this.model.attribute(curve, "BasisCurve") : null;
+        if (!isReference(basis)) {
+            return undefined;
+        }
+        const basisType = this.model.entity(basis.ref).type;
+        if (basisType === "IfcLine") {
+            return pathLength3(this.trimmed(curve));
+        }
+        const radius = basisType === "IfcCircle" ? this.model.attribute(basis.ref, "Radius") : null;
+        const turn = this.parameterSpan(curve);
+        return typeof radius === "number" && turn !== undefined ? radius * turn * this.radiansPerUnit : undefined;
     }
 
     planeOf(curve: number): FrameAxes | undefined {

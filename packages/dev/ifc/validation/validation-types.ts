@@ -40,5 +40,5 @@ export interface ValidationReport {
     geometryFailures: GeometryFailure[];
     volumes: MeasuredVolume[];
     walls: RegeneratedWall[];
-    clippedWalls: number;
+    wallsWithUnlistedClippings: number;
 }

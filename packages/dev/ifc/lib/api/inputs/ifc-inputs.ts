@@ -1083,8 +1083,8 @@ export namespace IFC {
          */
         schema = "";
         /**
-         * Whether the model can be changed: false for an `IFC2X3` file, which is read through `IFC4`
-         * to be shown and queried.
+         * Whether the model can be changed: false for an `IFC2X3` file or one naming the bare `IFC4X3`,
+         * each read through a newer table to be shown and queried.
          * @default true
          */
         editable = true;

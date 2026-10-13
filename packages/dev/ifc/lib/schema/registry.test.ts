@@ -57,8 +57,8 @@ describe("SUPPORTED_SCHEMAS", () => {
         expect(schemas.map((schema) => schema?.name)).toEqual(["IFC4", "IFC4", "IFC4X3_ADD2", "IFC4X3_ADD2", undefined]);
     });
 
-    it("should allow changes to IFC4 models only", () => {
+    it("should allow changes to IFC4 and IFC4X3 ADD2 models, and not to a schema only read through another", () => {
         // Assert
-        expect([isEditableSchema("IFC4"), isEditableSchema(" ifc4 "), isEditableSchema("IFC4X3_ADD2"), isEditableSchema("IFC2X3")]).toEqual([true, true, false, false]);
+        expect([isEditableSchema("IFC4"), isEditableSchema(" ifc4 "), isEditableSchema("IFC4X3_ADD2"), isEditableSchema("IFC4X3"), isEditableSchema("IFC2X3")]).toEqual([true, true, true, false, false]);
     });
 });

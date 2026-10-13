@@ -16,6 +16,7 @@ import { containIn, describeObject } from "./spatial";
 import { defineByType } from "./type-objects";
 import { axisLine, buttCut, endPoint, footprintOf, mitreCut, readWall } from "./wall-geometry";
 import { firstItem, replaceRepresentation, unwrapClippings } from "./representations";
+import { registerClippings } from "./clipping-registry";
 
 const END_NAMES: Readonly<Record<WallEnd, string>> = { ATSTART: "start", ATEND: "end", ATPATH: "length" };
 
@@ -123,10 +124,12 @@ function cutsOf(reader: ModelReader, geometry: WallGeometry, tolerance: number, 
 
 export function regenerateWall(tx: IfcTransaction, writer: EntityWriter, wall: number, tolerance: number, parallelTolerance: number, body?: WallBody): void {
     const read = readWall(tx, wall);
-    const geometry = body === undefined ? read : { ...read, height: body.height, base: body.base };
+    const geometry = body === undefined ? read : { ...read, height: body.height, base: body.base, low: body.low, high: body.high };
     const footprint = footprintOf(geometry, cutsOf(tx, geometry, tolerance, parallelTolerance), tolerance, parallelTolerance);
     const halfSpaces = body?.halfSpaces ?? (read.body === undefined ? [] : unwrapClippings(tx, firstItem(tx, read.body))[1]);
-    replaceRepresentation(tx, wall, read.body, extrudedBody(writer, footprint, geometry.base, geometry.height, halfSpaces));
+    const rebuilt = extrudedBody(writer, footprint, geometry.base, geometry.height, halfSpaces);
+    registerClippings(tx, writer, wall, read.body, rebuilt);
+    replaceRepresentation(tx, wall, read.body, rebuilt);
 }
 
 function overlapHeights(a: WallGeometry, b: WallGeometry, tolerance: number): boolean {
@@ -253,5 +256,7 @@ export function clipWall(tx: IfcTransaction, writer: EntityWriter, wall: number,
     }
     const halfSpace = writer.halfSpace(pointToLocal(geometry.frame, origin), vectorToLocal(geometry.frame, normal), [1, 0, 0]);
     const [solid, halfSpaces] = unwrapClippings(tx, firstItem(tx, geometry.body));
-    replaceRepresentation(tx, wall, geometry.body, clippedBody(writer, solid, [...halfSpaces, halfSpace]));
+    const clipped = clippedBody(writer, solid, [...halfSpaces, halfSpace]);
+    registerClippings(tx, writer, wall, geometry.body, clipped);
+    replaceRepresentation(tx, wall, geometry.body, clipped);
 }

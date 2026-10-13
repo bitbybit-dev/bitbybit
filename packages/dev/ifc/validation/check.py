@@ -4,6 +4,7 @@ import sys
 import ifcopenshell
 import ifcopenshell.api
 import ifcopenshell.geom
+import ifcopenshell.util.element
 import ifcopenshell.util.representation
 import ifcopenshell.util.shape
 import ifcopenshell.validate
@@ -64,13 +65,27 @@ def geometry_failures_of(chosen, model):
     return failures
 
 
-def is_clipped(wall):
+def booleans_of(item):
+    if not item.is_a("IfcBooleanResult"):
+        return []
+    return [item, *booleans_of(item.FirstOperand)]
+
+
+def listed_booleans_of(wall):
+    data = ifcopenshell.util.element.get_pset(wall, "BBIM_Boolean", "Data")
+    return set(json.loads(data)) if data else set()
+
+
+def has_unlisted_clippings(wall):
     body = ifcopenshell.util.representation.get_representation(wall, "Model", "Body", "MODEL_VIEW")
-    return body is not None and any(item.is_a("IfcBooleanResult") for item in body.Items)
+    if body is None:
+        return False
+    listed = listed_booleans_of(wall)
+    return any(boolean.id() not in listed for item in body.Items for boolean in booleans_of(item))
 
 
 def regenerated_walls_of(chosen, model):
-    walls = [wall for wall in model.by_type("IfcWall") if not is_clipped(wall)]
+    walls = [wall for wall in model.by_type("IfcWall") if not has_unlisted_clippings(wall)]
     ours = {}
     for wall in walls:
         try:
@@ -102,8 +117,8 @@ def regenerated_walls_of(chosen, model):
             "regenerated": regenerated,
             "problem": problem,
         })
-    clipped = len(model.by_type("IfcWall")) - len(walls)
-    return reports, clipped
+    unlisted = len(model.by_type("IfcWall")) - len(walls)
+    return reports, unlisted
 
 
 EXPECTED_SET = "Validation_Expected"
@@ -156,8 +171,9 @@ def report_of(path):
     statements = statements_of(ifcopenshell.open(path))
     geometry_failures = geometry_failures_of(chosen, ifcopenshell.open(path))
     volumes = measured_volumes_of(chosen, ifcopenshell.open(path))
-    walls, clipped = regenerated_walls_of(chosen, ifcopenshell.open(path))
-    return {"file": path, "statements": statements, "geometryFailures": geometry_failures, "volumes": volumes, "walls": walls, "clippedWalls": clipped}
+    walls, unlisted = regenerated_walls_of(chosen, ifcopenshell.open(path))
+    return {"file": path, "statements": statements, "geometryFailures": geometry_failures, "volumes": volumes, "walls": walls, "wallsWithUnlistedClippings": unlisted}
 
 
-json.dump([report_of(path) for path in sys.argv[1:]], sys.stdout)
+if __name__ == "__main__":
+    json.dump([report_of(path) for path in sys.argv[1:]], sys.stdout)

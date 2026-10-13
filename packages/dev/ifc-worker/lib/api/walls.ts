@@ -97,7 +97,8 @@ export class IFCWalls {
     /**
      * Reads a wall's parameters back from the model: its axis, height, base, thickness, layers and
      * alignment, the walls it is joined to, its openings and its clippings. It reads walls other tools
-     * wrote too, when they keep an axis and a layer set usage as IFC's standard walls do.
+     * wrote too, when they keep an axis and either a layer set usage or a body extruded from a strip
+     * along that axis, as Revit writes one.
      * @param inputs - The model and the wall
      * @returns The wall's parameters, in the plan of its storey
      * @group query
@@ -113,11 +114,12 @@ export class IFCWalls {
     }
 
     /**
-     * Clips a wall with a plane, removing the part on the side the plane's normal points to, as a
-     * wall is cut under a sloping roof.
+     * Clips a wall with a plane, removing the part on the side its normal points to, as under a
+     * sloping roof.
      *
-     * The plane is given in the wall's storey, and a wall can be clipped by several planes. Clipping
-     * keeps the wall's full height in its data, so joins stay right.
+     * The plane is given in the wall's storey, and a wall can be clipped by several. Clipping keeps
+     * the wall's full height in its data, so joins stay right. Bonsai keeps the clipping too, through
+     * the wall's `BBIM_Boolean` set.
      * @param inputs - The model, the wall, a point on the plane and its normal
      * @returns A new model with the wall clipped
      * @group edit

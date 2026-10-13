@@ -70,6 +70,10 @@ describe.each(VALIDATION_FIXTURES.map((fixture) => fixture.name))("the %s file",
         expect(reportOf(name).volumes.filter((volume) => !(volumeDifference(volume) < (volume.curved ? TESSELLATED_TOLERANCE : VOLUME_TOLERANCE)))).toEqual([]);
     });
 
+    it("should list every clipping where Bonsai keeps its own, so IfcOpenShell's wall regeneration keeps it", () => {
+        expect(reportOf(name).wallsWithUnlistedClippings).toBe(0);
+    });
+
     it("should hold walls that IfcOpenShell's own wall regeneration rebuilds to the same volume", () => {
         expect(reportOf(name).walls.filter((wall) => wall.problem !== null || !(relativeDifference(wall) < VOLUME_TOLERANCE))).toEqual([]);
     });

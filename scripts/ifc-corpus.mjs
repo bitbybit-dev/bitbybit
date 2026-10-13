@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { createReadStream, createWriteStream, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
@@ -13,6 +14,7 @@ export const MANIFEST = path.join(CORPUS, "corpus.json");
 export const FILES = path.join(CORPUS, "files");
 export const CACHE = path.join(CORPUS, ".cache");
 const ORACLE = path.join(CORPUS, "oracle.py");
+const VALIDATE = path.join(CORPUS, "validate.py");
 const MEASURE = path.join(ROOT, "scripts/ifc-corpus-measure.mjs");
 const RESOLVE = path.join(ROOT, "scripts/lib/dist-resolve.mjs");
 const PRIVATE_VARIABLE = "IFC_PRIVATE_CORPUS";
@@ -33,6 +35,9 @@ const UNIT_TOLERANCE = 1e-9;
 const WORST_LISTED = 10;
 const ORACLE_FAILURE_KEPT = 600;
 const ORACLE_LINE = "{\"ifcopenshell\"";
+const VALIDATION_LINE = "{\"baselineErrors\"";
+const EDITED_SCHEMAS = new Set(["IFC2X3", "IFC4", "IFC4X3_ADD2"]);
+const EDITED_BYTES_LIMIT = 20 * 1024 * 1024;
 const DATA_START = "\nDATA;";
 const DATA_END = "\nENDSEC;";
 
@@ -307,7 +312,8 @@ export function reportRow(entry, result) {
     const row = { id: entry.id, private: entry.private === true, schema: entry.schema, exporter: entry.exporter, ...result };
     if (!entry.private) { return row; }
     const scrubbed = (text) => (text === undefined ? undefined : withoutPath(entry, text));
-    return { ...row, failed: scrubbed(result.failed), oracleFailed: scrubbed(result.oracleFailed), volumes: withoutWorst(row.volumes), boxes: withoutWorst(row.boxes), exactVolumes: withoutWorst(row.exactVolumes), exactBoxes: withoutWorst(row.exactBoxes), semantics: withoutWorst(row.semantics) };
+    const editing = row.editing === undefined ? undefined : { ...row.editing, sample: undefined, edits: row.editing.edits?.map((edit) => ({ ...edit, refused: scrubbed(edit.refused) })) };
+    return { ...row, editing, failed: scrubbed(result.failed), oracleFailed: scrubbed(result.oracleFailed), volumes: withoutWorst(row.volumes), boxes: withoutWorst(row.boxes), exactVolumes: withoutWorst(row.exactVolumes), exactBoxes: withoutWorst(row.exactBoxes), semantics: withoutWorst(row.semantics) };
 }
 
 export function oracleJsonOf(stdout) {
@@ -335,6 +341,23 @@ async function oracleOf(entry) {
     return cached;
 }
 
+export function isEdited(entry, bytes) {
+    return EDITED_SCHEMAS.has(entry.schema) && bytes <= EDITED_BYTES_LIMIT;
+}
+
+function validatedEdits(entry, folder) {
+    const run = spawnSync(PYTHON, [VALIDATE, path.join(folder, "baseline.ifc"), path.join(folder, "edited.ifc")], { encoding: "utf8", maxBuffer: OUTPUT_LIMIT });
+    const line = run.stdout?.split("\n").reverse().find((text) => text.startsWith(VALIDATION_LINE));
+    if (run.error !== undefined || run.status !== 0 || line === undefined) {
+        return { validationFailed: withoutPath(entry, (run.error?.message ?? run.stderr ?? "").slice(-ORACLE_FAILURE_KEPT)) };
+    }
+    return JSON.parse(line);
+}
+
+export function editsFailed(row) {
+    return row.editing !== undefined && (row.editing.validationFailed !== undefined || row.editing.added > 0);
+}
+
 async function measureAll(args) {
     const rows = [];
     for (const entry of available(args)) {
@@ -345,17 +368,22 @@ async function measureAll(args) {
         } catch (error) {
             oracleFailed = error instanceof Error ? error.message : String(error);
         }
-        const measure = [`--max-old-space-size=${MEASURE_HEAP_MB}`, "--expose-gc", "--import", RESOLVE, MEASURE, entry.file, ...(oracle ? ["--oracle", oracle] : []), ...(args.includes("--exact") ? ["--exact"] : [])];
+        const folder = args.includes("--edits") && isEdited(entry, statSync(entry.file).size) ? mkdtempSync(path.join(tmpdir(), "ifc-corpus-edits-")) : undefined;
+        const measure = [`--max-old-space-size=${MEASURE_HEAP_MB}`, "--expose-gc", "--import", RESOLVE, MEASURE, entry.file, ...(oracle ? ["--oracle", oracle] : []), ...(args.includes("--exact") ? ["--exact"] : []), ...(folder ? ["--edited", folder] : [])];
         const run = spawnSync(process.execPath, measure, { encoding: "utf8", maxBuffer: OUTPUT_LIMIT });
         const line = run.stdout.split("\n").reverse().find((text) => text.startsWith("{"));
-        const result = line === undefined ? { failed: (run.stderr || `exit ${run.status}`).slice(-500) } : JSON.parse(line);
+        const measured = line === undefined ? { failed: (run.stderr || `exit ${run.status}`).slice(-500) } : JSON.parse(line);
+        const result = folder === undefined || measured.editing === undefined ? measured : { ...measured, editing: { ...measured.editing, ...validatedEdits(entry, folder) } };
+        if (folder !== undefined) {
+            rmSync(folder, { recursive: true, force: true });
+        }
         const row = reportRow(entry, oracleFailed === undefined ? result : { ...result, oracleFailed: oracleFailed.slice(-ORACLE_FAILURE_KEPT) });
         rows.push(row);
         console.log(summaryLine(row));
     }
     mkdirSync(CACHE, { recursive: true });
     writeFileSync(path.join(CACHE, "report.json"), `${JSON.stringify({ when: new Date().toISOString(), node: process.version, rows }, null, 2)}\n`);
-    return rows.every((row) => row.failed === undefined);
+    return rows.every((row) => row.failed === undefined && !editsFailed(row));
 }
 
 function summaryLine(row) {
@@ -364,8 +392,9 @@ function summaryLine(row) {
     const oracle = row.oracleFailed === undefined ? "" : `, IfcOpenShell failed: ${row.oracleFailed.trim().split("\n").pop()}`;
     const units = row.unitsAgree === false ? ", length unit read differently from IfcOpenShell" : "";
     const exact = row.exactMs === undefined ? "" : `, exact ${row.exactMs} ms with ${row.exactEmpty} empty${row.exactVolumes ? `, exact volumes ${row.exactVolumes.agreeing}/${row.exactVolumes.compared} and boxes ${row.exactBoxes.agreeing}/${row.exactBoxes.compared} agree` : ""}`;
+    const edits = row.editing === undefined ? "" : `, edits ${row.editing.edits.filter((edit) => edit.refused === undefined).length}/${row.editing.edits.length} made${row.editing.validationFailed === undefined ? ` with ${row.editing.added} new validator errors (${row.editing.baselineErrors} before)` : `, validation failed: ${row.editing.validationFailed.trim().split("\n").pop()}`}`;
     const semantics = row.semantics ? `, types ${row.semantics.types.agreeing}/${row.semantics.types.compared}, storeys ${row.semantics.storeys.agreeing}/${row.semantics.storeys.compared}, property sets ${row.semantics.propertySets.agreeing}/${row.semantics.propertySets.compared}` : "";
-    return `${row.id}: ${Math.round(row.bytes / 1e6)} MB, ${row.elements} elements, open ${row.openMs} ms, recipe ${row.recipeMs} ms, manifold ${row.manifoldMs} ms, ${row.unsupported} unsupported, ${row.emptySolids} empty (${row.surfaceRoots} drawn as surfaces, ${row.cutAway ?? 0} cut away entirely, ${row.emptySolids - row.surfaceRoots - (row.cutAway ?? 0)} lost), data ${row.dataIdentical ? "identical" : "changed"} on write, peak ${row.peakRssMb} MB, store ${row.storeMb} MB beside the file's${volumes}${exact}${semantics}${units}${oracle}`;
+    return `${row.id}: ${Math.round(row.bytes / 1e6)} MB, ${row.elements} elements, open ${row.openMs} ms, recipe ${row.recipeMs} ms, manifold ${row.manifoldMs} ms, ${row.unsupported} unsupported, ${row.emptySolids} empty (${row.surfaceRoots} drawn as surfaces, ${row.cutAway ?? 0} cut away entirely, ${row.emptySolids - row.surfaceRoots - (row.cutAway ?? 0)} lost), data ${row.dataIdentical ? "identical" : "changed"} on write, peak ${row.peakRssMb} MB, store ${row.storeMb} MB beside the file's${volumes}${exact}${edits}${semantics}${units}${oracle}`;
 }
 
 async function main(args) {
@@ -377,7 +406,7 @@ async function main(args) {
         problems.forEach((problem) => console.log(problem));
         return problems.length === 0;
     }
-    console.log("usage: node scripts/ifc-corpus.mjs fetch | check | manifest | run [--only <id part>] [--exact] [--no-oracle]");
+    console.log("usage: node scripts/ifc-corpus.mjs fetch | check | manifest | run [--only <id part>] [--exact] [--edits] [--no-oracle]");
     return false;
 }
 

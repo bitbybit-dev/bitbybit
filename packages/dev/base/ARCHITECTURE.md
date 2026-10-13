@@ -68,7 +68,11 @@ the helpers themselves stay internal and can change shape freely.
   stays closed. Delaunay is judged in a metric of how fast the normal turns along each parameter, plus
   a little of the surface's own length so flat directions still shape the triangles: along a cylinder
   the normal does not turn, so a pipe's face becomes straight strips with no points inside. Each pass
-  flips until no edge flips, since splitting before the flips settle grows points without end.
+  flips until no edge flips, since splitting before the flips settle grows points without end. An edge
+  is flipped when the two angles facing it pass half a turn, judged by the sign of the sine of their
+  sum from dot and cross products: summing two `acos` values is ill-conditioned near flat angles, and
+  on a cone whose parameters ran 0.92 along it the rounding made edges flip back and forth until the
+  round limit, twenty times slower (the ifc package's bench holds that cone to a budget).
 
 ## DXF export
 

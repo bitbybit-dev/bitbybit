@@ -31,11 +31,17 @@ const unitOrUndefined = (vector: Vec3): Vec3 | undefined => {
     return length > 0 ? scale3(vector, 1 / length) : undefined;
 };
 
-const angleAt = (corner: Point2, a: Point2, b: Point2): number => {
+const opposite = (corner: Point2, a: Point2, b: Point2): [number, number, number] => {
     const toA: Point2 = [a[0] - corner[0], a[1] - corner[1]];
     const toB: Point2 = [b[0] - corner[0], b[1] - corner[1]];
-    const lengths = Math.hypot(toA[0], toA[1]) * Math.hypot(toB[0], toB[1]);
-    return lengths > 0 ? Math.acos(Math.max(-1, Math.min(1, (toA[0] * toB[0] + toA[1] * toB[1]) / lengths))) : 0;
+    return [toA[0] * toB[0] + toA[1] * toB[1], Math.abs(toA[0] * toB[1] - toA[1] * toB[0]), Math.hypot(toA[0], toA[1]) * Math.hypot(toB[0], toB[1])];
+};
+
+const anglesPassHalfTurn = (c: Point2, d: Point2, p: Point2, q: Point2): boolean => {
+    const [cosC, sinC, lengthsC] = opposite(c, p, q);
+    const [cosD, sinD, lengthsD] = opposite(d, p, q);
+    const lengths = lengthsC * lengthsD;
+    return lengths > 0 && (sinC * cosD + cosC * sinD) / lengths < -FLIP_SLACK;
 };
 
 const orient2 = (a: Point2, b: Point2, c: Point2): number => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
@@ -322,7 +328,7 @@ class SurfaceMesh {
                 const [p, q, c] = this.alongEdge(sharing[0]!, a, b);
                 const [, , d] = this.alongEdge(sharing[1]!, a, b);
                 const [sp, sq, sc, sd] = [p, q, c, d].map((vertex) => this.scaled(vertex));
-                if (angleAt(sc!, sp!, sq!) + angleAt(sd!, sp!, sq!) > Math.PI + FLIP_SLACK) {
+                if (anglesPassHalfTurn(sc!, sd!, sp!, sq!)) {
                     flipped = this.flip(a, b) || flipped;
                 }
             }

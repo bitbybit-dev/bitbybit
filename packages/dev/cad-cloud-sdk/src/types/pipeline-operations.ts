@@ -570,6 +570,7 @@ export type OperationPath =
     | "occt.path.shapeFromPath"
     | "occt.recipes.build"
     | "occt.recipes.buildDocument"
+    | "occt.recipes.describe"
     | "occt.select.edges.along"
     | "occt.select.edges.between"
     | "occt.select.edges.byLength"
@@ -1731,14 +1732,18 @@ export interface OperationParams {
      * Writes a solid, a 2D shape, a path or a list of them as a 3MF file, a modern 3D printing
      * format, and downloads it in the browser as `fileName` plus `.3mf`.
      *
-     * `options` is passed to the 3MF writer as it is and can stay out.
+     * Each solid becomes an object of its own, with its name and color; 2D shapes and paths are
+     * left out.
      */
     "jscad.downloadGeometry3MF": {
         /** A solid, a 2D shape, a path, or a list of them, all written into one file */
         geometry: unknown[] | PipelineRef;
         /** Name of the downloaded file without the extension, which is added */
         fileName?: string | PipelineRef;
-        /** Options handed to the DXF or 3MF writer as they are; leave it out for the defaults */
+        /**
+         * Options for the file writer, left out for the defaults; 3MF takes `unit` (`millimeter` unless
+         * given), `defaultcolor`, `metadata` and `compress`
+         */
         options?: unknown | PipelineRef;
     };
     /**
@@ -1752,7 +1757,10 @@ export interface OperationParams {
         geometry: unknown[] | PipelineRef;
         /** Name of the downloaded file without the extension, which is added */
         fileName?: string | PipelineRef;
-        /** Options handed to the DXF or 3MF writer as they are; leave it out for the defaults */
+        /**
+         * Options for the file writer, left out for the defaults; 3MF takes `unit` (`millimeter` unless
+         * given), `defaultcolor`, `metadata` and `compress`
+         */
         options?: unknown | PipelineRef;
     };
     /**
@@ -10416,6 +10424,28 @@ export interface OperationParams {
          * counts as a step that failed.
          */
         maxTriangles?: number | PipelineRef;
+    };
+    /**
+     * Describes a shape exactly as a recipe: a brep step for its solids and their cavities, and one
+     * for the faces outside any solid.
+     *
+     * Lines, circles, ellipses and elementary surfaces stay as they are, swept surfaces keep their
+     * curve, and the rest become B-splines, as do cones and swept surfaces under `ifcSurfaces`.
+     * `recipes.build` builds it back.
+     */
+    "occt.recipes.describe": {
+        /** The shape to describe: a solid, several, a shell, faces or a compound of them. */
+        shape: unknown | PipelineRef;
+        /**
+         * How many millimetres one unit of the shape's coordinates is, recorded in the recipe for
+         * whoever reads it.
+         */
+        millimetresPerUnit?: number | PipelineRef;
+        /**
+         * Writes cones and swept surfaces as B-splines, so the recipe holds only the surfaces an IFC4
+         * advanced face takes: planes, cylinders, spheres, tori and B-splines.
+         */
+        ifcSurfaces?: boolean | PipelineRef;
     };
     /**
      * Chooses the straight edges that run within `angle` degrees of `direction`, either way along

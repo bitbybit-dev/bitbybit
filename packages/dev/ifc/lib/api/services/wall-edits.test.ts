@@ -419,6 +419,19 @@ describe("IFCWalls.edit", () => {
         expect(error.message).toContain("which it is joined to; disconnect them first with walls.disconnect");
     });
 
+    it("should refuse to change a wall another tool joined where this library does not see the walls meet, saying so", () => {
+        // Arrange
+        const ifc = new IFCService();
+        const joinedApart = OTHER_TOOL_FILE.replace("#61=IFCRELCONTAINEDINSPATIALSTRUCTURE(", "#62=IFCRELCONNECTSPATHELEMENTS('0JoinedApart0000000001',$,$,$,$,#42,#56,(),(),.ATEND.,.ATSTART.);\r\n#61=IFCRELCONTAINEDINSPATIALSTRUCTURE(");
+        const model = ifc.model.read({ data: joinedApart });
+
+        // Act
+        const error = errorFrom(() => ifc.walls.edit({ model, wall: WALL_A, height: 3.2 }));
+
+        // Assert
+        expect(error.message).toBe("the IfcWallStandardCase 'Wall A' is joined to the IfcWallStandardCase 'Wall B' where this library does not see them meet, so it cannot keep the join through a change; disconnect them first with walls.disconnect");
+    });
+
     it("should carry an opening with a wall whose start moves, keeping its offset from the start", () => {
         // Arrange
         const { ifc, model: wall } = oneWall();

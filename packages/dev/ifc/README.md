@@ -62,7 +62,7 @@ Run it with `npx tsx house.ts`. Compiled to JavaScript, run it as `node --import
 
 | Area | Supported |
 |---|---|
-| Schema | IFC4 ADD2 TC1, read and written; IFC4X3 ADD2 files read to show and query; IFC2X3 files read through IFC4 to show and query, and upgraded to IFC4 to edit (`model.upgradeToIfc4`); `.ifczip` archives read |
+| Schema | IFC4 ADD2 TC1 and IFC4X3 ADD2, read and edited, each in its own schema; new models in IFC4; IFC2X3 files read through IFC4 to show and query, and upgraded to IFC4 to edit (`model.upgradeToIfc4`); `.ifczip` archives read |
 | Spatial structure | project, site, one building, storeys raised or lowered with everything on them, spaces with their areas |
 | Site | terrain with holes where the building and paving meet it, and trees with a trunk and crown in their own materials, as geographic elements of the site |
 | Walls | straight walls from an axis, by thickness, layer set or wall type; centred, left or right aligned; L joins (mitred) and T joins (butt); clipping by planes and under roofs; read back as parameters and edited, also when another tool wrote them |

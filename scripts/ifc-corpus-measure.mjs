@@ -1,9 +1,10 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { isZip, zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/services/helpers/zip";
 import { IFCService } from "@bitbybit-dev/ifc";
 import { ManifoldService } from "@bitbybit-dev/manifold";
+import { editForValidation } from "./ifc-corpus-edit.mjs";
 import { canonicalSets, compareBoxes, compareSemantics, compareVolumes, cutHost, joinBoxes, nodeShape, oracleByGlobalId, oracleInMetres, problemKinds, sameDataSection } from "./ifc-corpus.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -19,6 +20,7 @@ const args = process.argv.slice(2);
 const file = args[0];
 const oraclePath = args.includes("--oracle") ? args[args.indexOf("--oracle") + 1] : undefined;
 const exact = args.includes("--exact");
+const editedFolder = args.includes("--edited") ? args[args.indexOf("--edited") + 1] : undefined;
 
 process.on("uncaughtException", (error) => {
     console.log(JSON.stringify({ failed: error instanceof Error ? error.message : String(error) }));
@@ -228,6 +230,15 @@ const inMetres = oracle === undefined ? undefined : oracleInMetres(oracle, metre
 const oracleElements = inMetres === undefined ? undefined : oracleByGlobalId(inMetres.elements);
 const sharedGlobalIds = elements.length - new Set(elements.map((element) => element.globalId)).size;
 
+function editedFiles(folder) {
+    const { baseline, edited, edits } = editForValidation(ifc, model, recipe.millimetresPerUnit);
+    writeFileSync(path.join(folder, "baseline.ifc"), baseline === model ? read : ifc.model.writeBytes({ model: baseline, fileName: "baseline.ifc" }));
+    writeFileSync(path.join(folder, "edited.ifc"), ifc.model.writeBytes({ model: edited, fileName: "edited.ifc" }));
+    return { edits, editable: edited.editable };
+}
+
+const [editing, editMs] = editedFolder === undefined ? [undefined, undefined] : timed(() => editedFiles(editedFolder));
+
 console.log(JSON.stringify({
     bytes: bytes.byteLength,
     schema: summary.schema,
@@ -265,5 +276,6 @@ console.log(JSON.stringify({
     boxes: oracleElements === undefined ? undefined : compareBoxes(boxes, oracleElements),
     exactVolumes: oracleElements === undefined || !exact ? undefined : compareVolumes(exactVolumes, oracleElements),
     exactBoxes: oracleElements === undefined || !exact ? undefined : compareBoxes(exactBoxes, oracleElements),
+    editing: editing === undefined ? undefined : { ...editing, editMs },
     semantics: oracle?.semantics === undefined ? undefined : compareSemantics({ counts: summary.elementCounts, storeys: new Map(elements.map((element) => [element.globalId, element.storey])), sets: sampleSets }, oracle.semantics),
 }));

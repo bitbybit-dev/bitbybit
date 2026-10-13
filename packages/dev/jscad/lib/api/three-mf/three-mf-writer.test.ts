@@ -128,6 +128,15 @@ describe("the 3MF writer", () => {
             expect(solids[0]!.name).toBe("Part 0");
         });
 
+        it("should refuse a JSCAD library without the generalize modifier it triangulates with", () => {
+            // Arrange
+            const library = { ...kernel, modifiers: {} as typeof kernel.modifiers };
+
+            // Act & Assert
+            expect(() => threeMfSolidsOf(library, [kernel.primitives.cube({ size: 2 })], [1, 1, 1, 1]))
+                .toThrow("The JSCAD library given has no modifiers.generalize to triangulate the solids with");
+        });
+
         it("should refuse geometry that holds no solid", () => {
             // Act & Assert
             expect(() => threeMfSolidsOf(kernel, [kernel.primitives.circle({ radius: 1 })], [1, 1, 1, 1]))

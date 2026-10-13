@@ -96,19 +96,23 @@ describe("connectWalls on walls other tools wrote", () => {
         expect(() => joined(model)).toThrow(`is not upright, so it is not a wall this library can edit`);
     });
 
-    it("should refuse to join a wall made of a plain material instead of layers", () => {
+    it("should join a wall made of a plain material by the sides of its body, as a layered wall, keeping the material", () => {
         // Arrange
         const { ifc, model: plain } = corner();
         const south = expressIdOf(plain, "south");
         const withMaterial = ifc.materials.add({ model: plain, name: "Concrete" });
+        const material = withMaterial.byType("IfcMaterial")[0]!.id;
         const model = edited(withMaterial, (tx) => {
-            const material = withMaterial.byType("IfcMaterial")[0]?.id ?? 0;
             const rel = withMaterial.byType("IfcRelAssociatesMaterial").find((entity) => refsOf(withMaterial.attribute(entity.id, "RelatedObjects")).includes(south));
-            tx.update(rel?.id ?? 0, { RelatingMaterial: ref(material) });
+            tx.update(rel!.id, { RelatingMaterial: ref(material) });
         });
 
-        // Act & Assert
-        expect(() => joined(model)).toThrow(`has no material layer set usage, so its thickness is unknown`);
+        // Act
+        const result = joined(model);
+
+        // Assert
+        expect(footprintOf(result, south)).toEqual(MITRED_SOUTH);
+        expect(materialOf(result, south)).toBe(material);
     });
 });
 

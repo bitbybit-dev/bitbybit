@@ -504,9 +504,9 @@ renamed into place. The glue must name the manifest's file. An entry without a u
 published - the build writes the entry and publishing fills in the url - which is fine where the file is
 present and a hard stop naming the file anywhere else.
 
-## ifc-corpus.mjs and ifc-corpus-measure.mjs
+## ifc-corpus.mjs, ifc-corpus-measure.mjs and ifc-corpus-edit.mjs
 
-`npm run ifc:corpus -- fetch | check | manifest | run [--only <id part>] [--exact] [--no-oracle]`, run
+`npm run ifc:corpus -- fetch | check | manifest | run [--only <id part>] [--exact] [--edits] [--no-oracle]`, run
 by hand and twice a week by `ifc.yml`, never by `npm test`: the files are large and served by other
 people. The helpers' suite, `ifc-corpus.test.mjs`, runs in `test:scripts`.
 
@@ -546,6 +546,19 @@ little of its precision. A volume is compared only where IfcOpenShell's shape is
 shared by two triangles, since the volume of an open shell means nothing. The oracle's output is cached
 by the file's hash in `corpus/.cache/oracle/`, so IfcOpenShell measures a file once. The report is
 written to `corpus/.cache/report.json`, with one line per file in the terminal.
+
+With `--edits`, every IFC4 and IFC2X3 file up to 20 MB is also edited and checked by IfcOpenShell's
+validator, with its rules (`corpus/validate.py`, which reads statements the way `validation/check.py`
+does). `ifc-corpus-edit.mjs` upgrades an IFC2X3 model to IFC4 first, then makes a fixed set of edits
+through the public API: an attribute and a property set on the first element, a door in, a new height
+for and a clipping of the first wall `walls.parameters` reads, a storey above the top one with a wall
+on it, a move and a removal of other elements. An edit the library refuses is recorded with its
+message and the next one starts from the model before it, so what a file allows is measured rather
+than assumed. The measuring process writes the model the edits started from and the edited one into a
+temporary folder, and the validator runs on both: the files are other tools' and many fail rules of
+their own, so what is checked is that the edits added none. A statement is matched by the attribute or
+rule, the entity type and the step id, which an untouched row keeps, or by its message when it names no
+instance. An added error, or a validator that could not run, fails the run.
 
 A file in `IFC_PRIVATE_CORPUS` may not be yours to share. It is named by an id that does not name it (`private-1`, in name
 order), its oracle is cached in a `.bitbybit-oracle/` folder beside it rather than in the repository, and

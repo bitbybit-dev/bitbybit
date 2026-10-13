@@ -48,6 +48,11 @@ export interface CurveTrim {
     readonly parameter: number | undefined;
 }
 
+export interface SweepBound {
+    readonly value: number;
+    readonly byLength: boolean;
+}
+
 export interface ParametricSurface {
     readonly periods: readonly [number | undefined, number | undefined];
     point(u: number, v: number): Base.Point3;

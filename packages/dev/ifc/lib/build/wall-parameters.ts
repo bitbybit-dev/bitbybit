@@ -17,6 +17,10 @@ const END_OF: Readonly<Record<WallEnd, Inputs.IFC.wallEndEnum>> = {
     ATPATH: Inputs.IFC.wallEndEnum.along,
 };
 
+function layerSetName(reader: ModelReader, layerSet: number | undefined): string {
+    return layerSet === undefined ? "" : textValue(reader.attribute(layerSet, "LayerSetName")) ?? "";
+}
+
 function globalIdOf(reader: ModelReader, id: number): string {
     return textValue(reader.attribute(id, "GlobalId")) ?? "";
 }
@@ -41,7 +45,7 @@ export function wallParametersOf(reader: ModelReader, wall: number, tolerance: n
         thickness: geometry.high - geometry.low,
         offset: geometry.low,
         alignment: alignmentOf(geometry, tolerance) ?? "",
-        layerSet: textValue(reader.attribute(layerSetOf(reader, geometry), "LayerSetName")) ?? "",
+        layerSet: layerSetName(reader, layerSetOf(reader, geometry)),
         wallType: type === undefined ? "" : globalIdOf(reader, type),
         joins: joinsOf(reader, wall).map((join) => ({ other: globalIdOf(reader, join.other), at: END_OF[join.mine], otherAt: END_OF[join.theirs] })),
         openings: openingsOf(reader, wall).map((opening) => globalIdOf(reader, opening)),

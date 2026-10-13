@@ -19,16 +19,16 @@ const ARC = [
     "#33=IFCTRIMMEDCURVE(#32,(IFCPARAMETERVALUE(0.)),(IFCPARAMETERVALUE(1.5707963267948966)),.T.,.PARAMETER.);",
 ];
 
-function converted(rows: readonly string[], item: number): Base.Recipe {
+function converted(rows: readonly string[], item: number, schema?: string): Base.Recipe {
     const builder = new RecipeBuilder();
-    const converter = new ItemConverter(modelOf(withContext([...PROJECT_ROWS, ...rows])), builder, REACH);
+    const converter = new ItemConverter(modelOf(withContext([...PROJECT_ROWS, ...rows], schema)), builder, REACH);
     builder.root({ node: converter.item(item), matrix: IDENTITY, tag: {} });
     return builder.build(1, 0.001);
 }
 
-function attempt(rows: readonly string[], item: number): () => void {
+function attempt(rows: readonly string[], item: number, schema?: string): () => void {
     return () => {
-        new ItemConverter(modelOf(withContext([...PROJECT_ROWS, ...rows])), new RecipeBuilder(), REACH).item(item);
+        new ItemConverter(modelOf(withContext([...PROJECT_ROWS, ...rows], schema)), new RecipeBuilder(), REACH).item(item);
     };
 }
 
@@ -188,6 +188,40 @@ describe("ItemConverter and swept areas", () => {
         // Assert
         expect(frames.every((frame) => Math.abs(frame[2]! - 1) < 1e-9)).toBe(true);
         expect(frames[0]!.slice(8, 11)).toEqual(near([0, 1, 0]));
+    });
+
+    it("should read an IFC4X3 sweep's ends as parameters or as lengths along its directrix, and refuse a part of it or ends measured both ways", () => {
+        // Arrange
+        const rows = [
+            ...RECTANGLE,
+            ...L_PATH,
+            ...ARC,
+            "#34=IFCDIRECTION((0.,0.,1.));",
+            "#40=IFCFIXEDREFERENCESWEPTAREASOLID(#10,$,#23,$,$,#34);",
+            "#41=IFCFIXEDREFERENCESWEPTAREASOLID(#10,$,#23,IFCPARAMETERVALUE(0.),IFCPARAMETERVALUE(2.),#34);",
+            "#42=IFCFIXEDREFERENCESWEPTAREASOLID(#10,$,#23,IFCLENGTHMEASURE(0.),IFCLENGTHMEASURE(1000.),#34);",
+            "#43=IFCFIXEDREFERENCESWEPTAREASOLID(#10,$,#33,$,$,#34);",
+            "#44=IFCFIXEDREFERENCESWEPTAREASOLID(#10,$,#33,$,IFCLENGTHMEASURE(471.23889803846896),#34);",
+            "#45=IFCFIXEDREFERENCESWEPTAREASOLID(#10,$,#23,IFCLENGTHMEASURE(0.),IFCLENGTHMEASURE(500.),#34);",
+            "#46=IFCFIXEDREFERENCESWEPTAREASOLID(#10,$,#23,IFCPARAMETERVALUE(1.),$,#34);",
+            "#47=IFCFIXEDREFERENCESWEPTAREASOLID(#10,$,#23,IFCPARAMETERVALUE(0.),IFCLENGTHMEASURE(2.),#34);",
+            "#48=IFCFIXEDREFERENCESWEPTAREASOLID(#10,$,#33,$,IFCLENGTHMEASURE(300.),#34);",
+        ];
+        const framesFor = (item: number): number[][] => {
+            const recipe = converted(rows, item, "IFC4X3_ADD2");
+            return framesOf(recipe, recipe.nodes.at(-1));
+        };
+
+        // Act
+        const [path, byParameter, byLength, arc, arcByLength] = [40, 41, 42, 43, 44].map(framesFor);
+
+        // Assert
+        expect([byParameter, byLength]).toEqual([path, path]);
+        expect(arcByLength).toEqual(arc);
+        expect(attempt(rows, 45, "IFC4X3_ADD2")).toThrow("#45 sweeps along part of its directrix, which is not supported yet");
+        expect(attempt(rows, 46, "IFC4X3_ADD2")).toThrow("#46 sweeps along part of its directrix, which is not supported yet");
+        expect(attempt(rows, 47, "IFC4X3_ADD2")).toThrow("#47 sweeps along part of its directrix, which is not supported yet");
+        expect(attempt(rows, 48, "IFC4X3_ADD2")).toThrow("#48 sweeps along part of its directrix, which is not supported yet");
     });
 
     it("should take a surface sweep's x axis from its plane's normal, or across a surface of linear extrusion", () => {
