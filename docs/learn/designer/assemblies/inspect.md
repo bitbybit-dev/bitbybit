@@ -34,3 +34,9 @@ A touch that a joint asks for, two parts meeting at their connectors, is left ou
 ## Volume and mass
 
 Select a part in its part document to see its volume, and its mass from its [material](../modelling/parts.md)'s density.
+
+## Measure
+
+Pick a face or an edge and the selection panel measures it: an edge's length, a face's area, and the radius and diameter of a circle, a cylinder or a sphere, with a circle's centre. <kbd>Shift</kbd>+click a second one and it measures the shortest distance between them, drawn as a line in the view when they do not touch, with its parts along X, Y and Z, and the angle between two flat faces or two straight edges. In an assembly, picks on different parts are measured where the assembly places them.
+
+<Ui>Measure</Ui>, in <Ui>Inspect</Ui> or on the toolbar, puts the same values in the status bar, and agents run it as `view.measure`. It works in part documents too, and visitors who open a shared design can measure it.

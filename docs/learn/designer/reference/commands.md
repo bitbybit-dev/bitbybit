@@ -12,7 +12,7 @@ tags: [designer]
 
 # Designer commands
 
-Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 132 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
+Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 133 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
 
 Each entry's anchor is the command's help topic, such as `#designer-part-fillet`, so a link to it keeps working when the title changes.
 
@@ -1348,6 +1348,16 @@ Finds placed parts of the assembly as built that overlap, touch or come closer t
 - **For agents:** `assembly.checkClashes`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
   - `clearance` (number): How close two parts may come before they are listed, 0 or more, in the document's length unit; 0 or left out lists only overlaps and touches.
+
+### Measure {#designer-view-measure}
+
+Measures the picked faces or edges: one gives its length or area and any radius, two the distance between them and their angle when both are flat or straight.
+
+- **Where:** <Ui>Inspect</Ui> > <Ui>Measure</Ui>; the toolbar
+- **Works in:** part documents and assembly documents
+- **For agents:** `view.measure`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `picks` (list of objects): The faces or edges to measure, up to 2, each \{ part, path, kind, index \} as the build names them; the current picks when left out.
 
 ## Operations
 
