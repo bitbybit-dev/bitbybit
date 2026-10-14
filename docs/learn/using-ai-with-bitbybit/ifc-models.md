@@ -169,7 +169,7 @@ const solids = await bitbybit.manifold.recipes.build({ recipe, adjustZtoY: true 
 await bitbybit.draw.drawAnyAsync({ entity: solids });
 ```
 
-The solids come back one per root of the recipe, and `recipe.roots[i].tag` carries the element's `globalId`, `type`, `name` and, when its material has a colour, `rgba`. With the OpenCascade worker enabled as well, `ifc.geometry.toShapes` gives exact shapes and `ifc.geometry.toStep` the bytes of a STEP file, nested by site, building, storey and IFC class: `await bitbybit.ifc.geometry.toStep({ model, name: "House", fileName: "house.step" })`. A Babylon.js scene is left-handed unless told otherwise; set `scene.useRightHandedSystem = true` before drawing, or the building is mirrored.
+The solids come back one per root of the recipe, and `recipe.roots[i].tag` carries the element's `globalId`, `type`, `name` and, when its material has a colour, `rgba`; `propertySets: true` adds its property set values, named like `Pset_WallCommon.IsExternal`. With the OpenCascade worker enabled as well, `ifc.geometry.toShapes` gives exact shapes and `ifc.geometry.toStep` the bytes of a STEP file, nested by site, building, storey and IFC class, each product carrying its property sets: `await bitbybit.ifc.geometry.toStep({ model, name: "House", fileName: "house.step" })`. A Babylon.js scene is left-handed unless told otherwise; set `scene.useRightHandedSystem = true` before drawing, or the building is mirrored.
 
 ## Mistakes to avoid in IFC models
 

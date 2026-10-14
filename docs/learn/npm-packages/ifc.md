@@ -178,7 +178,7 @@ await bitbybit.draw.drawAnyAsync({ entity: shapes });
 const step = await bitbybit.ifc.geometry.toStep({ model, name: "House", fileName: "house.step", tryDownload: true });
 ```
 
-`toShapes` gives one shape per element, standing up along Y for drawing, and an element the kernel cannot build comes back empty rather than stopping the rest. `toStep` writes the file and gives back its bytes; `toDocument` gives the assembly document instead, to export to glTF or inspect, and to delete when done. All three describe the model in the IFC worker and build it in the OCCT worker, so both have to be enabled. To build a recipe you have already made, or one from another source, hand it to `bitbybit.occt.recipes.build` and `bitbybit.occt.recipes.buildDocument` directly.
+`toShapes` gives one shape per element, standing up along Y for drawing, and an element the kernel cannot build comes back empty rather than stopping the rest. `toStep` writes the file and gives back its bytes; `toDocument` gives the assembly document instead, to export to glTF or inspect, and to delete when done. Each element's product carries its GlobalId, IFC type and property set values, named by set and property such as `Pset_WallCommon.IsExternal`; `propertySets: false` leaves the property sets out. All three describe the model in the IFC worker and build it in the OCCT worker, so both have to be enabled. To build a recipe you have already made, or one from another source, hand it to `bitbybit.occt.recipes.build` and `bitbybit.occt.recipes.buildDocument` directly.
 
 A whole recipe builds in one kernel call, its steps in parallel on the multithreaded kernel; the example house's 738 elements take under a second. In the STEP file each element is a product named after it, its GlobalId and IFC type written as properties, and a door or window type placed many times is one part placed by each. The products are nested as the model is, so a CAD tool's tree reads like the model's:
 
@@ -210,7 +210,7 @@ const body = await bitbybit.occt.recipes.describe({ shape: bracket, ifcSurfaces:
 model = await bitbybit.ifc.elements.add({ model, storey: "ground", body, type: "IfcFurniture", name: "Bracket", position: [2000, 1500, 0], rotation: 90 });
 ```
 
-The element keeps the exact shape as advanced breps, which other BIM tools read as solids, with any cavities cut from it; a body of triangles becomes a triangulated face set. The body is scaled from the unit its recipe records to the model's.
+The element keeps the exact shape as advanced breps, which other BIM tools read as solids, with any cavities cut from it; a body of triangles becomes a triangulated face set. The body is scaled from the unit its recipe records to the model's. `bitbybit.ifc.elements.addShape` does both steps in one call: it takes the shape itself, with `millimetresPerUnit` for its unit, and describes it with `ifcSurfaces` on the way.
 
 STEP is a verbose text format, and writing it holds the whole file in memory. A model with a million mesh triangles writes some 280 MB of STEP and needs about 2 GB while it does, which is all the standard 32-bit kernel has; export a model that large in parts, or on the 64-bit kernel, which has up to 16 GB.
 
