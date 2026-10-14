@@ -276,4 +276,40 @@ export class OCCTDesign {
     referenceFor(inputs: Inputs.OCCT.DesignReferenceForDto): Promise<Models.OCCT.DesignReferenceFound> {
         return this.occWorkerManager.genericCallToWorkerPromise("design.referenceFor", inputs);
     }
+
+    /**
+     * Turns a STEP file into design documents: a part document for each part it holds and an
+     * assembly document for each assembly, placed as the file places them, so its parts can be edited
+     * and placed like any others.
+     *
+     * Every part document imports its shape from one shapes file: a binary BREP of every part's
+     * shape, written beside the documents, each part taking its own by `child`. A part keeps its name
+     * and its colours, those of single faces included; its part is `part` and its body, the import, is
+     * `shape`, so a face is named `{ "of": "shape", "role": "face", "from": "<index>" }`. An assembly
+     * places its parts and sub-assemblies `at` the frames the file gives them, so a part placed forty
+     * times stays one document placed forty times. A placement that mirrors or scales its part is
+     * built into a part of its own and a hidden one is suppressed; `report.notes` says so. A file that
+     * places more parts than a design builds is refused. Lengths are in millimetres and Z is up. Store
+     * the asset's `data` at its `uri` before the documents are saved.
+     * @param inputs - The STEP file, its name, the seed of the documents' ids and the folder of the shapes file
+     * @returns The documents, the id of the one that places everything, the shapes file and a report
+     * @group document
+     * @shortname design from step
+     * @drawable false
+     * @ignore true
+     * @example
+     * ```typescript
+     * const imported = await bitbybit.occt.design.fromStep({ step: stepText, name: "bracket.step" });
+     * const shapes = imported.assets[0]!;
+     * const { parts } = await bitbybit.occt.design.build({
+     *     document: imported.documents.find(document => document.id === imported.root)!,
+     *     documents: imported.documents,
+     *     assets: { [shapes.id]: shapes.data },
+     * });
+     * console.log(imported.report.parts, parts.length);
+     * ```
+     */
+    fromStep(inputs: Inputs.OCCT.DesignFromStepDto): Promise<Models.OCCT.DesignFromStep> {
+        return this.occWorkerManager.genericCallToWorkerPromise("design.fromStep", inputs);
+    }
 }

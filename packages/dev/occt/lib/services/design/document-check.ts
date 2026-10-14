@@ -81,7 +81,7 @@ export const FEATURE_KEYS: Record<Models.OCCT.DesignFeature["type"], readonly st
     hole: ["body", "on", "origin", "direction", "at", "diameter", "depth", "tipAngle", "counterbore", "countersink"],
     boss: ["profile", "body", "distance", "until"],
     pocket: ["profile", "body", "distance", "until", "through"],
-    import: ["asset", "format"],
+    import: ["asset", "format", "child"],
     operation: ["operation", "params", "body"],
     script: ["script", "params", "body"],
 };
@@ -423,6 +423,12 @@ export function oneOf(values: readonly string[], optionalValue: boolean): (value
     };
 }
 
+const checkChild: Check = (value, path) => {
+    if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+        throw new DesignProblem(path, "a child is the position of a shape in the file's compound, a whole number from 0");
+    }
+};
+
 export const checkBoolean = (value: unknown, path: string): void => {
     if (typeof value !== "boolean") {
         throw new DesignProblem(path, "true or false is expected");
@@ -520,7 +526,7 @@ const FIELDS: Record<Exclude<Models.OCCT.DesignFeature["type"], "sketch">, Recor
     },
     boss: { profile: checkFaceProfile, body: checkBody, distance: optional(checkNumber), until: optional(checkFaces) },
     pocket: { profile: checkFaceProfile, body: checkBody, distance: optional(checkNumber), until: optional(checkFaces), through: optional(checkBoolean) },
-    import: { asset: checkAsset, format: oneOf(["brep", "brep-binary", "step", "iges"], true) },
+    import: { asset: checkAsset, format: oneOf(["brep", "brep-binary", "step", "iges"], true), child: optional(checkChild) },
     operation: { body: optional(checkBody) },
     script: { script: checkAsset, body: optional(checkBody) },
 };

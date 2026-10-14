@@ -498,13 +498,16 @@ export interface DesignPocketFeature extends DesignFeatureBase {
 /**
  * Starts a body from one of the document's `assets`: BREP as text (`brep`) or binary
  * (`brep-binary`), STEP or IGES, read from the media type or the file extension when `format` is
- * left out. The shape is taken as the file has it. Its faces are named `face`, and `face` with
- * their index from 0.
+ * left out. The shape is taken as the file has it, or with `child` only the shape at that position,
+ * from 0, of the compound the file holds, such as one part of the shapes file `design.fromStep`
+ * writes; a build reads such a file once for all the features that take a child of it. Its faces
+ * are named `face`, and `face` with their index from 0.
  */
 export interface DesignImportFeature extends DesignFeatureBase {
     type: "import";
     asset: string;
     format?: "brep" | "brep-binary" | "step" | "iges";
+    child?: number;
 }
 
 /**

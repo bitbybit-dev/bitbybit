@@ -74,6 +74,7 @@ export interface DesignRun {
     assets?: DesignAssetData | undefined;
     order: string[];
     used: Set<string>;
+    digests: Map<string, string>;
     trace?: Map<string, DesignTrace> | undefined;
     rebinding: Rebinding;
     supplied: ReadonlyMap<string, Models.OCCT.DesignSuppliedOutcome<TopoDS_Shape>>;
@@ -96,6 +97,8 @@ export interface DesignRunContext {
     assets?: DesignAssetData | undefined;
     /** The outcomes a larger build has used so far, when a run is one part of it: the run adds to them, and the larger build trims the cache once, at its end. */
     used?: Set<string> | undefined;
+    /** The digests of the asset contents a larger build has worked out so far, by asset id, so a file every part document imports is hashed once a build. */
+    digests?: Map<string, string> | undefined;
     /** Whether lost references with hints take the faces most like them (`report`) or only offer them (`never`, the default). */
     rebind?: "never" | "report" | undefined;
     /** When given, receives a hint for every face reference the run resolves, by its JSON pointer. */

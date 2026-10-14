@@ -431,7 +431,11 @@ class Exporter {
         const call = trace.format === "brep" ? `occt.io.loadBrep({ brepData: ${data} as string })`
             : trace.format === "brep-binary" ? `occt.io.loadBrepBinary({ brepData: ${data} as Uint8Array })`
                 : `occt.io.loadSTEPorIGES({ filetext: ${data} as string | ArrayBuffer, fileName: "asset.${trace.format}", adjustZtoY: false })`;
-        this.line(`let ${name} = await ${call};`);
+        if (feature.child === undefined) {
+            this.line(`let ${name} = await ${call};`);
+            return;
+        }
+        this.line(`let ${name} = (await occt.shapes.compound.getShapesOfCompound({ shape: await ${call} }))[${feature.child}]!;`);
     }
 
     private operationValue(value: unknown): string {

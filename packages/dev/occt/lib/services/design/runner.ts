@@ -326,6 +326,7 @@ function newRun(document: Models.OCCT.DesignPartDocument, choice: ParameterChoic
         declaredAssets: document.assets ?? [],
         order: [],
         used: context.used ?? new Set(),
+        digests: context.digests ?? new Map(),
         trace,
         rebinding: { mode: context.rebind ?? "never", entries: [], hints: context.hints },
         supplied: new Map((context.outcomes ?? []).map(outcome => [outcome.hash, outcome])),

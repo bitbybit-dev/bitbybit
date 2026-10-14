@@ -134,7 +134,7 @@ A plate with two holes and rounded top edges, made of aluminium, with a part num
 | `pushPull` | moves a face of a body along its normal: out when `distance` is above 0, in when below; `mode` `extrude`, the default, sweeps one flat face straight and adds or cuts the swept solid, `offset` moves the faces themselves, flat or curved, the faces around them stretching to follow, and with a `count` the reference may name several faces | `end` (the moved faces, which keep their names), `side` (the faces an extrude sweeps out) |
 | `removeFaces` | removes the `count` faces a reference names and closes the gap from the faces around them: a hole's wall fills the hole, a round sharpens its edge | keeps every name the faces that stay had |
 | `transform` | moves a body: turns it `rotate` degrees about X, Y and Z through a `pivot`, then shifts it by `translate` | keeps every name it had |
-| `import` | starts a body from a STEP, IGES or BREP asset pinned by its SHA-256 | `face` (per index) |
+| `import` | starts a body from a STEP, IGES or BREP asset pinned by its SHA-256; `child` takes one shape of a compound, such as one part of the shapes file `fromStep` writes | `face` (per index) |
 | `operation` | calls any method of the package by its path, such as `"occt.shapes.shape.unifySameDomain"` | carried through history, otherwise `face` |
 | `script` | runs code from an asset pinned by its SHA-256, outside the kernel, on bodies, references and values | the roles the script returns, otherwise `face` |
 
@@ -201,6 +201,7 @@ An assembly places parts of other documents. The documents are given to the buil
 - **`pattern`** places copies of a component where it is placed, turned about an axis or stepped along a direction, such as the blades of a fan: `"pattern": { "polar": { "axis": { "origin": [0, 0, 0], "direction": [1, 0, 0] }, "count": "blades" } }`, or `{ "linear": { "direction": [1, 0, 0], "spacing": 25, "count": 4 } }`. A polar pattern spaces its copies as the `polarPattern` feature does: a whole turn shared out, a part of one (`angle`) with both ends included, the first turned by `start`. Each copy is an occurrence of its own, `blade.1`, `blade.2` and so on, counted in the bill of materials. A patterned component is not moved by a joint or joined to; to turn a row of blades, pattern them inside a sub-assembly and join that.
 - A component's `source.parameters` drive the placed document's values from the assembly's own, so one parameter can size several parts.
 - An assembly may publish `connectors` of its components, so a larger assembly can join it as one unit.
+- **From a STEP file:** `occt.design.fromStep({ step, name })` writes an assembly document per assembly and a part document per part, placed `at` the file's frames, with names and colours, every part importing one shapes file by `child`. Store `assets[0].data` at its `uri`, then build the `root` document with `documents` and `assets: { [assets[0].id]: assets[0].data }`; `report.notes` says what changed on the way, such as a mirrored placement built into a part of its own.
 
 ## Mistakes to avoid
 

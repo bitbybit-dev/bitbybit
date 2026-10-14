@@ -91,6 +91,7 @@ const OCCT_DescribeRecipeDto: DtoConstraints = { shape: k.required(k.opaque), mi
 const OCCT_DesignBuildDto: DtoConstraints = { document: k.required(k.opaque), configuration: k.string, parameters: k.opaque, assets: k.opaque, documents: k.list(k.opaque), rebind: k.oneOf(["never", "report"]), outcomes: k.list(k.opaque), sketches: k.boolean };
 const OCCT_DesignClashesDto: DtoConstraints = { document: k.required(k.opaque), documents: k.list(k.opaque), configuration: k.string, parameters: k.opaque, assets: k.opaque, clearance: k.between(k.number, { min: 0 }) };
 const OCCT_DesignDocumentDto: DtoConstraints = { document: k.required(k.opaque), documents: k.list(k.opaque) };
+const OCCT_DesignFromStepDto: DtoConstraints = { step: k.required(k.opaque), name: k.string, seed: k.string, folder: k.string };
 const OCCT_DesignProbeFilletDto: DtoConstraints = { document: k.required(k.opaque), feature: k.required(k.string), configuration: k.string, parameters: k.opaque, assets: k.opaque, maxAttempts: k.between(k.number, { min: 1, max: 64 }) };
 const OCCT_DesignReferenceForDto: DtoConstraints = { document: k.required(k.opaque), body: k.required(k.string), faces: k.list(k.number), edges: k.list(k.number), configuration: k.string, parameters: k.opaque, assets: k.opaque, nudge: k.boolean };
 const OCCT_DifferenceDto: DtoConstraints = { shape: k.required(k.opaque), shapes: k.required(k.list(k.opaque)), keepEdges: k.boolean, strategy: k.oneOf(["oneAfterAnother", "inGroups", "allAtOnce"]) };
@@ -379,7 +380,7 @@ const OCCT_XYZDto: DtoConstraints = { x: k.number, y: k.number, z: k.number };
 const OCCT_ZigZagBetweenTwoWiresDto: DtoConstraints = { wire1: k.required(k.opaque), wire2: k.required(k.opaque), nrZigZags: k.between(k.number, { min: 1 }), inverse: k.boolean, divideByEqualDistance: k.boolean, zigZagsPerEdge: k.boolean };
 
 /**
- * Every public operation of the Bitbybit OCCT Kernel by its dotted path, the inputs DTO it
+ * Every public operation of the OCCT kernel by its dotted path, the inputs DTO it
  * takes, and what each property of that DTO accepts. `resolveInputs` from the base package reads
  * it to lay a caller's properties over that DTO's defaults before the kernel runs, and
  * `validateInputs` to check what the call was given.
@@ -462,6 +463,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "corners.filletCornerByPoint": { dto: Inputs.OCCT.FilletCornerByPointDto, constraints: OCCT_FilletCornerByPointDto },
     "design.build": { dto: Inputs.OCCT.DesignBuildDto, constraints: OCCT_DesignBuildDto },
     "design.clashes": { dto: Inputs.OCCT.DesignClashesDto, constraints: OCCT_DesignClashesDto },
+    "design.fromStep": { dto: Inputs.OCCT.DesignFromStepDto, constraints: OCCT_DesignFromStepDto },
     "design.probeFillet": { dto: Inputs.OCCT.DesignProbeFilletDto, constraints: OCCT_DesignProbeFilletDto },
     "design.referenceFor": { dto: Inputs.OCCT.DesignReferenceForDto, constraints: OCCT_DesignReferenceForDto },
     "design.toTypeScript": { dto: Inputs.OCCT.DesignBuildDto, constraints: OCCT_DesignBuildDto },

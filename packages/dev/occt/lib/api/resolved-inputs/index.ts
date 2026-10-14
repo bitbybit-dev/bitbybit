@@ -105,6 +105,7 @@ export namespace OCCT {
     export type DesignBuildDto<T> = Inputs.OCCT.DesignBuildDto<T>;
     export type DesignClashesDto = WithDefaults<Inputs.OCCT.DesignClashesDto, "clearance">;
     export type DesignDocumentDto = Inputs.OCCT.DesignDocumentDto;
+    export type DesignFromStepDto = WithDefaults<Inputs.OCCT.DesignFromStepDto, "name" | "seed" | "folder">;
     export type DesignProbeFilletDto = WithDefaults<Inputs.OCCT.DesignProbeFilletDto, "maxAttempts">;
     export type DesignReferenceForDto = WithDefaults<Inputs.OCCT.DesignReferenceForDto, "nudge">;
     export type DifferenceDto<T> = WithDefaults<Inputs.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;

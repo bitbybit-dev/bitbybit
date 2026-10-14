@@ -280,3 +280,39 @@ export class DesignClashesDto {
     clearance?: number | undefined = 0;
 }
 
+
+/**
+ * A STEP file, its name, the seed of the ids and the folder of the shapes file, for
+ * `design.fromStep`, which turns the file into design documents.
+ */
+export class DesignFromStepDto {
+    constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string) {
+        if (step !== undefined) { this.step = step; }
+        if (name !== undefined) { this.name = name; }
+        if (seed !== undefined) { this.seed = seed; }
+        if (folder !== undefined) { this.folder = folder; }
+    }
+    /**
+     * The STEP file, as text or bytes.
+     * @default undefined
+     */
+    step!: string | Uint8Array | ArrayBuffer;
+    /**
+     * The file's name, which names the shapes file, a lone part or assembly the file leaves unnamed,
+     * and the assembly that places shapes the file holds side by side.
+     * @default model.step
+     */
+    name?: string | undefined = "model.step";
+    /**
+     * Text mixed into the documents' ids: the same file and seed give the same ids, so a second
+     * import replaces the first; another seed makes a copy.
+     * @default
+     */
+    seed?: string | undefined = "";
+    /**
+     * The folder of the shapes file's `uri`, relative to the documents, such as `assets`; empty
+     * keeps the file beside them.
+     * @default
+     */
+    folder?: string | undefined = "";
+}

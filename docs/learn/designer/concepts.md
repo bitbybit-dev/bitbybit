@@ -74,6 +74,6 @@ Every change is recorded with who made it. <Ui>Undo</Ui> takes back your own las
 ## Files
 
 - <Ui>Export...</Ui> writes the open document as STEP, GLB, STL or BREP, or the project as a design document file.
-- <Ui>Import STEP, IGES or BREP</Ui> brings a shape from another CAD program into a part, and <Ui>Import design documents</Ui> adds documents from a design document file.
+- <Ui>Import STEP, IGES or BREP</Ui> brings a model from another CAD program in: a STEP file as its assemblies and parts, an IGES or BREP file as one part. <Ui>Import design documents</Ui> adds documents from a design document file.
 
 Everything the Designer saves is a [design document](../using-ai-with-bitbybit/design-documents.md): plain JSON that `bitbybit.occt.design.build` also builds in code, in the browser, in Node or on CAD Cloud.

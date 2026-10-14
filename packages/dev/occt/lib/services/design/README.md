@@ -52,7 +52,22 @@ each idea comes from, so the reasoning stays next to the code that implements it
   the document's version pins the geometry every import reads. An asset's `uri` is relative to the
   document's own location in the store that keeps it (an absolute URL is allowed); the runner
   fetches nothing. For OCCT's BREP, `mediaType` records the format version
-  (`model/vnd.occt.brep; version=3`).
+  (`model/vnd.occt.brep; version=3`). An import with `child` takes one shape of a compound; the file
+  is read once per build for every import that takes a child of it, kept in the cache under its
+  contents. A build hashes each asset once, however many documents import it: hashing a large shapes
+  file for each of hundreds of parts took a large assembly's build from seconds to half an hour.
+- `from-step.ts` is `fromStep`. It reads a STEP file into the kernel's assembly document and takes
+  each part and assembly once from its hierarchy (which repeats a sub-assembly under every placement
+  of it), writing a part document per part and an assembly document per assembly, so a part placed
+  forty times stays one document. Every part's shape goes into one binary BREP compound, the shapes
+  file, which the part documents import by `child`: a project then keeps one file per STEP file,
+  not one per part, which the file limits of a project and the time to fetch each would not allow
+  for a large assembly. Placements become `at` frames; one that mirrors or scales is built into a
+  part of its own, since a frame only moves and turns, and a placed sub-assembly that does is
+  flattened into such parts. A part's colour is its label's; a face's comes from the sub-shape labels
+  the STEP reader makes, matched to the part's faces by the kernel's shape hash, and when the part
+  has none, the colour most of its faces share becomes the part's. Ids are UUIDs made from the file's
+  SHA-256 and a seed, so importing the same file again replaces what the first import made.
 - `typescript-export.ts` is `toTypeScript`: it builds the document once, recording what each feature
   resolved (face frames, face and edge indexes, the import format, the shell's joins or its cut
   lids), and writes the

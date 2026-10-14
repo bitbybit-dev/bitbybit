@@ -81,6 +81,7 @@
     "deleteShapes",
     "design.build",
     "design.clashes",
+    "design.fromStep",
     "design.probeFillet",
     "design.referenceFor",
     "design.toTypeScript",

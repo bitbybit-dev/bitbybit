@@ -2,7 +2,7 @@ import type { TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitby
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import type { DesignOutcome } from "./cache";
-import { hashBytes, hashText, release, stableJson } from "./cache";
+import { release, stableJson } from "./cache";
 import { sha256 } from "./digest";
 import { bodyOf, contextOf, faceCount, faceFrame, faceSignatures, profileNames } from "./helpers";
 import { tripleOf } from "./placement";
@@ -337,9 +337,7 @@ function formatOf(feature: Models.OCCT.DesignImportFeature, asset: Models.OCCT.D
     throw new DesignProblem(pointer(path, "format"), `the format of "${asset.uri}" cannot be told from its media type or extension: give format`);
 }
 
-function imported(feature: Models.OCCT.DesignImportFeature, asset: Models.OCCT.DesignAsset, data: string | Uint8Array, path: string, run: DesignRun): DesignOutcome {
-    const format = formatOf(feature, asset, data, path);
-    run.trace?.set(path, { format });
+function loaded(format: ImportFormat, asset: Models.OCCT.DesignAsset, data: string | Uint8Array, path: string, run: DesignRun): TopoDS_Shape {
     let shape: TopoDS_Shape | undefined;
     if (format === "brep-binary") {
         shape = run.occt.io.loadBrepBinary({ brepData: typeof data === "string" ? new TextEncoder().encode(data) : data });
@@ -351,8 +349,55 @@ function imported(feature: Models.OCCT.DesignImportFeature, asset: Models.OCCT.D
     if (shape === undefined) {
         throw new DesignProblem(pointer(path, "asset"), `"${asset.uri}" holds no shape`);
     }
+    return shape;
+}
+
+function fileReadOncePerBuild(key: string, format: ImportFormat, asset: Models.OCCT.DesignAsset, data: string | Uint8Array, path: string, run: DesignRun): TopoDS_Shape {
+    const hash = `file ${format} ${key}`;
+    run.used.add(hash);
+    const kept = run.cache.take(hash);
+    if (kept !== undefined) {
+        return kept.shape;
+    }
+    const shape = loaded(format, asset, data, path, run);
+    run.cache.keep(hash, { kind: "body", shape, names: [] });
+    return shape;
+}
+
+function childOf(compound: TopoDS_Shape, child: number, asset: Models.OCCT.DesignAsset, path: string, run: DesignRun): TopoDS_Shape {
+    if (compound.ShapeType() !== run.occ.TopAbs_ShapeEnum.COMPOUND) {
+        throw new DesignProblem(pointer(path, "child"), `"${asset.uri}" holds one shape, not a compound of shapes to take a child of`);
+    }
+    const children = new run.occ.TopoDS_Iterator(compound);
+    try {
+        for (let index = 0; index < child && children.More(); index++) {
+            children.Next();
+        }
+        if (!children.More()) {
+            throw new DesignProblem(pointer(path, "child"), `"${asset.uri}" holds no shape at position ${child}`);
+        }
+        return children.Value();
+    } finally {
+        children.delete();
+    }
+}
+
+function imported(feature: Models.OCCT.DesignImportFeature, asset: Models.OCCT.DesignAsset, data: string | Uint8Array, key: string, path: string, run: DesignRun): DesignOutcome {
+    const format = formatOf(feature, asset, data, path);
+    run.trace?.set(path, { format });
+    const shape = feature.child === undefined ? loaded(format, asset, data, path, run) : childOf(fileReadOncePerBuild(key, format, asset, data, path, run), feature.child, asset, path, run);
     const names = Array.from({ length: faceCount(shape, run) }, (_, index) => [nameOf(feature.id, "face"), nameOf(feature.id, "face", String(index))].sort());
     return { kind: "body", shape, names };
+}
+
+function digestOnce(key: string, run: DesignRun, work: () => string): string {
+    const known = run.digests.get(key);
+    if (known !== undefined) {
+        return known;
+    }
+    const digest = work();
+    run.digests.set(key, digest);
+    return digest;
 }
 
 /**
@@ -367,13 +412,9 @@ export function importPlan(feature: Models.OCCT.DesignImportFeature, path: strin
     }
     const data = typeof given === "string" || given instanceof Uint8Array ? given : new Uint8Array(given);
     const asset = run.declaredAssets.find(declared => declared.id === feature.asset)!;
-    let key = typeof data === "string" ? `text ${data.length} ${hashText(data)}` : `bytes ${data.length} ${hashBytes(data)}`;
-    if (asset.sha256 !== undefined) {
-        const digest = sha256(typeof data === "string" ? new TextEncoder().encode(data) : data);
-        if (asset.sha256 !== digest) {
-            throw new DesignProblem(pointer(path, "asset"), `the data given for "${feature.asset}" has the SHA-256 ${digest}, not the ${asset.sha256} the document records`);
-        }
-        key = digest;
+    const digest = digestOnce(feature.asset, run, () => sha256(typeof data === "string" ? new TextEncoder().encode(data) : data));
+    if (asset.sha256 !== digest) {
+        throw new DesignProblem(pointer(path, "asset"), `the data given for "${feature.asset}" has the SHA-256 ${digest}, not the ${asset.sha256} the document records`);
     }
-    return { reads: [], salt: `${key} ${stableJson(asset)}`, make: () => imported(feature, asset, data, path, run) };
+    return { reads: [], salt: `${digest} ${stableJson(asset)}`, make: () => imported(feature, asset, data, digest, path, run) };
 }

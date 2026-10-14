@@ -92,13 +92,13 @@ Adds the design documents of .design.json or Designer project files, replacing t
 
 ### Import STEP, IGES or BREP {#designer-file-import-shape}
 
-Keeps a STEP, IGES or BREP file with the project and starts a part that imports it.
+Imports a STEP file as its parts and assemblies, or an IGES or BREP file as a part, keeping the shapes with the project.
 
 - **Where:** <Ui>File</Ui> > <Ui>Import STEP, IGES or BREP</Ui>
 - **Works in:** part documents and assembly documents
 - **For agents:** only a person runs it; agents see it as unavailable
 - **Values:**
-  - `uri` (string): The file's full link; a person's run picks a file and keeps it with the project instead.
+  - `uri` (string): The file's full link, imported as one part; a person's run picks a file and keeps it with the project instead, a STEP file as its parts and assemblies.
   - `sha256` (string): The SHA-256 of the file's bytes, 64 lower-case hexadecimal digits.
   - `format` (one of `"step"`, `"iges"`, `"brep"`, `"brep-binary"`): The file's format.
   - `name` (string): The new part document's name.
@@ -902,6 +902,7 @@ Starts a body from a STEP, IGES or BREP file the document lists as an asset.
 - **Values:**
   - `asset`: The id of the document's asset to read.
   - `format`: The file's format; read from the asset when left out.
+  - `child`: Takes only this shape of the file's compound, counted from 0, as each part of an imported STEP file does.
 
 ## Features that change shape
 

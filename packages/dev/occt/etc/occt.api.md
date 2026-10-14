@@ -2768,6 +2768,44 @@ interface DesignFrame {
 }
 
 // @public
+interface DesignFromStep {
+    // (undocumented)
+    assets: DesignFromStepAsset[];
+    // (undocumented)
+    documents: DesignDocument[];
+    // (undocumented)
+    report: DesignFromStepReport;
+    // (undocumented)
+    root: string;
+}
+
+// @public
+interface DesignFromStepAsset {
+    // (undocumented)
+    data: Uint8Array;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    mediaType: string;
+    // (undocumented)
+    sha256: string;
+    // (undocumented)
+    uri: string;
+}
+
+// @public
+interface DesignFromStepReport {
+    // (undocumented)
+    assemblies: number;
+    // (undocumented)
+    components: number;
+    // (undocumented)
+    notes: string[];
+    // (undocumented)
+    parts: number;
+}
+
+// @public
 interface DesignHintBox {
     // (undocumented)
     max: [number, number, number];
@@ -2821,6 +2859,8 @@ interface DesignHolePosition {
 interface DesignImportFeature extends DesignFeatureBase {
     // (undocumented)
     asset: string;
+    // (undocumented)
+    child?: number;
     // (undocumented)
     format?: "brep" | "brep-binary" | "step" | "iges";
     // (undocumented)
@@ -3979,7 +4019,7 @@ export interface EmbindModule {
     // (undocumented)
     CurvePointsAtNormalizedParameters(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
     // (undocumented)
-    DescribeShapeExact(_0: TopoDS_Shape): { description: string; numbers: Float64Array };
+    DescribeShapeExact(_0: TopoDS_Shape, _1: number): { description: string; numbers: Float64Array };
     // (undocumented)
     DihedralAngle(_0: TopoDS_Shape, _1: number, _2: number): { angle: number; isConvex: boolean; point: [number, number, number]; normalA: [number, number, number]; normalB: [number, number, number]; faceA: number; faceB: number };
     // (undocumented)
@@ -8498,6 +8538,13 @@ namespace OCCT {
         document: Models_2.OCCT.DesignDocument;
         documents?: Models_2.OCCT.DesignDocument[] | undefined;
     }
+    class DesignFromStepDto {
+        constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string);
+        folder?: string | undefined;
+        name?: string | undefined;
+        seed?: string | undefined;
+        step: string | Uint8Array | ArrayBuffer;
+    }
     class DesignProbeFilletDto {
         constructor(document?: Models_2.OCCT.DesignDocument, feature?: string, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, maxAttempts?: number);
         assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
@@ -11206,7 +11253,10 @@ declare namespace OCCT_2 {
         DesignProbeAttempt,
         DesignFilletProbe,
         DesignReferenceFound,
-        DesignClash
+        DesignClash,
+        DesignFromStepAsset,
+        DesignFromStepReport,
+        DesignFromStep
     }
 }
 
@@ -11404,6 +11454,8 @@ namespace OCCT_3 {
     type DesignClashesDto = WithDefaults<Inputs_2.OCCT.DesignClashesDto, "clearance">;
     // (undocumented)
     type DesignDocumentDto = Inputs_2.OCCT.DesignDocumentDto;
+    // (undocumented)
+    type DesignFromStepDto = WithDefaults<Inputs_2.OCCT.DesignFromStepDto, "name" | "seed" | "folder">;
     // (undocumented)
     type DesignProbeFilletDto = WithDefaults<Inputs_2.OCCT.DesignProbeFilletDto, "maxAttempts">;
     // (undocumented)

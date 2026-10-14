@@ -16,6 +16,7 @@ import { libraryOf } from "./library";
 import { documentIssues } from "./document-check";
 import { probeRounding } from "./probe";
 import { clashesOf } from "./clashes";
+import { documentsFromStep } from "./from-step";
 import type { DesignPicked } from "./reference-for";
 import { referenceFor } from "./reference-for";
 import { DesignProblem, isKernelTrap } from "./problems";
@@ -371,6 +372,46 @@ export class OCCTDesign {
         const picked = pickedOf(resolved.faces, resolved.edges);
         const context = { occt: this.service(), occ: this.occ, base: this.base, cache: this.cache, assets: resolved.assets };
         return this.inputProblems(() => referenceFor(document, this.choiceOf(resolved), context, resolved.body, picked, resolved.nudge));
+    }
+
+    /**
+     * Turns a STEP file into design documents: a part document for each part it holds and an
+     * assembly document for each assembly, placed as the file places them, so its parts can be edited
+     * and placed like any others.
+     *
+     * Every part document imports its shape from one shapes file: a binary BREP of every part's
+     * shape, written beside the documents, each part taking its own by `child`. A part keeps its name
+     * and its colours, those of single faces included; its part is `part` and its body, the import, is
+     * `shape`, so a face is named `{ "of": "shape", "role": "face", "from": "<index>" }`. An assembly
+     * places its parts and sub-assemblies `at` the frames the file gives them, so a part placed forty
+     * times stays one document placed forty times. A placement that mirrors or scales its part is
+     * built into a part of its own and a hidden one is suppressed; `report.notes` says so. A file that
+     * places more parts than a design builds is refused. Lengths are in millimetres and Z is up. Store
+     * the asset's `data` at its `uri` before the documents are saved.
+     * @param inputs - The STEP file, its name, the seed of the documents' ids and the folder of the shapes file
+     * @returns The documents, the id of the one that places everything, the shapes file and a report
+     * @group document
+     * @shortname design from step
+     * @drawable false
+     * @ignore true
+     * @example
+     * ```typescript
+     * const imported = await bitbybit.occt.design.fromStep({ step: stepText, name: "bracket.step" });
+     * const shapes = imported.assets[0]!;
+     * const { parts } = await bitbybit.occt.design.build({
+     *     document: imported.documents.find(document => document.id === imported.root)!,
+     *     documents: imported.documents,
+     *     assets: { [shapes.id]: shapes.data },
+     * });
+     * console.log(imported.report.parts, parts.length);
+     * ```
+     */
+    fromStep(inputs: Inputs.OCCT.DesignFromStepDto): Models.OCCT.DesignFromStep {
+        const resolved = resolveDto(Inputs.OCCT.DesignFromStepDto, inputs) as Resolved.OCCT.DesignFromStepDto;
+        if (typeof resolved.step !== "string" && !(resolved.step instanceof Uint8Array) && !(resolved.step instanceof ArrayBuffer)) {
+            throw new InputError("The STEP file is text or bytes.", "step");
+        }
+        return this.inputProblems(() => documentsFromStep(resolved.step, { name: resolved.name, seed: resolved.seed, folder: resolved.folder }, { occt: this.service(), occ: this.occ }));
     }
 
     private choiceOf(inputs: Pick<Inputs.OCCT.DesignBuildDto<unknown>, "configuration" | "parameters">): ParameterChoice {
