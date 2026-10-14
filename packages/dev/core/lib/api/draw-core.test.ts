@@ -240,6 +240,20 @@ describe("shapes with their appearance and design builds are told apart", () => 
         expect(partDocument).toBe(true);
     });
 
+    it("should detect a design section, which carries its frame where a build carries its report", () => {
+        // Arrange
+        const frame = { origin: [10, 0, 0], normal: [1, 0, 0], direction: [0, 1, 0] };
+        const section = { frame, parts: build.parts, components: build.components };
+
+        // Act
+        const placed = core.detectDesignBuild(section);
+        const unplaced = core.detectDesignBuild({ frame, parts: build.parts });
+        const frameless = core.detectDesignBuild({ frame: [10, 0, 0], parts: build.parts });
+
+        // Assert
+        expect([placed, unplaced, frameless]).toEqual([true, true, false]);
+    });
+
     it("should refuse a design build whose parts or components cannot be drawn", () => {
         // Act
         const noReport = core.detectDesignBuild({ parts: build.parts });

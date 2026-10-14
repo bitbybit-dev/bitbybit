@@ -15792,6 +15792,45 @@ export namespace OCCT {
          */
         folder?: string | undefined = "";
     }
+
+    /**
+     * A design build and the frame whose plane cuts it, for `design.section`, which gives the faces where
+     * the plane passes through the parts and, when asked, what is left of the parts behind it.
+     */
+    export class DesignSectionDto<T> {
+        constructor(build?: Models.OCCT.DesignSectionSource<T>, frame?: Base.Frame, cut?: boolean, tolerance?: number) {
+            if (build !== undefined) { this.build = build; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (cut !== undefined) { this.cut = cut; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * The build to cut, as `design.build` returns it: its `parts` and, for an assembly, the
+         * `components` that place them.
+         * @default undefined
+         */
+        build!: Models.OCCT.DesignSectionSource<T>;
+        /**
+         * The plane to cut along, through the frame's origin: what lies on the side its normal points to
+         * is taken away.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * Whether to give, besides the caps, the pieces of the parts the plane cuts and the parts that
+         * lie wholly behind it, for a view of the cut model.
+         * @default false
+         */
+        cut?: boolean | undefined = false;
+        /**
+         * How close the ends of two section edges must lie to be joined, in model units.
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-7;
+    }
     /**
      * A recipe for `recipes.build`, with whether Z turns into Y, whether a root that cannot be built
      * stops the build, and how large a triangle mesh is built. Experimental: the recipe format may still

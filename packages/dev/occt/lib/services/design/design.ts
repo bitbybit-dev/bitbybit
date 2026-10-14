@@ -17,6 +17,8 @@ import { documentIssues } from "./document-check";
 import { probeRounding } from "./probe";
 import { clashesOf } from "./clashes";
 import { documentsFromStep } from "./from-step";
+import { sectionOf } from "./section";
+import { checkedFrame } from "../base/input-checks";
 import type { DesignPicked } from "./reference-for";
 import { referenceFor } from "./reference-for";
 import { DesignProblem, isKernelTrap } from "./problems";
@@ -27,6 +29,8 @@ import { typescriptOf } from "./typescript-export";
 import type { ParameterChoice } from "./values";
 
 const CACHE_CAPACITY = 256;
+
+const SECTION_CAPACITY = 512;
 
 const MAX_PROBE_ATTEMPTS = 64;
 
@@ -60,6 +64,8 @@ function pickedOf(faces: number[] | undefined, edges: number[] | undefined): Des
  */
 export class OCCTDesign {
     private readonly cache = new DesignCache(CACHE_CAPACITY);
+    private readonly sections = new DesignCache(SECTION_CAPACITY);
+    private readonly boxes = new Map<string, readonly number[]>();
 
     constructor(
         private readonly occ: BitbybitOcctModule,
@@ -412,6 +418,43 @@ export class OCCTDesign {
             throw new InputError("The STEP file is text or bytes.", "step");
         }
         return this.inputProblems(() => documentsFromStep(resolved.step, { name: resolved.name, seed: resolved.seed, folder: resolved.folder }, { occt: this.service(), occ: this.occ }));
+    }
+
+    /**
+     * Cuts a design build with the plane of a frame: what lies on the side the normal points to is
+     * taken away, the side `operations.hiddenLines` looks from with the same frame.
+     *
+     * Each part the plane crosses gets a cap, the faces it cuts. With `cut`, the pieces behind the
+     * plane and the parts wholly behind it come too.
+     * @param inputs - The build, the frame whose plane cuts it, whether to give the cut parts and the joining tolerance
+     * @returns The caps, and with `cut` the pieces and whole parts behind the plane, placed like the build's parts so they draw as a build does
+     * @group document
+     * @shortname design section
+     * @drawable true
+     * @ignore true
+     * @example
+     * ```typescript
+     * const built = await bitbybit.occt.design.build({ document: assembly, documents: [bracket, pin] });
+     * const section = await bitbybit.occt.design.section({
+     *     build: built,
+     *     frame: { origin: [0, 0, 5], normal: [0, 0, 1], direction: [1, 0, 0] },
+     * });
+     * console.log(section.parts.map(part => part.area));
+     * ```
+     */
+    section(inputs: Inputs.OCCT.DesignSectionDto<TopoDS_Shape>): Models.OCCT.DesignSection<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.DesignSectionDto, inputs) as Resolved.OCCT.DesignSectionDto<TopoDS_Shape>;
+        const frame = checkedFrame(resolved.frame, "frame");
+        try {
+            return sectionOf(resolved.build, frame, { cut: resolved.cut, tolerance: resolved.tolerance }, { occt: this.service(), occ: this.occ, cache: this.sections, boxes: this.boxes });
+        } catch (error) {
+            if (isKernelTrap(error)) {
+                this.cache.forget();
+                this.sections.forget();
+                this.boxes.clear();
+            }
+            throw error;
+        }
     }
 
     private choiceOf(inputs: Pick<Inputs.OCCT.DesignBuildDto<unknown>, "configuration" | "parameters">): ParameterChoice {

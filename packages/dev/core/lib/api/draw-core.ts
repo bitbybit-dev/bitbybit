@@ -389,12 +389,13 @@ export class DrawCore {
     }
 
     /**
-     * Whether the entity is what `occt.design.build` returns: a `report` list and `parts` that each
-     * carry an `id` and a kernel `shape` with an optional appearance, and, for an assembly,
-     * `components` that each carry a `path`, an optional `part` and a 4 x 4 `world` matrix.
+     * Whether the entity is what `occt.design.build` or `occt.design.section` returns: a `report`
+     * list, or the section's `frame`, and `parts` that each carry an `id` and a kernel `shape` with an
+     * optional appearance, and, for an assembly, `components` that each carry a `path`, an optional
+     * `part` and a 4 x 4 `world` matrix.
      */
-    detectDesignBuild(entity: unknown): entity is Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> {
-        if (!isRecord(entity) || !Array.isArray(entity["report"]) || !Array.isArray(entity["parts"])) {
+    detectDesignBuild(entity: unknown): entity is Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer> {
+        if (!isRecord(entity) || !(Array.isArray(entity["report"]) || isRecord(entity["frame"])) || !Array.isArray(entity["parts"])) {
             return false;
         }
         const partsDrawable = entity["parts"].every(part => isRecord(part) && typeof part["id"] === "string" && this.detectShapeWithAppearance(part));

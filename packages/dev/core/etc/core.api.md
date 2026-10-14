@@ -816,7 +816,7 @@ export class DrawCore {
     detectDecomposedMesh(entity: unknown): entity is Inputs_7.OCCT.DecomposedMeshDto;
     // (undocumented)
     detectDecomposedMeshes(entity: unknown): entity is Inputs_7.OCCT.DecomposedMeshDto[];
-    detectDesignBuild(entity: unknown): entity is Models_3.OCCT.DesignBuildResult<Inputs_7.OCCT.TopoDSShapePointer>;
+    detectDesignBuild(entity: unknown): entity is Models_3.OCCT.DesignBuildResult<Inputs_7.OCCT.TopoDSShapePointer> | Models_3.OCCT.DesignSection<Inputs_7.OCCT.TopoDSShapePointer>;
     detectFrame(entity: unknown): entity is Inputs_7.Base.Frame;
     // (undocumented)
     detectFrames(entity: unknown): entity is Inputs_7.Base.Frame[];
@@ -5208,6 +5208,13 @@ namespace OCCT {
         document: Models.OCCT.DesignDocument;
         documents?: Models.OCCT.DesignDocument[] | undefined;
     }
+    class DesignFromStepDto {
+        constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string);
+        folder?: string | undefined;
+        name?: string | undefined;
+        seed?: string | undefined;
+        step: string | Uint8Array | ArrayBuffer;
+    }
     class DesignProbeFilletDto {
         constructor(document?: Models.OCCT.DesignDocument, feature?: string, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, maxAttempts?: number);
         assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
@@ -5233,6 +5240,13 @@ namespace OCCT {
         faces?: number[] | undefined;
         nudge?: boolean | undefined;
         parameters?: Record<string, number | string | boolean> | undefined;
+    }
+    class DesignSectionDto<T> {
+        constructor(build?: Models.OCCT.DesignSectionSource<T>, frame?: Base_2.Frame, cut?: boolean, tolerance?: number);
+        build: Models.OCCT.DesignSectionSource<T>;
+        cut?: boolean | undefined;
+        frame: Base_2.Frame;
+        tolerance?: number | undefined;
     }
     class DifferenceDto<T> {
         constructor(shape?: T, shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum);
@@ -7909,9 +7923,13 @@ namespace OCCT_3 {
     // (undocumented)
     type DesignDocumentDto = Inputs_5.OCCT.DesignDocumentDto;
     // (undocumented)
+    type DesignFromStepDto = WithDefaults<Inputs_5.OCCT.DesignFromStepDto, "name" | "seed" | "folder">;
+    // (undocumented)
     type DesignProbeFilletDto = WithDefaults<Inputs_5.OCCT.DesignProbeFilletDto, "maxAttempts">;
     // (undocumented)
     type DesignReferenceForDto = WithDefaults<Inputs_5.OCCT.DesignReferenceForDto, "nudge">;
+    // (undocumented)
+    type DesignSectionDto<T> = WithDefaults<Inputs_5.OCCT.DesignSectionDto<T>, "cut" | "tolerance">;
     // (undocumented)
     type DifferenceDto<T> = WithDefaults<Inputs_5.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
     // (undocumented)

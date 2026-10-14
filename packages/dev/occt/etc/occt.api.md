@@ -3296,6 +3296,79 @@ interface DesignScriptFeature extends DesignFeatureBase {
 }
 
 // @public
+interface DesignSection<T> {
+    // (undocumented)
+    components?: DesignSectionComponent[];
+    // (undocumented)
+    frame: Base.Frame;
+    // (undocumented)
+    parts: DesignSectionPart<T>[];
+}
+
+// @public
+interface DesignSectionComponent {
+    // (undocumented)
+    part: string;
+    // (undocumented)
+    path: string;
+    // (undocumented)
+    world: Base.TransformMatrix;
+}
+
+// @public
+type DesignSectionKind = "cap" | "piece" | "whole";
+
+// @public
+interface DesignSectionPart<T> {
+    // (undocumented)
+    appearance?: DesignBuiltAppearance;
+    // (undocumented)
+    area?: number;
+    // (undocumented)
+    from: string;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    kind: DesignSectionKind;
+    // (undocumented)
+    shape: T;
+    // (undocumented)
+    shapeHash: string;
+    // (undocumented)
+    volume?: number;
+}
+
+// @public
+interface DesignSectionSource<T> {
+    // (undocumented)
+    components?: DesignSectionSourceComponent[] | undefined;
+    // (undocumented)
+    parts: DesignSectionSourcePart<T>[];
+}
+
+// @public
+interface DesignSectionSourceComponent {
+    // (undocumented)
+    part?: string | undefined;
+    // (undocumented)
+    path: string;
+    // (undocumented)
+    world: Base.TransformMatrix;
+}
+
+// @public
+interface DesignSectionSourcePart<T> {
+    // (undocumented)
+    appearance?: DesignBuiltAppearance | undefined;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    shape: T;
+    // (undocumented)
+    shapeHash: string;
+}
+
+// @public
 interface DesignShellFeature extends DesignFeatureBase {
     // (undocumented)
     body: string;
@@ -8571,6 +8644,13 @@ namespace OCCT {
         nudge?: boolean | undefined;
         parameters?: Record<string, number | string | boolean> | undefined;
     }
+    class DesignSectionDto<T> {
+        constructor(build?: Models_2.OCCT.DesignSectionSource<T>, frame?: Base.Frame, cut?: boolean, tolerance?: number);
+        build: Models_2.OCCT.DesignSectionSource<T>;
+        cut?: boolean | undefined;
+        frame: Base.Frame;
+        tolerance?: number | undefined;
+    }
     class DifferenceDto<T> {
         constructor(shape?: T, shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum);
         keepEdges?: boolean | undefined;
@@ -11256,7 +11336,14 @@ declare namespace OCCT_2 {
         DesignClash,
         DesignFromStepAsset,
         DesignFromStepReport,
-        DesignFromStep
+        DesignFromStep,
+        DesignSectionSourcePart,
+        DesignSectionSourceComponent,
+        DesignSectionSource,
+        DesignSectionKind,
+        DesignSectionPart,
+        DesignSectionComponent,
+        DesignSection
     }
 }
 
@@ -11460,6 +11547,8 @@ namespace OCCT_3 {
     type DesignProbeFilletDto = WithDefaults<Inputs_2.OCCT.DesignProbeFilletDto, "maxAttempts">;
     // (undocumented)
     type DesignReferenceForDto = WithDefaults<Inputs_2.OCCT.DesignReferenceForDto, "nudge">;
+    // (undocumented)
+    type DesignSectionDto<T> = WithDefaults<Inputs_2.OCCT.DesignSectionDto<T>, "cut" | "tolerance">;
     // (undocumented)
     type DifferenceDto<T> = WithDefaults<Inputs_2.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
     // (undocumented)

@@ -84,6 +84,7 @@
     "design.fromStep",
     "design.probeFillet",
     "design.referenceFor",
+    "design.section",
     "design.toTypeScript",
     "design.validate",
     "design.versionOf",

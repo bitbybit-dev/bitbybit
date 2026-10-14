@@ -312,4 +312,30 @@ export class OCCTDesign {
     fromStep(inputs: Inputs.OCCT.DesignFromStepDto): Promise<Models.OCCT.DesignFromStep> {
         return this.occWorkerManager.genericCallToWorkerPromise("design.fromStep", inputs);
     }
+
+    /**
+     * Cuts a design build with the plane of a frame: what lies on the side the normal points to is
+     * taken away, the side `operations.hiddenLines` looks from with the same frame.
+     *
+     * Each part the plane crosses gets a cap, the faces it cuts. With `cut`, the pieces behind the
+     * plane and the parts wholly behind it come too.
+     * @param inputs - The build, the frame whose plane cuts it, whether to give the cut parts and the joining tolerance
+     * @returns The caps, and with `cut` the pieces and whole parts behind the plane, placed like the build's parts so they draw as a build does
+     * @group document
+     * @shortname design section
+     * @drawable true
+     * @ignore true
+     * @example
+     * ```typescript
+     * const built = await bitbybit.occt.design.build({ document: assembly, documents: [bracket, pin] });
+     * const section = await bitbybit.occt.design.section({
+     *     build: built,
+     *     frame: { origin: [0, 0, 5], normal: [0, 0, 1], direction: [1, 0, 0] },
+     * });
+     * console.log(section.parts.map(part => part.area));
+     * ```
+     */
+    section(inputs: Inputs.OCCT.DesignSectionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("design.section", inputs);
+    }
 }

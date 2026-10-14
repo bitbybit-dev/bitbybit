@@ -1115,7 +1115,7 @@ export class Draw extends DrawCore {
 
     private handleDesignBuild(inputs: Inputs.Draw.DrawAny) {
         const options = this.mergedOcctShapeOptions(inputs);
-        return this.drawHelper.drawDesignBuild(inputs.entity as Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, options, inputs.babylonMesh).then(r => {
+        return this.drawHelper.drawDesignBuild(inputs.entity as Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>, options, inputs.babylonMesh).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occtShapes, options, r);
             return r;
         });

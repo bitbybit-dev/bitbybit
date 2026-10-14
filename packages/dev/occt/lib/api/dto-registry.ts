@@ -94,6 +94,7 @@ const OCCT_DesignDocumentDto: DtoConstraints = { document: k.required(k.opaque),
 const OCCT_DesignFromStepDto: DtoConstraints = { step: k.required(k.opaque), name: k.string, seed: k.string, folder: k.string };
 const OCCT_DesignProbeFilletDto: DtoConstraints = { document: k.required(k.opaque), feature: k.required(k.string), configuration: k.string, parameters: k.opaque, assets: k.opaque, maxAttempts: k.between(k.number, { min: 1, max: 64 }) };
 const OCCT_DesignReferenceForDto: DtoConstraints = { document: k.required(k.opaque), body: k.required(k.string), faces: k.list(k.number), edges: k.list(k.number), configuration: k.string, parameters: k.opaque, assets: k.opaque, nudge: k.boolean };
+const OCCT_DesignSectionDto: DtoConstraints = { build: k.required(k.opaque), frame: k.required(k.opaque), cut: k.boolean, tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_DifferenceDto: DtoConstraints = { shape: k.required(k.opaque), shapes: k.required(k.list(k.opaque)), keepEdges: k.boolean, strategy: k.oneOf(["oneAfterAnother", "inGroups", "allAtOnce"]) };
 const OCCT_DihedralAngleDto: DtoConstraints = { shape: k.required(k.opaque), index: k.between(k.number, { min: 0 }), param: k.between(k.number, { min: 0, max: 1 }) };
 const OCCT_DivideDto: DtoConstraints = { shape: k.required(k.opaque), nrOfDivisions: k.between(k.number, { min: 1 }), removeStartPoint: k.boolean, removeEndPoint: k.boolean };
@@ -466,6 +467,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "design.fromStep": { dto: Inputs.OCCT.DesignFromStepDto, constraints: OCCT_DesignFromStepDto },
     "design.probeFillet": { dto: Inputs.OCCT.DesignProbeFilletDto, constraints: OCCT_DesignProbeFilletDto },
     "design.referenceFor": { dto: Inputs.OCCT.DesignReferenceForDto, constraints: OCCT_DesignReferenceForDto },
+    "design.section": { dto: Inputs.OCCT.DesignSectionDto, constraints: OCCT_DesignSectionDto },
     "design.toTypeScript": { dto: Inputs.OCCT.DesignBuildDto, constraints: OCCT_DesignBuildDto },
     "design.validate": { dto: Inputs.OCCT.DesignDocumentDto, constraints: OCCT_DesignDocumentDto },
     "design.versionOf": { dto: Inputs.OCCT.DesignDocumentDto, constraints: OCCT_DesignDocumentDto },

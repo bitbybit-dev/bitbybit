@@ -68,6 +68,15 @@ each idea comes from, so the reasoning stays next to the code that implements it
   the STEP reader makes, matched to the part's faces by the kernel's shape hash, and when the part
   has none, the colour most of its faces share becomes the part's. Ids are UUIDs made from the file's
   SHA-256 and a seed, so importing the same file again replaces what the first import made.
+- `section.ts` is `section`. It turns the world plane into each placed part's own coordinates (a
+  placement `x -> A x + t` sees the plane `n . x = c` as `(A^T n) . x = c - n . t`, mirrored and scaled
+  placements included), passes over the parts whose box lies on one side, and cuts each part once
+  for every plane its placements see, in one `sliceByFrames` call (and a `splitByFrame` per plane
+  when `cut` asks for the pieces). Cuts are kept in a cache of their own by the part's `shapeHash`,
+  the plane and the tolerance, which also make each cut's `shapeHash`, so placements that meet a
+  part the same way share one cap, a drawer keeps one mesh for it, and the same section again makes
+  nothing. A compound that mixes solids with sheets slices and splits to nothing in the kernel, so a
+  compound is cut through its solids when it holds any.
 - `typescript-export.ts` is `toTypeScript`: it builds the document once, recording what each feature
   resolved (face frames, face and edge indexes, the import format, the shell's joins or its cut
   lids), and writes the

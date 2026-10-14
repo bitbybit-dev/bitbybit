@@ -202,6 +202,7 @@ An assembly places parts of other documents. The documents are given to the buil
 - A component's `source.parameters` drive the placed document's values from the assembly's own, so one parameter can size several parts.
 - An assembly may publish `connectors` of its components, so a larger assembly can join it as one unit.
 - **From a STEP file:** `occt.design.fromStep({ step, name })` writes an assembly document per assembly and a part document per part, placed `at` the file's frames, with names and colours, every part importing one shapes file by `child`. Store `assets[0].data` at its `uri`, then build the `root` document with `documents` and `assets: { [assets[0].id]: assets[0].data }`; `report.notes` says what changed on the way, such as a mirrored placement built into a part of its own.
+- **Section a build:** `occt.design.section({ build, frame })` cuts what `build` returned with the plane of a frame, taking away what lies on the side its normal points to, and gives a cap for each part the plane passes through, the faces it cuts with their `area`. With `cut: true` the pieces behind the plane and the parts wholly behind it come too, each with its `volume`. The result is placed like the build's parts, so `draw.drawAnyAsync({ entity: section })` draws it, and the same frame given to `operations.hiddenLines` looks at the cut.
 
 ## Mistakes to avoid
 

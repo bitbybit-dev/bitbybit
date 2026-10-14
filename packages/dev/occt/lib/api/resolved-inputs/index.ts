@@ -108,6 +108,7 @@ export namespace OCCT {
     export type DesignFromStepDto = WithDefaults<Inputs.OCCT.DesignFromStepDto, "name" | "seed" | "folder">;
     export type DesignProbeFilletDto = WithDefaults<Inputs.OCCT.DesignProbeFilletDto, "maxAttempts">;
     export type DesignReferenceForDto = WithDefaults<Inputs.OCCT.DesignReferenceForDto, "nudge">;
+    export type DesignSectionDto<T> = WithDefaults<Inputs.OCCT.DesignSectionDto<T>, "cut" | "tolerance">;
     export type DifferenceDto<T> = WithDefaults<Inputs.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
     export type DihedralAngleDto<T> = WithDefaults<Inputs.OCCT.DihedralAngleDto<T>, "index" | "param">;
     export type DivideDto<T> = WithDefaults<Inputs.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;

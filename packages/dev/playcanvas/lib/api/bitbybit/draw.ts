@@ -598,7 +598,7 @@ export class Draw extends DrawCore {
 
     private handleDesignBuild(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
-            return this.drawHelper.drawDesignBuild(inputs.entity as Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, this.occtOptions(options), inputs.group);
+            return this.drawHelper.drawDesignBuild(inputs.entity as Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>, this.occtOptions(options), inputs.group);
         }, Inputs.Draw.drawingTypes.occtShapes);
     }
 

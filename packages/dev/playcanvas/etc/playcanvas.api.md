@@ -862,7 +862,7 @@ namespace Draw_2 {
         minInstances?: number | undefined;
         roughness?: number | undefined;
     }
-    type Entity = number[] | Base_3.Point3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.Frame | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | ShapeWithAppearance | Models_2.OCCT.DesignBuildResult<Inputs_2.OCCT.TopoDSShapePointer> | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Manifold.ManifoldPointer | Inputs_2.Manifold.CrossSectionPointer | Inputs_2.Manifold.DecomposedManifoldMeshDto | Inputs_2.Manifold.RecipeMeshesDto | Inputs_2.JSCAD.JSCADEntity | Inputs_2.Tag.TagDto | CustomGeometryDrawable | number[][] | Base_3.Point3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.Frame[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | ShapeWithAppearance[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Manifold.ManifoldPointer[] | Inputs_2.Manifold.CrossSectionPointer[] | Inputs_2.Manifold.DecomposedManifoldMeshDto[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.Tag.TagDto[];
+    type Entity = number[] | Base_3.Point3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.Frame | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | ShapeWithAppearance | Models_2.OCCT.DesignBuildResult<Inputs_2.OCCT.TopoDSShapePointer> | Models_2.OCCT.DesignSection<Inputs_2.OCCT.TopoDSShapePointer> | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Manifold.ManifoldPointer | Inputs_2.Manifold.CrossSectionPointer | Inputs_2.Manifold.DecomposedManifoldMeshDto | Inputs_2.Manifold.RecipeMeshesDto | Inputs_2.JSCAD.JSCADEntity | Inputs_2.Tag.TagDto | CustomGeometryDrawable | number[][] | Base_3.Point3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.Frame[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | ShapeWithAppearance[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Manifold.ManifoldPointer[] | Inputs_2.Manifold.CrossSectionPointer[] | Inputs_2.Manifold.DecomposedManifoldMeshDto[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.Tag.TagDto[];
     class GenericPBRMaterialDto {
         constructor(name?: string, baseColor?: Base_3.Color, metallic?: number, roughness?: number, alpha?: number, emissiveColor?: Base_3.Color, emissiveIntensity?: number, zOffset?: number, zOffsetUnits?: number, baseColorTexture?: Base_3.Texture, metallicRoughnessTexture?: Base_3.Texture, normalTexture?: Base_3.Texture, emissiveTexture?: Base_3.Texture, occlusionTexture?: Base_3.Texture, alphaMode?: alphaModeEnum, alphaCutoff?: number, doubleSided?: boolean, wireframe?: boolean, unlit?: boolean);
         alpha?: number | undefined;
@@ -986,7 +986,7 @@ export class DrawHelper extends DrawHelperCore {
     drawCurve(inputs: Inputs_2.Verb.DrawCurveDto<pc_2.Entity>): pc_2.Entity;
     // (undocumented)
     drawCurves(inputs: Inputs_2.Verb.DrawCurvesDto<pc_2.Entity>): pc_2.Entity;
-    drawDesignBuild(build: Models_2.OCCT.DesignBuildResult<Inputs_2.OCCT.TopoDSShapePointer>, drawOptions: Inputs_2.Draw.DrawOcctShapeOptions, previous?: pc_2.Entity): Promise<pc_2.Entity>;
+    drawDesignBuild(build: Models_2.OCCT.DesignBuildResult<Inputs_2.OCCT.TopoDSShapePointer> | Models_2.OCCT.DesignSection<Inputs_2.OCCT.TopoDSShapePointer>, drawOptions: Inputs_2.Draw.DrawOcctShapeOptions, previous?: pc_2.Entity): Promise<pc_2.Entity>;
     // (undocumented)
     drawManifoldMesh(mesh: Inputs_2.Manifold.DecomposedManifoldMeshDto, options: Inputs_2.Draw.DrawManifoldOrCrossSectionOptions): pc_2.Entity | undefined;
     // (undocumented)
@@ -5061,6 +5061,13 @@ namespace OCCT {
         document: Models.OCCT.DesignDocument;
         documents?: Models.OCCT.DesignDocument[] | undefined;
     }
+    class DesignFromStepDto {
+        constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string);
+        folder?: string | undefined;
+        name?: string | undefined;
+        seed?: string | undefined;
+        step: string | Uint8Array | ArrayBuffer;
+    }
     class DesignProbeFilletDto {
         constructor(document?: Models.OCCT.DesignDocument, feature?: string, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, maxAttempts?: number);
         assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
@@ -5086,6 +5093,13 @@ namespace OCCT {
         faces?: number[] | undefined;
         nudge?: boolean | undefined;
         parameters?: Record<string, number | string | boolean> | undefined;
+    }
+    class DesignSectionDto<T> {
+        constructor(build?: Models.OCCT.DesignSectionSource<T>, frame?: Base.Frame, cut?: boolean, tolerance?: number);
+        build: Models.OCCT.DesignSectionSource<T>;
+        cut?: boolean | undefined;
+        frame: Base.Frame;
+        tolerance?: number | undefined;
     }
     class DifferenceDto<T> {
         constructor(shape?: T, shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum);
@@ -7762,9 +7776,13 @@ namespace OCCT_3 {
     // (undocumented)
     type DesignDocumentDto = Inputs_7.OCCT.DesignDocumentDto;
     // (undocumented)
+    type DesignFromStepDto = WithDefaults<Inputs_7.OCCT.DesignFromStepDto, "name" | "seed" | "folder">;
+    // (undocumented)
     type DesignProbeFilletDto = WithDefaults<Inputs_7.OCCT.DesignProbeFilletDto, "maxAttempts">;
     // (undocumented)
     type DesignReferenceForDto = WithDefaults<Inputs_7.OCCT.DesignReferenceForDto, "nudge">;
+    // (undocumented)
+    type DesignSectionDto<T> = WithDefaults<Inputs_7.OCCT.DesignSectionDto<T>, "cut" | "tolerance">;
     // (undocumented)
     type DifferenceDto<T> = WithDefaults<Inputs_7.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
     // (undocumented)

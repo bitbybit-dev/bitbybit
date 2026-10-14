@@ -101,6 +101,7 @@ const DELEGATIONS: [string, (occt: OCCT) => unknown][] = [
     ["design.build", (o) => o.design.build(asInputs())],
     ["design.clashes", (o) => o.design.clashes(asInputs())],
     ["design.fromStep", (o) => o.design.fromStep(asInputs())],
+    ["design.section", (o) => o.design.section(asInputs())],
     ["design.probeFillet", (o) => o.design.probeFillet(asInputs())],
     ["design.referenceFor", (o) => o.design.referenceFor(asInputs())],
     ["design.toTypeScript", (o) => o.design.toTypeScript(asInputs())],

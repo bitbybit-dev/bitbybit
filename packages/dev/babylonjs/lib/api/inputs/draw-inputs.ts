@@ -72,6 +72,7 @@ export namespace Draw {
         | Inputs.OCCT.TopoDSShapePointer
         | ShapeWithAppearance
         | Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>
+        | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>
         | Inputs.OCCT.DecomposedMeshDto
         | Inputs.Manifold.ManifoldPointer
         | Inputs.Manifold.CrossSectionPointer

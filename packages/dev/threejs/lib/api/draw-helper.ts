@@ -274,7 +274,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
-     * Draws what `occt.design.build` returns. Every part is meshed once, in one call to the worker;
+     * Draws what `occt.design.build` or `occt.design.section` returns. Every part is meshed once, in one call to the worker;
      * every placement is a GPU instance, in one `BatchedMesh` per look; and every edge goes into one
      * batched line. Given the group an earlier build drew, it redraws in place: when the same parts
      * sit at the same paths, it only moves them, and otherwise it meshes only the parts it has not.
@@ -283,10 +283,10 @@ export class DrawHelper extends DrawHelperCore {
      * @param previous - The group an earlier build drew, to redraw in place
      * @returns The group holding the build: `previous` when given, else a new group added to the scene
      */
-    async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: THREEJS.Group): Promise<THREEJS.Group> {
+    async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: THREEJS.Group): Promise<THREEJS.Group> {
         const options = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
         const state = previous ? this.designStates.get(previous) : undefined;
-        const plan = designDrawPlanOf(build, options, state);
+        const plan = designDrawPlanOf<Models.OCCT.DesignBuiltPart<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSectionPart<Inputs.OCCT.TopoDSShapePointer>>(build, options, state);
         if (previous && state && plan.posesOnly) {
             this.poseDesign(state, plan.placements);
             return previous;
