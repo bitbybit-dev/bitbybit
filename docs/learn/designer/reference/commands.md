@@ -12,7 +12,7 @@ tags: [designer]
 
 # Designer commands
 
-Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 133 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
+Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 134 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
 
 Each entry's anchor is the command's help topic, such as `#designer-part-fillet`, so a link to it keeps working when the title changes.
 
@@ -179,6 +179,16 @@ Saves the project where it was opened from.
 - **Key:** <kbd>Ctrl+S</kbd>, <kbd>⌘S</kbd> on macOS
 - **Works in:** part documents and assembly documents
 - **For agents:** `file.save`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+
+### Remove the last import {#designer-file-remove-import}
+
+Deletes the documents the last import of this session added, while no other document uses them; the imported file stays with the project.
+
+- **Where:** <Ui>File</Ui> > <Ui>Remove the last import</Ui>; the documents list
+- **Works in:** part documents and assembly documents
+- **For agents:** only a person runs it; agents see it as unavailable
+- **Values:**
+  - `confirmed` (boolean): A person's run asks first unless this is true.
 
 ## Editing
 
