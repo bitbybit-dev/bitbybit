@@ -5077,6 +5077,12 @@ namespace OCCT {
         // (undocumented)
         parabola = "parabola"
     }
+    class CutByFramesDto<T> {
+        constructor(shapes?: T[], frames?: Base_2.Frame[], keep?: sectionKeepEnum);
+        frames: Base_2.Frame[];
+        keep?: sectionKeepEnum | undefined;
+        shapes: T[];
+    }
     class CylinderDto {
         constructor(radius?: number, height?: number, center?: Base_2.Point3, direction?: Base_2.Vector3, angle?: number, originOnCenter?: boolean);
         angle?: number | undefined;
@@ -6830,6 +6836,19 @@ namespace OCCT {
         center?: Base_2.Point3 | undefined;
         factor?: number | undefined;
     }
+    class SectionByFramesDto<T> {
+        constructor(shapes?: T[], frames?: Base_2.Frame[], makeFaces?: boolean, tolerance?: number);
+        frames: Base_2.Frame[];
+        makeFaces?: boolean | undefined;
+        shapes: T[];
+        tolerance?: number | undefined;
+    }
+    enum sectionKeepEnum {
+        // (undocumented)
+        behindAll = "behindAll",
+        // (undocumented)
+        behindAny = "behindAny"
+    }
     class SectionWiresDto<T> {
         constructor(shapeA?: T, shapeB?: T, tolerance?: number);
         shapeA: T;
@@ -7887,6 +7906,8 @@ namespace OCCT_3 {
     // (undocumented)
     type CurveSeamByParameterDto<T> = WithDefaults<Inputs_5.OCCT.CurveSeamByParameterDto<T>, "parameter">;
     // (undocumented)
+    type CutByFramesDto<T> = WithDefaults<Inputs_5.OCCT.CutByFramesDto<T>, "keep">;
+    // (undocumented)
     type CylinderDto = WithDefaults<Inputs_5.OCCT.CylinderDto, "radius" | "height" | "center" | "direction" | "angle" | "originOnCenter">;
     // (undocumented)
     type CylindersOnLinesDto = WithDefaults<Inputs_5.OCCT.CylindersOnLinesDto, "radius">;
@@ -8334,6 +8355,8 @@ namespace OCCT_3 {
     type ScaleShapesDto<T> = WithDefaults<Inputs_5.OCCT.ScaleShapesDto<T>, "factors">;
     // (undocumented)
     type ScaleUniformToMatrixDto = WithDefaults<Inputs_5.OCCT.ScaleUniformToMatrixDto, "factor" | "center">;
+    // (undocumented)
+    type SectionByFramesDto<T> = WithDefaults<Inputs_5.OCCT.SectionByFramesDto<T>, "makeFaces" | "tolerance">;
     // (undocumented)
     type SectionWiresDto<T> = WithDefaults<Inputs_5.OCCT.SectionWiresDto<T>, "tolerance">;
     // (undocumented)

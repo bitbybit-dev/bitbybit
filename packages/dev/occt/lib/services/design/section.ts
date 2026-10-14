@@ -153,35 +153,19 @@ function lookOf(part: SourcePart): Models.OCCT.DesignBuiltAppearance | undefined
     return look;
 }
 
-function withCuttable<T>(shape: TopoDS_Shape, context: SectionContext, use: (cuttable: TopoDS_Shape) => T): T {
-    if (shape.ShapeType() !== context.occ.TopAbs_ShapeEnum.COMPOUND) {
-        return use(shape);
-    }
-    const solids = context.occt.shapes.solid.getSolids({ shape });
-    if (solids.length === 0) {
-        return use(shape);
-    }
-    const compound = context.occt.shapes.compound.makeCompound({ shapes: solids });
-    try {
-        return use(compound);
-    } finally {
-        solids.forEach(solid => { solid.delete(); });
-        compound.delete();
-    }
-}
-
 function madeFor(cut: PartCut, kind: Exclude<Kind, "whole">, options: SectionOptions, context: SectionContext, used: Set<string>): Map<string, TopoDS_Shape> {
     const keyed = cut.crossings.map(crossing => ({ plane: crossing.plane, key: keyOf(kind, cut.part, crossing.plane, options.tolerance) }));
     const missing = keyed.filter(each => !context.cache.has(each.key));
     if (missing.length > 0) {
         const frames = missing.map(each => frameOf(each.plane));
-        const made = withCuttable(cut.part.shape, context, shape => kind === "cap"
+        const shape = cut.part.shape;
+        const made = kind === "cap"
             ? context.occt.operations.sliceByFrames({ shape, frames, makeFaces: true, tolerance: options.tolerance })
             : frames.map(frame => {
                 const { front, back } = context.occt.operations.splitByFrame({ shape, frame });
                 front.delete();
                 return back;
-            }));
+            });
         missing.forEach((each, index) => {
             const shape = made[index];
             if (shape !== undefined) {

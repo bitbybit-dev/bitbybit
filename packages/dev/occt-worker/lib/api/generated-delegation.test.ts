@@ -211,6 +211,8 @@ const DELEGATIONS: [string, (occt: OCCT) => unknown][] = [
     ["operations.sliceByFrames", (o) => o.operations.sliceByFrames(asInputs())],
     ["operations.sliceInStepPattern", (o) => o.operations.sliceInStepPattern(asInputs())],
     ["operations.splitByFrame", (o) => o.operations.splitByFrame(asInputs())],
+    ["operations.sectionByFrames", (o) => o.operations.sectionByFrames(asInputs())],
+    ["operations.cutByFrames", (o) => o.operations.cutByFrames(asInputs())],
     ["operations.splitFaceByWires", (o) => o.operations.splitFaceByWires(asInputs())],
     ["operations.splitShapeWithShapes", (o) => o.operations.splitShapeWithShapes(asInputs())],
     ["operations.sweepEvolved", (o) => o.operations.sweepEvolved(asInputs())],

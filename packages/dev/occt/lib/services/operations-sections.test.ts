@@ -6,7 +6,7 @@ import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTService } from "../occ-service";
 import { readKernelException } from "../kernel-exception";
-import type * as Inputs from "../api/inputs";
+import * as Inputs from "../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
 
 describe("OCCT sections and splitting", () => {
@@ -245,6 +245,92 @@ describe("OCCT sections and splitting", () => {
             // Assert
             expect(along.message).toBe("`frame` is not a frame: its `direction` runs along its `normal` or has no length.");
             expect(missing.message).toBe("`shape` is missing or empty, as an operation that failed can leave it.");
+        });
+    });
+
+    describe("cutting a compound that mixes solids with sheets", () => {
+        it("should slice and split it through its solids, which the kernel alone leaves empty", () => {
+            // Arrange
+            const mixed = occt.shapes.compound.makeCompound({ shapes: [cube(), square()] });
+            const frame = across([1, 0, 0], [0, 0, 0]);
+
+            // Act
+            const [slice] = occt.operations.sliceByFrames({ shape: mixed, frames: [frame] });
+            const { front, back } = occt.operations.splitByFrame({ shape: mixed, frame });
+
+            // Assert
+            expect(areaOf(slice!)).toBeCloseTo(100, 9);
+            expect([volumeOf(front), volumeOf(back)].map(volume => Number(volume.toFixed(9)))).toEqual([500, 500]);
+        });
+    });
+
+    describe("sectionByFrames and cutByFrames", () => {
+        const acrossX = across([1, 0, 0], [0, 0, 0]);
+        const acrossZ = across([0, 0, 1], [0, 0, 0]);
+        const movedBy = (shape: TopoDS_Shape, x: number): TopoDS_Shape => occt.transforms.translate({ shape, translation: [x, 0, 0] });
+        const areasOf = (sections: TopoDS_Shape[][]): number[][] => sections.map(perShape => perShape.map(section => Number(areaOf(section).toFixed(9))));
+        const volumesOf = (pieces: TopoDS_Shape[]): number[] => pieces.map(piece => Number(volumeOf(piece).toFixed(9)));
+
+        it("should section each shape with each plane, holes included, and give an empty compound where a plane misses", () => {
+            // Arrange
+            const shapes = [cube(), holedCube(), movedBy(cube(), 20)];
+
+            // Act
+            const sections = occt.operations.sectionByFrames({ shapes, frames: [acrossX, level(5)] });
+
+            // Assert
+            expect(areasOf(sections)).toEqual([[100, 100], [40, 100 - Math.PI * 9], [0, 100]].map(row => row.map(area => Number(area.toFixed(9)))));
+            expect(occt.operations.boundingBoxOfShape({ shape: sections[0]![0]! }).max[0]).toBeCloseTo(0, 6);
+        });
+
+        it("should give the section wires instead of faces when asked", () => {
+            // Act
+            const [[outline]] = occt.operations.sectionByFrames({ shapes: [cube()], frames: [acrossX], makeFaces: false }) as [[TopoDS_Shape]];
+
+            // Assert
+            expect([countOf(outline, "faces"), countOf(outline, "wires")]).toEqual([0, 1]);
+            expect(lengthOf(outline)).toBeCloseTo(40, 9);
+        });
+
+        it("should keep what lies behind one plane: a cut solid closed by its cut face, a shape wholly behind whole and one wholly in front empty", () => {
+            // Arrange
+            const shapes = [cube(), movedBy(cube(), -20), movedBy(cube(), 20)];
+
+            // Act
+            const kept = occt.operations.cutByFrames({ shapes, frames: [acrossX] });
+
+            // Assert
+            expect(volumesOf(kept)).toEqual([500, 1000, 0]);
+            expect(countOf(kept[0]!, "faces")).toBe(6);
+            expect(occt.shapes.face.getFaces({ shape: kept[0]! }).some(face => Math.abs(occt.shapes.face.getFaceCenterOfMass({ shape: face })[0]) < 1e-9 && occt.shapes.face.getFaceArea({ shape: face }) > 99)).toBe(true);
+        });
+
+        it("should keep what lies behind every plane, such as the inside of a box of six frames, or behind any, cutting a corner away", () => {
+            // Arrange
+            const box = [across([1, 0, 0], [2, 0, 0]), across([-1, 0, 0], [-2, 0, 0]), level(8), across([0, -1, 0], [0, 2, 0]), across([0, 0, 1], [0, 0, 2]), across([0, 0, -1], [0, 0, -2])];
+
+            // Act
+            const quarter = occt.operations.cutByFrames({ shapes: [cube()], frames: [acrossX, acrossZ] });
+            const cornerCut = occt.operations.cutByFrames({ shapes: [cube()], frames: [acrossX, acrossZ], keep: Inputs.OCCT.sectionKeepEnum.behindAny });
+            const inside = occt.operations.cutByFrames({ shapes: [cube(), movedBy(cube(), 20)], frames: box });
+
+            // Assert
+            expect([...volumesOf(quarter), ...volumesOf(cornerCut)]).toEqual([250, 750]);
+            expect(volumesOf(inside)).toEqual([96, 0]);
+        });
+
+        it("should refuse a list holding a missing shape, no frames, a frame that is not one and a negative tolerance", () => {
+            // Act
+            const missing = thrownBy(() => occt.operations.cutByFrames({ shapes: [cube(), loose(undefined)], frames: [acrossX] }));
+            const none = thrownBy(() => occt.operations.cutByFrames({ shapes: [cube()], frames: [] }));
+            const notFrame = thrownBy(() => occt.operations.sectionByFrames({ shapes: [cube()], frames: [{ origin: [0, 0, 0], normal: [0, 0, 0], direction: [1, 0, 0] }] }));
+            const negative = thrownBy(() => occt.operations.sectionByFrames({ shapes: [cube()], frames: [acrossX], tolerance: -1 }));
+
+            // Assert
+            expect(missing.message).toBe("`shapes` holds a missing or empty shape at position 1, as an operation that failed can leave it.");
+            expect(none.message).toBe("`frames` is empty: give at least one frame to cut along.");
+            expect(notFrame.message).toBe("`frames` at position 0 is not a frame: its `normal` has no length.");
+            expect(negative.message).toBe("`tolerance` must be a finite number 0 or more; it is -1.");
         });
     });
 

@@ -87,6 +87,7 @@ export namespace OCCT {
     export type CurveKinksDto<T> = WithDefaults<Inputs.OCCT.CurveKinksDto<T>, "angle">;
     export type CurveSeamByLengthDto<T> = WithDefaults<Inputs.OCCT.CurveSeamByLengthDto<T>, "length">;
     export type CurveSeamByParameterDto<T> = WithDefaults<Inputs.OCCT.CurveSeamByParameterDto<T>, "parameter">;
+    export type CutByFramesDto<T> = WithDefaults<Inputs.OCCT.CutByFramesDto<T>, "keep">;
     export type CylinderDto = WithDefaults<Inputs.OCCT.CylinderDto, "radius" | "height" | "center" | "direction" | "angle" | "originOnCenter">;
     export type CylindersOnLinesDto = WithDefaults<Inputs.OCCT.CylindersOnLinesDto, "radius">;
     export type DataOnGeometryAtLengthDto<T> = WithDefaults<Inputs.OCCT.DataOnGeometryAtLengthDto<T>, "length">;
@@ -311,6 +312,7 @@ export namespace OCCT {
     export type ScaleFromCenterDto<T> = WithDefaults<Inputs.OCCT.ScaleFromCenterDto<T>, "factor" | "center">;
     export type ScaleShapesDto<T> = WithDefaults<Inputs.OCCT.ScaleShapesDto<T>, "factors">;
     export type ScaleUniformToMatrixDto = WithDefaults<Inputs.OCCT.ScaleUniformToMatrixDto, "factor" | "center">;
+    export type SectionByFramesDto<T> = WithDefaults<Inputs.OCCT.SectionByFramesDto<T>, "makeFaces" | "tolerance">;
     export type SectionWiresDto<T> = WithDefaults<Inputs.OCCT.SectionWiresDto<T>, "tolerance">;
     export type SegmentBaseDto = Inputs.OCCT.SegmentBaseDto;
     export type SegmentsBaseDto = Inputs.OCCT.SegmentsBaseDto;

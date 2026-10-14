@@ -496,6 +496,15 @@ export namespace OCCT {
         report = "report",
     }
     /**
+     * What cutting with several frames keeps: `behindAll` what lies behind every plane, such as the
+     * inside of a box of six frames; `behindAny` what lies behind any of them, so only what lies in
+     * front of every plane is taken away, such as a corner cut away by two frames.
+     */
+    export enum sectionKeepEnum {
+        behindAll = "behindAll",
+        behindAny = "behindAny",
+    }
+    /**
      * The triangle mesh of a shape as `shapeToMesh` returns it: one entry per face with its triangles,
      * one per edge with its points, and the vertex points, ready for drawing.
      */
@@ -14510,6 +14519,69 @@ export namespace OCCT {
          * @default undefined
          */
         frame!: Base.Frame;
+    }
+    /**
+     * Shapes, frames and drawing options for `operations.sectionByFrames`, which gives the faces or wires
+     * where each frame's plane passes through each shape.
+     */
+    export class SectionByFramesDto<T> {
+        constructor(shapes?: T[], frames?: Base.Frame[], makeFaces?: boolean, tolerance?: number) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (frames !== undefined) { this.frames = frames; }
+            if (makeFaces !== undefined) { this.makeFaces = makeFaces; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * The shapes to section; each gives its own list of sections.
+         * @default undefined
+         */
+        shapes!: T[];
+        /**
+         * The planes to section along, each through its frame's origin square to its normal.
+         * @default undefined
+         */
+        frames!: Base.Frame[];
+        /**
+         * Whether to give the faces inside the solids, holes included, or only the section wires.
+         * @default true
+         */
+        makeFaces?: boolean | undefined = true;
+        /**
+         * How close the ends of two section edges must lie to be joined into one wire, in model units.
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-7;
+    }
+    /**
+     * Shapes, frames and what to keep for `operations.cutByFrames`, which cuts each shape with the
+     * frames' planes and keeps what lies behind them.
+     */
+    export class CutByFramesDto<T> {
+        constructor(shapes?: T[], frames?: Base.Frame[], keep?: sectionKeepEnum) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (frames !== undefined) { this.frames = frames; }
+            if (keep !== undefined) { this.keep = keep; }
+        }
+        /**
+         * The shapes to cut; each gives its own result.
+         * @default undefined
+         */
+        shapes!: T[];
+        /**
+         * The planes to cut along, each through its frame's origin; what lies on the side a normal
+         * points to is in front of that plane.
+         * @default undefined
+         */
+        frames!: Base.Frame[];
+        /**
+         * Whether to keep what lies behind every plane, such as the inside of a box of six frames, or
+         * behind any, cutting away only what lies in front of all.
+         * @default behindAll
+         */
+        keep?: sectionKeepEnum | undefined = sectionKeepEnum.behindAll;
     }
     /**
      * A face and the edges or wires that cut it for `operations.splitFaceByWires`, which returns the

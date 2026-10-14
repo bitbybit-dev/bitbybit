@@ -77,6 +77,7 @@ const OCCT_CurveExtremesAlongDto: DtoConstraints = { shape: k.required(k.opaque)
 const OCCT_CurveKinksDto: DtoConstraints = { shape: k.required(k.opaque), angle: k.between(k.number, { min: 0, max: 180 }) };
 const OCCT_CurveSeamByLengthDto: DtoConstraints = { shape: k.required(k.opaque), length: k.number };
 const OCCT_CurveSeamByParameterDto: DtoConstraints = { shape: k.required(k.opaque), parameter: k.number };
+const OCCT_CutByFramesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), frames: k.required(k.list(k.opaque)), keep: k.oneOf(["behindAll", "behindAny"]) };
 const OCCT_CylinderDto: DtoConstraints = { radius: k.between(k.number, { min: 0, exclusiveMin: true }), height: k.between(k.number, { min: 0, exclusiveMin: true }), center: k.point3, direction: k.vector3, angle: k.between(k.number, { min: 0, max: 360, exclusiveMin: true }), originOnCenter: k.boolean };
 const OCCT_CylindersOnLinesDto: DtoConstraints = { radius: k.between(k.number, { min: 0, exclusiveMin: true }), lines: k.required(k.list(k.opaque)) };
 const OCCT_DataOnGeometryAtLengthDto: DtoConstraints = { shape: k.required(k.opaque), length: k.between(k.number, { min: 0 }) };
@@ -280,6 +281,7 @@ const OCCT_ScaleDto: DtoConstraints = { shape: k.required(k.opaque), factor: k.n
 const OCCT_ScaleFromCenterDto: DtoConstraints = { shape: k.required(k.opaque), factor: k.number, center: k.point3 };
 const OCCT_ScaleShapesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), factors: k.list(k.number) };
 const OCCT_ScaleUniformToMatrixDto: DtoConstraints = { factor: k.number, center: k.point3 };
+const OCCT_SectionByFramesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), frames: k.required(k.list(k.opaque)), makeFaces: k.boolean, tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_SectionWiresDto: DtoConstraints = { shapeA: k.required(k.opaque), shapeB: k.required(k.opaque), tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_SegmentBaseDto: DtoConstraints = { segment: k.required(k.opaque) };
 const OCCT_SegmentsBaseDto: DtoConstraints = { segments: k.required(k.list(k.opaque)) };
@@ -563,6 +565,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "operations.closestPointsBetweenTwoShapes": { dto: Inputs.OCCT.ClosestPointsBetweenTwoShapesDto, constraints: OCCT_ClosestPointsBetweenTwoShapesDto },
     "operations.closestPointsOnShapeFromPoints": { dto: Inputs.OCCT.ClosestPointsOnShapeFromPointsDto, constraints: OCCT_ClosestPointsOnShapeFromPointsDto },
     "operations.closestPointsOnShapesFromPoints": { dto: Inputs.OCCT.ClosestPointsOnShapesFromPointsDto, constraints: OCCT_ClosestPointsOnShapesFromPointsDto },
+    "operations.cutByFrames": { dto: Inputs.OCCT.CutByFramesDto, constraints: OCCT_CutByFramesDto },
     "operations.distancesToShapeFromPoints": { dto: Inputs.OCCT.ClosestPointsOnShapeFromPointsDto, constraints: OCCT_ClosestPointsOnShapeFromPointsDto },
     "operations.extrude": { dto: Inputs.OCCT.ExtrudeDto, constraints: OCCT_ExtrudeDto },
     "operations.extrudeShapes": { dto: Inputs.OCCT.ExtrudeShapesDto, constraints: OCCT_ExtrudeShapesDto },
@@ -588,6 +591,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "operations.revolve": { dto: Inputs.OCCT.RevolveDto, constraints: OCCT_RevolveDto },
     "operations.revolveWithHistory": { dto: Inputs.OCCT.RevolveDto, constraints: OCCT_RevolveDto },
     "operations.rotatedExtrude": { dto: Inputs.OCCT.RotationExtrudeDto, constraints: OCCT_RotationExtrudeDto },
+    "operations.sectionByFrames": { dto: Inputs.OCCT.SectionByFramesDto, constraints: OCCT_SectionByFramesDto },
     "operations.sectionWires": { dto: Inputs.OCCT.SectionWiresDto, constraints: OCCT_SectionWiresDto },
     "operations.slice": { dto: Inputs.OCCT.SliceDto, constraints: OCCT_SliceDto },
     "operations.sliceByFrames": { dto: Inputs.OCCT.SliceByFramesDto, constraints: OCCT_SliceByFramesDto },

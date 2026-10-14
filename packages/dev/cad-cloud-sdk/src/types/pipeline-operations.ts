@@ -534,6 +534,7 @@ export type OperationPath =
     | "occt.operations.closestPointsBetweenTwoShapes"
     | "occt.operations.closestPointsOnShapeFromPoints"
     | "occt.operations.closestPointsOnShapesFromPoints"
+    | "occt.operations.cutByFrames"
     | "occt.operations.distancesToShapeFromPoints"
     | "occt.operations.extrude"
     | "occt.operations.extrudeShapes"
@@ -559,6 +560,7 @@ export type OperationPath =
     | "occt.operations.revolve"
     | "occt.operations.revolveWithHistory"
     | "occt.operations.rotatedExtrude"
+    | "occt.operations.sectionByFrames"
     | "occt.operations.sectionWires"
     | "occt.operations.slice"
     | "occt.operations.sliceByFrames"
@@ -9624,6 +9626,27 @@ export interface OperationParams {
         points: [number, number, number][] | PipelineRef;
     };
     /**
+     * Cuts a list of shapes with the planes of frames, taking away the side each normal points to,
+     * the side `hiddenLines` looks from with the same frame.
+     *
+     * `keep` says what stays: what lies behind every plane, or behind any. A cut solid stays closed,
+     * its cut faces part of it; a shape taken away whole gives an empty compound.
+     */
+    "occt.operations.cutByFrames": {
+        /** The shapes to cut; each gives its own result. */
+        shapes: unknown[] | PipelineRef;
+        /**
+         * The planes to cut along, each through its frame's origin; what lies on the side a normal
+         * points to is in front of that plane.
+         */
+        frames: unknown[] | PipelineRef;
+        /**
+         * Whether to keep what lies behind every plane, such as the inside of a box of six frames, or
+         * behind any, cutting away only what lies in front of all.
+         */
+        keep?: "behindAll" | "behindAny" | PipelineRef;
+    };
+    /**
      * Measures how far each point in a list is from a shape, as the straight distance to the
      * closest point on it, in model units.
      *
@@ -10181,6 +10204,24 @@ export interface OperationParams {
         angle?: number | PipelineRef;
         /** When true, a face profile gives a closed solid; when false the result is a shell. */
         makeSolid?: boolean | PipelineRef;
+    };
+    /**
+     * Sections a list of shapes with the plane of each frame: for each shape and frame, the faces
+     * where the plane passes through its solids, holes included, or with `makeFaces` false the
+     * section wires.
+     *
+     * A plane that misses a shape gives an empty compound, so the results line up with the shapes
+     * and the frames.
+     */
+    "occt.operations.sectionByFrames": {
+        /** The shapes to section; each gives its own list of sections. */
+        shapes: unknown[] | PipelineRef;
+        /** The planes to section along, each through its frame's origin square to its normal. */
+        frames: unknown[] | PipelineRef;
+        /** Whether to give the faces inside the solids, holes included, or only the section wires. */
+        makeFaces?: boolean | PipelineRef;
+        /** How close the ends of two section edges must lie to be joined into one wire, in model units. */
+        tolerance?: number | PipelineRef;
     };
     /**
      * Finds the curves where two shapes meet and joins them end to end into wires, such as the

@@ -5,6 +5,7 @@ import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../api/resolved-inputs";
 import type * as Models from "../api/models";
 import { numbersOfFrames } from "./base/frames";
+import { eachShape, keptBehind, sliceAlongFrames, splitAlongFrame } from "./base/frame-cuts";
 import { historiesFromKernel, historyFromKernel } from "./base/history";
 import { checkedFrame, checkedFrames, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "./base/input-checks";
 
@@ -1036,7 +1037,7 @@ export class OCCTOperations {
         const shape = checkedShape(resolved.shape);
         const frames = checkedFrames(resolved.frames, "frames");
         const tolerance = checkedNumber(resolved.tolerance, "tolerance", 0);
-        return this.och.occ.SliceByFrames(shape, numbersOfFrames(frames), resolved.makeFaces, tolerance);
+        return sliceAlongFrames(this.och, shape, frames, resolved.makeFaces, tolerance);
     }
 
     /**
@@ -1062,8 +1063,71 @@ export class OCCTOperations {
         const resolved = resolveDto(Inputs.OCCT.SplitByFrameDto, inputs) as Resolved.OCCT.SplitByFrameDto<TopoDS_Shape>;
         const shape = checkedShape(resolved.shape);
         const frame = checkedFrame(resolved.frame, "frame");
-        const [front, back] = this.och.occ.SplitByFrame(shape, numbersOfFrames([frame]));
-        return { front: front!, back: back! };
+        const [front, back] = splitAlongFrame(this.och, shape, frame);
+        return { front, back };
+    }
+
+    /**
+     * Sections a list of shapes with the plane of each frame: for each shape and frame, the faces
+     * where the plane passes through its solids, holes included, or with `makeFaces` false the
+     * section wires.
+     *
+     * A plane that misses a shape gives an empty compound, so the results line up with the shapes
+     * and the frames.
+     * @param inputs - The shapes, the frames, whether to make faces and the joining tolerance
+     * @returns For each shape in order, one compound per frame in order
+     * @group divisions
+     * @shortname section by frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const sections = await bitbybit.occt.operations.sectionByFrames({
+     *     shapes: [box, cylinder],
+     *     frames: [{ origin: [0, 0, 0], normal: [1, 0, 0], direction: [0, 1, 0] }],
+     *     makeFaces: true,
+     *     tolerance: 1e-7,
+     * });
+     * ```
+     */
+    sectionByFrames(inputs: Inputs.OCCT.SectionByFramesDto<TopoDS_Shape>): TopoDS_Compound[][] {
+        const resolved = resolveDto(Inputs.OCCT.SectionByFramesDto, inputs) as Resolved.OCCT.SectionByFramesDto<TopoDS_Shape>;
+        const shapes = checkedShapes(resolved.shapes);
+        const frames = checkedFrames(resolved.frames, "frames");
+        const tolerance = checkedNumber(resolved.tolerance, "tolerance", 0);
+        return eachShape(shapes, shape => sliceAlongFrames(this.och, shape, frames, resolved.makeFaces, tolerance));
+    }
+
+    /**
+     * Cuts a list of shapes with the planes of frames, taking away the side each normal points to,
+     * the side `hiddenLines` looks from with the same frame.
+     *
+     * `keep` says what stays: what lies behind every plane, or behind any. A cut solid stays closed,
+     * its cut faces part of it; a shape taken away whole gives an empty compound.
+     * @param inputs - The shapes, the frames whose planes cut them and what to keep
+     * @returns One compound per shape, in the order of the shapes
+     * @group divisions
+     * @shortname cut by frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const cutAway = await bitbybit.occt.operations.cutByFrames({
+     *     shapes: [box, cylinder],
+     *     frames: [
+     *         { origin: [0, 0, 0], normal: [1, 0, 0], direction: [0, 1, 0] },
+     *         { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] },
+     *     ],
+     *     keep: Bit.Inputs.OCCT.sectionKeepEnum.behindAny,
+     * });
+     * ```
+     */
+    cutByFrames(inputs: Inputs.OCCT.CutByFramesDto<TopoDS_Shape>): TopoDS_Compound[] {
+        const resolved = resolveDto(Inputs.OCCT.CutByFramesDto, inputs) as Resolved.OCCT.CutByFramesDto<TopoDS_Shape>;
+        const shapes = checkedShapes(resolved.shapes);
+        const frames = checkedFrames(resolved.frames, "frames");
+        if (frames.length === 0) {
+            throw new InputError("`frames` is empty: give at least one frame to cut along.", "frames");
+        }
+        return eachShape(shapes, shape => keptBehind(this.och, shape, frames, resolved.keep));
     }
 
     /**

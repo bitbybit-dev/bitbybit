@@ -8480,6 +8480,12 @@ namespace OCCT {
         // (undocumented)
         parabola = "parabola"
     }
+    class CutByFramesDto<T> {
+        constructor(shapes?: T[], frames?: Base.Frame[], keep?: sectionKeepEnum);
+        frames: Base.Frame[];
+        keep?: sectionKeepEnum | undefined;
+        shapes: T[];
+    }
     class CylinderDto {
         constructor(radius?: number, height?: number, center?: Base.Point3, direction?: Base.Vector3, angle?: number, originOnCenter?: boolean);
         angle?: number | undefined;
@@ -10233,6 +10239,19 @@ namespace OCCT {
         center?: Base.Point3 | undefined;
         factor?: number | undefined;
     }
+    class SectionByFramesDto<T> {
+        constructor(shapes?: T[], frames?: Base.Frame[], makeFaces?: boolean, tolerance?: number);
+        frames: Base.Frame[];
+        makeFaces?: boolean | undefined;
+        shapes: T[];
+        tolerance?: number | undefined;
+    }
+    enum sectionKeepEnum {
+        // (undocumented)
+        behindAll = "behindAll",
+        // (undocumented)
+        behindAny = "behindAny"
+    }
     class SectionWiresDto<T> {
         constructor(shapeA?: T, shapeB?: T, tolerance?: number);
         shapeA: T;
@@ -11506,6 +11525,8 @@ namespace OCCT_3 {
     // (undocumented)
     type CurveSeamByParameterDto<T> = WithDefaults<Inputs_2.OCCT.CurveSeamByParameterDto<T>, "parameter">;
     // (undocumented)
+    type CutByFramesDto<T> = WithDefaults<Inputs_2.OCCT.CutByFramesDto<T>, "keep">;
+    // (undocumented)
     type CylinderDto = WithDefaults<Inputs_2.OCCT.CylinderDto, "radius" | "height" | "center" | "direction" | "angle" | "originOnCenter">;
     // (undocumented)
     type CylindersOnLinesDto = WithDefaults<Inputs_2.OCCT.CylindersOnLinesDto, "radius">;
@@ -11953,6 +11974,8 @@ namespace OCCT_3 {
     type ScaleShapesDto<T> = WithDefaults<Inputs_2.OCCT.ScaleShapesDto<T>, "factors">;
     // (undocumented)
     type ScaleUniformToMatrixDto = WithDefaults<Inputs_2.OCCT.ScaleUniformToMatrixDto, "factor" | "center">;
+    // (undocumented)
+    type SectionByFramesDto<T> = WithDefaults<Inputs_2.OCCT.SectionByFramesDto<T>, "makeFaces" | "tolerance">;
     // (undocumented)
     type SectionWiresDto<T> = WithDefaults<Inputs_2.OCCT.SectionWiresDto<T>, "tolerance">;
     // (undocumented)
@@ -12533,6 +12556,7 @@ export class OCCTOperations {
     closestPointsOnShapeFromPoints(inputs: Inputs_2.OCCT.ClosestPointsOnShapeFromPointsDto<TopoDS_Shape>): Inputs_2.Base.Point3[];
     // @deprecated
     closestPointsOnShapesFromPoints(inputs: Inputs_2.OCCT.ClosestPointsOnShapesFromPointsDto<TopoDS_Shape>): Inputs_2.Base.Point3[];
+    cutByFrames(inputs: Inputs_2.OCCT.CutByFramesDto<TopoDS_Shape>): TopoDS_Compound[];
     // @deprecated
     distancesToShapeFromPoints(inputs: Inputs_2.OCCT.ClosestPointsOnShapeFromPointsDto<TopoDS_Shape>): number[];
     extrude(inputs: Inputs_2.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape;
@@ -12559,6 +12583,7 @@ export class OCCTOperations {
     revolve(inputs: Inputs_2.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape;
     revolveWithHistory(inputs: Inputs_2.OCCT.RevolveDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistory<TopoDS_Shape>;
     rotatedExtrude(inputs: Inputs_2.OCCT.RotationExtrudeDto<TopoDS_Shape>): TopoDS_Shape;
+    sectionByFrames(inputs: Inputs_2.OCCT.SectionByFramesDto<TopoDS_Shape>): TopoDS_Compound[][];
     sectionWires(inputs: Inputs_2.OCCT.SectionWiresDto<TopoDS_Shape>): TopoDS_Wire[];
     slice(inputs: Inputs_2.OCCT.SliceDto<TopoDS_Shape>): TopoDS_Compound;
     sliceByFrames(inputs: Inputs_2.OCCT.SliceByFramesDto<TopoDS_Shape>): TopoDS_Compound[];

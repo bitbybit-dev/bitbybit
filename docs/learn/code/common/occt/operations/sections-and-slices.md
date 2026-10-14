@@ -67,6 +67,14 @@ Each slice is a face: extrude it by the thickness of your sheet and you have the
 - `splitShapeWithShapes` cuts a shape into pieces with other shapes, without removing material, as a knife would.
 - `splitFaceByWires` scores a face along wires that lie on it, so each region can be coloured or extruded on its own.
 
+## Section views
+
+- `cutByFrames` cuts every shape of a list with the planes of frames and keeps what lies behind them, the side away from each normal. A cut solid stays closed, its cut faces part of it, so drawing the results shows the inside as a section view does. Each result lines up with its shape and can keep its colour; a shape cut away whole gives an empty compound.
+- With several frames, `keep` says what stays. `behindAll`, the default, keeps what lies behind every plane: six frames facing outwards keep the inside of a box, as a section box does. `behindAny` keeps what lies behind any plane, so only what lies in front of all of them goes: two frames cut a corner away.
+- `sectionByFrames` gives only the cut faces, holes included, for each shape and each frame, or with `makeFaces` false the section wires: the outline to hatch or dimension in a drawing.
+- The side taken away is the one a frame's normal points to, which is where `hiddenLines` looks from with the same frame, so one frame both cuts the model and draws the cut.
+- A design build has `occt.design.section`, which cuts every placed part the same way and shares the work between placements of the same part.
+
 ## Where two shapes meet
 
 `sectionWires` finds the curves where two shapes meet and joins them into wires: the outline a plane cuts through a part, or the seam where a pipe meets a wall.

@@ -973,6 +973,59 @@ export class OCCTOperations {
     }
 
     /**
+     * Sections a list of shapes with the plane of each frame: for each shape and frame, the faces
+     * where the plane passes through its solids, holes included, or with `makeFaces` false the
+     * section wires.
+     *
+     * A plane that misses a shape gives an empty compound, so the results line up with the shapes
+     * and the frames.
+     * @param inputs - The shapes, the frames, whether to make faces and the joining tolerance
+     * @returns For each shape in order, one compound per frame in order
+     * @group divisions
+     * @shortname section by frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const sections = await bitbybit.occt.operations.sectionByFrames({
+     *     shapes: [box, cylinder],
+     *     frames: [{ origin: [0, 0, 0], normal: [1, 0, 0], direction: [0, 1, 0] }],
+     *     makeFaces: true,
+     *     tolerance: 1e-7,
+     * });
+     * ```
+     */
+    sectionByFrames(inputs: Inputs.OCCT.SectionByFramesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer[][]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.sectionByFrames", inputs);
+    }
+
+    /**
+     * Cuts a list of shapes with the planes of frames, taking away the side each normal points to,
+     * the side `hiddenLines` looks from with the same frame.
+     *
+     * `keep` says what stays: what lies behind every plane, or behind any. A cut solid stays closed,
+     * its cut faces part of it; a shape taken away whole gives an empty compound.
+     * @param inputs - The shapes, the frames whose planes cut them and what to keep
+     * @returns One compound per shape, in the order of the shapes
+     * @group divisions
+     * @shortname cut by frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const cutAway = await bitbybit.occt.operations.cutByFrames({
+     *     shapes: [box, cylinder],
+     *     frames: [
+     *         { origin: [0, 0, 0], normal: [1, 0, 0], direction: [0, 1, 0] },
+     *         { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] },
+     *     ],
+     *     keep: Bit.Inputs.OCCT.sectionKeepEnum.behindAny,
+     * });
+     * ```
+     */
+    cutByFrames(inputs: Inputs.OCCT.CutByFramesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.cutByFrames", inputs);
+    }
+
+    /**
      * Cuts a face into pieces along edges or wires lying on it, like scoring a sheet.
      *
      * A cutter cuts only where it lies on the face, and a closed loop inside it cuts out the region it
