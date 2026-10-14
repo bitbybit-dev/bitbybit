@@ -12,7 +12,7 @@ tags: [designer]
 
 # Designer commands
 
-Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 134 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
+Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 135 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
 
 Each entry's anchor is the command's help topic, such as `#designer-part-fillet`, so a link to it keeps working when the title changes.
 
@@ -1368,6 +1368,20 @@ Measures the picked faces or edges: one gives its length or area and any radius,
 - **For agents:** `view.measure`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
   - `picks` (list of objects): The faces or edges to measure, up to 2, each \{ part, path, kind, index \} as the build names them; the current picks when left out.
+
+### Section view {#designer-view-section}
+
+Cuts the view with a plane across X, Y or Z, hiding what lies on the side it faces and filling the faces it cuts; alone it turns on facing the camera, or off again.
+
+- **Where:** <Ui>Inspect</Ui> > <Ui>Section view</Ui>; the toolbar; the section bar, while a section is on
+- **Key:** <kbd>X</kbd>
+- **Works in:** part documents and assembly documents
+- **For agents:** `view.section`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `axis` (one of `"x"`, `"y"`, `"z"`): The axis the plane stands square to.
+  - `offset` (number): Where the plane crosses the axis, in the document's length unit.
+  - `flip` (boolean): Hides the other side of the plane: with false what lies beyond the offset along the axis is hidden.
+  - `off` (boolean): Turns the section view off.
 
 ## Operations
 

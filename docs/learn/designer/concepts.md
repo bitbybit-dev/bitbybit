@@ -65,7 +65,7 @@ The features of a part document make bodies. Each body is a part until you say o
 - **Joints.** <Ui>Joint</Ui> joins a component's connector to another's: fastened, or turning, sliding or both about their shared axis, within limits you set. A joint's angle or offset can be a parameter, so the assembly moves when it changes.
 - **Replicate.** <Ui>Replicate</Ui> places a component on every connector of a set, such as a screw in every hole of a flange, in one step.
 
-The dock's <Ui>Bill of materials</Ui> counts the parts, <Ui>Check clashes</Ui> finds parts that overlap, and <Ui>Measure</Ui> gives the lengths, areas, radii, distances and angles of what is picked. A configuration is a named set of parameter values; <Ui>Show configuration</Ui> builds the assembly with one.
+The dock's <Ui>Bill of materials</Ui> counts the parts, <Ui>Check clashes</Ui> finds parts that overlap, and <Ui>Measure</Ui> gives the lengths, areas, radii, distances and angles of what is picked, and <Ui>Section view</Ui> cuts the view open to show the inside. A configuration is a named set of parameter values; <Ui>Show configuration</Ui> builds the assembly with one.
 
 ## Undo is per author
 

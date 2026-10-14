@@ -40,3 +40,11 @@ Select a part in its part document to see its volume, and its mass from its [mat
 Pick a face or an edge and the selection panel measures it: an edge's length, a face's area, and the radius and diameter of a circle, a cylinder or a sphere, with a circle's centre. <kbd>Shift</kbd>+click a second one and it measures the shortest distance between them, drawn as a line in the view when they do not touch, with its parts along X, Y and Z, and the angle between two flat faces or two straight edges. In an assembly, picks on different parts are measured where the assembly places them.
 
 <Ui>Measure</Ui>, in <Ui>Inspect</Ui> or on the toolbar, puts the same values in the status bar, and agents run it as `view.measure`. It works in part documents too, and visitors who open a shared design can measure it.
+
+## Section view
+
+<Ui>Section view</Ui>, in <Ui>Inspect</Ui>, on the toolbar or on <kbd>X</kbd>, cuts the view with a plane so you can look inside. It starts square to the axis you look along, through the middle of the model, and hides the half nearer to you.
+
+The section bar at the bottom of the view sets it: X, Y or Z stands the plane square to that axis, the slider or a typed offset in the document's length unit moves it, <Ui>Flip</Ui> hides the other side, and <Ui>Close</Ui> turns it off. Where the plane cuts a part, the cut is filled in a darker shade of the part's colour; it is the kernel's own cut, so it shows holes and walls exactly, and it follows the plane once the plane stops moving.
+
+Clicks, hovers and measurements reach only what is shown: a click lands on what you see through the cut, and a filled cut takes no pick. A section changes the view, never the document, and goes off when another document opens. Agents run it as `view.section` with `axis`, `offset`, `flip` or `off`, and visitors who open a shared design can use it too.

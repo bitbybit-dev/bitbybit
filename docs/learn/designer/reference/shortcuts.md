@@ -45,4 +45,5 @@ Keys run their command while the Designer has the focus and you are not typing i
 | <kbd>Enter</kbd> | <kbd>Enter</kbd> | [Finish the outline](./commands.md#designer-sketch-finish) | Stops drawing the current outline and leaves it open. |
 | <kbd>Esc</kbd> | <kbd>Esc</kbd> | [Stop drawing](./commands.md#designer-sketch-cancel-step) | Drops the point just placed, then stops the outline, then puts the tool down. |
 | <kbd>E</kbd> | <kbd>E</kbd> | [Extrude](./commands.md#designer-part-extrude) | Sweeps a sketch's face straight along its normal, or along a direction. |
+| <kbd>X</kbd> | <kbd>X</kbd> | [Section view](./commands.md#designer-view-section) | Cuts the view with a plane across X, Y or Z, hiding what lies on the side it faces and filling the faces it cuts; alone it turns on facing the camera, or off again. |
 | <kbd>Ctrl+K</kbd> | <kbd>⌘K</kbd> | [Find a command](./commands.md#designer-help-commands) | Searches every command by name. |
