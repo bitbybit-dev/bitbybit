@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as pc from "playcanvas";
 import { Tag } from "@bitbybit-dev/core";
-import { GeometryHelper, MathBitByBit, Vector, srgbToLinear } from "@bitbybit-dev/base";
+import { GeometryHelper, MathBitByBit, Vector } from "@bitbybit-dev/base";
+import { srgbToLinear } from "@bitbybit-dev/base/lib/api/services/helpers/color/color-space";
 import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";

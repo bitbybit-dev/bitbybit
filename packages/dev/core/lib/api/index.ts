@@ -7,6 +7,7 @@ export * from "./draw-recipe";
 export * from "./draw-recipe-types";
 export * from "./draw-helper-core";
 export * from "./draw-helper-types";
+export * from "./mesh-checks";
 export * from "./worker-types";
 export * from "./worker-utils";
 export * from "./init-kernels-types";

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
 import * as BABYLON from "@babylonjs/core";
-import { Tag } from "@bitbybit-dev/core";
+import { Tag, type KeptDesignMesh } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import { GeometryHelper, MathBitByBit, Vector, resolveDto } from "@bitbybit-dev/base";
 import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
@@ -11,6 +11,7 @@ import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 import * as Inputs from "../inputs";
 import type * as Resolved from "../resolved-inputs";
+import { meshBuffersOf } from "../__mocks__/mesh-buffers";
 import { BabylonNode } from "./babylon/node";
 import { Draw } from "./draw";
 
@@ -42,6 +43,10 @@ const boxMesh = (): Inputs.OCCT.DecomposedMeshDto => {
     mesh.pointsList = [];
     return mesh;
 };
+
+const boxBuffers = (): Inputs.OCCT.DecomposedMeshBuffersDto => meshBuffersOf(boxMesh());
+
+const buffersOfMesh = (mesh: Inputs.OCCT.DecomposedMeshBuffersDto): ArrayBuffer[] => [...new Set(mesh.faceList.flatMap(face => [face.vertexCoord.buffer, face.normalCoord.buffer, face.triIndexes.buffer, face.uvs.buffer]))] as ArrayBuffer[];
 
 const shapeA: Inputs.OCCT.TopoDSShapePointer = { hash: 101, type: "occ-shape" };
 const shapeB: Inputs.OCCT.TopoDSShapePointer = { hash: 102, type: "occ-shape" };
@@ -113,7 +118,7 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
         const occtWorkerManager = new OCCTWorkerManager();
         drawHelper = new DrawHelper(context, new JSCADText(jscadWorkerManager), new Vector(new MathBitByBit(), new GeometryHelper()), jscadWorkerManager, new ManifoldWorkerManager(), occtWorkerManager);
         draw = new Draw(drawHelper, new BabylonNode(context, drawHelper), new Tag(context), context);
-        workerCall = vi.fn((_method: string, inputs: { shapes: unknown[] }) => Promise.resolve(inputs.shapes.map(() => boxMesh())));
+        workerCall = vi.fn((_method: string, inputs: { shapes: unknown[] }) => Promise.resolve(inputs.shapes.map(() => boxBuffers())));
         occtWorkerManager.genericCallToWorkerPromise = workerCall;
     });
 
@@ -150,7 +155,13 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
 
             // Assert
             const surface = surfacesOf(drawn)[0]!;
-            expect(Array.from(surface.getIndices()!.slice(0, 6))).toEqual([0, 2, 1, 0, 3, 2]);
+            expect(Array.from(surface.getIndices()!)).toEqual([
+                0, 2, 1, 0, 3, 2, 4, 6, 5, 4, 7, 6, 8, 10, 9, 8, 11, 10, 12, 14, 13, 12, 15, 14,
+                16, 18, 17, 16, 19, 18, 20, 22, 21, 20, 23, 22,
+            ]);
+            expect(Array.from(surface.getVerticesData(BABYLON.VertexBuffer.NormalKind)!.slice(0, 3))).toEqual(NORMALS[2]);
+            expect(Array.from(surface.getVerticesData(BABYLON.VertexBuffer.NormalKind)!.slice(48, 51))).toEqual(NORMALS[0]);
+            expect(Array.from(surface.getVerticesData(BABYLON.VertexBuffer.PositionKind)!.slice(48, 51))).toEqual(CORNERS[QUADS[0]![0]!]);
             expect(surface.metadata.faceRanges).toEqual([
                 { face: 2, start: 0, count: 6 }, { face: 3, start: 6, count: 6 }, { face: 4, start: 12, count: 6 },
                 { face: 5, start: 18, count: 6 }, { face: 0, start: 24, count: 6 }, { face: 1, start: 30, count: 6 },
@@ -238,7 +249,7 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             // Arrange
             const empty = boxMesh();
             empty.faceList.forEach(face => { face.triIndexes = []; });
-            workerCall.mockResolvedValueOnce([empty]);
+            workerCall.mockResolvedValueOnce([meshBuffersOf(empty)]);
             const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), drawTwoSided: false, drawEdges: false };
 
             // Act
@@ -260,7 +271,7 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             // Assert
             expect(drawn.getChildMeshes(true)).toHaveLength(2);
             expect(workerCall).toHaveBeenCalledTimes(1);
-            expect(workerCall.mock.calls[0]![0]).toBe("shapesToMeshes");
+            expect(workerCall.mock.calls[0]![0]).toBe("shapesToMeshBuffers");
             expect(workerCall.mock.calls[0]![1].shapes).toEqual([shapeA, shapeB]);
             expect(drawn.metadata.type).toBe(Inputs.Draw.drawingTypes.occtShapes);
         });
@@ -274,6 +285,41 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
 
             // Assert
             await expect(drawing).rejects.toThrow("did not return one mesh of faces and edges per shape");
+        });
+    });
+
+    describe("a mesh with a face that cannot be drawn", () => {
+        const tenCoordinates = (): Inputs.OCCT.DecomposedMeshDto => {
+            const mesh = boxMesh();
+            mesh.faceList = [...mesh.faceList].reverse();
+            mesh.faceList[2]!.vertexCoord = [...mesh.faceList[2]!.vertexCoord.slice(0, 9), 5];
+            return mesh;
+        };
+
+        it("should refuse it naming the face, and leave nothing in the scene however often it is tried", async () => {
+            // Arrange
+            const before = scene.meshes.length;
+
+            // Act
+            const first = draw.drawAnyAsync({ entity: tenCoordinates() });
+            const second = draw.drawAnyAsync({ entity: tenCoordinates() });
+
+            // Assert
+            await expect(first).rejects.toThrow("Face 3 cannot be drawn: it holds 10 position values and 6 indexes; both must be whole points and triangles, three values each.");
+            await expect(second).rejects.toThrow("Face 3 cannot be drawn");
+            expect(scene.meshes).toHaveLength(before);
+        });
+
+        it("should refuse a list of meshes before drawing any of them", async () => {
+            // Arrange
+            const before = scene.meshes.length;
+
+            // Act
+            const drawing = draw.drawAnyAsync({ entity: [boxMesh(), tenCoordinates()] });
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Face 3 cannot be drawn");
+            expect(scene.meshes).toHaveLength(before);
         });
     });
 
@@ -320,7 +366,7 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             // Arrange
             const reversed = boxMesh();
             reversed.edgeList = [...reversed.edgeList].reverse();
-            workerCall.mockResolvedValueOnce([reversed, boxMesh()]);
+            workerCall.mockResolvedValueOnce([meshBuffersOf(reversed), boxBuffers()]);
 
             // Act
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
@@ -465,6 +511,51 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             expect(coarse).toEqual([]);
             expect(workerCall).toHaveBeenCalledTimes(1);
             expect(workerCall.mock.calls[0]![1].shapes).toEqual([shapeB]);
+        });
+
+        it("should draw parts from kept meshes handed back as a structured clone, without meshing them", async () => {
+            // Arrange
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const kept = structuredClone(drawHelper.keptDesignMeshes(["box-1-shape", "pin-2-shape"], options));
+            drawHelper.dispose();
+            workerCall.mockClear();
+
+            // Act
+            drawHelper.keepDesignMeshes(kept, options);
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+
+            // Assert
+            expect(workerCall).not.toHaveBeenCalled();
+            expect(surfacesOf(drawn).map(surface => surface.getTotalIndices())).toEqual([36, 36]);
+        });
+
+        it("should refuse kept meshes whose buffers were handed away to another thread, and keep none of them", async () => {
+            // Arrange
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const kept = drawHelper.keptDesignMeshes(["box-1-shape", "pin-2-shape"], options);
+            structuredClone(kept, { transfer: buffersOfMesh(kept[1]!.mesh as Inputs.OCCT.DecomposedMeshBuffersDto) });
+            drawHelper.dispose();
+            workerCall.mockClear();
+
+            // Act
+            const keeping = (): void => drawHelper.keepDesignMeshes(kept, options);
+
+            // Assert
+            expect(keeping).toThrow("The mesh kept for pin-2-shape cannot be drawn: face 0 counts 2 triangles but holds no indexes, as a mesh does once its buffers were handed away to another thread.");
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            expect(workerCall.mock.calls[0]![1].shapes).toEqual([shapeA, shapeB]);
+        });
+
+        it("should refuse kept meshes stored as JSON, whose typed arrays come back as plain records", async () => {
+            // Arrange
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const restored: unknown = JSON.parse(JSON.stringify(drawHelper.keptDesignMeshes(["box-1-shape"], options)));
+
+            // Act
+            const keeping = (): void => drawHelper.keepDesignMeshes(restored as KeptDesignMesh<unknown>[], options);
+
+            // Assert
+            expect(keeping).toThrow("The mesh kept for box-1-shape cannot be drawn: face 0 holds its positions, normals or indexes as something other than a list of numbers, as typed arrays stored as JSON come back.");
         });
 
         it("should mesh a part once for every build it draws, a preview beside the model say, until the meshing changes", async () => {

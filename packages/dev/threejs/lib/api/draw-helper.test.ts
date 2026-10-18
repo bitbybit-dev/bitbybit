@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
 import { createDrawHelperMocks, partialMock, flatOf, hexToRgb, colorsAreEqual, getMaterialFromMesh, createMockJSCADMesh, createMockOCCTShape, mockWorkerError } from "./__mocks__/test-helpers";
 import { mockOCCTBoxDecomposedMesh } from "./__mocks__/test-data";
+import { meshBuffersOf, triangleFaceLists, twoTrianglesBuffers } from "./__mocks__/mesh-buffers";
+import type { MeshPart } from "@bitbybit-dev/core";
 import { DrawHelper } from "./draw-helper";
 import type { Context } from "./context";
 import * as Inputs from "./inputs";
@@ -881,8 +883,8 @@ describe("DrawHelper unit tests", () => {
     describe("drawSolidOrPolygonMeshes", () => {
         it("should draw multiple JSCAD meshes", async () => {
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
-                { positions: [0, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
-                { positions: [1, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
+                { positions: [1, 0, 0, 2, 0, 0, 1, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
             const mockMeshes = [jscadSolid(), jscadSolid()];
@@ -913,8 +915,8 @@ describe("DrawHelper unit tests", () => {
 
         it("should handle meshes with baked colours", async () => {
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
-                { positions: [0, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], color: [1, 0, 0] },
-                { positions: [1, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], color: [1, 0, 0] },
+                { positions: [1, 0, 0, 2, 0, 0, 1, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
             const mockMeshes = [jscadSolid(), jscadSolid()];
@@ -933,8 +935,8 @@ describe("DrawHelper unit tests", () => {
 
         it("should handle array of colours matching meshes count", async () => {
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
-                { positions: [0, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
-                { positions: [1, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
+                { positions: [1, 0, 0, 2, 0, 0, 1, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
             const mockMeshes = [jscadSolid(), jscadSolid()];
@@ -970,7 +972,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should update existing mesh when updatable is true", async () => {
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
-                { positions: [0, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
             const existingMesh = new THREEJS.Group();
@@ -1013,7 +1015,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
-            expect(occtWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapeToMeshBuffers", expect.anything());
             expect(result.children.length).toBe(2);
             const facesGroup = result.children.find(child => child.name?.includes("faces")) as THREEJS.Group;
             if (facesGroup && facesGroup.children.length > 0) {
@@ -1102,7 +1104,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
-            expect(occtWorkerCall).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapesToMeshBuffers", expect.anything());
             expect(result.children.length).toBe(2);
 
             result.children.forEach(childGroup => {
@@ -1755,7 +1757,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should throw descriptive error when OCCT worker fails", async () => {
             const mockError = new Error("OCCT decomposition failed");
-            mockWorkerError(mockOccWorkerManager, "shapeToMesh", mockError);
+            mockWorkerError(mockOccWorkerManager, "shapeToMeshBuffers", mockError);
 
             const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
             inputs.shape = createMockOCCTShape();
@@ -1858,9 +1860,9 @@ describe("DrawHelper unit tests", () => {
         it("should call JSCAD worker with shapeToMesh method", async () => {
             const mockMesh = createMockJSCADMesh();
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
-                positions: [0, 0, 0],
-                normals: [0, 0, 1],
-                indices: [0],
+                positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                indices: [0, 1, 2],
                 transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
             });
 
@@ -1902,7 +1904,7 @@ describe("DrawHelper unit tests", () => {
             await drawHelper.drawShape(inputs);
 
             expect(occtWorkerCall).toHaveBeenCalledWith(
-                "shapeToMesh",
+                "shapeToMeshBuffers",
                 expect.objectContaining({
                     shape: inputs.shape
                 })
@@ -1946,7 +1948,7 @@ describe("DrawHelper unit tests", () => {
             await drawHelper.drawShape(inputs);
 
             expect(occtWorkerCall).toHaveBeenCalledWith(
-                "shapeToMesh",
+                "shapeToMeshBuffers",
                 expect.objectContaining({
                     shape: inputs.shape
                 })
@@ -2002,7 +2004,7 @@ describe("DrawHelper unit tests", () => {
             await drawHelper.drawShapes(inputs);
 
             expect(occtWorkerCall).toHaveBeenCalledWith(
-                "shapesToMeshes",
+                "shapesToMeshBuffers",
                 expect.any(Object)
             );
         });
@@ -3016,7 +3018,7 @@ describe("DrawHelper unit tests", () => {
         it("should say which drawing failed when the worker refuses a list of shapes", async () => {
             // Arrange
             vi.spyOn(console, "error").mockImplementation(() => undefined);
-            mockWorkerError(mockOccWorkerManager, "shapesToMeshes", new Error("kernel gone"));
+            mockWorkerError(mockOccWorkerManager, "shapesToMeshBuffers", new Error("kernel gone"));
             const inputs = new Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>();
             inputs.shapes = [createMockOCCTShape()];
 
@@ -3289,6 +3291,117 @@ describe("DrawHelper unit tests", () => {
 
             // Assert
             expect(helper.arrowAngles).toEqual([15]);
+        });
+    });
+
+    describe("the two sides of a drawn OCCT face", () => {
+        const surfaceMeshesOf = (drawn: THREEJS.Object3D): THREEJS.Mesh[] => {
+            const found: THREEJS.Mesh[] = [];
+            drawn.traverse(child => {
+                if (child instanceof THREEJS.Mesh && !(child instanceof LineSegments2)) {
+                    found.push(child);
+                }
+            });
+            return found;
+        };
+        const withoutSignedZeros = (values: number[]): number[] => values.map(value => value + 0);
+        const windingOf = (mesh: THREEJS.Mesh): { indices: number[]; normals: number[] } => ({ indices: flatOf(mesh.geometry.getIndex()!), normals: withoutSignedZeros(flatOf(mesh.geometry.getAttribute("normal"))) });
+
+        it("should draw the front of a triangle as the worker winds it and its back wound the other way with the normals turned round", async () => {
+            // Arrange
+            occtWorkerCall.mockResolvedValue(meshBuffersOf({ faceList: [triangleFaceLists(0, true)], edgeList: [], pointsList: [] }));
+
+            // Act
+            const drawn = await drawHelper.drawShape({ shape: occtShape(), drawEdges: false, drawTwoSided: true });
+
+            // Assert
+            const meshes = surfaceMeshesOf(drawn);
+            expect(meshes).toHaveLength(2);
+            expect(windingOf(meshes.find(mesh => !mesh.name.includes("backFace"))!)).toEqual({ indices: [0, 1, 2], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1] });
+            expect(windingOf(meshes.find(mesh => mesh.name.includes("backFace"))!)).toEqual({ indices: [0, 2, 1], normals: [0, 0, -1, 0, 0, -1, 0, 0, -1] });
+        });
+    });
+
+    describe("a shape mesh with a face that cannot be drawn", () => {
+        const withLooseFace = (): Inputs.OCCT.DecomposedMeshDto => ({
+            faceList: [triangleFaceLists(4, true), { ...triangleFaceLists(9, false), vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0, 5] }],
+            edgeList: [],
+            pointsList: [],
+        });
+
+        it("should refuse it naming the face by its index and add nothing to the scene", async () => {
+            // Arrange
+            const before = mockContext.scene.children.length;
+
+            // Act
+            const drawing = drawHelper.handleDecomposedMesh({ drawEdges: false }, withLooseFace(), {});
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Face 9 cannot be drawn: it holds 10 position values and 3 indexes; both must be whole points and triangles, three values each.");
+            expect(mockContext.scene.children).toHaveLength(before);
+        });
+
+        it("should refuse it when drawing each face on its own as well, before adding anything", async () => {
+            // Arrange
+            const before = mockContext.scene.children.length;
+
+            // Act
+            const drawing = drawHelper.handleDecomposedMeshIndividually({ drawEdges: false }, withLooseFace(), {});
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Face 9 cannot be drawn");
+            expect(mockContext.scene.children).toHaveLength(before);
+        });
+
+        it("should refuse a list of shapes before drawing any of them", async () => {
+            // Arrange
+            occtWorkerCall.mockResolvedValue([twoTrianglesBuffers(), withLooseFace()]);
+            const before = mockContext.scene.children.length;
+
+            // Act
+            const drawing = drawHelper.drawShapes({ shapes: [occtShape(), occtShape()], drawEdges: false });
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Failed to draw OCCT shapes: Face 9 cannot be drawn");
+            expect(mockContext.scene.children).toHaveLength(before);
+        });
+    });
+
+    describe("a part of a surface missing its numbers", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it("should leave out a part with null positions with a warning and draw the rest", () => {
+            // Arrange
+            const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+            const whole: MeshPart = { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] };
+            const withNullPositions: unknown = { positions: null, indices: [0, 1, 2] };
+            const material = new THREEJS.MeshPhysicalMaterial();
+
+            // Act
+            const drawn = drawHelper.createOrUpdateSurfacesMesh([whole, withNullPositions as MeshPart], undefined, false, material, false, false);
+
+            // Assert
+            expect(flatOf((drawn.children[0] as THREEJS.Mesh).geometry.getAttribute("position"))).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+            expect(warn).toHaveBeenCalledWith("Skipping corrupted mesh item");
+        });
+    });
+
+    describe("the index of a face the worker sends without a center point", () => {
+        it("should be placed at the middle of the face's vertices", async () => {
+            // Arrange
+            const withoutCenter = meshBuffersOf({ faceList: [{ ...triangleFaceLists(0, true), vertexCoord: [0, 0, 0, 2, 0, 0, 1, 2, 0] }], edgeList: [], pointsList: [] }, { withoutCenters: true });
+            occtWorkerCall.mockResolvedValue(withoutCenter);
+            (mockSolidText.createVectorText as Mock).mockResolvedValue([[[0, 0]]]);
+            const add = vi.spyOn(mockVector, "add");
+
+            // Act
+            await drawHelper.drawShape({ shape: occtShape(), drawEdges: false, drawTwoSided: false, drawFaceIndexes: true });
+
+            // Assert
+            expect(withoutCenter.faceList[0]!.centerPoint).toBeNull();
+            expect(add).toHaveBeenCalledWith({ first: [0, 0.05, 0], second: [1, 2 / 3, 0] });
         });
     });
 });

@@ -6,7 +6,7 @@ export type { JSCAD } from "@bitbybit-dev/jscad/lib/api/resolved-inputs";
 export type { Manifold } from "@bitbybit-dev/manifold/lib/api/resolved-inputs";
 export type { IFC } from "@bitbybit-dev/ifc/lib/api/resolved-inputs";
 export type { OCCT } from "@bitbybit-dev/occt/lib/api/resolved-inputs";
-export type { Color, Dates, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/base/lib/api/resolved-inputs";
+export type { Color, Dates, Engineering, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Recipes, Text, Transforms, Vector } from "@bitbybit-dev/base/lib/api/resolved-inputs";
 
 /**
  * The Asset inputs DTOs as their defaults leave them: every property with a default is present,

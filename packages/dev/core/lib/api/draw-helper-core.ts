@@ -1,9 +1,14 @@
 import { Base } from "./inputs/base-inputs";
 import type { Vector } from "@bitbybit-dev/base";
-import { srgbToLinear } from "@bitbybit-dev/base";
-import { computeVertexNormals, creasedMesh } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
+import { srgbToLinear } from "@bitbybit-dev/base/lib/api/services/helpers/color/color-space";
+import { computeVertexNormals, creasedMesh } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-normals";
 import { CACHE_CONFIG, DEFAULT_COLORS } from "./constants";
-import type { ManifoldMeshAttributes, ManifoldShadingOptions, ManifoldVertexData } from "./draw-helper-types";
+import type { ManifoldMeshAttributes, ManifoldShadingOptions, ManifoldVertexData, MergedMeshBuffers, MeshMerge, MeshPart } from "./draw-helper-types";
+import { mergedMeshBuffers } from "./mesh-buffers";
+import { add3, between3, cross3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { unitOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { radiansOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
+import { linearDeterminant } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
 
 const POSITION_SIZE = 3;
 
@@ -11,12 +16,12 @@ const POSITION_SIZE = 3;
  * Mesh data structure for geometry processing
  */
 export interface MeshData {
-    positions: number[];
-    indices: number[];
-    normals: number[];
-    uvs?: number[] | undefined;
+    positions: ArrayLike<number>;
+    indices: ArrayLike<number>;
+    normals: ArrayLike<number>;
+    uvs?: ArrayLike<number> | undefined;
     /** One color per vertex in the order of `positions`, three or four numbers from 0 to 1 each. */
-    colors?: number[] | undefined;
+    colors?: ArrayLike<number> | undefined;
 }
 
 /**
@@ -24,8 +29,14 @@ export interface MeshData {
  * analyzed, one value per vertex in the same order.
  */
 export interface SurfaceAnalysisFace {
-    vertexCoord: readonly number[];
-    analysisValues?: readonly number[] | undefined;
+    vertexCoord: ArrayLike<number>;
+    analysisValues?: ArrayLike<number> | undefined;
+}
+
+/** A face as its index label reads it: the middle point its mesh may hold and its vertex positions, three numbers each. */
+export interface LabelledFace {
+    centerPoint?: Base.Point3 | null | undefined;
+    vertexCoord: ArrayLike<number>;
 }
 
 /** A mesh whose faces may carry the values of a surface analysis. */
@@ -42,7 +53,9 @@ function finiteRange(meshes: readonly SurfaceAnalysisMesh[]): { min: number; max
     let max = -Infinity;
     for (const mesh of meshes) {
         for (const face of mesh.faceList ?? []) {
-            for (const value of face.analysisValues ?? []) {
+            const values = face.analysisValues ?? [];
+            for (let at = 0; at < values.length; at++) {
+                const value = values[at];
                 if (isFiniteNumber(value)) {
                     min = Math.min(min, value);
                     max = Math.max(max, value);
@@ -66,7 +79,7 @@ function rampColor(place: number): [number, number, number] {
     const share = scaled - stop;
     const from = SURFACE_ANALYSIS_RAMP[stop]!;
     const to = SURFACE_ANALYSIS_RAMP[stop + 1]!;
-    return [from[0] + (to[0] - from[0]) * share, from[1] + (to[1] - from[1]) * share, from[2] + (to[2] - from[2]) * share];
+    return between3([...from], [...to], share);
 }
 
 /**
@@ -105,6 +118,29 @@ export class DrawHelperCore {
             });
         }
         return pos as Base.Point3;
+    }
+
+    /**
+     * The average of a face's vertex positions given flat, x, y and z one vertex after another, for a
+     * face whose mesh holds no middle point.
+     * @param vertexCoord - The face's vertex positions
+     * @returns The average position
+     */
+    computeFaceMiddleOfCoordinates(vertexCoord: ArrayLike<number>): number[] {
+        return this.computeFaceMiddlePos(Array.from({ length: Math.floor(vertexCoord.length / POSITION_SIZE) }, (_, at) => [vertexCoord[at * POSITION_SIZE]!, vertexCoord[at * POSITION_SIZE + 1]!, vertexCoord[at * POSITION_SIZE + 2]!]));
+    }
+
+    /**
+     * Where a face's index label goes: the middle point its mesh holds, else the average of its
+     * vertex positions, or undefined for a face with neither, which gets no label.
+     * @param face - The face's middle point, if its mesh holds one, and its vertex positions
+     * @returns The label position, or undefined when the face has nothing to place a label at
+     */
+    faceLabelPositionOf(face: LabelledFace): Base.Point3 | undefined {
+        if (face.centerPoint !== null && face.centerPoint !== undefined) {
+            return face.centerPoint;
+        }
+        return face.vertexCoord.length < POSITION_SIZE ? undefined : this.computeFaceMiddleOfCoordinates(face.vertexCoord) as Base.Point3;
     }
 
     /**
@@ -330,90 +366,22 @@ export class DrawHelperCore {
 
         const endPoint = polylinePoints[polylinePoints.length - 1]!;
         const prevPoint = polylinePoints[polylinePoints.length - 2]!;
-
-        const dx = endPoint[0] - prevPoint[0];
-        const dy = endPoint[1] - prevPoint[1];
-        const dz = endPoint[2] - prevPoint[2];
-
-        const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        const toEnd = subtract3(endPoint, prevPoint);
+        const length = length3(toEnd);
         if (length < 1e-10) {
             return [];
         }
-
-        const dirX = dx / length;
-        const dirY = dy / length;
-        const dirZ = dz / length;
-
-        const angleRad = (arrowAngleDeg * Math.PI) / 180;
-        const cosAngle = Math.cos(angleRad);
-        const sinAngle = Math.sin(angleRad);
-
-        let refX = 0, refY = 1, refZ = 0;
-        const dotWithY = Math.abs(dirY);
-        if (dotWithY > 0.9) {
-            refX = 1; refY = 0; refZ = 0;
-        }
-
-        let perp1X = dirY * refZ - dirZ * refY;
-        let perp1Y = dirZ * refX - dirX * refZ;
-        let perp1Z = dirX * refY - dirY * refX;
-
-        const perp1Len = Math.sqrt(perp1X * perp1X + perp1Y * perp1Y + perp1Z * perp1Z);
-        perp1X /= perp1Len;
-        perp1Y /= perp1Len;
-        perp1Z /= perp1Len;
-
-        let perp2X = dirY * perp1Z - dirZ * perp1Y;
-        let perp2Y = dirZ * perp1X - dirX * perp1Z;
-        let perp2Z = dirX * perp1Y - dirY * perp1X;
-
-        const perp2Len = Math.sqrt(perp2X * perp2X + perp2Y * perp2Y + perp2Z * perp2Z);
-        perp2X /= perp2Len;
-        perp2Y /= perp2Len;
-        perp2Z /= perp2Len;
-
-        const backComponent = arrowSize * cosAngle;
-        const perpComponent = arrowSize * sinAngle;
-
-        const arrowLines: Base.Point3[][] = [];
-
-        arrowLines.push([
-            endPoint,
-            [
-                endPoint[0] - dirX * backComponent + perp1X * perpComponent,
-                endPoint[1] - dirY * backComponent + perp1Y * perpComponent,
-                endPoint[2] - dirZ * backComponent + perp1Z * perpComponent
-            ]
+        const direction = scale3(toEnd, 1 / length);
+        const angle = radiansOf(arrowAngleDeg);
+        const reference: Base.Vector3 = Math.abs(direction[1]) > 0.9 ? [1, 0, 0] : [0, 1, 0];
+        const sideways = unitOf(cross3(direction, reference))!;
+        const upwards = unitOf(cross3(direction, sideways))!;
+        const back = subtract3(endPoint, scale3(direction, arrowSize * Math.cos(angle)));
+        const spread = arrowSize * Math.sin(angle);
+        return [sideways, upwards].flatMap((across): Base.Point3[][] => [
+            [endPoint, add3(back, scale3(across, spread))],
+            [endPoint, subtract3(back, scale3(across, spread))],
         ]);
-
-        arrowLines.push([
-            endPoint,
-            [
-                endPoint[0] - dirX * backComponent - perp1X * perpComponent,
-                endPoint[1] - dirY * backComponent - perp1Y * perpComponent,
-                endPoint[2] - dirZ * backComponent - perp1Z * perpComponent
-            ]
-        ]);
-
-        arrowLines.push([
-            endPoint,
-            [
-                endPoint[0] - dirX * backComponent + perp2X * perpComponent,
-                endPoint[1] - dirY * backComponent + perp2Y * perpComponent,
-                endPoint[2] - dirZ * backComponent + perp2Z * perpComponent
-            ]
-        ]);
-
-        arrowLines.push([
-            endPoint,
-            [
-                endPoint[0] - dirX * backComponent - perp2X * perpComponent,
-                endPoint[1] - dirY * backComponent - perp2Y * perpComponent,
-                endPoint[2] - dirZ * backComponent - perp2Z * perpComponent
-            ]
-        ]);
-
-        return arrowLines;
     }
 
     /**
@@ -505,24 +473,8 @@ export class DrawHelperCore {
             const v2y = positions[i2 * 3 + 1]!;
             const v2z = positions[i2 * 3 + 2]!;
             
-            const e1x = v1x - v0x;
-            const e1y = v1y - v0y;
-            const e1z = v1z - v0z;
-            
-            const e2x = v2x - v0x;
-            const e2y = v2y - v0y;
-            const e2z = v2z - v0z;
-            
-            let nx = e1y * e2z - e1z * e2y;
-            let ny = e1z * e2x - e1x * e2z;
-            let nz = e1x * e2y - e1y * e2x;
-            
-            const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
-            if (len > 0) {
-                nx /= len;
-                ny /= len;
-                nz /= len;
-            }
+            const across = cross3(subtract3([v1x, v1y, v1z], [v0x, v0y, v0z]), subtract3([v2x, v2y, v2z], [v0x, v0y, v0z]));
+            const [nx, ny, nz] = unitOf(across) ?? across;
             
             const baseIndex = expandedPositions.length / 3;
             
@@ -542,6 +494,16 @@ export class DrawHelperCore {
             indices: expandedIndices,
             normals: expandedNormals
         };
+    }
+
+    /**
+     * Whether a transform mirrors what it places, as a JSCAD mirror does: the determinant of its
+     * turn-and-scale part is negative, so it cannot be taken apart into a turn and positive scales.
+     * @param transform - A 4 x 4 matrix, column-major
+     * @returns True when the transform mirrors
+     */
+    protected mirrors(transform: readonly number[]): boolean {
+        return linearDeterminant(transform) < 0;
     }
 
     /**
@@ -582,54 +544,39 @@ export class DrawHelperCore {
     }
 
     /**
-     * Prepare mesh data for back face rendering by flipping normals and reversing winding order
-     * This is used to create a duplicate mesh that renders the back side with a different material
-     * @param meshDataArray - Array of mesh data objects
-     * @returns Combined mesh data with flipped normals and reversed indices
+     * Joins the pieces of a surface into the typed buffers an engine uploads, in one pass and with no
+     * intermediate lists, so a face of any size draws.
+     * @param parts - The pieces, each with its own vertices and triangles
+     * @param merge - The color size, and whether to turn the normals round and wind the triangles the other way
+     * @returns The joined positions, normals, indices and, where the pieces have them, uvs and colors
      */
-    protected prepareBackFaceMeshData(
-        meshDataArray: MeshData[]
-    ): MeshData {
-        const totalPositions: number[] = [];
-        let totalNormals: number[] = [];
-        const totalIndices: number[] = [];
-        const totalUvs: number[] = [];
-        let indexOffset = 0;
+    protected mergeMeshParts(parts: readonly MeshPart[], merge: MeshMerge = {}): MergedMeshBuffers {
+        return mergedMeshBuffers(parts, merge);
+    }
 
-        meshDataArray.forEach(meshItem => {
-            totalPositions.push(...meshItem.positions);
-            
-            if (meshItem.normals && meshItem.normals.length > 0) {
-                for (let i = 0; i < meshItem.normals.length; i++) {
-                    totalNormals.push(-meshItem.normals[i]!);
-                }
-            }
-            
-            if (meshItem.uvs) {
-                totalUvs.push(...meshItem.uvs);
-            }
-            
-            for (let i = 0; i < meshItem.indices.length; i += 3) {
-                totalIndices.push(
-                    meshItem.indices[i]! + indexOffset,
-                    meshItem.indices[i + 2]! + indexOffset,
-                    meshItem.indices[i + 1]! + indexOffset
-                );
-            }
-            indexOffset += meshItem.positions.length / 3;
-        });
-
-        if (totalNormals.length === 0 && totalPositions.length > 0) {
-            const computedNormals = this.computeNormals(totalPositions, totalIndices);
-            totalNormals = computedNormals;
+    /**
+     * The pieces of a surface that can be drawn: a piece that is missing, or that has no positions or
+     * no indexes, is left out with a warning, so one corrupted piece does not keep the rest from
+     * drawing.
+     * @param parts - The pieces as the caller hands them over
+     * @returns The pieces to merge
+     */
+    protected drawableMeshParts(parts: readonly MeshPart[]): MeshPart[] {
+        const drawable = parts.filter(part => part?.positions != null && part.indices != null);
+        if (drawable.length < parts.length) {
+            console.warn("Skipping corrupted mesh item");
         }
+        return drawable;
+    }
 
-        return {
-            positions: totalPositions,
-            indices: totalIndices,
-            normals: totalNormals,
-            uvs: totalUvs.length > 0 ? totalUvs : undefined
-        };
+    /**
+     * Prepares the back of a surface: its pieces joined, the normals turned round and the triangles
+     * wound the other way, so a second mesh shows the back side in its own material.
+     * @param meshDataArray - The pieces of the surface
+     * @returns The joined buffers of the back side
+     */
+    protected prepareBackFaceMeshData(meshDataArray: readonly MeshPart[]): MergedMeshBuffers {
+        return mergedMeshBuffers(meshDataArray, { flipNormals: true, reverseWinding: true });
     }
 
     /**
@@ -675,7 +622,7 @@ export class DrawHelperCore {
      */
     protected surfaceAnalysisColors(mesh: SurfaceAnalysisMesh, fallback: string, min: number | undefined, max: number | undefined, components: 3 | 4): number[][] | undefined {
         const faces = mesh.faceList ?? [];
-        if (!faces.some(face => Array.isArray(face.analysisValues))) {
+        if (!faces.some(face => face.analysisValues !== undefined)) {
             return undefined;
         }
         const found = finiteRange([mesh]);

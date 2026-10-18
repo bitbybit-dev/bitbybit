@@ -4,7 +4,7 @@ import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../inputs";
 import type { BabylonNode } from "./babylon/node";
 import type { Tag } from "@bitbybit-dev/core";
-import { DrawCore } from "@bitbybit-dev/core";
+import { DrawCore, checkDrawableMesh } from "@bitbybit-dev/core";
 import type { Context } from "../context";
 import { GridMaterial } from "@babylonjs/materials";
 import type { DrawHelper } from "../draw-helper";
@@ -159,6 +159,9 @@ export class Draw extends DrawCore {
     private async handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny) {
         const options = this.mergedOcctShapeOptions(inputs);
         const decomposedMeshes = inputs.entity as Inputs.OCCT.DecomposedMeshDto[];
+        if (options.drawFaces) {
+            decomposedMeshes.forEach(checkDrawableMesh);
+        }
         const pooled = this.drawHelper.withSurfaceAnalysisRange(options, decomposedMeshes);
         const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
             pooled, dm, pooled)));

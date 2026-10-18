@@ -1,9 +1,9 @@
 
 import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, defaultEdgeColor, DesignMeshCache, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
-import type { KeptDesignMesh } from "@bitbybit-dev/core";
-import type { EdgeRange, EdgeSegments, FaceLook, FaceRange, LookGroup, LookMesh, PartPlacement, MeshData } from "@bitbybit-dev/core";
+import { DrawHelperCore, checkDrawableMesh, checkKeptDesignMesh, defaultEdgeColor, DesignMeshCache, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookedMeshOf, lookMeshesOf, designDrawPlanOf, designMeshesOf, designMeshingTextOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
+import type { KeptDesignMesh, DrawableShapeMesh } from "@bitbybit-dev/core";
+import type { EdgeRange, EdgeSegments, FaceLook, FaceRange, LookGroup, LookMesh, PartPlacement, MeshData, MeshPart, GrowingMeshData } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import type { JSCADText } from "@bitbybit-dev/jscad-worker";
 import type { Vector } from "@bitbybit-dev/base";
@@ -41,9 +41,10 @@ interface DesignEdges {
 
 interface DesignDrawState {
     placements: Map<string, PartPlacement[]>;
-    meshes: Map<string, Inputs.OCCT.DecomposedMeshDto>;
+    meshes: Map<string, DrawableShapeMesh>;
     signature: string;
     precision: number;
+    meshing: string;
     batches: DesignBatch[];
     edges: DesignEdges | undefined;
 }
@@ -62,7 +63,7 @@ export class DrawHelper extends DrawHelperCore {
 
     private readonly designStates = new WeakMap<THREEJS.Group, DesignDrawState>();
 
-    private readonly designMeshes = new DesignMeshCache<Inputs.OCCT.DecomposedMeshDto>();
+    private readonly designMeshes = new DesignMeshCache<DrawableShapeMesh>();
     private readonly scratchMatrix = new THREEJS.Matrix4();
 
     private readonly recipeDrawer = new RecipeMeshesDrawer({
@@ -213,7 +214,7 @@ export class DrawHelper extends DrawHelperCore {
                 throw new Error("Shape parameter is required");
             }
             const safeWorkerOptions = this.getMeshingOptions(resolved);
-            const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", safeWorkerOptions);
+            const decomposedMesh: DrawableShapeMesh = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMeshBuffers", safeWorkerOptions);
             return this.handleDecomposedMesh(resolved, decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing OCCT shape:", error);
@@ -225,7 +226,10 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.OCCT.DrawShapesDto, inputs) as Resolved.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>;
         try {
             const safeWorkerOptions = this.getMeshingOptions(resolved);
-            const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", safeWorkerOptions);
+            const meshes: DrawableShapeMesh[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshBuffers", safeWorkerOptions);
+            if (resolved.drawFaces) {
+                meshes.forEach(checkDrawableMesh);
+            }
             const pooled = this.withSurfaceAnalysisRange(resolved, meshes);
             const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(pooled, decomposedMesh, pooled)));
             const shapesMeshContainer = new THREEJS.Group();
@@ -286,17 +290,19 @@ export class DrawHelper extends DrawHelperCore {
     async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: THREEJS.Group): Promise<THREEJS.Group> {
         const options = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
         const state = previous ? this.designStates.get(previous) : undefined;
-        const plan = designDrawPlanOf<Models.OCCT.DesignBuiltPart<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSectionPart<Inputs.OCCT.TopoDSShapePointer>>(build, options, state);
+        const meshing = this.meshingTextOf(options);
+        const planOptions = { ...options, meshing };
+        const plan = designDrawPlanOf<Models.OCCT.DesignBuiltPart<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSectionPart<Inputs.OCCT.TopoDSShapePointer>>(build, planOptions, state);
         if (previous && state && plan.posesOnly) {
             this.poseDesign(state, plan.placements);
             return previous;
         }
-        const meshes = await designMeshesOf(plan, options, state, this.meshingTextOf(options), this.designMeshes, parts => this.meshShapesForLooks(parts.map(part => part.shape), options));
+        const meshes = await designMeshesOf(plan, planOptions, state, meshing, this.designMeshes, parts => this.meshShapesForLooks(parts.map(part => part.shape), options));
         const target = previous && state ? previous : this.newDesignGroup();
         if (state && target === previous) {
             this.clearDesign(target, state);
         }
-        const filled = this.fillDesign(target, plan.parts, plan.placements, plan.placed, meshes, options, plan.signature);
+        const filled = { ...this.fillDesign(target, plan.parts, plan.placements, plan.placed, meshes, options, plan.signature), meshing };
         filled.meshes = meshesByKeyOf(plan, meshes);
         this.designStates.set(target, filled);
         return target;
@@ -306,11 +312,16 @@ export class DrawHelper extends DrawHelperCore {
     /**
      * The meshes this drawer keeps for design parts with the given shape hashes, as it meshed them for
      * these drawing options, so a caller can store them and hand them back with `keepDesignMeshes`.
+     * They are the drawer's own meshes, not copies, and their numbers are views into buffers the
+     * worker handed over, so store them where a structured clone keeps them, such as IndexedDB or a
+     * message posted without a transfer list. Never transfer their buffers to another thread, which
+     * empties them here too, and never store them as JSON, which turns their typed arrays into plain
+     * records: `keepDesignMeshes` refuses both rather than drawing nothing.
      * @param shapeHashes - The parts' shape hashes, as a design build gives them
      * @param drawOptions - The options the parts were drawn with
      * @returns The meshes it keeps, each with its part's shape hash; a part it has not meshed for these options is left out
      */
-    keptDesignMeshes(shapeHashes: readonly string[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): KeptDesignMesh<Inputs.OCCT.DecomposedMeshDto>[] {
+    keptDesignMeshes(shapeHashes: readonly string[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): KeptDesignMesh<DrawableShapeMesh>[] {
         const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
         const meshing = this.meshingTextOf(resolved);
         return shapeHashes.flatMap(shapeHash => {
@@ -324,15 +335,15 @@ export class DrawHelper extends DrawHelperCore {
      * these options without being meshed again. A mesh that is not one of faces and edges is passed over.
      * @param meshes - The meshes, each with its part's shape hash
      * @param drawOptions - The options the meshes were made for
+     * @throws Error when a mesh of faces and edges can no longer be drawn: its buffers were transferred
+     * to another thread, or it was stored as JSON; then none of the meshes is kept
      */
     keepDesignMeshes(meshes: readonly KeptDesignMesh<unknown>[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): void {
         const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
         const meshing = this.meshingTextOf(resolved);
-        meshes.forEach(({ shapeHash, mesh }) => {
-            if (this.isMeshOfFacesAndEdges(mesh)) {
-                this.designMeshes.set(keptMeshKeyOf(shapeHash, meshing), mesh);
-            }
-        });
+        const keepable = meshes.filter((kept): kept is KeptDesignMesh<DrawableShapeMesh> => this.isMeshOfFacesAndEdges(kept.mesh));
+        keepable.forEach(checkKeptDesignMesh);
+        keepable.forEach(({ shapeHash, mesh }) => this.designMeshes.set(keptMeshKeyOf(shapeHash, meshing), mesh));
     }
 
     private meshingForLooks(options: Resolved.Draw.DrawOcctShapeOptions): Omit<Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, "faceMaterial"> {
@@ -341,30 +352,31 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private meshingTextOf(options: Resolved.Draw.DrawOcctShapeOptions): string {
-        return JSON.stringify(this.meshingForLooks(options));
+        return designMeshingTextOf(options);
     }
 
-    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<DrawableShapeMesh[]> {
         const meshing = this.meshingForLooks(options);
-        const meshes: unknown = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", { ...meshing, shapes });
+        const meshes: unknown = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshBuffers", { ...meshing, shapes });
         if (!Array.isArray(meshes) || meshes.length !== shapes.length || !meshes.every(mesh => this.isMeshOfFacesAndEdges(mesh))) {
             throw new Error(`Meshing ${shapes.length} shapes did not return one mesh of faces and edges per shape.`);
         }
+        meshes.forEach(checkDrawableMesh);
         return meshes;
     }
 
-    private isMeshOfFacesAndEdges(mesh: unknown): mesh is Inputs.OCCT.DecomposedMeshDto {
+    private isMeshOfFacesAndEdges(mesh: unknown): mesh is DrawableShapeMesh {
         return typeof mesh === "object" && mesh !== null && Array.isArray((mesh as Record<string, unknown>)["faceList"]) && Array.isArray((mesh as Record<string, unknown>)["edgeList"]);
     }
 
-    private lookedShapeGroup(mesh: Inputs.OCCT.DecomposedMeshDto, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): THREEJS.Group {
+    private lookedShapeGroup(mesh: DrawableShapeMesh, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): THREEJS.Group {
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMeshWithAppearance");
         this.context.scene.add(shapeGroup);
         const zOffset = options.drawEdges ? 2 : 0;
         if (options.drawFaces && mesh.faceList.length > 0) {
             const looks = lookGroupsOf(appearance, mesh.faceList.map(face => face.faceIndex), options.faceColour);
-            shapeGroup.add(this.lookedMesh(lookMeshesOf(mesh, looks), options.faceOpacity, zOffset));
+            shapeGroup.add(this.lookedMesh(mesh, looks, options.faceOpacity, zOffset));
             if (options.drawTwoSided) {
                 const meshData: MeshData[] = mesh.faceList.map(face => ({ positions: face.vertexCoord, normals: face.normalCoord, indices: face.triIndexes }));
                 shapeGroup.add(this.createBackFaceMesh(meshData, options.backFaceColour || DEFAULT_COLORS.BACK_FACE, options.backFaceOpacity, zOffset));
@@ -384,34 +396,10 @@ export class DrawHelper extends DrawHelperCore {
         return defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
     }
 
-    private lookedMesh(lookMeshes: readonly LookMesh[], faceOpacity: number, zOffset: number): THREEJS.Mesh {
-        const drawn = lookMeshes.filter(look => look.indices.length > 0);
-        let vertexCount = 0;
-        let indexCount = 0;
-        for (const look of drawn) {
-            vertexCount += look.positions.length / 3;
-            indexCount += look.indices.length;
-        }
-        const positions = new Float32Array(vertexCount * 3);
-        const normals = new Float32Array(vertexCount * 3);
-        const indices = new Uint32Array(indexCount);
+    private lookedMesh(source: DrawableShapeMesh, looks: readonly LookGroup[], faceOpacity: number, zOffset: number): THREEJS.Mesh {
+        const { positions, normals, indices, looks: drawn, faceRanges } = lookedMeshOf(source, looks);
         const geometry = new THREEJS.BufferGeometry();
-        const faceRanges: FaceRange[] = [];
-        let vertexOffset = 0;
-        let indexOffset = 0;
-        drawn.forEach((look, materialIndex) => {
-            positions.set(look.positions, vertexOffset * 3);
-            normals.set(look.normals, vertexOffset * 3);
-            for (let i = 0; i < look.indices.length; i++) {
-                indices[indexOffset + i] = look.indices[i]! + vertexOffset;
-            }
-            geometry.addGroup(indexOffset, look.indices.length, materialIndex);
-            for (const range of look.faceRanges) {
-                faceRanges.push({ face: range.face, start: range.start + indexOffset, count: range.count });
-            }
-            vertexOffset += look.positions.length / 3;
-            indexOffset += look.indices.length;
-        });
+        drawn.forEach((span, materialIndex) => geometry.addGroup(span.indexStart, span.indexCount, materialIndex));
         geometry.setAttribute("position", new THREEJS.BufferAttribute(positions, 3));
         geometry.setAttribute("normal", new THREEJS.BufferAttribute(normals, 3));
         geometry.setIndex(new THREEJS.BufferAttribute(indices, 1));
@@ -453,7 +441,7 @@ export class DrawHelper extends DrawHelperCore {
         return group;
     }
 
-    private fillDesign(target: THREEJS.Group, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: Map<string, Inputs.OCCT.DecomposedMeshDto>, options: Resolved.Draw.DrawOcctShapeOptions, signature: string): DesignDrawState {
+    private fillDesign(target: THREEJS.Group, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: Map<string, DrawableShapeMesh>, options: Resolved.Draw.DrawOcctShapeOptions, signature: string): Omit<DesignDrawState, "meshing"> {
         const zOffset = options.drawEdges ? 2 : 0;
         const batches: DesignBatch[] = [];
         if (options.drawFaces) {
@@ -521,7 +509,7 @@ export class DrawHelper extends DrawHelperCore {
         return { mesh, instances };
     }
 
-    private edgeBatch(placed: readonly string[], parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance>, meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, placements: ReadonlyMap<string, readonly PartPlacement[]>, options: Resolved.Draw.DrawOcctShapeOptions): DesignEdges | undefined {
+    private edgeBatch(placed: readonly string[], parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance>, meshes: ReadonlyMap<string, DrawableShapeMesh>, placements: ReadonlyMap<string, readonly PartPlacement[]>, options: Resolved.Draw.DrawOcctShapeOptions): DesignEdges | undefined {
         const segments = new Map(placed.map(id => [id, edgeSegmentsOf(meshes.get(id)!)]));
         const colors = new Map(placed.map(id => [id, this.segmentColors(segments.get(id)!, parts.get(id)!.appearance, options)]));
         const order: { part: string; index: number }[] = [];
@@ -687,7 +675,7 @@ export class DrawHelper extends DrawHelperCore {
             let localOrigin: THREEJS.Group;
             if (resolved.jscadMesh && resolved.updatable) {
                 localOrigin = resolved.jscadMesh;
-                localOrigin.clear();
+                this.clearFreeingGeometries(localOrigin);
             } else {
                 localOrigin = new THREEJS.Group();
                 localOrigin.name = this.generateEntityId("jscadMeshes");
@@ -924,7 +912,7 @@ export class DrawHelper extends DrawHelperCore {
 
     drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum | undefined }): THREEJS.Group {
         if (inputs.surfacesMesh && inputs.updatable) {
-            inputs.surfacesMesh.clear();
+            this.clearFreeingGeometries(inputs.surfacesMesh);
         } else {
             inputs.surfacesMesh = new THREEJS.Group();
             inputs.surfacesMesh.name = this.generateEntityId("colouredSurfaces");
@@ -952,93 +940,35 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined; colors?: number[] | undefined }[],
+        meshDataConverted: readonly MeshPart[],
         group: THREEJS.Group | undefined, updatable: boolean, material: THREEJS.MeshPhysicalMaterial, addToScene: boolean, hidden: boolean
     ): THREEJS.Group {
-        const createMesh = () => {
-            const totalPositions: number[] = [];
-            let totalNormals: number[] = [];
-            const totalIndices: number[] = [];
-            const totalUvs: number[] = [];
-            const totalColors: number[] = [];
-            let indexOffset = 0;
-
-            meshDataConverted.forEach(meshItem => {
-                if (!meshItem || !meshItem.positions || !meshItem.indices) {
-                    console.warn("Skipping corrupted mesh item");
-                    return;
-                }
-                totalPositions.push(...meshItem.positions);
-                if (meshItem.normals && meshItem.normals.length > 0) {
-                    totalNormals.push(...meshItem.normals);
-                }
-                if (meshItem.uvs) {
-                    totalUvs.push(...meshItem.uvs);
-                }
-                if (meshItem.colors) {
-                    totalColors.push(...meshItem.colors);
-                }
-                const offsetIndices = meshItem.indices.map(i => i + indexOffset);
-                totalIndices.push(...offsetIndices);
-                indexOffset += meshItem.positions.length / 3;
-            });
-
-            if (totalNormals.length === 0 && totalPositions.length > 0) {
-                totalNormals = Array.from(this.computeNormals(totalPositions, totalIndices));
-            }
-
-            const geometry = new THREEJS.BufferGeometry();
-            geometry.setAttribute("position", new THREEJS.BufferAttribute(Float32Array.from(totalPositions), 3));
-            geometry.setAttribute("normal", new THREEJS.BufferAttribute(Float32Array.from(totalNormals), 3));
-            if (totalUvs.length > 0) {
-                geometry.setAttribute("uv", new THREEJS.BufferAttribute(Float32Array.from(totalUvs), 2));
-                geometry.setAttribute("uv2", new THREEJS.BufferAttribute(Float32Array.from(totalUvs), 2));
-            }
-            if (totalColors.length > 0 && totalColors.length === totalPositions.length) {
-                geometry.setAttribute("color", new THREEJS.BufferAttribute(Float32Array.from(totalColors), 3));
-            }
-            geometry.setIndex(new THREEJS.BufferAttribute(Uint32Array.from(totalIndices), 1));
-            return geometry;
-        };
+        const merged = this.mergeMeshParts(this.drawableMeshParts(meshDataConverted), { colorSize: 3 });
+        const geometry = new THREEJS.BufferGeometry();
+        geometry.setAttribute("position", new THREEJS.BufferAttribute(merged.positions, 3));
+        geometry.setAttribute("normal", new THREEJS.BufferAttribute(merged.normals, 3));
+        if (merged.uvs) {
+            geometry.setAttribute("uv", new THREEJS.BufferAttribute(merged.uvs, 2));
+            geometry.setAttribute("uv2", new THREEJS.BufferAttribute(merged.uvs, 2));
+        }
+        if (merged.colors) {
+            geometry.setAttribute("color", new THREEJS.BufferAttribute(merged.colors, 3));
+        }
+        geometry.setIndex(new THREEJS.BufferAttribute(merged.indices, 1));
 
         if (group && updatable) {
-            group.clear();
-            const geometry = createMesh();
-            if (material) {
-                const mesh = new THREEJS.Mesh(geometry, material);
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                group.add(mesh);
-            } else {
-                const mesh = new THREEJS.Mesh(geometry);
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                group.add(mesh);
-            }
+            this.clearFreeingGeometries(group);
         } else {
-            let scene: THREEJS.Scene | null = null;
-            if (addToScene) {
-                scene = this.context.scene;
-            }
-
             group = new THREEJS.Group();
             group.name = this.generateEntityId("surface");
-            if (scene) {
-                scene.add(group);
-            }
-            const geometry = createMesh();
-            if (material) {
-                const mesh = new THREEJS.Mesh(geometry, material);
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                group.add(mesh);
-            } else {
-                const mesh = new THREEJS.Mesh(geometry);
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                group.add(mesh);
+            if (addToScene) {
+                this.context.scene.add(group);
             }
         }
+        const mesh = material ? new THREEJS.Mesh(geometry, material) : new THREEJS.Mesh(geometry);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        group.add(mesh);
         if (hidden) {
             group.visible = false;
         }
@@ -1049,7 +979,7 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.Verb.DrawSurfaceDto, inputs) as Resolved.Verb.DrawSurfaceDto<THREEJS.Group>;
         const meshData = resolved.surface.tessellate();
 
-        const meshDataConverted: MeshData = {
+        const meshDataConverted: GrowingMeshData = {
             positions: [],
             indices: [],
             normals: [],
@@ -1161,17 +1091,29 @@ export class DrawHelper extends DrawHelperCore {
         geometry.computeVertexNormals();
         const matrix4 = new THREEJS.Matrix4();
         matrix4.fromArray(transforms);
-        jscadMesh.clear();
+        this.clearFreeingGeometries(jscadMesh);
         const mesh = new THREEJS.Mesh(geometry, material);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         jscadMesh.add(mesh);
-        jscadMesh.applyMatrix4(matrix4);
+        matrix4.decompose(jscadMesh.position, jscadMesh.quaternion, jscadMesh.scale);
     }
 
-    async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>) {
+    private clearFreeingGeometries(group: THREEJS.Object3D): void {
+        group.traverse(node => {
+            if (node instanceof THREEJS.Mesh) {
+                node.geometry.dispose();
+            }
+        });
+        group.clear();
+    }
+
+    async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: DrawableShapeMesh, options: Partial<Inputs.Draw.DrawOcctShapeOptions>) {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
         const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+        if (resolved.drawFaces) {
+            checkDrawableMesh(decomposedMesh);
+        }
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
@@ -1217,7 +1159,7 @@ export class DrawHelper extends DrawHelperCore {
             const colorGroups = decomposedMesh.colorGroups;
             if (!analysisColors && !resolved.faceMaterial && colorGroups && Object.keys(colorGroups).length > 0) {
                 const looks = lookGroupsOfColors(colorGroups, decomposedMesh.faceList.map(face => face.faceIndex), hex);
-                shapeGroup.add(this.lookedMesh(lookMeshesOf(decomposedMesh, looks), alpha, zOffset));
+                shapeGroup.add(this.lookedMesh(decomposedMesh, looks, alpha, zOffset));
             } else {
                 const mesh = this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
                 shapeGroup.add(mesh);
@@ -1298,14 +1240,16 @@ export class DrawHelper extends DrawHelperCore {
             });
             const textPolylines = await Promise.all(promises);
             const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, resolved.edgeIndexColour);
-            shapeGroup.add(edgeMesh!);
+            if (edgeMesh) {
+                shapeGroup.add(edgeMesh);
+            }
         }
         if (resolved.drawFaceIndexes) {
-            const promises = decomposedMesh.faceList.map(async (face) => {
-                let faceMiddle = face.centerPoint;
-                if (faceMiddle === undefined) {
-                    faceMiddle = this.computeFaceMiddlePos(face.vertexCoordVec) as Inputs.Base.Point3;
-                }
+            const labelled = decomposedMesh.faceList.flatMap(face => {
+                const faceMiddle = this.faceLabelPositionOf(face);
+                return faceMiddle === undefined ? [] : [{ face, faceMiddle }];
+            });
+            const promises = labelled.map(async ({ face, faceMiddle }) => {
                 const tdto = new Inputs.JSCAD.TextDto();
                 tdto.text = `${face.faceIndex}`;
                 tdto.height = resolved.faceIndexHeight;
@@ -1327,14 +1271,19 @@ export class DrawHelper extends DrawHelperCore {
             const textPolylines = await Promise.all(promises);
 
             const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, resolved.faceIndexColour);
-            faceMesh!.parent = shapeGroup;
+            if (faceMesh) {
+                shapeGroup.add(faceMesh);
+            }
         }
         return shapeGroup;
     }
 
-    async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<THREEJS.Group> {
+    async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: DrawableShapeMesh, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<THREEJS.Group> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
         const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+        if (resolved.drawFaces) {
+            checkDrawableMesh(decomposedMesh);
+        }
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
@@ -1367,10 +1316,10 @@ export class DrawHelper extends DrawHelperCore {
 
             decomposedMesh.faceList.forEach((face, index) => {
                 const meshData: MeshData[] = [{
-                    positions: [...face.vertexCoord],
-                    normals: [...face.normalCoord],
-                    indices: [...face.triIndexes],
-                    uvs: face.uvs ? [...face.uvs] : undefined,
+                    positions: face.vertexCoord,
+                    normals: face.normalCoord,
+                    indices: face.triIndexes,
+                    uvs: face.uvs,
                     colors: analysisColors?.[index],
                 }];
 
@@ -1644,11 +1593,7 @@ export class DrawHelper extends DrawHelperCore {
                 group.add(mesh);
 
                 if (options.drawTwoSided !== false) {
-                    const meshData: MeshData[] = [{
-                        positions: Array.from(positions),
-                        indices: Array.from(indices),
-                        normals: Array.from(normals),
-                    }];
+                    const meshData: MeshData[] = [{ positions, indices, normals }];
 
                     const backFaceMesh = this.createBackFaceMesh(
                         meshData,
@@ -1682,7 +1627,7 @@ export class DrawHelper extends DrawHelperCore {
                     opacity: options.crossSectionOpacity,
                     colours: options.crossSectionColour
                 });
-                polylineMesh.parent = group;
+                group.add(polylineMesh);
                 this.context.scene.add(group);
                 return group;
             }
@@ -1805,12 +1750,12 @@ export class DrawHelper extends DrawHelperCore {
         const backFaceMeshData = this.prepareBackFaceMeshData(meshDataConverted);
 
         const geometry = new THREEJS.BufferGeometry();
-        geometry.setAttribute("position", new THREEJS.BufferAttribute(Float32Array.from(backFaceMeshData.positions), 3));
-        geometry.setAttribute("normal", new THREEJS.BufferAttribute(Float32Array.from(backFaceMeshData.normals), 3));
-        if (backFaceMeshData.uvs && backFaceMeshData.uvs.length > 0) {
-            geometry.setAttribute("uv", new THREEJS.BufferAttribute(Float32Array.from(backFaceMeshData.uvs), 2));
+        geometry.setAttribute("position", new THREEJS.BufferAttribute(backFaceMeshData.positions, 3));
+        geometry.setAttribute("normal", new THREEJS.BufferAttribute(backFaceMeshData.normals, 3));
+        if (backFaceMeshData.uvs) {
+            geometry.setAttribute("uv", new THREEJS.BufferAttribute(backFaceMeshData.uvs, 2));
         }
-        geometry.setIndex(new THREEJS.BufferAttribute(Uint32Array.from(backFaceMeshData.indices), 1));
+        geometry.setIndex(new THREEJS.BufferAttribute(backFaceMeshData.indices, 1));
 
         const group = new THREEJS.Group();
         group.name = this.generateEntityId("backFaceSurface");

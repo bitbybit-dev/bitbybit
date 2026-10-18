@@ -46,9 +46,19 @@ The shared draw rules live in `core`'s `CLAUDE.md`. What Babylon itself forces:
   long digit run into a fixed-width integer and abort.
 - **A shape with its appearance is one mesh with a sub-mesh and a material per look**: a
   `MultiMaterial` over the cached look materials when there is more than one look, the cached material
-  itself when there is one. Each triangle is written reversed, which is what `flipFaces(false)` does
-  to the plain kernel meshes; calling `flipFaces` instead sets the indices again, and Babylon then
-  replaces the sub-meshes with one. `metadata.faceRanges` says where each face's triangles sit.
+  itself when there is one. Each triangle is written reversed as it is merged (`lookedMeshOf` with
+  `reverseWinding`), as the plain kernel meshes are (`mergeMeshParts` with `reverseWinding`);
+  `flipFaces` would read the indices back and upload them a second time, and on a mesh with
+  sub-meshes Babylon then replaces them with one. `metadata.faceRanges` says where each face's
+  triangles sit.
+- **A JSCAD back face is wound from the triangles the worker sent, never from the front mesh's.**
+  A mesh made in a left-handed scene takes `CounterClockWiseSideOrientation` by default and one made
+  in a right-handed scene `ClockWiseSideOrientation`, so the back face reverses the JSCAD winding in a
+  right-handed scene, where its material takes `CounterClockWiseSideOrientation`, and keeps it in a
+  left-handed one. The front mesh reverses a copy (`flipFaces`): Babylon's geometry keeps a
+  reference to the array it is given, so reversing the worker's own would hand the back face
+  indices that were already turned round. `draw-helper-winding.test.ts` pins every back face on the
+  `NullEngine`, which the engine mock cannot do, since its `flipFaces` does nothing.
 - **A design build is one mesh and one greased line per part, both thin-instanced** from one matrix
   buffer per part, so a placement adds no node. The line follows the instances because the greased
   line's camera-facing vertex code places vertices through `finalWorld`, which carries the thin

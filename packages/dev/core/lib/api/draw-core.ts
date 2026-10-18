@@ -1,7 +1,7 @@
 import { isRecord } from "@bitbybit-dev/base";
 import type * as Inputs from "./inputs";
 import type * as Models from "./models";
-import { isFrameShaped, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { isFrameShaped, pointToWorld, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type { ShapeWithAppearance } from "./draw-appearance";
 
 /**
@@ -251,11 +251,7 @@ export class DrawCore {
             if (typeof axes === "string") {
                 return;
             }
-            const at = (u: number, v: number, w: number): Inputs.Base.Point3 => [
-                axes.origin[0] + u * axes.x[0] + v * axes.y[0] + w * axes.z[0],
-                axes.origin[1] + u * axes.x[1] + v * axes.y[1] + w * axes.z[1],
-                axes.origin[2] + u * axes.x[2] + v * axes.y[2] + w * axes.z[2],
-            ];
+            const at = (u: number, v: number, w: number): Inputs.Base.Point3 => pointToWorld(axes, [u, v, w]);
             const length = style.size;
             add([at(0, 0, 0), at(length, 0, 0)], style.colorX);
             add([at(0, 0, 0), at(0, length, 0)], style.colorY);

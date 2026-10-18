@@ -1,5 +1,5 @@
 import * as THREEJS from "three";
-import { srgbToLinear } from "@bitbybit-dev/base";
+import { srgbToLinear } from "@bitbybit-dev/base/lib/api/services/helpers/color/color-space";
 import { recipeDrawElementAt, recipeDrawPlanOf, recipeDrawRangeColors, recipeDrawRangeIndices } from "@bitbybit-dev/core";
 import type { RecipeDrawBatch, RecipeDrawInstances, RecipeDrawMesh, RecipeDrawPart } from "@bitbybit-dev/core";
 import type * as Inputs from "./inputs";

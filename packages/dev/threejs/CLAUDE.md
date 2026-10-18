@@ -52,7 +52,8 @@ The engine is an ordinary dependency here, not a peer as it is in `babylonjs`.
   measured against each other, which made the same script draw points twice the size here.
 - **Rebuilding line segments needs both halves**: clear the group and dispose its children. Adding
   without clearing leaves the old segments in the scene; clearing without disposing leaks their GPU
-  buffers. Either half alone grows without bound.
+  buffers. Either half alone grows without bound. Surfaces and JSCAD solids redrawn in place free the
+  geometries they replace the same way (`clearFreeingGeometries`), never the cached materials.
 - The pitch setter clamps to **+/-89.9 degrees** on top of the caller's limits, to stay off the poles
   where the spherical conversion and `lookAt` lose their up vector.
 - **`initThreeJS` sizes the camera distance and its limits from `sceneSize`, never the sensitivities.**

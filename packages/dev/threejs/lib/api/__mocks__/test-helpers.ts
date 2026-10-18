@@ -8,6 +8,7 @@ import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import type { Vector } from "@bitbybit-dev/base";
 import type * as Inputs from "../inputs";
+import { twoTrianglesBuffers } from "./mesh-buffers";
 
 export const partialMock = <T>(members: Partial<T>): T => members as T;
 
@@ -38,6 +39,24 @@ export interface DrawHelperMocks extends MockWorkerManagers {
     mockScene: THREEJS.Scene;
 }
 
+interface OcctDrawingInputs {
+    shapes?: unknown[];
+}
+
+function occtAnswerTo(command: string, inputs: unknown): unknown {
+    if (command === "shapeToMeshBuffers") {
+        return twoTrianglesBuffers();
+    }
+    if (command === "shapesToMeshBuffers") {
+        return ((inputs as OcctDrawingInputs | undefined)?.shapes ?? []).map(() => twoTrianglesBuffers());
+    }
+    return {
+        faceList: [],
+        edgeList: [],
+        pointsList: []
+    };
+}
+
 export function createMockWorkerManagers(): MockWorkerManagers {
     const jscadWorkerCall = vi.fn().mockResolvedValue({
         positions: [],
@@ -58,11 +77,7 @@ export function createMockWorkerManagers(): MockWorkerManagers {
         genericCallToWorkerPromise: manifoldWorkerCall
     });
 
-    const occtWorkerCall = vi.fn().mockResolvedValue({
-        faceList: [],
-        edgeList: [],
-        pointsList: []
-    });
+    const occtWorkerCall = vi.fn().mockImplementation((command: string, inputs: unknown) => Promise.resolve(occtAnswerTo(command, inputs)));
     const mockOccWorkerManager = partialMock<OCCTWorkerManager>({
         genericCallToWorkerPromise: occtWorkerCall
     });

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { contrastColor, defaultEdgeColor, designDrawPlanOf, DesignMeshCache, designMeshCacheKeyOf, designMeshesOf, designMeshKeyOf, designOptionsKeyOf, designPartKeyOf, designSignatureOf, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, meshesByKeyOf, meshNumbersOf, partPlacementsOf, samePlacements, type DesignDrawMemory, type DesignLookOptions, type DesignMesh, type DesignPlanOptions, type PartPlacement } from "./draw-appearance";
+import { contrastColor, defaultEdgeColor, designDrawPlanOf, DesignMeshCache, designMeshCacheKeyOf, designMeshesOf, designMeshKeyOf, designOptionsKeyOf, designPartKeyOf, designSignatureOf, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookedMeshOf, lookMeshesOf, meshesByKeyOf, meshNumbersOf, partPlacementsOf, samePlacements, type DesignDrawMemory, type DesignLookOptions, type DesignMesh, type DesignPlanOptions, type PartPlacement } from "./draw-appearance";
 
 const square = (faceIndex: number, z: number) => ({
     faceIndex,
@@ -250,6 +250,63 @@ describe("the faces of each look merged into flat arrays", () => {
     });
 });
 
+describe("the faces of every look merged into one mesh", () => {
+    const blackMiddleFace = lookGroupsOf({ faces: [{ indexes: [1], color: "#000000" }] }, [0, 1, 2], "#ffffff");
+    const threeSquares = { faceList: [square(0, 0), square(1, 5), square(2, 9)] };
+
+    it("should put the looks one after another and say where each look and each face sits in the whole mesh", () => {
+        // Act
+        const looked = lookedMeshOf(threeSquares, blackMiddleFace);
+
+        // Assert
+        expect(Array.from(looked.indices)).toEqual([0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11]);
+        expect(Array.from(looked.positions.subarray(12, 15))).toEqual([0, 0, 9]);
+        expect(Array.from(looked.positions.subarray(24, 27))).toEqual([0, 0, 5]);
+        expect(looked.looks.map(look => [look.group.look.color, look.vertexStart, look.vertexCount, look.indexStart, look.indexCount])).toEqual([["#ffffff", 0, 8, 0, 12], ["#000000", 8, 4, 12, 6]]);
+        expect(looked.faceRanges).toEqual([{ face: 0, start: 0, count: 6 }, { face: 2, start: 6, count: 6 }, { face: 1, start: 12, count: 6 }]);
+    });
+
+    it("should hold the same numbers as the meshes of each look put one after another", () => {
+        // Arrange
+        const perLook = lookMeshesOf(threeSquares, blackMiddleFace);
+
+        // Act
+        const looked = lookedMeshOf(threeSquares, blackMiddleFace);
+
+        // Assert
+        expect(Array.from(looked.positions)).toEqual(perLook.flatMap(look => Array.from(look.positions)));
+        expect(Array.from(looked.normals)).toEqual(perLook.flatMap(look => Array.from(look.normals)));
+    });
+
+    it("should wind every triangle the other way when asked, and keep the normals the faces give", () => {
+        // Act
+        const looked = lookedMeshOf(threeSquares, blackMiddleFace, { reverseWinding: true });
+
+        // Assert
+        expect(Array.from(looked.indices)).toEqual([0, 2, 1, 0, 3, 2, 4, 6, 5, 4, 7, 6, 8, 10, 9, 8, 11, 10]);
+        expect(Array.from(looked.normals.subarray(0, 6))).toEqual([0, 0, 1, 0, 0, 1]);
+        expect(looked.faceRanges.map(range => range.start)).toEqual([0, 6, 12]);
+    });
+
+    it("should leave out a look whose faces hold no triangles or that the mesh does not have", () => {
+        // Arrange
+        const withoutTriangles = { ...square(1, 5), triIndexes: [] };
+        const groups = [
+            { key: "kept", look: { color: "#ffffff", opacity: 1 }, faces: [0] },
+            { key: "missing", look: { color: "#ff0000", opacity: 1 }, faces: [4] },
+            { key: "empty", look: { color: "#00ff00", opacity: 1 }, faces: [1] },
+        ];
+
+        // Act
+        const looked = lookedMeshOf({ faceList: [square(0, 0), withoutTriangles] }, groups);
+
+        // Assert
+        expect(looked.looks.map(look => look.group.key)).toEqual(["kept"]);
+        expect(looked.positions).toHaveLength(12);
+        expect(looked.faceRanges).toEqual([{ face: 0, start: 0, count: 6 }]);
+    });
+});
+
 describe("the edges of a mesh as segments", () => {
     it("should cut each edge into segments between consecutive points and record where they are", () => {
         // Arrange
@@ -400,6 +457,20 @@ describe("the meshes a drawer keeps across design builds", () => {
 
         // Assert
         expect(numbers).toBe(2 * (12 + 12 + 6) + 6);
+    });
+
+    it("should weigh the uvs and the surface analysis values a mesh's faces carry as well", () => {
+        // Arrange
+        const texturedAndAnalyzed: DesignMesh = {
+            faceList: [{ ...square(0, 0), uvs: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]), analysisValues: new Float32Array([1, 2, 3, 4]) }, { ...square(1, 0), uvs: new Float32Array(0) }],
+            edgeList: [],
+        };
+
+        // Act
+        const numbers = meshNumbersOf(texturedAndAnalyzed);
+
+        // Assert
+        expect(numbers).toBe(12 + 12 + 6 + 8 + 4 + 12 + 12 + 6);
     });
 
     it("should key a part's mesh by its shape hash and the meshing options, and keep none for a part without a shape hash", () => {

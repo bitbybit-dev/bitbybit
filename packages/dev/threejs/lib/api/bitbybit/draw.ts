@@ -1,6 +1,6 @@
 import * as THREEJS from "three";
 import type { Tag } from "@bitbybit-dev/core";
-import { DrawCore } from "@bitbybit-dev/core";
+import { DrawCore, checkDrawableMesh } from "@bitbybit-dev/core";
 import * as Inputs from "../inputs";
 import type { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
 import type { Context } from "../context";
@@ -144,6 +144,9 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), async (options) => {
             const decomposedMeshes = inputs.entity as Inputs.OCCT.DecomposedMeshDto[];
             const merged = this.drawHelper.withSurfaceAnalysisRange(this.occtOptions(options), decomposedMeshes);
+            if (merged.drawFaces) {
+                decomposedMeshes.forEach(checkDrawableMesh);
+            }
             const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
                 merged, dm, merged)));
             const container = new THREEJS.Group();

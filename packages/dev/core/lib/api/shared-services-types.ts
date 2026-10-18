@@ -1,4 +1,4 @@
-import type { Color, Dates, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
+import type { Color, Dates, Engineering, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, Recipes, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
 import type { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import type { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import type { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
@@ -28,6 +28,8 @@ export interface SharedServices {
     transforms: Transforms;
     point: Point;
     frame: Frame;
+    engineering: Engineering;
+    recipes: Recipes;
     line: Line;
     polyline: Polyline;
         verb: Verb;

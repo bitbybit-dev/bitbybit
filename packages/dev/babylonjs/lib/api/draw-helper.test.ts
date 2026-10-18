@@ -5,7 +5,9 @@ vi.mock("@babylonjs/core", async () => {
 });
 
 import { createDrawHelperMocks, partialMock } from "./__mocks__/test-helpers";
-import { MockGreasedLineMesh, MockLinesMesh, MockPBRMetallicRoughnessMaterial, MockVertexData, instanceOf, type MockMesh, type MockScene } from "./__mocks__/babylonjs.mock";
+import { meshBuffersOf, triangleFaceLists, twoTrianglesBuffers } from "./__mocks__/mesh-buffers";
+import type { MeshPart } from "@bitbybit-dev/core";
+import { MockGreasedLineMesh, MockLinesMesh, MockMesh, MockPBRMetallicRoughnessMaterial, MockVertexData, instanceOf, type MockScene } from "./__mocks__/babylonjs.mock";
 import { DrawHelper } from "./draw-helper";
 import type { Context } from "./context";
 import * as Inputs from "./inputs";
@@ -1635,7 +1637,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(occtWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapeToMeshBuffers", expect.anything());
         });
 
         it("should draw OCCT shape with edges", async () => {
@@ -1808,7 +1810,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(occtWorkerCall).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapesToMeshBuffers", expect.anything());
             expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(2);
         });
     });
@@ -2430,7 +2432,7 @@ describe("DrawHelper unit tests", () => {
             await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(occtWorkerCall).toHaveBeenCalledWith(
-                "shapeToMesh",
+                "shapeToMeshBuffers",
                 expect.objectContaining({
                     shape: inputs.shape
                 })
@@ -3194,7 +3196,7 @@ describe("DrawHelper unit tests", () => {
                     {
                         faceIndex: 0,
                         centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertexCoord: [],
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0.5, 1, 0],
                         vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
                         normalCoord: [],
                         triIndexes: [0, 1, 2]
@@ -3231,7 +3233,7 @@ describe("DrawHelper unit tests", () => {
                     {
                         faceIndex: 0,
                         centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertexCoord: [],
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0.5, 1, 0],
                         vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
                         normalCoord: [],
                         triIndexes: [0, 1, 2]
@@ -3595,6 +3597,20 @@ describe("DrawHelper unit tests", () => {
             expect(vectorAdd).toHaveBeenCalled();
         });
 
+        it("should place the index of a face the worker sends without a center point at the middle of its vertices", async () => {
+            // Arrange
+            const withoutCenter = meshBuffersOf({ faceList: [{ ...triangleFaceLists(0, true), vertexCoord: [0, 0, 0, 2, 0, 0, 1, 2, 0] }], edgeList: [], pointsList: [] }, { withoutCenters: true });
+            occtWorkerCall.mockResolvedValueOnce(withoutCenter);
+            createVectorText.mockResolvedValue([[[0, 0]]]);
+
+            // Act
+            await drawHelper.drawShape({ shape: occtShape(), drawEdges: false, drawTwoSided: false, drawFaceIndexes: true });
+
+            // Assert
+            expect(withoutCenter.faceList[0]!.centerPoint).toBeNull();
+            expect(vectorAdd).toHaveBeenCalledWith({ first: [0, 0.05, 0], second: [1, 2 / 3, 0] });
+        });
+
         it("should set zOffset on face index mesh when drawEdges is true", async () => {
             const mockShape = {
                 faceList: [
@@ -3761,7 +3777,9 @@ describe("DrawHelper unit tests", () => {
             inputs.edgeIndexColour = "#ffff00";
             inputs.drawTwoSided = false;
 
-            await expect(drawHelper.drawShape(inputs)).rejects.toThrow();
+            await drawHelper.drawShape(inputs);
+
+            expect(createVectorText).not.toHaveBeenCalled();
         });
 
         it("should not call createVectorText when faceList is empty but drawFaceIndexes is true", async () => {
@@ -3792,7 +3810,9 @@ describe("DrawHelper unit tests", () => {
             inputs.faceIndexColour = "#ff00ff";
             inputs.drawTwoSided = false;
 
-            await expect(drawHelper.drawShape(inputs)).rejects.toThrow();
+            await drawHelper.drawShape(inputs);
+
+            expect(createVectorText).not.toHaveBeenCalled();
         });
 
         it("should use correct lineSpacing for edge index text", async () => {
@@ -3900,7 +3920,14 @@ describe("DrawHelper unit tests", () => {
         });
     });
 
-    describe("prepareBackFaceMeshDataNoWindingReversal", () => {
+    describe("back faces drawn without turning the winding", () => {
+        const backWithoutReversal = (parts: { positions: number[]; normals: number[]; indices: number[]; uvs?: number[] }[]): { positions: number[]; normals: number[]; indices: number[]; uvs: number[] | undefined } => {
+            const usesClockWiseSideOrientation = false;
+            const skipWindingReversal = true;
+            const back = instanceOf(drawHelper["createBackFaceMesh"](parts, "#0000ff", 1, 0, usesClockWiseSideOrientation, skipWindingReversal), MockMesh);
+            const data = back._vertexData!;
+            return { positions: Array.from(data.positions), normals: Array.from(data.normals), indices: Array.from(data.indices), uvs: data.uvs.length > 0 ? Array.from(data.uvs) : undefined };
+        };
         it("should flip normals without reversing winding order", () => {
             const meshData = [
                 {
@@ -3911,7 +3938,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
+            const result = backWithoutReversal(meshData);
 
             expect(result.positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
             
@@ -3945,7 +3972,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
+            const result = backWithoutReversal(meshDataArray);
 
             expect(result.positions).toEqual([
                 0, 0, 0, 1, 0, 0, 0, 1, 0,
@@ -3977,7 +4004,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
+            const result = backWithoutReversal(meshDataArray);
 
             expect(result.indices).toEqual([
                 0, 1, 2,
@@ -3994,14 +4021,14 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
+            const result = backWithoutReversal(meshData);
 
             expect(result.normals.length).toBe(9);
             expect(result.normals[0]).toBe(-0.5);
             expect(result.normals[1]).toBe(0.5);
-            expect(result.normals[2]).toBe(-0.707);
-            expect(result.normals[3]).toBe(0.3);
-            expect(result.normals[4]).toBe(-0.8);
+            expect(result.normals[2]).toBeCloseTo(-0.707, 7);
+            expect(result.normals[3]).toBeCloseTo(0.3, 7);
+            expect(result.normals[4]).toBeCloseTo(-0.8, 7);
             expect(result.normals[5]).toBe(0.5);
             expect(result.normals[6]).toBe(-1);
             expect(result.normals[7]).toBeCloseTo(0, 10);
@@ -4017,7 +4044,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
+            const result = backWithoutReversal(meshData);
 
             expect(result.uvs).toBeUndefined();
         });
@@ -4032,7 +4059,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
+            const result = backWithoutReversal(meshData);
 
             expect(result.uvs).toEqual([0, 0, 1, 0, 0.5, 1]);
         });
@@ -4053,12 +4080,12 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
+            const result = backWithoutReversal(meshDataArray);
 
             expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0.5, 0.5]);
         });
 
-        it("should handle empty normals array", () => {
+        it("should give a part without normals smooth ones from its triangles, turned round", () => {
             const meshData = [
                 {
                     positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
@@ -4067,9 +4094,9 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
+            const result = backWithoutReversal(meshData);
 
-            expect(result.normals.length).toBe(0);
+            expect(result.normals.map(value => value + 0)).toEqual([0, 0, -1, 0, 0, -1, 0, 0, -1]);
         });
 
         it("should handle complex triangle mesh", () => {
@@ -4092,7 +4119,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
+            const result = backWithoutReversal(meshData);
 
             expect(result.normals.length).toBe(12);
             expect(result.normals[2]).toBe(-1);
@@ -4103,7 +4130,7 @@ describe("DrawHelper unit tests", () => {
             expect(result.indices).toEqual([0, 1, 2, 1, 3, 2]);
         });
 
-        it("should handle mesh data with only some items having UVs", () => {
+        it("should fill zeros for the uvs of a part that has none, so every vertex keeps its own", () => {
             const meshDataArray = [
                 {
                     positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
@@ -4118,9 +4145,9 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
+            const result = backWithoutReversal(meshDataArray);
 
-            expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1]);
+            expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0]);
         });
 
         it("should preserve zero normals", () => {
@@ -4132,7 +4159,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
+            const result = backWithoutReversal(meshData);
 
             expect(result.normals.length).toBe(9);
             result.normals.forEach((val: number) => expect(Math.abs(val)).toBe(0));
@@ -4147,9 +4174,9 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
+            const result = backWithoutReversal(meshData);
 
-            expect(result.normals).toEqual([-0.001, 0.002, -0.003, 0.001, -0.002, 0.003, -0.0001, 0.0002, -0.0003]);
+            [-0.001, 0.002, -0.003, 0.001, -0.002, 0.003, -0.0001, 0.0002, -0.0003].forEach((expected, at) => expect(result.normals[at]).toBeCloseTo(expected, 7));
         });
     });
     describe("handleDecomposedMeshIndividually", () => {
@@ -4458,6 +4485,80 @@ describe("DrawHelper unit tests", () => {
             expect(lineColorOf(plain)).toBe("#00ff00");
             expect(lineColorOf(contrasted)).toBe("#999999");
             expect(lineColorOf(individually)).toBe("#ffffff");
+        });
+    });
+
+    describe("a shape mesh with a face that cannot be drawn", () => {
+        const withLooseFace = (): Inputs.OCCT.DecomposedMeshDto => ({
+            faceList: [triangleFaceLists(4, true), { ...triangleFaceLists(9, false), vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0, 5] }],
+            edgeList: [],
+            pointsList: [],
+        });
+
+        it("should refuse it naming the face by its index and add nothing to the scene", async () => {
+            // Arrange
+            const before = mockScene._meshes.length;
+
+            // Act
+            const drawing = drawHelper.handleDecomposedMesh({ drawEdges: false }, withLooseFace(), {});
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Face 9 cannot be drawn: it holds 10 position values and 3 indexes; both must be whole points and triangles, three values each.");
+            expect(mockScene._meshes).toHaveLength(before);
+        });
+
+        it("should refuse it when drawing each face on its own as well, before adding anything", async () => {
+            // Arrange
+            const before = mockScene._meshes.length;
+
+            // Act
+            const drawing = drawHelper.handleDecomposedMeshIndividually({ drawEdges: false }, withLooseFace(), {});
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Face 9 cannot be drawn");
+            expect(mockScene._meshes).toHaveLength(before);
+        });
+
+        it("should refuse a list of shapes before drawing any of them", async () => {
+            // Arrange
+            occtWorkerCall.mockResolvedValue([twoTrianglesBuffers(), withLooseFace()]);
+            const before = mockScene._meshes.length;
+
+            // Act
+            const drawing = drawHelper.drawShapes({ shapes: [occtShape(), occtShape()], drawEdges: false });
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Face 9 cannot be drawn");
+            expect(mockScene._meshes).toHaveLength(before);
+        });
+
+        it("should draw such a mesh's edges when its faces are not drawn", async () => {
+            // Act
+            const drawn = await drawHelper.handleDecomposedMesh({ drawFaces: false, drawEdges: false }, withLooseFace(), {});
+
+            // Assert
+            expect(instanceOf(drawn, MockMesh).getChildMeshes()).toHaveLength(0);
+        });
+    });
+
+    describe("a part of a surface missing its numbers", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it("should leave out a part without positions with a warning and draw the rest", () => {
+            // Arrange
+            const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+            const whole: MeshPart = { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] };
+            const withoutPositions: unknown = { positions: null, indices: [0, 1, 2] };
+            const material = new BABYLON.PBRMetallicRoughnessMaterial("surface");
+
+            // Act
+            const drawn = drawHelper.createOrUpdateSurfacesMesh([whole, withoutPositions as MeshPart], undefined, false, material, true, false);
+
+            // Assert
+            expect(Array.from(instanceOf(drawn, MockMesh)._vertexData!.positions)).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+            expect(warn).toHaveBeenCalledWith("Skipping corrupted mesh item");
         });
     });
 });

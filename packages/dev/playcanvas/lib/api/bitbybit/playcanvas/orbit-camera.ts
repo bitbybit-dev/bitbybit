@@ -530,9 +530,7 @@ export class PlayCanvasOrbitCamera {
         const pinchMidPoint = new pc.Vec2();
 
         const getPinchDistance = (pointA: { x: number; y: number }, pointB: { x: number; y: number }): number => {
-            const dx = pointA.x - pointB.x;
-            const dy = pointA.y - pointB.y;
-            return Math.sqrt((dx * dx) + (dy * dy));
+            return Math.hypot(pointA.x - pointB.x, pointA.y - pointB.y);
         };
 
         const calcMidPoint = (pointA: { x: number; y: number }, pointB: { x: number; y: number }, result: pc.Vec2): void => {

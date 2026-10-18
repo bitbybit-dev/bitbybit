@@ -1,5 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
-import { srgbToLinear } from "@bitbybit-dev/base";
+import { srgbToLinear } from "@bitbybit-dev/base/lib/api/services/helpers/color/color-space";
 import { describe, expect, it } from "vitest";
 import type * as Inputs from "./inputs";
 import { recipeDrawElementAt, recipeDrawPlanOf, recipeDrawRangeColors, recipeDrawRangeIndices } from "./draw-recipe";

@@ -5,6 +5,7 @@ vi.mock("@babylonjs/core", async () => {
 });
 
 import { createDrawHelperMocks } from "./__mocks__/test-helpers";
+import { meshBuffersOf } from "./__mocks__/mesh-buffers";
 import { MockGreasedLineMesh, MockMesh, MockPBRMetallicRoughnessMaterial, instanceOf } from "./__mocks__/babylonjs.mock";
 import { DrawHelper } from "./draw-helper";
 import * as Inputs from "./inputs";
@@ -62,6 +63,11 @@ describe("DrawHelper iso curves and surface analysis", () => {
     const greasedLines = (drawn: BABYLON.Mesh): MockGreasedLineMesh[] => children(drawn).filter((child): child is MockGreasedLineMesh => child instanceof MockGreasedLineMesh);
     const surfaces = (drawn: BABYLON.Mesh): MockMesh[] => children(drawn).filter(child => !(child instanceof MockGreasedLineMesh) && child._vertexData !== null);
     const frontFaces = (drawn: BABYLON.Mesh): MockMesh[] => surfaces(drawn).filter(child => !child.name.includes("backFace"));
+    const backFaces = (drawn: BABYLON.Mesh): MockMesh[] => surfaces(drawn).filter(child => child.name.includes("backFace"));
+    const numbersOf = (mesh: MockMesh): { positions: number[]; normals: number[]; indices: number[]; uvs: number[]; colors: number[] | null } => {
+        const data = mesh._vertexData!;
+        return { positions: Array.from(data.positions), normals: Array.from(data.normals), indices: Array.from(data.indices), uvs: Array.from(data.uvs), colors: data.colors && Array.from(data.colors) };
+    };
     const materialOf = (mesh: MockMesh): MockPBRMetallicRoughnessMaterial => instanceOf(mesh.material, MockPBRMetallicRoughnessMaterial);
     const rounded = (values: number[]): number[] => values.map(value => Number(value.toFixed(7)));
 
@@ -69,12 +75,12 @@ describe("DrawHelper iso curves and surface analysis", () => {
         const data = mesh._vertexData!;
         const colors = new Map<string, number[]>();
         for (let vertex = 0; vertex < data.positions.length / 3; vertex++) {
-            colors.set(data.positions.slice(3 * vertex, 3 * vertex + 3).join(","), rounded(data.colors!.slice(4 * vertex, 4 * vertex + 4)));
+            colors.set(Array.from(data.positions.slice(3 * vertex, 3 * vertex + 3)).join(","), rounded(Array.from(data.colors!.slice(4 * vertex, 4 * vertex + 4))));
         }
         return colors;
     };
 
-    const draw = (mesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>>): Promise<BABYLON.Mesh> =>
+    const draw = (mesh: Inputs.OCCT.DecomposedMeshDto | Inputs.OCCT.DecomposedMeshBuffersDto, options: Partial<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>>): Promise<BABYLON.Mesh> =>
         drawHelper.handleDecomposedMesh({ drawEdges: false, drawTwoSided: false, ...options }, mesh, {});
 
     describe("what reaches the worker", () => {
@@ -116,7 +122,7 @@ describe("DrawHelper iso curves and surface analysis", () => {
 
             // Assert
             const [name, inputs] = occtWorkerCall.mock.calls[0]!;
-            expect(name).toBe("shapesToMeshes");
+            expect(name).toBe("shapesToMeshBuffers");
             expect([inputs.isoCurvesU, inputs.isoCurvesV, inputs.surfaceAnalysis]).toEqual([5, 2, Inputs.OCCT.surfaceAnalysisEnum.mean]);
             expect("faceMaterial" in inputs).toBe(false);
         });
@@ -156,6 +162,25 @@ describe("DrawHelper iso curves and surface analysis", () => {
     });
 
     describe("surface analysis", () => {
+        it("should draw the typed buffers the worker hands over exactly as it draws lists, analysis colors and back faces included", async () => {
+            // Arrange
+            const lists = meshOf([triangle(0, [0, 2, 4]), { ...triangle(1), uvs: [] }]);
+            const buffers = meshBuffersOf(lists, { withoutCenters: true });
+
+            // Act
+            const fromLists = await draw(lists, { drawTwoSided: true });
+            const fromBuffers = await draw(buffers, { drawTwoSided: true });
+
+            // Assert
+            expect(buffers.faceList[1]!.vertexCoord.byteOffset).toBeGreaterThan(0);
+            expect(buffers.faceList[1]!.uvs).toHaveLength(0);
+            expect(numbersOf(frontFaces(fromLists)[0]!).positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0, 0, 11, 0, 0, 10, 1, 0]);
+            expect(numbersOf(frontFaces(fromBuffers)[0]!)).toEqual(numbersOf(frontFaces(fromLists)[0]!));
+            expect(numbersOf(backFaces(fromLists)[0]!).indices).toEqual([0, 2, 1, 3, 5, 4]);
+            expect(numbersOf(backFaces(fromBuffers)[0]!)).toEqual(numbersOf(backFaces(fromLists)[0]!));
+            expect(surfaces(fromBuffers)).toHaveLength(surfaces(fromLists).length);
+        });
+
         it("should color each vertex through the ramp, from the lowest value found to the highest", async () => {
             // Act
             const drawn = await draw(meshOf([triangle(0, [0, 2, 4])]), {});

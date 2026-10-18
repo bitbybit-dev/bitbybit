@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { GeometryHelper, MathBitByBit, Vector } from "@bitbybit-dev/base";
 import { DrawHelperCore, type SurfaceAnalysisMesh } from "./draw-helper-core";
-import type { ManifoldMeshAttributes } from "./draw-helper-types";
+import type { ManifoldMeshAttributes, MeshPart } from "./draw-helper-types";
 
 class ColourReader extends DrawHelperCore {
     readColour(colour: number[] | string | undefined, fallback: string): string {
@@ -27,6 +27,15 @@ class ManifoldShader extends DrawHelperCore {
         return this.manifoldMeshAttributes({ numProp, vertProperties: new Float32Array(vertProperties), triVerts: new Uint32Array(triVerts) }, minSharpAngle);
     }
 }
+
+class PartSorter extends DrawHelperCore {
+    drawable(parts: readonly MeshPart[]): MeshPart[] {
+        return this.drawableMeshParts(parts);
+    }
+}
+
+const sorter = (): PartSorter =>
+    new PartSorter(new Vector(new MathBitByBit(), new GeometryHelper()));
 
 const shader = (): ManifoldShader =>
     new ManifoldShader(new Vector(new MathBitByBit(), new GeometryHelper()));
@@ -316,5 +325,39 @@ describe("DrawHelperCore Manifold shading", () => {
 
         // Assert
         expect(Array.from(mesh.positions)).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+    });
+});
+
+describe("DrawHelperCore parts of a surface to draw", () => {
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    it("should leave out a missing part and a part without positions or indexes, with one warning", () => {
+        // Arrange
+        const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+        const whole: MeshPart = { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], indices: [0, 1, 2] };
+        const parts = loose<MeshPart[]>([whole, null, { positions: null, indices: [0, 1, 2] }, { positions: [0, 0, 0], indices: undefined }, undefined]);
+
+        // Act
+        const drawable = sorter().drawable(parts);
+
+        // Assert
+        expect(drawable).toEqual([whole]);
+        expect(warn).toHaveBeenCalledTimes(1);
+        expect(warn).toHaveBeenCalledWith("Skipping corrupted mesh item");
+    });
+
+    it("should keep every part without a warning when all of them can be drawn", () => {
+        // Arrange
+        const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+        const parts: MeshPart[] = [{ positions: new Float32Array(9), indices: new Uint32Array([0, 1, 2]) }, { positions: [], indices: [] }];
+
+        // Act
+        const drawable = sorter().drawable(parts);
+
+        // Assert
+        expect(drawable).toEqual(parts);
+        expect(warn).not.toHaveBeenCalled();
     });
 });

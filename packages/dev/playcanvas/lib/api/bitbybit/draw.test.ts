@@ -2256,7 +2256,7 @@ describe("Draw unit tests", () => {
             await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options: { precision: undefined, faceColour: "#00ff00" } });
 
             // Assert
-            expect(callWorker).toHaveBeenCalledWith("shapeToMesh", expect.objectContaining({ precision: 0.01, faceColour: "#00ff00" }));
+            expect(callWorker).toHaveBeenCalledWith("shapeToMeshBuffers", expect.objectContaining({ precision: 0.01, faceColour: "#00ff00" }));
         });
 
         it("should draw the manifold it is given even when the options it is redrawn with name another", async () => {
@@ -2291,7 +2291,7 @@ describe("Draw unit tests", () => {
             await draw.drawAnyAsync({ entity: current, group });
 
             // Assert
-            expect(callWorker).toHaveBeenCalledWith("shapeToMesh", expect.objectContaining({ shape: current, faceColour: "#00ff00" }));
+            expect(callWorker).toHaveBeenCalledWith("shapeToMeshBuffers", expect.objectContaining({ shape: current, faceColour: "#00ff00" }));
         });
 
         it("should leave a polyline's width to the line DTO rather than the point diameter when its options leave the size out", async () => {
