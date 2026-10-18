@@ -1,5 +1,6 @@
 import type * as Manifold3D from "manifold-3d";
-import { recipeSurfaceMeshes, resolveDto, toRecipe } from "@bitbybit-dev/base";
+import type { Recipes } from "@bitbybit-dev/base";
+import { resolveDto } from "@bitbybit-dev/base";
 import * as Inputs from "../../inputs/manifold-inputs";
 import type * as Resolved from "../../resolved-inputs";
 import { executeRecipe } from "./recipe-executor";
@@ -22,7 +23,7 @@ export class ManifoldRecipes {
 
     private manifold: Manifold3D.ManifoldToplevel;
 
-    constructor(wasm: Manifold3D.ManifoldToplevel) {
+    constructor(wasm: Manifold3D.ManifoldToplevel, private readonly recipes: Recipes) {
         this.manifold = wasm;
     }
 
@@ -45,7 +46,7 @@ export class ManifoldRecipes {
      */
     build(inputs: Inputs.Manifold.BuildRecipeDto): Manifold3D.Manifold[] {
         const resolved = resolveDto(Inputs.Manifold.BuildRecipeDto, inputs) as Resolved.Manifold.BuildRecipeDto;
-        const recipe = toRecipe(resolved.recipe);
+        const recipe = this.recipes.read({ recipe: resolved.recipe });
         if (!Number.isSafeInteger(resolved.circularSegments) || resolved.circularSegments < MIN_CIRCLE_SIDES) {
             throw new RangeError(`A circle needs at least ${MIN_CIRCLE_SIDES} sides, got ${resolved.circularSegments}`);
         }
@@ -71,14 +72,14 @@ export class ManifoldRecipes {
      */
     meshes(inputs: Inputs.Manifold.BuildRecipeMeshesDto): Inputs.Manifold.RecipeMeshesDto {
         const resolved = resolveDto(Inputs.Manifold.BuildRecipeMeshesDto, inputs) as Resolved.Manifold.BuildRecipeMeshesDto;
-        const recipe = toRecipe(resolved.recipe);
+        const recipe = this.recipes.read({ recipe: resolved.recipe });
         if (!Number.isSafeInteger(resolved.circularSegments) || resolved.circularSegments < MIN_CIRCLE_SIDES) {
             throw new RangeError(`A circle needs at least ${MIN_CIRCLE_SIDES} sides, got ${resolved.circularSegments}`);
         }
         if (!(resolved.minSharpAngle >= 0 && resolved.minSharpAngle <= MAX_SHARP_ANGLE)) {
             throw new RangeError(`minSharpAngle must be an angle from 0 to ${MAX_SHARP_ANGLE} degrees, got ${resolved.minSharpAngle}`);
         }
-        return recipeMeshes(this.manifold, recipe, resolved);
+        return recipeMeshes(this.manifold, this.recipes, recipe, resolved);
     }
 
     /**
@@ -102,7 +103,7 @@ export class ManifoldRecipes {
      */
     surfaceMeshes(inputs: Inputs.Manifold.RecipeSurfaceMeshesDto): Inputs.Manifold.DecomposedManifoldMeshDto[] {
         const resolved = resolveDto(Inputs.Manifold.RecipeSurfaceMeshesDto, inputs) as Resolved.Manifold.RecipeSurfaceMeshesDto;
-        return recipeSurfaceMeshes(resolved.recipe, resolved.roots, resolved.adjustZtoY).map((mesh) => ({
+        return this.recipes.surfaceMeshes({ recipe: resolved.recipe, roots: resolved.roots, adjustZtoY: resolved.adjustZtoY }).map((mesh) => ({
             numProp: POSITION_PROPERTIES,
             vertProperties: mesh?.positions ?? new Float32Array(0),
             triVerts: mesh?.indices ?? new Uint32Array(0),

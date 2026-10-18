@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, pointToLocal, vectorToLocal } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { cross2, length2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { WORLD_AXES, pointToLocal, vectorToLocal } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { cross2, length2, length3, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import * as Inputs from "../api/inputs";
 import type { IfcTransaction } from "../model/transaction";
 import { enumValue, isEnumeration, isReference, ref } from "../step/values";
@@ -8,9 +8,10 @@ import type { Meeting, ModelReader, WallBody, WallCuts, WallEnd, WallGeometry, W
 import { WALL_CONNECTION, WALL_ENDS } from "./constants";
 import { axisContext, bodyContext } from "./contexts";
 import type { EntityWriter } from "./entity-writer";
+import { requireWithinRecipes } from "./checks";
 import { associateNewMaterial, layerSetThickness, layerSetUsage } from "./materials";
 import type { Line2 } from "./build-types";
-import { distanceToLine, normalize2, parameterOnLine } from "./math";
+import { distanceToLine, direction2Of, parameterOnLine } from "./math";
 import { objectPlacementOf } from "./placement";
 import { containIn, describeObject } from "./spatial";
 import { defineByType } from "./type-objects";
@@ -57,7 +58,8 @@ export function createWall(tx: IfcTransaction, writer: EntityWriter, spec: WallS
     if (!(thickness > 0)) {
         throw new Error("A wall's layers must add up to more than zero thickness");
     }
-    const direction = normalize2(along);
+    const direction = direction2Of(along);
+    requireWithinRecipes(length, "wall's length", "end");
     const offset = offsetFor(spec.alignment, thickness);
     const placement = writer.localPlacement(objectPlacementOf(tx, spec.storey), {
         origin: [spec.start[0], spec.start[1], spec.baseOffset],
@@ -251,7 +253,7 @@ export function clipWall(tx: IfcTransaction, writer: EntityWriter, wall: number,
     if (geometry.body === undefined) {
         throw new Error(`${describeObject(tx, wall)} has no body to clip`);
     }
-    if (!(Math.hypot(normal[0], normal[1], normal[2]) > 0)) {
+    if (!(length3(normal) > 0)) {
         throw new Error("A clipping plane needs a normal of some length");
     }
     const halfSpace = writer.halfSpace(pointToLocal(geometry.frame, origin), vectorToLocal(geometry.frame, normal), [1, 0, 0]);

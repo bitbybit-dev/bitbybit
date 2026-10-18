@@ -1,6 +1,6 @@
 import type * as Manifold3D from "manifold-3d";
 import type { Base } from "@bitbybit-dev/base";
-import { recipeSourceOf, recipeSurfaceMeshes } from "@bitbybit-dev/base";
+import type { Recipes } from "@bitbybit-dev/base";
 import type * as Inputs from "../../inputs";
 import type * as Resolved from "../../resolved-inputs";
 import { creasedMeshData, positionsOf } from "../mesh-data";
@@ -8,7 +8,6 @@ import { executeRecipeNodes, turnedZtoY } from "./recipe-executor";
 
 const IDENTITY: Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 const NO_MESH = -1;
-
 function placedBy(matrix: Base.TransformMatrix, adjustZtoY: boolean): Base.TransformMatrix {
     return adjustZtoY ? turnedZtoY(matrix) : [...matrix] as Base.TransformMatrix;
 }
@@ -21,8 +20,8 @@ function meshOf(solid: Manifold3D.Manifold, minSharpAngle: number): Inputs.Manif
     return creasedMeshData(positionsOf(plain), plain.triVerts, minSharpAngle);
 }
 
-export function recipeMeshes(wasm: Manifold3D.ManifoldToplevel, recipe: Base.Recipe, options: Omit<Resolved.Manifold.BuildRecipeMeshesDto, "recipe">): Inputs.Manifold.RecipeMeshesDto {
-    const sources = recipe.roots.map((root) => recipeSourceOf(recipe, root.node, root.matrix));
+export function recipeMeshes(wasm: Manifold3D.ManifoldToplevel, recipes: Recipes, recipe: Base.Recipe, options: Omit<Resolved.Manifold.BuildRecipeMeshesDto, "recipe">): Inputs.Manifold.RecipeMeshesDto {
+    const sources = recipe.roots.map((root) => recipes.sourceOf({ recipe, node: root.node, matrix: root.matrix }));
     const solids = executeRecipeNodes(wasm, recipe, options.circularSegments, options.emptyWhenFailed, [...new Set(sources.map((source) => source.node))]);
     const meshes: Inputs.Manifold.DecomposedManifoldMeshDto[] = [];
     const meshOfNode = new Map<number, number>();
@@ -43,7 +42,7 @@ export function recipeMeshes(wasm: Manifold3D.ManifoldToplevel, recipe: Base.Rec
         ...(root.group === undefined ? {} : { group: root.group }),
     }));
     const failed = sources.flatMap((source, index) => solids.get(source.node) === undefined ? [index] : []);
-    recipeSurfaceMeshes(recipe, failed, false).forEach((surface, at) => {
+    recipes.surfaceMeshes({ recipe, roots: failed, adjustZtoY: false }).forEach((surface, at) => {
         if (surface === undefined) {
             return;
         }

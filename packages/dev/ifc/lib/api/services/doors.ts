@@ -1,4 +1,5 @@
 import { resolveDto } from "@bitbybit-dev/base";
+import { requireFinite } from "../../build/checks";
 import { createDoorType, createFilling } from "../../build/fillings";
 import type { IfcModel } from "../../model/model-types";
 import * as Inputs from "../inputs";
@@ -94,8 +95,10 @@ export class IFCDoors {
         const model = modelOf(resolved.model);
         const wall = resolveId(model, resolved.wall, "IfcWall", "wall");
         const type = resolveId(model, resolved.doorType, "IfcDoorType", "door type");
+        const offset = lengthIn(model, resolved.offset, DEFAULT_MILLIMETRES.openingOffset);
+        requireFinite(offset, "door's offset");
+        requireFinite(resolved.sill, "door's sill");
         return editModel(model, (tx, writer) => {
-            const offset = lengthIn(model, resolved.offset, DEFAULT_MILLIMETRES.openingOffset);
             createFilling(tx, writer, "IfcDoor", { wall, type, id: resolved.id, name: resolved.name, offset, sill: resolved.sill }, lengthTolerance(model));
         });
     }

@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
 import type { MeshArrays } from "@bitbybit-dev/base/lib/api/services/helpers/helper-types";
-import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type * as Inputs from "../api/inputs";
 import type { IfcSchema } from "../schema/schema";
 import type { IfcEntity, IfcFileHeader, IfcValue } from "../step/step-types";

@@ -1,5 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
-import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type * as Inputs from "../api/inputs";
 
 export type ProfileRegion = PolygonRegion | CircleRegion | CompositeRegion;

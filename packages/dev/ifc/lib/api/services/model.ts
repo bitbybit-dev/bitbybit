@@ -1,5 +1,5 @@
 import { resolveDto } from "@bitbybit-dev/base";
-import { WORLD_AXES, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import { textValue } from "../../step/values";
 import { createProject, DESIGN_TRANSFER_VIEW, millimetresPerUnit, projectOf, SCHEMA_FOR_NEW_MODELS } from "../../build/project";
 import { keyGlobalId } from "../../model/guid";
@@ -16,7 +16,7 @@ import { editModel, lengthTolerance, modelOf, oneOf, resolveId } from "./service
 import { PARALLEL_TOLERANCE, POINT3_SIZE } from "../../build/constants";
 import { moveElement } from "../../build/moving";
 import { removeObject } from "../../build/removal";
-import { requireFinite, requirePoint } from "../../build/checks";
+import { requirePoint, requireTurn } from "../../build/checks";
 import { standingIn, storeyFrame, storeyOf, storeysOf } from "../../build/spatial";
 import { georeferenceOf } from "../../build/georeference";
 
@@ -343,7 +343,7 @@ export class IFCModels {
         const resolved = resolveDto(Inputs.IFC.MoveElementDto, inputs) as Resolved.IFC.MoveElementDto<IfcModel>;
         const model = modelOf(resolved.model);
         requirePoint(resolved.translation, POINT3_SIZE, "translation");
-        requireFinite(resolved.rotation, "rotation in degrees");
+        requireTurn(resolved.rotation, "rotation");
         const element = resolveId(model, resolved.element, "IfcProduct", "element");
         const storey = storeyOf(model, element);
         const plan = storey === undefined ? WORLD_AXES : storeyFrame(model, storey);

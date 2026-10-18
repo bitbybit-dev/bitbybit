@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
+import { WORLD_AXES, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
 import type { IfcTransaction } from "../model/transaction";
 import { enumValue, isReference, ref } from "../step/values";
 import type { Frame3, ModelReader, SlabOpeningSpec } from "./build-types";
@@ -8,7 +8,7 @@ import { VERTICAL_COSINE, VOIDING } from "./constants";
 import { bodyContext } from "./contexts";
 import { polylinePoints } from "./curves";
 import type { EntityWriter } from "./entity-writer";
-import { normalize3, placedOnPlan } from "./math";
+import { direction3Of, placedOnPlan } from "./math";
 import { openingMargin } from "./openings";
 import { cleanOutline, edgesCross, isInsideOrOn } from "./outlines";
 import { absoluteFrame, directionOf, objectPlacementOf } from "./placement";
@@ -31,7 +31,7 @@ function extrudedSolidOf(reader: ModelReader, slab: number): number {
 }
 
 function verticalSpan(reader: ModelReader, slab: number, solid: number, frame: Frame3): [number, number] {
-    const direction = vectorToWorld(frame, normalize3(directionOf(reader, reader.attribute(solid, "ExtrudedDirection"), [0, 0, 1])));
+    const direction = vectorToWorld(frame, direction3Of(directionOf(reader, reader.attribute(solid, "ExtrudedDirection"), [0, 0, 1])));
     const depth = reader.attribute(solid, "Depth");
     if (typeof depth !== "number" || Math.abs(frame.z[2]) < VERTICAL_COSINE || Math.abs(direction[2]) < VERTICAL_COSINE) {
         throw new Error(`${describeObject(reader, slab)} is not extruded straight up or down, so this library does not cut it`);

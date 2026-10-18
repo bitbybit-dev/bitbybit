@@ -1,7 +1,7 @@
 import type { Base } from "@bitbybit-dev/base";
-import { knotDomain, nurbsCurvePoint } from "@bitbybit-dev/base/lib/api/services/helpers/nurbs";
-import { WORLD_AXES, pointToWorld, vectorToWorld, type FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { cross3, length3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { knotDomain, nurbsCurvePoint } from "@bitbybit-dev/base/lib/api/services/helpers/curves/nurbs";
+import { WORLD_AXES, pointToWorld, vectorToWorld, type FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { cross3, length3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { axisPlacementFrame, directionOf, pointOf } from "../build/placement";
 import type { ModelSnapshot } from "../model/snapshot";
 import type { IfcValue } from "../step/step-types";

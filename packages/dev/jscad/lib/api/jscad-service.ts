@@ -1,6 +1,6 @@
 import { GeometryHelper, Lists, Point, Transforms, Vector, resolveDto } from "@bitbybit-dev/base";
 import { MathBitByBit } from "@bitbybit-dev/base";
-import { computeVertexNormals } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
+import { computeVertexNormals } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-normals";
 import { JSCADExpansions } from "./services/jscad-expansions";
 import { JSCADBooleans } from "./services/jscad-booleans";
 import { JSCADExtrusions } from "./services/jscad-extrusions";

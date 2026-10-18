@@ -1,4 +1,4 @@
-import { WORLD_AXES, composeAxes, pointToWorld, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES, composeAxes, pointToWorld, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import { describe, expect, it } from "vitest";
 import type { Fixture } from "../../__test__/fixture-types";
 import { modelOf } from "./service-support";
@@ -155,6 +155,7 @@ describe("IFCRoofs.add", () => {
     it.each([
         [{ pitch: 0 }, "A sloped roof's pitch is more than 0 and at most 89 degrees, got 0"],
         [{ pitch: 90 }, "A sloped roof's pitch is more than 0 and at most 89 degrees, got 90"],
+        [{ pitch: 1e308 }, "A sloped roof's pitch is more than 0 and at most 89 degrees, got 1e+308"],
         [{ overhang: -100 }, "A roof's overhang is zero or more, got -100"],
     ])("should refuse %j", (change, message) => {
         // Arrange

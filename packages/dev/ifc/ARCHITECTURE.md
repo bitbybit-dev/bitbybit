@@ -611,8 +611,10 @@ face (`AdvancedFaces`, `lib/geometry/advanced.ts`).
 - The loops go into parameter space, angles unwrapped along each loop. A face whose two loops wrap
   around its surface (a band of a cylinder without a seam edge) is cut open along a seam between them,
   and one whose single loop wraps (half a sphere) is closed over the pole; the cut and the pole's edge
-  are sampled along the surface as finely as its normal turns, the same points on both sides of the
-  cut. `refinedSurfaceMesh` (base) then meshes the face, and its triangles are turned to face along
+  are sampled along the surface as finely as its normal turns, a step every 1/32 of a turn, the same
+  points on both sides of the cut. A turn within a billionth of a step of a whole number of steps takes
+  no extra step: half a sphere's normals turn a quarter turn, eight steps, give or take their
+  rounding, and without that slack the rounding decided between eight and nine. `refinedSurfaceMesh` (base) then meshes the face, and its triangles are turned to face along
   the surface's normal, or against it when `SameSense` is false.
 - A rational spline whose ends meet their vertices only once its control points are divided by their
   weights is read divided, and a rational surface its boundary misses is tried the same way: one

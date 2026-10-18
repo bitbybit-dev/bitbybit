@@ -1,3 +1,6 @@
+import { InputError } from "@bitbybit-dev/base";
+import { MAX_RECIPE_COORDINATE } from "@bitbybit-dev/base/lib/api/recipes/limits.constants";
+import { radiansOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 import { isReference } from "../step/values";
 import type { EntityReader } from "./build-types";
 import { MIN_OUTLINE_POINTS, POINT2_SIZE } from "./constants";
@@ -26,6 +29,19 @@ export function requirePositive(value: number, what: string): void {
 export function requireFinite(value: number, what: string): void {
     if (!Number.isFinite(value)) {
         throw new RangeError(`The ${what} must be a finite number, got ${value}`);
+    }
+}
+
+export function requireTurn(degrees: number, property: string): void {
+    requireFinite(degrees, `${property} in degrees`);
+    if (!Number.isFinite(radiansOf(degrees))) {
+        throw new InputError(`The ${property} in degrees is too large to turn by, got ${degrees}: give the same turn within 360 degrees`, property);
+    }
+}
+
+export function requireWithinRecipes(length: number, what: string, property: string): void {
+    if (length > MAX_RECIPE_COORDINATE) {
+        throw new InputError(`The ${what} must be at most ${MAX_RECIPE_COORDINATE}, the largest coordinate a geometry recipe holds, got ${length}`, property);
     }
 }
 

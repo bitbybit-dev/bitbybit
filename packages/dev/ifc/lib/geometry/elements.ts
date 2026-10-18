@@ -1,5 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
-import { axesToMatrix, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { axesToMatrix, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type * as Inputs from "../api/inputs";
 import type { Frame3 } from "../build/build-types";
 import { absoluteFrame, objectPlacementOf } from "../build/placement";

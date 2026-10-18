@@ -5,7 +5,7 @@ import { CrossSection } from "./services/cross-section/cross-section";
 import { Mesh } from "./services/mesh/mesh";
 import { ManifoldRecipes } from "./services/recipes/recipes";
 import { creasedMeshData, positionsOf } from "./services/mesh-data";
-import { BaseBitByBit } from "../base";
+import { BaseBitByBit } from "@bitbybit-dev/base";
 
 /**
  * The entry point to the Manifold kernel, a fast mesh-based solid modeler: `manifold` builds and
@@ -36,7 +36,7 @@ export class ManifoldService {
         this.manifold = new Manifold(wasm);
         this.crossSection = new CrossSection(wasm, this.base);
         this.mesh = new Mesh(wasm);
-        this.recipes = new ManifoldRecipes(wasm);
+        this.recipes = new ManifoldRecipes(wasm, this.base.recipes);
     }
 
     /**

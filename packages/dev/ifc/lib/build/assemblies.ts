@@ -1,4 +1,4 @@
-import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type { IfcTransaction } from "../model/transaction";
 import { enumValue, ref } from "../step/values";
 import { AGGREGATION, CONTAINMENT } from "./constants";

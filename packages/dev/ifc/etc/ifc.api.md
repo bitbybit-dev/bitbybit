@@ -67,6 +67,11 @@ export namespace Base {
         // (undocumented)
         right = "right"
     }
+    export type IndexedMesh = {
+        positions: number[];
+        indices: number[];
+        normals?: number[];
+    };
     export type Line2 = {
         start: Base.Point2;
         end: Base.Point2;
@@ -77,6 +82,11 @@ export namespace Base {
     };
     export type Material = any;
     export type Mesh3 = Triangle3[];
+    export type MeshWindingPieces = {
+        turnOver: boolean[];
+        pieces: number[];
+        count: number;
+    };
     // @deprecated
     export type Plane3 = Frame;
     export type Point2 = [number, number];
@@ -361,6 +371,10 @@ export namespace Base {
 
 // @public
 export namespace Color {
+    export class ChannelDto {
+        constructor(channel?: number);
+        channel?: number | undefined;
+    }
     export class HexDto {
         constructor(color?: Base.Color);
         color?: Base.Color | undefined;
@@ -443,6 +457,8 @@ namespace Color_2 {
     // Warning: (ae-forgotten-export) The symbol "WithDefaults" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "Inputs_2" needs to be exported by the entry point index.d.ts
     //
+    // (undocumented)
+    type ChannelDto = WithDefaults<Inputs_2.Color.ChannelDto, "channel">;
     // (undocumented)
     type HexDto = WithDefaults<Inputs_2.Color.HexDto, "color">;
     // (undocumented)
@@ -565,6 +581,368 @@ namespace Dates_2 {
     type DateTimeDto = WithDefaults<Inputs_2.Dates.DateTimeDto, "time">;
     // (undocumented)
     type DateYearDto = WithDefaults<Inputs_2.Dates.DateYearDto, "year">;
+}
+
+// @public
+export namespace Engineering {
+    export enum ballBearingEnum {
+        // (undocumented)
+        b6000 = "6000",
+        // (undocumented)
+        b6001 = "6001",
+        // (undocumented)
+        b6002 = "6002",
+        // (undocumented)
+        b6003 = "6003",
+        // (undocumented)
+        b6004 = "6004",
+        // (undocumented)
+        b6005 = "6005",
+        // (undocumented)
+        b6006 = "6006",
+        // (undocumented)
+        b6007 = "6007",
+        // (undocumented)
+        b6008 = "6008",
+        // (undocumented)
+        b6009 = "6009",
+        // (undocumented)
+        b6010 = "6010",
+        // (undocumented)
+        b608 = "608",
+        // (undocumented)
+        b609 = "609",
+        // (undocumented)
+        b6200 = "6200",
+        // (undocumented)
+        b6201 = "6201",
+        // (undocumented)
+        b6202 = "6202",
+        // (undocumented)
+        b6203 = "6203",
+        // (undocumented)
+        b6204 = "6204",
+        // (undocumented)
+        b6205 = "6205",
+        // (undocumented)
+        b6206 = "6206",
+        // (undocumented)
+        b6207 = "6207",
+        // (undocumented)
+        b6208 = "6208",
+        // (undocumented)
+        b6209 = "6209",
+        // (undocumented)
+        b6210 = "6210",
+        // (undocumented)
+        b623 = "623",
+        // (undocumented)
+        b624 = "624",
+        // (undocumented)
+        b625 = "625",
+        // (undocumented)
+        b626 = "626"
+    }
+    export class BallBearingSizesDto {
+        constructor(designation?: ballBearingEnum);
+        designation?: ballBearingEnum | undefined;
+    }
+    export class BevelGearOutlineDto extends BevelGearSharedDto {
+        constructor(rotation?: number, segments?: number, module?: number, teeth?: number, mateTeeth?: number, shaftAngle?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+        rotation?: number | undefined;
+        segments?: number | undefined;
+    }
+    export abstract class BevelGearSharedDto {
+        addendum?: number | undefined;
+        backlash?: number | undefined;
+        dedendum?: number | undefined;
+        mateTeeth?: number | undefined;
+        module?: number | undefined;
+        pressureAngle?: number | undefined;
+        rootFillet?: number | undefined;
+        shaftAngle?: number | undefined;
+        teeth?: number | undefined;
+    }
+    export class BevelGearSizesDto extends BevelGearSharedDto {
+        constructor(module?: number, teeth?: number, mateTeeth?: number, shaftAngle?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+    }
+    export enum clearanceFitEnum {
+        // (undocumented)
+        close = "close",
+        // (undocumented)
+        loose = "loose",
+        // (undocumented)
+        normal = "normal"
+    }
+    export class ClearanceHoleDto extends MetricSizeSharedDto {
+        constructor(size?: metricSizeEnum, fit?: clearanceFitEnum);
+        fit?: clearanceFitEnum | undefined;
+    }
+    export class CompressionSpringPathDto {
+        constructor(wireDiameter?: number, diameter?: number, activeCoils?: number, length?: number);
+        activeCoils?: number | undefined;
+        diameter?: number | undefined;
+        length?: number | undefined;
+        wireDiameter?: number | undefined;
+    }
+    export class GearPairDto {
+        constructor(module?: number, teethA?: number, teethB?: number, pressureAngle?: number, profileShiftA?: number, profileShiftB?: number, addendum?: number, dedendum?: number);
+        addendum?: number | undefined;
+        dedendum?: number | undefined;
+        module?: number | undefined;
+        pressureAngle?: number | undefined;
+        profileShiftA?: number | undefined;
+        profileShiftB?: number | undefined;
+        teethA?: number | undefined;
+        teethB?: number | undefined;
+    }
+    export class HelicalGearOutlineDto extends HelicalGearSharedDto {
+        constructor(rotation?: number, segments?: number, module?: number, teeth?: number, helixAngle?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+        rotation?: number | undefined;
+        segments?: number | undefined;
+    }
+    export abstract class HelicalGearSharedDto {
+        addendum?: number | undefined;
+        backlash?: number | undefined;
+        dedendum?: number | undefined;
+        helixAngle?: number | undefined;
+        module?: number | undefined;
+        pressureAngle?: number | undefined;
+        profileShift?: number | undefined;
+        rootFillet?: number | undefined;
+        teeth?: number | undefined;
+    }
+    export class HelicalGearSizesDto extends HelicalGearSharedDto {
+        constructor(module?: number, teeth?: number, helixAngle?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+    }
+    export class HexBoltSizesDto extends MetricSizeSharedDto {
+        constructor(size?: metricSizeEnum, length?: number);
+        length?: number | undefined;
+    }
+    export class InternalGearPairDto {
+        constructor(module?: number, pinionTeeth?: number, ringTeeth?: number, pressureAngle?: number, addendum?: number);
+        addendum?: number | undefined;
+        module?: number | undefined;
+        pinionTeeth?: number | undefined;
+        pressureAngle?: number | undefined;
+        ringTeeth?: number | undefined;
+    }
+    export class InvoluteSplineSizesDto {
+        constructor(referenceDiameter?: number, module?: number);
+        module?: number | undefined;
+        referenceDiameter?: number | undefined;
+    }
+    export enum knurlPatternEnum {
+        // (undocumented)
+        diamond = "diamond",
+        // (undocumented)
+        left = "left",
+        // (undocumented)
+        right = "right",
+        // (undocumented)
+        straight = "straight"
+    }
+    export class KnurlSizesDto {
+        constructor(diameter?: number, pitch?: number, pattern?: knurlPatternEnum);
+        diameter?: number | undefined;
+        pattern?: knurlPatternEnum | undefined;
+        pitch?: number | undefined;
+    }
+    export class MetricSizeDto extends MetricSizeSharedDto {
+        constructor(size?: metricSizeEnum);
+    }
+    export enum metricSizeEnum {
+        // (undocumented)
+        m10 = "M10",
+        // (undocumented)
+        m12 = "M12",
+        // (undocumented)
+        m14 = "M14",
+        // (undocumented)
+        m16 = "M16",
+        // (undocumented)
+        m1_6 = "M1.6",
+        // (undocumented)
+        m2 = "M2",
+        // (undocumented)
+        m20 = "M20",
+        // (undocumented)
+        m24 = "M24",
+        // (undocumented)
+        m2_5 = "M2.5",
+        // (undocumented)
+        m3 = "M3",
+        // (undocumented)
+        m4 = "M4",
+        // (undocumented)
+        m5 = "M5",
+        // (undocumented)
+        m6 = "M6",
+        // (undocumented)
+        m8 = "M8"
+    }
+    export abstract class MetricSizeSharedDto {
+        size?: metricSizeEnum | undefined;
+    }
+    export class MetricThreadDto extends MetricSizeSharedDto {
+        constructor(size?: metricSizeEnum, pitch?: number);
+        pitch?: number | undefined;
+    }
+    export class ParallelKeySizesDto {
+        constructor(shaftDiameter?: number);
+        shaftDiameter?: number | undefined;
+    }
+    export class PlanetarySetDto {
+        constructor(module?: number, sunTeeth?: number, planetTeeth?: number, planets?: number, pressureAngle?: number, addendum?: number);
+        addendum?: number | undefined;
+        module?: number | undefined;
+        planets?: number | undefined;
+        planetTeeth?: number | undefined;
+        pressureAngle?: number | undefined;
+        sunTeeth?: number | undefined;
+    }
+    export class RackOutlineDto extends RackSharedDto {
+        constructor(segments?: number, module?: number, teeth?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, height?: number);
+        segments?: number | undefined;
+    }
+    export abstract class RackSharedDto {
+        addendum?: number | undefined;
+        backlash?: number | undefined;
+        dedendum?: number | undefined;
+        height?: number | undefined;
+        module?: number | undefined;
+        pressureAngle?: number | undefined;
+        rootFillet?: number | undefined;
+        teeth?: number | undefined;
+    }
+    export class RackSizesDto extends RackSharedDto {
+        constructor(module?: number, teeth?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, height?: number);
+    }
+    export enum retainingRingKindEnum {
+        // (undocumented)
+        bore = "bore",
+        // (undocumented)
+        shaft = "shaft"
+    }
+    export class RetainingRingSizesDto {
+        constructor(kind?: retainingRingKindEnum, diameter?: number);
+        diameter?: number | undefined;
+        kind?: retainingRingKindEnum | undefined;
+    }
+    export class RingGearOutlineDto extends RingGearSharedDto {
+        constructor(rotation?: number, segments?: number, module?: number, teeth?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+        rotation?: number | undefined;
+        segments?: number | undefined;
+    }
+    export abstract class RingGearSharedDto {
+        addendum?: number | undefined;
+        backlash?: number | undefined;
+        dedendum?: number | undefined;
+        module?: number | undefined;
+        pressureAngle?: number | undefined;
+        rootFillet?: number | undefined;
+        teeth?: number | undefined;
+    }
+    export class RingGearSizesDto extends RingGearSharedDto {
+        constructor(module?: number, teeth?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+    }
+    export enum setScrewPointEnum {
+        // (undocumented)
+        cone = "cone",
+        // (undocumented)
+        cup = "cup",
+        // (undocumented)
+        dog = "dog",
+        // (undocumented)
+        flat = "flat"
+    }
+    export class SetScrewSizesDto extends MetricSizeSharedDto {
+        constructor(size?: metricSizeEnum, point?: setScrewPointEnum, length?: number);
+        length?: number | undefined;
+        point?: setScrewPointEnum | undefined;
+    }
+    export class SpurGearOutlineDto extends SpurGearSharedDto {
+        constructor(rotation?: number, segments?: number, module?: number, teeth?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+        rotation?: number | undefined;
+        segments?: number | undefined;
+    }
+    export abstract class SpurGearSharedDto {
+        addendum?: number | undefined;
+        backlash?: number | undefined;
+        dedendum?: number | undefined;
+        module?: number | undefined;
+        pressureAngle?: number | undefined;
+        profileShift?: number | undefined;
+        rootFillet?: number | undefined;
+        teeth?: number | undefined;
+    }
+    export class SpurGearSizesDto extends SpurGearSharedDto {
+        constructor(module?: number, teeth?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+    }
+}
+
+// @public
+namespace Engineering_2 {
+    // (undocumented)
+    type BallBearingSizesDto = WithDefaults<Inputs_2.Engineering.BallBearingSizesDto, "designation">;
+    // (undocumented)
+    type BevelGearOutlineDto = WithDefaults<Inputs_2.Engineering.BevelGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type BevelGearSharedDto = WithDefaults<Inputs_2.Engineering.BevelGearSharedDto, "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type BevelGearSizesDto = WithDefaults<Inputs_2.Engineering.BevelGearSizesDto, "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type ClearanceHoleDto = WithDefaults<Inputs_2.Engineering.ClearanceHoleDto, "fit" | "size">;
+    // (undocumented)
+    type CompressionSpringPathDto = WithDefaults<Inputs_2.Engineering.CompressionSpringPathDto, "wireDiameter" | "diameter" | "activeCoils" | "length">;
+    // (undocumented)
+    type GearPairDto = WithDefaults<Inputs_2.Engineering.GearPairDto, "module" | "teethA" | "teethB" | "pressureAngle" | "profileShiftA" | "profileShiftB" | "addendum" | "dedendum">;
+    // (undocumented)
+    type HelicalGearOutlineDto = WithDefaults<Inputs_2.Engineering.HelicalGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "helixAngle" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type HelicalGearSharedDto = WithDefaults<Inputs_2.Engineering.HelicalGearSharedDto, "module" | "teeth" | "helixAngle" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type HelicalGearSizesDto = WithDefaults<Inputs_2.Engineering.HelicalGearSizesDto, "module" | "teeth" | "helixAngle" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type HexBoltSizesDto = WithDefaults<Inputs_2.Engineering.HexBoltSizesDto, "length" | "size">;
+    // (undocumented)
+    type InternalGearPairDto = WithDefaults<Inputs_2.Engineering.InternalGearPairDto, "module" | "pinionTeeth" | "ringTeeth" | "pressureAngle" | "addendum">;
+    // (undocumented)
+    type InvoluteSplineSizesDto = WithDefaults<Inputs_2.Engineering.InvoluteSplineSizesDto, "referenceDiameter" | "module">;
+    // (undocumented)
+    type KnurlSizesDto = WithDefaults<Inputs_2.Engineering.KnurlSizesDto, "diameter" | "pitch" | "pattern">;
+    // (undocumented)
+    type MetricSizeDto = WithDefaults<Inputs_2.Engineering.MetricSizeDto, "size">;
+    // (undocumented)
+    type MetricSizeSharedDto = WithDefaults<Inputs_2.Engineering.MetricSizeSharedDto, "size">;
+    // (undocumented)
+    type MetricThreadDto = WithDefaults<Inputs_2.Engineering.MetricThreadDto, "size">;
+    // (undocumented)
+    type ParallelKeySizesDto = WithDefaults<Inputs_2.Engineering.ParallelKeySizesDto, "shaftDiameter">;
+    // (undocumented)
+    type PlanetarySetDto = WithDefaults<Inputs_2.Engineering.PlanetarySetDto, "module" | "sunTeeth" | "planetTeeth" | "planets" | "pressureAngle" | "addendum">;
+    // (undocumented)
+    type RackOutlineDto = WithDefaults<Inputs_2.Engineering.RackOutlineDto, "segments" | "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "height">;
+    // (undocumented)
+    type RackSharedDto = WithDefaults<Inputs_2.Engineering.RackSharedDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "height">;
+    // (undocumented)
+    type RackSizesDto = WithDefaults<Inputs_2.Engineering.RackSizesDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "height">;
+    // (undocumented)
+    type RetainingRingSizesDto = WithDefaults<Inputs_2.Engineering.RetainingRingSizesDto, "kind" | "diameter">;
+    // (undocumented)
+    type RingGearOutlineDto = WithDefaults<Inputs_2.Engineering.RingGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type RingGearSharedDto = WithDefaults<Inputs_2.Engineering.RingGearSharedDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type RingGearSizesDto = WithDefaults<Inputs_2.Engineering.RingGearSizesDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type SetScrewSizesDto = WithDefaults<Inputs_2.Engineering.SetScrewSizesDto, "point" | "size">;
+    // (undocumented)
+    type SpurGearOutlineDto = WithDefaults<Inputs_2.Engineering.SpurGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type SpurGearSharedDto = WithDefaults<Inputs_2.Engineering.SpurGearSharedDto, "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    // (undocumented)
+    type SpurGearSizesDto = WithDefaults<Inputs_2.Engineering.SpurGearSizesDto, "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
 }
 
 // @public
@@ -2515,14 +2893,54 @@ namespace Math_3 {
 
 // @public
 export namespace Mesh {
+    export class CreasedNormalsDto {
+        constructor(mesh?: Base.IndexedMesh, angle?: number);
+        angle?: number | undefined;
+        mesh: Base.IndexedMesh;
+    }
+    export class FrustumDto {
+        constructor(center?: Base.Point3, direction?: Base.Vector3, bottomRadius?: number, topRadius?: number, height?: number, sides?: number);
+        bottomRadius?: number | undefined;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        height?: number | undefined;
+        sides?: number | undefined;
+        topRadius?: number | undefined;
+    }
+    export class IcosphereDto {
+        constructor(center?: Base.Point3, radius?: number, detail?: number);
+        center?: Base.Point3 | undefined;
+        detail?: number | undefined;
+        radius?: number | undefined;
+    }
+    export class IndexedMeshDto {
+        constructor(mesh?: Base.IndexedMesh);
+        mesh: Base.IndexedMesh;
+    }
     export class MeshDto {
         constructor(mesh?: Base.Mesh3);
         mesh: Base.Mesh3;
+    }
+    export class MeshesWithinDto {
+        constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, distance?: number);
+        distance?: number | undefined;
+        mesh1: Base.Mesh3;
+        mesh2: Base.Mesh3;
     }
     export class MeshMeshToleranceDto {
         constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, tolerance?: number);
         mesh1: Base.Mesh3;
         mesh2: Base.Mesh3;
+        tolerance?: number | undefined;
+    }
+    export class MeshPointDto {
+        constructor(mesh?: Base.Mesh3, point?: Base.Point3);
+        mesh: Base.Mesh3;
+        point: Base.Point3;
+    }
+    export class MeshToIndexedDto {
+        constructor(mesh?: Base.Mesh3, tolerance?: number);
+        mesh: Base.Mesh3;
         tolerance?: number | undefined;
     }
     export class PolygonWithHolesDto {
@@ -2555,9 +2973,23 @@ export namespace Mesh {
 // @public
 namespace Mesh_2 {
     // (undocumented)
+    type CreasedNormalsDto = WithDefaults<Inputs_2.Mesh.CreasedNormalsDto, "angle">;
+    // (undocumented)
+    type FrustumDto = WithDefaults<Inputs_2.Mesh.FrustumDto, "center" | "direction" | "bottomRadius" | "topRadius" | "height" | "sides">;
+    // (undocumented)
+    type IcosphereDto = WithDefaults<Inputs_2.Mesh.IcosphereDto, "center" | "radius" | "detail">;
+    // (undocumented)
+    type IndexedMeshDto = Inputs_2.Mesh.IndexedMeshDto;
+    // (undocumented)
     type MeshDto = Inputs_2.Mesh.MeshDto;
     // (undocumented)
+    type MeshesWithinDto = WithDefaults<Inputs_2.Mesh.MeshesWithinDto, "distance">;
+    // (undocumented)
     type MeshMeshToleranceDto = WithDefaults<Inputs_2.Mesh.MeshMeshToleranceDto, "tolerance">;
+    // (undocumented)
+    type MeshPointDto = Inputs_2.Mesh.MeshPointDto;
+    // (undocumented)
+    type MeshToIndexedDto = WithDefaults<Inputs_2.Mesh.MeshToIndexedDto, "tolerance">;
     // (undocumented)
     type PolygonWithHolesDto = Inputs_2.Mesh.PolygonWithHolesDto;
     // (undocumented)
@@ -2839,6 +3271,20 @@ export namespace Polyline {
         size?: number | undefined;
         updatable?: boolean | undefined;
     }
+    export class OrientPolygon2Dto {
+        constructor(points?: Base.Point2[], counterClockwise?: boolean);
+        counterClockwise?: boolean | undefined;
+        points: Base.Point2[];
+    }
+    export class PointInPolygon2Dto {
+        constructor(points?: Base.Point2[], point?: Base.Point2);
+        point: Base.Point2;
+        points: Base.Point2[];
+    }
+    export class Polygon2Dto {
+        constructor(points?: Base.Point2[]);
+        points: Base.Point2[];
+    }
     export class PolylineCreateDto {
         constructor(points?: Base.Point3[], isClosed?: boolean);
         isClosed?: boolean | undefined;
@@ -2858,10 +3304,34 @@ export namespace Polyline {
         constructor(polylines?: PolylinePropertiesDto[]);
         polylines: PolylinePropertiesDto[];
     }
+    export class PolylineSweepDto {
+        constructor(polyline?: PolylinePropertiesDto, firstDirection?: Base.Vector3);
+        firstDirection?: Base.Vector3 | undefined;
+        polyline: PolylinePropertiesDto;
+    }
+    export class PolylineTangentsDto {
+        constructor(polyline?: PolylinePropertiesDto, startTangent?: Base.Vector3, endTangent?: Base.Vector3);
+        endTangent?: Base.Vector3 | undefined;
+        polyline: PolylinePropertiesDto;
+        startTangent?: Base.Vector3 | undefined;
+    }
     export class PolylineToleranceDto {
         constructor(polyline?: PolylinePropertiesDto, tolerance?: number);
         polyline: PolylinePropertiesDto;
         tolerance?: number | undefined;
+    }
+    export class RoundPolygon2Dto {
+        constructor(points?: Base.Point2[], radius?: number, radiusList?: number[], segments?: number);
+        points: Base.Point2[];
+        radius?: number | undefined;
+        radiusList?: number[] | undefined;
+        segments?: number | undefined;
+    }
+    export class RoundPolylineDto {
+        constructor(polyline?: PolylinePropertiesDto, radius?: number, segments?: number);
+        polyline: PolylinePropertiesDto;
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     export class SegmentsToleranceDto {
         constructor(segments?: Base.Segment3[]);
@@ -2888,6 +3358,12 @@ namespace Polyline_2 {
     // (undocumented)
     type DrawPolylinesDto<T> = WithDefaults<Inputs_2.Polyline.DrawPolylinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
     // (undocumented)
+    type OrientPolygon2Dto = WithDefaults<Inputs_2.Polyline.OrientPolygon2Dto, "counterClockwise">;
+    // (undocumented)
+    type PointInPolygon2Dto = Inputs_2.Polyline.PointInPolygon2Dto;
+    // (undocumented)
+    type Polygon2Dto = Inputs_2.Polyline.Polygon2Dto;
+    // (undocumented)
     type PolylineCreateDto = WithDefaults<Inputs_2.Polyline.PolylineCreateDto, "isClosed">;
     // (undocumented)
     type PolylineDto = Inputs_2.Polyline.PolylineDto;
@@ -2896,7 +3372,15 @@ namespace Polyline_2 {
     // (undocumented)
     type PolylinesDto = Inputs_2.Polyline.PolylinesDto;
     // (undocumented)
+    type PolylineSweepDto = WithDefaults<Inputs_2.Polyline.PolylineSweepDto, "firstDirection">;
+    // (undocumented)
+    type PolylineTangentsDto = Inputs_2.Polyline.PolylineTangentsDto;
+    // (undocumented)
     type PolylineToleranceDto = WithDefaults<Inputs_2.Polyline.PolylineToleranceDto, "tolerance">;
+    // (undocumented)
+    type RoundPolygon2Dto = WithDefaults<Inputs_2.Polyline.RoundPolygon2Dto, "radius" | "segments">;
+    // (undocumented)
+    type RoundPolylineDto = WithDefaults<Inputs_2.Polyline.RoundPolylineDto, "radius" | "segments">;
     // (undocumented)
     type SegmentsToleranceDto = WithDefaults<Inputs_2.Polyline.SegmentsToleranceDto, "tolerance">;
     // (undocumented)
@@ -2905,11 +3389,42 @@ namespace Polyline_2 {
     type TwoPolylinesToleranceDto = WithDefaults<Inputs_2.Polyline.TwoPolylinesToleranceDto, "tolerance">;
 }
 
+// @beta
+export namespace Recipes {
+    export class RecipeDto {
+        constructor(recipe?: Base.Recipe);
+        recipe: Base.Recipe;
+    }
+    export class RecipeSourceDto {
+        constructor(recipe?: Base.Recipe, node?: number, matrix?: Base.TransformMatrix);
+        matrix: Base.TransformMatrix;
+        node?: number | undefined;
+        recipe: Base.Recipe;
+    }
+    export class RecipeSurfaceMeshesDto {
+        constructor(recipe?: Base.Recipe, roots?: number[], adjustZtoY?: boolean);
+        adjustZtoY?: boolean | undefined;
+        recipe: Base.Recipe;
+        roots?: number[] | undefined;
+    }
+}
+
+// @public
+namespace Recipes_2 {
+    // (undocumented)
+    type RecipeDto = Inputs_2.Recipes.RecipeDto;
+    // (undocumented)
+    type RecipeSourceDto = WithDefaults<Inputs_2.Recipes.RecipeSourceDto, "node">;
+    // (undocumented)
+    type RecipeSurfaceMeshesDto = WithDefaults<Inputs_2.Recipes.RecipeSurfaceMeshesDto, "adjustZtoY">;
+}
+
 declare namespace Resolved {
     export {
         IFC_2 as IFC,
         Color_2 as Color,
         Dates_2 as Dates,
+        Engineering_2 as Engineering,
         Frame_2 as Frame,
         IO_2 as IO,
         Line_2 as Line,
@@ -2919,6 +3434,7 @@ declare namespace Resolved {
         Mesh_2 as Mesh,
         Point_2 as Point,
         Polyline_2 as Polyline,
+        Recipes_2 as Recipes,
         Text_3 as Text,
         Transforms_2 as Transforms,
         Vector_2 as Vector
@@ -3106,6 +3622,15 @@ export namespace Transforms {
         direction?: Base.Vector3 | undefined;
         scale?: number | undefined;
     }
+    export class TransformationDto {
+        constructor(transformation?: Base.TransformMatrixes);
+        transformation: Base.TransformMatrixes;
+    }
+    export class TransformationToleranceDto {
+        constructor(transformation?: Base.TransformMatrixes, tolerance?: number);
+        tolerance?: number | undefined;
+        transformation: Base.TransformMatrixes;
+    }
     export class TranslationsXYZDto {
         constructor(translations?: Base.Vector3[]);
         translations: Base.Vector3[];
@@ -3139,6 +3664,10 @@ namespace Transforms_2 {
     type ScaleXYZDto = WithDefaults<Inputs_2.Transforms.ScaleXYZDto, "scaleXyz">;
     // (undocumented)
     type StretchDirCenterDto = WithDefaults<Inputs_2.Transforms.StretchDirCenterDto, "center" | "direction" | "scale">;
+    // (undocumented)
+    type TransformationDto = Inputs_2.Transforms.TransformationDto;
+    // (undocumented)
+    type TransformationToleranceDto = WithDefaults<Inputs_2.Transforms.TransformationToleranceDto, "tolerance">;
     // (undocumented)
     type TranslationsXYZDto = Inputs_2.Transforms.TranslationsXYZDto;
     // (undocumented)

@@ -27,7 +27,7 @@ import { Jscad } from "@bitbybit-dev/jscad";
 import { ManifoldService } from "@bitbybit-dev/manifold";
 
 // OCCT for Node.js
-import { OCCTService, OccHelper, VectorHelperService, ShapesHelperService } from "@bitbybit-dev/occt";
+import { OCCTService } from "@bitbybit-dev/occt";
 import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
 
 // Manifold WASM module
@@ -118,9 +118,6 @@ export class BitByBitBase {
         this.csv = new CSVBitByBit();
 
         // Initialize OCCT service
-        const vecHelper = new VectorHelperService();
-        const shapesHelper = new ShapesHelperService();
-        const occHelper = new OccHelper(vecHelper, shapesHelper, occ);
-        this.occt = new OCCTService(occ, occHelper);
+        this.occt = new OCCTService(occ);
     }
 }

@@ -1,13 +1,14 @@
-import { resolveDto, toRecipe } from "@bitbybit-dev/base";
+import { Recipes, resolveDto } from "@bitbybit-dev/base";
 import { millimetresPerUnit } from "../../build/project";
-import { requireFinite, requirePoint } from "../../build/checks";
+import { requirePoint, requireTurn } from "../../build/checks";
 import { createBodiedElement } from "../../build/bodied-elements";
 import { requireMaterial } from "../../build/materials";
 import type { IfcModel } from "../../model/model-types";
 import * as Inputs from "../inputs";
 import type * as Resolved from "../resolved-inputs";
-import { DEGREES_TO_RADIANS, POINT3_SIZE } from "../../build/constants";
+import { POINT3_SIZE } from "../../build/constants";
 import { editModel, modelOf, resolveId } from "./service-support";
+import { radiansOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 /**
  * Elements of any kind whose body is given as data: exact boundary representations, such as an
@@ -15,6 +16,8 @@ import { editModel, modelOf, resolveId } from "./service-support";
  * @beta
  */
 export class IFCElements {
+
+    private readonly recipes = new Recipes();
 
     /**
      * Adds an element of any class to a storey, its body written from a recipe: brep steps as
@@ -36,11 +39,11 @@ export class IFCElements {
     add(inputs: Inputs.IFC.AddElementDto<IfcModel>): IfcModel {
         const resolved = resolveDto(Inputs.IFC.AddElementDto, inputs) as Resolved.IFC.AddElementDto<IfcModel>;
         const model = modelOf(resolved.model);
-        const body = toRecipe(resolved.body);
+        const body = this.recipes.read({ recipe: resolved.body });
         requirePoint(resolved.position, POINT3_SIZE, "position");
-        requireFinite(resolved.rotation, "rotation in degrees");
+        requireTurn(resolved.rotation, "rotation");
         const storey = resolveId(model, resolved.storey, "IfcBuildingStorey", "storey");
-        const angle = resolved.rotation * DEGREES_TO_RADIANS;
+        const angle = radiansOf(resolved.rotation);
         const [cos, sin] = [Math.cos(angle), Math.sin(angle)];
         return editModel(model, (tx, writer) => {
             createBodiedElement(tx, writer, {

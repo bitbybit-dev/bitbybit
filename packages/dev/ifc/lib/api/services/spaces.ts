@@ -35,6 +35,7 @@ export class IFCSpaces {
         const storey = resolveId(model, resolved.storey, "IfcBuildingStorey", "storey");
         const predefinedType = oneOf(resolved.predefinedType, Inputs.IFC.spacePredefinedTypeEnum, "predefined type");
         const height = lengthIn(model, resolved.height, DEFAULT_MILLIMETRES.spaceHeight);
+        requireFinite(height, "space's height");
         return editModel(model, (tx, writer) => {
             createSpace(tx, writer, {
                 storey,

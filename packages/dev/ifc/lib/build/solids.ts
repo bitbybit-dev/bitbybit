@@ -1,9 +1,10 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, pointToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES, pointToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type { IfcValue } from "../step/step-types";
 import { isReference } from "../step/values";
 import type { Frame3, ModelReader } from "./build-types";
 import { axisPlacementFrame, directionOf } from "./placement";
+import { length3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
 export function frameOf(reader: ModelReader, placement: IfcValue): Frame3 {
     return isReference(placement) ? axisPlacementFrame(reader, placement.ref) : WORLD_AXES;
@@ -26,7 +27,7 @@ export function extrusionCorners(reader: ModelReader, item: number): Base.Point3
     const profileFrame = frameOf(reader, reader.attribute(profile.ref, "Position"));
     const solidFrame = frameOf(reader, reader.attribute(item, "Position"));
     const direction = directionOf(reader, reader.attribute(item, "ExtrudedDirection"), [0, 0, 1]);
-    const scale = depth / Math.hypot(direction[0], direction[1], direction[2]);
+    const scale = depth / length3(direction);
     const corners: Base.Point3[] = [];
     for (const x of [-xDim / 2, xDim / 2]) {
         for (const y of [-yDim / 2, yDim / 2]) {

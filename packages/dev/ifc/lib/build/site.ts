@@ -1,6 +1,6 @@
-import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { frustum, icosphere } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-primitives";
-import { isInsidePolygon2, wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
+import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { frustum, icosphere } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-primitives";
+import { wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
 import type { MeshArrays } from "@bitbybit-dev/base/lib/api/services/helpers/helper-types";
 import type { ModelSnapshot } from "../model/snapshot";
 import type { IfcTransaction } from "../model/transaction";
@@ -10,7 +10,7 @@ import { POINT3_SIZE, TRIANGLE_CORNERS } from "./constants";
 import { bodyContext } from "./contexts";
 import type { EntityWriter } from "./entity-writer";
 import { associateNewMaterial, dressParts, materialsOfParts, requireMaterial } from "./materials";
-import { cleanOutline } from "./outlines";
+import { cleanHoles, cleanOutline, measuredFrom } from "./outlines";
 import { objectPlacementOf } from "./placement";
 import { containIn } from "./spatial";
 
@@ -66,15 +66,11 @@ export function createTerrain(tx: IfcTransaction, writer: EntityWriter, spec: Te
     const site = onlySite(tx);
     const material = spec.material === undefined ? undefined : requireMaterial(tx, spec.material);
     const outer = wound2(cleanOutline(spec.outline, tolerance, "outline"), true);
-    const holes = spec.holes.map((hole, index) => {
-        const cleaned = cleanOutline(hole, tolerance, `hole ${index}`);
-        if (!cleaned.every((point) => isInsidePolygon2(point, outer))) {
-            throw new Error(`Hole ${index} reaches outside the terrain's outline`);
-        }
-        return wound2(cleaned, false);
-    });
-    const placement = writer.localPlacement(objectPlacementOf(tx, site), { ...WORLD_AXES, origin: [0, 0, spec.elevation] });
-    const solid = writer.extrusion(writer.profile({ outer, holes }), WORLD_AXES, spec.depth, [0, 0, -1]);
+    const holes = cleanHoles(outer, spec.holes, tolerance, "terrain");
+    const anchor = outer[0]!;
+    const placement = writer.localPlacement(objectPlacementOf(tx, site), { ...WORLD_AXES, origin: [anchor[0], anchor[1], spec.elevation] });
+    const profile = writer.profile({ outer: measuredFrom(outer, anchor), holes: holes.map((hole) => measuredFrom(hole, anchor)) });
+    const solid = writer.extrusion(profile, WORLD_AXES, spec.depth, [0, 0, -1]);
     const body = writer.shapeRepresentation(bodyContext(tx, writer), "Body", "SweptSolid", [solid]);
     const terrain = writer.create(GEOGRAPHIC_ELEMENT, {
         GlobalId: tx.globalId(spec.id),

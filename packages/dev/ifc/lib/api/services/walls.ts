@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
-import { WORLD_AXES, pointToWorld, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES, pointToWorld, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import { requireFinite, requirePoint } from "../../build/checks";
 import { PARALLEL_TOLERANCE, POINT2_SIZE, POINT3_SIZE } from "../../build/constants";
 import { associateMaterial, layerSetFor, materialOf, requireLayerSet } from "../../build/materials";
@@ -67,6 +67,8 @@ export class IFCWalls {
         const predefinedType = oneOf(resolved.predefinedType, Inputs.IFC.wallPredefinedTypeEnum, "predefined type");
         const height = lengthIn(model, resolved.height, DEFAULT_MILLIMETRES.wallHeight);
         const thickness = lengthIn(model, resolved.thickness, DEFAULT_MILLIMETRES.wallThickness);
+        requireFinite(height, "wall's height");
+        requireFinite(resolved.baseOffset, "base offset");
         return editModel(model, (tx, writer) => {
             createWall(tx, writer, {
                 storey,
@@ -157,6 +159,9 @@ export class IFCWalls {
         }
         if (resolved.baseOffset !== undefined) {
             requireFinite(resolved.baseOffset, "base offset");
+        }
+        if (resolved.height !== undefined) {
+            requireFinite(resolved.height, "wall's height");
         }
         const alignment = resolved.alignment === undefined ? undefined : oneOf(resolved.alignment, Inputs.IFC.wallAlignmentEnum, "wall alignment");
         const tolerance = lengthTolerance(model);

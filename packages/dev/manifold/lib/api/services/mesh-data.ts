@@ -1,5 +1,5 @@
 import type * as Manifold3D from "manifold-3d";
-import { creasedMesh } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
+import { creasedMesh } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-normals";
 import type * as Inputs from "../inputs";
 
 const POSITION_SIZE = 3;

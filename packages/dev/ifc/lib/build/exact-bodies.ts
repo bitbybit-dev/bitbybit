@@ -1,14 +1,15 @@
 import type { Base } from "@bitbybit-dev/base";
-import { recipeSourceOf } from "@bitbybit-dev/base";
-import { isRigidMatrix, linearDeterminant } from "@bitbybit-dev/base/lib/api/services/helpers/matrices";
-import { cross3, dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { Recipes } from "@bitbybit-dev/base";
+import { isRigidMatrix, linearDeterminant, movedPoint, turnedVector } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
+import { scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { enumValue, ref } from "../step/values";
 import type { BodyItems, BrepItems, PlacedSource } from "./build-types";
 import { POINT3_SIZE, TRIANGLE_CORNERS } from "./constants";
 import type { EntityWriter } from "./entity-writer";
+import { direction3Of, frameFrom } from "./math";
 
-const COLUMN = 4;
-const TRANSLATION = 12;
+const RECIPES = new Recipes();
+
 const UNSPECIFIED = "UNSPECIFIED";
 const DIFFERENCE = "DIFFERENCE";
 const ADVANCED_BREP = "AdvancedBrep";
@@ -20,15 +21,15 @@ class Placer {
     constructor(private readonly matrix: readonly number[], private readonly scale: number) { }
 
     point(point: readonly number[]): Base.Point3 {
-        const m = this.matrix;
-        const [x, y, z] = [point[0]!, point[1]!, point[2]!];
-        return [0, 1, 2].map((axis) => (m[axis]! * x + m[COLUMN + axis]! * y + m[2 * COLUMN + axis]! * z + m[TRANSLATION + axis]!) * this.scale) as Base.Point3;
+        return scale3(movedPoint(this.matrix, point), this.scale);
+    }
+
+    turned(vector: readonly number[]): Base.Vector3 {
+        return turnedVector(this.matrix, vector);
     }
 
     vector(vector: readonly number[]): Base.Vector3 {
-        const m = this.matrix;
-        const turned = [0, 1, 2].map((axis) => m[axis]! * vector[0]! + m[COLUMN + axis]! * vector[1]! + m[2 * COLUMN + axis]! * vector[2]!) as Base.Vector3;
-        return scale3(turned, 1 / length3(turned));
+        return direction3Of(this.turned(vector));
     }
 
     length(length: number): number {
@@ -126,11 +127,7 @@ class BrepWriter {
     }
 
     private placement(placement: Base.RecipeBrepPlacement): number {
-        const z = this.placer.vector(placement.axis);
-        const along = this.placer.vector(placement.xDirection);
-        const square = subtract3(along, scale3(z, dot3(z, along)));
-        const x = scale3(square, 1 / length3(square));
-        return this.writer.placement3({ origin: this.placer.point(placement.origin), x, y: cross3(z, x), z });
+        return this.writer.placement3(frameFrom(this.placer.point(placement.origin), this.placer.turned(placement.axis), this.placer.turned(placement.xDirection)));
     }
 
     private curve(index: number): number {
@@ -259,7 +256,7 @@ function faceSetOf(writer: EntityWriter, node: Base.RecipeTrianglesNode, buffers
 }
 
 function placedSourceOf(recipe: Base.Recipe, root: Base.RecipeRoot, at: number): PlacedSource {
-    const source = recipeSourceOf(recipe, root.node, root.matrix);
+    const source = RECIPES.sourceOf({ recipe, node: root.node, matrix: root.matrix });
     if (!isRigidMatrix(source.matrix) || linearDeterminant(source.matrix) < 0) {
         throw new Error(`Root ${at} of the body is placed by a matrix that scales or mirrors; a body is written only moved and turned`);
     }

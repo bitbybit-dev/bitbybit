@@ -1,4 +1,3 @@
-import { checkRecipe } from "@bitbybit-dev/base";
 import type { Base } from "@bitbybit-dev/base";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { modelRecipe } from "../../geometry/elements";
@@ -7,6 +6,9 @@ import * as Inputs from "../inputs";
 import type { IfcModel } from "../../model/model-types";
 import { oneWall, TIME_STAMP } from "../../__test__/build-setup";
 import { OTHER_TOOL_FILE, WALL_A, WALL_B } from "../../__test__/other-tool-file";
+import { Recipes } from "@bitbybit-dev/base";
+
+const RECIPES = new Recipes();
 
 vi.mock("../../geometry/elements", async () => {
     const actual = await vi.importActual<typeof import("../../geometry/elements")>("../../geometry/elements");
@@ -62,7 +64,7 @@ describe("IFCGeometry.recipe", () => {
         const recipe = ifc.geometry.recipe({ model });
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         expect(recipe.roots.map((root) => root.tag["type"])).toEqual(["IfcWall", "IfcWall", "IfcDoor", "IfcDoor", "IfcSlab", "IfcColumn"]);
         expect(recipe.millimetresPerUnit).toBe(1);
         expect(recipe.tolerance).toBe(0.01);
@@ -76,7 +78,7 @@ describe("IFCGeometry.recipe", () => {
         const recipe = ifc.geometry.recipe({ model });
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         expect(recipe.groups!.map((group) => [group.name, group.parent, group.tag["type"]])).toEqual([
             ["Site", undefined, "IfcSite"],
             ["Building", 0, "IfcBuilding"],

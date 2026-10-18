@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { Base } from "@bitbybit-dev/base";
-import { checkRecipe } from "@bitbybit-dev/base";
-import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-measures";
+import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-measures";
 import { IFCService } from "../ifc-service";
 import type { IfcModel } from "../../model/model-types";
 import { modelOf } from "./service-support";
 import { cylinderBody, exactRecipe, hollowedBody, quarterCylinderBody } from "../../__test__/exact-bodies";
+import { errorFrom } from "../../__test__/build-setup";
+import { InputError, Recipes } from "@bitbybit-dev/base";
+
+const RECIPES = new Recipes();
 
 const ifc = new IFCService();
 const IDENTITY: Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
@@ -71,7 +74,7 @@ describe("IFCElements.add", () => {
         const { recipe, brep } = readBack(added, "post");
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         expect(brep.surfaces.map((surface) => surface.kind)).toEqual(["cylinder", "plane", "plane"]);
         expect(brep.curves.map((curve) => curve.kind)).toEqual(["circle", "line", "circle"]);
         expect(brep.faces.map((face) => face.sameSense)).toEqual([true, false, true]);
@@ -370,6 +373,19 @@ describe("IFCElements.add", () => {
 
         // Act & Assert
         expect(() => ifc.elements.add({ model, storey: "ground", body: empty })).toThrow("The body has no roots to write");
+    });
+
+    it("should refuse a rotation too large to turn by with an InputError naming the rotation, before anything is written", () => {
+        // Arrange
+        const model = storeyModel();
+        const rotationBeyondRadians = 1e308;
+
+        // Act
+        const error = errorFrom(() => ifc.elements.add({ model, storey: "ground", body: recipeOf([cylinderNode()], SEAM), rotation: rotationBeyondRadians }));
+
+        // Assert
+        expect(error).toBeInstanceOf(InputError);
+        expect(error).toMatchObject({ property: "rotation", message: "The rotation in degrees is too large to turn by, got 1e+308: give the same turn within 360 degrees" });
     });
 
     it("should leave the model it was given as it was", () => {

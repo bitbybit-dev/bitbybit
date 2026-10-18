@@ -1,5 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
-import { roundedCorners2, wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
+import { roundedCorners2, wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
 import { axisPlacementFrame } from "../build/placement";
 import { radiansPerUnit } from "../build/project";
 import type { ModelSnapshot } from "../model/snapshot";
@@ -9,6 +9,8 @@ import { UnsupportedGeometryError } from "./errors";
 import type { ProfileCorner, ProfileRegion } from "./geometry-types";
 import { placedOnPlan } from "../build/math";
 import { operatorMatrix } from "./operators";
+import { dot2, length2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { movedCoordinate } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
 
 const FULL_TURN = 2 * Math.PI;
 const SIMILARITY_TOLERANCE = 1e-9;
@@ -180,12 +182,14 @@ function ellipse(model: ModelSnapshot, profile: number): ProfileCorner[] {
 }
 
 function onPlan(matrix: Base.TransformMatrix, [x, y]: Base.Point2): Base.Point2 {
-    return [matrix[0] * x + matrix[4] * y + matrix[12], matrix[1] * x + matrix[5] * y + matrix[13]];
+    return [movedCoordinate(matrix, x, y, 0, 0), movedCoordinate(matrix, x, y, 0, 1)];
 }
 
 function isSimilarity(matrix: Base.TransformMatrix): boolean {
-    const scale = Math.hypot(matrix[0], matrix[1]);
-    return Math.abs(Math.hypot(matrix[4], matrix[5]) - scale) <= SIMILARITY_TOLERANCE * scale && Math.abs(matrix[0] * matrix[4] + matrix[1] * matrix[5]) <= SIMILARITY_TOLERANCE * scale * scale;
+    const x: Base.Vector2 = [matrix[0], matrix[1]];
+    const y: Base.Vector2 = [matrix[4], matrix[5]];
+    const scale = length2(x);
+    return Math.abs(length2(y) - scale) <= SIMILARITY_TOLERANCE * scale && Math.abs(dot2(x, y)) <= SIMILARITY_TOLERANCE * scale * scale;
 }
 
 function circlePoints(center: Base.Point2, radius: number): Base.Point2[] {
@@ -199,7 +203,7 @@ function transformedRegion(region: ProfileRegion, matrix: Base.TransformMatrix):
             return { kind: "composite", parts: region.parts.map((part) => transformedRegion(part, matrix)) };
         case "circle":
             if (isSimilarity(matrix)) {
-                const scale = Math.hypot(matrix[0], matrix[1]);
+                const scale = length2([matrix[0], matrix[1]]);
                 return { kind: "circle", center: onPlan(matrix, region.center), radius: region.radius * scale, innerRadius: region.innerRadius * scale };
             }
             return transformedRegion({ kind: "polygon", outer: circlePoints(region.center, region.radius), holes: region.innerRadius > 0 ? [circlePoints(region.center, region.innerRadius)] : [] }, matrix);

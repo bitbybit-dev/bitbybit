@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
 import { describe, expect, it } from "vitest";
-import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-measures";
+import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-measures";
 import { modelOf } from "../api/services/service-support";
 import { withContext } from "../__test__/geometry-fixtures";
 import { ItemConverter } from "./items";

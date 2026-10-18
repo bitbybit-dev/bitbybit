@@ -1,30 +1,39 @@
 import type { Base } from "@bitbybit-dev/base";
-import { pointToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { add2, cross2, cross3, dot2, dot3, length2, length3, scale2, scale3, subtract2, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { pointToWorld, squareFrame, unitOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { add2, cross2, dot2, length2, scale2, subtract2, unit2Of } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type { Frame3, Line2 } from "./build-types";
 
-const ZERO_LENGTH = "A direction of zero length has no direction";
+const NO_DIRECTION = "A direction needs a finite length above zero";
+const NO_SQUARE_X = "A frame's X direction has no part square to its Z axis";
 
-export function normalize2(a: Base.Vector2): Base.Vector2 {
-    const length = length2(a);
-    if (!(length > 0)) {
-        throw new RangeError(ZERO_LENGTH);
+export function direction2Of(a: Base.Vector2): Base.Vector2 {
+    const unit = unit2Of(a);
+    if (unit === undefined) {
+        throw new RangeError(NO_DIRECTION);
     }
-    return [a[0] / length, a[1] / length];
+    return unit;
 }
 
-export function normalize3(a: Base.Vector3): Base.Vector3 {
-    const length = length3(a);
-    if (!(length > 0)) {
-        throw new RangeError(ZERO_LENGTH);
+export function direction3Of(a: Base.Vector3): Base.Vector3 {
+    const unit = unitOf(a);
+    if (unit === undefined) {
+        throw new RangeError(NO_DIRECTION);
     }
-    return [a[0] / length, a[1] / length, a[2] / length];
+    return unit;
+}
+
+export function requiredFrame(frame: Frame3 | "normal" | "direction"): Frame3 {
+    if (frame === "normal") {
+        throw new RangeError(NO_DIRECTION);
+    }
+    if (frame === "direction") {
+        throw new RangeError(NO_SQUARE_X);
+    }
+    return frame;
 }
 
 export function frameFrom(origin: Base.Point3, zAxis: Base.Vector3, xHint: Base.Vector3): Frame3 {
-    const z = normalize3(zAxis);
-    const x = normalize3(subtract3(xHint, scale3(z, dot3(xHint, z))));
-    return { origin, x, y: cross3(z, x), z };
+    return requiredFrame(squareFrame(origin, zAxis, xHint));
 }
 
 export function intersectLines(first: Line2, second: Line2, parallelTolerance: number): Base.Point2 | undefined {

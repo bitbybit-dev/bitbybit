@@ -14,6 +14,7 @@ export type OperationPath =
     | "color.hexToRgb"
     | "color.hexToRgbMapped"
     | "color.invert"
+    | "color.linearToSrgb"
     | "color.rgb1Color"
     | "color.rgb255Color"
     | "color.rgba1Color"
@@ -25,6 +26,7 @@ export type OperationPath =
     | "color.rgbToGreen"
     | "color.rgbToHex"
     | "color.rgbToRed"
+    | "color.srgbToLinear"
     | "csv.arrayToCsv"
     | "csv.getColumnCount"
     | "csv.getHeaders"
@@ -443,8 +445,11 @@ export type OperationPath =
     | "occt.docToMesh"
     | "occt.docToMeshes"
     | "occt.draft.draftAngle"
+    | "occt.draft.draftAngleWithHistory"
     | "occt.draft.makeDraft"
     | "occt.draft.makeDraftToShape"
+    | "occt.draft.makeDraftToShapeWithHistory"
+    | "occt.draft.makeDraftWithHistory"
     | "occt.features.boss"
     | "occt.features.bossWithHistory"
     | "occt.features.counterboredHoles"
@@ -452,6 +457,7 @@ export type OperationPath =
     | "occt.features.countersunkHoles"
     | "occt.features.countersunkHolesWithHistory"
     | "occt.features.groove"
+    | "occt.features.grooveWithHistory"
     | "occt.features.holes"
     | "occt.features.holesWithHistory"
     | "occt.features.pocket"
@@ -461,20 +467,32 @@ export type OperationPath =
     | "occt.features.removeFaces"
     | "occt.features.removeFacesWithHistory"
     | "occt.features.revolvedBoss"
+    | "occt.features.revolvedBossWithHistory"
     | "occt.features.revolvedPocket"
+    | "occt.features.revolvedPocketWithHistory"
     | "occt.features.rib"
+    | "occt.features.ribWithHistory"
     | "occt.features.taperedBoss"
+    | "occt.features.taperedBossWithHistory"
     | "occt.features.taperedPocket"
+    | "occt.features.taperedPocketWithHistory"
     | "occt.fillets.chamfer2dVertices"
     | "occt.fillets.chamferEdgeDistAngle"
+    | "occt.fillets.chamferEdgeDistAngleWithHistory"
     | "occt.fillets.chamferEdges"
     | "occt.fillets.chamferEdgesDistAngle"
+    | "occt.fillets.chamferEdgesDistAngleWithHistory"
     | "occt.fillets.chamferEdgesDistsAngles"
+    | "occt.fillets.chamferEdgesDistsAnglesWithHistory"
     | "occt.fillets.chamferEdgesList"
+    | "occt.fillets.chamferEdgesListWithHistory"
     | "occt.fillets.chamferEdgesTwoDistances"
     | "occt.fillets.chamferEdgesTwoDistancesLists"
+    | "occt.fillets.chamferEdgesTwoDistancesListsWithHistory"
+    | "occt.fillets.chamferEdgesTwoDistancesWithHistory"
     | "occt.fillets.chamferEdgesWithHistory"
     | "occt.fillets.chamferEdgeTwoDistances"
+    | "occt.fillets.chamferEdgeTwoDistancesWithHistory"
     | "occt.fillets.fillet2d"
     | "occt.fillets.fillet2dShapes"
     | "occt.fillets.fillet3DWire"
@@ -482,10 +500,15 @@ export type OperationPath =
     | "occt.fillets.filletEdges"
     | "occt.fillets.filletEdgesList"
     | "occt.fillets.filletEdgesListOneRadius"
+    | "occt.fillets.filletEdgesListOneRadiusWithHistory"
+    | "occt.fillets.filletEdgesListWithHistory"
     | "occt.fillets.filletEdgesSameVariableRadius"
+    | "occt.fillets.filletEdgesSameVariableRadiusWithHistory"
     | "occt.fillets.filletEdgesVariableRadius"
+    | "occt.fillets.filletEdgesVariableRadiusWithHistory"
     | "occt.fillets.filletEdgesWithHistory"
     | "occt.fillets.filletEdgeVariableRadius"
+    | "occt.fillets.filletEdgeVariableRadiusWithHistory"
     | "occt.fillets.filletTwoEdgesInPlaneIntoAWire"
     | "occt.geom.curves.geom2dEllipse"
     | "occt.geom.curves.geom2dSegment"
@@ -551,15 +574,20 @@ export type OperationPath =
     | "occt.operations.offset"
     | "occt.operations.offset3DWire"
     | "occt.operations.offsetAdv"
+    | "occt.operations.offsetAdvWithHistory"
+    | "occt.operations.offsetWithHistory"
     | "occt.operations.pipe"
     | "occt.operations.pipePolylineWireNGon"
+    | "occt.operations.pipePolylineWireNGonWithHistory"
     | "occt.operations.pipeWireCylindrical"
+    | "occt.operations.pipeWireCylindricalWithHistory"
     | "occt.operations.pipeWiresCylindrical"
     | "occt.operations.pipeWithHistory"
     | "occt.operations.pipeWithScaling"
     | "occt.operations.revolve"
     | "occt.operations.revolveWithHistory"
     | "occt.operations.rotatedExtrude"
+    | "occt.operations.rotatedExtrudeWithHistory"
     | "occt.operations.sectionByFrames"
     | "occt.operations.sectionWires"
     | "occt.operations.slice"
@@ -568,7 +596,55 @@ export type OperationPath =
     | "occt.operations.splitByFrame"
     | "occt.operations.splitFaceByWires"
     | "occt.operations.splitShapeWithShapes"
+    | "occt.operations.splitShapeWithShapesWithHistory"
     | "occt.operations.sweepEvolved"
+    | "occt.parts.mechanical.bearings.ballBearing"
+    | "occt.parts.mechanical.bearings.ballBearingWithRoles"
+    | "occt.parts.mechanical.fasteners.dowelPin"
+    | "occt.parts.mechanical.fasteners.dowelPinWithRoles"
+    | "occt.parts.mechanical.fasteners.hexBolt"
+    | "occt.parts.mechanical.fasteners.hexBoltWithRoles"
+    | "occt.parts.mechanical.fasteners.hexNut"
+    | "occt.parts.mechanical.fasteners.hexNutWithRoles"
+    | "occt.parts.mechanical.fasteners.setScrew"
+    | "occt.parts.mechanical.fasteners.setScrewWithRoles"
+    | "occt.parts.mechanical.fasteners.socketHeadCapScrew"
+    | "occt.parts.mechanical.fasteners.socketHeadCapScrewWithRoles"
+    | "occt.parts.mechanical.fasteners.washer"
+    | "occt.parts.mechanical.fasteners.washerWithRoles"
+    | "occt.parts.mechanical.gears.bevelGear"
+    | "occt.parts.mechanical.gears.bevelGearWithRoles"
+    | "occt.parts.mechanical.gears.helicalGear"
+    | "occt.parts.mechanical.gears.helicalGearWithRoles"
+    | "occt.parts.mechanical.gears.rack"
+    | "occt.parts.mechanical.gears.rackProfile"
+    | "occt.parts.mechanical.gears.rackWithRoles"
+    | "occt.parts.mechanical.gears.ringGear"
+    | "occt.parts.mechanical.gears.ringGearProfile"
+    | "occt.parts.mechanical.gears.ringGearWithRoles"
+    | "occt.parts.mechanical.gears.spurGear"
+    | "occt.parts.mechanical.gears.spurGearProfile"
+    | "occt.parts.mechanical.gears.spurGearWithRoles"
+    | "occt.parts.mechanical.keys.parallelKey"
+    | "occt.parts.mechanical.keys.parallelKeyWithRoles"
+    | "occt.parts.mechanical.machining.flat"
+    | "occt.parts.mechanical.machining.flatTool"
+    | "occt.parts.mechanical.machining.keyway"
+    | "occt.parts.mechanical.machining.keywayTool"
+    | "occt.parts.mechanical.machining.knurl"
+    | "occt.parts.mechanical.machining.knurlTool"
+    | "occt.parts.mechanical.machining.ringGroove"
+    | "occt.parts.mechanical.machining.ringGrooveTool"
+    | "occt.parts.mechanical.machining.splinedHub"
+    | "occt.parts.mechanical.machining.splinedHubTool"
+    | "occt.parts.mechanical.machining.splinedShaft"
+    | "occt.parts.mechanical.machining.thread"
+    | "occt.parts.mechanical.machining.threadTool"
+    | "occt.parts.mechanical.retainingRings.retainingRing"
+    | "occt.parts.mechanical.retainingRings.retainingRingWithRoles"
+    | "occt.parts.mechanical.springs.compressionSpring"
+    | "occt.parts.mechanical.springs.compressionSpringPath"
+    | "occt.parts.mechanical.springs.compressionSpringWithRoles"
     | "occt.path.shapeFromPath"
     | "occt.recipes.build"
     | "occt.recipes.buildDocument"
@@ -693,6 +769,7 @@ export type OperationPath =
     | "occt.shapes.face.createChristmasTreeFace"
     | "occt.shapes.face.createCircleFace"
     | "occt.shapes.face.createEllipseFace"
+    | "occt.shapes.face.createFaceBoundedByWiresOnFace"
     | "occt.shapes.face.createFaceFromMultipleCircleTanWireCollections"
     | "occt.shapes.face.createFaceFromMultipleCircleTanWires"
     | "occt.shapes.face.createFaceFromWire"
@@ -777,9 +854,11 @@ export type OperationPath =
     | "occt.shapes.shape.isSame"
     | "occt.shapes.shape.purgeInternalEdges"
     | "occt.shapes.shape.unifySameDomain"
+    | "occt.shapes.shape.unifySameDomainWithHistory"
     | "occt.shapes.shell.debugInfo"
     | "occt.shapes.shell.getShellSurfaceArea"
     | "occt.shapes.shell.sewFaces"
+    | "occt.shapes.shell.sewFacesWithHistory"
     | "occt.shapes.solid.createBox"
     | "occt.shapes.solid.createBoxFromCorner"
     | "occt.shapes.solid.createChristmasTreeSolid"
@@ -801,6 +880,8 @@ export type OperationPath =
     | "occt.shapes.solid.debugInfo"
     | "occt.shapes.solid.filterSolidPoints"
     | "occt.shapes.solid.fromClosedShell"
+    | "occt.shapes.solid.fromFaces"
+    | "occt.shapes.solid.fromFacesWithHistory"
     | "occt.shapes.solid.getSolidCenterOfMass"
     | "occt.shapes.solid.getSolids"
     | "occt.shapes.solid.getSolidsCentersOfMass"
@@ -1019,16 +1100,25 @@ export type OperationPath =
     | "polyline.countPoints"
     | "polyline.create"
     | "polyline.getPoints"
+    | "polyline.isPointInside2d"
     | "polyline.length"
     | "polyline.maxFilletsHalfLine"
+    | "polyline.orient2d"
+    | "polyline.perimeter2d"
     | "polyline.polygonArea"
     | "polyline.polygonNormal"
     | "polyline.polylineSelfIntersection"
     | "polyline.polylineToLines"
     | "polyline.polylineToSegments"
     | "polyline.reverse"
+    | "polyline.roundCorners"
+    | "polyline.roundCorners2d"
     | "polyline.safestFilletRadius"
+    | "polyline.signedArea2d"
     | "polyline.sortSegmentsIntoPolylines"
+    | "polyline.sweepFrames"
+    | "polyline.sweepPlacements"
+    | "polyline.tangents"
     | "polyline.transformPolyline"
     | "polyline.twoPolylineIntersection"
     | "text.charAt"
@@ -1200,6 +1290,16 @@ export interface OperationParams {
         blackAndWhite?: boolean | PipelineRef;
     };
     /**
+     * Turns one linear-light color channel back into its sRGB encoding, the inverse of
+     * `srgbToLinear`, as a hex color holds it.
+     *
+     * Example: 0.214 -> 0.5
+     */
+    "color.linearToSrgb": {
+        /** The channel, from 0 to 1. */
+        channel?: number | PipelineRef;
+    };
+    /**
      * Passes an `{ r, g, b }` color with channels from 0 to 1 through unchanged, so it can be
      * given a name and reused.
      *
@@ -1337,6 +1437,16 @@ export interface OperationParams {
     "color.rgbToRed": {
         /** The color object to read a channel from. */
         rgb: unknown | PipelineRef;
+    };
+    /**
+     * Turns one sRGB-encoded color channel into linear light, the form glTF, STEP colors read by
+     * XCAF and the renderers' lighting work in. A hex color's channels are sRGB-encoded.
+     *
+     * Example: 0.5 -> 0.214
+     */
+    "color.srgbToLinear": {
+        /** The channel, from 0 to 1. */
+        channel?: number | PipelineRef;
     };
     /**
      * Writes a list of rows, each a list of cells, as CSV text; a cell holding a separator, a quote
@@ -5728,7 +5838,7 @@ export interface OperationParams {
      * other, such as colliding parts.
      *
      * A clash names the two by their positions in the list, from 0, with their distance, 0 where they
-     * touch, overlap or nest, and the volume two solids share.
+     * touch, overlap or nest, and the volume two solids share. Meshes rule out pairs first.
      */
     "occt.analysis.clashes.betweenShapes": {
         /** The shapes to check against each other; a clash names two of them by their positions here. */
@@ -5738,6 +5848,11 @@ export interface OperationParams {
          * touch or overlap.
          */
         clearance?: number | PipelineRef;
+        /**
+         * Whether pairs whose boxes or meshes stay clear by more than the clearance are ruled out before
+         * the rest are measured exactly, with the same clashes; false measures every pair.
+         */
+        prefilter?: boolean | PipelineRef;
     };
     /**
      * Finds the faces of one shape that come within a clearance of faces of another, each pair
@@ -7148,8 +7263,10 @@ export interface OperationParams {
      *
      * The document is built as `build` builds it and every part placement is checked against every
      * other in place. Two components a joint holds together are expected to touch, so a touch between
-     * them is left out and an overlap is listed with `joined` true. A part document's parts are checked
-     * where they were built.
+     * them is left out and an overlap is listed with `joined` true. So is a fastener's thread resting in
+     * a tapped hole, faces named in the role `thread` on both, with the hole's rim and the screw's end
+     * chamfer around it; anything else between the two is still listed. A part document's parts are
+     * checked where they were built.
      */
     "occt.design.clashes": {
         /**
@@ -7494,6 +7611,29 @@ export interface OperationParams {
         flag?: boolean | PipelineRef;
     };
     /**
+     * Drafts faces as `draftAngle` does, and reports what each face, edge and vertex of the shape
+     * became: a drafted face becomes its tilted successor in `faces`.
+     */
+    "occt.draft.draftAngleWithHistory": {
+        /** The solid whose faces are tilted. */
+        shape: unknown | PipelineRef;
+        /** The faces of the shape that get the taper. */
+        faces: unknown[] | PipelineRef;
+        /** The pull direction, the way the part leaves the mold; the taper is measured against it. */
+        direction?: [number, number, number] | PipelineRef;
+        /** The draft angle, in degrees. */
+        angle?: number | PipelineRef;
+        /**
+         * A point on the neutral plane, the plane that stays where it is while the faces pivot about
+         * it.
+         */
+        neutralPlaneOrigin?: [number, number, number] | PipelineRef;
+        /** The normal of the neutral plane. */
+        neutralPlaneDirection?: [number, number, number] | PipelineRef;
+        /** When true, the faces taper on the standard side; false tapers them the other way. */
+        flag?: boolean | PipelineRef;
+    };
+    /**
      * Grows a tapered skirt from a wire, or the edges of a shape, along a direction: each edge is
      * swept along `direction`, leaning outward or inward by `angle` degrees, until the skirt is
      * `lengthMax` long.
@@ -7534,6 +7674,43 @@ export interface OperationParams {
         angle?: number | PipelineRef;
         /** When true, the part of the stop shape outside the skirt is kept in the result. */
         keepOut?: boolean | PipelineRef;
+        /** When true, the skirt leans inward instead of outward. */
+        internal?: boolean | PipelineRef;
+    };
+    /**
+     * Grows a skirt up to a stop shape as `makeDraftToShape` does, and reports what each edge of the
+     * wire or shape swept, as `makeDraftWithHistory` does.
+     */
+    "occt.draft.makeDraftToShapeWithHistory": {
+        /** The wire, face or shape whose edges the skirt grows from. */
+        shape: unknown | PipelineRef;
+        /** The shape the skirt grows up to and stops at. */
+        stopShape: unknown | PipelineRef;
+        /** The direction the skirt grows along, the pull direction of the mold. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How far the skirt leans from the direction, in degrees. */
+        angle?: number | PipelineRef;
+        /** When true, the part of the stop shape outside the skirt is kept in the result. */
+        keepOut?: boolean | PipelineRef;
+        /** When true, the skirt leans inward instead of outward. */
+        internal?: boolean | PipelineRef;
+    };
+    /**
+     * Grows a skirt as `makeDraft` does, and reports what each edge of the wire or shape swept:
+     * `facesFromEdges[i]` holds the skirt faces edge `i` grew.
+     */
+    "occt.draft.makeDraftWithHistory": {
+        /** The wire, face or shape whose edges the skirt grows from. */
+        shape: unknown | PipelineRef;
+        /** The direction the skirt grows along, the pull direction of the mold. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How far the skirt leans from the direction, in degrees. */
+        angle?: number | PipelineRef;
+        /**
+         * How long the skirt may grow, in model units, measured along the corner edges between its
+         * faces.
+         */
+        lengthMax?: number | PipelineRef;
         /** When true, the skirt leans inward instead of outward. */
         internal?: boolean | PipelineRef;
     };
@@ -7771,6 +7948,35 @@ export interface OperationParams {
         otherSideThickness?: number | PipelineRef;
     };
     /**
+     * Cuts a groove as `groove` does, and reports two histories: the base's, then the wire's, whose
+     * `facesFromEdges` holds the wall each wire edge cut and `firstFaces` and `lastFaces` the
+     * groove's two flat sides.
+     */
+    "occt.features.grooveWithHistory": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /**
+         * The wire outlining the rib or groove in the plane of `frame`; the feature lies on its left as
+         * it runs, seen from the side the normal points to.
+         */
+        wire: unknown | PipelineRef;
+        /**
+         * The plane the wire lies in, through the frame's origin and square to its normal; the frame's
+         * direction does not matter.
+         */
+        frame: unknown | PipelineRef;
+        /**
+         * How thick the feature is on the side of the plane the frame's normal points to, in model
+         * units.
+         */
+        thickness?: number | PipelineRef;
+        /**
+         * How thick the feature is on the other side of the plane, in model units; it and `thickness`
+         * are not both 0.
+         */
+        otherSideThickness?: number | PipelineRef;
+    };
+    /**
      * Drills plain holes into a shape, one at each frame: its origin is where the hole enters and its
      * normal points out of the material.
      *
@@ -7977,6 +8183,31 @@ export interface OperationParams {
         angle?: number | PipelineRef;
     };
     /**
+     * Adds a ring as `revolvedBoss` does, and reports two histories: the base's, then the profile's,
+     * whose `facesFromEdges` holds the face each profile edge turned into, such as the ring's outer
+     * wall and its two sides.
+     */
+    "occt.features.revolvedBossWithHistory": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /**
+         * The face to turn, lying in a plane through the axis; it must lie on the face of the base that
+         * `sketchFaceIndex` names.
+         */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /** A point on the axis the profile turns about. */
+        axisOrigin?: [number, number, number] | PipelineRef;
+        /** The direction of the axis the profile turns about. */
+        axisDirection?: [number, number, number] | PipelineRef;
+        /**
+         * How far the profile turns, in degrees, following the right-hand rule about the axis; 360
+         * makes a whole ring.
+         */
+        angle?: number | PipelineRef;
+    };
+    /**
      * Cuts a groove round a base by turning a profile face about an axis, such as the seat of a
      * circlip on a shaft: the profile lies on a face of the base, in a plane through the axis.
      *
@@ -8004,12 +8235,66 @@ export interface OperationParams {
         angle?: number | PipelineRef;
     };
     /**
+     * Cuts a groove round a base as `revolvedPocket` does, and reports two histories: the base's,
+     * whose side splits into the pieces on either side of the groove, then the profile's, whose
+     * `facesFromEdges` holds the groove's floor and walls.
+     */
+    "occt.features.revolvedPocketWithHistory": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /**
+         * The face to turn, lying in a plane through the axis; it must lie on the face of the base that
+         * `sketchFaceIndex` names.
+         */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /** A point on the axis the profile turns about. */
+        axisOrigin?: [number, number, number] | PipelineRef;
+        /** The direction of the axis the profile turns about. */
+        axisDirection?: [number, number, number] | PipelineRef;
+        /**
+         * How far the profile turns, in degrees, following the right-hand rule about the axis; 360
+         * makes a whole ring.
+         */
+        angle?: number | PipelineRef;
+    };
+    /**
      * Adds a rib to a base: the region between a wire and the base's faces, on the wire's left as it
      * runs seen from the side the frame's normal points to, filled and thickened across the plane.
      *
      * A wire across the inside corner of an L fills the corner; an edge is made into a wire first.
      */
     "occt.features.rib": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /**
+         * The wire outlining the rib or groove in the plane of `frame`; the feature lies on its left as
+         * it runs, seen from the side the normal points to.
+         */
+        wire: unknown | PipelineRef;
+        /**
+         * The plane the wire lies in, through the frame's origin and square to its normal; the frame's
+         * direction does not matter.
+         */
+        frame: unknown | PipelineRef;
+        /**
+         * How thick the feature is on the side of the plane the frame's normal points to, in model
+         * units.
+         */
+        thickness?: number | PipelineRef;
+        /**
+         * How thick the feature is on the other side of the plane, in model units; it and `thickness`
+         * are not both 0.
+         */
+        otherSideThickness?: number | PipelineRef;
+    };
+    /**
+     * Adds a rib as `rib` does, and reports two histories: the base's, then the wire's, whose
+     * `facesFromEdges` holds the face each wire edge made and `firstFaces` and `lastFaces` the rib's
+     * two flat sides.
+     */
+    "occt.features.ribWithHistory": {
         /** The base shape the feature is built on. */
         shape: unknown | PipelineRef;
         /**
@@ -8066,6 +8351,36 @@ export interface OperationParams {
         untilFaceIndex?: number | PipelineRef;
     };
     /**
+     * Grows a tapered boss as `taperedBoss` does, and reports two histories: the base's, then the
+     * profile's, whose `facesFromEdges` holds the leaning side each profile edge swept and
+     * `lastFaces` the top.
+     */
+    "occt.features.taperedBossWithHistory": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /** The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names. */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /**
+         * How far the sides lean from straight, in degrees: a positive angle narrows the feature as it
+         * goes away from the sketch face, a negative one widens it.
+         */
+        angle?: number | PipelineRef;
+        /**
+         * Where the feature stops: after `length`, at the face `untilFaceIndex` names, or once it has
+         * passed through the whole base.
+         */
+        extent?: "length" | "untilFace" | "throughAll" | PipelineRef;
+        /** How far the feature runs from the sketch face when `extent` is `length`, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * The face the feature stops at when `extent` is `untilFace`: one the profile meets on its way,
+         * such as the underside of an overhang or a void's ceiling.
+         */
+        untilFaceIndex?: number | PipelineRef;
+    };
+    /**
      * Cuts a pocket into a base as `pocket` does, straight in from the sketch face, with its sides
      * leaning by `angle` degrees.
      *
@@ -8073,6 +8388,36 @@ export interface OperationParams {
      * stop a tapered pocket at the far side of the base; run it through all instead.
      */
     "occt.features.taperedPocket": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /** The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names. */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /**
+         * How far the sides lean from straight, in degrees: a positive angle narrows the feature as it
+         * goes away from the sketch face, a negative one widens it.
+         */
+        angle?: number | PipelineRef;
+        /**
+         * Where the feature stops: after `length`, at the face `untilFaceIndex` names, or once it has
+         * passed through the whole base.
+         */
+        extent?: "length" | "untilFace" | "throughAll" | PipelineRef;
+        /** How far the feature runs from the sketch face when `extent` is `length`, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * The face the feature stops at when `extent` is `untilFace`: one the profile meets on its way,
+         * such as the underside of an overhang or a void's ceiling.
+         */
+        untilFaceIndex?: number | PipelineRef;
+    };
+    /**
+     * Cuts a tapered pocket as `taperedPocket` does, and reports two histories: the base's, then the
+     * profile's, whose `facesFromEdges` holds the leaning wall each profile edge swept and
+     * `lastFaces` the floor.
+     */
+    "occt.features.taperedPocketWithHistory": {
         /** The base shape the feature is built on. */
         shape: unknown | PipelineRef;
         /** The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names. */
@@ -8137,6 +8482,25 @@ export interface OperationParams {
         angle?: number | PipelineRef;
     };
     /**
+     * Bevels an edge by a distance and an angle as `chamferEdgeDistAngle` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.chamferEdgeDistAngleWithHistory": {
+        /** The shape the edge belongs to. */
+        shape: unknown | PipelineRef;
+        /** The edge to bevel. */
+        edge: unknown | PipelineRef;
+        /**
+         * One of the two faces meeting at the edge; the distance is measured on it and the angle from
+         * it.
+         */
+        face: unknown | PipelineRef;
+        /** How far from the edge the bevel starts on the face, in model units. */
+        distance?: number | PipelineRef;
+        /** The slope of the bevel away from the face, in degrees; 45 gives an even chamfer. */
+        angle?: number | PipelineRef;
+    };
+    /**
      * Bevels the edges of a shape by a distance, in model units, cutting each sharp edge back to a
      * flat strip.
      *
@@ -8182,6 +8546,22 @@ export interface OperationParams {
         angle?: number | PipelineRef;
     };
     /**
+     * Bevels edges by a distance and an angle as `chamferEdgesDistAngle` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.chamferEdgesDistAngleWithHistory": {
+        /** The shape the edges belong to. */
+        shape: unknown | PipelineRef;
+        /** The edges to bevel. */
+        edges: unknown[] | PipelineRef;
+        /** One face per edge, meeting it; the distance is measured on that face and the angle from it. */
+        faces: unknown[] | PipelineRef;
+        /** How far from each edge the bevel starts on its paired face, in model units. */
+        distance?: number | PipelineRef;
+        /** The slope of the bevels away from the paired faces, in degrees; 45 gives an even chamfer. */
+        angle?: number | PipelineRef;
+    };
+    /**
      * Bevels several edges of a shape, each by its own distance and angle, the distance measured on
      * the edge's paired face and the angle in degrees from it.
      *
@@ -8201,12 +8581,43 @@ export interface OperationParams {
         angles: number[] | PipelineRef;
     };
     /**
+     * Bevels edges, each by its own distance and angle, as `chamferEdgesDistsAngles` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.chamferEdgesDistsAnglesWithHistory": {
+        /** The shape the edges belong to. */
+        shape: unknown | PipelineRef;
+        /** The edges to bevel. */
+        edges: unknown[] | PipelineRef;
+        /** One face per edge, meeting it; the distance is measured on that face and the angle from it. */
+        faces: unknown[] | PipelineRef;
+        /** One distance per edge, in model units, measured on the paired face. */
+        distances: number[] | PipelineRef;
+        /** One bevel angle per edge, in degrees, measured from the paired face. */
+        angles: number[] | PipelineRef;
+    };
+    /**
      * Bevels the given edges of a shape, each by its own distance.
      *
      * The edges must belong to the shape; `distanceList` pairs with them by position and must have
      * the same length, or an error is thrown.
      */
     "occt.fillets.chamferEdgesList": {
+        /** The shape the edges belong to. */
+        shape: unknown | PipelineRef;
+        /** The edges of the shape to bevel. */
+        edges: unknown[] | PipelineRef;
+        /**
+         * One bevel distance per edge in model units, in the same order as `edges`; the lists must have
+         * the same length.
+         */
+        distanceList: number[] | PipelineRef;
+    };
+    /**
+     * Bevels the given edges as `chamferEdgesList` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.chamferEdgesListWithHistory": {
         /** The shape the edges belong to. */
         shape: unknown | PipelineRef;
         /** The edges of the shape to bevel. */
@@ -8255,6 +8666,38 @@ export interface OperationParams {
         distances2: number[] | PipelineRef;
     };
     /**
+     * Bevels edges, each by its own two distances, as `chamferEdgesTwoDistancesLists` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.chamferEdgesTwoDistancesListsWithHistory": {
+        /** The shape the edges belong to. */
+        shape: unknown | PipelineRef;
+        /** The edges to bevel. */
+        edges: unknown[] | PipelineRef;
+        /** One face per edge, meeting it; the first distance is measured on that face. */
+        faces: unknown[] | PipelineRef;
+        /** One distance per edge, in model units, measured on the paired face. */
+        distances1: number[] | PipelineRef;
+        /** One distance per edge, in model units, measured on the other face. */
+        distances2: number[] | PipelineRef;
+    };
+    /**
+     * Bevels edges by two distances as `chamferEdgesTwoDistances` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.chamferEdgesTwoDistancesWithHistory": {
+        /** The shape the edges belong to. */
+        shape: unknown | PipelineRef;
+        /** The edges to bevel. */
+        edges: unknown[] | PipelineRef;
+        /** One face per edge, meeting it; `distance1` is measured on that face. */
+        faces: unknown[] | PipelineRef;
+        /** How far the bevel reaches from each edge on its paired face, in model units. */
+        distance1?: number | PipelineRef;
+        /** How far the bevel reaches from each edge on the other face, in model units. */
+        distance2?: number | PipelineRef;
+    };
+    /**
      * Bevels edges as `chamferEdges` does, and reports what became of every face, edge and vertex of
      * the shape: `history.facesFromEdges` holds the bevel made along each edge, and `history.faces`
      * what each face was trimmed to.
@@ -8285,6 +8728,22 @@ export interface OperationParams {
      * The face decides which side gets which distance; swap them to flip the bevel.
      */
     "occt.fillets.chamferEdgeTwoDistances": {
+        /** The shape the edge belongs to. */
+        shape: unknown | PipelineRef;
+        /** The edge to bevel. */
+        edge: unknown | PipelineRef;
+        /** One of the two faces meeting at the edge; `distance1` is measured on it. */
+        face: unknown | PipelineRef;
+        /** How far the bevel reaches from the edge on `face`, in model units. */
+        distance1?: number | PipelineRef;
+        /** How far the bevel reaches from the edge on the other face, in model units. */
+        distance2?: number | PipelineRef;
+    };
+    /**
+     * Bevels an edge by two distances as `chamferEdgeTwoDistances` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.chamferEdgeTwoDistancesWithHistory": {
         /** The shape the edge belongs to. */
         shape: unknown | PipelineRef;
         /** The edge to bevel. */
@@ -8452,12 +8911,53 @@ export interface OperationParams {
         radius?: number | PipelineRef;
     };
     /**
+     * Rounds the given edges as `filletEdgesListOneRadius` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the round made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.filletEdgesListOneRadiusWithHistory": {
+        /** The shape the edges belong to. */
+        shape: unknown | PipelineRef;
+        /** The edges of the shape to round. */
+        edges: unknown[] | PipelineRef;
+        /** The rounding radius for every edge, in model units. */
+        radius?: number | PipelineRef;
+    };
+    /**
+     * Rounds the given edges as `filletEdgesList` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the round made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.filletEdgesListWithHistory": {
+        /** The shape the edges belong to. */
+        shape: unknown | PipelineRef;
+        /** The edges of the shape to round. */
+        edges: unknown[] | PipelineRef;
+        /**
+         * One rounding radius per edge in model units, in the same order as `edges`; the lists must
+         * have the same length.
+         */
+        radiusList: number[] | PipelineRef;
+    };
+    /**
      * Rounds several edges of a shape, each with the same radius profile that changes along it.
      *
      * `paramsU` are positions along each edge as fractions from 0 to 1 and `radiusList` the radius
      * at each; the lists must have the same length, or an error is thrown.
      */
     "occt.fillets.filletEdgesSameVariableRadius": {
+        /** The shape the edges belong to. */
+        shape: unknown | PipelineRef;
+        /** The edges to round, all with the same radius profile. */
+        edges: unknown[] | PipelineRef;
+        /** The radius in model units at each position in `paramsU`; the lists must have the same length. */
+        radiusList: number[] | PipelineRef;
+        /** Positions along each edge as fractions from 0 at its start to 1 at its end, one per radius. */
+        paramsU: number[] | PipelineRef;
+    };
+    /**
+     * Rounds edges with one changing radius as `filletEdgesSameVariableRadius` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the round made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.filletEdgesSameVariableRadiusWithHistory": {
         /** The shape the edges belong to. */
         shape: unknown | PipelineRef;
         /** The edges to round, all with the same radius profile. */
@@ -8475,6 +8975,26 @@ export interface OperationParams {
      * must have the same length, or an error is thrown.
      */
     "occt.fillets.filletEdgesVariableRadius": {
+        /** The shape the edges belong to. */
+        shape: unknown | PipelineRef;
+        /** The edges to round, each with its own radius profile. */
+        edges: unknown[] | PipelineRef;
+        /**
+         * One list per edge of radii in model units, each pairing with the matching list in
+         * `paramsULists`.
+         */
+        radiusLists: unknown[] | PipelineRef;
+        /**
+         * One list per edge of positions as fractions from 0 to 1 along it, each pairing with the
+         * matching list in `radiusLists`.
+         */
+        paramsULists: unknown[] | PipelineRef;
+    };
+    /**
+     * Rounds edges, each with its own changing radius, as `filletEdgesVariableRadius` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the round made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.filletEdgesVariableRadiusWithHistory": {
         /** The shape the edges belong to. */
         shape: unknown | PipelineRef;
         /** The edges to round, each with its own radius profile. */
@@ -8522,6 +9042,20 @@ export interface OperationParams {
      * must have the same length, or an error is thrown.
      */
     "occt.fillets.filletEdgeVariableRadius": {
+        /** The shape the edge belongs to. */
+        shape: unknown | PipelineRef;
+        /** The edge to round with a changing radius. */
+        edge: unknown | PipelineRef;
+        /** The radius in model units at each position in `paramsU`; the lists must have the same length. */
+        radiusList: number[] | PipelineRef;
+        /** Positions along the edge as fractions from 0 at its start to 1 at its end, one per radius. */
+        paramsU: number[] | PipelineRef;
+    };
+    /**
+     * Rounds an edge with a changing radius as `filletEdgeVariableRadius` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the round made along each edge, and `faces` what each face was trimmed to.
+     */
+    "occt.fillets.filletEdgeVariableRadiusWithHistory": {
         /** The shape the edge belongs to. */
         shape: unknown | PipelineRef;
         /** The edge to round with a changing radius. */
@@ -10035,6 +10569,54 @@ export interface OperationParams {
         removeIntEdges?: boolean | PipelineRef;
     };
     /**
+     * Offsets a face, shell or solid as `offsetAdv` does, and reports what each face became: the
+     * face offset from it, with the corner faces the join adds generated from edges. A wire or edge
+     * is refused.
+     */
+    "occt.operations.offsetAdvWithHistory": {
+        /** The shape to offset: a wire, edge, face, shell or solid. */
+        shape: unknown | PipelineRef;
+        /**
+         * For a wire or edge, a face whose surface the offset is drawn on; leave it out to offset in
+         * the wire's own plane.
+         */
+        face?: unknown | PipelineRef;
+        /**
+         * How far the boundary moves, in model units; negative moves it inward, 0 returns the shape as
+         * it is.
+         */
+        distance?: number | PipelineRef;
+        /** How close two points must be to count as the same when the offset is built, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * How the offset pieces meet at corners: `arc` rounds them, `intersection` extends them to a
+         * sharp corner, `tangent` keeps them tangent.
+         */
+        joinType?: "arc" | "intersection" | "tangent" | PipelineRef;
+        /** When true, the internal edges the offset can leave behind are removed from the result. */
+        removeIntEdges?: boolean | PipelineRef;
+    };
+    /**
+     * Offsets a face, shell or solid as `offset` does, and reports what each face became: the face
+     * offset from it. A wire or edge has no faces to follow and is refused.
+     */
+    "occt.operations.offsetWithHistory": {
+        /** The shape to offset: a wire, edge, face, shell or solid. */
+        shape: unknown | PipelineRef;
+        /**
+         * For a wire or edge, a face whose surface the offset is drawn on; leave it out to offset in
+         * the wire's own plane.
+         */
+        face?: unknown | PipelineRef;
+        /**
+         * How far the boundary moves, in model units; negative moves it inward, 0 returns the shape as
+         * it is.
+         */
+        distance?: number | PipelineRef;
+        /** How close two points must be to count as the same when the offset is built, in model units. */
+        tolerance?: number | PipelineRef;
+    };
+    /**
      * Sweeps one or more profile shapes along a path wire and closes the result into a solid.
      *
      * The profiles should be placed on the path; with several profiles the sweep blends from one to
@@ -10071,17 +10653,17 @@ export interface OperationParams {
         forceApproxC1?: boolean | PipelineRef;
     };
     /**
-     * Sweeps a circle along a wire, giving a round tube of the given radius that follows the path.
-     *
-     * The circle starts perpendicular to the wire. `makeSolid` gives a solid instead of a shell,
-     * `trihedronEnum` sets how the profile turns, and `forceApproxC1` smooths the result. An invalid
-     * tube is refused; on a nearly straight path, use the discrete trihedron.
+     * Sweeps a regular polygon along a wire as `pipePolylineWireNGon` does, and reports the path's
+     * history: `facesFromEdges` the flat sides running along each path edge, `edgesFromVertices`
+     * the polygon at each path vertex, `firstFaces` and `lastFaces` the end caps of a solid.
      */
-    "occt.operations.pipeWireCylindrical": {
+    "occt.operations.pipePolylineWireNGonWithHistory": {
         /** The path wire the tube follows. */
         shape: unknown | PipelineRef;
-        /** The radius of the tube, in model units. */
+        /** The distance from the path to each corner of the polygon, in model units. */
         radius?: number | PipelineRef;
+        /** How many corners, and so flat sides, the tube has. */
+        nrCorners?: number | PipelineRef;
         /** When true, the tube is a solid; when false it is an open shell. */
         makeSolid?: boolean | PipelineRef;
         /**
@@ -10093,15 +10675,18 @@ export interface OperationParams {
         forceApproxC1?: boolean | PipelineRef;
     };
     /**
-     * Sweeps a circle along each of several wires, as `pipeWireCylindrical` does for one, all with
-     * the same radius and options.
+     * Sweeps a circle along a wire, giving a round tube of the given radius that follows the path.
+     *
+     * `makeSolid` gives a solid instead of a shell. Along smoothly joined lines and arcs the tube is
+     * exact; `bendRadius` bends a polyline's corners into such arcs first. Elsewhere `trihedronEnum`
+     * and `forceApproxC1` steer the sweep. Bends tighter than the radius are refused.
      */
-    "occt.operations.pipeWiresCylindrical": {
-        /** The path wires, one tube per wire. */
-        shapes: unknown[] | PipelineRef;
-        /** The radius of the tubes, in model units. */
+    "occt.operations.pipeWireCylindrical": {
+        /** The path wire the tube follows. */
+        shape: unknown | PipelineRef;
+        /** The radius of each tube, in model units. */
         radius?: number | PipelineRef;
-        /** When true, the tubes are solids; when false they are open shells. */
+        /** When true, each tube is a solid; when false it is an open shell. */
         makeSolid?: boolean | PipelineRef;
         /**
          * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
@@ -10110,6 +10695,61 @@ export interface OperationParams {
         trihedronEnum?: "isCorrectedFrenet" | "isFixed" | "isFrenet" | "isConstantNormal" | "isDarboux" | "isGuideAC" | "isGuidePlan" | "isGuideACWithContact" | "isGuidePlanWithContact" | "isDiscreteTrihedron" | PipelineRef;
         /** When true, a swept surface that came out with kinks is refitted to be smooth. */
         forceApproxC1?: boolean | PipelineRef;
+        /**
+         * The radius every corner of the path is bent round first, so a polyline gives an exact tube; 0
+         * leaves corners sharp. Each bend must fit its edges.
+         */
+        bendRadius?: number | PipelineRef;
+    };
+    /**
+     * Sweeps a circle along a wire as `pipeWireCylindrical` does, and reports the path's history:
+     * `facesFromEdges` the tube faces running along each path edge, `edgesFromVertices` the circle
+     * at each path vertex, `firstFaces` and `lastFaces` the end caps of a solid. A corner bent round
+     * `bendRadius` gives its bend under `facesFromVertices` of that corner.
+     */
+    "occt.operations.pipeWireCylindricalWithHistory": {
+        /** The path wire the tube follows. */
+        shape: unknown | PipelineRef;
+        /** The radius of each tube, in model units. */
+        radius?: number | PipelineRef;
+        /** When true, each tube is a solid; when false it is an open shell. */
+        makeSolid?: boolean | PipelineRef;
+        /**
+         * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
+         * modes follow the curve's bending.
+         */
+        trihedronEnum?: "isCorrectedFrenet" | "isFixed" | "isFrenet" | "isConstantNormal" | "isDarboux" | "isGuideAC" | "isGuidePlan" | "isGuideACWithContact" | "isGuidePlanWithContact" | "isDiscreteTrihedron" | PipelineRef;
+        /** When true, a swept surface that came out with kinks is refitted to be smooth. */
+        forceApproxC1?: boolean | PipelineRef;
+        /**
+         * The radius every corner of the path is bent round first, so a polyline gives an exact tube; 0
+         * leaves corners sharp. Each bend must fit its edges.
+         */
+        bendRadius?: number | PipelineRef;
+    };
+    /**
+     * Sweeps a circle along each of several wires, as `pipeWireCylindrical` does for one, all with
+     * the same radius and options.
+     */
+    "occt.operations.pipeWiresCylindrical": {
+        /** The path wires, one tube per wire. */
+        shapes: unknown[] | PipelineRef;
+        /** The radius of each tube, in model units. */
+        radius?: number | PipelineRef;
+        /** When true, each tube is a solid; when false it is an open shell. */
+        makeSolid?: boolean | PipelineRef;
+        /**
+         * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
+         * modes follow the curve's bending.
+         */
+        trihedronEnum?: "isCorrectedFrenet" | "isFixed" | "isFrenet" | "isConstantNormal" | "isDarboux" | "isGuideAC" | "isGuidePlan" | "isGuideACWithContact" | "isGuidePlanWithContact" | "isDiscreteTrihedron" | PipelineRef;
+        /** When true, a swept surface that came out with kinks is refitted to be smooth. */
+        forceApproxC1?: boolean | PipelineRef;
+        /**
+         * The radius every corner of the path is bent round first, so a polyline gives an exact tube; 0
+         * leaves corners sharp. Each bend must fit its edges.
+         */
+        bendRadius?: number | PipelineRef;
     };
     /**
      * Sweeps profiles along a path as `pipe` does, and reports what each profile became, one
@@ -10192,10 +10832,25 @@ export interface OperationParams {
      * Extrudes a flat shape up along Y by `height` while twisting it by `angle` degrees about the Y
      * axis, like a twisted column.
      *
-     * The shape should lie flat, as the profiles this package creates do. With `makeSolid` true,
-     * the default, a face profile gives a closed solid; a wire gives a twisted shell.
+     * The profile is a flat wire, or a face without holes whose outline is swept. With `makeSolid`
+     * true, the default, the twist is closed into a solid; otherwise it is a twisted shell.
      */
     "occt.operations.rotatedExtrude": {
+        /** The flat profile to extrude, a wire or a face lying on the ground. */
+        shape: unknown | PipelineRef;
+        /** How far the profile is extruded along Y, in model units. */
+        height?: number | PipelineRef;
+        /** How far the profile turns about the Y axis over the height, in degrees. */
+        angle?: number | PipelineRef;
+        /** When true, a face profile gives a closed solid; when false the result is a shell. */
+        makeSolid?: boolean | PipelineRef;
+    };
+    /**
+     * Twists a profile upward as `rotatedExtrude` does, and reports what each part of the profile
+     * became: `facesFromEdges` the twisted side each edge swept, `firstFaces` and `lastFaces` the
+     * bottom and top of a solid.
+     */
+    "occt.operations.rotatedExtrudeWithHistory": {
         /** The flat profile to extrude, a wire or a face lying on the ground. */
         shape: unknown | PipelineRef;
         /** How far the profile is extruded along Y, in model units. */
@@ -10353,6 +11008,27 @@ export interface OperationParams {
         nonDestructive?: boolean | PipelineRef;
     };
     /**
+     * Splits a shape as `splitShapeWithShapes` does and gives the pieces as one compound, with one
+     * history per shape given, the shape to split first: `faces` names the pieces each face was
+     * cut into.
+     */
+    "occt.operations.splitShapeWithShapesWithHistory": {
+        /** The shape to cut into pieces. */
+        shape: unknown | PipelineRef;
+        /** The shapes that do the cutting, such as faces or solids passing through the shape. */
+        shapes: unknown[] | PipelineRef;
+        /**
+         * How far apart geometry may be and still count as touching, in model units; helps when faces
+         * nearly coincide.
+         */
+        localFuzzyTolerance?: number | PipelineRef;
+        /**
+         * When true, the inputs stay untouched and the result holds the pieces of every shape involved;
+         * when false only the pieces of `shape` come back.
+         */
+        nonDestructive?: boolean | PipelineRef;
+    };
+    /**
      * Sweeps a profile along a flat spine, keeping its place beside it, as a moulding follows a wall.
      *
      * Draw the profile about the origin: x along the spine, y to the left of travel, inside a
@@ -10371,6 +11047,1487 @@ export interface OperationParams {
          * wall, and a wall round a closed spine is capped.
          */
         makeSolid?: boolean | PipelineRef;
+    };
+    /**
+     * Makes a deep groove ball bearing as a compound of its inner and outer rings with their
+     * raceways, its balls, its cage and, when `shields` is true, a shield on each side.
+     *
+     * One side lies on the frame's origin and the axis runs along the normal.
+     */
+    "occt.parts.mechanical.bearings.ballBearing": {
+        /** The bearing, such as 6204 or 608; its sizes are in millimetres. */
+        designation?: "623" | "624" | "625" | "626" | "608" | "609" | "6000" | "6001" | "6002" | "6003" | "6004" | "6005" | "6006" | "6007" | "6008" | "6009" | "6010" | "6200" | "6201" | "6202" | "6203" | "6204" | "6205" | "6206" | "6207" | "6208" | "6209" | "6210" | PipelineRef;
+        /** When true, a shield closes each side between the rings, as on a 2Z bearing. */
+        shields?: boolean | PipelineRef;
+        /**
+         * Where the bearing sits: the centre of one side on the origin and its axis along the normal.
+         * Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a ball bearing as `ballBearing` does and names the role each face plays.
+     *
+     * The roles `bore`, `outside`, the rings' sides `innerStart`, `innerEnd`, `outerStart` and
+     * `outerEnd`, `innerRing`, `outerRing`, `race`, `ball`, `cage` and `shield` list face indexes as
+     * `shapes.face.getFaces` numbers them across the compound. The `axis` frame is the input frame.
+     */
+    "occt.parts.mechanical.bearings.ballBearingWithRoles": {
+        /** The bearing, such as 6204 or 608; its sizes are in millimetres. */
+        designation?: "623" | "624" | "625" | "626" | "608" | "609" | "6000" | "6001" | "6002" | "6003" | "6004" | "6005" | "6006" | "6007" | "6008" | "6009" | "6010" | "6200" | "6201" | "6202" | "6203" | "6204" | "6205" | "6206" | "6207" | "6208" | "6209" | "6210" | PipelineRef;
+        /** When true, a shield closes each side between the rings, as on a 2Z bearing. */
+        shields?: boolean | PipelineRef;
+        /**
+         * Where the bearing sits: the centre of one side on the origin and its axis along the normal.
+         * Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a cylindrical dowel pin with a 45 degree chamfer of a tenth of its diameter at each end,
+     * after ISO 2338.
+     *
+     * It starts at the frame's origin and runs along the normal.
+     */
+    "occt.parts.mechanical.fasteners.dowelPin": {
+        /** The diameter of the pin, in model units. */
+        diameter?: number | PipelineRef;
+        /** The length of the pin, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * Where the pin starts: its origin at the centre of one end and its normal along the pin. Left
+         * out, the origin facing +Z.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a dowel pin as `dowelPin` does and names the role each face plays.
+     *
+     * The roles `side` and `end` (both ends with their chamfers) list face indexes as
+     * `shapes.face.getFaces` numbers them. The `end` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.dowelPinWithRoles": {
+        /** The diameter of the pin, in model units. */
+        diameter?: number | PipelineRef;
+        /** The length of the pin, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * Where the pin starts: its origin at the centre of one end and its normal along the pin. Left
+         * out, the origin facing +Z.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a hexagon head bolt with chamfered top corners: threaded to the head after ISO 4017, or
+     * after ISO 4014 only for the length the standard gives when `fullyThreaded` is false.
+     *
+     * The head sits on the frame's origin and rises along its normal, a flat facing the frame's
+     * direction; the shank runs the other way. `modelledThread` cuts the thread.
+     */
+    "occt.parts.mechanical.fasteners.hexBolt": {
+        /**
+         * When true the bolt is threaded to its head (ISO 4017); when false only for the length ISO 4014
+         * gives, leaving a plain shank a modelled thread shows.
+         */
+        fullyThreaded?: boolean | PipelineRef;
+        /** The length of the screw from under its head to its tip, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * When true the threaded length is modelled, as `parts.mechanical.machining.thread` cuts it, its faces all
+         * named `thread`; when false the thread is a light cosmetic face.
+         */
+        modelledThread?: boolean | PipelineRef;
+        /** The thread size, such as M8. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a hexagon head bolt as `hexBolt` does and names the role each face plays.
+     *
+     * The roles `head`, `seat` (under the head), `shank`, `thread` and `end` (the tip) list face
+     * indexes as `shapes.face.getFaces` numbers them; a bolt threaded to its head has no `shank`. The
+     * `seat` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.hexBoltWithRoles": {
+        /**
+         * When true the bolt is threaded to its head (ISO 4017); when false only for the length ISO 4014
+         * gives, leaving a plain shank a modelled thread shows.
+         */
+        fullyThreaded?: boolean | PipelineRef;
+        /** The length of the screw from under its head to its tip, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * When true the threaded length is modelled, as `parts.mechanical.machining.thread` cuts it, its faces all
+         * named `thread`; when false the thread is a light cosmetic face.
+         */
+        modelledThread?: boolean | PipelineRef;
+        /** The thread size, such as M8. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an ISO 4032 hexagon nut, its corners chamfered on both sides and its hole at the thread's
+     * nominal diameter, so a screw of its size passes through without overlapping it.
+     *
+     * Its bearing face lies on the frame's origin and it rises along the normal, a flat facing the
+     * frame's direction.
+     */
+    "occt.parts.mechanical.fasteners.hexNut": {
+        /** The thread size, such as M8. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a hexagon nut as `hexNut` does and names the role each face plays.
+     *
+     * The roles `seat` (the bearing face), `top`, `side` and `thread` (the hole) list face indexes as
+     * `shapes.face.getFaces` numbers them. The `seat` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.hexNutWithRoles": {
+        /** The thread size, such as M8. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a set screw with a hexagon recess, threaded its whole length, its point flat, cone, dog
+     * or cup as ISO 4026 to 4029 give them, the recess as deep as they ask of its length.
+     *
+     * Its recessed end lies on the frame's origin and it runs against the normal.
+     */
+    "occt.parts.mechanical.fasteners.setScrew": {
+        /**
+         * The shape of the end that bears on the part: flat (ISO 4026), cone (ISO 4027), dog (ISO 4028)
+         * or cup (ISO 4029).
+         */
+        point?: "flat" | "cone" | "dog" | "cup" | PipelineRef;
+        /** The length of the set screw, in millimetres. */
+        length?: number | PipelineRef;
+        /** The thread size, such as M8. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a set screw as `setScrew` does and names the role each face plays.
+     *
+     * The roles `top` (the recessed end), `recess`, `thread` and `end` (the point) list face indexes as
+     * `shapes.face.getFaces` numbers them. The `top` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.setScrewWithRoles": {
+        /**
+         * The shape of the end that bears on the part: flat (ISO 4026), cone (ISO 4027), dog (ISO 4028)
+         * or cup (ISO 4029).
+         */
+        point?: "flat" | "cone" | "dog" | "cup" | PipelineRef;
+        /** The length of the set screw, in millimetres. */
+        length?: number | PipelineRef;
+        /** The thread size, such as M8. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an ISO 4762 cap screw: a round head with a hexagon recess for a key, and a shank threaded
+     * from the tip for the length the standard gives, or to the head on a shorter screw.
+     *
+     * The head sits on the frame's origin and rises along its normal; the shank runs the other way.
+     * `modelledThread` models the thread.
+     */
+    "occt.parts.mechanical.fasteners.socketHeadCapScrew": {
+        /** The length of the screw from under its head to its tip, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * When true the threaded length is modelled, as `parts.mechanical.machining.thread` cuts it, its faces all
+         * named `thread`; when false the thread is a light cosmetic face.
+         */
+        modelledThread?: boolean | PipelineRef;
+        /** The thread size, such as M8. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a cap screw as `socketHeadCapScrew` does and names the role each face plays.
+     *
+     * The roles `head`, `recess`, `seat` (under the head), `shank`, `thread` and `end` (the tip) list
+     * face indexes as `shapes.face.getFaces` numbers them; a screw threaded to its head has no
+     * `shank`. The `seat` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.socketHeadCapScrewWithRoles": {
+        /** The length of the screw from under its head to its tip, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * When true the threaded length is modelled, as `parts.mechanical.machining.thread` cuts it, its faces all
+         * named `thread`; when false the thread is a light cosmetic face.
+         */
+        modelledThread?: boolean | PipelineRef;
+        /** The thread size, such as M8. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a plain washer: flat after ISO 7089, or after ISO 7090 with its outside chamfered on the
+     * face away from the seat.
+     *
+     * Its bearing face lies on the frame's origin and it rises along the normal.
+     */
+    "occt.parts.mechanical.fasteners.washer": {
+        /**
+         * When true, the ISO 7090 washer, chamfered on the outside of the face away from the seat, from
+         * M5; when false, the flat ISO 7089 one.
+         */
+        chamfered?: boolean | PipelineRef;
+        /** The thread size, such as M8. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a plain washer as `washer` does and names the role each face plays.
+     *
+     * The roles `seat` (the bearing face), `top`, `bore` and `rim` (the chamfer too) list face
+     * indexes as `shapes.face.getFaces` numbers them. The `seat` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.washerWithRoles": {
+        /**
+         * When true, the ISO 7090 washer, chamfered on the outside of the face away from the seat, from
+         * M5; when false, the flat ISO 7089 one.
+         */
+        chamfered?: boolean | PipelineRef;
+        /** The thread size, such as M8. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a straight bevel gear as a solid by Tredgold's approximation: teeth that run straight to
+     * the apex, between a back cone and a front cone `faceWidth` nearer the apex, on a body with flat
+     * ends.
+     *
+     * It meshes a bevel gear of the mate's teeth that shares its frame's origin, the two normals at
+     * `shaftAngle`, turned half a tooth.
+     */
+    "occt.parts.mechanical.gears.bevelGear": {
+        /**
+         * The tooth size at the back, the gear's outer end: the outer pitch diameter divided by the
+         * teeth, in model units. Only gears of one module mesh.
+         */
+        module?: number | PipelineRef;
+        /** How many teeth the gear has, at least 3. */
+        teeth?: number | PipelineRef;
+        /**
+         * How many teeth the gear it meshes with has. With `shaftAngle` it sets the cone the gear
+         * rolls on.
+         */
+        mateTeeth?: number | PipelineRef;
+        /** The angle between the two gears' axes, in degrees; 90 turns a drive through a right angle. */
+        shaftAngle?: number | PipelineRef;
+        /**
+         * The angle at which meshing teeth push on each other, in degrees; 20 is the common
+         * standard, and meshing gears share it.
+         */
+        pressureAngle?: number | PipelineRef;
+        /** How much thinner each tooth is at the outer pitch circle than a tight fit, in model units. */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach above the pitch cone at the back, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /** How deep the gaps reach below the pitch cone at the back, as a share of the module. */
+        dedendum?: number | PipelineRef;
+        /**
+         * The radius that rounds the bottom of each gap at the back, as a share of the module; it
+         * shrinks to fit a narrow gap.
+         */
+        rootFillet?: number | PipelineRef;
+        /**
+         * How long the teeth are along the cone, from the back toward the apex, in model units; at most a
+         * third of the cone distance.
+         */
+        faceWidth?: number | PipelineRef;
+        /**
+         * The diameter of the hole along the axis, in model units; 0 leaves the gear whole. It must stay
+         * inside the roots at the front.
+         */
+        bore?: number | PipelineRef;
+        /**
+         * How far the gear is turned about its axis, in degrees. At 0 a tooth points along the frame's
+         * direction where the gear meets the frame.
+         */
+        rotation?: number | PipelineRef;
+        /**
+         * The apex, where the axes meet, at the origin; the axis along the normal toward the back; a
+         * tooth along the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a bevel gear as `bevelGear` does and names the role each face plays.
+     *
+     * The roles `tip`, `flank`, `root`, `back` (the back cone and the flat back face), `front` and
+     * `bore` list face indexes as `shapes.face.getFaces` numbers them. The `apex` frame is the input
+     * frame turned to the first tooth; `back` sits at the back face's centre.
+     */
+    "occt.parts.mechanical.gears.bevelGearWithRoles": {
+        /**
+         * The tooth size at the back, the gear's outer end: the outer pitch diameter divided by the
+         * teeth, in model units. Only gears of one module mesh.
+         */
+        module?: number | PipelineRef;
+        /** How many teeth the gear has, at least 3. */
+        teeth?: number | PipelineRef;
+        /**
+         * How many teeth the gear it meshes with has. With `shaftAngle` it sets the cone the gear
+         * rolls on.
+         */
+        mateTeeth?: number | PipelineRef;
+        /** The angle between the two gears' axes, in degrees; 90 turns a drive through a right angle. */
+        shaftAngle?: number | PipelineRef;
+        /**
+         * The angle at which meshing teeth push on each other, in degrees; 20 is the common
+         * standard, and meshing gears share it.
+         */
+        pressureAngle?: number | PipelineRef;
+        /** How much thinner each tooth is at the outer pitch circle than a tight fit, in model units. */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach above the pitch cone at the back, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /** How deep the gaps reach below the pitch cone at the back, as a share of the module. */
+        dedendum?: number | PipelineRef;
+        /**
+         * The radius that rounds the bottom of each gap at the back, as a share of the module; it
+         * shrinks to fit a narrow gap.
+         */
+        rootFillet?: number | PipelineRef;
+        /**
+         * How long the teeth are along the cone, from the back toward the apex, in model units; at most a
+         * third of the cone distance.
+         */
+        faceWidth?: number | PipelineRef;
+        /**
+         * The diameter of the hole along the axis, in model units; 0 leaves the gear whole. It must stay
+         * inside the roots at the front.
+         */
+        bore?: number | PipelineRef;
+        /**
+         * How far the gear is turned about its axis, in degrees. At 0 a tooth points along the frame's
+         * direction where the gear meets the frame.
+         */
+        rotation?: number | PipelineRef;
+        /**
+         * The apex, where the axes meet, at the origin; the axis along the normal toward the back; a
+         * tooth along the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an involute helical gear as a solid: its section square to the axis turned steadily along
+     * `width`, with a `bore`, a hub and a DIN 6885 keyway as `spurGear` has them.
+     *
+     * Two external helical gears of one module and angle in opposite hands mesh, the sum of their
+     * pitch radii apart; `herringbone` makes two opposite halves.
+     */
+    "occt.parts.mechanical.gears.helicalGear": {
+        /**
+         * The normal module: the tooth size measured square to the teeth, in model units, as the
+         * cutter's module. Only gears of one module mesh.
+         */
+        module?: number | PipelineRef;
+        /** How many teeth the gear has, at least 3. */
+        teeth?: number | PipelineRef;
+        /**
+         * The teeth's lean from the axis in degrees: positive for a right hand, negative for a left.
+         * Two external helical gears mesh at one angle in opposite hands.
+         */
+        helixAngle?: number | PipelineRef;
+        /**
+         * When true, two halves of opposite hands meet halfway across the width, cancelling the push
+         * along the axis; the half at the frame leans as `helixAngle` says.
+         */
+        herringbone?: boolean | PipelineRef;
+        /**
+         * The angle at which meshing teeth push on each other, in degrees, measured square to the
+         * teeth; 20 is the common standard, and meshing gears share it.
+         */
+        pressureAngle?: number | PipelineRef;
+        /**
+         * How far the teeth are moved out from the pitch circle, as a share of the module. Positive
+         * values give thicker teeth that small gears need, negative values thinner ones.
+         */
+        profileShift?: number | PipelineRef;
+        /**
+         * How much thinner each tooth is round the pitch circle than a tight fit, in model units; two
+         * meshing gears leave the sum of their backlash between their teeth.
+         */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach above the pitch circle, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /**
+         * How deep the gaps reach below the pitch circle, as a share of the module; more than
+         * `addendum` leaves room for the tips of the mating gear.
+         */
+        dedendum?: number | PipelineRef;
+        /**
+         * The radius that rounds the bottom of each gap, as a share of the module. It shrinks to
+         * fit a narrow gap, and 0 leaves a sharp corner.
+         */
+        rootFillet?: number | PipelineRef;
+        /**
+         * How far the gear is turned about its axis, in degrees. At 0 a tooth points along the frame's
+         * direction where the gear meets the frame.
+         */
+        rotation?: number | PipelineRef;
+        /**
+         * The frame the gear lies in: its centre at the origin, a tooth along the direction, its face
+         * toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+        /** How thick the gear is along the frame's normal, in model units. */
+        width?: number | PipelineRef;
+        /**
+         * The diameter of the hole through the middle of the gear, in model units; 0 leaves the gear
+         * whole. It must stay inside the root circle.
+         */
+        bore?: number | PipelineRef;
+        /**
+         * The diameter of a hub standing out from the gear's end face, in model units, between the
+         * bore and the root circle; 0 leaves no hub.
+         */
+        hub?: number | PipelineRef;
+        /** How far the hub stands out beyond the gear's end face along the normal, in model units. */
+        hubLength?: number | PipelineRef;
+        /**
+         * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
+         * in millimetres, toward the tooth at rotation 0.
+         */
+        keyway?: boolean | PipelineRef;
+    };
+    /**
+     * Makes a helical gear as `helicalGear` does and names the role each face plays.
+     *
+     * The roles `tip`, `flank`, `root`, `bore`, `hub`, `keyway`, `start` (in the frame's plane) and
+     * `end` list face indexes as `shapes.face.getFaces` numbers them. The `axis` frame sits at the
+     * start face's centre, toward the first tooth.
+     */
+    "occt.parts.mechanical.gears.helicalGearWithRoles": {
+        /**
+         * The normal module: the tooth size measured square to the teeth, in model units, as the
+         * cutter's module. Only gears of one module mesh.
+         */
+        module?: number | PipelineRef;
+        /** How many teeth the gear has, at least 3. */
+        teeth?: number | PipelineRef;
+        /**
+         * The teeth's lean from the axis in degrees: positive for a right hand, negative for a left.
+         * Two external helical gears mesh at one angle in opposite hands.
+         */
+        helixAngle?: number | PipelineRef;
+        /**
+         * When true, two halves of opposite hands meet halfway across the width, cancelling the push
+         * along the axis; the half at the frame leans as `helixAngle` says.
+         */
+        herringbone?: boolean | PipelineRef;
+        /**
+         * The angle at which meshing teeth push on each other, in degrees, measured square to the
+         * teeth; 20 is the common standard, and meshing gears share it.
+         */
+        pressureAngle?: number | PipelineRef;
+        /**
+         * How far the teeth are moved out from the pitch circle, as a share of the module. Positive
+         * values give thicker teeth that small gears need, negative values thinner ones.
+         */
+        profileShift?: number | PipelineRef;
+        /**
+         * How much thinner each tooth is round the pitch circle than a tight fit, in model units; two
+         * meshing gears leave the sum of their backlash between their teeth.
+         */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach above the pitch circle, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /**
+         * How deep the gaps reach below the pitch circle, as a share of the module; more than
+         * `addendum` leaves room for the tips of the mating gear.
+         */
+        dedendum?: number | PipelineRef;
+        /**
+         * The radius that rounds the bottom of each gap, as a share of the module. It shrinks to
+         * fit a narrow gap, and 0 leaves a sharp corner.
+         */
+        rootFillet?: number | PipelineRef;
+        /**
+         * How far the gear is turned about its axis, in degrees. At 0 a tooth points along the frame's
+         * direction where the gear meets the frame.
+         */
+        rotation?: number | PipelineRef;
+        /**
+         * The frame the gear lies in: its centre at the origin, a tooth along the direction, its face
+         * toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+        /** How thick the gear is along the frame's normal, in model units. */
+        width?: number | PipelineRef;
+        /**
+         * The diameter of the hole through the middle of the gear, in model units; 0 leaves the gear
+         * whole. It must stay inside the root circle.
+         */
+        bore?: number | PipelineRef;
+        /**
+         * The diameter of a hub standing out from the gear's end face, in model units, between the
+         * bore and the root circle; 0 leaves no hub.
+         */
+        hub?: number | PipelineRef;
+        /** How far the hub stands out beyond the gear's end face along the normal, in model units. */
+        hubLength?: number | PipelineRef;
+        /**
+         * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
+         * in millimetres, toward the tooth at rotation 0.
+         */
+        keyway?: boolean | PipelineRef;
+    };
+    /**
+     * Makes an involute rack as a solid: its outline swept `width` along the frame's normal.
+     *
+     * A spur gear of the same module meshes with it with its centre its pitch radius from the pitch
+     * line; turning the gear by an angle moves the rack its pitch radius times the angle in radians.
+     */
+    "occt.parts.mechanical.gears.rack": {
+        /** How thick the rack is along the frame's normal, in model units. */
+        width?: number | PipelineRef;
+        /** The module of the gears the rack meshes with, in model units. */
+        module?: number | PipelineRef;
+        /** How many teeth the rack has, at least 1. */
+        teeth?: number | PipelineRef;
+        /** The angle of each flank from square to the pitch line, in degrees; it matches the gears'. */
+        pressureAngle?: number | PipelineRef;
+        /** How much thinner each tooth is at the pitch line than a tight fit, in model units. */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach above the pitch line, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /** How deep the gaps reach below the pitch line, as a share of the module. */
+        dedendum?: number | PipelineRef;
+        /** The radius that rounds the bottom of each gap, as a share of the module; it shrinks to fit. */
+        rootFillet?: number | PipelineRef;
+        /** How far the back of the rack lies below the pitch line, in model units, beyond the gaps. */
+        height?: number | PipelineRef;
+        /**
+         * The frame the rack lies in: the first tooth's middle at the origin, the rack along the
+         * direction, its face toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Draws an involute rack in the frame's plane: its pitch line along the frame's direction, its
+     * straight-flanked teeth pointing across it, the first tooth's middle on the origin.
+     *
+     * The rack ends halfway across a gap at each end. A spur gear of the same module meshes with its
+     * centre its pitch radius from the pitch line.
+     */
+    "occt.parts.mechanical.gears.rackProfile": {
+        /**
+         * When true, the outline becomes a face whose normal is the frame's normal; when false it stays a
+         * closed wire.
+         */
+        makeFace?: boolean | PipelineRef;
+        /** The module of the gears the rack meshes with, in model units. */
+        module?: number | PipelineRef;
+        /** How many teeth the rack has, at least 1. */
+        teeth?: number | PipelineRef;
+        /** The angle of each flank from square to the pitch line, in degrees; it matches the gears'. */
+        pressureAngle?: number | PipelineRef;
+        /** How much thinner each tooth is at the pitch line than a tight fit, in model units. */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach above the pitch line, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /** How deep the gaps reach below the pitch line, as a share of the module. */
+        dedendum?: number | PipelineRef;
+        /** The radius that rounds the bottom of each gap, as a share of the module; it shrinks to fit. */
+        rootFillet?: number | PipelineRef;
+        /** How far the back of the rack lies below the pitch line, in model units, beyond the gaps. */
+        height?: number | PipelineRef;
+        /**
+         * The frame the rack lies in: the first tooth's middle at the origin, the rack along the
+         * direction, its face toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a rack as `rack` does and names the role each face plays.
+     *
+     * The roles `tip`, `flank`, `root`, `back`, `side` (its two ends), `start` (in the frame's plane)
+     * and `end` list face indexes as `shapes.face.getFaces` numbers them. The `pitch` frame sits on
+     * the first tooth's middle on the pitch line, along the rack.
+     */
+    "occt.parts.mechanical.gears.rackWithRoles": {
+        /** How thick the rack is along the frame's normal, in model units. */
+        width?: number | PipelineRef;
+        /** The module of the gears the rack meshes with, in model units. */
+        module?: number | PipelineRef;
+        /** How many teeth the rack has, at least 1. */
+        teeth?: number | PipelineRef;
+        /** The angle of each flank from square to the pitch line, in degrees; it matches the gears'. */
+        pressureAngle?: number | PipelineRef;
+        /** How much thinner each tooth is at the pitch line than a tight fit, in model units. */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach above the pitch line, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /** How deep the gaps reach below the pitch line, as a share of the module. */
+        dedendum?: number | PipelineRef;
+        /** The radius that rounds the bottom of each gap, as a share of the module; it shrinks to fit. */
+        rootFillet?: number | PipelineRef;
+        /** How far the back of the rack lies below the pitch line, in model units, beyond the gaps. */
+        height?: number | PipelineRef;
+        /**
+         * The frame the rack lies in: the first tooth's middle at the origin, the rack along the
+         * direction, its face toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an involute ring gear as a solid: the ring between its outer circle and its teeth, swept
+     * `width` along the frame's normal.
+     *
+     * The first face lies in the frame's plane. A spur gear of the same module meshes inside it with
+     * its centre half the module times the difference of their teeth from the ring's centre.
+     */
+    "occt.parts.mechanical.gears.ringGear": {
+        /** How thick the ring is along the frame's normal, in model units. */
+        width?: number | PipelineRef;
+        /**
+         * The size of the teeth: the pitch circle's diameter divided by the number of teeth, in model
+         * units. A gear meshes inside the ring only with the same module.
+         */
+        module?: number | PipelineRef;
+        /**
+         * How many teeth the ring has. Their tips must stay outside the base circle, which takes at least
+         * 34 teeth at a pressure angle of 20 degrees.
+         */
+        teeth?: number | PipelineRef;
+        /**
+         * The angle at which meshing teeth push on each other, in degrees; 20 is the common standard, and
+         * the ring shares it with the gears inside it.
+         */
+        pressureAngle?: number | PipelineRef;
+        /**
+         * How much thinner each tooth is at the pitch circle than a tight fit, in model units; the ring
+         * and a gear inside it leave both backlashes between their teeth.
+         */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach in from the pitch circle toward the centre, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /**
+         * How deep the gaps reach out beyond the pitch circle, as a share of the module; more than
+         * `addendum` leaves room for the tips of the gear inside.
+         */
+        dedendum?: number | PipelineRef;
+        /**
+         * The radius that rounds the bottom of each gap, as a share of the module. It shrinks to fit a
+         * narrow gap, and 0 leaves a sharp corner.
+         */
+        rootFillet?: number | PipelineRef;
+        /** How thick the ring is outside the bottoms of its gaps, in model units. */
+        rim?: number | PipelineRef;
+        /**
+         * How far the ring is turned about its centre, in degrees. At 0 a tooth points along the frame's
+         * direction.
+         */
+        rotation?: number | PipelineRef;
+        /**
+         * The frame the ring lies in: its centre at the origin, a tooth along the direction, its face
+         * toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Draws an involute ring gear in the frame's plane, its teeth pointing in toward the frame's
+     * origin.
+     *
+     * As a face it is the ring between its outer circle and its teeth; as a wire, only the outline of
+     * the teeth. At `rotation` 0 a tooth points along the frame's direction. Teeth whose tips reach
+     * inside the base circle are refused.
+     */
+    "occt.parts.mechanical.gears.ringGearProfile": {
+        /**
+         * When true, the ring between its outer circle and its teeth becomes a face facing the frame's
+         * normal; when false only the teeth's outline stays, as a closed wire.
+         */
+        makeFace?: boolean | PipelineRef;
+        /**
+         * The size of the teeth: the pitch circle's diameter divided by the number of teeth, in model
+         * units. A gear meshes inside the ring only with the same module.
+         */
+        module?: number | PipelineRef;
+        /**
+         * How many teeth the ring has. Their tips must stay outside the base circle, which takes at least
+         * 34 teeth at a pressure angle of 20 degrees.
+         */
+        teeth?: number | PipelineRef;
+        /**
+         * The angle at which meshing teeth push on each other, in degrees; 20 is the common standard, and
+         * the ring shares it with the gears inside it.
+         */
+        pressureAngle?: number | PipelineRef;
+        /**
+         * How much thinner each tooth is at the pitch circle than a tight fit, in model units; the ring
+         * and a gear inside it leave both backlashes between their teeth.
+         */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach in from the pitch circle toward the centre, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /**
+         * How deep the gaps reach out beyond the pitch circle, as a share of the module; more than
+         * `addendum` leaves room for the tips of the gear inside.
+         */
+        dedendum?: number | PipelineRef;
+        /**
+         * The radius that rounds the bottom of each gap, as a share of the module. It shrinks to fit a
+         * narrow gap, and 0 leaves a sharp corner.
+         */
+        rootFillet?: number | PipelineRef;
+        /** How thick the ring is outside the bottoms of its gaps, in model units. */
+        rim?: number | PipelineRef;
+        /**
+         * How far the ring is turned about its centre, in degrees. At 0 a tooth points along the frame's
+         * direction.
+         */
+        rotation?: number | PipelineRef;
+        /**
+         * The frame the ring lies in: its centre at the origin, a tooth along the direction, its face
+         * toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a ring gear as `ringGear` does and names the role each face plays.
+     *
+     * The roles `tip`, `flank`, `root`, `rim` (the outer face), `start` (in the frame's plane) and
+     * `end` list face indexes as `shapes.face.getFaces` numbers them. The `axis` frame sits at the
+     * start face's centre, toward the first tooth.
+     */
+    "occt.parts.mechanical.gears.ringGearWithRoles": {
+        /** How thick the ring is along the frame's normal, in model units. */
+        width?: number | PipelineRef;
+        /**
+         * The size of the teeth: the pitch circle's diameter divided by the number of teeth, in model
+         * units. A gear meshes inside the ring only with the same module.
+         */
+        module?: number | PipelineRef;
+        /**
+         * How many teeth the ring has. Their tips must stay outside the base circle, which takes at least
+         * 34 teeth at a pressure angle of 20 degrees.
+         */
+        teeth?: number | PipelineRef;
+        /**
+         * The angle at which meshing teeth push on each other, in degrees; 20 is the common standard, and
+         * the ring shares it with the gears inside it.
+         */
+        pressureAngle?: number | PipelineRef;
+        /**
+         * How much thinner each tooth is at the pitch circle than a tight fit, in model units; the ring
+         * and a gear inside it leave both backlashes between their teeth.
+         */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach in from the pitch circle toward the centre, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /**
+         * How deep the gaps reach out beyond the pitch circle, as a share of the module; more than
+         * `addendum` leaves room for the tips of the gear inside.
+         */
+        dedendum?: number | PipelineRef;
+        /**
+         * The radius that rounds the bottom of each gap, as a share of the module. It shrinks to fit a
+         * narrow gap, and 0 leaves a sharp corner.
+         */
+        rootFillet?: number | PipelineRef;
+        /** How thick the ring is outside the bottoms of its gaps, in model units. */
+        rim?: number | PipelineRef;
+        /**
+         * How far the ring is turned about its centre, in degrees. At 0 a tooth points along the frame's
+         * direction.
+         */
+        rotation?: number | PipelineRef;
+        /**
+         * The frame the ring lies in: its centre at the origin, a tooth along the direction, its face
+         * toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an involute spur gear as a solid: its outline swept `width` along the frame's normal, with
+     * a `bore`, a hub standing out from its end face and a DIN 6885 keyway.
+     *
+     * The first face lies in the frame's plane. A `bore` of 0 leaves the gear whole; one that
+     * reaches the root circle is refused.
+     */
+    "occt.parts.mechanical.gears.spurGear": {
+        /** How thick the gear is along the frame's normal, in model units. */
+        width?: number | PipelineRef;
+        /**
+         * The diameter of the hole through the middle of the gear, in model units; 0 leaves the gear
+         * whole. It must stay inside the root circle.
+         */
+        bore?: number | PipelineRef;
+        /**
+         * The diameter of a hub standing out from the gear's end face, in model units, between the
+         * bore and the root circle; 0 leaves no hub.
+         */
+        hub?: number | PipelineRef;
+        /** How far the hub stands out beyond the gear's end face along the normal, in model units. */
+        hubLength?: number | PipelineRef;
+        /**
+         * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
+         * in millimetres, toward the tooth at rotation 0.
+         */
+        keyway?: boolean | PipelineRef;
+        /**
+         * The size of the teeth: the pitch circle's diameter divided by the number of teeth, in model
+         * units. Gears mesh only with gears of the same module.
+         */
+        module?: number | PipelineRef;
+        /** How many teeth the gear has, at least 3. */
+        teeth?: number | PipelineRef;
+        /**
+         * The angle at which meshing teeth push on each other, in degrees; 20 is the common standard, and
+         * meshing gears share it.
+         */
+        pressureAngle?: number | PipelineRef;
+        /**
+         * How far the teeth are moved out from the pitch circle, as a share of the module. Positive values
+         * give thicker teeth that small gears need, negative values thinner ones.
+         */
+        profileShift?: number | PipelineRef;
+        /**
+         * How much thinner each tooth is at the pitch circle than a tight fit, in model units; two meshing
+         * gears leave the sum of their backlash between their teeth.
+         */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach above the pitch circle, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /**
+         * How deep the gaps reach below the pitch circle, as a share of the module; more than `addendum`
+         * leaves room for the tips of the mating gear.
+         */
+        dedendum?: number | PipelineRef;
+        /**
+         * The radius that rounds the bottom of each gap, as a share of the module. It shrinks to fit a
+         * narrow gap, and 0 leaves a sharp corner.
+         */
+        rootFillet?: number | PipelineRef;
+        /**
+         * How far the gear is turned about its centre, in degrees. At 0 a tooth points along the frame's
+         * direction.
+         */
+        rotation?: number | PipelineRef;
+        /**
+         * The frame the gear lies in: its centre at the origin, a tooth along the direction, its face
+         * toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Draws the outline of an involute spur gear around a frame's origin, in the frame's plane.
+     *
+     * The flanks follow the involute of the base circle and the gaps are rounded at the root. At
+     * `rotation` 0 a tooth points along the frame's direction. Teeth that come to a point, or leave no
+     * gap at the root, are refused.
+     */
+    "occt.parts.mechanical.gears.spurGearProfile": {
+        /**
+         * When true, the outline becomes a face whose normal is the frame's normal; when false it stays a
+         * closed wire.
+         */
+        makeFace?: boolean | PipelineRef;
+        /**
+         * The size of the teeth: the pitch circle's diameter divided by the number of teeth, in model
+         * units. Gears mesh only with gears of the same module.
+         */
+        module?: number | PipelineRef;
+        /** How many teeth the gear has, at least 3. */
+        teeth?: number | PipelineRef;
+        /**
+         * The angle at which meshing teeth push on each other, in degrees; 20 is the common standard, and
+         * meshing gears share it.
+         */
+        pressureAngle?: number | PipelineRef;
+        /**
+         * How far the teeth are moved out from the pitch circle, as a share of the module. Positive values
+         * give thicker teeth that small gears need, negative values thinner ones.
+         */
+        profileShift?: number | PipelineRef;
+        /**
+         * How much thinner each tooth is at the pitch circle than a tight fit, in model units; two meshing
+         * gears leave the sum of their backlash between their teeth.
+         */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach above the pitch circle, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /**
+         * How deep the gaps reach below the pitch circle, as a share of the module; more than `addendum`
+         * leaves room for the tips of the mating gear.
+         */
+        dedendum?: number | PipelineRef;
+        /**
+         * The radius that rounds the bottom of each gap, as a share of the module. It shrinks to fit a
+         * narrow gap, and 0 leaves a sharp corner.
+         */
+        rootFillet?: number | PipelineRef;
+        /**
+         * How far the gear is turned about its centre, in degrees. At 0 a tooth points along the frame's
+         * direction.
+         */
+        rotation?: number | PipelineRef;
+        /**
+         * The frame the gear lies in: its centre at the origin, a tooth along the direction, its face
+         * toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a spur gear as `spurGear` does and names the role each face plays.
+     *
+     * The roles `tip`, `flank`, `root`, `bore`, `hub`, `keyway`, `start` (in the frame's plane) and
+     * `end` list face indexes as `shapes.face.getFaces` numbers them. The `axis` frame sits at the
+     * start face's centre, toward the first tooth.
+     */
+    "occt.parts.mechanical.gears.spurGearWithRoles": {
+        /** How thick the gear is along the frame's normal, in model units. */
+        width?: number | PipelineRef;
+        /**
+         * The diameter of the hole through the middle of the gear, in model units; 0 leaves the gear
+         * whole. It must stay inside the root circle.
+         */
+        bore?: number | PipelineRef;
+        /**
+         * The diameter of a hub standing out from the gear's end face, in model units, between the
+         * bore and the root circle; 0 leaves no hub.
+         */
+        hub?: number | PipelineRef;
+        /** How far the hub stands out beyond the gear's end face along the normal, in model units. */
+        hubLength?: number | PipelineRef;
+        /**
+         * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
+         * in millimetres, toward the tooth at rotation 0.
+         */
+        keyway?: boolean | PipelineRef;
+        /**
+         * The size of the teeth: the pitch circle's diameter divided by the number of teeth, in model
+         * units. Gears mesh only with gears of the same module.
+         */
+        module?: number | PipelineRef;
+        /** How many teeth the gear has, at least 3. */
+        teeth?: number | PipelineRef;
+        /**
+         * The angle at which meshing teeth push on each other, in degrees; 20 is the common standard, and
+         * meshing gears share it.
+         */
+        pressureAngle?: number | PipelineRef;
+        /**
+         * How far the teeth are moved out from the pitch circle, as a share of the module. Positive values
+         * give thicker teeth that small gears need, negative values thinner ones.
+         */
+        profileShift?: number | PipelineRef;
+        /**
+         * How much thinner each tooth is at the pitch circle than a tight fit, in model units; two meshing
+         * gears leave the sum of their backlash between their teeth.
+         */
+        backlash?: number | PipelineRef;
+        /** How far the teeth reach above the pitch circle, as a share of the module. */
+        addendum?: number | PipelineRef;
+        /**
+         * How deep the gaps reach below the pitch circle, as a share of the module; more than `addendum`
+         * leaves room for the tips of the mating gear.
+         */
+        dedendum?: number | PipelineRef;
+        /**
+         * The radius that rounds the bottom of each gap, as a share of the module. It shrinks to fit a
+         * narrow gap, and 0 leaves a sharp corner.
+         */
+        rootFillet?: number | PipelineRef;
+        /**
+         * How far the gear is turned about its centre, in degrees. At 0 a tooth points along the frame's
+         * direction.
+         */
+        rotation?: number | PipelineRef;
+        /**
+         * The frame the gear lies in: its centre at the origin, a tooth along the direction, its face
+         * toward the normal. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a DIN 6885 form A parallel key: a bar with round ends, as wide and high as the standard
+     * gives for a shaft of `shaftDiameter`, lying along the frame's direction on its origin.
+     *
+     * Sunk the shaft's keyway depth below the shaft's surface, the key also serves as the tool that
+     * cuts that keyway.
+     */
+    "occt.parts.mechanical.keys.parallelKey": {
+        /** The diameter of the shaft the key sits in, in millimetres, which sets its width and height. */
+        shaftDiameter?: number | PipelineRef;
+        /** The key's length from one round end to the other, in millimetres; at least its width. */
+        length?: number | PipelineRef;
+        /**
+         * Where the key lies: its bottom face's centre on the origin, its height along the normal, its
+         * length along the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a parallel key as `parallelKey` does and names the role each face plays.
+     *
+     * The roles `bottom`, `top`, `side` and `end` (the round ends) list face indexes as
+     * `shapes.face.getFaces` numbers them. The `bottom` frame is the input frame.
+     */
+    "occt.parts.mechanical.keys.parallelKeyWithRoles": {
+        /** The diameter of the shaft the key sits in, in millimetres, which sets its width and height. */
+        shaftDiameter?: number | PipelineRef;
+        /** The key's length from one round end to the other, in millimetres; at least its width. */
+        length?: number | PipelineRef;
+        /**
+         * Where the key lies: its bottom face's centre on the origin, its height along the normal, its
+         * length along the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Cuts a flat into a round shaft, as `flatTool` places it, such as the D flat a set screw bears on.
+     *
+     * The body given is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.flat": {
+        /** The shaft to cut. */
+        shape: unknown | PipelineRef;
+        /** The shaft's diameter in model units. */
+        diameter?: number | PipelineRef;
+        /** How far the flat cuts in from the shaft's surface, in model units, less than the diameter. */
+        depth?: number | PipelineRef;
+        /** The flat's length along the axis, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid a flat on a round shaft removes: everything beyond a plane `depth` in from the
+     * surface, along `length`.
+     *
+     * It starts at the frame's origin on the axis, runs along the normal and faces the frame's
+     * direction.
+     */
+    "occt.parts.mechanical.machining.flatTool": {
+        /** The shaft's diameter in model units. */
+        diameter?: number | PipelineRef;
+        /** How far the flat cuts in from the shaft's surface, in model units, less than the diameter. */
+        depth?: number | PipelineRef;
+        /** The flat's length along the axis, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Cuts a DIN 6885 keyway into a shaft or through a hub, as `keywayTool` places it.
+     *
+     * The body given is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.keyway": {
+        /** The shaft or the hub to cut. */
+        shape: unknown | PipelineRef;
+        /** The shaft's or the bore's diameter in millimetres, which sets the keyway's width and depth. */
+        diameter?: number | PipelineRef;
+        /** The keyway's length along the axis, in millimetres; in a shaft, end to end of its round ends. */
+        length?: number | PipelineRef;
+        /**
+         * When true, the straight keyway cut through a hub's bore; when false, the round-ended pocket
+         * milled into a shaft.
+         */
+        inHub?: boolean | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid a DIN 6885 keyway removes: the round-ended pocket milled into a shaft, or the
+     * straight keyway cut through a hub's bore, sized for the diameter.
+     *
+     * It starts at the frame's origin on the axis, runs `length` along the normal and faces the
+     * frame's direction.
+     */
+    "occt.parts.mechanical.machining.keywayTool": {
+        /** The shaft's or the bore's diameter in millimetres, which sets the keyway's width and depth. */
+        diameter?: number | PipelineRef;
+        /** The keyway's length along the axis, in millimetres; in a shaft, end to end of its round ends. */
+        length?: number | PipelineRef;
+        /**
+         * When true, the straight keyway cut through a hub's bore; when false, the round-ended pocket
+         * milled into a shaft.
+         */
+        inHub?: boolean | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Knurls a round shaft, as `knurlTool` places the knurl.
+     *
+     * A diamond on a long knurl is heavy to build, its grooves crossing on every pitch. The body given
+     * is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.knurl": {
+        /** The shaft to knurl. */
+        shape: unknown | PipelineRef;
+        /**
+         * The shaft's diameter in millimetres; the knurl's crests sit on the nearest diameter its pitch
+         * divides evenly.
+         */
+        diameter?: number | PipelineRef;
+        /** The knurl's length along the axis, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * The distance between grooves round the circumference, one of DIN 82's: 0.5, 0.6, 0.8, 1, 1.2
+         * or 1.6 mm.
+         */
+        pitch?: number | PipelineRef;
+        /** The grooves' pattern. */
+        pattern?: "straight" | "left" | "right" | "diamond" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid a DIN 82 knurl removes from a round shaft: 90 degree grooves half the pitch
+     * deep, straight, helical at 30 degrees or crossing in a raised diamond.
+     *
+     * Its crests sit on the diameter the pitch divides evenly, nearest the one given; it starts at the
+     * frame's origin and runs `length` along the normal.
+     */
+    "occt.parts.mechanical.machining.knurlTool": {
+        /**
+         * The shaft's diameter in millimetres; the knurl's crests sit on the nearest diameter its pitch
+         * divides evenly.
+         */
+        diameter?: number | PipelineRef;
+        /** The knurl's length along the axis, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * The distance between grooves round the circumference, one of DIN 82's: 0.5, 0.6, 0.8, 1, 1.2
+         * or 1.6 mm.
+         */
+        pitch?: number | PipelineRef;
+        /** The grooves' pattern. */
+        pattern?: "straight" | "left" | "right" | "diamond" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Cuts the groove of a DIN 471 or DIN 472 retaining ring into a shaft or a bore, as
+     * `ringGrooveTool` places it; `parts.mechanical.retainingRings.retainingRing` at the same frame sits in it.
+     *
+     * The body given is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.ringGroove": {
+        /** The shaft or the bored body to cut. */
+        shape: unknown | PipelineRef;
+        /** Whether the groove is in a shaft or in a bore. */
+        kind?: "shaft" | "bore" | PipelineRef;
+        /** The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists. */
+        diameter?: number | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid the groove of a DIN 471 or DIN 472 retaining ring removes from a shaft or a
+     * bore: as wide as the groove, down to its diameter.
+     *
+     * It starts at the frame's origin on the axis and runs the groove's width along the normal.
+     */
+    "occt.parts.mechanical.machining.ringGrooveTool": {
+        /** Whether the groove is in a shaft or in a bore. */
+        kind?: "shaft" | "bore" | PipelineRef;
+        /** The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists. */
+        diameter?: number | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Cuts a DIN 5480 spline through a hub, as `splinedHubTool` places it.
+     *
+     * The body given is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.splinedHub": {
+        /** The hub to cut. */
+        shape: unknown | PipelineRef;
+        /** The diameter the spline is named by, in millimetres, such as 25 in W 25x1.25x18. */
+        referenceDiameter?: number | PipelineRef;
+        /** The module of its teeth, one of DIN 5480's from 0.5 to 10. */
+        module?: number | PipelineRef;
+        /** The spline's length along the axis, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid a DIN 5480 hub spline removes: the shaft's flanks, with the hub's tip and root
+     * diameters, so the shaft of the same size slides into the cut.
+     *
+     * It starts at the frame's origin, runs `length` along the normal, and a gap faces the frame's
+     * direction, where `splinedShaft` at the same frame has a tooth.
+     */
+    "occt.parts.mechanical.machining.splinedHubTool": {
+        /** The diameter the spline is named by, in millimetres, such as 25 in W 25x1.25x18. */
+        referenceDiameter?: number | PipelineRef;
+        /** The module of its teeth, one of DIN 5480's from 0.5 to 10. */
+        module?: number | PipelineRef;
+        /** The spline's length along the axis, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a DIN 5480 involute splined shaft: its teeth at 30 degrees, sized from the reference
+     * diameter and the module, `length` long.
+     *
+     * It starts at the frame's origin, runs along the normal, and a tooth points along the frame's
+     * direction.
+     */
+    "occt.parts.mechanical.machining.splinedShaft": {
+        /** The diameter the spline is named by, in millimetres, such as 25 in W 25x1.25x18. */
+        referenceDiameter?: number | PipelineRef;
+        /** The module of its teeth, one of DIN 5480's from 0.5 to 10. */
+        module?: number | PipelineRef;
+        /** The spline's length along the axis, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Models an ISO metric thread on a shank or in a hole, as `threadTool` places it, instead of the
+     * cosmetic thread `parts.mechanical.fasteners` draws.
+     *
+     * Turn the shank to the nominal diameter, or drill the hole to the minor; a modelled thread is
+     * heavy, so keep it to the parts that need it. Its defaults thread a default bolt.
+     */
+    "occt.parts.mechanical.machining.thread": {
+        /** The shank or the body with the hole to cut. */
+        shape: unknown | PipelineRef;
+        /** The thread size, such as M8; the default is the default screw's and bolt's. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /** The distance from one crest to the next, in millimetres. Left out, the size's coarse pitch. */
+        pitch?: number | PipelineRef;
+        /** The threaded length along the axis, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * When true, the thread is cut in a hole drilled to the minor diameter, as in a nut; when false,
+         * on a shank turned to the nominal.
+         */
+        internal?: boolean | PipelineRef;
+        /**
+         * Where the thread starts, at a hole's mouth or under a head, its normal out of the part: the
+         * thread runs against it. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid an ISO metric thread removes: the 60 degree groove swept along a right-hand
+     * helix.
+     *
+     * It runs `length` from the frame's origin into the part, against the normal, stopping at the
+     * origin's plane. Shanks sit to 6g and holes to 6H: on frames whole pitches apart, the two mesh
+     * with play.
+     */
+    "occt.parts.mechanical.machining.threadTool": {
+        /** The thread size, such as M8; the default is the default screw's and bolt's. */
+        size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /** The distance from one crest to the next, in millimetres. Left out, the size's coarse pitch. */
+        pitch?: number | PipelineRef;
+        /** The threaded length along the axis, in millimetres. */
+        length?: number | PipelineRef;
+        /**
+         * When true, the thread is cut in a hole drilled to the minor diameter, as in a nut; when false,
+         * on a shank turned to the nominal.
+         */
+        internal?: boolean | PipelineRef;
+        /**
+         * Where the thread starts, at a hole's mouth or under a head, its normal out of the part: the
+         * thread runs against it. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a DIN 471 retaining ring for a shaft or a DIN 472 ring for a bore, fitted in its groove.
+     *
+     * Its centre lies on the frame's origin, one side on the frame's plane, it rises along the normal
+     * and its lugs point along the direction.
+     */
+    "occt.parts.mechanical.retainingRings.retainingRing": {
+        /** Whether the ring sits on a shaft or in a bore. */
+        kind?: "shaft" | "bore" | PipelineRef;
+        /**
+         * The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists: from 3 to 100
+         * for shafts, from 8 to 100 for bores.
+         */
+        diameter?: number | PipelineRef;
+        /**
+         * Where the ring sits: its centre on the origin, one side on the frame's plane, its lugs toward
+         * the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a retaining ring as `retainingRing` does and names the role each face plays.
+     *
+     * The roles `seat` (the face in the groove), `rim`, `start`, `end`, `gap` and `lug` (the plier
+     * holes) list face indexes as `shapes.face.getFaces` numbers them. The `centre` frame is the
+     * input frame.
+     */
+    "occt.parts.mechanical.retainingRings.retainingRingWithRoles": {
+        /** Whether the ring sits on a shaft or in a bore. */
+        kind?: "shaft" | "bore" | PipelineRef;
+        /**
+         * The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists: from 3 to 100
+         * for shafts, from 8 to 100 for bores.
+         */
+        diameter?: number | PipelineRef;
+        /**
+         * Where the ring sits: its centre on the origin, one side on the frame's plane, its lugs toward
+         * the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a compression spring with closed and ground ends: a round wire coiled about the frame's
+     * normal, its end coils closed onto the next and ground flat, standing on the frame's origin.
+     *
+     * The active coils share the length the end coils leave, so a shorter `length` compresses the
+     * spring; one shorter than solid, every coil touching, is refused.
+     */
+    "occt.parts.mechanical.springs.compressionSpring": {
+        /** The diameter of the wire, in model units. */
+        wireDiameter?: number | PipelineRef;
+        /** The outside diameter of the coils, in model units; more than three times the wire's. */
+        diameter?: number | PipelineRef;
+        /** How many coils spring, besides the closed coil at each end; it may be a fraction. */
+        activeCoils?: number | PipelineRef;
+        /**
+         * The spring's length from one ground end to the other, free or compressed; at least the solid
+         * length, where every coil touches the next.
+         */
+        length?: number | PipelineRef;
+        /**
+         * Where the spring stands: its bottom end's centre on the origin and its axis along the normal.
+         * Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the centre line of a compression spring's wire, coiled about the frame's normal as
+     * `compressionSpring` coils it, to sweep a wire of another section along.
+     *
+     * It runs three quarters of a coil past the frame's origin and past `length`: cut the swept solid
+     * flat at both to grind its ends.
+     */
+    "occt.parts.mechanical.springs.compressionSpringPath": {
+        /** The diameter of the wire, in model units. */
+        wireDiameter?: number | PipelineRef;
+        /** The outside diameter of the coils, in model units; more than three times the wire's. */
+        diameter?: number | PipelineRef;
+        /** How many coils spring, besides the closed coil at each end; it may be a fraction. */
+        activeCoils?: number | PipelineRef;
+        /**
+         * The spring's length from one ground end to the other, free or compressed; at least the solid
+         * length, where every coil touches the next.
+         */
+        length?: number | PipelineRef;
+        /**
+         * Where the spring stands: its bottom end's centre on the origin and its axis along the normal.
+         * Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a compression spring as `compressionSpring` does and names the role each face plays.
+     *
+     * The roles `bottom` and `top` (the ground ends) and `coil` list face indexes as
+     * `shapes.face.getFaces` numbers them. The `bottom` frame is the input frame and the `top` frame
+     * lies `length` along its normal.
+     */
+    "occt.parts.mechanical.springs.compressionSpringWithRoles": {
+        /** The diameter of the wire, in model units. */
+        wireDiameter?: number | PipelineRef;
+        /** The outside diameter of the coils, in model units; more than three times the wire's. */
+        diameter?: number | PipelineRef;
+        /** How many coils spring, besides the closed coil at each end; it may be a fraction. */
+        activeCoils?: number | PipelineRef;
+        /**
+         * The spring's length from one ground end to the other, free or compressed; at least the solid
+         * length, where every coil touches the next.
+         */
+        length?: number | PipelineRef;
+        /**
+         * Where the spring stands: its bottom end's centre on the origin and its axis along the normal.
+         * Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
     };
     /**
      * Builds a shape from path subpaths: one wire per subpath, packed into a compound when there
@@ -12146,6 +14303,21 @@ export interface OperationParams {
         radiusMajor?: number | PipelineRef;
     };
     /**
+     * Creates the one face of a guiding face's surface that wires lying on it bound, given in 3D in
+     * any order: the outer boundary and holes, or two loops round a closed surface such as a cone.
+     *
+     * The edges get their curves on the surface, so wires built anywhere work if they lie on it.
+     */
+    "occt.shapes.face.createFaceBoundedByWiresOnFace": {
+        /**
+         * The wires on the guiding surface, in any order and either way round: the outer boundary and the
+         * holes, or two loops that go round a closed surface.
+         */
+        wires: unknown[] | PipelineRef;
+        /** The face whose surface the new face is cut from. */
+        face: unknown | PipelineRef;
+    };
+    /**
      * Joins circles from consecutive lists with tangent belts, the way
      * `createFaceFromMultipleCircleTanWires` joins single circles.
      *
@@ -12228,11 +14400,11 @@ export interface OperationParams {
         inside?: boolean | PipelineRef;
     };
     /**
-     * Creates one face from several wires: the first wire is the outer boundary and every further
-     * wire cuts a hole in it.
+     * Creates one face from several wires: the first is the outer boundary and every further one a
+     * hole, whichever way it runs.
      *
-     * With `planar` true the wires must lie in one plane. The hole wires must sit inside the outer
-     * one without crossing it or each other.
+     * The outer wire's direction sets which way the face faces; `planar` keeps it flat. Holes must
+     * lie inside it, apart from it and from each other.
      */
     "occt.shapes.face.createFaceFromWires": {
         /** The wires: the first is the outer boundary, every further one cuts a hole. */
@@ -12241,8 +14413,8 @@ export interface OperationParams {
         planar?: boolean | PipelineRef;
     };
     /**
-     * Creates one face from several wires on the surface of a guiding face: the first wire is the
-     * outer boundary and every further wire cuts a hole.
+     * Creates one face on the surface of a guiding face: the first wire is the outer boundary and
+     * every further one a hole, whichever way it runs.
      *
      * The face takes the curvature of the guiding surface. `inside` applies to the first wire: true
      * turns it so the face is the region it encloses; false lets its own direction decide.
@@ -13710,6 +15882,20 @@ export interface OperationParams {
         concatBSplines?: boolean | PipelineRef;
     };
     /**
+     * Merges faces and edges as `unifySameDomain` does, and reports what each face, edge and vertex
+     * of the shape became: both halves of a face a fuse split name the one face they merge into.
+     */
+    "occt.shapes.shape.unifySameDomainWithHistory": {
+        /** The shape to clean up. */
+        shape: unknown | PipelineRef;
+        /** When true, edges that continue each other on one curve are merged into one. */
+        unifyEdges?: boolean | PipelineRef;
+        /** When true, faces that lie on one surface are merged into one. */
+        unifyFaces?: boolean | PipelineRef;
+        /** When true, neighboring B-spline edges are joined into a single B-spline where possible. */
+        concatBSplines?: boolean | PipelineRef;
+    };
+    /**
      * Collects diagnostic facts about a shell: whether it is valid, how many faces and edges it
      * has, its total area and, for every face, the surface type, degrees, control point counts,
      * bounds and area.
@@ -13733,6 +15919,19 @@ export interface OperationParams {
      * join as a compound of what did.
      */
     "occt.shapes.shell.sewFaces": {
+        /** The faces to stitch together; their shared edges must line up within the tolerance. */
+        shapes: unknown[] | PipelineRef;
+        /** How far apart two edges may be and still be sewn together, in model units. */
+        tolerance?: number | PipelineRef;
+    };
+    /**
+     * Sews faces and shells as `sewFaces` does, and reports per shape given which faces of the sewn
+     * shape each of its faces became.
+     *
+     * `histories[i].faces[j]` lists the result faces face `j` of shape `i` became, as
+     * `shapes.face.getFaces` numbers both.
+     */
+    "occt.shapes.shell.sewFacesWithHistory": {
         /** The faces to stitch together; their shared edges must line up within the tolerance. */
         shapes: unknown[] | PipelineRef;
         /** How far apart two edges may be and still be sewn together, in model units. */
@@ -14220,6 +16419,28 @@ export interface OperationParams {
     "occt.shapes.solid.fromClosedShell": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
+    };
+    /**
+     * Sews faces and shells that close a volume into one solid, turned so its material is inside,
+     * which builds a body face by face without a boolean.
+     *
+     * Faces that leave a gap wider than the tolerance, or that close several volumes, are refused.
+     */
+    "occt.shapes.solid.fromFaces": {
+        /** The faces to stitch together; their shared edges must line up within the tolerance. */
+        shapes: unknown[] | PipelineRef;
+        /** How far apart two edges may be and still be sewn together, in model units. */
+        tolerance?: number | PipelineRef;
+    };
+    /**
+     * Makes a solid as `fromFaces` does, and reports per shape given which faces of the solid each of
+     * its faces became, as `shapes.face.getFaces` numbers both.
+     */
+    "occt.shapes.solid.fromFacesWithHistory": {
+        /** The faces to stitch together; their shared edges must line up within the tolerance. */
+        shapes: unknown[] | PipelineRef;
+        /** How far apart two edges may be and still be sewn together, in model units. */
+        tolerance?: number | PipelineRef;
     };
     /** Finds the center of mass of a solid, treating it as filled with material of uniform density. */
     "occt.shapes.solid.getSolidCenterOfMass": {
@@ -17636,6 +19857,19 @@ export interface OperationParams {
         polyline: unknown | PipelineRef;
     };
     /**
+     * Tells whether a point lies inside a flat outline.
+     *
+     * It counts the outline's sides a ray from the point crosses, so it holds for outlines that are
+     * not convex; a point exactly on a side may fall either way.
+     * Example: [2,2] in [[0,0], [4,0], [4,4], [0,4]] -> true
+     */
+    "polyline.isPointInside2d": {
+        /** The outline's corners in order; the last joins back to the first. */
+        points: [number, number][] | PipelineRef;
+        /** The point to test. */
+        point: [number, number] | PipelineRef;
+    };
+    /**
      * Measures the polyline by adding up the straight distances between neighboring points.
      *
      * The closing segment of a closed polyline is not counted.
@@ -17657,6 +19891,27 @@ export interface OperationParams {
         polyline: unknown | PipelineRef;
         /** Distance, in model units, below which two points count as the same. */
         tolerance?: number | PipelineRef;
+    };
+    /**
+     * Makes a flat outline run counter-clockwise, or clockwise.
+     *
+     * An outline already running that way comes back as it was; otherwise its corners are reversed.
+     * Example: [[0,0], [0,4], [4,4], [4,0]], counter-clockwise -> [[4,0], [4,4], [0,4], [0,0]]
+     */
+    "polyline.orient2d": {
+        /** The outline's corners in order; the last joins back to the first. */
+        points: [number, number][] | PipelineRef;
+        /** When true the outline is made to run counter-clockwise, when false clockwise. */
+        counterClockwise?: boolean | PipelineRef;
+    };
+    /**
+     * Measures the length around a flat outline, its closing side included.
+     *
+     * Example: [[0,0], [3,0], [3,4]] -> 12
+     */
+    "polyline.perimeter2d": {
+        /** The outline's corners in order; the last joins back to the first. */
+        points: [number, number][] | PipelineRef;
     };
     /**
      * Measures the area a polyline encloses, read as a closed outline in its own plane.
@@ -17727,6 +19982,38 @@ export interface OperationParams {
         polyline: unknown | PipelineRef;
     };
     /**
+     * Rounds the corners of a path in space with arcs, drawn as short straight pieces.
+     *
+     * Where the segments beside a corner are too short for `radius`, it gets the largest arc that
+     * fits half of each. The ends stay where they are.
+     * Example: [[0,0,0], [10,0,0], [10,10,0]], radius 2 -> one quarter arc at the corner
+     */
+    "polyline.roundCorners": {
+        /** The path, an open polyline of at least two points. */
+        polyline: unknown | PipelineRef;
+        /** The radius each corner is rounded with; it shrinks where the segments beside it are short. */
+        radius?: number | PipelineRef;
+        /** How many straight pieces draw a quarter turn of arc; a smaller turn takes fewer. */
+        segments?: number | PipelineRef;
+    };
+    /**
+     * Rounds the corners of a flat outline with arcs, drawn as short straight pieces.
+     *
+     * Every corner takes `radius`, or its own entry of `radiusList`; a radius of 0 leaves it sharp.
+     * A radius too large for the sides beside its corner is refused.
+     * Example: a 10 by 10 square, radius 2 -> four quarter arcs at the corners
+     */
+    "polyline.roundCorners2d": {
+        /** The outline's corners in order; the last joins back to the first. */
+        points: [number, number][] | PipelineRef;
+        /** The radius every corner is rounded with; 0 leaves corners sharp. */
+        radius?: number | PipelineRef;
+        /** A radius per corner, in the order of `points`, used instead of `radius` when given. */
+        radiusList?: number[] | PipelineRef;
+        /** How many straight pieces draw a quarter turn of arc; a smaller turn takes fewer. */
+        segments?: number | PipelineRef;
+    };
+    /**
      * Finds one fillet radius that fits every corner of the polyline: the smallest of the
      * per-corner maximums under the half-segment rule.
      *
@@ -17737,6 +20024,17 @@ export interface OperationParams {
         polyline: unknown | PipelineRef;
         /** Distance, in model units, below which two points count as the same. */
         tolerance?: number | PipelineRef;
+    };
+    /**
+     * Measures the area of a flat outline, signed by the way it runs.
+     *
+     * The area is positive when the outline runs counter-clockwise and negative when it runs
+     * clockwise, so the sign tells which way an outline turns.
+     * Example: [[0,0], [4,0], [4,4], [0,4]] -> 16; the same corners reversed -> -16
+     */
+    "polyline.signedArea2d": {
+        /** The outline's corners in order; the last joins back to the first. */
+        points: [number, number][] | PipelineRef;
     };
     /**
      * Joins loose segments into polylines by matching up ends that meet within the tolerance.
@@ -17750,6 +20048,48 @@ export interface OperationParams {
         segments: unknown[] | PipelineRef;
         /** Two segment ends closer than this, in model units, count as touching. */
         tolerance?: number | PipelineRef;
+    };
+    /**
+     * Places a frame at each point of a path, facing along it without twisting.
+     *
+     * Each normal is the path's direction there. Each direction, the profile's X axis, turns by the
+     * smallest angle between points, so a swept profile does not spin. `firstDirection` sets it at
+     * the start.
+     * Example: a straight path along X -> frames that differ only in origin
+     */
+    "polyline.sweepFrames": {
+        /** The path, an open polyline of at least two points. */
+        polyline: unknown | PipelineRef;
+        /** Roughly where the profile's X axis points at the start; it is turned square to the path. */
+        firstDirection?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Builds a matrix per point of a path that places a flat profile there, for sweeping it.
+     *
+     * Each puts the XY plane on that point's `sweepFrames` frame, Z along the path, and stretches it
+     * across a bend so the pieces either side meet.
+     * Example: a straight path along Z -> matrices that only move up it
+     */
+    "polyline.sweepPlacements": {
+        /** The path, an open polyline of at least two points. */
+        polyline: unknown | PipelineRef;
+        /** Roughly where the profile's X axis points at the start; it is turned square to the path. */
+        firstDirection?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Finds the direction a path heads in at each of its points.
+     *
+     * At an inner point it bisects the segments either side; at the ends it follows the end
+     * segments, unless `startTangent` or `endTangent` is given. Every direction has length 1.
+     * Example: [[0,0,0], [1,0,0], [1,1,0]] -> [[1,0,0], [0.707,0.707,0], [0,1,0]]
+     */
+    "polyline.tangents": {
+        /** The path, an open polyline of at least two points. */
+        polyline: unknown | PipelineRef;
+        /** The direction at the first point; left out, the first segment's. */
+        startTangent?: [number, number, number] | PipelineRef;
+        /** The direction at the last point; left out, the last segment's. */
+        endTangent?: [number, number, number] | PipelineRef;
     };
     /**
      * Applies a transformation matrix, or a list of them in order, to every point of the polyline.
@@ -18513,9 +20853,10 @@ export interface OperationParams {
         vector: number[] | PipelineRef;
     };
     /**
-     * Scales a 3D vector to length 1 while keeping its direction.
+     * Scales a vector to length 1 while keeping its direction.
      *
-     * A vector shorter than 1e-8 has no direction to keep, so the result is undefined.
+     * A vector shorter than 1e-8, or with a component that is not finite, has no direction to keep,
+     * so the result is undefined; a very long vector is scaled without overflowing.
      * Example: [3,4,0] -> [0.6,0.8,0]
      */
     "vector.normalized": {

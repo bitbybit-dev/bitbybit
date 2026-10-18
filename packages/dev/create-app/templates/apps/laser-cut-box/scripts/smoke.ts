@@ -2,7 +2,7 @@ import { createRequire } from "node:module";
 import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
-import { Inputs, OCCTService, OccHelper, VectorHelperService, ShapesHelperService } from "@bitbybit-dev/occt";
+import { Inputs, OCCTService } from "@bitbybit-dev/occt";
 import { buildModel, clampParams, defaultParams, type BoxParams, type Occt } from "../src/model.ts";
 import { partsOverlap, slotArea } from "../src/panels.ts";
 
@@ -30,7 +30,7 @@ const kernelDir = dirname(require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/
 const wasmFile = readdirSync(kernelDir).find((file) => file.endsWith(".wasm"));
 if (!wasmFile) throw new Error(`no Bitbybit OCCT Kernel (.wasm) found in ${kernelDir}`);
 const occ = await initOpenCascade({ locateFile: (file: string) => (file.endsWith(".wasm") ? join(kernelDir, wasmFile) : file) });
-const occt = inProcess(new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ)));
+const occt = inProcess(new OCCTService(occ));
 
 const round = (n: number): number => Math.round(n * 1000) / 1000;
 const spans = (box: number[], expected: [number, number, number], slack: number): boolean => expected.every((value, i) => Math.abs((box[i] ?? Number.NaN) - value) <= slack);

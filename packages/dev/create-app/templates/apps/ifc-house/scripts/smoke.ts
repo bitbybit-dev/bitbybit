@@ -3,7 +3,7 @@ import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import Module from "manifold-3d";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
-import { OCCTService, OccHelper, VectorHelperService, ShapesHelperService } from "@bitbybit-dev/occt";
+import { OCCTService } from "@bitbybit-dev/occt";
 import { ManifoldService } from "@bitbybit-dev/manifold";
 import { IFCService } from "@bitbybit-dev/ifc";
 import { HouseAuthor } from "../src/house/build-house.ts";
@@ -84,7 +84,7 @@ const kernelDir = dirname(require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/
 const wasmFile = readdirSync(kernelDir).find((file) => file.endsWith(".wasm"));
 if (!wasmFile) throw new Error(`no Bitbybit OCCT Kernel (.wasm) found in ${kernelDir}`);
 const occ = await initOpenCascade({ locateFile: (file: string): string => (file.endsWith(".wasm") ? join(kernelDir, wasmFile) : file), print: (): void => undefined });
-const occt = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+const occt = new OCCTService(occ);
 const stepStarted = Date.now();
 const document = occt.recipes.buildDocument({ recipe, name: "Family house", facetedMeshes: true });
 const step = occt.assembly.manager.exportDocumentToStep({ document, fileName: "house.step" });

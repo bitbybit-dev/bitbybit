@@ -1,8 +1,8 @@
 import type * as Manifold3D from "manifold-3d";
 import type { Base } from "@bitbybit-dev/base";
 import { loftMesh } from "./recipe-loft";
-import { DEGREES_PER_RADIAN } from "./recipes.constants";
 import type { Built, ProfileRings } from "./recipe-types";
+import { degreesOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 const UNIT_HEIGHT = 1;
 const FULL_TURN = 2 * Math.PI;
@@ -248,7 +248,7 @@ class RecipeExecutor {
         }
         const normal = along[0] * across[1] - along[1] * across[0];
         try {
-            const turned = this.wasm.Manifold.revolve(profile, Math.max(MIN_REVOLVE_SEGMENTS, Math.ceil((this.circularSegments * node.angle) / FULL_TURN)), node.angle * DEGREES_PER_RADIAN);
+            const turned = this.wasm.Manifold.revolve(profile, Math.max(MIN_REVOLVE_SEGMENTS, Math.ceil((this.circularSegments * node.angle) / FULL_TURN)), degreesOf(node.angle));
             try {
                 return turned.transform([across[0], across[1], 0, 0, 0, 0, normal, 0, along[0], along[1], 0, 0, ox, oy, 0, 1]);
             } finally {

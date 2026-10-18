@@ -1,7 +1,7 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, axesToMatrix, vectorToLocal } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { add3, length3, scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
-import { wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
+import { WORLD_AXES, axesToMatrix, vectorToLocal } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { add3, length3, scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
 import { PARALLEL_TOLERANCE } from "../build/constants";
 import { axisPlacementFrame, directionOf } from "../build/placement";
 import type { ModelSnapshot } from "../model/snapshot";

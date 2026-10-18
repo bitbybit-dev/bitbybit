@@ -33,13 +33,15 @@ export class IFCSite {
         requireOutline(resolved.outline, "outline");
         (resolved.holes ?? []).forEach((hole, index) => requireOutline(hole, `hole ${index}`));
         requireFinite(resolved.elevation, "elevation");
+        const depth = lengthIn(model, resolved.depth, DEFAULT_MILLIMETRES.terrainDepth);
+        requireFinite(depth, "terrain's depth");
         return editModel(model, (tx, writer) => {
             createTerrain(tx, writer, {
                 id: resolved.id,
                 name: resolved.name,
                 outline: resolved.outline,
                 holes: resolved.holes ?? [],
-                depth: lengthIn(model, resolved.depth, DEFAULT_MILLIMETRES.terrainDepth),
+                depth,
                 elevation: resolved.elevation,
                 material: resolved.material,
             }, lengthTolerance(model));

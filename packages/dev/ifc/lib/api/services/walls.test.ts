@@ -295,6 +295,17 @@ describe("IFCWalls.add", () => {
         expect(() => addRightWall(ifc, model, "dot", [100, 100], [100, 100])).toThrow("A wall's start and end must be apart");
     });
 
+    it("should refuse a wall whose start and end are too far apart to have a direction", () => {
+        // Arrange
+        const { ifc, model } = groundFloor();
+
+        // Act
+        const error = errorFrom(() => ifc.walls.add({ model, storey: "ground", start: [-1e308, 0], end: [1e308, 0] }));
+
+        // Assert
+        expect(error.message).toBe("A direction needs a finite length above zero");
+    });
+
     it("should refuse a start that is not two finite numbers with a TypeError", () => {
         // Arrange
         const { ifc, model } = groundFloor();

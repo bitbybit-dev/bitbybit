@@ -1,15 +1,20 @@
 import type { Base } from "@bitbybit-dev/base";
 import { describe, expect, it } from "vitest";
-import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-measures";
-import { checkRecipe } from "@bitbybit-dev/base";
+import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-measures";
 import { modelOf } from "../api/services/service-support";
 import { withContext } from "../__test__/geometry-fixtures";
 import { ItemConverter } from "./items";
 import { RecipeBuilder } from "./recipe-builder";
+import { Recipes } from "@bitbybit-dev/base";
+
+const RECIPES = new Recipes();
 
 const REACH = 1000;
 const SEGMENTS = 32;
 const IDENTITY: Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+const MERIDIAN_TOLERANCE = 1e-9;
+const MILLIONTHS = 1e6;
+const QUARTER_TURN_CUT_HEIGHTS = [0, 0.19509, 0.382683, 0.55557, 0.707107, 0.83147, 0.92388, 0.980785];
 const PROJECT_ROWS = ["#90=IFCSIUNIT(*,.PLANEANGLEUNIT.,$,.RADIAN.);", "#91=IFCUNITASSIGNMENT((#90));", "#92=IFCPROJECT('0YvctVUKr0kugbFTf53O9L',$,'Project',$,$,$,$,(#3),#91);"];
 
 class Rows {
@@ -113,6 +118,16 @@ function numbersIn(recipe: Base.Recipe, range: Base.RecipeRange): number[] {
     return [...recipe.buffers.f64.slice(range[0], range[0] + range[1])];
 }
 
+function heightsOnStartMeridian(positions: readonly number[]): number[] {
+    const heights = new Set<number>();
+    for (let at = 0; at + 2 < positions.length; at += 3) {
+        if (Math.abs(positions[at + 1]!) < MERIDIAN_TOLERANCE && positions[at]! > MERIDIAN_TOLERANCE) {
+            heights.add(Math.round(positions[at + 2]! * MILLIONTHS) / MILLIONTHS);
+        }
+    }
+    return [...heights].sort((a, b) => a - b);
+}
+
 function edgeUses(indices: readonly number[]): { closed: boolean; consistent: boolean } {
     const directed = new Map<string, number>();
     for (let at = 0; at < indices.length; at += 3) {
@@ -192,6 +207,22 @@ describe("ItemConverter and advanced breps", () => {
         expect(volume).toBeGreaterThan(0.97 * (4 / 3) * Math.PI);
         expect(volume).toBeLessThanOrEqual((4 / 3) * Math.PI);
         expect(edgeUses(mesh.indices).closed).toBe(true);
+    });
+
+    it("should cut a half of a sphere from its equator to its pole in 8 steps, one per 1/32 of the turn its normal makes, whatever the rounding of the normals", () => {
+        // Arrange
+        const rows = new Rows();
+        const start = rows.vertex(1, 0, 0);
+        const equator = rows.add(`IFCEDGECURVE(#${start},#${start},#${rows.add(`IFCCIRCLE(#${rows.placement([0, 0, 0])},1.)`)},.T.)`);
+        const loop = rows.loop([[equator, true]]);
+        const sphere = rows.add(`IFCSPHERICALSURFACE(#${rows.placement([0, 0, 0])},1.)`);
+        const upperHalf = rows.add(`IFCSHELLBASEDSURFACEMODEL((#${rows.add(`IFCOPENSHELL((#${rows.face([[loop, true]], sphere)}))`)}))`);
+
+        // Act
+        const mesh = meshOf(rows.rows, upperHalf);
+
+        // Assert
+        expect(heightsOnStartMeridian(mesh.positions)).toEqual(QUARTER_TURN_CUT_HEIGHTS);
     });
 
     it("should mesh a face whose loop passes through its surface's apex, splitting the apex into the angles it arrives and leaves at", () => {
@@ -402,7 +433,7 @@ describe("ItemConverter and the exact description of advanced breps", () => {
         const { recipe, node } = exactOf(rows, brep);
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         expect(node.op).toBe("brep");
         if (node.op !== "brep") {
             return;
@@ -436,7 +467,7 @@ describe("ItemConverter and the exact description of advanced breps", () => {
         const { recipe, node } = exactOf(rows.rows, brep);
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         if (node.op !== "brep") {
             throw new Error("not a brep node");
         }
@@ -483,7 +514,7 @@ describe("ItemConverter and the exact description of advanced breps", () => {
         const { recipe, node } = exactOf(rows.rows, brep);
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         if (node.op !== "brep") {
             throw new Error("not a brep node");
         }
@@ -528,7 +559,7 @@ describe("ItemConverter and the exact description of advanced breps", () => {
         const wrappedNode = exactOf(rows.rows, wrapped).node;
 
         // Assert
-        expect(checkRecipe(turnedRecipe.recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe: turnedRecipe.recipe })).toEqual([]);
         if (turnedRecipe.node.op !== "brep") {
             throw new Error("not a brep node");
         }
@@ -557,7 +588,7 @@ describe("ItemConverter and a representation of several advanced breps", () => {
         const node = recipe.nodes.at(-1)!;
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         expect(recipe.nodes.map((step) => step.op)).toEqual(["triangles", "brep"]);
         if (node.op !== "brep") {
             throw new Error("not a brep node");
@@ -600,7 +631,7 @@ describe("ItemConverter and the rarer forms of an exact description", () => {
         const { recipe, node } = exactOf(rows.rows, disc);
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         if (node.op !== "brep") {
             throw new Error("not a brep node");
         }
@@ -673,7 +704,7 @@ describe("ItemConverter and the rarer forms of an exact description", () => {
         const { recipe, node } = exactOf(rows.rows, hollow);
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         if (node.op !== "brep") {
             throw new Error("not a brep node");
         }

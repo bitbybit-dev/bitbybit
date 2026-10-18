@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
-import { perimeter2, signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
-import { length2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { perimeter2, signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
+import { between2, dot2, length2, length3, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type { IfcValue } from "../step/step-types";
 import { isList, isReference } from "../step/values";
 import type { BoundPair, Bounds, ExtrudedBody, Linear2, ModelReader, Plane3, ProfileShape } from "./build-types";
@@ -61,7 +61,7 @@ function valueAt(f: Linear2, point: Base.Point2): number {
     return f.a * point[0] + f.b * point[1] + f.c;
 }
 
-function minus(f: Linear2, g: Linear2): Linear2 {
+function linearDifference(f: Linear2, g: Linear2): Linear2 {
     return { a: f.a - g.a, b: f.b - g.b, c: f.c - g.c };
 }
 
@@ -76,7 +76,7 @@ function clipped(polygon: readonly Base.Point2[], keep: Linear2): Base.Point2[] 
         }
         if ((here < 0 && there > 0) || (here > 0 && there < 0)) {
             const fraction = here / (here - there);
-            result.push([point[0] + (next[0] - point[0]) * fraction, point[1] + (next[1] - point[1]) * fraction]);
+            result.push(between2(point, next, fraction));
         }
     });
     return result;
@@ -109,9 +109,9 @@ function pairs(bounds: Bounds): BoundPair[] {
         top,
         bottom,
         keeps: [
-            ...tops.filter((_, j) => j !== k).map((other) => minus(top, other)),
-            ...bottoms.filter((_, j) => j !== m).map((other) => minus(other, bottom)),
-            minus(bottom, top),
+            ...tops.filter((_, j) => j !== k).map((other) => linearDifference(top, other)),
+            ...bottoms.filter((_, j) => j !== m).map((other) => linearDifference(other, bottom)),
+            linearDifference(bottom, top),
             ...bounds.sides,
         ],
     })));
@@ -124,7 +124,7 @@ function within(polygon: readonly Base.Point2[], keeps: readonly Linear2[]): Bas
 export function volumeBetween(footprint: readonly Base.Point2[], bounds: Bounds): number {
     return pairs(bounds).reduce((sum, { top, bottom, keeps }) => {
         const region = within(footprint, keeps);
-        return sum + (region.length > 2 ? integral(region, minus(top, bottom)) : 0);
+        return sum + (region.length > 2 ? integral(region, linearDifference(top, bottom)) : 0);
     }, 0);
 }
 
@@ -135,7 +135,7 @@ export function areaWithin(footprint: readonly Base.Point2[], sides: readonly Li
 
 export function areaBetween(start: Base.Point2, end: Base.Point2, bounds: Bounds): number {
     const length = length2(subtract2(end, start));
-    const at = (f: Linear2, s: number): number => valueAt(f, [start[0] + (end[0] - start[0]) * s, start[1] + (end[1] - start[1]) * s]);
+    const at = (f: Linear2, s: number): number => valueAt(f, between2(start, end, s));
     let low = 0;
     let high = 1;
     for (const side of bounds.sides) {
@@ -188,7 +188,7 @@ export function boundsOf(base: number, top: number, planes: readonly Plane3[]): 
         sides: planes.filter((plane) => Math.abs(plane.normal[2]) <= UPRIGHT_NORMAL).map((plane) => ({
             a: plane.normal[0],
             b: plane.normal[1],
-            c: -(plane.origin[0] * plane.normal[0] + plane.origin[1] * plane.normal[1]),
+            c: -dot2([plane.origin[0], plane.origin[1]], [plane.normal[0], plane.normal[1]]),
         })),
     };
 }
@@ -205,7 +205,7 @@ export function extrudedBodyOf(reader: ModelReader, product: number): ExtrudedBo
     const depth = reader.attribute(solid, "Depth");
     const shape = isReference(profile) ? profileShape(reader, profile.ref) : undefined;
     const direction = directionOf(reader, reader.attribute(solid, "ExtrudedDirection"), [0, 0, 1]);
-    const length = Math.hypot(direction[0], direction[1], direction[2]);
+    const length = length3(direction);
     if (!shape || typeof depth !== "number" || !(length > 0)) {
         return undefined;
     }

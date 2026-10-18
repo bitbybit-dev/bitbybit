@@ -1,6 +1,7 @@
-import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-measures";
-import { windingRepairs } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-orientation";
-import { newellNormal, triangulateFace } from "@bitbybit-dev/base/lib/api/services/helpers/triangulation";
+import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-measures";
+import { windingRepairs } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-orientation";
+import { newellNormal, triangulateFace } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/triangulation";
+import { length3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { POINT3_SIZE } from "../build/constants";
 import { numbersOf } from "../build/placement";
 import type { ModelSnapshot } from "../model/snapshot";
@@ -160,7 +161,7 @@ export class MeshCollector {
             loops.push(vertices);
         }
         if (outer < 0) {
-            const spans = loops.map((loop) => Math.hypot(...newellNormal(this.positions, loop)));
+            const spans = loops.map((loop) => length3(newellNormal(this.positions, loop)));
             outer = spans.indexOf(Math.max(...spans));
         }
         this.add(triangulateFace(this.positions, [loops[outer] ?? [], ...loops.filter((_, at) => at !== outer)]));

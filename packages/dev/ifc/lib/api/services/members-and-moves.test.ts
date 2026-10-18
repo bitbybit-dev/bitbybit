@@ -10,6 +10,10 @@ import { ref } from "../../step/values";
 import { IFCService } from "../ifc-service";
 import { OTHER_TOOL_FILE, WALL_A } from "../../__test__/other-tool-file";
 import * as Inputs from "../inputs";
+import { InputError } from "@bitbybit-dev/base";
+
+const ROTATION_BEYOND_RADIANS = 1e308;
+const TOO_LARGE_A_TURN = "The rotation in degrees is too large to turn by, got 1e+308: give the same turn within 360 degrees";
 
 function worldFrame(model: IfcModel, id: string): Frame3 {
     const snapshot = modelOf(model);
@@ -63,6 +67,29 @@ describe("IFCMembers.add", () => {
 
         // Assert
         expect(error.message).toContain("The predefined type 'GIRDER' is not one of");
+    });
+
+    it("should refuse a rotation too large to turn by with an InputError naming the rotation", () => {
+        // Arrange
+        const { ifc, model } = groundFloor();
+
+        // Act
+        const error = errorFrom(() => ifc.members.add({ model, storey: "ground", start: [0, 0, 0], end: [1000, 0, 0], rotation: ROTATION_BEYOND_RADIANS }));
+
+        // Assert
+        expect(error).toBeInstanceOf(InputError);
+        expect(error).toMatchObject({ property: "rotation", message: TOO_LARGE_A_TURN });
+    });
+
+    it("should refuse a member whose start and end are too far apart to have a direction", () => {
+        // Arrange
+        const { ifc, model } = groundFloor();
+
+        // Act
+        const error = errorFrom(() => ifc.members.add({ model, storey: "ground", start: [0, 0, -1e308], end: [0, 0, 1e308] }));
+
+        // Assert
+        expect(error.message).toBe("A direction needs a finite length above zero");
     });
 });
 
@@ -208,5 +235,17 @@ describe("IFCModels.move", () => {
 
         // Assert
         expect([translation.message, rotation.message]).toEqual(["The translation must be three finite numbers", "The rotation in degrees must be a finite number, got Infinity"]);
+    });
+
+    it("should refuse a turn too large to turn by with an InputError naming the rotation", () => {
+        // Arrange
+        const { ifc, model } = withColumn();
+
+        // Act
+        const error = errorFrom(() => ifc.model.move({ model, element: "column", rotation: ROTATION_BEYOND_RADIANS }));
+
+        // Assert
+        expect(error).toBeInstanceOf(InputError);
+        expect(error).toMatchObject({ property: "rotation", message: TOO_LARGE_A_TURN });
     });
 });

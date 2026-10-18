@@ -1,12 +1,12 @@
 import type { Base } from "@bitbybit-dev/base";
-import { dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { axesAlong, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type { IfcAttributes } from "../model/model-types";
 import type { IfcTransaction } from "../model/transaction";
 import type { IfcValue } from "../step/step-types";
 import { enumValue, ref } from "../step/values";
 import type { Outline2 } from "./build-types";
 import type { Frame3 } from "./build-types";
-import { frameFrom, normalize3 } from "./math";
+import { requiredFrame } from "./math";
 
 const AXIS_TOLERANCE = 1e-12;
 
@@ -116,8 +116,6 @@ export class EntityWriter {
 }
 
 export function planeFrame(origin: Base.Point3, normal: Base.Vector3, xHint: Base.Vector3): Frame3 {
-    const z = normalize3(normal);
-    const projected = subtract3(xHint, scale3(z, dot3(xHint, z)));
-    const fallback: Base.Vector3 = Math.abs(z[0]) < Math.abs(z[1]) ? [1, 0, 0] : [0, 1, 0];
-    return frameFrom(origin, z, length3(projected) > AXIS_TOLERANCE ? projected : fallback);
+    const frame = squareFrame(origin, normal, xHint);
+    return frame === "direction" ? axesAlong(origin, normal)! : requiredFrame(frame);
 }

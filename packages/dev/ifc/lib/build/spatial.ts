@@ -1,4 +1,4 @@
-import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type * as Inputs from "../api/inputs";
 import { keyGlobalId } from "../model/guid";
 import type { ModelSnapshot } from "../model/snapshot";

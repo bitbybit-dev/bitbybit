@@ -1,7 +1,7 @@
 import type { Base } from "@bitbybit-dev/base";
-import { pointToLocal, pointToWorld, vectorToLocal } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
-import { add2, leftOf2, length2, scale2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { WORLD_AXES, pointToLocal, pointToWorld, vectorToLocal } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
+import { add2, leftOf2, length2, length3, scale2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import * as Inputs from "../api/inputs";
 import { isEnumeration, isReference } from "../step/values";
 import type { ModelReader, WallCuts, WallEnd, WallGeometry } from "./build-types";
@@ -9,7 +9,7 @@ import { requiredReference } from "./checks";
 import { PARALLEL_TOLERANCE, VERTICAL_COSINE } from "./constants";
 import { layerSetThickness, materialOf } from "./materials";
 import type { Frame3, Line2 } from "./build-types";
-import { distanceToLine, intersectLines, normalize2, parameterOnLine, placedOnPlan } from "./math";
+import { distanceToLine, intersectLines, direction2Of, parameterOnLine, placedOnPlan } from "./math";
 import { absoluteFrame, axisPlacementFrame, directionOf, objectPlacementOf } from "./placement";
 import { describeObject } from "./spatial";
 import { firstItem, representationOf, unwrapClippings } from "./representations";
@@ -85,7 +85,7 @@ function verticalExtrusion(reader: ModelReader, wall: number, body: number): [nu
     const position = reader.attribute(solid, "Position");
     const frame: Frame3 | undefined = isReference(position) ? axisPlacementFrame(reader, position.ref) : undefined;
     const direction = directionOf(reader, reader.attribute(solid, "ExtrudedDirection"), [0, 0, 1]);
-    const upwards = Math.hypot(direction[0], direction[1], direction[2]);
+    const upwards = length3(direction);
     if (typeof depth !== "number" || !(depth > 0) || (frame !== undefined && frame.z[2] < VERTICAL_COSINE) || !(direction[2] / upwards >= VERTICAL_COSINE)) {
         throw new Error(`${refusal}its extrusion does not rise straight up from a plan outline`);
     }
@@ -105,13 +105,13 @@ export function readWall(reader: ModelReader, wall: number): WallGeometry {
     const body = representationOf(reader, wall, "Body");
     const [height, base] = body === undefined ? [0, 0] : verticalExtrusion(reader, wall, body);
     const [low, high] = usage === undefined ? bodySides(reader, wall, body, localStart[1]) : layerBounds(reader, usage);
-    return { wall, frame, start, end, direction: normalize2(subtract2(end, start)), length: length2(subtract2(end, start)), low, high, height, base, body, usage };
+    return { wall, frame, start, end, direction: direction2Of(subtract2(end, start)), length: length2(subtract2(end, start)), low, high, height, base, body, usage };
 }
 
 export function axisFrame(geometry: WallGeometry): Frame3 {
     const start = pointToLocal(geometry.frame, [geometry.start[0], geometry.start[1], 0]);
     const end = pointToLocal(geometry.frame, [geometry.end[0], geometry.end[1], 0]);
-    const direction = normalize2([end[0] - start[0], end[1] - start[1]]);
+    const direction = direction2Of(subtract2([end[0], end[1]], [start[0], start[1]]));
     return { origin: [start[0], start[1], geometry.base], x: [direction[0], direction[1], 0], y: [-direction[1], direction[0], 0], z: [0, 0, 1] };
 }
 
@@ -153,7 +153,7 @@ export function mitreCut(wall: WallGeometry, wallEnd: WallEnd, other: WallGeomet
     if (length2(along) <= tolerance) {
         return undefined;
     }
-    return { point: first, direction: normalize2(along) };
+    return { point: first, direction: direction2Of(along) };
 }
 
 export function buttCut(stem: WallGeometry, stemEnd: WallEnd, through: WallGeometry): Line2 {
@@ -165,11 +165,11 @@ export function footprintOf(geometry: WallGeometry, cuts: WallCuts, tolerance: n
     const toLocalLine = (line: Line2): Line2 => {
         const point = pointToLocal(geometry.frame, [line.point[0], line.point[1], 0]);
         const direction = vectorToLocal(geometry.frame, [line.direction[0], line.direction[1], 0]);
-        return { point: [point[0], point[1]], direction: normalize2([direction[0], direction[1]]) };
+        return { point: [point[0], point[1]], direction: direction2Of([direction[0], direction[1]]) };
     };
     const startLocal = pointToLocal(geometry.frame, [geometry.start[0], geometry.start[1], 0]);
     const endLocal = pointToLocal(geometry.frame, [geometry.end[0], geometry.end[1], 0]);
-    const axisDirection = normalize2([endLocal[0] - startLocal[0], endLocal[1] - startLocal[1]]);
+    const axisDirection = direction2Of(subtract2([endLocal[0], endLocal[1]], [startLocal[0], startLocal[1]]));
     const across = leftOf2(axisDirection);
     const squareAt = (point: Base.Point3): Line2 => ({ point: [point[0], point[1]], direction: across });
     const startCut = cuts.start ? toLocalLine(cuts.start) : squareAt(startLocal);
@@ -198,4 +198,9 @@ export function readableWall(reader: ModelReader, wall: number): WallGeometry | 
     } catch {
         return undefined;
     }
+}
+
+export function inOwnFrame(reader: ModelReader, geometry: WallGeometry): WallGeometry {
+    const [start, end] = axisPoints(reader, geometry.wall);
+    return { ...geometry, frame: WORLD_AXES, start, end, direction: direction2Of(subtract2(end, start)), length: length2(subtract2(end, start)) };
 }

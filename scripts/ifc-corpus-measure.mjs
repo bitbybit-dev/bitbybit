@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { isZip, zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/services/helpers/zip";
+import { isZip, zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/services/helpers/files/zip";
 import { IFCService } from "@bitbybit-dev/ifc";
 import { ManifoldService } from "@bitbybit-dev/manifold";
 import { editForValidation } from "./ifc-corpus-edit.mjs";
@@ -41,10 +41,10 @@ async function manifoldService() {
 }
 
 async function occtService() {
-    const { OCCTService, OccHelper, VectorHelperService, ShapesHelperService } = await import("@bitbybit-dev/occt");
+    const { OCCTService } = await import("@bitbybit-dev/occt");
     const { default: initOpenCascade } = await import("@bitbybit-dev/occt/bitbybit-dev-occt/index.js");
     const occ = await initOpenCascade({ print: () => undefined, printErr: () => undefined });
-    return new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+    return new OCCTService(occ);
 }
 
 function batches(ids) {

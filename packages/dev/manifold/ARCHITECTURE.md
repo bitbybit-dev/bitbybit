@@ -59,17 +59,17 @@ root by transforming its node's solid with the root's matrix.
 - **Nothing outlives a failure.** Every node's result is released once the roots are placed, and when
   anything throws, the roots already placed are released too, so a recipe that fails halfway leaks no
   WASM memory.
-- **An open mesh is drawn, not built.** `recipes.surfaceMeshes` hands base's `recipeSurfaceMeshes`
+- **An open mesh is drawn, not built.** `recipes.surfaceMeshes` hands base's `recipes.surfaceMeshes`
   the roots a caller names, typically the ones `build` gave back empty, and returns them in the shape
   `manifoldToMesh` gives (positions only, so the renderer computes their normals), with an empty mesh
   for a root that holds a solid step. The renderers draw that shape through `drawAnyAsync` directly.
 - **`recipes.meshes` gives a drawer what it batches.** Each root is followed to its source with
-  base's `recipeSourceOf`, its rigid transforms folded into the placement, and the executor builds
+  base's `recipes.sourceOf`, its rigid transforms folded into the placement, and the executor builds
   the recipe once and hands back a copy of each source's solid (`executeRecipeNodes`), undefined for
   one that failed. Each solid is meshed once with creased normals (`creasedMeshData`, which
   `decomposeManifoldOrCrossSection` uses too), and every root becomes a placement: its mesh or -1,
   its matrix with `adjustZtoY` folded in, its tag and group. A root whose source failed and that is
-  triangles alone is drawn as its surface (`recipeSurfaceMeshes`, placed already); a root built
+  triangles alone is drawn as its surface (base's `recipes.surfaceMeshes`, placed already); a root built
   empty, such as a host its openings cut away, draws nothing, so a cut host never comes back uncut.
   A door type placed a hundred times is one mesh, which is what lets the renderers instance it.
 

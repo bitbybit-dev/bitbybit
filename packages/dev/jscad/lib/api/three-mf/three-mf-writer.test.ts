@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type * as Modeling from "@jscad/modeling";
-import { zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/services/helpers/zip";
+import { zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/services/helpers/files/zip";
 import { getJscad } from "../__test__/kernel";
 import { escapeXml, hexColorOf, threeMfMeshOf, threeMfModelXml, threeMfSettingsOf, threeMfSolidsOf, writeThreeMf } from "./three-mf-writer";
 import type { ThreeMfSolid } from "./three-mf-types";

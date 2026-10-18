@@ -1,15 +1,15 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, composeAxes, pointToWorld, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { length2, length3, subtract2, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { WORLD_AXES, composeAxes, pointToWorld, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { length2, length3, subtract2, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type { IfcTransaction } from "../model/transaction";
 import { isReference, ref } from "../step/values";
 import type { Frame3, WallChange, WallGeometry, WallOpeningPlace } from "./build-types";
 import { MATERIAL_ASSOCIATION, TYPE_DEFINITION } from "./constants";
 import { axisContext } from "./contexts";
 import type { EntityWriter } from "./entity-writer";
-import { requiredReference } from "./checks";
+import { requiredReference, requireWithinRecipes } from "./checks";
 import { associateNewMaterial, layerSetFor, layerSetThickness, layerSetUsage, materialOf } from "./materials";
-import { normalize2 } from "./math";
+import { direction2Of } from "./math";
 import { carriedWith, carryOpening, openingsOf, readWallOpening } from "./openings";
 import { absoluteFrame, axisPlacementFrame, movePlacement, objectPlacementOf } from "./placement";
 import { detach, relatingOf } from "./relationships";
@@ -23,7 +23,7 @@ function movesAny(from: Frame3, to: Frame3, points: readonly Base.Point3[], tole
 }
 
 function wallFrame(start: Base.Point2, end: Base.Point2, bottom: number): Frame3 {
-    const direction = normalize2(subtract2(end, start));
+    const direction = direction2Of(subtract2(end, start));
     return {
         origin: [start[0], start[1], bottom],
         x: [direction[0], direction[1], 0],
@@ -85,6 +85,7 @@ export function editWall(tx: IfcTransaction, writer: EntityWriter, wall: number,
     if (!(length > tolerance)) {
         throw new Error("A wall's start and end must be apart");
     }
+    requireWithinRecipes(length, "wall's length", "end");
     if (!(height > 0)) {
         throw new Error(`A wall's height must be more than zero, got ${height}`);
     }

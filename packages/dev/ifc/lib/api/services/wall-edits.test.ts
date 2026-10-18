@@ -1,5 +1,5 @@
-import { WORLD_AXES, composeAxes, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { dot3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { WORLD_AXES, composeAxes, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { dot3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { describe, expect, it } from "vitest";
 import type { Fixture } from "../../__test__/fixture-types";
 import { modelOf } from "./service-support";

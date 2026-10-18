@@ -1,7 +1,7 @@
 import type { Base } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
-import { WORLD_AXES, pointToLocal, pointToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { requireOutline } from "../../build/checks";
+import { WORLD_AXES, pointToLocal, pointToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { requireFinite, requireOutline } from "../../build/checks";
 import { createWallOpening, editWallOpening } from "../../build/openings";
 import { absoluteFrame, objectPlacementOf } from "../../build/placement";
 import { createSlabOpening } from "../../build/slab-openings";
@@ -40,16 +40,15 @@ export class IFCOpenings {
         const resolved = resolveDto(Inputs.IFC.AddOpeningDto, inputs) as Resolved.IFC.AddOpeningDto<IfcModel>;
         const model = modelOf(resolved.model);
         const wall = resolveId(model, resolved.wall, "IfcWall", "wall");
+        const offset = lengthIn(model, resolved.offset, DEFAULT_MILLIMETRES.openingOffset);
+        const width = lengthIn(model, resolved.width, DEFAULT_MILLIMETRES.openingWidth);
+        const height = lengthIn(model, resolved.height, DEFAULT_MILLIMETRES.openingHeight);
+        requireFinite(offset, "opening's offset");
+        requireFinite(resolved.sill, "opening's sill");
+        requireFinite(width, "opening's width");
+        requireFinite(height, "opening's height");
         return editModel(model, (tx, writer) => {
-            createWallOpening(tx, writer, {
-                wall,
-                id: resolved.id,
-                name: resolved.name,
-                offset: lengthIn(model, resolved.offset, DEFAULT_MILLIMETRES.openingOffset),
-                sill: resolved.sill,
-                width: lengthIn(model, resolved.width, DEFAULT_MILLIMETRES.openingWidth),
-                height: lengthIn(model, resolved.height, DEFAULT_MILLIMETRES.openingHeight),
-            }, lengthTolerance(model));
+            createWallOpening(tx, writer, { wall, id: resolved.id, name: resolved.name, offset, sill: resolved.sill, width, height }, lengthTolerance(model));
         });
     }
 
@@ -71,6 +70,12 @@ export class IFCOpenings {
         const resolved = resolveDto(Inputs.IFC.EditOpeningDto, inputs) as Resolved.IFC.EditOpeningDto<IfcModel>;
         const model = modelOf(resolved.model);
         const element = resolveId(model, resolved.opening, "IfcElement", "opening");
+        const given = [[resolved.offset, "opening's offset"], [resolved.sill, "opening's sill"], [resolved.width, "opening's width"], [resolved.height, "opening's height"]] as const;
+        given.forEach(([value, what]) => {
+            if (value !== undefined) {
+                requireFinite(value, what);
+            }
+        });
         return editModel(model, (tx, writer) => {
             editWallOpening(tx, writer, element, { offset: resolved.offset, sill: resolved.sill, width: resolved.width, height: resolved.height }, lengthTolerance(model));
         });

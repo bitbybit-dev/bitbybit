@@ -5,7 +5,7 @@ import type { IfcModel } from "../model/model-types";
 import { CurveSampler } from "./curves";
 import type { ProfileRegion } from "./geometry-types";
 import { profileRegion } from "./profiles";
-import { signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
+import { signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
 
 const DEGREE_PROJECT_ROWS = [
     "#40=IFCSIUNIT(*,.PLANEANGLEUNIT.,$,.RADIAN.);",

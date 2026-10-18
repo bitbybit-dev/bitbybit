@@ -1,5 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
-import { composeAxes, pointToLocal, pointToWorld, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { composeAxes, pointToLocal, pointToWorld, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type { IfcTransaction } from "../model/transaction";
 import { enumValue, isList, isReference, ref } from "../step/values";
 import { FILLING, OPENING_MARGIN_RATIO, VOIDING } from "./constants";

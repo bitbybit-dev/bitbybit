@@ -1,5 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, pointToLocal, pointToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES, pointToLocal, pointToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import * as Inputs from "../api/inputs";
 import { textValue } from "../step/values";
 import type { ModelReader, WallEnd } from "./build-types";

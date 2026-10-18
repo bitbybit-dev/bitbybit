@@ -1,7 +1,7 @@
 import type { Base } from "@bitbybit-dev/base";
-import { axesToMatrix, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { pathTangents, roundedPath3, sweepMatrices, transportedAxes } from "@bitbybit-dev/base/lib/api/services/helpers/paths";
-import { cross3, dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { axesToMatrix, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { pathTangents, roundedPath3, sweepMatrices, transportedAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/paths";
+import { cross3, dot3, length3, scale2, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { PARALLEL_TOLERANCE } from "../build/constants";
 import { axisPlacementFrame, directionOf, pointOf } from "../build/placement";
 import { radiansPerUnit } from "../build/project";
@@ -66,7 +66,7 @@ export class SweptSolids {
             throw new UnsupportedGeometryError(`#${item} turns by an angle that is not above zero and at most a whole turn`);
         }
         const solid = regionSolid(this.builder, region, this.flat(item, (profile) => this.builder.node({
-            op: "revolve", profile, origin: [origin[0], origin[1]], direction: [sign * direction[0], sign * direction[1]], angle,
+            op: "revolve", profile, origin: [origin[0], origin[1]], direction: scale2([direction[0], direction[1]], sign), angle,
         })));
         return this.placed(item, solid);
     }
