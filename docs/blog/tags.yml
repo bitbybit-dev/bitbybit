@@ -271,3 +271,8 @@ typescript:
   label: TypeScript
   permalink: /typescript
   description: Writing Bitbybit scripts in the TypeScript editor and with the npm packages.
+
+designer:
+  label: Designer
+  permalink: /designer
+  description: The Designer, Bitbybit's interactive parametric CAD modeller for parts and assemblies, where people and AI agents work in the same document.
