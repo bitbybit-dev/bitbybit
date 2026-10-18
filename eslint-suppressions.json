@@ -83,16 +83,16 @@
   },
   "packages/dev/babylonjs/lib/api/draw-helper.ts": {
     "@typescript-eslint/explicit-function-return-type": {
-      "count": 3
+      "count": 2
     },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 52
+      "count": 41
     },
     "@typescript-eslint/require-await": {
       "count": 1
     },
     "bitbybit/no-inline-object-types": {
-      "count": 20
+      "count": 19
     },
     "max-lines": {
       "count": 1
@@ -187,10 +187,10 @@
       "count": 1
     },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 8
+      "count": 3
     }
   },
-  "packages/dev/base/lib/api/services/helpers/dxf/dxf-generator.ts": {
+  "packages/dev/base/lib/api/services/helpers/files/dxf/dxf-generator.ts": {
     "@typescript-eslint/no-magic-numbers": {
       "count": 52
     },
@@ -201,12 +201,12 @@
       "count": 1
     }
   },
-  "packages/dev/base/lib/api/services/helpers/frame-axes.ts": {
+  "packages/dev/base/lib/api/services/helpers/geometry/frame-axes.ts": {
     "@typescript-eslint/no-magic-numbers": {
       "count": 1
     }
   },
-  "packages/dev/base/lib/api/services/helpers/matrices.ts": {
+  "packages/dev/base/lib/api/services/helpers/geometry/matrices.ts": {
     "@typescript-eslint/no-magic-numbers": {
       "count": 13
     },
@@ -232,7 +232,7 @@
       "count": 2
     },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 68
+      "count": 59
     }
   },
   "packages/dev/base/lib/api/services/mesh.ts": {
@@ -280,7 +280,7 @@
   },
   "packages/dev/base/lib/api/services/vector.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 2
+      "count": 1
     }
   },
   "packages/dev/base/lib/api/unit-test-helper.ts": {
@@ -417,7 +417,7 @@
   },
   "packages/dev/core/lib/api/draw-appearance.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 23
+      "count": 17
     },
     "bitbybit/no-inline-object-types": {
       "count": 8
@@ -433,7 +433,7 @@
       "count": 1
     },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 33
+      "count": 30
     },
     "bitbybit/no-inline-object-types": {
       "count": 5
@@ -755,11 +755,6 @@
       "count": 2
     }
   },
-  "packages/dev/occt/lib/api/inputs/occt/meshes-points-and-constraints.ts": {
-    "bitbybit/no-inline-object-types": {
-      "count": 1
-    }
-  },
   "packages/dev/occt/lib/api/inputs/occt/sections-features-and-sweeps.ts": {
     "@typescript-eslint/no-magic-numbers": {
       "count": 1
@@ -797,7 +792,7 @@
   },
   "packages/dev/occt/lib/api/shapes-helper.service.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 5
+      "count": 4
     }
   },
   "packages/dev/occt/lib/api/validation/shapes.ts": {
@@ -806,19 +801,6 @@
     },
     "bitbybit/no-inline-object-types": {
       "count": 1
-    }
-  },
-  "packages/dev/occt/lib/api/vector-helper.service.ts": {
-    "@typescript-eslint/explicit-function-return-type": {
-      "count": 2
-    },
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 1
-    }
-  },
-  "packages/dev/occt/lib/kernel-failures.ts": {
-    "bitbybit/no-inline-object-types": {
-      "count": 3
     }
   },
   "packages/dev/occt/lib/occ-service.ts": {
@@ -860,16 +842,13 @@
     }
   },
   "packages/dev/occt/lib/services/base/curve-analysis.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 1
-    },
     "bitbybit/no-inline-object-types": {
       "count": 1
     }
   },
   "packages/dev/occt/lib/services/base/dimensions.service.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 3
+      "count": 2
     },
     "bitbybit/no-inline-object-types": {
       "count": 1
@@ -916,14 +895,6 @@
       "count": 1
     }
   },
-  "packages/dev/occt/lib/services/base/fillets.service.ts": {
-    "@typescript-eslint/explicit-function-return-type": {
-      "count": 1
-    },
-    "max-lines": {
-      "count": 1
-    }
-  },
   "packages/dev/occt/lib/services/base/frames.ts": {
     "@typescript-eslint/no-magic-numbers": {
       "count": 8
@@ -941,15 +912,12 @@
   },
   "packages/dev/occt/lib/services/base/mesh-arrays.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 28
-    },
-    "bitbybit/no-inline-object-types": {
-      "count": 2
+      "count": 18
     }
   },
   "packages/dev/occt/lib/services/base/meshing.service.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 13
+      "count": 12
     },
     "bitbybit/no-inline-object-types": {
       "count": 1
@@ -960,10 +928,7 @@
       "count": 2
     },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 15
-    },
-    "bitbybit/no-inline-object-types": {
-      "count": 1
+      "count": 12
     },
     "max-lines": {
       "count": 1
@@ -981,7 +946,7 @@
   },
   "packages/dev/occt/lib/services/base/surface-analysis.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 2
+      "count": 1
     },
     "bitbybit/no-inline-object-types": {
       "count": 1
@@ -1010,7 +975,7 @@
       "count": 13
     },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 18
+      "count": 17
     },
     "bitbybit/no-inline-object-types": {
       "count": 3
@@ -1030,9 +995,6 @@
     }
   },
   "packages/dev/occt/lib/services/features/features.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 1
-    },
     "bitbybit/no-inline-object-types": {
       "count": 1
     }
@@ -1040,19 +1002,16 @@
   "packages/dev/occt/lib/services/io.ts": {
     "@typescript-eslint/no-magic-numbers": {
       "count": 6
-    },
-    "max-lines": {
-      "count": 1
     }
   },
   "packages/dev/occt/lib/services/select/edges.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 5
+      "count": 4
     }
   },
   "packages/dev/occt/lib/services/select/faces.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 2
+      "count": 1
     }
   },
   "packages/dev/occt/lib/services/shapes/edge.ts": {
@@ -1083,7 +1042,7 @@
   },
   "packages/dev/occt/lib/services/sketch/outline.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 15
+      "count": 14
     },
     "bitbybit/no-inline-object-types": {
       "count": 7
@@ -1135,7 +1094,7 @@
   },
   "packages/dev/occt/lib/svg/svg-path-parser.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 3
+      "count": 2
     },
     "bitbybit/no-inline-object-types": {
       "count": 1
@@ -1143,7 +1102,7 @@
   },
   "packages/dev/occt/lib/svg/svg-transform.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 3
+      "count": 2
     }
   },
   "packages/dev/occt/lib/svg/svg-xml.ts": {
@@ -1193,17 +1152,14 @@
     }
   },
   "packages/dev/playcanvas/lib/api/draw-helper.ts": {
-    "@typescript-eslint/explicit-function-return-type": {
-      "count": 1
-    },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 28
+      "count": 25
     },
     "@typescript-eslint/require-await": {
       "count": 1
     },
     "bitbybit/no-inline-object-types": {
-      "count": 24
+      "count": 22
     },
     "max-lines": {
       "count": 1
@@ -1247,7 +1203,7 @@
       "count": 1
     },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 17
+      "count": 15
     },
     "bitbybit/no-inline-object-types": {
       "count": 4
@@ -1260,16 +1216,16 @@
   },
   "packages/dev/threejs/lib/api/draw-helper.ts": {
     "@typescript-eslint/explicit-function-return-type": {
-      "count": 6
+      "count": 5
     },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 35
+      "count": 28
     },
     "@typescript-eslint/require-await": {
       "count": 1
     },
     "bitbybit/no-inline-object-types": {
-      "count": 19
+      "count": 18
     },
     "max-lines": {
       "count": 1

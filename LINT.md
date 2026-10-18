@@ -149,6 +149,21 @@ from it, so a fix removes the directive rather than adding one.
   bench suites, not tests, mocks or generated files, and the findings that predate it are in the
   suppressions file.
 
+- **`bitbybit/no-local-maths`.** Vector, matrix and angle arithmetic lives once, in base's
+  `services/helpers/`, and every other module calls it - through a public service method, or the helper
+  itself on a hot path (`packages/dev/CLAUDE.md`, "Maths lives once, in base"). A copy written beside
+  the code that needs it drifts: a different order of operations gives different last bits, a missed
+  zero check gives NaN, and the next copy is written because the first was not found. The rule reports
+  what it can recognise in the syntax: a conversion between degrees and radians (`Math.PI` with `180`),
+  a dot product of indexed components, a cross product, a length or distance (`Math.sqrt` of squares,
+  `Math.hypot` of components), a point through a column-major 4x4 matrix, an array whose elements apply
+  the same arithmetic to each component of a vector, and a function whose name says it is generic maths
+  (`dot`, `normalize`, `lerp`, `polar`, ...). Its message names where base has it. When base lacks what
+  you need, add it there with tests and a public method (`base/CLAUDE.md`), never a local copy. It covers
+  every package's code but base's `services/helpers/`, the one home, and not tests, mocks or generated
+  files; tests keep their own arithmetic as an independent oracle. The findings that predate it are in
+  the suppressions file and are paid off, not added to.
+
 Each local rule has a `RuleTester` suite beside it, run by `npm run test:scripts`.
 
 ## What is not linted

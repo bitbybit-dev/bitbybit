@@ -7,6 +7,7 @@ import noDoubleAssertion from "./eslint-rules/no-double-assertion.mjs";
 import noLooseComments from "./eslint-rules/no-loose-comments.mjs";
 import noInputWrites from "./eslint-rules/no-input-writes.mjs";
 import noInlineObjectTypes from "./eslint-rules/no-inline-object-types.mjs";
+import noLocalMaths from "./eslint-rules/no-local-maths.mjs";
 
 const HOUSE_STYLE = {
     "quotes": ["error", "double", { avoidEscape: true, allowTemplateLiterals: true }],
@@ -22,7 +23,7 @@ const UNDERSCORE_TOLERANT_UNUSED_VARS = ["error", {
     ignoreRestSiblings: true,
 }];
 
-const LOCAL_RULES = { rules: { "no-double-assertion": noDoubleAssertion, "no-loose-comments": noLooseComments, "no-input-writes": noInputWrites, "no-inline-object-types": noInlineObjectTypes } };
+const LOCAL_RULES = { rules: { "no-double-assertion": noDoubleAssertion, "no-loose-comments": noLooseComments, "no-input-writes": noInputWrites, "no-inline-object-types": noInlineObjectTypes, "no-local-maths": noLocalMaths } };
 const MAGIC_NUMBERS = ["error", {
     ignore: [-1, 0, 1, 2, 1024],
     ignoreArrayIndexes: true,
@@ -51,6 +52,7 @@ const TESTS = ["**/*.test.ts", "**/*.test.mjs"];
 const STAND_INS = ["**/__mocks__/**", "**/__test__/**"];
 const OUTSIDE_CHECKS = ["packages/dev/*/validation/**", "packages/dev/*/bench/**"];
 const VITEST_CONFIGS = ["**/vitest.config.ts", "packages/dev/vitest.shared.ts"];
+const MATHS_HOME = ["packages/dev/base/lib/api/services/helpers/**"];
 
 export default defineConfig([
     globalIgnores([
@@ -146,6 +148,11 @@ export default defineConfig([
             "max-lines": ["error", { max: 600, skipBlankLines: true, skipComments: true }],
             "@typescript-eslint/no-magic-numbers": MAGIC_NUMBERS,
         },
+    },
+    {
+        files: ["packages/dev/*/lib/**/*.ts", "packages/dev/*/src/**/*.ts"],
+        ignores: [...TESTS, ...STAND_INS, ...VITEST_CONFIGS, ...GENERATED, ...MATHS_HOME],
+        rules: { "bitbybit/no-local-maths": "error" },
     },
     {
         files: ["packages/dev/**/constants.ts", "packages/dev/**/*.constants.ts", "packages/dev/occt/lib/services/design/digest.ts"],
