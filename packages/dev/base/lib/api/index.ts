@@ -1,7 +1,11 @@
 export * from "./services";
 export * from "./kernel-calls";
-export * from "./recipes";
+export type { RecipeIssue, RecipeSource, RecipeSurfaceMesh } from "./recipes/recipe-types";
 export * from "./color-space";
+export type { InvoluteSplineSizes, KnurlSizes } from "./shafts/shaft-types";
+export type { BevelGearSizes, GearMove, GearPairSizes, GearPart, GearSizes, HelicalGearSizes, InternalGearPairSizes, PlanetarySet, RackMove, RackPart, RackSizes, SpurGearSpec } from "./gears/gear-types";
+export type { ChamferedWasherSizes, HexBoltSizes, HexNutSizes, MetricSize, MetricThread, SetScrewSizes, SocketHeadCapScrewSizes, WasherSizes } from "./fasteners/fastener-types";
+export type { BallBearingSizes, CompressionSpringPath, ParallelKeySizes, RetainingRingSizes } from "./machine-elements/machine-element-types";
 export * from "./GlobalCDNProvider";
 export * as Inputs from "./inputs";
 export * as Resolved from "./resolved-inputs";

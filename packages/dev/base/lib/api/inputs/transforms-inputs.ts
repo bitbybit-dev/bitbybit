@@ -232,4 +232,43 @@ export namespace Transforms {
          */
         translations!: Base.Vector3[];
     }
+    /**
+     * A transformation for `transforms.combine`, `transforms.rigidInverse` and
+     * `transforms.determinant`: one matrix, or a list of them applied in order.
+     */
+    export class TransformationDto {
+        constructor(transformation?: Base.TransformMatrixes) {
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
+        /**
+         * A transformation matrix, or a list of them applied in order; a list of such lists is
+         * applied one list after another, as `point.transformPoints` takes it.
+         * @default undefined
+         */
+        transformation!: Base.TransformMatrixes;
+    }
+    /**
+     * A transformation and how far from exact `transforms.isRigid` lets it be.
+     */
+    export class TransformationToleranceDto {
+        constructor(transformation?: Base.TransformMatrixes, tolerance?: number) {
+            if (transformation !== undefined) { this.transformation = transformation; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * A transformation matrix, or a list of them applied in order; a list of such lists is
+         * applied one list after another, as `point.transformPoints` takes it.
+         * @default undefined
+         */
+        transformation!: Base.TransformMatrixes;
+        /**
+         * How far each axis may be from length 1, and from square to the others, for the
+         * transformation to still count as rigid.
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.0000001
+         */
+        tolerance?: number | undefined = 1e-7;
+    }
 }

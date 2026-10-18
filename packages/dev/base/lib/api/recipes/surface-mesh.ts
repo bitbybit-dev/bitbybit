@@ -1,16 +1,15 @@
 import type { Base } from "../inputs/base-inputs";
 import { InputError } from "../kernel-calls/errors";
-import { followedBy, linearDeterminant } from "../services/helpers/matrices";
+import { followedBy, linearDeterminant, movedCoordinate } from "../services/helpers/geometry/matrices";
 import { POINT3_SIZE, TRIANGLE_CORNERS } from "./limits.constants";
 import type { RecipeSurfaceMesh, SurfacePiece } from "./recipe-types";
 import { toRecipe } from "./validate";
+import { isIndexBelow } from "./checks";
 
 const Z_TO_Y: Base.TransformMatrix = [1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1];
 const X = 0;
 const Y = 1;
 const Z = 2;
-const COLUMN = 4;
-const TRANSLATION = 12;
 
 function collectPieces(nodes: readonly Base.RecipeNode[], index: number, matrix: Base.TransformMatrix, pieces: SurfacePiece[]): boolean {
     const node = nodes[index]!;
@@ -46,9 +45,9 @@ function meshOfPieces(buffers: Base.RecipeBuffers, pieces: readonly SurfacePiece
             const x = buffers.f64[at + X]!;
             const y = buffers.f64[at + Y]!;
             const z = buffers.f64[at + Z]!;
-            positions[vertexAt * POINT3_SIZE + X] = m[X]! * x + m[COLUMN + X]! * y + m[2 * COLUMN + X]! * z + m[TRANSLATION + X]!;
-            positions[vertexAt * POINT3_SIZE + Y] = m[Y]! * x + m[COLUMN + Y]! * y + m[2 * COLUMN + Y]! * z + m[TRANSLATION + Y]!;
-            positions[vertexAt * POINT3_SIZE + Z] = m[Z]! * x + m[COLUMN + Z]! * y + m[2 * COLUMN + Z]! * z + m[TRANSLATION + Z]!;
+            positions[vertexAt * POINT3_SIZE + X] = movedCoordinate(m, x, y, z, X);
+            positions[vertexAt * POINT3_SIZE + Y] = movedCoordinate(m, x, y, z, Y);
+            positions[vertexAt * POINT3_SIZE + Z] = movedCoordinate(m, x, y, z, Z);
             vertexAt++;
         }
         const first = vertexAt - length / POINT3_SIZE;
@@ -64,24 +63,10 @@ function meshOfPieces(buffers: Base.RecipeBuffers, pieces: readonly SurfacePiece
     return { positions, indices };
 }
 
-/**
- * The triangle meshes a recipe's roots describe, for the roots built from triangle nodes alone
- * (through transforms, compounds and unions), placed by their matrices; no kernel is needed. Openings cut
- * through such a mesh are left uncut, since a surface has no inside to cut. A root that holds any
- * other step, such as an extrusion or a cut, gives undefined. This is how an open mesh no solid
- * kernel accepts, such as a building model's furniture surfaces, can still be drawn.
- *
- * Experimental: the recipe format may still change before it is declared stable.
- * @param recipe - The recipe, checked as `assertRecipe` checks it
- * @param roots - The positions of the roots to read, all of them when left out
- * @param adjustZtoY - Whether `(x, y, z)` becomes `(x, z, -y)`, as a recipe build does with the same option
- * @returns One mesh per asked root, in the order asked, or undefined where the root is not made of triangles alone
- * @beta
- */
 export function recipeSurfaceMeshes(value: unknown, roots?: readonly number[], adjustZtoY = false): (RecipeSurfaceMesh | undefined)[] {
     const recipe = toRecipe(value);
     const asked = roots ?? recipe.roots.map((_, index) => index);
-    const bad = asked.find((index) => !Number.isSafeInteger(index) || index < 0 || index >= recipe.roots.length);
+    const bad = asked.find((index): boolean => !isIndexBelow(index, recipe.roots.length));
     if (bad !== undefined) {
         throw new InputError(`Root ${bad} is not one of the recipe's ${recipe.roots.length} roots`, "roots");
     }

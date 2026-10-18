@@ -1,18 +1,14 @@
-const ENCODED_KNEE = 0.04045;
-const LINEAR_KNEE = 0.0031308;
-const LINEAR_SLOPE = 12.92;
-const CURVE_OFFSET = 0.055;
-const CURVE_SCALE = 1.055;
-const CURVE_EXPONENT = 2.4;
+import { linearToSrgb as encodedOf, srgbToLinear as linearOf } from "./services/helpers/color/color-space";
 
 /**
  * Turns one sRGB-encoded color channel, from 0 to 1, into linear light, as glTF, XCAF and the
  * renderers' lighting expect it.
  * @param channel - The encoded channel, from 0 to 1
  * @returns The linear channel, from 0 to 1
+ * @deprecated Use `color.srgbToLinear`, which takes `{ channel }`; this function leaves the package's index in the next major version.
  */
 export function srgbToLinear(channel: number): number {
-    return channel <= ENCODED_KNEE ? channel / LINEAR_SLOPE : ((channel + CURVE_OFFSET) / CURVE_SCALE) ** CURVE_EXPONENT;
+    return linearOf(channel);
 }
 
 /**
@@ -20,7 +16,8 @@ export function srgbToLinear(channel: number): number {
  * `srgbToLinear`.
  * @param channel - The linear channel, from 0 to 1
  * @returns The encoded channel, from 0 to 1
+ * @deprecated Use `color.linearToSrgb`, which takes `{ channel }`; this function leaves the package's index in the next major version.
  */
 export function linearToSrgb(channel: number): number {
-    return channel <= LINEAR_KNEE ? channel * LINEAR_SLOPE : CURVE_SCALE * channel ** (1 / CURVE_EXPONENT) - CURVE_OFFSET;
+    return encodedOf(channel);
 }

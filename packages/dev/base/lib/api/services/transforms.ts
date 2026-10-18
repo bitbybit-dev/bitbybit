@@ -3,19 +3,111 @@ import type { Base } from "../inputs/base-inputs";
 import * as Inputs from "../inputs";
 import type { MathBitByBit } from "./math";
 import type { Vector } from "./vector";
-import { resolveDto } from "../kernel-calls";
+import { InputError, resolveDto } from "../kernel-calls";
+import { composed, isRigidMatrix, isTransformMatrix, linearDeterminant, rigidInverse } from "./helpers/geometry/matrices";
 import type * as Resolved from "../resolved-inputs";
 
 /**
  * Builds transformation matrices for moving, rotating, scaling and stretching geometry. A
  * transformation is a 4x4 matrix as 16 numbers in column-major order; most methods return a short
  * list of them that is applied in order, so a rotation about a point is a move to the origin, the
- * rotation, and the move back. Angles are in degrees. Apply the result with the transform methods
- * of `point`, `polyline`, `line` and the kernels.
+ * rotation, and the move back. Angles are in degrees. Such a list can also be combined into one
+ * matrix, undone, and read for whether it keeps shapes rigid. Apply the result with the transform
+ * methods of `point`, `polyline`, `line` and the kernels.
  */
 export class Transforms {
 
     constructor(private readonly vector: Vector, private readonly math: MathBitByBit) { }
+
+    /**
+     * Folds a transformation into the one matrix that does all its steps in order.
+     *
+     * The lists `rotationCenterAxis` and the other builders return become a single matrix, which is
+     * what a renderer or a placement often wants. An empty list gives the identity.
+     * Example: a move by [1,0,0] followed by a move by [0,2,0] -> one move by [1,2,0]
+     * @param inputs - The transformation: a matrix, or a list applied in order
+     * @returns A list holding the one combined matrix
+     * @group combine
+     * @shortname combine
+     * @drawable false
+     * @example
+     * ```typescript
+     * const turn = bitbybit.transforms.rotationCenterAxis({ center: [5, 0, 0], axis: [0, 1, 0], angle: 90 });
+     * const single = bitbybit.transforms.combine({ transformation: turn });
+     * ```
+     */
+    combine(inputs: Inputs.Transforms.TransformationDto): Base.TransformMatrixes {
+        return [composed(this.matricesOf(inputs.transformation))];
+    }
+
+    /**
+     * Builds the transformation that undoes one that only moves and turns.
+     *
+     * The transformation is combined first. One that scales, stretches or mirrors is refused, since
+     * undoing it exactly takes a general inverse; `isRigid` tells the two apart.
+     * Example: a quarter turn about Z, then a move by [10,0,0] -> the move back, then the turn back
+     * @param inputs - The transformation: a matrix, or a list applied in order
+     * @returns A list holding the one matrix that undoes it
+     * @group combine
+     * @shortname rigid inverse
+     * @drawable false
+     * @example
+     * ```typescript
+     * const placement = bitbybit.transforms.rotationCenterAxis({ center: [0, 0, 0], axis: [0, 0, 1], angle: 90 });
+     * const back = bitbybit.transforms.rigidInverse({ transformation: placement });
+     * ```
+     */
+    rigidInverse(inputs: Inputs.Transforms.TransformationDto): Base.TransformMatrixes {
+        const matrix = composed(this.matricesOf(inputs.transformation));
+        if (!isRigidMatrix(matrix)) {
+            throw new InputError("`transformation` scales, stretches or mirrors; only one that moves and turns is undone here.", "transformation");
+        }
+        return [rigidInverse(matrix)];
+    }
+
+    /**
+     * Measures how a transformation scales volumes, and whether it mirrors.
+     *
+     * It is the determinant of the combined matrix's turn-and-scale part: 1 for a move and turn, the
+     * volume factor for a scale, negative when the transformation mirrors.
+     * Example: a uniform scale by 2 -> 8
+     * @param inputs - The transformation: a matrix, or a list applied in order
+     * @returns The determinant
+     * @group combine
+     * @shortname determinant
+     * @drawable false
+     * @example
+     * ```typescript
+     * const factor = bitbybit.transforms.determinant({ transformation: bitbybit.transforms.uniformScale({ scale: 2 }) });
+     * ```
+     */
+    determinant(inputs: Inputs.Transforms.TransformationDto): number {
+        return linearDeterminant(composed(this.matricesOf(inputs.transformation)));
+    }
+
+    /**
+     * Tells whether a transformation only moves and turns, without scaling, stretching or mirroring.
+     *
+     * The transformation is combined first; each of its axes must have length 1 and stand square to
+     * the others within `tolerance`.
+     * Example: a rotation -> true, a scale by 2 -> false
+     * @param inputs - The transformation and the tolerance
+     * @returns True when it is a rigid motion
+     * @group combine
+     * @shortname is rigid
+     * @drawable false
+     * @example
+     * ```typescript
+     * const rigid = bitbybit.transforms.isRigid({ transformation: bitbybit.transforms.rotationCenterX({ center: [0, 0, 0], angle: 30 }) });
+     * ```
+     */
+    isRigid(inputs: Inputs.Transforms.TransformationToleranceDto): boolean {
+        const resolved = resolveDto(Inputs.Transforms.TransformationToleranceDto, inputs) as Resolved.Transforms.TransformationToleranceDto;
+        if (!(resolved.tolerance >= 0)) {
+            throw new InputError("`tolerance` is not a number of 0 or more.", "tolerance");
+        }
+        return isRigidMatrix(composed(this.matricesOf(resolved.transformation)), resolved.tolerance);
+    }
 
     /**
      * Builds a rotation about an axis that passes through a center point.
@@ -475,4 +567,14 @@ export class Transforms {
         return m;
     }
 
+
+    private matricesOf(transformation: unknown): Base.TransformMatrix[] {
+        const given: unknown = isTransformMatrix(transformation) ? [transformation] : transformation;
+        const nested = Array.isArray(given) && given.length > 0 && given.every(entry => Array.isArray(entry) && !isTransformMatrix(entry));
+        const list: unknown = nested ? (given as unknown[][]).flat() : given;
+        if (!Array.isArray(list) || !list.every(isTransformMatrix)) {
+            throw new InputError("`transformation` is not a matrix of 16 finite numbers, or a list of them.", "transformation");
+        }
+        return list;
+    }
 }

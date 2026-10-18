@@ -8,6 +8,7 @@ import * as Inputs from "../inputs";
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace Color {
+    export type ChannelDto = WithDefaults<Inputs.Color.ChannelDto, "channel">;
     export type HexDto = WithDefaults<Inputs.Color.HexDto, "color">;
     export type HexDtoMapped = WithDefaults<Inputs.Color.HexDtoMapped, "color" | "from" | "to">;
     export type InvertHexDto = WithDefaults<Inputs.Color.InvertHexDto, "color" | "blackAndWhite">;
@@ -41,6 +42,43 @@ export namespace Dates {
     export type DateStringDto = Inputs.Dates.DateStringDto;
     export type DateTimeDto = WithDefaults<Inputs.Dates.DateTimeDto, "time">;
     export type DateYearDto = WithDefaults<Inputs.Dates.DateYearDto, "year">;
+}
+
+/**
+ * The Engineering inputs DTOs as their defaults leave them: every property with a default is present,
+ * the way `resolveDto` hands a DTO to the code that reads it.
+ */
+export namespace Engineering {
+    export type BallBearingSizesDto = WithDefaults<Inputs.Engineering.BallBearingSizesDto, "designation">;
+    export type BevelGearOutlineDto = WithDefaults<Inputs.Engineering.BevelGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type BevelGearSharedDto = WithDefaults<Inputs.Engineering.BevelGearSharedDto, "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type BevelGearSizesDto = WithDefaults<Inputs.Engineering.BevelGearSizesDto, "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type ClearanceHoleDto = WithDefaults<Inputs.Engineering.ClearanceHoleDto, "fit" | "size">;
+    export type CompressionSpringPathDto = WithDefaults<Inputs.Engineering.CompressionSpringPathDto, "wireDiameter" | "diameter" | "activeCoils" | "length">;
+    export type GearPairDto = WithDefaults<Inputs.Engineering.GearPairDto, "module" | "teethA" | "teethB" | "pressureAngle" | "profileShiftA" | "profileShiftB" | "addendum" | "dedendum">;
+    export type HelicalGearOutlineDto = WithDefaults<Inputs.Engineering.HelicalGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "helixAngle" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type HelicalGearSharedDto = WithDefaults<Inputs.Engineering.HelicalGearSharedDto, "module" | "teeth" | "helixAngle" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type HelicalGearSizesDto = WithDefaults<Inputs.Engineering.HelicalGearSizesDto, "module" | "teeth" | "helixAngle" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type HexBoltSizesDto = WithDefaults<Inputs.Engineering.HexBoltSizesDto, "length" | "size">;
+    export type InternalGearPairDto = WithDefaults<Inputs.Engineering.InternalGearPairDto, "module" | "pinionTeeth" | "ringTeeth" | "pressureAngle" | "addendum">;
+    export type InvoluteSplineSizesDto = WithDefaults<Inputs.Engineering.InvoluteSplineSizesDto, "referenceDiameter" | "module">;
+    export type KnurlSizesDto = WithDefaults<Inputs.Engineering.KnurlSizesDto, "diameter" | "pitch" | "pattern">;
+    export type MetricSizeDto = WithDefaults<Inputs.Engineering.MetricSizeDto, "size">;
+    export type MetricSizeSharedDto = WithDefaults<Inputs.Engineering.MetricSizeSharedDto, "size">;
+    export type MetricThreadDto = WithDefaults<Inputs.Engineering.MetricThreadDto, "size">;
+    export type ParallelKeySizesDto = WithDefaults<Inputs.Engineering.ParallelKeySizesDto, "shaftDiameter">;
+    export type PlanetarySetDto = WithDefaults<Inputs.Engineering.PlanetarySetDto, "module" | "sunTeeth" | "planetTeeth" | "planets" | "pressureAngle" | "addendum">;
+    export type RackOutlineDto = WithDefaults<Inputs.Engineering.RackOutlineDto, "segments" | "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "height">;
+    export type RackSharedDto = WithDefaults<Inputs.Engineering.RackSharedDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "height">;
+    export type RackSizesDto = WithDefaults<Inputs.Engineering.RackSizesDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "height">;
+    export type RetainingRingSizesDto = WithDefaults<Inputs.Engineering.RetainingRingSizesDto, "kind" | "diameter">;
+    export type RingGearOutlineDto = WithDefaults<Inputs.Engineering.RingGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type RingGearSharedDto = WithDefaults<Inputs.Engineering.RingGearSharedDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type RingGearSizesDto = WithDefaults<Inputs.Engineering.RingGearSizesDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type SetScrewSizesDto = WithDefaults<Inputs.Engineering.SetScrewSizesDto, "point" | "size">;
+    export type SpurGearOutlineDto = WithDefaults<Inputs.Engineering.SpurGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type SpurGearSharedDto = WithDefaults<Inputs.Engineering.SpurGearSharedDto, "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
+    export type SpurGearSizesDto = WithDefaults<Inputs.Engineering.SpurGearSizesDto, "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
 }
 
 /**
@@ -193,8 +231,15 @@ export namespace Math {
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace Mesh {
+    export type CreasedNormalsDto = WithDefaults<Inputs.Mesh.CreasedNormalsDto, "angle">;
+    export type FrustumDto = WithDefaults<Inputs.Mesh.FrustumDto, "center" | "direction" | "bottomRadius" | "topRadius" | "height" | "sides">;
+    export type IcosphereDto = WithDefaults<Inputs.Mesh.IcosphereDto, "center" | "radius" | "detail">;
+    export type IndexedMeshDto = Inputs.Mesh.IndexedMeshDto;
     export type MeshDto = Inputs.Mesh.MeshDto;
+    export type MeshesWithinDto = WithDefaults<Inputs.Mesh.MeshesWithinDto, "distance">;
     export type MeshMeshToleranceDto = WithDefaults<Inputs.Mesh.MeshMeshToleranceDto, "tolerance">;
+    export type MeshPointDto = Inputs.Mesh.MeshPointDto;
+    export type MeshToIndexedDto = WithDefaults<Inputs.Mesh.MeshToIndexedDto, "tolerance">;
     export type PolygonWithHolesDto = Inputs.Mesh.PolygonWithHolesDto;
     export type SignedDistanceFromPlaneToPointDto = Inputs.Mesh.SignedDistanceFromPlaneToPointDto;
     export type TriangleDto = Inputs.Mesh.TriangleDto;
@@ -245,14 +290,31 @@ export namespace Point {
 export namespace Polyline {
     export type DrawPolylineDto<T> = WithDefaults<Inputs.Polyline.DrawPolylineDto<T>, "opacity" | "colours" | "size" | "updatable">;
     export type DrawPolylinesDto<T> = WithDefaults<Inputs.Polyline.DrawPolylinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    export type OrientPolygon2Dto = WithDefaults<Inputs.Polyline.OrientPolygon2Dto, "counterClockwise">;
+    export type PointInPolygon2Dto = Inputs.Polyline.PointInPolygon2Dto;
+    export type Polygon2Dto = Inputs.Polyline.Polygon2Dto;
     export type PolylineCreateDto = WithDefaults<Inputs.Polyline.PolylineCreateDto, "isClosed">;
     export type PolylineDto = Inputs.Polyline.PolylineDto;
     export type PolylinePropertiesDto = WithDefaults<Inputs.Polyline.PolylinePropertiesDto, "isClosed">;
     export type PolylinesDto = Inputs.Polyline.PolylinesDto;
+    export type PolylineSweepDto = WithDefaults<Inputs.Polyline.PolylineSweepDto, "firstDirection">;
+    export type PolylineTangentsDto = Inputs.Polyline.PolylineTangentsDto;
     export type PolylineToleranceDto = WithDefaults<Inputs.Polyline.PolylineToleranceDto, "tolerance">;
+    export type RoundPolygon2Dto = WithDefaults<Inputs.Polyline.RoundPolygon2Dto, "radius" | "segments">;
+    export type RoundPolylineDto = WithDefaults<Inputs.Polyline.RoundPolylineDto, "radius" | "segments">;
     export type SegmentsToleranceDto = WithDefaults<Inputs.Polyline.SegmentsToleranceDto, "tolerance">;
     export type TransformPolylineDto = Inputs.Polyline.TransformPolylineDto;
     export type TwoPolylinesToleranceDto = WithDefaults<Inputs.Polyline.TwoPolylinesToleranceDto, "tolerance">;
+}
+
+/**
+ * The Recipes inputs DTOs as their defaults leave them: every property with a default is present,
+ * the way `resolveDto` hands a DTO to the code that reads it.
+ */
+export namespace Recipes {
+    export type RecipeDto = Inputs.Recipes.RecipeDto;
+    export type RecipeSourceDto = WithDefaults<Inputs.Recipes.RecipeSourceDto, "node">;
+    export type RecipeSurfaceMeshesDto = WithDefaults<Inputs.Recipes.RecipeSurfaceMeshesDto, "adjustZtoY">;
 }
 
 /**
@@ -290,6 +352,8 @@ export namespace Transforms {
     export type ScaleCenterXYZDto = WithDefaults<Inputs.Transforms.ScaleCenterXYZDto, "center" | "scaleXyz">;
     export type ScaleXYZDto = WithDefaults<Inputs.Transforms.ScaleXYZDto, "scaleXyz">;
     export type StretchDirCenterDto = WithDefaults<Inputs.Transforms.StretchDirCenterDto, "center" | "direction" | "scale">;
+    export type TransformationDto = Inputs.Transforms.TransformationDto;
+    export type TransformationToleranceDto = WithDefaults<Inputs.Transforms.TransformationToleranceDto, "tolerance">;
     export type TranslationsXYZDto = Inputs.Transforms.TranslationsXYZDto;
     export type TranslationXYZDto = WithDefaults<Inputs.Transforms.TranslationXYZDto, "translation">;
     export type UniformScaleDto = WithDefaults<Inputs.Transforms.UniformScaleDto, "scale">;

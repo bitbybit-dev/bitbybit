@@ -1,0 +1,13 @@
+export const SPLINE_PRESSURE_ANGLE = 30;
+export const SPLINE_TIP_SHARE = 0.2;
+export const SPLINE_HUB_TIP_SHARE = 2;
+export const SPLINE_BASE_SHARE = 1.1;
+export const SPLINE_DEDENDUM_SHARE = 0.55;
+export const SPLINE_LEAST_SHIFT = -0.05;
+export const SPLINE_MOST_SHIFT = 0.45;
+export const SPLINE_MODULES: readonly number[] = [0.5, 0.6, 0.75, 0.8, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5, 6, 8, 10];
+export const SPLINE_LEAST_TEETH = 6;
+export const SPLINE_MOST_TEETH = 82;
+export const KNURL_HELIX_ANGLE = 30;
+export const KNURL_PITCHES: readonly number[] = [0.5, 0.6, 0.8, 1, 1.2, 1.6];
+export const SHIFT_TOLERANCE = 1e-9;

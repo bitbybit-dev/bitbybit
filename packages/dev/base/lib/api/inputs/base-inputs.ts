@@ -81,6 +81,20 @@ export namespace Base {
      */
     export type Mesh3 = Triangle3[];
     /**
+     * A mesh whose points are stored once and whose triangles refer to them by number, the layout
+     * glTF and game engines draw. `positions` holds x, y, z for each point in turn, `indices` three
+     * point numbers, counted from 0, for each triangle, and `normals`, when present, one direction
+     * x, y, z for each point. Triangles that share a corner share its number, which is how the mesh
+     * knows its neighbours.
+     */
+    export type IndexedMesh = { positions: number[], indices: number[], normals?: number[] };
+    /**
+     * The connected pieces of a mesh, and the triangles to turn over so that each piece is wound one
+     * way. `turnOver` and `pieces` hold one entry per triangle, in the mesh's order; pieces are
+     * numbered from 0 and `count` says how many there are.
+     */
+    export type MeshWindingPieces = { turnOver: boolean[], pieces: number[], count: number };
+    /**
      * A coordinate frame: an origin, a normal (its z axis) and a direction (its x axis, square to the
      * normal); its y axis is the normal crossed with the direction, so the frame is right-handed. A
      * frame places things: shapes land on it, profiles are drawn in its plane.

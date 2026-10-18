@@ -49,3 +49,43 @@ export interface EdgeUses {
     readonly uses: Map<number, number[]>;
     readonly stride: number;
 }
+
+export interface TriangleTree {
+    readonly corners: Float64Array;
+    readonly boxes: Float64Array;
+    readonly starts: Uint32Array;
+    readonly counts: Uint32Array;
+    readonly lefts: Int32Array;
+    readonly rights: Int32Array;
+}
+
+export interface TreeBox {
+    readonly min: Inputs.Base.Point3;
+    readonly max: Inputs.Base.Point3;
+}
+
+export interface VectorCellRange {
+    readonly center: number[];
+    readonly lowest: number[];
+    readonly highest: number[];
+}
+
+export interface UniqueVectors {
+    readonly kept: number[][];
+    readonly indexes: number[];
+}
+
+export interface CreasedVertices {
+    readonly sources: Uint32Array;
+    readonly normals: Float64Array;
+    readonly indices: Uint32Array;
+}
+
+export interface RoundedCorner {
+    readonly corner: Inputs.Base.Point2;
+    readonly radius: number;
+    readonly toPrevious: Inputs.Base.Vector2;
+    readonly toNext: Inputs.Base.Vector2;
+    readonly half: number;
+    readonly reach: number;
+}

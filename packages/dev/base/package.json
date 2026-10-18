@@ -108,11 +108,6 @@
             "types": "./dist/lib/api/models/text/index.d.ts",
             "default": "./dist/lib/api/models/text/index.js"
         },
-        "./lib/api/recipes": {
-            "@bitbybit-dev/source": "./lib/api/recipes/index.ts",
-            "types": "./dist/lib/api/recipes/index.d.ts",
-            "default": "./dist/lib/api/recipes/index.js"
-        },
         "./lib/api/resolved-inputs": {
             "@bitbybit-dev/source": "./lib/api/resolved-inputs/index.ts",
             "types": "./dist/lib/api/resolved-inputs/index.d.ts",
@@ -122,6 +117,16 @@
             "@bitbybit-dev/source": "./lib/api/services/index.ts",
             "types": "./dist/lib/api/services/index.d.ts",
             "default": "./dist/lib/api/services/index.js"
+        },
+        "./lib/api/services/engineering": {
+            "@bitbybit-dev/source": "./lib/api/services/engineering/index.ts",
+            "types": "./dist/lib/api/services/engineering/index.d.ts",
+            "default": "./dist/lib/api/services/engineering/index.js"
+        },
+        "./lib/api/services/engineering/mechanical": {
+            "@bitbybit-dev/source": "./lib/api/services/engineering/mechanical/index.ts",
+            "types": "./dist/lib/api/services/engineering/mechanical/index.d.ts",
+            "default": "./dist/lib/api/services/engineering/mechanical/index.js"
         },
         "./package.json": "./package.json",
         "./*.js": {
@@ -140,6 +145,7 @@
     "devDependencies": {
         "@microsoft/api-extractor": "7.59.1",
         "@vitest/coverage-v8": "4.1.11",
+        "fast-check": "4.10.2",
         "shx": "0.4.0",
         "typescript": "5.9.3",
         "vitest": "4.1.11"

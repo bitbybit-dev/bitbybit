@@ -31,6 +31,10 @@ export function isCount(value: unknown): value is number {
     return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 }
 
+export function isIndexBelow(value: unknown, count: number): value is number {
+    return isCount(value) && value < count;
+}
+
 export function positive(issues: RecipeIssue[], value: unknown, path: string): void {
     if (typeof value !== "number" || !Number.isFinite(value) || !(value > 0)) {
         report(issues, path, "must be a finite number above zero");
@@ -71,7 +75,7 @@ export function range(checker: Checker, value: unknown, length: number, multiple
 }
 
 export function reference(checker: Checker, value: unknown, at: number, accepted: readonly Kind[], path: string): number {
-    if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0 || value >= at) {
+    if (!isIndexBelow(value, at)) {
         report(checker.issues, path, at === 0 ? "must be the index of an earlier node, and none comes before it" : `must be the index of an earlier node, from 0 to ${at - 1}`);
         return 0;
     }

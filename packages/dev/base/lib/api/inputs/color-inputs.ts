@@ -7,6 +7,22 @@ import type { Base } from "./base-inputs";
  */
 export namespace Color {
     /**
+     * One color channel for `color.srgbToLinear` and `color.linearToSrgb`.
+     */
+    export class ChannelDto {
+        constructor(channel?: number) {
+            if (channel !== undefined) { this.channel = channel; }
+        }
+        /**
+         * The channel, from 0 to 1.
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.01
+         */
+        channel?: number | undefined = 0.5;
+    }
+    /**
      * A hex color for `color.hexColor` and `color.hexToRgb`.
      */
     export class HexDto {

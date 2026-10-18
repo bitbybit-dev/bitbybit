@@ -1,7 +1,7 @@
 import type { Base } from "../inputs/base-inputs";
 import { InputError } from "../kernel-calls/errors";
 import { isRecord } from "../kernel-calls/unknown-values";
-import { linearDeterminant } from "../services/helpers/matrices";
+import { linearDeterminant } from "../services/helpers/geometry/matrices";
 import type { Checker, Kind, NodeSummary } from "./checker-types";
 import { checkBrep } from "./validate-brep";
 import { COORDINATE_RANGE, coordinates, extent, isCoordinate, isCount, positive, range, reference, references, report, vector } from "./checks";
@@ -272,19 +272,6 @@ function checkGroups(issues: RecipeIssue[], groups: readonly unknown[]): void {
     }
 }
 
-/**
- * Checks that a value is a recipe an executor can safely run: every index refers to an earlier
- * node of the right kind, every range lies inside its buffer, every coordinate of a profile or an
- * extrusion is finite and between minus and plus one billion, every placement (a matrix or a
- * half-space's origin) between minus and plus ten trillion, every matrix moves, turns, mirrors and
- * scales without flattening, and no list, total or nesting exceeds its limit. A recipe that comes from another thread, a file or a caller is
- * checked before any kernel touches it.
- *
- * Experimental: the recipe format may still change before it is declared stable.
- * @param recipe - The value to check
- * @returns What is wrong with it, at most a hundred issues, empty when nothing is
- * @beta
- */
 export function checkRecipe(recipe: unknown): RecipeIssue[] {
     const issues: RecipeIssue[] = [];
     if (!isRecord(recipe)) {
@@ -330,14 +317,6 @@ export function checkRecipe(recipe: unknown): RecipeIssue[] {
     return issues;
 }
 
-/**
- * Throws an `InputError` when a value is not a recipe an executor can safely run, naming the first
- * three problems `checkRecipe` finds.
- *
- * Experimental: the recipe format may still change before it is declared stable.
- * @param recipe - The value to check
- * @beta
- */
 export function assertRecipe(recipe: unknown): asserts recipe is Base.Recipe {
     const issues = checkRecipe(recipe);
     if (issues.length) {
@@ -353,16 +332,6 @@ function isInt32List(value: unknown): value is number[] {
     return isNumberList(value) && value.every((item) => Number.isInteger(item) && item >= INT32_LOWEST && item <= INT32_HIGHEST);
 }
 
-/**
- * Reads a value as a recipe an executor can run, taking its buffers as lists of numbers too, as JSON
- * carries them: such lists become the typed arrays the format holds, and the result is checked as
- * `assertRecipe` checks it. The value it is given is left as it was.
- *
- * Experimental: the recipe format may still change before it is declared stable.
- * @param value - The recipe, its buffers typed arrays or lists of numbers
- * @returns The recipe with typed buffers
- * @beta
- */
 export function toRecipe(value: unknown): Base.Recipe {
     const buffers = isRecord(value) ? value["buffers"] : undefined;
     if (isRecord(value) && isRecord(buffers) && (isNumberList(buffers["f64"]) || isInt32List(buffers["i32"]))) {

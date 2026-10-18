@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { Color } from "./color";
 import { MathBitByBit } from "./math";
 import * as Inputs from "../inputs";
+import { linearToSrgb, srgbToLinear } from "../color-space";
 
 describe("Color unit tests", () => {
     let color: Color;
@@ -172,6 +173,20 @@ describe("Color unit tests", () => {
 
             // Assert
             expect(handedUndefined).toEqual({ r: 255, g: 128, b: 0 });
+        });
+    });
+
+    describe("linear light", () => {
+        it("should decode a channel to linear light and encode it back, as the functions the index shipped with do", () => {
+            // Act
+            const linear = color.srgbToLinear({ channel: 0.5 });
+            const encoded = color.linearToSrgb({ channel: linear });
+
+            // Assert
+            expect(linear).toBeCloseTo(0.214041140482232, 12);
+            expect(encoded).toBeCloseTo(0.5, 12);
+            expect([srgbToLinear(0.5), linearToSrgb(linear)]).toEqual([linear, encoded]);
+            expect(color.srgbToLinear({})).toBe(linear);
         });
     });
 });

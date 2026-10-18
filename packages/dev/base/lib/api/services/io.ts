@@ -1,4 +1,4 @@
-import { Dxf } from "./helpers/dxf/dxf";
+import { Dxf } from "./helpers/files/dxf/dxf";
 
 /**
  * Reading and writing files: exporting geometry to the supported formats, importing it back, and

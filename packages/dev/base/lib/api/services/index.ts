@@ -13,3 +13,6 @@ export * from "./polyline";
 export * from "./mesh";
 export * from "./io";
 export * from "./frame";
+export * from "./engineering";
+export * from "./recipes";
+export * from "./base-bitbybit";

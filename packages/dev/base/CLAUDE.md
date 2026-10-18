@@ -4,23 +4,52 @@ The root of the dependency graph. It depends on no sibling, which is what makes 
 packages that cannot import each other can share code. Shared package conventions are one level up in
 `packages/dev/CLAUDE.md`.
 
-`lib/api/services/helpers/` is internal: not exported from the services barrel, and reached by direct
-import from the few places that need it. Code lands there when it must be shared but must not become
-public API. `computeVertexNormals` is there because both `jscad` and the shared draw helper need it and
-neither may import the other. The geometry helpers (vectors, frame transforms, polygons, triangulation,
-arcs, mesh measures) are the arithmetic under the public services and the other packages' hot paths:
-plain tuples, no DTOs. When one is useful to users, a service method wraps it rather than copying it,
-and a service never keeps a second copy of the arithmetic (`ARCHITECTURE.md`, "Shared geometry
-helpers").
+**What belongs in base.** Base is the 3D maths core every other package shares, and it takes code on
+three conditions together: the code is stateless arithmetic on plain numbers and tuples (no topology,
+no kernel objects, no iterative solving beyond small closed forms such as a 3x3 eigen solve); it is
+shared 3D vocabulary rather than a feature (vectors, matrices, frames, polygons, triangle meshes,
+curve and surface evaluation, path framing); and two packages need it, or the one that does may not
+depend on a kernel (`ifc` sits on base alone). Modelling stays out - booleans, offsets, fillets,
+NURBS fitting or intersection, B-rep topology are the kernels' work. Base also hosts two bodies of
+kernel-agnostic knowledge beside the maths core, the engineering tables and the recipe format;
+`ARCHITECTURE.md` ("What could leave base") names them and the curves helpers as the parts that could
+become packages of their own, which their service-only surface keeps cheap.
 
-**`removeAllDuplicateVectors` is the shared implementation**, and the OCCT vector helper calls it
-rather than keeping a copy. Deduplication under a tolerance is quadratic written directly, and it runs
+`lib/api/services/helpers/` is internal: not exported from the services barrel, and reached by direct
+import from the few places that need it, grouped by domain - `geometry/` (vectors, scalars, matrices,
+frame axes, arcs, polygons, paths, triangulation), `mesh/`, `curves/` (NURBS evaluation, adaptive
+surface meshing), `color/` and `files/` (zip, inflate, crc32, dxf). A helper never sits loose beside
+them. The helper itself is not public API, the service method that wraps it is: base is the toolbox
+people building 3D apps reach for, so a generic helper is exposed (DTO, JSDoc, example) and a service
+never keeps a second copy of the arithmetic. `lib/api/services/helpers/exposure.json` records for
+every export the method that exposes it, why it stays internal, or that it waits to be exposed;
+`lib/api/services/helpers/exposure.test.ts` holds each export to it, and the number waiting only
+falls. No other package writes its own copy: `bitbybit/no-local-maths` (`LINT.md`) fails the
+arithmetic it recognises outside `services/helpers/` (`ARCHITECTURE.md`, "Shared geometry helpers").
+
+**What the index exports.** Services, the `Inputs` and `Resolved` namespaces, models and types, and
+`kernel-calls/` - never a free-standing helper function. Code a caller can use becomes public as a
+service method with a DTO and the JSDoc `API_DOCS_GUIDE.md` asks for (`engineering.mechanical.gears.spurGearSizes`,
+`recipes.check`), because that is what reaches the editors, the reference and the catalogue, and the
+kernels, the renderers and the apps call that same method, so what they rely on is what users get.
+`resolveDto` copies one level, so a service call costs nothing a loop notices. A deep import
+(`@bitbybit-dev/base/lib/api/...`) is the exception, for what the method cannot serve: a result it
+does not give (a gear outline as exact arcs and cubics, where the method gives points) or a call from a
+module function on a draw path with no service in reach (the sRGB conversion); nothing re-exports
+such an implementation. `lib/api/index-exports.test.ts` holds the index to this: every function it
+exports is a class, part of `kernel-calls/`, or one of the two sRGB functions that shipped in 1.5.0,
+deprecated now and gone in the next major.
+
+**`uniqueVectors` (`lib/api/services/helpers/geometry/vector-grid.ts`) is the one deduplication**: behind
+`vector.removeAllDuplicateVectors`, and behind `mesh.toIndexed`, which also reads which kept vector each
+corner matched. Deduplication under a tolerance is quadratic written directly, and it runs
 on caller-supplied point lists of unbounded size, so kept vectors are indexed into a grid of cells a
 few tolerances wide and only the cells a candidate could match are probed.
 
 **The grid narrows candidates and never decides equality.** Every candidate it returns is still
-confirmed with `vectorsTheSame`, which is what keeps the result identical item for item to the plain
-scan, first occurrence kept. If the grid decided equality, the answer would depend on the cell size.
+confirmed component by component, which keeps the result identical item for item to the plain scan:
+the first occurrence is kept, and each vector matches the first kept one it agrees with. If the grid
+decided equality, the answer would depend on the cell size.
 Vectors it cannot place - a non-finite component, a tolerance that is not positive and finite, a
 magnitude where the cell arithmetic stops being exact - fall back to the plain scan and are also held
 in a side list the grid path consults, so neither path can miss a duplicate the other holds.

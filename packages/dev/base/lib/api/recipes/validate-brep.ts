@@ -1,4 +1,6 @@
 import { isRecord } from "../kernel-calls/unknown-values";
+import type { Base } from "../inputs/base-inputs";
+import { cross3, length3 } from "../services/helpers/geometry/vectors";
 import type { Checker, Kind } from "./checker-types";
 import { COORDINATE_RANGE, coordinates, extent, isCount, range, reference, report, vector } from "./checks";
 import { MAX_BREP_DEGREE, MAX_BREP_ITEMS, PARALLEL_SINE, POINT3_SIZE, QUARTER_TURN } from "./limits.constants";
@@ -48,8 +50,8 @@ function checkPlacement(checker: Checker, value: Record<string, unknown>, path: 
     const axis = value["axis"];
     const x = value["xDirection"];
     if (coordinates(axis, POINT3_SIZE) && coordinates(x, POINT3_SIZE)) {
-        const cross = [axis[1]! * x[2]! - axis[2]! * x[1]!, axis[2]! * x[0]! - axis[0]! * x[2]!, axis[0]! * x[1]! - axis[1]! * x[0]!];
-        const sine = Math.hypot(cross[0]!, cross[1]!, cross[2]!) / (Math.hypot(axis[0]!, axis[1]!, axis[2]!) * Math.hypot(x[0]!, x[1]!, x[2]!));
+        const [along, across] = [axis as Base.Vector3, x as Base.Vector3];
+        const sine = length3(cross3(along, across)) / (length3(along) * length3(across));
         if (!(sine > PARALLEL_SINE)) {
             report(checker.issues, `${path}.xDirection`, "lies along the axis, so it gives no X direction");
         }

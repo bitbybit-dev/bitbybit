@@ -1,6 +1,7 @@
 import * as Inputs from "../inputs";
 import { resolveDto } from "../kernel-calls";
 import type * as Resolved from "../resolved-inputs";
+import { degreesOf, fractionOf, interpolated, radiansOf, roundedTo, smoothstep } from "./helpers/geometry/scalars";
 
 /**
  * Arithmetic, rounding, ranges, random numbers and the trigonometric functions on plain numbers.
@@ -107,7 +108,7 @@ export class MathBitByBit {
      */
     roundToDecimals(inputs: Inputs.Math.RoundToDecimalsDto): number {
         const resolved = resolveDto(Inputs.Math.RoundToDecimalsDto, inputs) as Resolved.Math.RoundToDecimalsDto;
-        return Math.round(resolved.number * Math.pow(10, resolved.decimalPlaces)) / Math.pow(10, resolved.decimalPlaces);
+        return roundedTo(resolved.number, resolved.decimalPlaces);
     }
 
     /**
@@ -128,7 +129,7 @@ export class MathBitByBit {
      */
     roundAndRemoveTrailingZeros(inputs: Inputs.Math.RoundToDecimalsDto): number {
         const resolved = resolveDto(Inputs.Math.RoundToDecimalsDto, inputs) as Resolved.Math.RoundToDecimalsDto;
-        const rounded = Math.round(resolved.number * Math.pow(10, resolved.decimalPlaces)) / Math.pow(10, resolved.decimalPlaces);
+        const rounded = roundedTo(resolved.number, resolved.decimalPlaces);
         return parseFloat(rounded.toFixed(resolved.decimalPlaces));
     }
 
@@ -205,10 +206,10 @@ export class MathBitByBit {
                 result = Math.exp(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.degToRad:
-                result = resolved.number * Math.PI / 180;
+                result = radiansOf(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.radToDeg:
-                result = resolved.number * 180 / Math.PI;
+                result = degreesOf(resolved.number);
                 break;
             default:
                 break;
@@ -672,7 +673,7 @@ export class MathBitByBit {
      */
     degToRad(inputs: Inputs.Math.NumberDto): number {
         const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
-        return resolved.number * Math.PI / 180;
+        return radiansOf(resolved.number);
     }
 
     /**
@@ -687,7 +688,7 @@ export class MathBitByBit {
      */
     radToDeg(inputs: Inputs.Math.NumberDto): number {
         const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
-        return resolved.number * 180 / Math.PI;
+        return degreesOf(resolved.number);
     }
 
     /**
@@ -755,7 +756,7 @@ export class MathBitByBit {
      */
     lerp(inputs: Inputs.Math.LerpDto): number {
         const resolved = resolveDto(Inputs.Math.LerpDto, inputs) as Resolved.Math.LerpDto;
-        return resolved.start + (resolved.end - resolved.start) * resolved.t;
+        return interpolated(resolved.start, resolved.end, resolved.t);
     }
 
     /**
@@ -794,8 +795,7 @@ export class MathBitByBit {
      */
     smoothstep(inputs: Inputs.Math.NumberDto): number {
         const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
-        const t = Math.max(0, Math.min(1, resolved.number));
-        return t * t * (3 - 2 * t);
+        return smoothstep(resolved.number);
     }
 
     /**
@@ -826,7 +826,7 @@ export class MathBitByBit {
      */
     fract(inputs: Inputs.Math.NumberDto): number {
         const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
-        return resolved.number - Math.floor(resolved.number);
+        return fractionOf(resolved.number);
     }
 
     /**
