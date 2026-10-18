@@ -1,20 +1,24 @@
 import type { BRepFilletAPI_MakeChamfer, BRepFilletAPI_MakeFillet, BRepFilletAPI_MakeFillet2d, BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Inputs from "../../api/inputs";
-import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type { IteratorService } from "./iterator.service";
 import type { ConverterService } from "./converter.service";
 import type { EntitiesService } from "./entities.service";
 import type { ShapeGettersService } from "./shape-getters";
 import type * as Resolved from "../../api/resolved-inputs";
-import { InputError, KernelOperationError } from "@bitbybit-dev/base";
+import { InputError } from "@bitbybit-dev/base";
+import type { KernelOperationError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
+import { kernelObjects, release, releasedOnError } from "./release";
+import { withKernelFailure } from "./kernel-refusals";
+import { holdsSolid, unbrokenResult } from "./solid-results";
 import { isStraightCorner, straightCorners, withoutStraightCorners } from "./straight-corners";
 
 export class FilletsService {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        private readonly vecHelper: VectorHelperService,
+        private readonly base: BaseBitByBit,
         private readonly iteratorService: IteratorService,
         private readonly converterService: ConverterService,
         private readonly entitiesService: EntitiesService,
@@ -26,198 +30,136 @@ export class FilletsService {
      * is where a history is read.
      */
     filletEdges(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>, read?: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void): TopoDS_Shape {
-
         if (!inputs.indexes || inputs.indexes.length === 0) {
-            const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
-                inputs.shape, this.occ.ChFi3d_FilletShape.Rational
-            );
-            const anEdgeExplorer = new this.occ.TopExp_Explorer(
-                inputs.shape, this.occ.TopAbs_ShapeEnum.EDGE,
-                this.occ.TopAbs_ShapeEnum.SHAPE
-            );
-            const edges: TopoDS_Edge[] = [];
-            while (anEdgeExplorer.More()) {
-                const current = anEdgeExplorer.Current();
-                const anEdge = this.occ.CastToEdge(current);
-                current.delete();
-                edges.push(anEdge);
-                mkFillet.Add(inputs.radius, anEdge);
-                anEdgeExplorer.Next();
-            }
-            anEdgeExplorer.delete();
-            edges.forEach(e => e.delete());
-            return this.builtFillet(mkFillet, inputs.shape, read);
-        } else {
-            const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
-                inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
-            );
+            return this.filleted(inputs.shape, maker => this.iteratorService.forEachEdge(inputs.shape, (_index, edge) => {
+                try {
+                    maker.Add(inputs.radius, edge);
+                } finally {
+                    edge.delete();
+                }
+            }), read);
+        }
+        const inputIndexes = inputs.indexes;
+        const curFillet = this.filleted(inputs.shape, maker => {
             let foundEdges = 0;
-            let curFillet: TopoDS_Shape;
             let radiusIndex = 0;
-            const inputIndexes = inputs.indexes;
             this.iteratorService.forEachEdge(inputs.shape, (index, edge) => {
-                if (inputIndexes.includes(index)) {
-                    let radius = inputs.radius;
-                    if (inputs.radiusList) {
-                        radius = inputs.radiusList[radiusIndex]!;
-                        radiusIndex++;
+                try {
+                    if (inputIndexes.includes(index)) {
+                        let radius = inputs.radius;
+                        if (inputs.radiusList) {
+                            radius = inputs.radiusList[radiusIndex]!;
+                            radiusIndex++;
+                        }
+                        if (radius === undefined) {
+                            throw (Error("Radius not defined, or radiusList not correct length"));
+                        }
+                        maker.Add(radius, edge);
+                        foundEdges++;
                     }
-                    if (radius === undefined) {
-                        throw (Error("Radius not defined, or radiusList not correct length"));
-                    }
-                    mkFillet.Add(radius, edge);
-                    foundEdges++;
+                } finally {
+                    edge.delete();
                 }
             });
             if (foundEdges === 0) {
-                mkFillet.delete();
                 throw (new Error("Fillet Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!"));
             }
-            else {
-                curFillet = this.builtFillet(mkFillet, inputs.shape, read);
-            }
-            const result = this.converterService.getActualTypeOfShape(curFillet);
-            curFillet.delete();
-            return result;
-        }
+        }, read);
+        return this.converterService.castAndRelease(curFillet);
     }
 
-    filletEdgesListOneRadius(inputs: Resolved.OCCT.FilletEdgesListOneRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
+    filletEdgesListOneRadius(inputs: Resolved.OCCT.FilletEdgesListOneRadiusDto<TopoDS_Shape, TopoDS_Edge>, read?: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0) {
-            const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
-                inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
-            );
-            inputs.edges.forEach((edge) => {
-                mkFillet.Add(inputs.radius, edge);
-            });
-            const curFillet = this.builtFillet(mkFillet, inputs.shape);
-            const result = this.converterService.getActualTypeOfShape(curFillet);
-            curFillet.delete();
-            return result;
+            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => inputs.edges.forEach(edge => maker.Add(inputs.radius, edge)), read));
         }
         throw new Error("Edges must be provided");
     }
 
-    filletEdgesList(inputs: Inputs.OCCT.FilletEdgesListDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
+    filletEdgesList(inputs: Inputs.OCCT.FilletEdgesListDto<TopoDS_Shape, TopoDS_Edge>, read?: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 && inputs.radiusList && inputs.radiusList.length > 0 && inputs.edges.length === inputs.radiusList.length) {
-            const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
-                inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
-            );
-            inputs.edges.forEach((edge, index) => {
-                mkFillet.Add(inputs.radiusList[index]!, edge);
-            });
-            const curFillet = this.builtFillet(mkFillet, inputs.shape);
-            const result = this.converterService.getActualTypeOfShape(curFillet);
-            curFillet.delete();
-            return result;
+            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => inputs.edges.forEach((edge, index) => maker.Add(inputs.radiusList[index]!, edge)), read));
         }
         throw new Error("Edges and radius list must be provided with the same length");
     }
 
-    filletEdgeVariableRadius(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
+    filletEdgeVariableRadius(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>, read?: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (inputs.paramsU && inputs.paramsU.length > 0 && inputs.radiusList && inputs.radiusList.length > 0 && inputs.paramsU.length === inputs.radiusList.length) {
-            const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
-                inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
-            );
-            this.assignVariableFilletToEdge(inputs, mkFillet);
-            const curFillet = this.builtFillet(mkFillet, inputs.shape);
-            const result = this.converterService.getActualTypeOfShape(curFillet);
-            curFillet.delete();
-            return result;
+            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => this.assignVariableFilletToEdge(inputs, maker), read));
         }
         throw new Error("Params U and radius list must be provided with the same length");
     }
 
-    filletEdgesSameVariableRadius(inputs: Inputs.OCCT.FilletEdgesSameVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
+    filletEdgesSameVariableRadius(inputs: Inputs.OCCT.FilletEdgesSameVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>, read?: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.radiusList && inputs.radiusList.length > 0 &&
             inputs.paramsU.length === inputs.radiusList.length) {
-            const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
-                inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
-            );
-            inputs.edges.forEach((edge) => {
-                this.assignVariableFilletToEdge({
-                    edge, paramsU: inputs.paramsU, radiusList: inputs.radiusList, shape: inputs.shape,
-                }, mkFillet);
-            });
-            const curFillet = this.builtFillet(mkFillet, inputs.shape);
-            const result = this.converterService.getActualTypeOfShape(curFillet);
-            curFillet.delete();
-            return result;
+            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => inputs.edges.forEach(edge => this.assignVariableFilletToEdge({
+                edge, paramsU: inputs.paramsU, radiusList: inputs.radiusList, shape: inputs.shape,
+            }, maker)), read));
         }
         throw new Error("Edges, params U and radius list must be provided with the same length");
     }
 
-    filletEdgesVariableRadius(inputs: Inputs.OCCT.FilletEdgesVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
+    filletEdgesVariableRadius(inputs: Inputs.OCCT.FilletEdgesVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>, read?: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.radiusLists && inputs.radiusLists.length > 0 &&
             inputs.paramsULists.length === inputs.radiusLists.length &&
             inputs.paramsULists.length === inputs.edges.length &&
             inputs.radiusLists.length === inputs.edges.length) {
-            const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
-                inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
-            );
-            inputs.edges.forEach((edge, index) => {
-                this.assignVariableFilletToEdge({
-                    edge, paramsU: inputs.paramsULists[index]!, radiusList: inputs.radiusLists[index]!, shape: inputs.shape,
-                }, mkFillet);
-            });
-            const curFillet = this.builtFillet(mkFillet, inputs.shape);
-            const result = this.converterService.getActualTypeOfShape(curFillet);
-            curFillet.delete();
-            return result;
+            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => inputs.edges.forEach((edge, index) => this.assignVariableFilletToEdge({
+                edge, paramsU: inputs.paramsULists[index]!, radiusList: inputs.radiusLists[index]!, shape: inputs.shape,
+            }, maker)), read));
         }
         throw new Error("Edges, radius lists and params U lists must be provided with the same length");
     }
 
-    private builtFillet(maker: BRepFilletAPI_MakeFillet, shape: TopoDS_Shape, read?: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void): TopoDS_Shape {
-        maker.Build();
-        if (!maker.IsDone()) {
-            const faulty = maker.FaultyEdges(shape);
-            const edges = Array.from({ length: faulty.size() }, (_, i) => faulty.get(i)!);
-            faulty.delete();
-            maker.delete();
-            throw edges.length > 0 ? occtFailure("occt.fillet.failedOnEdges", { edges }) : occtFailure("occt.fillet.failed");
-        }
-        const result = maker.Shape();
+    private filleted(shape: TopoDS_Shape, add: (maker: BRepFilletAPI_MakeFillet) => void, read?: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void): TopoDS_Shape {
+        const maker = new this.occ.BRepFilletAPI_MakeFillet(shape, this.occ.ChFi3d_FilletShape.Rational);
         try {
-            read?.(maker, result);
-        } catch (error) {
-            result.delete();
-            throw error;
+            add(maker);
+            withKernelFailure(this.occ, () => maker.Build(), () => occtFailure("occt.fillet.failed"));
+            if (!maker.IsDone()) {
+                const faulty = maker.FaultyEdges(shape);
+                const edges = Array.from({ length: faulty.size() }, (_, i) => faulty.get(i)!);
+                faulty.delete();
+                throw edges.length > 0 ? occtFailure("occt.fillet.failedOnEdges", { edges }) : occtFailure("occt.fillet.failed");
+            }
+            const result = unbrokenResult(this.occ, maker.Shape(), holdsSolid(this.occ, shape), () => occtFailure("occt.fillet.failed"));
+            releasedOnError([result], () => read?.(maker, result));
+            return result;
         } finally {
             maker.delete();
         }
-        return result;
     }
 
-    private builtChamfer(maker: BRepFilletAPI_MakeChamfer, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
-        maker.Build();
-        if (!maker.IsDone()) {
-            maker.delete();
-            throw occtFailure("occt.chamfer.failed");
-        }
-        const result = maker.Shape();
+    private chamfered(shape: TopoDS_Shape, add: (maker: BRepFilletAPI_MakeChamfer) => void, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
+        const maker = new this.occ.BRepFilletAPI_MakeChamfer(shape);
         try {
-            read?.(maker, result);
-        } catch (error) {
-            result.delete();
-            throw error;
+            add(maker);
+            withKernelFailure(this.occ, () => maker.Build(), () => occtFailure("occt.chamfer.failed"));
+            if (!maker.IsDone()) {
+                throw occtFailure("occt.chamfer.failed");
+            }
+            const result = unbrokenResult(this.occ, maker.Shape(), holdsSolid(this.occ, shape), () => occtFailure("occt.chamfer.failed"));
+            releasedOnError([result], () => read?.(maker, result));
+            return result;
         } finally {
             maker.delete();
         }
-        return result;
     }
 
-    private assignVariableFilletToEdge(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>, mkFillet: BRepFilletAPI_MakeFillet) {
+    private assignVariableFilletToEdge(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>, mkFillet: BRepFilletAPI_MakeFillet): void {
         const array = new this.occ.TColgp_Array1OfPnt2d(1, inputs.paramsU.length);
-        inputs.paramsU.forEach((param, index) => {
-            const point = this.entitiesService.gpPnt2d([param, inputs.radiusList[index]!]);
-            array.SetValue(index + 1, point);
-            point.delete();
-        });
-        mkFillet.AddWithLaw(array, inputs.edge);
-        array.delete();
+        try {
+            inputs.paramsU.forEach((param, index) => {
+                const point = this.entitiesService.gpPnt2d([param, inputs.radiusList[index]!]);
+                array.SetValue(index + 1, point);
+                point.delete();
+            });
+            mkFillet.AddWithLaw(array, inputs.edge);
+        } finally {
+            array.delete();
+        }
     }
 
     /**
@@ -225,108 +167,70 @@ export class FilletsService {
      */
     chamferEdges(inputs: Resolved.OCCT.ChamferDto<TopoDS_Shape>, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (!inputs.indexes || inputs.indexes.length === 0) {
-            const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
-                inputs.shape
-            );
-            const anEdgeExplorer = new this.occ.TopExp_Explorer(
-                inputs.shape, this.occ.TopAbs_ShapeEnum.EDGE,
-                this.occ.TopAbs_ShapeEnum.SHAPE
-            );
-            const edges: TopoDS_Edge[] = [];
-            while (anEdgeExplorer.More()) {
-                const current = anEdgeExplorer.Current();
-                const anEdge = this.occ.CastToEdge(current);
-                current.delete();
-                edges.push(anEdge);
-                mkChamfer.Add(inputs.distance, anEdge);
-                anEdgeExplorer.Next();
-            }
-            anEdgeExplorer.delete();
-            edges.forEach(e => e.delete());
-            return this.builtChamfer(mkChamfer, read);
-        } else {
-            const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
-                inputs.shape
-            );
+            return this.chamfered(inputs.shape, maker => this.iteratorService.forEachEdge(inputs.shape, (_index, edge) => {
+                try {
+                    maker.Add(inputs.distance, edge);
+                } finally {
+                    edge.delete();
+                }
+            }), read);
+        }
+        const inputIndexes = inputs.indexes;
+        const curChamfer = this.chamfered(inputs.shape, maker => {
             let foundEdges = 0;
             let distanceIndex = 0;
-            const inputIndexes = inputs.indexes;
             this.iteratorService.forEachEdge(inputs.shape, (index, edge) => {
-                if (inputIndexes.includes(index)) {
-                    let distance = inputs.distance;
-                    if (inputs.distanceList) {
-                        distance = inputs.distanceList[distanceIndex]!;
-                        distanceIndex++;
+                try {
+                    if (inputIndexes.includes(index)) {
+                        let distance = inputs.distance;
+                        if (inputs.distanceList) {
+                            distance = inputs.distanceList[distanceIndex]!;
+                            distanceIndex++;
+                        }
+                        if (distance === undefined) {
+                            throw (Error("Distance not defined and/or distance list incorrect length"));
+                        }
+                        maker.Add(distance, edge);
+                        foundEdges++;
                     }
-                    if (distance === undefined) {
-                        throw (Error("Distance not defined and/or distance list incorrect length"));
-                    }
-                    mkChamfer.Add(distance, edge);
-                    foundEdges++;
+                } finally {
+                    edge.delete();
                 }
             });
             if (foundEdges === 0) {
-                console.error("Chamfer Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!");
-                mkChamfer.delete();
-                return this.converterService.getActualTypeOfShape(inputs.shape);
+                throw (new Error("Chamfer Edges Not Found!  Make sure you are looking at the object _before_ the Chamfer is applied!"));
             }
-            const curChamfer = this.builtChamfer(mkChamfer, read);
-            const result = this.converterService.getActualTypeOfShape(curChamfer);
-            curChamfer.delete();
-            return result;
-        }
+        }, read);
+        return this.converterService.castAndRelease(curChamfer);
     }
 
-    chamferEdgesList(inputs: Inputs.OCCT.ChamferEdgesListDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
+    chamferEdgesList(inputs: Inputs.OCCT.ChamferEdgesListDto<TopoDS_Shape, TopoDS_Edge>, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 && inputs.distanceList && inputs.distanceList.length > 0 && inputs.edges.length === inputs.distanceList.length) {
-            const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
-                inputs.shape
-            );
-            inputs.edges.forEach((edge, index) => {
+            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => inputs.edges.forEach((edge, index) => {
                 const distance = inputs.distanceList[index];
                 if (distance === undefined) {
                     throw (Error("Distance is not defined"));
                 }
-                mkChamfer.Add(distance, edge);
-            });
-            const curChamfer = this.builtChamfer(mkChamfer);
-            const result = this.converterService.getActualTypeOfShape(curChamfer);
-            curChamfer.delete();
-            return result;
+                maker.Add(distance, edge);
+            }), read));
         }
         throw new Error("Edges and distance list must be provided with the same length");
     }
 
-    chamferEdgeTwoDistances(inputs: Resolved.OCCT.ChamferEdgeTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
-        const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
-            inputs.shape
-        );
-        mkChamfer.AddTwoDistances(inputs.distance1, inputs.distance2, inputs.edge, inputs.face);
-        const curChamfer = this.builtChamfer(mkChamfer);
-        const result = this.converterService.getActualTypeOfShape(curChamfer);
-        curChamfer.delete();
-        return result;
+    chamferEdgeTwoDistances(inputs: Resolved.OCCT.ChamferEdgeTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
+        return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => maker.AddTwoDistances(inputs.distance1, inputs.distance2, inputs.edge, inputs.face), read));
     }
 
-    chamferEdgesTwoDistances(inputs: Resolved.OCCT.ChamferEdgesTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
+    chamferEdgesTwoDistances(inputs: Resolved.OCCT.ChamferEdgesTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.edges.length === inputs.faces.length) {
-            const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
-                inputs.shape
-            );
-            inputs.edges.forEach((edge, index) => {
-                mkChamfer.AddTwoDistances(inputs.distance1, inputs.distance2, edge, inputs.faces[index]!);
-            });
-            const curChamfer = this.builtChamfer(mkChamfer);
-            const result = this.converterService.getActualTypeOfShape(curChamfer);
-            curChamfer.delete();
-            return result;
+            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => inputs.edges.forEach((edge, index) => maker.AddTwoDistances(inputs.distance1, inputs.distance2, edge, inputs.faces[index]!)), read));
         } else {
             throw new Error("Edges and faces must be provided with the same length");
         }
     }
 
-    chamferEdgesTwoDistancesLists(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesListsDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
+    chamferEdgesTwoDistancesLists(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesListsDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.faces && inputs.faces.length > 0 &&
             inputs.distances1 && inputs.distances1.length > 0 &&
@@ -334,34 +238,18 @@ export class FilletsService {
             inputs.edges.length === inputs.faces.length &&
             inputs.edges.length === inputs.distances1.length &&
             inputs.edges.length === inputs.distances2.length) {
-            const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
-                inputs.shape
-            );
-            inputs.edges.forEach((edge, index) => {
-                mkChamfer.AddTwoDistances(inputs.distances1[index]!, inputs.distances2[index]!, edge, inputs.faces[index]!);
-            });
-            const curChamfer = this.builtChamfer(mkChamfer);
-            const result = this.converterService.getActualTypeOfShape(curChamfer);
-            curChamfer.delete();
-            return result;
+            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => inputs.edges.forEach((edge, index) => maker.AddTwoDistances(inputs.distances1[index]!, inputs.distances2[index]!, edge, inputs.faces[index]!)), read));
         } else {
             throw new Error("Edges, faces and distance lists must be provided with the same length");
         }
     }
 
-    chamferEdgeDistAngle(inputs: Resolved.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
-        const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
-            inputs.shape
-        );
-        const radians = this.vecHelper.degToRad(inputs.angle);
-        mkChamfer.AddDA(inputs.distance, radians, inputs.edge, inputs.face);
-        const curChamfer = this.builtChamfer(mkChamfer);
-        const result = this.converterService.getActualTypeOfShape(curChamfer);
-        curChamfer.delete();
-        return result;
+    chamferEdgeDistAngle(inputs: Resolved.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
+        const radians = this.base.math.degToRad({ number: inputs.angle });
+        return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => maker.AddDA(inputs.distance, radians, inputs.edge, inputs.face), read));
     }
 
-    chamferEdgesDistsAngles(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
+    chamferEdgesDistsAngles(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.faces && inputs.faces.length > 0 &&
             inputs.distances && inputs.distances.length > 0 &&
@@ -369,38 +257,22 @@ export class FilletsService {
             inputs.edges.length === inputs.distances.length &&
             inputs.edges.length === inputs.faces.length &&
             inputs.edges.length === inputs.angles.length) {
-            const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
-                inputs.shape
-            );
-            inputs.edges.forEach((edge, index) => {
-                const radians = this.vecHelper.degToRad(inputs.angles[index]!);
-                mkChamfer.AddDA(inputs.distances[index]!, radians, edge, inputs.faces[index]!);
-            });
-            const curChamfer = this.builtChamfer(mkChamfer);
-            const result = this.converterService.getActualTypeOfShape(curChamfer);
-            curChamfer.delete();
-            return result;
+            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => inputs.edges.forEach((edge, index) => {
+                const radians = this.base.math.degToRad({ number: inputs.angles[index]! });
+                maker.AddDA(inputs.distances[index]!, radians, edge, inputs.faces[index]!);
+            }), read));
         } else {
             throw new Error("Edges, faces, distances and angles must be provided with the same length");
         }
     }
 
-    chamferEdgesDistAngle(inputs: Resolved.OCCT.ChamferEdgesDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
+    chamferEdgesDistAngle(inputs: Resolved.OCCT.ChamferEdgesDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.faces && inputs.faces.length > 0 &&
             inputs.edges.length === inputs.faces.length
         ) {
-            const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
-                inputs.shape
-            );
-            const radians = this.vecHelper.degToRad(inputs.angle);
-            inputs.edges.forEach((edge, index) => {
-                mkChamfer.AddDA(inputs.distance, radians, edge, inputs.faces[index]!);
-            });
-            const curChamfer = this.builtChamfer(mkChamfer);
-            const result = this.converterService.getActualTypeOfShape(curChamfer);
-            curChamfer.delete();
-            return result;
+            const radians = this.base.math.degToRad({ number: inputs.angle });
+            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => inputs.edges.forEach((edge, index) => maker.AddDA(inputs.distance, radians, edge, inputs.faces[index]!)), read));
         } else {
             throw new Error("Edges and faces must be provided with the same length");
         }
@@ -410,107 +282,78 @@ export class FilletsService {
         if (inputs.indexes && inputs.radiusList && inputs.radiusList.length !== inputs.indexes.length) {
             throw new Error("When using radius list, length of the list must match index list of corners that you want to fillet.");
         }
-        let face;
-        let isShapeFace = false;
-        if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.FACE) {
-            face = this.converterService.getActualTypeOfShape(inputs.shape);
-            isShapeFace = true;
-        } else if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
-            const faceShape = this.occ.MakeFaceFromWireOnlyPlane(inputs.shape, true);
-            face = this.converterService.getActualTypeOfShape(faceShape);
-            faceShape.delete();
-        } else {
-            throw new Error("You can only fillet a 2d wire or a 2d face.");
-        }
-
-        const filletMaker = new this.occ.BRepFilletAPI_MakeFillet2d(face);
-
-        const anVertexExplorer = new this.occ.TopExp_Explorer(
-            inputs.shape, this.occ.TopAbs_ShapeEnum.VERTEX,
-            this.occ.TopAbs_ShapeEnum.SHAPE
-        );
-        let i = 1;
-        const cornerVertices: TopoDS_Vertex[] = [];
-        for (anVertexExplorer; anVertexExplorer.More(); anVertexExplorer.Next()) {
-            const current = anVertexExplorer.Current();
-            const vertex: TopoDS_Vertex = this.occ.CastToVertex(current);
-            current.delete();
-            if (i % 2 === 0) {
-                cornerVertices.push(vertex);
-            } else {
-                vertex.delete();
-            }
-            i++;
-        }
-        if (!isShapeFace) {
-            const wire = inputs.shape;
-            if (!wire.Closed()) {
-                cornerVertices.pop();
-            }
-        }
-        const straight = (isShapeFace ? this.shapeGettersService.getWires({ shape: face }) : [inputs.shape])
-            .flatMap(wire => straightCorners(this.occ, wire));
-        let radiusAddedCounter = 0;
-        const failedCorners: number[] = [];
-        cornerVertices.forEach((cvx, index) => {
-            const skip = isStraightCorner(straight, this.converterService.vertexToPoint({ shape: cvx }));
-            let added = false;
-            if (!inputs.indexes) {
-                added = !skip && this.applyRadiusToVertex(inputs, filletMaker, cvx, index);
-            } else if (inputs.indexes.includes(index + 1)) {
-                added = !skip && this.applyRadiusToVertex(inputs, filletMaker, cvx, radiusAddedCounter);
-                radiusAddedCounter++;
-            }
-            if (added && !filletMaker.CornerDone()) {
-                failedCorners.push(index + 1);
-            }
-        });
-        filletMaker.Build();
-        const cornersFailed = (): KernelOperationError => failedCorners.length > 0
-            ? occtFailure("occt.fillet.failedAtCorners", { corners: failedCorners })
-            : occtFailure("occt.fillet.failed");
-        let result: TopoDS_Shape | undefined;
-        let failure: KernelOperationError | undefined;
-        const release = (): void => {
-            anVertexExplorer.delete();
-            filletMaker.delete();
-            cornerVertices.forEach(cvx => cvx.delete());
-        };
-        if (isShapeFace) {
-            result = filletMaker.IsDone() && failedCorners.length === 0 ? filletMaker.Shape() : undefined;
-        } else {
+        const isShapeFace = this.isFlatFace(inputs.shape, "You can only fillet a 2d wire or a 2d face.");
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const face = own(this.faceToRound(inputs.shape, isShapeFace));
+            const filletMaker = own(new this.occ.BRepFilletAPI_MakeFillet2d(face));
+            const cornerVertices = this.collectCornerVertices(inputs.shape, isShapeFace).map(own);
+            const straight = (isShapeFace ? this.shapeGettersService.getWires({ shape: face }).map(own) : [inputs.shape])
+                .flatMap(wire => straightCorners(this.occ, wire));
+            let radiusAddedCounter = 0;
+            const failedCorners: number[] = [];
+            cornerVertices.forEach((cvx, index) => {
+                const skip = isStraightCorner(straight, this.converterService.vertexToPoint({ shape: cvx }));
+                let added = false;
+                if (!inputs.indexes) {
+                    added = !skip && this.applyRadiusToVertex(inputs, filletMaker, cvx, index);
+                } else if (inputs.indexes.includes(index + 1)) {
+                    added = !skip && this.applyRadiusToVertex(inputs, filletMaker, cvx, radiusAddedCounter);
+                    radiusAddedCounter++;
+                }
+                if (added && !filletMaker.CornerDone()) {
+                    failedCorners.push(index + 1);
+                }
+            });
+            filletMaker.Build();
+            const cornersFailed = (): KernelOperationError => failedCorners.length > 0
+                ? occtFailure("occt.fillet.failedAtCorners", { corners: failedCorners })
+                : occtFailure("occt.fillet.failed");
             const isDone = filletMaker.IsDone();
+            if (isShapeFace) {
+                if (!isDone || failedCorners.length > 0) {
+                    throw cornersFailed();
+                }
+                return this.converterService.castAndRelease(filletMaker.Shape());
+            }
             if (isDone && failedCorners.length > 0) {
-                failure = cornersFailed();
-            } else if (isDone) {
-                const shape = filletMaker.Shape();
-                const filletedWires = this.shapeGettersService.getWires({ shape });
-                if (filletedWires.length === 1) {
-                    result = filletedWires[0];
-                }
+                throw cornersFailed();
             }
-            else if (!this.everyGivenRadiusRounds(inputs.radius, inputs.radiusList)) {
-                failure = cornersFailed();
-            } else {
-                try {
-                    result = this.filletWireCorners(inputs.shape, this.radiiOf2dCorners(inputs, this.occ.WireCornerCount(inputs.shape)));
-                } catch (thrown) {
-                    if (!(thrown instanceof KernelOperationError)) {
-                        release();
-                        throw thrown;
-                    }
-                    failure = thrown;
-                }
+            if (isDone) {
+                return this.onlyWireOf(own(filletMaker.Shape()), cornersFailed);
             }
+            if (!this.everyGivenRadiusRounds(inputs.radius, inputs.radiusList)) {
+                throw cornersFailed();
+            }
+            return this.filletWireCorners(inputs.shape, this.radiiOf2dCorners(inputs, this.occ.WireCornerCount(inputs.shape)));
+        } finally {
+            releaseAll();
         }
-        release();
-        if (failure !== undefined) {
-            throw failure;
+    }
+
+    private isFlatFace(shape: TopoDS_Shape, refusal: string): boolean {
+        if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.FACE) {
+            return true;
         }
-        if (!result) {
-            throw cornersFailed();
+        if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
+            return false;
         }
-        return result;
+        throw new Error(refusal);
+    }
+
+    private faceToRound(shape: TopoDS_Shape, isShapeFace: boolean): TopoDS_Face {
+        return isShapeFace
+            ? this.converterService.getActualTypeOfShape(shape)
+            : this.converterService.castAndRelease(this.occ.MakeFaceFromWireOnlyPlane(shape, true));
+    }
+
+    private onlyWireOf(shape: TopoDS_Shape, refusal: () => Error): TopoDS_Wire {
+        const wires = this.shapeGettersService.getWires({ shape });
+        if (wires.length !== 1) {
+            wires.forEach(release);
+            throw refusal();
+        }
+        return wires[0]!;
     }
 
     fillet3DWire(inputs: Resolved.OCCT.Fillet3DWireDto<TopoDS_Wire>): TopoDS_Wire {
@@ -572,65 +415,47 @@ export class FilletsService {
 
     private applyRadiusToVertex(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>, filletMaker: BRepFilletAPI_MakeFillet2d, cvx: TopoDS_Vertex, index: number): boolean {
         if (inputs.radiusList) {
-            const radiusList = inputs.radiusList;
-            filletMaker.AddFillet(cvx, radiusList[index]!);
+            filletMaker.AddFillet(cvx, inputs.radiusList[index]!).delete();
             return true;
         } else if (inputs.radius) {
-            filletMaker.AddFillet(cvx, inputs.radius);
+            filletMaker.AddFillet(cvx, inputs.radius).delete();
             return true;
         }
         return false;
     }
 
     chamfer2dVertices(inputs: Resolved.OCCT.Chamfer2dVertexDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face | TopoDS_Wire {
-        let face: TopoDS_Face;
-        let isShapeFace = false;
-        if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.FACE) {
-            face = this.converterService.getActualTypeOfShape(inputs.shape);
-            isShapeFace = true;
-        } else if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
-            const faceShape = this.occ.MakeFaceFromWireOnlyPlane(inputs.shape, true);
-            face = this.converterService.getActualTypeOfShape(faceShape);
-            faceShape.delete();
-        } else {
-            throw new Error("You can only chamfer a 2d wire or a 2d face.");
-        }
-
-        const filletMaker = new this.occ.BRepFilletAPI_MakeFillet2d(face);
-        const angle = this.vecHelper.degToRad(inputs.angle);
-        const cornerVertices = this.collectCornerVertices(inputs.shape, isShapeFace);
-        const faceEdges = this.shapeGettersService.getEdges({ shape: face });
-
-        cornerVertices.forEach((cvx, index) => {
-            if (inputs.indexes && !inputs.indexes.includes(index + 1)) {
-                return;
+        const isShapeFace = this.isFlatFace(inputs.shape, "You can only chamfer a 2d wire or a 2d face.");
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const face = own(this.faceToRound(inputs.shape, isShapeFace));
+            const filletMaker = own(new this.occ.BRepFilletAPI_MakeFillet2d(face));
+            const angle = this.base.math.degToRad({ number: inputs.angle });
+            const cornerVertices = this.collectCornerVertices(inputs.shape, isShapeFace).map(own);
+            const faceEdges = this.shapeGettersService.getEdges({ shape: face }).map(own);
+            cornerVertices.forEach((cvx, index) => {
+                if (inputs.indexes && !inputs.indexes.includes(index + 1)) {
+                    return;
+                }
+                const edge = this.findEdgeContainingVertex(faceEdges, cvx);
+                if (edge) {
+                    own(filletMaker.AddChamferVertex(edge, cvx, inputs.distance, angle));
+                }
+            });
+            filletMaker.Build();
+            if (!filletMaker.IsDone()) {
+                throw occtFailure("occt.chamfer.failed");
             }
-            const edge = this.findEdgeContainingVertex(faceEdges, cvx);
-            if (edge) {
-                filletMaker.AddChamferVertex(edge, cvx, inputs.distance, angle);
+            const made = own(filletMaker.Shape());
+            if (isShapeFace) {
+                return this.converterService.getActualTypeOfShape(made);
             }
-        });
-        filletMaker.Build();
-        if (!filletMaker.IsDone()) {
-            filletMaker.delete();
-            face.delete();
-            cornerVertices.forEach(cvx => cvx.delete());
-            faceEdges.forEach(e => e.delete());
-            throw occtFailure("occt.chamfer.failed");
+            const wires = this.shapeGettersService.getWires({ shape: made });
+            wires.slice(1).forEach(release);
+            return wires[0]!;
+        } finally {
+            releaseAll();
         }
-
-        let result: TopoDS_Face | TopoDS_Wire;
-        if (isShapeFace) {
-            result = this.converterService.getActualTypeOfShape(filletMaker.Shape());
-        } else {
-            const wires = this.shapeGettersService.getWires({ shape: filletMaker.Shape() });
-            result = wires[0]!;
-        }
-        filletMaker.delete();
-        face.delete();
-        cornerVertices.forEach(cvx => cvx.delete());
-        faceEdges.forEach(e => e.delete());
-        return result;
     }
 
     private collectCornerVertices(shape: TopoDS_Shape, isShapeFace: boolean): TopoDS_Vertex[] {

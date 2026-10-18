@@ -2,6 +2,12 @@ import type { Base } from "@bitbybit-dev/base";
 import { circleInclusionEnum, positionResultEnum, surfaceAnalysisEnum, twoCircleInclusionEnum } from "./enums";
 
 /**
+ * Which faces carry which color: the face indexes of each color, keyed by `#rrggbbaa`.
+ */
+export interface FaceColorGroups {
+    [color: string]: number[];
+}
+/**
  * The triangle mesh of a shape as `shapeToMesh` returns it: one entry per face with its triangles,
  * one per edge with its points, and the vertex points, ready for drawing.
  */
@@ -27,7 +33,7 @@ export class DecomposedMeshDto {
      * assembly document.
      * @optional true
      */
-    colorGroups?: { [color: string]: number[] } | undefined;
+    colorGroups?: FaceColorGroups | undefined;
     /**
      * The faces' iso curves as polylines, face by face with u curves before v curves; a curve crossing
      * a hole comes in pieces. Present only when asked for.
@@ -188,6 +194,115 @@ export class DecomposedEdgeDto {
      * @optional true
      */
     edgeUid?: number | undefined;
+}
+/**
+ * One face of a `DecomposedMeshBuffersDto`: the numbers of a `DecomposedFaceDto` in single-precision
+ * typed arrays, each a view into a buffer the whole mesh shares, so it crosses threads uncopied.
+ */
+export class DecomposedFaceBuffersDto {
+    /**
+     * The position of the face in the shape, counting from 0 in the order `shapes.face.getFaces`
+     * uses.
+     */
+    faceIndex!: number;
+    /**
+     * The vertex positions, x, y and z one vertex after another.
+     */
+    vertexCoord!: Float32Array;
+    /**
+     * The vertex normals, x, y and z one vertex after another.
+     */
+    normalCoord!: Float32Array;
+    /**
+     * The triangles as vertex indexes into this face's vertices, three per triangle.
+     */
+    triIndexes!: Uint32Array;
+    /**
+     * How many triangles the face was cut into.
+     */
+    numberOfTriangles!: number;
+    /**
+     * The texture coordinates, u and v one vertex after another; empty when the face has none.
+     */
+    uvs!: Float32Array;
+    /**
+     * A point in the middle of the face's parameter range, on the surface, or null for a face with
+     * no surface to place it on.
+     */
+    centerPoint!: Base.Point3 | null;
+    /**
+     * The surface normal at `centerPoint`, or null where `centerPoint` is.
+     */
+    centerNormal!: Base.Vector3 | null;
+    /**
+     * The surface area of the face in square model units; present only with `computeMetadata`.
+     * @optional true
+     */
+    area?: number | undefined;
+    /**
+     * The center of mass of the face; present only with `computeMetadata`.
+     * @optional true
+     */
+    centerOfMass?: Base.Point3 | undefined;
+    /**
+     * The kind of surface the face lies on, such as `Plane`, `Cylinder` or `BSplineSurface`;
+     * present only with `computeMetadata`.
+     * @optional true
+     */
+    surfaceType?: string | undefined;
+    /**
+     * The geometric tolerance of the face in model units; present only with `computeMetadata`.
+     * @optional true
+     */
+    tolerance?: number | undefined;
+    /**
+     * The indexes of the faces that share an edge with this one; present only with
+     * `computeMetadata`.
+     * @optional true
+     */
+    adjacentFaces?: number[] | undefined;
+    /**
+     * The face's stable id in the shape's graph, or -1 when unavailable; present only with
+     * `computeMetadata`.
+     * @optional true
+     */
+    faceUid?: number | undefined;
+    /**
+     * The surface analysis value at each vertex in `vertexCoord` order, NaN where undefined;
+     * present only with `surfaceAnalysis`.
+     * @optional true
+     */
+    analysisValues?: Float32Array | undefined;
+}
+/**
+ * The triangulated mesh of a shape the way the drawing code takes it: the faces' numbers in typed
+ * arrays that share their buffers, and the edges and vertices as a `DecomposedMeshDto` holds them.
+ */
+export class DecomposedMeshBuffersDto {
+    /**
+     * One entry per face with its triangulation.
+     */
+    faceList!: DecomposedFaceBuffersDto[];
+    /**
+     * One entry per edge with the points that trace it.
+     */
+    edgeList!: DecomposedEdgeDto[];
+    /**
+     * The points of the shape's standalone vertices.
+     */
+    pointsList!: Base.Point3[];
+    /**
+     * Which faces carry which color, keyed by `#rrggbbaa`; present only for meshes made from an
+     * assembly document.
+     * @optional true
+     */
+    colorGroups?: FaceColorGroups | undefined;
+    /**
+     * The faces' iso curves as polylines, face by face with u curves before v curves. Present only
+     * when asked for.
+     * @optional true
+     */
+    isoCurveList?: Base.Point3[][] | undefined;
 }
 /**
  * A list of shapes for the methods that take several at once, such as `shapes.face.getFacesAreas`

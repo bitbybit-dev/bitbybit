@@ -257,11 +257,10 @@ export class OCCTBrepGraph {
         const resolved = resolveDto(Inputs.OCCT.BRepGraphReconstructDto, inputs) as Resolved.OCCT.BRepGraphReconstructDto<TopoDS_Shape>;
         const shape = this.occ.BRepGraphReconstruct(resolved.shape, resolved.kind, resolved.index);
         if (shape.IsNull()) {
+            shape.delete();
             throw new Error("Could not reconstruct a sub-shape for the given node.");
         }
-        const result = this.och.converterService.getActualTypeOfShape(shape);
-        shape.delete();
-        return result;
+        return this.och.converterService.castAndRelease(shape);
     }
 
     /**

@@ -12,20 +12,16 @@ import { resolveEdges, resolveFaces } from "./references";
 import type { DesignPlan, DesignRun } from "./state";
 import { bodyKey } from "./state";
 import { ownValue } from "./structure";
-import { numberOf } from "./values";
-
-function only(value: unknown, key: string): value is Record<string, unknown> {
-    return isRecord(value) && Object.keys(value).length === 1 && key in value;
-}
+import { hasOnlyKey, numberOf } from "./values";
 
 function bodiesReadBy(value: unknown, path: string, run: DesignRun): string[] {
-    if (only(value, "body") && typeof value["body"] === "string") {
+    if (hasOnlyKey(value, "body") && typeof value["body"] === "string") {
         return [value["body"]];
     }
-    if (only(value, "faces") && isRecord(value["faces"]) && typeof value["faces"]["of"] === "string") {
+    if (hasOnlyKey(value, "faces") && isRecord(value["faces"]) && typeof value["faces"]["of"] === "string") {
         return [ownerOf(value["faces"]["of"], pointer(path, "faces", "of"), run)];
     }
-    if (only(value, "edges") && isRecord(value["edges"]) && Array.isArray(value["edges"]["between"])) {
+    if (hasOnlyKey(value, "edges") && isRecord(value["edges"]) && Array.isArray(value["edges"]["between"])) {
         const first: unknown = value["edges"]["between"][0];
         return isRecord(first) && typeof first["of"] === "string" ? [ownerOf(first["of"], pointer(path, "edges", "between", 0, "of"), run)] : [];
     }
@@ -36,18 +32,18 @@ function bodiesReadBy(value: unknown, path: string, run: DesignRun): string[] {
 }
 
 function inputsOf(value: unknown, path: string, run: DesignRun): unknown {
-    if (only(value, "body") && typeof value["body"] === "string") {
+    if (hasOnlyKey(value, "body") && typeof value["body"] === "string") {
         return bodyOf(value["body"], run).shape.clone();
     }
-    if (only(value, "expr")) {
+    if (hasOnlyKey(value, "expr")) {
         return numberOf(value["expr"], run.parameters, pointer(path, "expr"));
     }
-    if (only(value, "faces")) {
+    if (hasOnlyKey(value, "faces")) {
         const reference = value["faces"] as Models.OCCT.DesignFaceReference;
         const owner = bodyOf(ownerOf(reference.of, pointer(path, "faces", "of"), run), run);
         return resolveFaces(reference, contextOf(owner, run), pointer(path, "faces"));
     }
-    if (only(value, "edges")) {
+    if (hasOnlyKey(value, "edges")) {
         const reference = value["edges"] as Models.OCCT.DesignEdgeReference;
         const owner = bodyOf(ownerOf(reference.between[0].of, pointer(path, "edges", "between", 0, "of"), run), run);
         return resolveEdges(reference, contextOf(owner, run), pointer(path, "edges"));

@@ -117,10 +117,58 @@ export interface DesignCircleCommand {
 }
 
 /**
- * A pen command of a sketch feature: a `sketch.pen` command whose numbers may be expressions, or a
- * `circle`.
+ * An involute spur gear's outline around `centre`, in the sketch's coordinates, as
+ * `parts.mechanical.gears.spurGearProfile` draws it: `module` and `teeth` size it, and the other numbers shape
+ * the teeth as that method's inputs do, with the same defaults. With `internal` true it draws the
+ * teeth of a ring gear instead, pointing in toward `centre` as `parts.mechanical.gears.ringGearProfile` draws
+ * them, for the edge of a hole in a larger loop; a ring takes no `profileShift`. It is a loop by
+ * itself, so it is the only command of its pen or loop. The faces made of it are named by its id and
+ * their part, such as `<sketch>.<id>.tip`, `<sketch>.<id>.flank` and `<sketch>.<id>.root`.
  */
-export type DesignPenCommand = DesignExpressions<SketchCommand> | DesignCircleCommand;
+export interface DesignGearCommand {
+    type: "gear";
+    id?: string;
+    internal?: boolean;
+    centre: [DesignNumber, DesignNumber];
+    module: DesignNumber;
+    teeth: DesignNumber;
+    pressureAngle?: DesignNumber;
+    profileShift?: DesignNumber;
+    backlash?: DesignNumber;
+    addendum?: DesignNumber;
+    dedendum?: DesignNumber;
+    rootFillet?: DesignNumber;
+    rotation?: DesignNumber;
+}
+
+/**
+ * An involute rack's outline, in the sketch's coordinates, as `parts.mechanical.gears.rackProfile` draws it:
+ * `start` is where the first tooth's middle sits on the pitch line, `angle` turns the rack from
+ * running along +x (in degrees), `module` and `teeth` size it, and the other numbers shape the teeth
+ * as that method's inputs do, with the same defaults. A gear meshes with its centre its pitch radius
+ * from the pitch line. It is a loop by itself, so it is the only command of its pen or loop. The faces
+ * made of it are named by its id and their part: `tip`, `flank`, `root`, `back` and `side`.
+ */
+export interface DesignRackCommand {
+    type: "rack";
+    id?: string;
+    start: [DesignNumber, DesignNumber];
+    angle?: DesignNumber;
+    module: DesignNumber;
+    teeth: DesignNumber;
+    pressureAngle?: DesignNumber;
+    backlash?: DesignNumber;
+    addendum?: DesignNumber;
+    dedendum?: DesignNumber;
+    rootFillet?: DesignNumber;
+    height?: DesignNumber;
+}
+
+/**
+ * A pen command of a sketch feature: a `sketch.pen` command whose numbers may be expressions, a
+ * `circle`, a `gear` or a `rack`.
+ */
+export type DesignPenCommand = DesignExpressions<SketchCommand> | DesignCircleCommand | DesignGearCommand | DesignRackCommand;
 
 /**
  * One closed outline of a sketch that draws several: where its pen starts and its commands.
@@ -447,12 +495,26 @@ export interface DesignHolePosition {
 }
 
 /**
+ * A hole sized by the metric screw it takes: `size` from `"M1.6"` to `"M24"` (text, or `{ "expr" }`
+ * so a parameter can choose it); `fit` `close`, `normal` (the default) or `loose` for a clearance
+ * hole after ISO 273, or `tapped` for a threaded hole at the thread's nominal diameter, whose walls
+ * are also named `thread`; and `head` `socket` for the counterbore DIN 974-1 gives a socket head cap
+ * screw, as deep as its head plus half a millimetre.
+ */
+export interface DesignHoleFastener {
+    size: DesignText;
+    fit?: "close" | "normal" | "loose" | "tapped";
+    head?: "socket";
+}
+
+/**
  * Drills holes into `body` through the flat face `on` names, at the points `at`, which are x and y
  * on that face as a sketch on it reads them (`origin` and `direction` as for a sketch on a face).
- * `depth` 0, the default, drills through; `tipAngle` gives the bottom a drill point. A `counterbore`
- * or a `countersink` widens each mouth. Every hole's faces are named `wall`, and a hole whose
- * position has an id, as `{ "id": "left", "x": -10, "y": 0 }`, also `wall` with that id, which a
- * reference names it by; a position is never named by where it comes in `at`.
+ * The hole is `diameter` across, or sized by the screw `fastener` names. `depth` 0, the default,
+ * drills through; `tipAngle` gives the bottom a drill point. A `counterbore` or a `countersink`
+ * widens each mouth. Every hole's faces are named `wall`, and a hole whose position has an id, as
+ * `{ "id": "left", "x": -10, "y": 0 }`, also `wall` with that id, which a reference names it by; a
+ * position is never named by where it comes in `at`.
  */
 export interface DesignHoleFeature extends DesignFeatureBase {
     type: "hole";
@@ -461,7 +523,8 @@ export interface DesignHoleFeature extends DesignFeatureBase {
     origin?: DesignPoint;
     direction?: DesignPoint;
     at: (DesignHolePosition | [DesignNumber, DesignNumber])[];
-    diameter: DesignNumber;
+    diameter?: DesignNumber;
+    fastener?: DesignHoleFastener;
     depth?: DesignNumber;
     tipAngle?: DesignNumber;
     counterbore?: { diameter: DesignNumber; depth: DesignNumber };
@@ -513,12 +576,12 @@ export interface DesignImportFeature extends DesignFeatureBase {
 /**
  * Runs any operation of this package by its dotted path with the kernel first, such as
  * `"occt.operations.offset"`, with `params` as its inputs. In `params`, `{ "body": "<id>" }` passes a
- * body's shape and `{ "expr": "<expression>" }` a number. With `body` the result goes on as that
- * body, otherwise it starts a body named by the feature's id. An operation with a history twin
- * (`...WithHistory`) given bodies keeps the names of the faces it carries through, and names the
- * faces it makes of edges `round` (a fillet), `bevel` (a chamfer) or `side`, and its first and last
- * faces `start` and `end`; every other face is named `face`. An operation that makes a list of
- * shapes, such as `occt.shapes.face.subdivideToHexagonHoles`, makes their compound.
+ * body's shape and `{ "expr": "<expression>" }` what its expression gives, a number or text such as a
+ * choice parameter's `"M8"`. With `body` the result goes on as that body, otherwise it starts a body
+ * named by the feature's id. An operation with a roles twin (`...WithRoles`) names its faces by
+ * those roles. One with a history twin (`...WithHistory`) given bodies keeps the names of the faces
+ * it carries through, names faces made of edges `round`, `bevel` or `side`, and its first and last
+ * `start` and `end`; every other face is `face`. A list of shapes makes their compound.
  */
 export interface DesignOperationFeature extends DesignFeatureBase {
     type: "operation";

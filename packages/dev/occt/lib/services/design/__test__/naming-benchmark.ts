@@ -2,7 +2,8 @@ import type { BitbybitOcctModule } from "../../../../bitbybit-dev-occt/bitbybit-
 import type { OCCTService } from "../../../occ-service";
 import * as Inputs from "../../../api/inputs";
 import type * as Models from "../../../api/models";
-import { DesignCache, release } from "../cache";
+import { DesignCache } from "../cache";
+import { release } from "../../base/release";
 import { contextOf } from "../helpers";
 import { referenceHintOf } from "../hints";
 import { DesignProblem } from "../problems";
@@ -11,7 +12,7 @@ import { runFeatures } from "../runner";
 import type { BodyState, DesignRun } from "../state";
 import { directionOf, numberOf, pointOf } from "../values";
 import { unitVector } from "../placement";
-import { BaseBitByBit } from "../../../base";
+import { BaseBitByBit } from "@bitbybit-dev/base";
 
 export type FaceIntent =
     | { plane: { point: Models.OCCT.DesignPoint; normal: Models.OCCT.DesignPoint } }

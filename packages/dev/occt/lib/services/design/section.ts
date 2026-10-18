@@ -4,46 +4,38 @@ import type * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { massesAndCentres } from "../base/kernel-arrays";
 import { hashText } from "./cache";
+import { knownBox } from "./boxes";
+import { rigidInverse, turnedVector } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
+import { dot3, length3, scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type { Crossing, Kind, LocalPlane, Made, PartCut, Placement, SectionContext, SectionOptions, SourcePart, Vec3 } from "./section-types";
+import { IDENTITY_MATRIX } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices.constants";
 
-const IDENTITY: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 const KEY_DIGITS = 9;
 const BOX_VALUES = 6;
 const MATRIX_VALUES = 16;
-const MOST_BOXES = 4096;
 const SIDEWAYS = 0.9;
 const TRANSLATION = 12;
-const ROW = 4;
 
-function dot(a: readonly number[], b: readonly number[]): number {
-    return (a[0] ?? 0) * (b[0] ?? 0) + (a[1] ?? 0) * (b[1] ?? 0) + (a[2] ?? 0) * (b[2] ?? 0);
-}
-
-function rounded(value: number): number {
+export function rounded(value: number): number {
     const kept = Number(value.toFixed(KEY_DIGITS));
     return Object.is(kept, -0) ? 0 : kept;
 }
 
 function localPlane(world: Inputs.Base.TransformMatrix, normal: Vec3, offset: number): LocalPlane | undefined {
-    const turned: Vec3 = [0, 1, 2].map(column => dot([world[column * ROW] ?? 0, world[column * ROW + 1] ?? 0, world[column * ROW + 2] ?? 0], normal)) as Vec3;
-    const length = Math.hypot(...turned);
+    const turned = turnedVector(rigidInverse(world), normal);
+    const length = length3(turned);
     if (!Number.isFinite(length) || length === 0) {
         return undefined;
     }
-    const local: Vec3 = [turned[0] / length, turned[1] / length, turned[2] / length];
-    const shifted = (offset - dot(normal, [world[TRANSLATION] ?? 0, world[TRANSLATION + 1] ?? 0, world[TRANSLATION + 2] ?? 0])) / length;
+    const local = scale3(turned, 1 / length);
+    const shifted = (offset - dot3(normal, [world[TRANSLATION], world[TRANSLATION + 1]!, world[TRANSLATION + 2]!])) / length;
     return { normal: local, offset: shifted, key: [...local, shifted].map(rounded).join(" ") };
 }
 
 function frameOf(plane: LocalPlane): Inputs.Base.Frame {
     const [x, y, z] = plane.normal;
     const across: Vec3 = Math.abs(x) < SIDEWAYS ? [0, z, -y] : [-z, 0, x];
-    const length = Math.hypot(...across);
-    return {
-        origin: [x * plane.offset, y * plane.offset, z * plane.offset],
-        normal: plane.normal,
-        direction: [across[0] / length, across[1] / length, across[2] / length],
-    };
+    return { origin: scale3(plane.normal, plane.offset), normal: plane.normal, direction: scale3(across, 1 / length3(across)) };
 }
 
 function cornersOf(box: readonly number[]): Vec3[] {
@@ -53,7 +45,7 @@ function cornersOf(box: readonly number[]): Vec3[] {
 }
 
 function sideOf(box: readonly number[], plane: LocalPlane, tolerance: number): -1 | 0 | 1 {
-    const distances = cornersOf(box).map(corner => dot(corner, plane.normal) - plane.offset);
+    const distances = cornersOf(box).map(corner => dot3(corner, plane.normal) - plane.offset);
     if (Math.max(...distances) < -tolerance) {
         return -1;
     }
@@ -67,7 +59,7 @@ function placementsOf(source: Models.OCCT.DesignSectionSource<TopoDS_Shape>, par
     };
     if (source.components === undefined) {
         for (const id of parts.keys()) {
-            add(id, { path: id, world: IDENTITY });
+            add(id, { path: id, world: IDENTITY_MATRIX });
         }
         return placements;
     }
@@ -103,25 +95,11 @@ function partsOf(source: Models.OCCT.DesignSectionSource<TopoDS_Shape>): Map<str
     return parts;
 }
 
-function boxOf(part: SourcePart, context: SectionContext): readonly number[] {
-    const known = context.boxes.get(part.shapeHash);
-    if (known !== undefined) {
-        return known;
-    }
-    if (context.boxes.size >= MOST_BOXES) {
-        context.boxes.clear();
-    }
-    const box = Array.from(context.occ.BoundingBoxOf(part.shape));
-    context.boxes.set(part.shapeHash, box);
-    return box;
-}
-
 function cutsOf(parts: ReadonlyMap<string, SourcePart>, placements: ReadonlyMap<string, Placement[]>, frame: Inputs.Base.Frame, tolerance: number, context: SectionContext): PartCut[] {
-    const length = Math.hypot(...frame.normal);
-    const normal: Vec3 = [frame.normal[0] / length, frame.normal[1] / length, frame.normal[2] / length];
-    const offset = dot(normal, frame.origin);
+    const normal = scale3(frame.normal, 1 / length3(frame.normal));
+    const offset = dot3(normal, frame.origin);
     return [...parts.values()].flatMap((part): PartCut[] => {
-        const box = boxOf(part, context);
+        const box = knownBox(context.boxes, part.shapeHash, part.shape, context.occ);
         if (box.length < BOX_VALUES) {
             return [];
         }

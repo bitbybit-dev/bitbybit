@@ -10,6 +10,14 @@ const PARAMETER_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const PARAMETER_KEYS = ["value", "type", "unit", "min", "max", "step", "options", "label", "description", "group"];
 const TYPES = ["number", "boolean", "choice", "text"] as const;
 
+export function hasOnlyKey(value: unknown, key: string): value is Record<string, unknown> {
+    if (!isRecord(value)) {
+        return false;
+    }
+    const keys = Object.keys(value);
+    return keys.length === 1 && keys[0] === key;
+}
+
 /** The value of every parameter, and of `configuration`, as expressions read them. */
 export type DesignValues = ReadonlyMap<string, ExpressionValue>;
 
@@ -454,7 +462,7 @@ export function propertyValue(value: unknown, parameters: DesignValues, path: st
             return typeof result === "number" ? formatNumber(result) : result;
         }).join("");
     }
-    if (isRecord(value) && Object.keys(value).length === 1 && "expr" in value) {
+    if (hasOnlyKey(value, "expr")) {
         return numberOf(value["expr"], parameters, pointer(path, "expr"));
     }
     throw new DesignProblem(path, "a property is text, a number, a boolean or { \"expr\": \"...\" }");

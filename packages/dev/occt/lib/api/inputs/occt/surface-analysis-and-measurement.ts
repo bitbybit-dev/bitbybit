@@ -291,9 +291,10 @@ export class MinCurvatureRadiusDto<T> {
  * overlap or come within the clearance of each other.
  */
 export class ClashesBetweenShapesDto<T> {
-    constructor(shapes?: T[], clearance?: number) {
+    constructor(shapes?: T[], clearance?: number, prefilter?: boolean) {
         if (shapes !== undefined) { this.shapes = shapes; }
         if (clearance !== undefined) { this.clearance = clearance; }
+        if (prefilter !== undefined) { this.prefilter = prefilter; }
     }
     /**
      * The shapes to check against each other; a clash names two of them by their positions here.
@@ -309,6 +310,12 @@ export class ClashesBetweenShapesDto<T> {
      * @step 0.1
      */
     clearance?: number | undefined = 0;
+    /**
+     * Whether pairs whose boxes or meshes stay clear by more than the clearance are ruled out before
+     * the rest are measured exactly, with the same clashes; false measures every pair.
+     * @default true
+     */
+    prefilter?: boolean | undefined = true;
 }
 /**
  * Two shapes, a clearance and a meshing precision for `analysis.clashes.facesWithin`, which finds

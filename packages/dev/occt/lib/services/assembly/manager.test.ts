@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll, afterEach } from "vitest";
 import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTAssemblyManager } from "./manager";
 import { OCCTAssemblyQuery } from "./query";
 import { OCCTSolid } from "../shapes";
@@ -20,9 +18,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         manager = new OCCTAssemblyManager(occt, occHelper);
         query = new OCCTAssemblyQuery(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);

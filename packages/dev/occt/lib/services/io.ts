@@ -6,7 +6,7 @@ import type { IO } from "@bitbybit-dev/base/lib/api/inputs";
 import { InputError, messageOf, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../api/resolved-inputs";
 import { checkedFrame, checkedNumber, checkedShape } from "./base/input-checks";
-import { readKernelException } from "../kernel-exception";
+import { withKernelRefusals } from "./base/kernel-refusals";
 import { numbersOfFrames } from "./base/frames";
 import { SMALLEST_MESH_DEFLECTION, bytesOfFile, objNameOf, textOfFile } from "./base/file-data";
 import type { DrawingLine } from "./base/svg-drawing";
@@ -51,56 +51,41 @@ export class OCCTIO {
      */
     saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<TopoDS_Shape>): string {
         const resolved = resolveDto(Inputs.OCCT.SaveStepDto, inputs) as Resolved.OCCT.SaveStepDto<TopoDS_Shape>;
-        const shapeToUse = resolved.shape;
-        let adjustedShape;
-        if (resolved.adjustYtoZ) {
-            const rotatedShape = this.och.transformsService.rotate({ shape: resolved.shape, axis: [1, 0, 0], angle: -90 });
-            if (resolved.fromRightHanded) {
-                adjustedShape = rotatedShape;
-            } else {
-                adjustedShape = this.och.transformsService.mirrorAlongNormal(
-                    { shape: rotatedShape, origin: [0, 0, 0], normal: [0, 0, 1] }
-                );
-                rotatedShape.delete();
-            }
-        }
-        const fileName = "x";
+        const adjustedShape = resolved.adjustYtoZ ? this.zUpOf(resolved.shape, resolved.fromRightHanded) : undefined;
         const writer = new this.occ.STEPControl_Writer();
-        let transferShape;
-        if (adjustedShape) {
-            transferShape = adjustedShape;
-        } else {
-            transferShape = shapeToUse;
-        }
-
-        let transferResult;
         try {
-            transferResult = writer.Transfer(
-                transferShape,
-                this.occ.STEPControl_StepModelType.AsIs
-            );
-        } catch (ex) {
-            throw new Error("Failed when calling writer.Transfer.", { cause: ex });
-        }
-        let result: string;
-        if (transferResult === this.occ.IFSelect_ReturnStatus.RetDone) {
-            const writeResult = writer.Write(fileName);
-            if (writeResult === this.occ.IFSelect_ReturnStatus.RetDone) {
-                const stepFileText = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" }) as string;
-                this.occ.FS.unlink("/" + fileName);
-
-                result = stepFileText;
-            } else {
+            let transferResult;
+            try {
+                transferResult = writer.Transfer(adjustedShape ?? resolved.shape, this.occ.STEPControl_StepModelType.AsIs);
+            } catch (ex) {
+                throw new Error("Failed when calling writer.Transfer.", { cause: ex });
+            }
+            if (transferResult !== this.occ.IFSelect_ReturnStatus.RetDone) {
+                throw (new Error("Failed when transfering to step writer."));
+            }
+            const fileName = "x";
+            if (writer.Write(fileName) !== this.occ.IFSelect_ReturnStatus.RetDone) {
                 throw (new Error("Failed when writing step file."));
             }
-        } else {
-            throw (new Error("Failed when transfering to step writer."));
+            const stepFileText = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" }) as string;
+            this.occ.FS.unlink("/" + fileName);
+            return stepFileText;
+        } finally {
+            writer.delete();
+            adjustedShape?.delete();
         }
-        if (adjustedShape) {
-            adjustedShape.delete();
-        }
+    }
 
-        return result;
+    private zUpOf(shape: TopoDS_Shape, fromRightHanded: boolean): TopoDS_Shape {
+        const rotatedShape = this.och.transformsService.rotate({ shape, axis: [1, 0, 0], angle: -90 });
+        if (fromRightHanded) {
+            return rotatedShape;
+        }
+        try {
+            return this.och.transformsService.mirrorAlongNormal({ shape: rotatedShape, origin: [0, 0, 0], normal: [0, 0, 1] });
+        } finally {
+            rotatedShape.delete();
+        }
     }
 
     /**
@@ -443,29 +428,17 @@ export class OCCTIO {
     loadBrepBinary(inputs: Inputs.OCCT.LoadBrepBinaryDto): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.LoadBrepBinaryDto, inputs);
         const bytes = bytesOfFile(resolved.brepData, "brepData");
-        try {
-            return this.occ.ReadBREPFromBytes(bytes);
-        } catch (thrown) {
-            const read = readKernelException(this.occ, thrown);
-            const refusal = read instanceof Error ? /ReadBREPFromBytes: (?:the binary BREP data is damaged: )?(.+)$/.exec(read.message) : null;
-            if (refusal === null) {
-                throw read;
-            }
-            throw new InputError(`\`brepData\` is damaged: ${refusal[1]}.`, "brepData");
-        }
+        return withKernelRefusals(this.occ, () => this.occ.ReadBREPFromBytes(bytes), message => {
+            const refusal = /ReadBREPFromBytes: (?:the binary BREP data is damaged: )?(.+)$/.exec(message);
+            return refusal === null ? undefined : new InputError(`\`brepData\` is damaged: ${refusal[1]}.`, "brepData");
+        });
     }
 
     private brepShapeOf(text: string): TopoDS_Shape {
-        try {
-            return this.occ.ReadBREPFromString(text);
-        } catch (thrown) {
-            const read = readKernelException(this.occ, thrown);
-            const damage = read instanceof Error ? /the BREP text is damaged: (.+)$/.exec(read.message) : null;
-            if (damage === null) {
-                throw read;
-            }
-            throw new InputError(`\`brepData\` is damaged: ${damage[1]}.`, "brepData");
-        }
+        return withKernelRefusals(this.occ, () => this.occ.ReadBREPFromString(text), message => {
+            const damage = /the BREP text is damaged: (.+)$/.exec(message);
+            return damage === null ? undefined : new InputError(`\`brepData\` is damaged: ${damage[1]}.`, "brepData");
+        });
     }
 
     /**

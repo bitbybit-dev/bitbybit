@@ -1,4 +1,4 @@
-import { messageOf } from "@bitbybit-dev/base";
+import { InputError, messageOf } from "@bitbybit-dev/base";
 import type * as Models from "../../api/models";
 import type { OcctFailureCode, OcctFailureDetails } from "../../kernel-failures";
 
@@ -51,6 +51,17 @@ export function nothing(): undefined {
 /** A fallback for `unlessTrapped` that turns a failure into a reason: `how` and what failed. */
 export function failedWith(how: string): (error: unknown) => string {
     return error => `${how}: ${messageOf(error)}`;
+}
+
+export function problemsAt<T>(at: string, make: () => T): T {
+    try {
+        return make();
+    } catch (error) {
+        if (error instanceof InputError) {
+            throw new DesignProblem(error.property === undefined ? at : pointer(at, error.property), error.message);
+        }
+        throw error;
+    }
 }
 
 /** The JSON pointer of `path` below `base`, with `~` and `/` escaped as JSON pointers escape them. */

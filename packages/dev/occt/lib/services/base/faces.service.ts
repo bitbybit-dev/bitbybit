@@ -7,12 +7,16 @@ import type { EnumService } from "./enum.service";
 import type { WiresService } from "./wires.service";
 import type { BooleansService } from "./booleans.service";
 import type { ConverterService } from "./converter.service";
-import type { BaseBitByBit } from "../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
-import { resolveDto } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { coordinatesOf, massesAndCentres, pointsFromCoordinates } from "./kernel-arrays";
-import { checkedShapes } from "./input-checks";
+import { checkedShape, checkedShapes } from "./input-checks";
+import { withKernelRefusals } from "./kernel-refusals";
+import { add3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+
+const FACE_REFUSAL = /(?:^|\s)(?:MakeFaceFromWires(?:OnFace)?|MakeFaceFromFaceSurfaceAndWires): (.*)$/;
 
 export class FacesService {
 
@@ -118,10 +122,8 @@ export class FacesService {
         if (box.length < 6) {
             return undefined;
         }
-        return {
-            min: [box[0]! - gap, box[1]! - gap, box[2]! - gap],
-            max: [box[3]! + gap, box[4]! + gap, box[5]! + gap],
-        };
+        const reach: Base.Vector3 = [gap, gap, gap];
+        return { min: subtract3([box[0]!, box[1]!, box[2]!], reach), max: add3([box[3]!, box[4]!, box[5]!], reach) };
     }
 
     private isOutsideBounds(bounds: { min: Base.Point3, max: Base.Point3 }, pt: Base.Point3): boolean {
@@ -301,13 +303,26 @@ export class FacesService {
 
     createFaceFromWires(inputs: Resolved.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face {
         checkedShapes(inputs.shapes);
-        const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWires(inputs.shapes, inputs.planar);
-        return result;
+        return this.boundedFace("shapes", () => this.entitiesService.bRepBuilderAPIMakeFaceFromWires(inputs.shapes, inputs.planar));
     }
 
     createFaceFromWiresOnFace(inputs: Resolved.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
-        const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWires(inputs.wires, false, inputs.face, inputs.inside);
-        return result;
+        checkedShapes(inputs.wires, "wires");
+        checkedShape(inputs.face, "face");
+        return this.boundedFace("wires", () => this.entitiesService.bRepBuilderAPIMakeFaceFromWires(inputs.wires, false, inputs.face, inputs.inside));
+    }
+
+    private boundedFace(property: string, make: () => TopoDS_Face): TopoDS_Face {
+        return withKernelRefusals(this.occ, make, message => {
+            const refusal = FACE_REFUSAL.exec(message);
+            return refusal === null ? undefined : new InputError(`\`${property}\` cannot bound one face: ${refusal[1]!}.`, property);
+        });
+    }
+
+    createFaceBoundedByWiresOnFace(inputs: Resolved.OCCT.FaceBoundedByWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
+        const face = checkedShape(inputs.face, "face");
+        const wires = checkedShapes(inputs.wires, "wires");
+        return this.boundedFace("wires", () => this.occ.MakeFaceFromFaceSurfaceAndWires(face, wires));
     }
 
     faceFromSurface(inputs: Resolved.OCCT.ShapeWithToleranceDto<Geom_Surface>): TopoDS_Face {

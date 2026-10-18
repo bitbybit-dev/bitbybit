@@ -6,7 +6,7 @@ import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../api/resolved-inputs";
 import { numbersOfFrames, WORLD_FRAME } from "./base/frames";
 import { checkedFrame, checkedFrames, checkedPlacements, checkedShape, checkedShapes } from "./base/input-checks";
-import { readKernelException } from "../kernel-exception";
+import { withKernelRefusals } from "./base/kernel-refusals";
 
 /**
  * Moving, turning, scaling and mirroring OpenCascade shapes, and building the 4x4 matrices that
@@ -235,13 +235,10 @@ export class OCCTTransforms {
         const resolved = resolveDto(Inputs.OCCT.PlaceByMatricesDto, inputs) as Resolved.OCCT.PlaceByMatricesDto<TopoDS_Shape>;
         const shape = checkedShape(resolved.shape);
         const placements = checkedPlacements(resolved.matrices, "matrices");
-        try {
-            return this.och.occ.PlaceByMatrices(shape, placements.flat());
-        } catch (thrown) {
-            const read = readKernelException(this.och.occ, thrown);
-            const refused = read instanceof Error ? /matrix (\d+) is not a rigid motion \((.*)\)/.exec(read.message) : null;
-            throw refused === null ? read : new InputError(`\`matrices\` holds a placement at position ${refused[1]} that is not a turn and a move: ${refused[2]}.`, "matrices");
-        }
+        return withKernelRefusals(this.och.occ, () => this.och.occ.PlaceByMatrices(shape, placements.flat()), message => {
+            const refused = /matrix (\d+) is not a rigid motion \((.*)\)/.exec(message);
+            return refused === null ? undefined : new InputError(`\`matrices\` holds a placement at position ${refused[1]} that is not a turn and a move: ${refused[2]}.`, "matrices");
+        });
     }
 
     /**

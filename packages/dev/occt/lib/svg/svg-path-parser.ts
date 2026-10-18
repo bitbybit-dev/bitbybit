@@ -1,5 +1,7 @@
 import type { Base } from "@bitbybit-dev/base";
 import type { SvgArcSegment, SvgSegment, SvgSubpath } from "./svg-models";
+import { scale2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { angleOfCosine, radiansOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 interface Token {
     command: string;
@@ -94,7 +96,7 @@ function endpointToCenterArc(
     if (rx === 0 || ry === 0) {
         return { type: "line", to: p1 };
     }
-    const phi = (xRotDeg * Math.PI) / 180;
+    const phi = radiansOf(xRotDeg);
     const cosPhi = Math.cos(phi);
     const sinPhi = Math.sin(phi);
 
@@ -126,7 +128,7 @@ function endpointToCenterArc(
     const angle = (ux: number, uy: number, vx: number, vy: number): number => {
         const dot = ux * vx + uy * vy;
         const len = Math.sqrt((ux * ux + uy * uy) * (vx * vx + vy * vy));
-        let a = Math.acos(Math.min(1, Math.max(-1, dot / len)));
+        let a = angleOfCosine(dot / len);
         if (ux * vy - uy * vx < 0) { a = -a; }
         return a;
     };
@@ -220,7 +222,7 @@ export function parsePathData(d: string): SvgSubpath[] {
             }
             case "s": {
                 const reflect: Base.Point2 = lastCubicCtrl
-                    ? [2 * cursor[0] - lastCubicCtrl[0], 2 * cursor[1] - lastCubicCtrl[1]]
+                    ? subtract2(scale2(cursor, 2), lastCubicCtrl)
                     : [cursor[0], cursor[1]];
                 const c2: Base.Point2 = [baseX + a[0]!, baseY + a[1]!];
                 const pt: Base.Point2 = [baseX + a[2]!, baseY + a[3]!];
@@ -241,7 +243,7 @@ export function parsePathData(d: string): SvgSubpath[] {
             }
             case "t": {
                 const reflect: Base.Point2 = lastQuadCtrl
-                    ? [2 * cursor[0] - lastQuadCtrl[0], 2 * cursor[1] - lastQuadCtrl[1]]
+                    ? subtract2(scale2(cursor, 2), lastQuadCtrl)
                     : [cursor[0], cursor[1]];
                 const pt: Base.Point2 = [baseX + a[0]!, baseY + a[1]!];
                 pushSeg({ type: "quad", c: reflect, to: pt });

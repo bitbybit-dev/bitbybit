@@ -13,9 +13,6 @@ const { thrown, progress } = vi.hoisted(() => {
 
 vi.mock("@bitbybit-dev/occt", async (importOriginal) => {
     const actual = await importOriginal<typeof import("@bitbybit-dev/occt")>();
-    class VectorHelperService { }
-    class ShapesHelperService { }
-    class OccHelper { }
     class OCCTService {
         plugins: { dependencies: Record<string, unknown> } | undefined;
         boom = (): unknown => { throw thrown.value; };
@@ -41,7 +38,10 @@ vi.mock("@bitbybit-dev/occt", async (importOriginal) => {
         size = 1;
     }
     const occtDtoRegistry = { measure: { dto: MeasureDto, constraints: { size: { kind: "number" } } } };
-    return { VectorHelperService, ShapesHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules: new Map(), readKernelException: actual.readKernelException };
+    class OccHelper {
+        meshingService = {};
+    }
+    return { OccHelper, OCCTService, occtDtoRegistry, occtDtoRules: new Map(), readKernelException: actual.readKernelException };
 });
 
 const A_MODULE: BitbybitOcctModule = {} as BitbybitOcctModule;

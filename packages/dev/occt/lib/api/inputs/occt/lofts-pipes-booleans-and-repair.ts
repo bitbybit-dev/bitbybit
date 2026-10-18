@@ -286,90 +286,85 @@ export class WiresOnFaceDto<T, U> {
     face!: U;
 }
 /**
+ * How a round tube is swept along a path, shared by `PipeWireCylindricalDto` and
+ * `PipeWiresCylindricalDto`: its radius, whether it is solid, how its profile turns, smoothing, and the
+ * bend at each corner.
+ */
+export abstract class PipeWireCylindricalSharedDto {
+    /**
+     * The radius of each tube, in model units.
+     * @default 0.1
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
+     * @step 1
+     */
+    radius?: number | undefined = 0.1;
+    /**
+     * When true, each tube is a solid; when false it is an open shell.
+     * @default true
+     */
+    makeSolid?: boolean | undefined = true;
+    /**
+     * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
+     * modes follow the curve's bending.
+     * @default isConstantNormal
+     */
+    trihedronEnum?: geomFillTrihedronEnum | undefined = geomFillTrihedronEnum.isConstantNormal;
+    /**
+     * When true, a swept surface that came out with kinks is refitted to be smooth.
+     * @default false
+     */
+    forceApproxC1?: boolean | undefined = false;
+    /**
+     * The radius every corner of the path is bent round first, so a polyline gives an exact tube; 0
+     * leaves corners sharp. Each bend must fit its edges.
+     * @default 0
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.5
+     */
+    bendRadius?: number | undefined = 0;
+}
+/**
  * Path wires, a radius and sweep options for `operations.pipeWiresCylindrical`, which makes a round
  * tube along each wire.
  */
-export class PipeWiresCylindricalDto<T> {
-    constructor(shapes?: T[], radius?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean) {
+export class PipeWiresCylindricalDto<T> extends PipeWireCylindricalSharedDto {
+    constructor(shapes?: T[], radius?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean, bendRadius?: number) {
+        super();
         if (shapes !== undefined) { this.shapes = shapes; }
         if (radius !== undefined) { this.radius = radius; }
         if (makeSolid !== undefined) { this.makeSolid = makeSolid; }
         if (trihedronEnum !== undefined) { this.trihedronEnum = trihedronEnum; }
         if (forceApproxC1 !== undefined) { this.forceApproxC1 = forceApproxC1; }
+        if (bendRadius !== undefined) { this.bendRadius = bendRadius; }
     }
     /**
      * The path wires, one tube per wire.
      * @default undefined
      */
     shapes!: T[];
-    /**
-     * The radius of the tubes, in model units.
-     * @default 0.1
-     * @minimum 0
-     * @exclusiveMinimum true
-     * @maximum Infinity
-     * @step 1
-     */
-    radius?: number | undefined = 0.1;
-    /**
-     * When true, the tubes are solids; when false they are open shells.
-     * @default true
-     */
-    makeSolid?: boolean | undefined = true;
-    /**
-     * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
-     * modes follow the curve's bending.
-     * @default isConstantNormal
-     */
-    trihedronEnum?: geomFillTrihedronEnum | undefined = geomFillTrihedronEnum.isConstantNormal;
-    /**
-     * When true, a swept surface that came out with kinks is refitted to be smooth.
-     * @default false
-     */
-    forceApproxC1?: boolean | undefined = false;
 }
 /**
  * A path wire, a radius and sweep options for `operations.pipeWireCylindrical`, which makes a round
  * tube along the wire.
  */
-export class PipeWireCylindricalDto<T> {
-    constructor(shape?: T, radius?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean) {
+export class PipeWireCylindricalDto<T> extends PipeWireCylindricalSharedDto {
+    constructor(shape?: T, radius?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean, bendRadius?: number) {
+        super();
         if (shape !== undefined) { this.shape = shape; }
         if (radius !== undefined) { this.radius = radius; }
         if (makeSolid !== undefined) { this.makeSolid = makeSolid; }
         if (trihedronEnum !== undefined) { this.trihedronEnum = trihedronEnum; }
         if (forceApproxC1 !== undefined) { this.forceApproxC1 = forceApproxC1; }
+        if (bendRadius !== undefined) { this.bendRadius = bendRadius; }
     }
     /**
      * The path wire the tube follows.
      * @default undefined
      */
     shape!: T;
-    /**
-     * The radius of the tube, in model units.
-     * @default 0.1
-     * @minimum 0
-     * @exclusiveMinimum true
-     * @maximum Infinity
-     * @step 1
-     */
-    radius?: number | undefined = 0.1;
-    /**
-     * When true, the tube is a solid; when false it is an open shell.
-     * @default true
-     */
-    makeSolid?: boolean | undefined = true;
-    /**
-     * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
-     * modes follow the curve's bending.
-     * @default isConstantNormal
-     */
-    trihedronEnum?: geomFillTrihedronEnum | undefined = geomFillTrihedronEnum.isConstantNormal;
-    /**
-     * When true, a swept surface that came out with kinks is refitted to be smooth.
-     * @default false
-     */
-    forceApproxC1?: boolean | undefined = false;
 }
 /**
  * A path wire, a polygon size and sweep options for `operations.pipePolylineWireNGon`, which makes
@@ -853,9 +848,10 @@ export class RotationExtrudeDto<T> {
      */
     shape!: T;
     /**
-     * How far the profile is extruded along Y, in model units.
+     * How far the profile is extruded along Y, in model units; 0 leaves nothing to twist along.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */

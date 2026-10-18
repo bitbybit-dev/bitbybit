@@ -8,6 +8,4 @@ export const LINE_SEPARATOR = 0x2028;
 
 export const PARAGRAPH_SEPARATOR = 0x2029;
 
-export const NEGLIGIBLE = 1e-12;
 
-export const WRITTEN_DIGITS = 15;

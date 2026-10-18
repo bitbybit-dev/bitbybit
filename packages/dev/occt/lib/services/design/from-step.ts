@@ -4,9 +4,11 @@ import type * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import type { OCCTService } from "../../occ-service";
 import { MAX_OCCURRENCES } from "./assembly";
-import { release } from "./cache";
+import { release } from "../base/release";
+import { followedBy, isRigidMatrix } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
 import { sha256 } from "./digest";
 import { isKernelTrap } from "./problems";
+import { IDENTITY_MATRIX } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices.constants";
 
 type Node = Models.OCCT.AssemblyHierarchyNode;
 type Rgba = Models.OCCT.LabelColorInfo;
@@ -30,7 +32,6 @@ const FILE_BASE_LENGTH = 36;
 const ID_LENGTH = 40;
 const NAMES_LISTED = 5;
 const TRANSLATOR_NAME = /^Open CASCADE STEP translator\b/;
-const IDENTITY: Matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 const UUID_VERSION = "8";
 const UUID_VARIANT_MASK = 0x3;
 const UUID_VARIANT = 0x8;
@@ -104,36 +105,17 @@ function tidy(value: number): number {
     return Object.is(rounded, -0) ? 0 : rounded;
 }
 
-function dot(a: readonly number[], b: readonly number[]): number {
-    return a[0]! * b[0]! + a[1]! * b[1]! + a[2]! * b[2]!;
-}
-
-function cross(a: readonly number[], b: readonly number[]): number[] {
-    return [a[1]! * b[2]! - a[2]! * b[1]!, a[2]! * b[0]! - a[0]! * b[2]!, a[0]! * b[1]! - a[1]! * b[0]!];
-}
-
 function column(matrix: readonly number[], index: number): number[] {
     return [matrix[index * SIDE]!, matrix[index * SIDE + 1]!, matrix[index * SIDE + 2]!];
 }
 
 function isRigid(matrix: readonly number[]): boolean {
-    const [x, y, z] = [column(matrix, X_COLUMN), column(matrix, X_COLUMN + 1), column(matrix, Z_COLUMN)];
-    const unit = (vector: number[]): boolean => Math.abs(dot(vector, vector) - 1) <= SQUARE_TOLERANCE;
-    const square = (a: number[], b: number[]): boolean => Math.abs(dot(a, b)) <= SQUARE_TOLERANCE;
     const affine = LAST_ROW.every(index => Math.abs(matrix[index]!) <= SQUARE_TOLERANCE) && Math.abs(matrix[CORNER]! - 1) <= SQUARE_TOLERANCE;
-    return affine && unit(x) && unit(y) && unit(z) && square(x, y) && square(y, z) && square(x, z) && dot(cross(x, y), z) > 0;
+    return affine && isRigidMatrix(matrix, SQUARE_TOLERANCE);
 }
 
 function isIdentity(matrix: readonly number[] | undefined): boolean {
-    return matrix === undefined || matrix.every((value, index) => Math.abs(value - IDENTITY[index]!) <= IDENTITY_TOLERANCE);
-}
-
-function multiplied(a: Matrix, b: Matrix): Matrix {
-    return Array.from({ length: SIDE * SIDE }, (_, index) => {
-        const row = index % SIDE;
-        const col = Math.floor(index / SIDE);
-        return Array.from({ length: SIDE }, (__, k) => a[row + SIDE * k]! * b[k + SIDE * col]!).reduce((sum, value) => sum + value, 0);
-    }) as Matrix;
+    return matrix === undefined || matrix.every((value, index) => Math.abs(value - IDENTITY_MATRIX[index]!) <= IDENTITY_TOLERANCE);
 }
 
 function frameOf(matrix: readonly number[]): Models.OCCT.DesignFrame {
@@ -432,7 +414,7 @@ class StepImport {
         return definition.placements.flatMap(inner => {
             const innerDefinition = this.definitions.get(inner.definition)!;
             const named = { ...inner, name: `${placement.name} ${inner.name}`, visible: placement.visible && inner.visible };
-            return this.bakedComponents(innerDefinition, named, multiplied(matrix, inner.matrix ?? IDENTITY), taken);
+            return this.bakedComponents(innerDefinition, named, followedBy(inner.matrix ?? IDENTITY_MATRIX, matrix), taken);
         });
     }
 

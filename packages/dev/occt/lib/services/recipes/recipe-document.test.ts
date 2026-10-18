@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { Base } from "@bitbybit-dev/base";
-import { followedBy } from "@bitbybit-dev/base/lib/api/services/helpers/matrices";
+import { followedBy } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
+import { Recipes } from "@bitbybit-dev/base";
 import { documentPlan, documentStructure } from "./recipe-document";
+
+const RECIPES = new Recipes();
 
 const IDENTITY: Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 const MIRROR: Base.TransformMatrix = [-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
@@ -30,7 +33,7 @@ describe("documentPlan", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY), rootOf(1, moved(10)), rootOf(1, QUARTER_TURN), rootOf(2, moved(3))]);
 
         // Act
-        const plan = documentPlan(recipe);
+        const plan = documentPlan(recipe, RECIPES);
 
         // Assert
         expect(plan.parts).toEqual([{ root: { node: 1, matrix: IDENTITY, tag: {} }, roots: [0, 1, 2] }, { root: { node: 2, matrix: IDENTITY, tag: {} }, roots: [3] }]);
@@ -48,7 +51,7 @@ describe("documentPlan", () => {
             { op: "transform", of: 1, matrix: MIRROR });
 
         // Act
-        const plan = documentPlan(recipe);
+        const plan = documentPlan(recipe, RECIPES);
 
         // Assert
         expect(plan.parts).toEqual([
@@ -71,7 +74,7 @@ describe("documentPlan", () => {
         const recipe = recipeOf([rootOf(1, MIRROR), rootOf(1, scaled), rootOf(1, IDENTITY)]);
 
         // Act
-        const plan = documentPlan(recipe);
+        const plan = documentPlan(recipe, RECIPES);
 
         // Assert
         expect(plan.parts.map((part) => part.root.matrix)).toEqual([MIRROR, scaled, IDENTITY]);
@@ -80,7 +83,7 @@ describe("documentPlan", () => {
 
     it("should keep a unit a STEP file can state", () => {
         // Act
-        const units = [1, 10, 1000, 25.4].map((millimetres) => documentPlan(recipeOf([rootOf(1, moved(1))], millimetres)).lengthUnit);
+        const units = [1, 10, 1000, 25.4].map((millimetres) => documentPlan(recipeOf([rootOf(1, moved(1))], millimetres), RECIPES).lengthUnit);
 
         // Assert
         expect(units).toEqual(["mm", "cm", "m", "in"]);
@@ -91,7 +94,7 @@ describe("documentPlan", () => {
         const recipe = recipeOf([rootOf(1, moved(2)), rootOf(1, moved(3))], 304.8);
 
         // Act
-        const plan = documentPlan(recipe);
+        const plan = documentPlan(recipe, RECIPES);
 
         // Assert
         expect(plan.lengthUnit).toBe("mm");
@@ -108,7 +111,7 @@ describe("documentPlan", () => {
         const before = structuredClone(recipe.roots);
 
         // Act
-        documentPlan(recipe);
+        documentPlan(recipe, RECIPES);
 
         // Assert
         expect(recipe.roots).toEqual(before);
@@ -122,7 +125,7 @@ describe("documentStructure", () => {
             rootOf(1, moved(5), { globalId: "A", type: "IfcWindow", name: "W1", rgba: [0.1, 0.2, 0.3, 1] }),
             rootOf(2, moved(5), { globalId: "A", type: "IfcWindow", name: "W1", rgba: [0.5, 0.6, 0.7, 0.4] }),
         ]);
-        const plan = documentPlan(recipe);
+        const plan = documentPlan(recipe, RECIPES);
 
         // Act
         const structure = documentStructure(recipe, plan, ["frame", "glass"], "House", "globalId");
@@ -147,7 +150,7 @@ describe("documentStructure", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY, { name: "A" }), rootOf(1, moved(1), { name: "B", globalId: "" }), rootOf(1, moved(2), { name: "C", globalId: 7 }), rootOf(1, moved(3), { name: "D", globalId: 7 })]);
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box"], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box"], "Top", "globalId");
 
         // Assert
         expect(structure.nodes.filter((node) => node.type === "assembly").map((node) => node.name)).toEqual(["Top", "A", "B", "C"]);
@@ -159,7 +162,7 @@ describe("documentStructure", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY, { name: " ", type: "IfcSlab" }), rootOf(1, IDENTITY, { name: 3, type: "" }), rootOf(1, IDENTITY, { name: "Wall" })]);
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box"], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box"], "Top", "globalId");
 
         // Assert
         expect(structure.nodes.filter((node) => node.parentId === "recipe").map((node) => node.name)).toEqual(["IfcSlab", "Root 1", "Wall"]);
@@ -172,7 +175,7 @@ describe("documentStructure", () => {
             rootOf(2, IDENTITY, { name: "D1", type: "IfcDoor" }), rootOf(2, moved(1), { name: "D2", type: "IfcDoor" }),
             rootOf(2, moved(2), { name: "D3" }),
         ]);
-        const plan = documentPlan(recipe);
+        const plan = documentPlan(recipe, RECIPES);
 
         // Act
         const structure = documentStructure(recipe, plan, ["a", "b"], "Top", "globalId");
@@ -186,7 +189,7 @@ describe("documentStructure", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY, { name: "A" }), rootOf(1, moved(1), { name: "B" })]);
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box"], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box"], "Top", "globalId");
 
         // Assert
         expect(structure.parts.map((part) => part.name)).toEqual(["Part 1"]);
@@ -197,7 +200,7 @@ describe("documentStructure", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY, { name: "A", rgba: [1, 0, 0] }), rootOf(1, moved(1), { name: "B", rgba: [0, 1, 0, 0.5] }), rootOf(1, moved(2), { name: "C" })]);
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box"], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box"], "Top", "globalId");
 
         // Assert
         expect(structure.parts[0]!.colorRgba).toBeUndefined();
@@ -209,7 +212,7 @@ describe("documentStructure", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY, { name: "A", rgba: [1, 0] }), rootOf(2, IDENTITY, { name: "B", rgba: [1, Number.NaN, 0] }), rootOf(2, moved(1), { name: "C", rgba: [1, 0, 0, 1, 1] })]);
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["a", "b"], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["a", "b"], "Top", "globalId");
 
         // Assert
         expect(structure.parts.map((part) => part.colorRgba)).toEqual([undefined, undefined]);
@@ -221,7 +224,7 @@ describe("documentStructure", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY, { name: "A", level: 2, external: true, rgba: [1, 0, 0], ratio: Number.POSITIVE_INFINITY })]);
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box"], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box"], "Top", "globalId");
 
         // Assert
         expect(structure.nodes[1]!.properties).toEqual({ name: "A", level: 2, external: true });
@@ -232,7 +235,7 @@ describe("documentStructure", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY, { globalId: "A", name: "A" }), rootOf(2, IDENTITY, { globalId: "A", name: "A" }), rootOf(2, moved(1), { globalId: "B", name: "B" })]);
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["first", null], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["first", null], "Top", "globalId");
 
         // Assert
         expect(structure.parts.map((part) => part.id)).toEqual(["part-0"]);
@@ -257,7 +260,7 @@ describe("documentStructure", () => {
         recipe.roots[1]!.group = 0;
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box", "slab"], "House", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box", "slab"], "House", "globalId");
 
         // Assert
         expect(structure.nodes.filter((node) => node.type === "assembly")).toEqual([
@@ -279,7 +282,7 @@ describe("documentStructure", () => {
         recipe.roots[0]!.group = 2;
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box"], "House", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box"], "House", "globalId");
 
         // Assert
         expect(structure.nodes.filter((node) => node.type === "assembly").map((node) => [node.name, node.parentId])).toEqual([
@@ -292,7 +295,7 @@ describe("documentStructure", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY, { name: "Text", globalId: "7" }), rootOf(1, moved(1), { name: "Number", globalId: 7 })]);
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box"], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box"], "Top", "globalId");
 
         // Assert
         expect(structure.nodes.filter((node) => node.type === "assembly").map((node) => node.name)).toEqual(["Top", "Text", "Number"]);
@@ -303,7 +306,7 @@ describe("documentStructure", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY, { name: "A", rgba: [0.1, 0.2, 0.3, 1] }), rootOf(1, moved(1), { name: "B", rgba: [0.1, 0.2, 0.3, 0.5] })]);
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box"], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box"], "Top", "globalId");
 
         // Assert
         expect(structure.parts[0]!.colorRgba).toBeUndefined();
@@ -320,7 +323,7 @@ describe("documentStructure", () => {
         recipe.roots[1]!.group = 2;
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box", null], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box", null], "Top", "globalId");
 
         // Assert
         expect(structure.nodes.map((node) => [node.id, node.name, node.parentId])).toEqual([
@@ -336,7 +339,7 @@ describe("documentStructure", () => {
         const recipe = recipeOf([rootOf(1, IDENTITY, { name: "A" })]);
 
         // Act
-        const structure = documentStructure(recipe, documentPlan(recipe), ["box"], "Top", "globalId");
+        const structure = documentStructure(recipe, documentPlan(recipe, RECIPES), ["box"], "Top", "globalId");
 
         // Assert
         expect(structure.nodes[2]).toEqual({ id: "root-0", type: "instance", name: "A", parentId: "product-0", partId: "part-0" });

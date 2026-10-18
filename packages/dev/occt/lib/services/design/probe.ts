@@ -1,7 +1,7 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Models from "../../api/models";
 import { InputError, messageOf } from "@bitbybit-dev/base";
-import { release } from "./cache";
+import { release } from "../base/release";
 import { contextOf } from "./helpers";
 import { DesignProblem, isKernelTrap, pointer } from "./problems";
 import { countProblem, edgesBetween, facesFound } from "./references";

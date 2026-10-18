@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import { readKernelException } from "../../kernel-exception";
 import * as Inputs from "../../api/inputs";
@@ -15,7 +12,7 @@ describe("OCCT hole features", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const plate = (): TopoDS_Shape => occt.shapes.solid.createBoxFromCorner({ corner: [0, 0, 0], width: 20, height: 10, length: 20 });
@@ -57,6 +54,23 @@ describe("OCCT hole features", () => {
             expect(volumeOf(blind)).toBeCloseTo(4000 - 20 * Math.PI, 6);
             expect(occt.shapeFix.isValid({ shape: through })).toBe(true);
             expect(occt.shapeFix.isValid({ shape: blind })).toBe(true);
+        });
+
+        it("should keep what lies across air above a hole's mouth, such as a bridge over it", () => {
+            // Arrange
+            const bridge = occt.booleans.union({ shapes: [
+                plate(),
+                occt.shapes.solid.createBoxFromCorner({ corner: [0, 10, 0], width: 2, height: 10, length: 20 }),
+                occt.shapes.solid.createBoxFromCorner({ corner: [18, 10, 0], width: 2, height: 10, length: 20 }),
+                occt.shapes.solid.createBoxFromCorner({ corner: [0, 20, 0], width: 20, height: 2, length: 20 }),
+            ], keepEdges: false });
+
+            // Act
+            const drilled = occt.features.holes({ shape: bridge, frames: [onTop(10, 10)], diameter: 4, depth: 5, tipAngle: 0 });
+
+            // Assert
+            expect(volumeOf(drilled)).toBeCloseTo(volumeOf(bridge) - 20 * Math.PI, 6);
+            expect(occt.shapeFix.isValid({ shape: drilled })).toBe(true);
         });
 
         it("should leave the cone of a drill point below a blind hole, its angle in degrees", () => {
@@ -112,15 +126,17 @@ describe("OCCT hole features", () => {
             expect(notList.message).toBe("`frames` is not a list of frames.");
         });
 
-        it("should pass on the kernel's refusal of no frames", () => {
+        it("should refuse no frames as an input error on frames, with history or without", () => {
             // Arrange
             const shape = plate();
 
             // Act
-            const none = kernelMessage(() => occt.features.holes({ shape, frames: [] }));
+            const plain = (): unknown => occt.features.holes({ shape, frames: [] });
+            const twin = (): unknown => occt.features.holesWithHistory({ shape, frames: [] });
 
             // Assert
-            expect(none).toBe("Standard_DomainError: DrillHoles: no frames were given");
+            expect(plain).toThrow(new InputError("`frames` is empty, and a hole is drilled at each frame: give at least one.", "frames"));
+            expect(twin).toThrow(expect.objectContaining({ name: "InputError", property: "frames" }));
         });
     });
 

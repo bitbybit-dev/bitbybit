@@ -6,9 +6,6 @@ import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "./occ-helper";
-import { VectorHelperService } from "./api/vector-helper.service";
-import { ShapesHelperService } from "./api/shapes-helper.service";
 import { OCCTService } from "./occ-service";
 
 vi.mock("node:fs", async (importOriginal) => ({ ...await importOriginal<typeof import("node:fs")>(), writeFileSync: vi.fn() }));
@@ -45,7 +42,7 @@ describe("the geometry guide's part to start from, run from the page on the kern
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
         guide = readFileSync(GUIDE, "utf8");
         const [part, runner] = sectionBlocks(guide, PART_SECTION);
         if (part === undefined || runner === undefined) {

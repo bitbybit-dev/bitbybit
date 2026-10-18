@@ -4,7 +4,7 @@ import { callByPath, messageOf } from "@bitbybit-dev/base";
 import type { FaceNames } from "./names";
 import { facesCopied, nameOf } from "./names";
 import type { OCCTService } from "../../occ-service";
-import type { BaseBitByBit } from "../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type { Rebinding } from "./hints";
 import { candidatesOf, rebindOf, recordHint, referenceHintOf } from "./hints";
 import { DesignProblem, isKernelTrap, pointer } from "./problems";

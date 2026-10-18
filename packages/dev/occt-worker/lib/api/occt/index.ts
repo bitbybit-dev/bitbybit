@@ -13,6 +13,7 @@ export * from "./geom";
 export * from "./io";
 export * from "./occt";
 export * from "./operations";
+export * from "./parts";
 export * from "./path";
 export * from "./recipes";
 export * from "./select";

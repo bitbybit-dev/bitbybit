@@ -7,7 +7,7 @@ import type { FaceNames } from "./names";
 import type { DesignValues } from "./values";
 import type { Rebinding } from "./hints";
 import type { DesignProgress } from "./progress";
-import type { BaseBitByBit } from "../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 
 /** A body as the build holds it: its face names, the hash of the feature that made it as it is, and the parameters what made it read. */
 export interface BodyState {

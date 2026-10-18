@@ -57,6 +57,42 @@ export class OCCTSolid {
     }
 
     /**
+     * Sews faces and shells that close a volume into one solid, turned so its material is inside,
+     * which builds a body face by face without a boolean.
+     *
+     * Faces that leave a gap wider than the tolerance, or that close several volumes, are refused.
+     * @param inputs - The faces or shells and the sewing tolerance
+     * @returns The solid
+     * @group from
+     * @shortname solid from faces
+     * @drawable true
+     * @example
+     * ```typescript
+     * const box = await bitbybit.occt.shapes.solid.fromFaces({ shapes: [bottom, top, ...sides], tolerance: 1e-7 });
+     * ```
+     */
+    fromFaces(inputs: Inputs.OCCT.SewDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.fromFaces", inputs);
+    }
+
+    /**
+     * Makes a solid as `fromFaces` does, and reports per shape given which faces of the solid each of
+     * its faces became, as `shapes.face.getFaces` numbers both.
+     * @param inputs - The faces or shells and the sewing tolerance
+     * @returns The solid and one history per shape given
+     * @group from
+     * @shortname solid from faces with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.shapes.solid.fromFacesWithHistory({ shapes: [bottom, top, ...sides], tolerance: 1e-7 });
+     * ```
+     */
+    fromFacesWithHistory(inputs: Inputs.OCCT.SewDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.fromFacesWithHistory", inputs);
+    }
+
+    /**
      * Creates a box solid with its sides parallel to the axes.
      *
      * `width` runs along X, `height` along Y (up) and `length` along Z, all in model units. By

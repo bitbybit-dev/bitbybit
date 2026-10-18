@@ -1,7 +1,7 @@
 import type { BRepAdaptor_CompCurve, Geom_Curve, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Inputs from "../../api/inputs";
 import type { Base } from "../../api/inputs";
-import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type { EntitiesService } from "./entities.service";
 import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
@@ -12,7 +12,7 @@ export class GeomService {
 
     constructor(
         public readonly occ: BitbybitOcctModule,
-        private readonly vecHelper: VectorHelperService,
+        private readonly base: BaseBitByBit,
         private readonly entitiesService: EntitiesService
     ) { }
 
@@ -82,7 +82,7 @@ export class GeomService {
     pointOnCurveAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<Geom_Curve | BRepAdaptor_CompCurve>): Base.Point3 {
         const curve = inputs.shape;
         const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
-        const param = this.vecHelper.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
+        const param = this.base.math.remap({ number: inputs.param, fromLow: 0, fromHigh: 1, toLow: curve.FirstParameter(), toHigh: curve.LastParameter() });
         curve.D0(param, gpPnt);
         const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
         gpPnt.delete();
@@ -101,7 +101,7 @@ export class GeomService {
 
     tangentOnCurveAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<BRepAdaptor_CompCurve>): Base.Point3 {
         const curve = inputs.shape;
-        const param = this.vecHelper.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
+        const param = this.base.math.remap({ number: inputs.param, fromLow: 0, fromHigh: 1, toLow: curve.FirstParameter(), toHigh: curve.LastParameter() });
         const vec = this.occ.BRepAdaptor_CompCurve_DN(curve, param, 1);
         const pt: Base.Point3 = [vec.X(), vec.Y(), vec.Z()];
         vec.delete();

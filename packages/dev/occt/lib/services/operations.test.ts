@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
+import type { BitbybitOcctModule, ClassHandle, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
-import { ShapesHelperService } from "../api/shapes-helper.service";
-import { VectorHelperService } from "../api/vector-helper.service";
 import { OccHelper } from "../occ-helper";
 import { OCCTOperations } from "./operations";
 import { OCCTEdge, OCCTFace, OCCTShell, OCCTSolid, OCCTWire } from "./shapes";
 import { OCCTTransforms } from "./transforms";
+import { resolveDto } from "@bitbybit-dev/base";
+import type * as Resolved from "../api/resolved-inputs";
 
 describe("OCCT operations unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -22,9 +22,7 @@ describe("OCCT operations unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         wire = new OCCTWire(occt, occHelper);
         face = new OCCTFace(occt, occHelper);
         edge = new OCCTEdge(occt, occHelper);
@@ -307,23 +305,23 @@ describe("OCCT operations unit tests", () => {
         const faces = face.getFaces({ shape: res });
         const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
-        expect(area).toBeCloseTo(25.325391299348812, 10);
+        expect(area).toBeCloseTo(26.507316735517627, 10);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
         subd.nrDivisionsU = 3;
         subd.nrDivisionsV = 3;
         const pointsOnFace = face.subdivideToPoints(subd);
 
         expect(pointsOnFace).toEqual([
-            [0, -5.551115123125783e-17, 1],
-            [-8.914760633184574e-17, -5.5511151231257815e-17, -1.0000000000000007],
-            [-1.2246467991473532e-16, -5.551115123125783e-17, 1],
-            [0, 2.0432249027445284, 1.0479566351043827],
-            [-3.9717754623032344e-17, 2.0432249027445293, -1.047956635104383],
-            [-1.3811166947220446e-16, 2.0432249027445284, 1.047956635104383],
-            [0, -2.7755575615628914e-17, 1],
-            [2.1874696130669933e-17, -2.775557561562902e-17, -1],
-            [-1.2246467991473532e-16, -2.7755575615628914e-17, 1]
-        ]);
+            [0, 0, 1],
+            [0, 0, -1],
+            [0, 0, 1],
+            [0, 2.0293172384058327, 1.0415698822170323],
+            [0, 2.0293172384058327, -1.0415698822170323],
+            [0, 2.0293172384058327, 1.0415698822170323],
+            [0, 0, 1],
+            [0, 0, -1],
+            [0, 0, 1]
+        ].map(point => point.map(coordinate => expect.closeTo(coordinate, 10))));
     });
 
     it("should not loft three ellipses by using advanced loft method if periodic option is enabled and closed disabled", () => {
@@ -1213,17 +1211,93 @@ describe("OCCT operations unit tests", () => {
         res.forEach(s => s.delete());
     });
 
-    it("should refuse a tube OCCT builds without its side along a straight path, naming the trihedron", () => {
+    it("should sweep a tube along lines and an arc exactly, as cylinders and a torus with flat caps", () => {
+        // Arrange
+        const corner = Math.sin(Math.PI / 4) * 3;
+        const path = wire.combineEdgesAndWiresIntoAWire({ shapes: [
+            edge.line({ start: [0, 0, 0], end: [7, 0, 0] }),
+            edge.arcThroughThreePoints({ start: [7, 0, 0], middle: [7 + corner, 3 - corner, 0], end: [10, 3, 0] }),
+            edge.line({ start: [10, 3, 0], end: [10, 10, 0] }),
+        ] });
+
+        // Act
+        const tube = operations.pipeWireCylindrical({ shape: path, radius: 1, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isFrenet });
+
+        // Assert
+        expect(face.getFaces({ shape: tube })).toHaveLength(5);
+        expect(solid.getSolidVolume({ shape: tube })).toBeCloseTo(Math.PI * (14 + 3 * Math.PI / 2), 9);
+        path.delete();
+        tube.delete();
+    });
+
+    it("should refuse a tube whose path bends more tightly than its radius", () => {
+        // Arrange
+        const path = wire.interpolatePoints({ points: [[0, 0, 0], [10, 0, 0], [10.2, 0.2, 0], [10, 0.4, 0], [0, 0.4, 0]], tolerance: 1e-7, periodic: false });
+
+        // Act
+        const act = (): TopoDS_Shape => operations.pipeWireCylindrical({ shape: path, radius: 1, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal });
+
+        // Assert
+        expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.tooTight" }));
+        path.delete();
+    });
+
+    it("should bend every corner of a polyline round the bend radius and sweep it as cylinders and a torus", () => {
+        // Arrange
+        const path = wire.createPolylineWire({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
+
+        // Act
+        const tube = operations.pipeWireCylindrical({ shape: path, radius: 1, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal, bendRadius: 3 });
+
+        // Assert
+        expect(face.getFaces({ shape: tube })).toHaveLength(5);
+        expect(solid.getSolidVolume({ shape: tube })).toBeCloseTo(Math.PI * (14 + 3 * Math.PI / 2), 9);
+        path.delete();
+        tube.delete();
+    });
+
+    it("should give a bend's wall to the corner it bends in the path's history", () => {
+        // Arrange
+        const path = wire.createPolylineWire({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
+
+        // Act
+        const { shape, history } = operations.pipeWireCylindricalWithHistory({ shape: path, radius: 1, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal, bendRadius: 3 });
+
+        // Assert
+        const walls = history.facesFromEdges.flat();
+        const bends = [...new Set(history.facesFromVertices.flat())];
+        expect(history.facesFromEdges.map(faces => faces.length)).toEqual([1, 1]);
+        expect(bends).toHaveLength(1);
+        expect(walls).not.toContain(bends[0]);
+        expect([...walls, ...bends, ...history.firstFaces, ...history.lastFaces].sort()).toEqual([0, 1, 2, 3, 4]);
+        path.delete();
+        shape.delete();
+    });
+
+    it("should refuse a bend radius the edges at a corner are too short for, naming the corners", () => {
+        // Arrange
+        const path = wire.createPolylineWire({ points: [[0, 0, 0], [10, 0, 0], [10, 1, 0], [0, 1, 0]] });
+
+        // Act
+        const act = (): TopoDS_Shape => operations.pipeWireCylindrical({ shape: path, radius: 0.2, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal, bendRadius: 3 });
+
+        // Assert
+        expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.bendDoesNotFit", details: { corners: [1, 2] } }));
+        path.delete();
+    });
+
+    it("should build a round tube along a straight path even with the Frenet trihedron, which OCCT sweeps without its side", () => {
         // Arrange
         const straight = wire.interpolatePoints({ points: [[0, 0, 0], [30, 40, 0], [60, 80, 0]], tolerance: 1e-7, periodic: false, startTangent: [0.6, 0.8, 0], endTangent: [0.6, 0.8, 0] });
 
         // Act
-        const act = (): TopoDS_Shape => operations.pipeWireCylindrical({ shape: straight, radius: 3, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isFrenet });
+        const tube = operations.pipeWireCylindrical({ shape: straight, radius: 3, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isFrenet });
 
         // Assert
-        expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.notValid", details: { trihedron: "isFrenet" } }));
-        expect(act).toThrow("With the isFrenet trihedron OCCT can do that on a path that is straight or nearly so; the discrete trihedron (isDiscreteTrihedron) builds such paths.");
+        expect(face.getFaces({ shape: tube })).toHaveLength(3);
+        expect(solid.getSolidVolume({ shape: tube })).toBeCloseTo(Math.PI * 9 * 100, 3);
         straight.delete();
+        tube.delete();
     });
 
     it("should build the same straight path as a valid tube with the discrete trihedron", () => {
@@ -1638,6 +1712,386 @@ describe("OCCT operations unit tests", () => {
 
             // Assert
             expect(refusal).toMatchObject({ name: "InputError", property: "shape", message: "`shape` has no geometry to bound, so it has no bounding box." });
+        });
+    });
+
+    describe("what a twist, a pipe, a loft and a split let go of", () => {
+        type Returning = { mock: { results: { value: unknown }[] } };
+        type Maker = ClassHandle & Record<string, (...args: unknown[]) => ClassHandle>;
+        const returnedBy = (...spies: Returning[]): ClassHandle[] => spies.flatMap(spy => spy.mock.results.flatMap(result => result.value)) as ClassHandle[];
+        const alive = (handles: ClassHandle[]): ClassHandle[] => handles.filter(handle => !handle.isDeleted());
+        const madeBy = (names: string[], act: () => unknown, answers: string[] = ["Shape"]): { made: ClassHandle[]; thrown: unknown } => {
+            const made: ClassHandle[] = [];
+            const originals = names.map(name => [name, Reflect.get(occt, name)] as const);
+            originals.forEach(([name, original]) => Reflect.set(occt, name, new Proxy(original, {
+                construct(target, args): object {
+                    const maker: Maker = Reflect.construct(target, args);
+                    answers.forEach(answer => {
+                        const answerOf = maker[answer]!.bind(maker);
+                        maker[answer] = (...answerArgs: unknown[]): ClassHandle => {
+                            const handle = answerOf(...answerArgs);
+                            made.push(handle);
+                            return handle;
+                        };
+                    });
+                    made.push(maker);
+                    return maker;
+                },
+            })));
+            let thrown: unknown;
+            try {
+                act();
+            } catch (failure) {
+                thrown = failure;
+            } finally {
+                originals.forEach(([name, original]) => Reflect.set(occt, name, original));
+            }
+            return { made, thrown };
+        };
+        const thrownBy = (act: () => unknown): unknown => madeBy([], act).thrown;
+        const failingRead = new Error("the history could not be read");
+        const readThatFails = (): never => {
+            throw failingRead;
+        };
+
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        describe("rotatedExtrude", () => {
+            const twistParts = (): Returning[] => [
+                vi.spyOn(occHelper.shapeGettersService, "getWires"),
+                vi.spyOn(occHelper.wiresService, "createBSpline"),
+                vi.spyOn(occHelper.transformsService, "translate"),
+                vi.spyOn(occHelper.transformsService, "rotate"),
+            ];
+
+            it.each([true, false])("should refuse a height of 0, which leaves the profile no length to twist along, before it builds anything (solid %s)", (makeSolid) => {
+                // Arrange
+                const square = wire.createSquareWire({ size: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+
+                // Act
+                const plain = madeBy(["BRepOffsetAPI_MakePipeShell"], () => operations.rotatedExtrude({ shape: square, height: 0, angle: 90, makeSolid }));
+                const twin = madeBy(["BRepOffsetAPI_MakePipeShell"], () => operations.rotatedExtrudeWithHistory({ shape: square, height: 0, angle: 90, makeSolid }));
+
+                // Assert
+                expect([plain.thrown, twin.thrown]).toEqual([
+                    expect.objectContaining({ name: "InputError", property: "height", message: "`height` is 0, so the profile has no length to twist along: give a height other than 0." }),
+                    expect.objectContaining({ name: "InputError", property: "height", message: "`height` is 0, so the profile has no length to twist along: give a height other than 0." }),
+                ]);
+                expect([...plain.made, ...twin.made]).toEqual([]);
+            });
+
+            it("should name a twist the kernel could not build as a failed pipe rather than pass on the kernel's own error", () => {
+                // Arrange
+                const upright = wire.createSquareWire({ size: 5, center: [0, 0, 0], direction: [1, 0, 0] });
+
+                // Act
+                const act = (): TopoDS_Shape => operations.rotatedExtrude({ shape: upright, height: 5, angle: 90, makeSolid: true });
+
+                // Assert
+                expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.failed" }));
+            });
+
+            it.each([true, false])("should release the outline, the spines, the copies, the maker and its shape when the kernel could not build the twist (solid %s)", (makeSolid) => {
+                // Arrange
+                const upright = face.createSquareFace({ size: 5, center: [0, 0, 0], direction: [1, 0, 0] });
+                const parts = twistParts();
+
+                // Act
+                const { made, thrown } = madeBy(["BRepOffsetAPI_MakePipeShell"], () => operations.rotatedExtrude({ shape: upright, height: 5, angle: 90, makeSolid }));
+
+                // Assert
+                expect(thrown).toEqual(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.failed" }));
+                expect(returnedBy(...parts)).toHaveLength(5);
+                expect(alive([...returnedBy(...parts), ...made])).toEqual([]);
+                expect(upright.isDeleted()).toBe(false);
+            });
+
+            it("should release what it made, and never the profile it was given, when the kernel throws on a profile it cannot sweep", () => {
+                // Arrange
+                const point = occHelper.entitiesService.makeVertex([1, 0, 0]);
+                const parts = twistParts();
+
+                // Act
+                const { made, thrown } = madeBy(["BRepOffsetAPI_MakePipeShell"], () => operations.rotatedExtrude({ shape: point, height: 5, angle: 90, makeSolid: true }));
+
+                // Assert
+                expect(thrown).toEqual(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.failed" }));
+                expect(made).toHaveLength(1);
+                expect(returnedBy(...parts)).toHaveLength(4);
+                expect(alive([...returnedBy(...parts), ...made])).toEqual([]);
+                expect(point.isDeleted()).toBe(false);
+            });
+
+            it("should release the outline it took from a face and everything else it made once the twist is built", () => {
+                // Arrange
+                const square = face.createSquareFace({ size: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+                const parts = twistParts();
+
+                let twisted: TopoDS_Shape | undefined;
+
+                // Act
+                const { made, thrown } = madeBy(["BRepOffsetAPI_MakePipeShell"], () => {
+                    twisted = operations.rotatedExtrude({ shape: square, height: 20, angle: 90, makeSolid: true });
+                });
+
+                // Assert
+                expect(thrown).toBeUndefined();
+                expect(solid.getSolidVolume({ shape: twisted! })).toBeCloseTo(500, 2);
+                expect(returnedBy(...parts)).toHaveLength(5);
+                expect(made).toHaveLength(2);
+                expect(alive([...returnedBy(...parts), ...made])).toEqual([]);
+                expect(square.isDeleted()).toBe(false);
+            });
+
+            it("should release everything it made, and pass the error on, when reading the twist's history fails", () => {
+                // Arrange
+                const square = face.createSquareFace({ size: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+                const parts = twistParts();
+                const resolved = { shape: square, height: 20, angle: 90, makeSolid: true };
+
+                // Act
+                const { made, thrown } = madeBy(["BRepOffsetAPI_MakePipeShell"], () => occHelper.operationsService.rotatedExtrude(resolved, readThatFails));
+
+                // Assert
+                expect(thrown).toBe(failingRead);
+                expect(alive([...returnedBy(...parts), ...made])).toEqual([]);
+                expect(square.isDeleted()).toBe(false);
+            });
+
+            it("should say a face without any outline has none, rather than counting its holes", () => {
+                // Arrange
+                const square = face.createSquareFace({ size: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+                const unboundedPlane = occt.MakeFaceFromFaceSurface(square, 0);
+
+                // Act
+                const thrown = thrownBy(() => operations.rotatedExtrude({ shape: unboundedPlane, height: 5, angle: 90, makeSolid: true }));
+
+                // Assert
+                expect(thrown).toEqual(expect.objectContaining({ name: "InputError", property: "shape", message: "`shape` is a face without an outline, such as an unbounded plane, and a twisted sweep follows one outline: give a bounded face, or a wire." }));
+            });
+        });
+
+        describe("loft and loftAdvanced", () => {
+            const circleEdge = (radius: number, height: number): TopoDS_Edge => edge.createCircleEdge({ radius, center: [0, height, 0], direction: [0, 1, 0] });
+            const circleWire = (radius: number, height: number): TopoDS_Wire => wire.createCircleWire({ radius, center: [0, height, 0], direction: [0, 1, 0] });
+            const advanced = (inputs: Partial<Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>>): Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge> =>
+                ({ ...new Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>(), ...inputs });
+            const sectionsMadeBy = (): Returning[] => [
+                vi.spyOn(occHelper.entitiesService, "bRepBuilderAPIMakeWire"),
+                vi.spyOn(occHelper.entitiesService, "makeVertex"),
+                vi.spyOn(occHelper.wiresService, "interpolatePoints"),
+            ];
+
+            it("should release the wires it makes of the edges it lofts through, and never the edges", () => {
+                // Arrange
+                const sections = [circleEdge(2, 0), circleEdge(1, 5)];
+                const made = sectionsMadeBy();
+
+                // Act
+                const lofted = operations.loft({ shapes: sections, makeSolid: true });
+
+                // Assert
+                expect(solid.getSolidVolume({ shape: lofted })).toBeCloseTo(Math.PI * 5 * (4 + 2 + 1) / 3, 3);
+                expect(returnedBy(...made)).toHaveLength(2);
+                expect(alive(returnedBy(...made))).toEqual([]);
+                expect(sections.map(section => section.isDeleted())).toEqual([false, false]);
+            });
+
+            it("should release the wires it makes of edges for a periodic loft, and the periodic sections", () => {
+                // Arrange
+                const sections = [circleEdge(2, 0), circleEdge(1, 5), circleEdge(2, 10)];
+                const made = sectionsMadeBy();
+
+                // Act
+                const lofted = operations.loftAdvanced(advanced({ shapes: sections, makeSolid: true, closed: true, periodic: true }));
+
+                // Assert
+                expect(lofted.isDeleted()).toBe(false);
+                expect(returnedBy(...made).length).toBeGreaterThan(3);
+                expect(alive(returnedBy(...made))).toEqual([]);
+                expect(sections.map(section => section.isDeleted())).toEqual([false, false, false]);
+            });
+
+            it("should loft through edges as it lofts through the wires they make, as the sections promise", () => {
+                // Arrange
+                const throughEdges = advanced({ shapes: [circleEdge(2, 0), circleEdge(1, 5)], makeSolid: true });
+                const throughWires = advanced({ shapes: [circleWire(2, 0), circleWire(1, 5)], makeSolid: true });
+
+                // Act
+                const fromEdges = operations.loftAdvanced(throughEdges);
+                const fromWires = operations.loftAdvanced(throughWires);
+
+                // Assert
+                expect(solid.getSolidVolume({ shape: fromEdges })).toBeCloseTo(solid.getSolidVolume({ shape: fromWires }), 9);
+            });
+
+            it("should release the end points, the sections it made, the maker and its shape when reading the history of a loft fails", () => {
+                // Arrange
+                const made = sectionsMadeBy();
+                const pointed = resolveDto(Inputs.OCCT.LoftAdvancedDto, { shapes: [circleWire(2, 5)], makeSolid: true, startVertex: [0, 0, 0], endVertex: [0, 10, 0] }) as Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>;
+                const periodic = resolveDto(Inputs.OCCT.LoftAdvancedDto, { shapes: [circleEdge(2, 0), circleEdge(1, 5), circleEdge(2, 10)], makeSolid: true, closed: true, periodic: true }) as Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>;
+                const plain = { shapes: [circleEdge(2, 0), circleEdge(1, 5)], makeSolid: true };
+
+                // Act
+                const runs = [
+                    madeBy(["BRepOffsetAPI_ThruSections"], () => occHelper.operationsService.loftAdvanced(pointed, readThatFails)),
+                    madeBy(["BRepOffsetAPI_ThruSections"], () => occHelper.operationsService.loftAdvanced(periodic, readThatFails)),
+                    madeBy(["BRepOffsetAPI_ThruSections"], () => occHelper.operationsService.loft(plain, readThatFails)),
+                ];
+
+                // Assert
+                expect(runs.map(run => run.thrown)).toEqual([failingRead, failingRead, failingRead]);
+                expect(runs.map(run => run.made.length)).toEqual([2, 2, 2]);
+                expect(alive([...returnedBy(...made), ...runs.flatMap(run => run.made)])).toEqual([]);
+            });
+        });
+
+        describe("splitShapeWithShapes and splitShapeWithShapesWithHistory", () => {
+            const cube = (): TopoDS_Shape => solid.createBox({ width: 10, length: 10, height: 10, center: [5, 5, 5] });
+            const knifeThrough = (): TopoDS_Shape => face.createRectangleFace({ width: 20, length: 20, center: [5, 5, 5], direction: [1, 0, 0] });
+            const knifeAside = (): TopoDS_Shape => face.createRectangleFace({ width: 20, length: 20, center: [50, 5, 5], direction: [1, 0, 0] });
+            const recordingListCompounds = (): { made: ClassHandle[]; stop: () => void } => {
+                const made: ClassHandle[] = [];
+                const original: unknown = Reflect.get(occt, "BitListOfShapesToCompound");
+                const toCompound = (original as (...args: unknown[]) => ClassHandle).bind(occt);
+                Reflect.set(occt, "BitListOfShapesToCompound", (...args: unknown[]): ClassHandle => {
+                    const compound = toCompound(...args);
+                    made.push(compound);
+                    return compound;
+                });
+                return { made, stop: (): void => void Reflect.set(occt, "BitListOfShapesToCompound", original) };
+            };
+
+            it("should refuse a split whose shapes cut nothing off the shape, as it has no pieces to follow", () => {
+                // Arrange
+                const box = cube();
+                const knife = knifeAside();
+
+                // Act
+                const thrown = thrownBy(() => operations.splitShapeWithShapesWithHistory({ shape: box, shapes: [knife], localFuzzyTolerance: 1e-7, nonDestructive: false }));
+
+                // Assert
+                expect(thrown).toEqual(expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` cut nothing off `shape`, so there are no pieces to follow: give shapes that cut through it." }));
+            });
+
+            it("should release the builder, what it modified and the compound of it, and hand back only the pieces", () => {
+                // Arrange
+                const pieces = vi.spyOn(occHelper.shapeGettersService, "getShapesOfCompound");
+                let split: TopoDS_Shape[] = [];
+
+                const compounds = recordingListCompounds();
+
+                // Act
+                const run = madeBy(["BOPAlgo_Builder"], () => {
+                    split = operations.splitShapeWithShapes({ shape: cube(), shapes: [knifeThrough()], localFuzzyTolerance: 1e-7, nonDestructive: false });
+                }, ["Modified"]);
+                compounds.stop();
+
+                // Assert
+                expect(run.thrown).toBeUndefined();
+                expect(split).toHaveLength(2);
+                expect([run.made.length, compounds.made.length]).toEqual([2, 1]);
+                expect(alive([...run.made, ...compounds.made])).toEqual([]);
+                expect(returnedBy(pieces).map((piece, index) => piece === split[index] && !piece.isDeleted())).toEqual([true, true]);
+            });
+
+            it("should release the builder and its whole result when the cutters' pieces are kept too", () => {
+                // Arrange
+                let split: TopoDS_Shape[] = [];
+
+                // Act
+                const { made, thrown } = madeBy(["BOPAlgo_Builder"], () => {
+                    split = operations.splitShapeWithShapes({ shape: cube(), shapes: [knifeThrough()], localFuzzyTolerance: 1e-7, nonDestructive: true });
+                });
+
+                // Assert
+                expect(thrown).toBeUndefined();
+                expect(split.length).toBeGreaterThan(2);
+                expect(made).toHaveLength(2);
+                expect(alive(made)).toEqual([]);
+            });
+
+            it("should release the builder and the loose pieces once the history twin has put them in its compound", () => {
+                // Arrange
+                const pieces = vi.spyOn(occHelper.shapeGettersService, "getShapesOfCompound");
+                const compound = vi.spyOn(occHelper.converterService, "makeCompound");
+                let shape: TopoDS_Shape | undefined;
+
+                // Act
+                const { made, thrown } = madeBy(["BOPAlgo_Builder"], () => {
+                    shape = operations.splitShapeWithShapesWithHistory({ shape: cube(), shapes: [knifeThrough()], localFuzzyTolerance: 1e-7, nonDestructive: false }).shape;
+                }, []);
+
+                // Assert
+                expect(thrown).toBeUndefined();
+                expect(returnedBy(pieces)).toHaveLength(2);
+                expect(alive([...made, ...returnedBy(pieces)])).toEqual([]);
+                expect(returnedBy(compound).map(made => made === shape && !made.isDeleted())).toEqual([true]);
+            });
+
+            it("should release the builder, the pieces and the compound, and pass the error on, when reading the split's history fails", () => {
+                // Arrange
+                const pieces = vi.spyOn(occHelper.shapeGettersService, "getShapesOfCompound");
+                const compound = vi.spyOn(occHelper.converterService, "makeCompound");
+                const historyOfBuilder: unknown = Reflect.get(occt, "HistoryOfBuilder");
+                Reflect.set(occt, "HistoryOfBuilder", readThatFails);
+
+                // Act
+                const run = madeBy(["BOPAlgo_Builder"], () => operations.splitShapeWithShapesWithHistory({ shape: cube(), shapes: [knifeThrough()], localFuzzyTolerance: 1e-7, nonDestructive: false }), []);
+                Reflect.set(occt, "HistoryOfBuilder", historyOfBuilder);
+
+                // Assert
+                expect(run.thrown).toBe(failingRead);
+                expect([run.made.length, returnedBy(pieces).length, returnedBy(compound).length]).toEqual([1, 2, 1]);
+                expect(alive([...run.made, ...returnedBy(pieces), ...returnedBy(compound)])).toEqual([]);
+            });
+        });
+
+        describe("pipePolylineWireNGon", () => {
+            const path = (): TopoDS_Wire => wire.createLineWire({ start: [0, 0, 0], end: [0, 10, 0] });
+            const barParts = (): Returning[] => [
+                vi.spyOn(occHelper.shapeGettersService, "getEdge"),
+                vi.spyOn(occHelper.wiresService, "createNGonWire"),
+                vi.spyOn(occHelper.wiresService, "reversedWire"),
+                vi.spyOn(occHelper.facesService, "createFaceFromWire"),
+            ];
+            const bar = (makeSolid: boolean): Resolved.OCCT.PipePolygonWireNGonDto<TopoDS_Wire> =>
+                ({ shape: path(), radius: 0.5, nrCorners: 6, makeSolid, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isCorrectedFrenet });
+
+            it.each([[true, 4], [false, 3]])("should release the edge, the n-gon, its reversal, its face and the maker once the bar is built (solid %s)", (makeSolid, parts) => {
+                // Arrange
+                const made = barParts();
+                const inputs = bar(makeSolid);
+                let pipe: TopoDS_Shape | undefined;
+
+                // Act
+                const run = madeBy(["BRepOffsetAPI_MakePipe"], () => {
+                    pipe = operations.pipePolylineWireNGon(inputs);
+                });
+
+                // Assert
+                expect(run.thrown).toBeUndefined();
+                expect(pipe!.isDeleted()).toBe(false);
+                expect([returnedBy(...made).length, run.made.length]).toEqual([parts, 2]);
+                expect(alive([...returnedBy(...made), ...run.made])).toEqual([]);
+                expect(inputs.shape.isDeleted()).toBe(false);
+            });
+
+            it("should release everything it made, and pass the error on, when reading the bar's history fails", () => {
+                // Arrange
+                const made = barParts();
+                const inputs = bar(true);
+
+                // Act
+                const run = madeBy(["BRepOffsetAPI_MakePipe"], () => occHelper.operationsService.pipePolylineWireNGon(inputs, readThatFails));
+
+                // Assert
+                expect(run.thrown).toBe(failingRead);
+                expect([returnedBy(...made).length, run.made.length]).toEqual([4, 2]);
+                expect(alive([...returnedBy(...made), ...run.made])).toEqual([]);
+            });
         });
     });
 });

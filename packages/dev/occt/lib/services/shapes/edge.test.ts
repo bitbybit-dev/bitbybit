@@ -4,8 +4,6 @@ import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTGeom } from "../geom/geom";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import * as Inputs from "../../api/inputs";
 import { OCCTFace } from "./face";
 import { OCCTBooleans } from "../booleans";
@@ -21,16 +19,12 @@ describe("OCCT edge unit tests", () => {
     let geom: OCCTGeom;
     let occHelper: OccHelper;
     let occt: BitbybitOcctModule;
-    let vec: VectorHelperService;
-    let s: ShapesHelperService;
 
     const closeToNr = 13;
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        vec = new VectorHelperService();
-        s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         geom = new OCCTGeom(occt, occHelper);
         edge = new OCCTEdge(occt, occHelper);
         face = new OCCTFace(occt, occHelper);

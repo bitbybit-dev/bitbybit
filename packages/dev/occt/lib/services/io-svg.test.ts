@@ -3,8 +3,6 @@ import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/b
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { OccHelper } from "../occ-helper";
-import { VectorHelperService } from "../api/vector-helper.service";
-import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTSolid } from "./shapes";
 import { OCCTIO } from "./io";
 import { svgOfDrawing } from "./base/svg-drawing";
@@ -49,7 +47,7 @@ describe("OCCT io writing SVG drawings of views", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        occHelper = new OccHelper(occt);
         io = new OCCTIO(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);
     });

@@ -3,7 +3,7 @@ import * as Inputs from "../../api/inputs";
 import type { TransformsService } from "./transforms.service";
 import type { ConverterService } from "./converter.service";
 import type { WiresService } from "./wires.service";
-import type { BaseBitByBit } from "../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type { EdgesService } from "./edges.service";
 import type { EntitiesService } from "./entities.service";
 import type * as Resolved from "../../api/resolved-inputs";
@@ -90,7 +90,7 @@ export class DimensionsService {
             throw new Error("Arrow direction must not be parallel to the dimension normal");
         }
         
-        const halfAngleRad = (inputs.angle / 2) * Math.PI / 180;
+        const halfAngleRad = this.base.math.degToRad({ number: inputs.angle / 2 });
         
         const baseLength = inputs.size * Math.cos(halfAngleRad);
         const sideOffset = inputs.size * Math.sin(halfAngleRad);
@@ -129,9 +129,8 @@ export class DimensionsService {
         });
         
         const result = this.converterService.makeCompound({ shapes: [line1, line2] });
-        
+        shapesToDelete.push(line1, line2);
         shapesToDelete.forEach(shape => shape.delete());
-        
         return result;
     }
 
@@ -298,6 +297,7 @@ export class DimensionsService {
         }
 
         const res = this.converterService.makeCompound({ shapes: shapesToInclude });
+        shapesToDelete.push(...shapesToInclude);
 
         shapesToDelete.forEach((shape) => {
             shape.delete();
@@ -506,6 +506,7 @@ export class DimensionsService {
         }
 
         const res = this.converterService.makeCompound({ shapes: shapesToInclude });
+        shapesToDelete.push(...shapesToInclude);
 
         shapesToDelete.forEach((shape) => {
             shape.delete();
@@ -636,6 +637,7 @@ export class DimensionsService {
         }
 
         const res = this.converterService.makeCompound({ shapes: shapesToInclude });
+        shapesToDelete.push(...shapesToInclude);
 
         shapesToDelete.forEach((shape) => {
             shape.delete();

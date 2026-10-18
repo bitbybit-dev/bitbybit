@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
-import { ShapesHelperService } from "../api/shapes-helper.service";
-import { VectorHelperService } from "../api/vector-helper.service";
 import { OccHelper } from "../occ-helper";
 import { OCCTDimensions } from "./dimensions";
 import { OCCTCompound, OCCTVertex } from "./shapes";
@@ -17,9 +15,7 @@ describe("OCCT dimensions unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         compound = new OCCTCompound(occt, occHelper);
         vertex = new OCCTVertex(occt, occHelper);
         dimensions = new OCCTDimensions(occt, occHelper);

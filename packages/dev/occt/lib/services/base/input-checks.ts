@@ -1,9 +1,9 @@
 import { InputError } from "@bitbybit-dev/base";
-import { isFrameShaped, isTriple, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { composed, isTransformMatrix } from "@bitbybit-dev/base/lib/api/services/helpers/matrices";
+import { isFrameShaped, isTriple, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { composed, isTransformMatrix } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { KernelExceptionReader } from "../../kernel-exception";
-import { readKernelException } from "../../kernel-exception";
+import { withKernelRefusals } from "./kernel-refusals";
 import type * as Inputs from "../../api/inputs";
 
 type Vec3 = Inputs.Base.Vector3;
@@ -235,17 +235,14 @@ export function checkedPlacements(value: unknown, property: string): number[][] 
  * @param call - The kernel call
  */
 export function withIndexesInRange<T>(occ: KernelExceptionReader, noun: string, lists: Record<string, readonly number[]>, call: () => T): T {
-    try {
-        return call();
-    } catch (thrown) {
-        const read = readKernelException(occ, thrown);
-        const outside = read instanceof Error ? /index (-?\d+) is (?:outside 0 to (\d+)|out of range)/.exec(read.message) : null;
+    return withKernelRefusals(occ, call, message => {
+        const outside = /index (-?\d+) is (?:outside 0 to (\d+)|out of range)/.exec(message);
         if (outside === null) {
-            throw read;
+            return undefined;
         }
         const index = Number(outside[1]);
         const property = Object.keys(lists).find(name => lists[name]!.includes(index)) ?? Object.keys(lists)[0]!;
         const counted = outside[2] === undefined ? `the shape has no ${noun}` : `its ${noun} are numbered from 0 to ${outside[2]}`;
-        throw new InputError(`\`${property}\` holds ${index}, past the shape's last: ${counted}.`, property);
-    }
+        return new InputError(`\`${property}\` holds ${index}, past the shape's last: ${counted}.`, property);
+    });
 }

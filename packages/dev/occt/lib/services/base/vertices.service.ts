@@ -39,7 +39,11 @@ export class VerticesService {
 
     getVerticesAsPoints(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.Base.Point3[] {
         const vertices = this.shapeGettersService.getVertices(inputs);
-        return this.verticesToPoints({ shapes: vertices });
+        try {
+            return this.verticesToPoints({ shapes: vertices });
+        } finally {
+            vertices.filter(vertex => vertex !== inputs.shape).forEach(vertex => vertex.delete());
+        }
     }
 
     verticesToPoints(inputs: Inputs.OCCT.ShapesDto<TopoDS_Vertex>): Inputs.Base.Point3[] {

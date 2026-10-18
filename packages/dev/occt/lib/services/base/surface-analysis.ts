@@ -1,11 +1,8 @@
 import { InputError } from "@bitbybit-dev/base";
-import { isTriple } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { isTriple } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
-
-/** The factor that turns the kernel's radians into the degrees the public API speaks. */
-export const DEGREES_PER_RADIAN = 180 / Math.PI;
 
 /** What the kernel's measurements name a sub-shape by, as the public kind of shape. */
 export function supportType(name: string): Inputs.OCCT.shapeTypeEnum {

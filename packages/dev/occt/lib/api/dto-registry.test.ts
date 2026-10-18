@@ -3,10 +3,7 @@ import type { InputIssue } from "@bitbybit-dev/base";
 import { resolveInputs, validateInputs, withDefaults } from "@bitbybit-dev/base";
 import type { TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
 import { OCCTService } from "../occ-service";
-import { VectorHelperService } from "./vector-helper.service";
-import { ShapesHelperService } from "./shapes-helper.service";
 import { occtDtoRegistry } from "./dto-registry";
 import { occtDtoRules } from "./validation";
 import * as Inputs from "./inputs";
@@ -18,7 +15,7 @@ describe("the OCCT operation registry", () => {
 
     beforeAll(async () => {
         const occ = await createBitbybitOcct();
-        service = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+        service = new OCCTService(occ);
     });
 
     it("should name a kernel method for every listed path", () => {
@@ -183,7 +180,7 @@ describe("a value of 0 the Bitbybit OCCT Kernel cannot build with", () => {
 
     beforeAll(async () => {
         const occ = await createBitbybitOcct();
-        kernel = withDefaults(new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ)), occtDtoRegistry);
+        kernel = withDefaults(new OCCTService(occ), occtDtoRegistry);
         const box = kernel.shapes.solid.createBox({ width: 2, length: 2, height: 2 });
         const face = kernel.shapes.face.getFaces({ shape: box })[0]!;
         shapes = {

@@ -1,7 +1,7 @@
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { Base } from "../../api/inputs";
 import type { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
-import type { BaseBitByBit } from "../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 export class DxfService {
 

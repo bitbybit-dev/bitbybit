@@ -3,10 +3,7 @@ import type { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt"
 import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { readKernelException } from "./kernel-exception";
 import { InputError } from "@bitbybit-dev/base";
-import { OccHelper } from "./occ-helper";
 import { OCCTService } from "./occ-service";
-import { VectorHelperService } from "./api/vector-helper.service";
-import { ShapesHelperService } from "./api/shapes-helper.service";
 
 describe("kernel functions given a null shape", () => {
     let occt: BitbybitOcctModule;
@@ -183,7 +180,7 @@ describe("operations given a list that holds an empty shape", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        service = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        service = new OCCTService(kernel);
     });
 
     const valid = (kind: string): unknown => {

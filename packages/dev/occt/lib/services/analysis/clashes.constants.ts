@@ -1,0 +1,13 @@
+export const MESH_SHARE = 1e-3;
+export const LEAST_PRECISION = 1e-6;
+export const ERROR_MARGIN = 2;
+export const BOX_VALUES = 6;
+export const BOX_CORNERS: readonly (readonly [number, number, number])[] = [[0, 1, 2], [3, 1, 2], [0, 4, 2], [3, 4, 2], [0, 1, 5], [3, 1, 5], [0, 4, 5], [3, 4, 5]];
+export const MATRIX_SIZE = 16;
+export const REFINE_FACTOR = 4;
+export const MOST_REFINEMENTS = 2;
+export const MOST_TRIANGLES = 1500000;
+export const CLASSIFY_TOLERANCE = 1e-7;
+export const OUTSIDE = 1;
+export const UNKNOWN = 3;
+export const CLASSIFIED_POINTS = 8;

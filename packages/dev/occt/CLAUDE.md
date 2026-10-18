@@ -95,9 +95,15 @@ has a reason code. The codes and detail types are in the API report, because cal
 them; a new kind of failure gets a new code, and a code is never reused for another meaning. Inputs
 that would crash or trivially fail the kernel (a loft through fewer than two sections, a loft of
 points only, an empty operand of a boolean) are refused as an `InputError` before it runs. OCCT also
-reports success for some results that are not valid solids - a fillet radius larger than the faces
-allow, a pipe whose profile does not fit its bends - and those still come back without an error;
-`shapeFix.isValid` finds the first kind.
+reports success for some results that are not valid solids. Fillets, chamfers, offsets, thick
+solids and solid lofts refuse a result that is broken beyond use - no solid and not valid, or a volume
+that is not a number, about 0 or larger than its own box (`lib/services/base/solid-results.ts`); an invalid result
+of a plausible volume still comes back without an error, since callers such as the design shell
+repair or judge it themselves, and `shapeFix.isValid` finds it. The kernel catches
+two such kinds itself: a boolean of solids whose result is not valid, or whose volume no such boolean
+can have, is rebuilt from OCCT's split cells and refused as `occt.boolean.inconsistent` when that fails
+too; and a round pipe whose path bends tighter than its radius is refused as `occt.pipe.tooTight`
+(along lines and arcs that pipe is exact, cylinders and tori).
 
 Two behaviours are stable and surprising, so assume the opposite at your peril:
 

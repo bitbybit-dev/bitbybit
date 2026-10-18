@@ -1,5 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
 import type { SvgArcSegment, SvgSegment, SvgSubpath } from "./svg-models";
+import { radiansOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 export type Matrix = [number, number, number, number, number, number];
 
@@ -23,7 +24,6 @@ export function applyToPoint(m: Matrix, p: Base.Point2): Base.Point2 {
     return [m[0] * p[0] + m[2] * p[1] + m[4], m[1] * p[0] + m[3] * p[1] + m[5]];
 }
 
-const DEG = Math.PI / 180;
 
 /** Parse a `transform` attribute value into a single composed matrix. */
 export function parseTransform(value: string | undefined | null): Matrix {
@@ -52,7 +52,7 @@ export function parseTransform(value: string | undefined | null): Matrix {
                 break;
             }
             case "rotate": {
-                const ang = (nums[0] || 0) * DEG;
+                const ang = radiansOf(nums[0] || 0);
                 const cos = Math.cos(ang);
                 const sin = Math.sin(ang);
                 const rot: Matrix = [cos, sin, -sin, cos, 0, 0];
@@ -66,10 +66,10 @@ export function parseTransform(value: string | undefined | null): Matrix {
                 break;
             }
             case "skewX":
-                t = [1, 0, Math.tan((nums[0] || 0) * DEG), 1, 0, 0];
+                t = [1, 0, Math.tan(radiansOf(nums[0] || 0)), 1, 0, 0];
                 break;
             case "skewY":
-                t = [1, Math.tan((nums[0] || 0) * DEG), 0, 1, 0, 0];
+                t = [1, Math.tan(radiansOf(nums[0] || 0)), 0, 1, 0, 0];
                 break;
             default:
                 break;

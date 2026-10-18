@@ -3,9 +3,6 @@ import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape } from "../../../bit
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { readKernelException } from "../../kernel-exception";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import { uvFractions } from "../base/surface-analysis";
 import * as Inputs from "../../api/inputs";
@@ -16,7 +13,7 @@ describe("OCCT curve analysis: kinks, extremes and intersections", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const close = (values: readonly number[], digits = 9): unknown[] => values.map(value => expect.closeTo(value, digits));

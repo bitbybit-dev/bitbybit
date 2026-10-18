@@ -1,6 +1,6 @@
 import { InputError } from "@bitbybit-dev/base";
 import * as Inputs from "../../api/inputs";
-import type { BaseBitByBit } from "../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import { DesignProblem } from "./problems";
 
 /** A placement as a column-major 4 x 4 matrix. */

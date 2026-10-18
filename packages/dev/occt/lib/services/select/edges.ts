@@ -1,8 +1,11 @@
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
+import type { MathBitByBit } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { checkedChoice, checkedCount, checkedDirection, checkedIndexes, checkedNumber, checkedPoint, checkedShape, withIndexesInRange } from "../base/input-checks";
+import { massesAndCentres } from "../base/kernel-arrays";
+import { groupsAreLevels, groupsInOrder, levelsInOrder, nearestInOrder, TIE_LEVEL } from "./tie-order";
 
 const CURVE_TYPES: readonly Inputs.OCCT.curveTypeEnum[] = [
     Inputs.OCCT.curveTypeEnum.line,
@@ -16,8 +19,6 @@ const CURVE_TYPES: readonly Inputs.OCCT.curveTypeEnum[] = [
     Inputs.OCCT.curveTypeEnum.other,
 ];
 
-const RADIANS_PER_DEGREE = Math.PI / 180;
-
 /**
  * Choosing the edges of an OpenCascade shape by what they are, where they lie and how they meet,
  * so that "the edges round the top" still names the right edges after a parameter changes. Every
@@ -30,6 +31,7 @@ export class OCCTSelectEdges {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
+        private readonly math: MathBitByBit,
     ) { }
 
     /**
@@ -70,7 +72,7 @@ export class OCCTSelectEdges {
         const shape = checkedShape(resolved.shape);
         const direction = checkedDirection(resolved.direction, "direction");
         const angle = checkedNumber(resolved.angle, "angle", 0, 180);
-        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectEdgesAlong(shape, among, direction, angle * RADIANS_PER_DEGREE)));
+        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectEdgesAlong(shape, among, direction, this.math.degToRad({ number: angle }))));
     }
 
     /**
@@ -153,7 +155,8 @@ export class OCCTSelectEdges {
         const shape = checkedShape(resolved.shape);
         const point = checkedPoint(resolved.point, "point");
         const count = checkedCount(resolved.count, "count");
-        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectEdgesNearest(shape, among, point, count)));
+        const chosen = Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectEdgesNearest(shape, among, point, Infinity)));
+        return chosen.length < 2 ? chosen : nearestInOrder(chosen, point, count, indexes => this.centresOf(shape, indexes), resolved.indexes);
     }
 
     /**
@@ -277,7 +280,7 @@ export class OCCTSelectEdges {
         const shape = checkedShape(resolved.shape);
         const seeds = checkedIndexes(resolved.indexes, "indexes");
         const angle = checkedNumber(resolved.angle, "angle", 0, 180);
-        return Array.from(withIndexesInRange(this.occ, "edges", { indexes: seeds }, () => this.occ.SelectEdgesTangentChain(shape, seeds, angle * RADIANS_PER_DEGREE)));
+        return Array.from(withIndexesInRange(this.occ, "edges", { indexes: seeds }, () => this.occ.SelectEdgesTangentChain(shape, seeds, this.math.degToRad({ number: angle }))));
     }
 
     /**
@@ -297,7 +300,7 @@ export class OCCTSelectEdges {
         const resolved = resolveDto(Inputs.OCCT.SelectConvexityDto, inputs) as Resolved.OCCT.SelectConvexityDto<TopoDS_Shape>;
         const shape = checkedShape(resolved.shape);
         const tangentAngle = checkedNumber(resolved.tangentAngle, "tangentAngle", 0, 90);
-        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectEdgesConvex(shape, among, tangentAngle * RADIANS_PER_DEGREE)));
+        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectEdgesConvex(shape, among, this.math.degToRad({ number: tangentAngle }))));
     }
 
     /**
@@ -317,7 +320,7 @@ export class OCCTSelectEdges {
         const resolved = resolveDto(Inputs.OCCT.SelectConvexityDto, inputs) as Resolved.OCCT.SelectConvexityDto<TopoDS_Shape>;
         const shape = checkedShape(resolved.shape);
         const tangentAngle = checkedNumber(resolved.tangentAngle, "tangentAngle", 0, 90);
-        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectEdgesConcave(shape, among, tangentAngle * RADIANS_PER_DEGREE)));
+        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectEdgesConcave(shape, among, this.math.degToRad({ number: tangentAngle }))));
     }
 
     /**
@@ -337,7 +340,8 @@ export class OCCTSelectEdges {
         const resolved = resolveDto(Inputs.OCCT.SelectSortAlongDto, inputs) as Resolved.OCCT.SelectSortAlongDto<TopoDS_Shape>;
         const shape = checkedShape(resolved.shape);
         const direction = checkedDirection(resolved.direction, "direction");
-        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectEdgesSortedAlong(shape, among, direction)));
+        const levels = this.chosen<Int32Array[]>(resolved.indexes, [], among => this.occ.SelectEdgesGroupedAlong(shape, among, direction, TIE_LEVEL)).map(level => Array.from(level));
+        return levelsInOrder(levels, resolved.indexes);
     }
 
     /**
@@ -358,7 +362,18 @@ export class OCCTSelectEdges {
         const shape = checkedShape(resolved.shape);
         const direction = checkedDirection(resolved.direction, "direction");
         const tolerance = checkedNumber(resolved.tolerance, "tolerance", 0);
-        return this.chosen<Int32Array[]>(resolved.indexes, [], among => this.occ.SelectEdgesGroupedAlong(shape, among, direction, tolerance)).map(group => Array.from(group));
+        const groupedAt = (level: number): number[][] => this.chosen<Int32Array[]>(resolved.indexes, [], among => this.occ.SelectEdgesGroupedAlong(shape, among, direction, level)).map(group => Array.from(group));
+        const groups = groupedAt(tolerance);
+        return groupsInOrder(groups, groupsAreLevels(tolerance) || groups.every(group => group.length < 2) ? groups : groupedAt(TIE_LEVEL), resolved.indexes);
+    }
+
+    private centresOf(shape: TopoDS_Shape, indexes: readonly number[]): Inputs.Base.Point3[] {
+        const edges = this.occ.EdgesOf(shape, true);
+        try {
+            return massesAndCentres(this.occ.LinearPropertiesOfEach(indexes.map(index => edges[index]!))).map(properties => properties.centre);
+        } finally {
+            edges.forEach(edge => edge.delete());
+        }
     }
 
     private chosen<T>(indexes: number[] | undefined, nothing: T, choose: (among: number[]) => T): T {

@@ -2,9 +2,6 @@ import { describe, it, expect, beforeAll, afterEach } from "vitest";
 import type { KernelSteps } from "@bitbybit-dev/base";
 import { setKernelStepSink } from "@bitbybit-dev/base";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 
@@ -56,7 +53,7 @@ describe("how far a design build has come", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     afterEach(() => {

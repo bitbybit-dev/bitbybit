@@ -1,14 +1,16 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
-import { release, stableJson } from "./cache";
-import type { BaseBitByBit } from "../../base";
+import { stableJson } from "./cache";
+import { release } from "../base/release";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type { Matrix } from "./placement";
 import { frameMatrix, jointMatrix, movedFrame, squaredFrame } from "./placement";
 import type { DesignLibrary, LibraryEntry } from "./library";
 import { sourceEntry, versionIn } from "./library";
 import { connectorIdsOf } from "./connectors";
 import { DesignProblem, pointer } from "./problems";
+import { checkWithinLimits } from "./joint-limits";
 import { framingOf, runDesign } from "./runner";
 import { ROOT_NODE, structurePartOf, withProperties } from "./export-structure";
 import type { DesignRunContext } from "./state";
@@ -25,7 +27,6 @@ export type BuildLibrary = DesignLibrary<Models.OCCT.DesignDocument>;
 function sourceDocument(library: BuildLibrary, source: Models.OCCT.DesignComponentSource): LibraryEntry<Models.OCCT.DesignDocument> {
     return sourceEntry(library, source.document, source.version, "");
 }
-
 
 /** The most occurrences one build places through every level; a sub-assembly placed many times counts all it holds each time. */
 export const MAX_OCCURRENCES = 100_000;
@@ -105,7 +106,7 @@ function patternMoves(pattern: Models.OCCT.DesignComponentPattern, parameters: D
     if (unit === undefined) {
         throw new DesignProblem(pointer(at, "direction"), "the direction has no length");
     }
-    return Array.from({ length: count }, (_, index) => base.transforms.translationXYZ({ translation: [unit[0]! * spacing * index, unit[1]! * spacing * index, unit[2]! * spacing * index] }));
+    return Array.from({ length: count }, (_, index) => base.transforms.translationXYZ({ translation: base.vector.mul({ vector: unit, scalar: spacing * index }) as Inputs.Base.Vector3 }));
 }
 
 function patternCountOf(component: Models.OCCT.DesignComponent): number {
@@ -272,7 +273,7 @@ interface JointValues {
     limits: Models.OCCT.DesignBuiltJoint["limits"];
 }
 
-function jointValues(placing: Placing, parameters: DesignValues): JointValues {
+function jointValues(placing: Placing, parameters: DesignValues, math: BaseBitByBit["math"]): JointValues {
     const { joint } = placing;
     const path = placing.path;
     const values = {
@@ -287,12 +288,8 @@ function jointValues(placing: Placing, parameters: DesignValues): JointValues {
         }
         const least = numberOf(range[0], parameters, pointer(path, "limits", key, 0));
         const most = numberOf(range[1], parameters, pointer(path, "limits", key, 1));
-        if (least > most) {
-            throw new DesignProblem(pointer(path, "limits", key), `the least, ${formatNumber(least)}, is more than the most, ${formatNumber(most)}`);
-        }
-        if (values[key] < least || values[key] > most) {
-            throw new DesignProblem(pointer(path, key), `${formatNumber(values[key])} is outside the joint's limits, ${formatNumber(least)} to ${formatNumber(most)}`);
-        }
+        checkWithinLimits(values[key], least, most, pointer(path, "limits", key), pointer(path, key));
+        values[key] = math.clamp({ number: values[key], min: Math.min(least, most), max: most });
         limits[key] = [least, most];
     }
     return { ...values, limits };
@@ -315,7 +312,7 @@ function placementOf(component: Models.OCCT.DesignComponent, own: Connectors, pl
     if (connector === undefined) {
         throw new DesignProblem(pointer(placing.path, "connector"), `the connector "${joint.connector}" was not placed in this build`);
     }
-    const values = jointValues(placing, parameters);
+    const values = jointValues(placing, parameters, base.math);
     return { matrix: jointMatrix(connector, target, joint.flip === true, values.angle, values.offset, base), values };
 }
 

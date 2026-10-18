@@ -1,4 +1,4 @@
-import { linearToSrgb, srgbToLinear } from "@bitbybit-dev/base";
+import { linearToSrgb, srgbToLinear } from "@bitbybit-dev/base/lib/api/services/helpers/color/color-space";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";

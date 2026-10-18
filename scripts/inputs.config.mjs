@@ -12,6 +12,7 @@ export const targets = [
             "/* eslint-disable @typescript-eslint/no-namespace */",
             "import { Base } from \"@bitbybit-dev/base\";",
             "import { IO } from \"@bitbybit-dev/base/lib/api/inputs/io-inputs\";",
+            "import { Engineering } from \"@bitbybit-dev/base/lib/api/inputs/engineering-inputs\";",
             "import * as Models from \"../models\";",
         ],
         order: [
@@ -41,6 +42,8 @@ export const targets = [
             "repair-and-files",
             "design-documents",
             "recipes",
+            "parts",
+            "machining",
         ],
     },
     {

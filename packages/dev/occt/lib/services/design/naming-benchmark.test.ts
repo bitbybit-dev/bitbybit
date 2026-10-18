@@ -1,8 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type { BenchmarkReport } from "./__test__/naming-benchmark";
 import { runBenchmark, statusOf, summaryLine } from "./__test__/naming-benchmark";
@@ -13,7 +10,7 @@ describe("the naming benchmark", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        const occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        const occt = new OCCTService(kernel);
         report = runBenchmark(NAMING_CORPUS, occt, kernel);
         console.info(summaryLine(report, NAMING_CORPUS.length));
     }, 600_000);

@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
-import { VectorHelperService } from "../api/vector-helper.service";
-import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTService } from "../occ-service";
 import { readKernelException } from "../kernel-exception";
 import * as Inputs from "../api/inputs";
@@ -15,7 +12,7 @@ describe("OCCT sections and splitting", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const across = (normal: Inputs.Base.Vector3, origin: Inputs.Base.Point3): Inputs.Base.Frame => ({ origin, normal, direction: normal[0] === 0 ? [1, 0, 0] : [0, 1, 0] });
@@ -249,9 +246,10 @@ describe("OCCT sections and splitting", () => {
     });
 
     describe("cutting a compound that mixes solids with sheets", () => {
-        it("should slice and split it through its solids, which the kernel alone leaves empty", () => {
+        it("should slice and split it through its solids, also where a sheet runs through them", () => {
             // Arrange
-            const mixed = occt.shapes.compound.makeCompound({ shapes: [cube(), square()] });
+            const through = occt.shapes.face.createSquareFace({ size: 10, center: [0, 5, 0], direction: [0, 1, 0] });
+            const mixed = occt.shapes.compound.makeCompound({ shapes: [cube(), square(), through] });
             const frame = across([1, 0, 0], [0, 0, 0]);
 
             // Act

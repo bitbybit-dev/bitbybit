@@ -2,9 +2,6 @@ import { InputError } from "@bitbybit-dev/base";
 import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { OccHelper } from "../../occ-helper";
 
-/** Radians in one degree: the public API takes and gives degrees, the kernel radians. */
-export const RADIANS_PER_DEGREE = Math.PI / 180;
-
 /** A solution of a tangency problem as the kernel gives it: its edge and where it meets each argument. */
 export interface TangentSolution {
     edge: TopoDS_Edge;

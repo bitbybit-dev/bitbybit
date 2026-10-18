@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shell, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { IteratorService } from "./iterator.service";
 import { OCCTSolid } from "../shapes/solid";
 import { OCCTFace } from "../shapes/face";
@@ -19,9 +17,7 @@ describe("OCCT iterator service unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         iteratorService = new IteratorService(occt);
         solid = new OCCTSolid(occt, occHelper);
         faceService = new OCCTFace(occt, occHelper);
@@ -201,6 +197,44 @@ describe("OCCT iterator service unit tests", () => {
             expect(passed.map(([index]) => index)).toEqual([0, 1, 2]);
             expect(passed.map(([, child]) => child.IsSame(sphere))).toEqual([false, true, false]);
         });
+    });
+
+    describe("a callback that throws", () => {
+            it.each([
+                ["forEachEdge", "EdgesOf", 12],
+                ["forEachFace", "FacesOf", 6],
+                ["forEachWire", "WiresOf", 6],
+                ["forEachVertex", "VerticesOf", 48],
+            ] as const)("should release what %s had not handed over yet when a callback throws, and leave the shape it threw on to the callback", (walkName, kernelWalk, count) => {
+                // Arrange
+                const box = solid.createBox({ width: 1, length: 2, height: 3, center: [0, 0, 0] });
+                const failure = new Error("the callback could not use the shape");
+                const handedOut: TopoDS_Shape[] = [];
+                const original: unknown = Reflect.get(occt, kernelWalk);
+                const walkOf = (original as (...args: unknown[]) => TopoDS_Shape[]).bind(occt);
+                Reflect.set(occt, kernelWalk, (...args: unknown[]): TopoDS_Shape[] => {
+                    const shapes = walkOf(...args);
+                    handedOut.push(...shapes);
+                    return shapes;
+                });
+                const walk: (shape: TopoDS_Shape, callback: () => void) => void = iteratorService[walkName].bind(iteratorService);
+                let thrown: unknown;
+
+                // Act
+                try {
+                    walk(box, () => {
+                        throw failure;
+                    });
+                } catch (error) {
+                    thrown = error;
+                } finally {
+                    Reflect.set(occt, kernelWalk, original);
+                }
+
+                // Assert
+                expect(thrown).toBe(failure);
+                expect(handedOut.map(shape => shape.isDeleted())).toEqual([false, ...Array(count - 1).fill(true)]);
+            });
     });
 
     describe("edges along a wire", () => {

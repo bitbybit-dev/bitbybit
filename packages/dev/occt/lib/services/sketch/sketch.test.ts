@@ -1,9 +1,6 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { TopoDS_Edge, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
@@ -16,7 +13,7 @@ describe("OCCT sketch", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const ground = (x: number, y: number): Point3 => [x, 0, -y];
@@ -483,6 +480,51 @@ describe("OCCT sketch", () => {
             expect(message).toMatch(/`width` is too wide for the wire: its offset breaks apart/);
         });
 
+        it("should refuse a wire with no direction at an end before outlining it, as the kernel reports at a Bezier's doubled first point, standing in for its tangent query", () => {
+            // Arrange
+            const wire = line();
+            const tangentOnWireAtParam = occt.shapes.wire.tangentOnWireAtParam.bind(occt.shapes.wire);
+            const noDirectionAtTheStart = vi.spyOn(occt.shapes.wire, "tangentOnWireAtParam").mockImplementation(inputs => inputs.param === 0 ? [0, 0, 0] : tangentOnWireAtParam(inputs));
+            const offsets = vi.spyOn(occt.shapes.wire, "offsetOpen");
+
+            // Act
+            const refusal = thrownBy(() => occt.sketch.stroke({ shape: wire, width: 4 }));
+            const offsetCalls = offsets.mock.calls.length;
+            noDirectionAtTheStart.mockRestore();
+            offsets.mockRestore();
+
+            // Assert
+            expect(refusal.property).toBe("shape");
+            expect(refusal.message).toBe("`shape` has no direction at its start, so its ends cannot be capped: remove the doubled point or the piece of no length there.");
+            expect(offsetCalls).toBe(0);
+        });
+
+        it.each([Inputs.OCCT.strokeCapEnum.flat, Inputs.OCCT.strokeCapEnum.round, Inputs.OCCT.strokeCapEnum.square])("should refuse a Bezier whose last control point sits on its end, where it has no direction, before outlining it with a %s cap", cap => {
+            // Arrange
+            const doubledEnd = occt.sketch.pen({ commands: [{ type: "cubic", control1: [5, 5], control2: [10, 0], to: [10, 0] }] });
+            const offsets = vi.spyOn(occt.shapes.wire, "offsetOpen");
+
+            // Act
+            const refusal = thrownBy(() => occt.sketch.stroke({ shape: doubledEnd, width: 1, cap }));
+            const offsetCalls = offsets.mock.calls.length;
+            offsets.mockRestore();
+
+            // Assert
+            expect([refusal.property, refusal.message]).toEqual(["shape", "`shape` has no direction at its end, so its ends cannot be capped: remove the doubled point or the piece of no length there."]);
+            expect(offsetCalls).toBe(0);
+        });
+
+        it("should refuse a Bezier whose first control point sits on its start, where it has no direction", () => {
+            // Arrange
+            const doubledStart = occt.sketch.pen({ commands: [{ type: "cubic", control1: [0, 0], control2: [5, 5], to: [10, 0] }] });
+
+            // Act
+            const refusal = thrownBy(() => occt.sketch.stroke({ shape: doubledStart, width: 1 }));
+
+            // Assert
+            expect([refusal.property, refusal.message]).toEqual(["shape", "`shape` has no direction at its start, so its ends cannot be capped: remove the doubled point or the piece of no length there."]);
+        });
+
         it("should pass on the kernel's failure when the inside of a closed wire vanishes", () => {
             // Arrange
             const small = occt.shapes.wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
@@ -560,6 +602,50 @@ describe("OCCT sketch", () => {
             expectPoint(normalOf(hull), [0, 1, 0]);
             const circular = edgesOf(hull).filter(edge => occt.shapes.edge.isEdgeCircular({ shape: edge }));
             expect(circular).toHaveLength(4);
+        });
+
+        it("should wrap a slot drawn of two lines and two half circles in itself", () => {
+            // Arrange
+            const slot = occt.sketch.pen({ commands: [{ type: "hLine", length: 20 }, { type: "tangentArc", to: [20, 10] }, { type: "hLine", length: -20 }, { type: "tangentArc", to: [0, 0] }] });
+
+            // Act
+            const hull = occt.sketch.hull({ shapes: [slot] });
+
+            // Assert
+            expect(areaOf(hull)).toBeCloseTo(20 * 10 + Math.PI * 25, 5);
+        });
+
+        it("should wrap a rectangle with rounded corners in itself", () => {
+            // Arrange
+            const corner = { type: "filletCorner", radius: 3 } as const;
+            const rounded = occt.sketch.pen({ commands: [{ type: "hLine", length: 20 }, corner, { type: "vLine", length: 10 }, corner, { type: "hLine", length: -20 }, corner, { type: "close" }, corner] });
+
+            // Act
+            const hull = occt.sketch.hull({ shapes: [rounded] });
+
+            // Assert
+            expect(areaOf(hull)).toBeCloseTo(20 * 10 - (4 - Math.PI) * 9, 5);
+        });
+
+        it("should wrap a circle, a vertex on its rim and one beyond it alike whatever order they are given in", () => {
+            // Arrange
+            const ring = circle(-2, 1, 3);
+            const onRim = occt.shapes.vertex.vertexFromXYZ({ x: -2, y: 0, z: -4 });
+            const beyond = occt.shapes.vertex.vertexFromXYZ({ x: 4, y: 0, z: -4 });
+            const tangent = 6;
+            const expected = tangent * 3 + (2 * Math.PI - 2 * Math.acos(3 / Math.hypot(6, 3))) * 9 / 2;
+
+            // Act
+            const areas = [[ring, onRim, beyond], [beyond, onRim, ring], [onRim, ring, beyond]].map(shapes => {
+                try {
+                    return areaOf(occt.sketch.hull({ shapes }));
+                } catch (error) {
+                    return (error as Error).message;
+                }
+            });
+
+            // Assert
+            expect(areas).toEqual([expect.closeTo(expected, 5), expect.closeTo(expected, 5), expect.closeTo(expected, 5)]);
         });
 
         it("should wrap circles of different sizes", () => {

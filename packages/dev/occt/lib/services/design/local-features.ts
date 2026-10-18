@@ -2,9 +2,11 @@ import type { TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitby
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import type { DesignOutcome } from "./cache";
-import { release, stableJson } from "./cache";
+import { stableJson } from "./cache";
+import { release, releasedOnError } from "../base/release";
 import { sha256 } from "./digest";
 import { bodyOf, contextOf, faceCount, faceFrame, faceSignatures, profileNames } from "./helpers";
+import { holeSizeOf, tappedWallsOf } from "./hole-fastener";
 import { tripleOf } from "./placement";
 import type { FaceNames } from "./names";
 import { carryNames, give, nameOf } from "./names";
@@ -140,7 +142,7 @@ function cut(id: string, body: BodyState, open: number[], thickness: number, inn
         release(face);
         return tool;
     });
-    const opened = run.occt.booleans.differenceWithHistory({ shape: hollow.shape, shapes: tools, keepEdges: false });
+    const opened = run.occt.booleans.differenceWithHistory({ shape: hollow.shape, shapes: tools, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
     tools.forEach(release);
     release(hollow.shape);
     if (!run.occt.shapeFix.isValid({ shape: opened.shape })) {
@@ -184,15 +186,18 @@ function drilled(feature: Models.OCCT.DesignHoleFeature, path: string, run: Desi
         const y = Array.isArray(position) ? numberOf(position[1], run.parameters, pointer(path, "at", index, 1)) : numberOf(position.y, run.parameters, pointer(path, "at", index, "y"));
         return { origin: run.base.frame.pointToWorld({ frame, point: [x, y, 0] }), normal: frame.normal, direction: frame.direction };
     });
+    const sized = feature.fastener === undefined ? undefined : holeSizeOf(feature.fastener, run.parameters, pointer(path, "fastener"));
     const common = {
         shape: body.shape,
         frames,
-        diameter: numberOf(feature.diameter, run.parameters, pointer(path, "diameter")),
+        diameter: sized?.diameter ?? numberOf(feature.diameter, run.parameters, pointer(path, "diameter")),
         depth: feature.depth === undefined ? 0 : numberOf(feature.depth, run.parameters, pointer(path, "depth")),
         tipAngle: feature.tipAngle === undefined ? 0 : numberOf(feature.tipAngle, run.parameters, pointer(path, "tipAngle")),
     };
     const { counterbore, countersink } = feature;
-    const made = counterbore !== undefined
+    const made = sized?.counterbore !== undefined
+        ? run.occt.features.counterboredHolesWithHistory({ ...common, counterboreDiameter: sized.counterbore.diameter, counterboreDepth: sized.counterbore.depth })
+        : counterbore !== undefined
         ? run.occt.features.counterboredHolesWithHistory({
             ...common,
             counterboreDiameter: numberOf(counterbore.diameter, run.parameters, pointer(path, "counterbore", "diameter")),
@@ -208,7 +213,11 @@ function drilled(feature: Models.OCCT.DesignHoleFeature, path: string, run: Desi
     const given = new Map<number, string[]>();
     made.histories.slice(1).forEach((hole, index) => {
         const position = feature.at[index]!;
-        give(given, hole.faces.flat(), nameOf(feature.id, "wall"), ...(Array.isArray(position) ? [] : [nameOf(feature.id, "wall", position.id)]));
+        const faces = hole.faces.flat();
+        give(given, faces, nameOf(feature.id, "wall"), ...(Array.isArray(position) ? [] : [nameOf(feature.id, "wall", position.id)]));
+        if (sized?.tapped === true) {
+            give(given, releasedOnError([made.shape], () => tappedWallsOf(made.shape, faces, frames[index]!, common.diameter / 2, run)), nameOf(feature.id, "thread"));
+        }
     });
     return { kind: "body", shape: made.shape, names: carryNames(faceCount(made.shape, run), [{ names: body.names, history: made.histories[0]! }], given) };
 }

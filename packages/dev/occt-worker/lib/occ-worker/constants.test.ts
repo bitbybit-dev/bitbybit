@@ -28,6 +28,8 @@ describe("the worker protocol constants", () => {
             expect(ReservedFunctions).toEqual({
                 SHAPE_TO_MESH: "shapeToMesh",
                 SHAPES_TO_MESHES: "shapesToMeshes",
+                SHAPE_TO_MESH_BUFFERS: "shapeToMeshBuffers",
+                SHAPES_TO_MESH_BUFFERS: "shapesToMeshBuffers",
                 DOC_TO_MESH: "docToMesh",
                 DOC_TO_MESHES: "docToMeshes",
                 DELETE_SHAPE: "deleteShape",
@@ -55,6 +57,8 @@ describe("the worker protocol constants", () => {
                 "saveShapeSTEP",
                 "setMeshRetention",
                 "shapeToMesh",
+                "shapeToMeshBuffers",
+                "shapesToMeshBuffers",
                 "shapesToMeshes",
                 "startedTheRun",
             ]);

@@ -3,29 +3,14 @@ import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt"
 import type * as Inputs from "../../api/inputs";
 import type { RebindEntry } from "./hints";
 import type { FaceNames } from "./names";
+import { release } from "../base/release";
+import { recentlyUsed } from "./recent";
 
 /** What one feature made: a body with its face names, or a sketch with the command each edge was drawn by, the way it faces and the frame it was drawn in. */
 export type DesignOutcome = (
     | { kind: "body"; shape: TopoDS_Shape; names: FaceNames }
     | { kind: "sketch"; shape: TopoDS_Shape; commands: (string | undefined)[]; normal: [number, number, number]; frame: Inputs.Base.Frame }
 ) & { rebinds?: readonly RebindEntry[] };
-
-/** Frees a shape the cache or a feature owns, once. */
-export function release(shape: TopoDS_Shape): void {
-    if (!shape.isDeleted()) {
-        shape.delete();
-    }
-}
-
-/** What `use` gives, made with a new `shape` it may keep; when it throws instead, `shape` is freed first. */
-export function releasedOnError<T>(shape: TopoDS_Shape, use: () => T): T {
-    try {
-        return use();
-    } catch (error) {
-        release(shape);
-        throw error;
-    }
-}
 
 /**
  * What features made, by the hash of what they were made from, so a build that meets the same
@@ -49,12 +34,7 @@ export class DesignCache {
 
     /** The outcome made under `hash`, now the most recently used, or undefined. */
     take(hash: string): DesignOutcome | undefined {
-        const found = this.entries.get(hash);
-        if (found !== undefined) {
-            this.entries.delete(hash);
-            this.entries.set(hash, found);
-        }
-        return found;
+        return recentlyUsed(this.entries, hash);
     }
 
     /** Keeps `outcome` under `hash`; the cache owns its shape from now on. */

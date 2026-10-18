@@ -1,11 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest";
+import fc from "fast-check";
 import { runInNewContext } from "node:vm";
 import * as ts from "typescript";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
@@ -40,13 +39,42 @@ const javascriptOf = (code: string): string => {
     return output.outputText;
 };
 
+
+const NUMBER_NAMES = ["width", "depth", "angle"] as const;
+
+const expressionText: fc.Arbitrary<string> = fc.letrec<{ expression: string }>(tie => ({
+    expression: fc.oneof(
+        { depthSize: "small", withCrossShrink: true },
+        fc.oneof(
+            fc.integer({ min: -400, max: 400 }).map(value => String(value)),
+            fc.integer({ min: -400, max: 400 }).map(value => String(value / 8)),
+            fc.constantFrom(...NUMBER_NAMES, "pi", "tau", "e", "true", "false", "0.1", "1e-7", "2.5", "-2.5"),
+        ),
+        fc.tuple(tie("expression"), fc.constantFrom("+", "-", "*", "/", "^", "<", "<=", ">", ">=", "==", "!=", "&&", "||"), tie("expression"), fc.boolean())
+            .map(([left, operator, right, grouped]) => grouped ? `(${left}) ${operator} (${right})` : `${left} ${operator} ${right}`),
+        fc.tuple(fc.constantFrom("-", "!", "+"), tie("expression")).map(([sign, operand]) => `${sign}${operand}`),
+        fc.tuple(fc.constantFrom("sin", "cos", "tan", "asin", "acos", "atan", "abs", "sqrt", "floor", "ceil", "round"), tie("expression")).map(([name, argument]) => `${name}(${argument})`),
+        fc.tuple(fc.constantFrom("atan2", "min", "max"), tie("expression"), tie("expression")).map(([name, first, second]) => `${name}(${first}, ${second})`),
+        fc.tuple(tie("expression"), tie("expression"), tie("expression")).map(([test, then, otherwise]) => `if(${test}, ${then}, ${otherwise})`),
+        fc.tuple(fc.constantFrom("finish == 'raw'", "finish != 'black'", "'raw' == finish"), tie("expression"), tie("expression")).map(([test, then, otherwise]) => `if(${test}, ${then}, ${otherwise})`),
+    ),
+})).expression;
+
+const evaluatedOrUndefined = (text: string, values: ReadonlyMap<string, number | string>): number | string | undefined => {
+    try {
+        return evaluateExpression(parseExpression(text), values);
+    } catch {
+        return undefined;
+    }
+};
+
 describe("design documents as TypeScript", () => {
     let kernel: BitbybitOcctModule;
     let occt: OCCTService;
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        const helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel);
+        const helper = new OccHelper(kernel);
         occt = new OCCTService(kernel, helper);
     }, 120_000);
 
@@ -99,6 +127,52 @@ describe("design documents as TypeScript", () => {
                 const expected = evaluateExpression(parseExpression(expressions[index]!), values);
                 expect(computed, `${expressions[index]} as ${code}`).toBe(expected);
             });
+        });
+
+        it("should convert every angle in the order the build does, so angles whose last bit depends on that order come out the same", () => {
+            // Arrange
+            const lastBitCounterexamples = ["sin(3)", "tan(3)", "atan(0.7)", "atan(2)", "atan2(2, 1)", "asin(0.02)", "acos(0.01)"];
+            const helpers = new Map<MathHelper, string>();
+            const helper = (kind: MathHelper): string => {
+                const uses = mathHelperUses(kind);
+                if (uses !== undefined) {
+                    helper(uses);
+                }
+                helpers.set(kind, `${kind}Helper`);
+                return `${kind}Helper`;
+            };
+
+            // Act
+            const codes = lastBitCounterexamples.map(text => expressionCode(parseExpression(text), new Map(), helper).text);
+            const declarations = ts.transpile(mathHelperDeclarations(helpers).join("\n"));
+            const computed = codes.map(code => runInNewContext(`${declarations}\n(${code})`, { Math }) as number);
+
+            // Assert
+            expect(computed).toEqual(lastBitCounterexamples.map(text => evaluateExpression(parseExpression(text), new Map())));
+        });
+        it("should compute to the bit what the build computes for any expression the language parses, operator precedence, signs and trigonometry included", () => {
+            // Arrange
+            const values = new Map<string, number | string>([["width", 40], ["depth", -12.5], ["angle", 30], ["finish", "raw"]]);
+            const names = new Map([...values.keys()].map(name => [name, name]));
+            const helpers = new Map<MathHelper, string>();
+            const helper = (kind: MathHelper): string => {
+                const uses = mathHelperUses(kind);
+                if (uses !== undefined) {
+                    helper(uses);
+                }
+                helpers.set(kind, `${kind}Helper`);
+                return `${kind}Helper`;
+            };
+
+            // Act & Assert
+            fc.assert(fc.property(expressionText, text => {
+                const expected = evaluatedOrUndefined(text, values);
+                fc.pre(expected !== undefined);
+                const code = expressionCode(parseExpression(text), names, helper).text;
+                const declarations = ts.transpile(mathHelperDeclarations(helpers).join("\n"));
+                const computed: unknown = runInNewContext(`${declarations}\n(${javascriptOf(`const value = ${code};`).replace("const value = ", "").replace(/;\s*$/, "")})`, { ...Object.fromEntries(values), Math });
+                expect(Object.is(computed, expected), `${text} as ${code} gives ${String(computed)}, the build ${String(expected)}`).toBe(true);
+            }), { seed: 20261018, numRuns: 1500 });
         });
     });
 
@@ -352,6 +426,55 @@ describe("design documents as TypeScript", () => {
             expect(box(parts[0]!.shape)).toEqual(box(built.parts[0]!.shape).map(value => expect.closeTo(value, 6)));
         });
 
+        it("should write holes sized by a fastener with the sizes the build drills, its head's counterbore included", async () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [
+                    rectangle("base", 40, 20, { plane: "XY" }),
+                    { id: "plate", type: "extrude", profile: "base", distance: 10 },
+                    { id: "seated", type: "hole", body: "plate", on: { of: "plate", role: "end" }, at: [[10, 10]], fastener: { size: "M5", head: "socket" } },
+                    { id: "tapped", type: "hole", body: "plate", on: { of: "plate", role: "end" }, at: [[30, 10]], fastener: { size: "M6", fit: "tapped" }, depth: 8 },
+                ],
+            };
+
+            // Act
+            const built = occt.design.build({ document });
+            const code = occt.design.toTypeScript({ document });
+            const parts = await execute(code);
+
+            // Assert
+            expect(code).not.toContain("undefined");
+            expect(code).toContain("counterboredHoles");
+            expect(parts.map(part => volume(part.shape))).toEqual(built.parts.map(part => expect.closeTo(volume(part.shape), 6)));
+        });
+
+        it("should join bodies the way the build does, so an edge picked after a pattern is the same edge in the program", async () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [
+                    rectangle("tooth", 2, 2, { plane: "XY" }, [5, -1]),
+                    { id: "teeth", type: "extrude", profile: "tooth", distance: 2 },
+                    rectangle("hub", 4, 4, { plane: "XY" }, [-2, -2]),
+                    { id: "core", type: "extrude", profile: "hub", distance: 3, body: "teeth" },
+                    { id: "crown", type: "polarPattern", body: "teeth", axis: { origin: [0, 0, 0], direction: [0, 0, 1] }, count: 5 },
+                    { id: "edge", type: "chamfer", body: "teeth", distance: 0.5, edges: { between: [{ of: "teeth", role: "end" }, { of: "teeth", role: "side", from: "tooth.bottom" }], count: 1 } },
+                ],
+            };
+
+            // Act
+            const built = occt.design.build({ document });
+            const code = occt.design.toTypeScript({ document });
+            const parts = await execute(code);
+
+            // Assert
+            expect(built.report.filter(entry => entry.status !== "ok")).toEqual([]);
+            const centre = (shape: TopoDS_Shape): number[] => occt.shapes.solid.getSolidCenterOfMass({ shape });
+            expect(code).toContain("booleanStrategyEnum.inGroups");
+            expect(parts.map(part => centre(part.shape))).toEqual(built.parts.map(part => centre(part.shape).map(value => expect.closeTo(value, 9))));
+        });
+
         it("should refuse a document that does not build or has problems", () => {
             // Arrange
             const failing: Document = {
@@ -363,12 +486,14 @@ describe("design documents as TypeScript", () => {
             const notBuilt = (): unknown => occt.design.toTypeScript({ document: failing });
             const broken = (): unknown => occt.design.toTypeScript({ document: { schemaVersion: 1, features: [{ id: "plate", type: "extrude", profile: "none", distance: 1 }] } });
             const badOverride = (): unknown => occt.design.toTypeScript({ document: failing, parameters: { nope: 1 } });
+            const fastenedByParameter = (): unknown => occt.design.toTypeScript({ document: { schemaVersion: 1, parameters: { size: { value: "M6", type: "text" } }, features: [rectangle("base", 4, 4, { plane: "XY" }), { id: "plate", type: "extrude", profile: "base", distance: 1 }, { id: "holes", type: "hole", body: "plate", on: { of: "plate", role: "end" }, at: [[2, 2]], fastener: { size: { expr: "size" } } }] } });
 
             // Assert
             expect(notBuilt).toThrow(InputError);
             expect(notBuilt).toThrow(/^The design document does not build with these values, so it has no code: "huge": /);
             expect(broken).toThrow("The design document has a problem: /features/0/profile:");
             expect(badOverride).toThrow("/parameters/nope: \"nope\" is not a parameter of this document.");
+            expect(fastenedByParameter).toThrow("/features/2: a hole sized by a fastener whose size is an expression is not written as TypeScript yet");
         });
     });
 });

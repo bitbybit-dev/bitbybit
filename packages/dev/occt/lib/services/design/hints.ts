@@ -1,6 +1,6 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { OCCTService } from "../../occ-service";
-import type { BaseBitByBit } from "../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type * as Models from "../../api/models";
 import type { FaceNames } from "./names";
 import { tripleOf } from "./placement";

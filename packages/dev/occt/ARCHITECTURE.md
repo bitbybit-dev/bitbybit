@@ -31,6 +31,24 @@ build - so it detects what the loaded kernel has instead of assuming it.
   checked against the face and edge records it belongs to (`checkLengths`, `checkContents`), so a
   kernel with another record layout fails there instead of drawing a mesh with holes. Colour groups
   are rebuilt as the JSON path writes them: each `#rrggbbaa` colour, in sorted order, with its faces.
+- **Drawing takes the buffers layout, scripts the lists.** `shapeToMesh` gives what the kernel's JSON
+  describes, plain number lists and every position again as a point (`vertexCoordVec`), because users'
+  scripts read it so. The drawers ask the worker for `shapeToMeshBuffers` instead (`MeshingService`,
+  `decodeMeshBuffers`): the same walk over the records (`decodeWith`), but each kind of number is made
+  single precision once for the whole shape and every face holds views into it, with no points again.
+  A mesh of 2,000 cylinders is 13 MB that way where the lists are 28 MB, and its buffers are handed to
+  the main thread rather than copied. Where the kernel answered as JSON, `meshBuffersFromLists` turns
+  the lists into the same buffers.
+- **Edges are read from the faces' mesh.** The kernel takes an edge's points from the triangulation of
+  a face it bounds, the nodes the mesher already placed along it, so a drawn edge lies exactly on the
+  faces; only an edge no meshed face carries (a wire, a free edge) is sampled, with the mesh's own
+  angular deflection and its precision as the chordal one. Sampling once took the precision as the
+  angle, which traced a small circle in 630 points and made edges most of a large model's mesh.
+- **A kept shape is drawn again without the mesher.** With a retention budget set, a redraw whose
+  faces all kept their triangulation for the same settings skips OCCT's mesher, whose own check of
+  kept faces cost more than a second on an assembly of 130 detailed parts, and reads each face's
+  normals and centre as they were worked out the first time. That redraw went from about 1.5 s to
+  under 0.1 s; a first draw costs what it did.
 
 ## Faces
 
@@ -106,6 +124,50 @@ Slicing turns the shape so the slicing direction is the Y axis, slices each soli
 face twice from the kernel, which is kept once; a shape too thin to slice gives an empty compound.
 One call refuses to cut more than 100000 slices (`MOST_SLICES`): a step too small for the shape, or
 for its distance from the origin, would otherwise loop for a very long time.
+
+## Clashes
+
+- `analysis.clashes.betweenShapes` measures a pair exactly only when it cannot be ruled out more
+  cheaply, and answers what measuring every pair would. Two shapes whose kernel boxes are farther
+  apart than the clearance cannot clash. Meshes then rule out the rest, but only between shapes that
+  are one solid whose every face carries a surface: free edges and vertices are never meshed, ray
+  parity cannot tell inside from outside in a compound of overlapping solids, and a face that holds
+  only a mesh is meshed and measured by no surface, so any other pair is measured. Shapes are meshed
+  lazily, only once a pair of them survives the boxes.
+- Each shape is meshed at a thousandth of its box's diagonal, and the meshes go into box trees
+  (base's mesh proximity helpers, whose tolerances are relative to the triangles they compare, so a
+  part modelled in metres is measured as one in millimetres). A pair whose meshes stay farther apart
+  than the clearance plus twice both meshes' error cannot clash, unless one lies inside the other,
+  which a point of each tested by ray parity against the other settles; that far from the other's
+  mesh the parity cannot be fooled by the mesh's error.
+- Meshes already within the clearance less that margin go straight to `ClashesBetween`'s exact
+  distance and shared volume. A pair in the band between, or whose meshes cross where the clearance
+  is smaller than the margin, is meshed again four times finer, up to twice, within a triangle
+  budget and never finer than a precision of 1e-6 (the kernel meshes nothing finer than 1e-7),
+  since a coarse mesh of a big part cannot rule out a gap of a tenth of a millimetre; meshes that
+  still cross are measured. Where the finest meshes still cannot tell, the kernel classifies eight
+  points of each mesh, spread through it, against the other shape, which settles one inside the
+  other near its wall where ray parity could be fooled. A point the kernel cannot classify (it
+  answers unknown for every point of some valid solids) is left to ray parity, but only at a point
+  farther than twice the mesh's error from it; with none that far, the pair is measured. Then
+  `FacesWithin` names the faces that really come within the clearance, and only a pair with a point
+  inside or such a face is measured. A mesh that comes out empty at any level is measured too.
+  `prefilter: false` measures every pair.
+- Pairs are measured one at a time, so a kernel failure would name positions 0 and 1. A kernel
+  failure on the way therefore measures the whole list the way `prefilter: false` does, which fails
+  naming the pair by its positions in the list, or answers; any other error is thrown as it is.
+- When one tree's node is a leaf, each of its triangles walks the other tree on its own, pruned by
+  the triangle's box and its plane: a big flat face meshes to long triangles whose boxes cover their
+  neighbours, and testing them as a leaf made a gear against a crankcase take a minute.
+- `design.clashes` meshes each built part once and places the mesh by each component's world matrix,
+  its kernel box by the box of the placed corners and a point by the inverse placement before it is
+  classified against the part's own shape. What it learns is kept by the parts' shape hashes, never
+  their ids, which outlive an edit: the kernel boxes (shared with `design.section`), whether a part
+  is one solid, its meshes at each level within a byte budget, and measured pairs. A pair of parts at
+  the same relative placement and clearance is answered from what was measured, its points kept in
+  the first part's frame, so a sweep through a motion measures only what moved. A kernel failure
+  while ruling a pair out measures it exactly; one while telling a thread apart keeps the measured
+  clash.
 
 ## Drawings
 
@@ -204,6 +266,49 @@ for its distance from the origin, would otherwise loop for a very long time.
   writes into a `//` comment: a line break would end the comment and run the rest as code. It
   parenthesises the operand of a unary `-` or `!` unless that is an atom or another sign, because
   TypeScript refuses a sign directly before `**`.
+
+## Standard parts
+
+- A spur gear's outline is computed in base (`spurGearOutline`, kernel-neutral; public as points through
+  `engineering.mechanical.gears.spurGearOutline`) as lines, arcs and cubic Beziers, read here by its deep path, and drawn through the pen in one kernel call. Each involute flank is a run
+  of cubics fitted by arc length, split until no sample strays more than a ten-thousandth of the
+  module from the true involute; the root fillet touches the radial root below the base circle or
+  the involute above it, and shrinks until the two fillets of a gap meet short of its middle.
+- The pen commands carry ids `<part>.<index>` (`tip`, `flank`, `root`), unique as the pen needs; a
+  role comes from the outline move of the segment's command, never from parsing the id.
+- A ring gear's outline is the edge of the space inside the ring, and that space is shaped like a
+  spur gear whose teeth are the ring's gaps: the same flank code draws it with the ring's root as
+  that shape's tips, which are rounded instead of the gaps, and turned half a pitch so a ring tooth
+  lies along the frame's direction. Its tips must stay outside the base circle, where the involute
+  starts, which rules out rings of fewer than about 34 teeth at 20 degrees.
+- `spurGearWithRoles` takes the side roles from the extrude's history, `start` and `end` from its
+  first and last faces, and after the bore is cut keeps each face's role through the boolean's
+  history: the faces no gear face became are the bore. `ringGearWithRoles` makes the ring as one
+  face, the outer circle with the teeth as its hole, and extrudes it, so the face that is not a
+  tooth's is the rim; the face's edges are matched to the teeth's by `IsSame`. Both twins return the
+  `axis` frame, the input frame turned by `rotation`. `lib/services/parts/mechanical/gear-pen.ts` is shared
+  with the design documents' `gear` loop, so both draw the same outline.
+- Fasteners are turned profiles, with a hexagon cut for a socket and intersected with a 30 degree
+  chamfer cone for a head or a nut, all in one frame along +Z with the seat at the origin, then
+  oriented onto the caller's frame. Their faces are named by where each sits in that frame (its
+  surface kind and its box: its height along the axis and how far it reaches from it), which a
+  boolean's history would only repeat; `analysis.signatures` would also integrate every face's area
+  and centre, a second for a spring's swept coil. The booleans keep their edges, so a screw's
+  plain shank and its threaded length stay two faces.
+- Threads are cosmetic and modelled at the nominal diameter inside a nut and a tapped hole as well
+  as on the screw, so a screw in its nut or hole touches it without sharing volume; `design.clashes`
+  leaves that touch out where a joint holds the two together.
+- A compression spring is a round tube swept along an interpolated helix with the Frenet trihedron
+  (the corrected Frenet and constant normal sweeps break on that path), then cut flat by a cylinder
+  as long as the spring. The helix runs three quarters of a coil past each end, so the cutting planes
+  cross the wire's side: a plane through the centre of the tube's end cap left the boolean unable to
+  cut at most lengths. Closed coils rise by 1.05 of the wire's diameter rather than touching.
+- A ball bearing is a compound of separate solids, rings, balls, cage and shields, each named by its
+  own rule and offset by the faces before it, since a boolean of them would weld what turns. The
+  balls, raceways and cage follow typical proportions of the bearing's section, sized so nothing in
+  it overlaps; only the boundary sizes come from the designation. Each ring's flat sides are named
+  apart from the rest of it (`innerStart`, `outerEnd`), so a design document's connector can stand
+  on one.
 
 ## Recipes
 

@@ -1,9 +1,10 @@
-import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shell } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Shell } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
+import { released } from "../base/release";
 
 /**
  * Shells in OpenCascade: sets of faces joined along their edges. A shell that closes on itself with
@@ -40,10 +41,10 @@ export class OCCTShell {
             return { valid: false, nbFaces: 0, nbEdges: 0, area: 0, faces: [] };
         }
         const faces = this.och.shapeGettersService.getFaces({ shape: inputs.shape });
-        const faceInfos = faces.map((f) => JSON.parse(this.occ.FaceDebugInfoJson(f)) as Models.OCCT.FaceDebugInfo);
-        const edges = this.och.shapeGettersService.getEdges({ shape: inputs.shape });
+        const faceInfos = released(faces, () => faces.map((f) => JSON.parse(this.occ.FaceDebugInfoJson(f)) as Models.OCCT.FaceDebugInfo));
+        const nbEdges = this.occ.CountSubShapes(inputs.shape, this.occ.TopAbs_ShapeEnum.EDGE, true);
         const area = faceInfos.reduce((sum, f) => sum + (f.area ?? 0), 0);
-        return { valid: true, nbFaces: faces.length, nbEdges: edges.length, area, faces: faceInfos };
+        return { valid: true, nbFaces: faces.length, nbEdges, area, faces: faceInfos };
     }
 
     /**
@@ -65,6 +66,28 @@ export class OCCTShell {
     sewFaces(inputs: Inputs.OCCT.SewDto<TopoDS_Face>): TopoDS_Shell {
         const resolved = resolveDto(Inputs.OCCT.SewDto, inputs) as Resolved.OCCT.SewDto<TopoDS_Face>;
         return this.och.shellsService.sewFaces(resolved);
+    }
+
+    /**
+     * Sews faces and shells as `sewFaces` does, and reports per shape given which faces of the sewn
+     * shape each of its faces became.
+     *
+     * `histories[i].faces[j]` lists the result faces face `j` of shape `i` became, as
+     * `shapes.face.getFaces` numbers both.
+     * @param inputs - The faces or shells and the sewing tolerance
+     * @returns The sewn shape and one history per shape given
+     * @group create
+     * @shortname sew with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.shapes.shell.sewFacesWithHistory({ shapes: [top, bottom, side], tolerance: 1e-7 });
+     * const sewnTop = histories[0].faces[0];
+     * ```
+     */
+    sewFacesWithHistory(inputs: Inputs.OCCT.SewDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.SewDto, inputs) as Resolved.OCCT.SewDto<TopoDS_Shape>;
+        return this.och.shellsService.sewFacesWithHistory(resolved);
     }
 
     /**

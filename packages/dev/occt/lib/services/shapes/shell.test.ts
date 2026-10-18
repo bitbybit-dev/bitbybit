@@ -3,8 +3,6 @@ import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTFace } from "./face";
 import { OCCTShell } from "./shell";
 
@@ -16,9 +14,7 @@ describe("OCCT shell unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         face = new OCCTFace(occt, occHelper);
         shell = new OCCTShell(occt, occHelper);
     });

@@ -1,7 +1,8 @@
 import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { squareFrame, unitOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { add3, dot3, length2, scale3, subtract2, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
@@ -27,11 +28,6 @@ const XY_FRAME: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 1], dire
 const IN_PLANE = 1e-6;
 const CAPS: readonly Inputs.OCCT.strokeCapEnum[] = [Inputs.OCCT.strokeCapEnum.flat, Inputs.OCCT.strokeCapEnum.round, Inputs.OCCT.strokeCapEnum.square];
 const JOINS: readonly Inputs.OCCT.joinTypeEnum[] = [Inputs.OCCT.joinTypeEnum.arc, Inputs.OCCT.joinTypeEnum.intersection, Inputs.OCCT.joinTypeEnum.tangent];
-
-const plus = (a: Vec3, b: Vec3): Vec3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-const times = (a: Vec3, factor: number): Vec3 => [a[0] * factor, a[1] * factor, a[2] * factor];
-const minus = (a: Vec3, b: Vec3): Vec3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-const along = (a: Vec3, b: Vec3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
 /**
  * Drawing flat outlines with a pen: a start point and a list of moves (lines, arcs, Bezier curves,
@@ -270,10 +266,7 @@ export class OCCTSketch {
             const transform = new this.occ.BRepBuilderAPI_Transform(shape, transformation, true);
             const moved = transform.Shape();
             transform.delete();
-            const typed = this.och.converterService.getActualTypeOfShape(moved);
-            if (typed !== moved) {
-                moved.delete();
-            }
+            const typed = this.och.converterService.castAndRelease(moved);
             return typed;
         } finally {
             source.delete();
@@ -332,6 +325,11 @@ export class OCCTSketch {
     }
 
     private band(wire: TopoDS_Wire, plane: TopoDS_Face, width: number, cap: Inputs.OCCT.strokeCapEnum, join: Inputs.OCCT.joinTypeEnum, makeFace: boolean): TopoDS_Shape {
+        const startTangent = unitOf(this.shapes.wire.tangentOnWireAtParam({ shape: wire, param: 0 }));
+        const endTangent = unitOf(this.shapes.wire.tangentOnWireAtParam({ shape: wire, param: 1 }));
+        if (startTangent === undefined || endTangent === undefined) {
+            throw new InputError(`\`shape\` has no direction at its ${startTangent === undefined ? "start" : "end"}, so its ends cannot be capped: remove the doubled point or the piece of no length there.`, "shape");
+        }
         const half = width / 2;
         const right = this.shapes.wire.offsetOpen({ shape: wire, face: plane, distance: half, joinType: join });
         const left = this.shapes.wire.offsetOpen({ shape: wire, face: plane, distance: -half, joinType: join });
@@ -344,10 +342,8 @@ export class OCCTSketch {
         const lastOf = (edges: TopoDS_Edge[]): Vec3 => this.shapes.edge.endPointOnEdge({ shape: edges[edges.length - 1]! });
         const start = this.shapes.wire.startPointOnWire({ shape: wire });
         const end = this.shapes.wire.endPointOnWire({ shape: wire });
-        const startTangent = unit3(this.shapes.wire.tangentOnWireAtParam({ shape: wire, param: 0 }));
-        const endTangent = unit3(this.shapes.wire.tangentOnWireAtParam({ shape: wire, param: 1 }));
         const endCap = this.cap(lastOf(rightEdges), lastOf(leftEdges), end, endTangent, half, cap);
-        const startCap = this.cap(firstOf(leftEdges), firstOf(rightEdges), start, times(startTangent, -1), half, cap);
+        const startCap = this.cap(firstOf(leftEdges), firstOf(rightEdges), start, scale3(startTangent, -1), half, cap);
         const edges = [...rightEdges, ...endCap, ...leftBack, ...startCap];
         try {
             const outline = this.shapes.wire.combineEdgesAndWiresIntoAWire({ shapes: edges });
@@ -368,27 +364,24 @@ export class OCCTSketch {
 
     private cap(from: Vec3, to: Vec3, end: Vec3, outward: Vec3, half: number, cap: Inputs.OCCT.strokeCapEnum): TopoDS_Edge[] {
         if (cap === Inputs.OCCT.strokeCapEnum.round) {
-            return [this.shapes.edge.arcThroughThreePoints({ start: from, middle: plus(end, times(outward, half)), end: to })];
+            return [this.shapes.edge.arcThroughThreePoints({ start: from, middle: add3(end, scale3(outward, half)), end: to })];
         }
         if (cap === Inputs.OCCT.strokeCapEnum.flat) {
             return [this.shapes.edge.line({ start: from, end: to })];
         }
-        const fromOut = plus(from, times(outward, half));
-        const toOut = plus(to, times(outward, half));
+        const fromOut = add3(from, scale3(outward, half));
+        const toOut = add3(to, scale3(outward, half));
         return [this.shapes.edge.line({ start: from, end: fromOut }), this.shapes.edge.line({ start: fromOut, end: toOut }), this.shapes.edge.line({ start: toOut, end: to })];
     }
 
     private facingAlong(face: TopoDS_Face, plane: TopoDS_Face): TopoDS_Face {
         const normal = this.shapes.face.normalOnUV({ shape: plane, paramU: 0.5, paramV: 0.5 });
         const facing = this.shapes.face.normalOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
-        if (along(normal, facing) >= 0) {
+        if (dot3(normal, facing) >= 0) {
             return face;
         }
         const reversed = face.Reversed();
-        const typed = this.och.converterService.getActualTypeOfShape(reversed);
-        if (typed !== reversed) {
-            reversed.delete();
-        }
+        const typed = this.och.converterService.castAndRelease(reversed);
         face.delete();
         return typed;
     }
@@ -396,11 +389,11 @@ export class OCCTSketch {
     private hullParts(shape: TopoDS_Shape, index: number, axes: FrameAxes): HullPart[] {
         const property = "shapes";
         const flat = (point: Vec3): Vec2 => {
-            const offset = minus(point, axes.origin);
-            if (Math.abs(along(offset, axes.z)) > IN_PLANE) {
+            const offset = subtract3(point, axes.origin);
+            if (Math.abs(dot3(offset, axes.z)) > IN_PLANE) {
                 throw new InputError(`\`${property}\` at position ${index} does not lie in the frame's plane.`, property);
             }
-            return [along(offset, axes.x), along(offset, axes.y)];
+            return [dot3(offset, axes.x), dot3(offset, axes.y)];
         };
         if (this.och.enumService.getShapeTypeEnum(shape) === Inputs.OCCT.shapeTypeEnum.vertex) {
             return [{ kind: "point", at: flat(this.shapes.vertex.vertexToPoint({ shape: shape })) }];
@@ -420,12 +413,12 @@ export class OCCTSketch {
                     throw new InputError(`\`${property}\` at position ${index} has an edge that is neither straight nor circular.`, property);
                 }
                 const normal = this.shapes.edge.getCircularEdgePlaneDirection({ shape: edge });
-                if (Math.abs(Math.abs(along(unit3(normal), axes.z)) - 1) > IN_PLANE) {
+                if (Math.abs(Math.abs(dot3(unitOf(normal)!, axes.z)) - 1) > IN_PLANE) {
                     throw new InputError(`\`${property}\` at position ${index} has a circle tilted out of the frame's plane.`, property);
                 }
                 const center = flat(this.shapes.edge.getCircularEdgeCenterPoint({ shape: edge }));
                 const radius = this.shapes.edge.getCircularEdgeRadius({ shape: edge });
-                if (Math.hypot(end[0] - start[0], end[1] - start[1]) <= COINCIDENT) {
+                if (length2(subtract2(end, start)) <= COINCIDENT) {
                     return [{ kind: "disc", center, radius }];
                 }
                 const middle = flat(this.shapes.edge.pointOnEdgeAtParam({ shape: edge, param: 0.5 }));
@@ -442,10 +435,6 @@ function pointOf(value: unknown, property: string): Vec2 {
         throw new InputError(`\`${property}\` is not a 2D point: it needs two finite numbers.`, property);
     }
     return [value[0] as number, value[1] as number];
-}
-
-function unit3(vector: Vec3): Vec3 {
-    return times(vector, 1 / Math.hypot(vector[0], vector[1], vector[2]));
 }
 
 function arcRange(center: Vec2, start: Vec2, middle: Vec2, end: Vec2): { from: number; span: number } {

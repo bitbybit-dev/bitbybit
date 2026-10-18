@@ -14,9 +14,6 @@ const { failure, kernelCalls } = vi.hoisted(() => {
 });
 
 vi.mock("@bitbybit-dev/occt", () => {
-    class VectorHelperService { }
-    class ShapesHelperService { }
-    class OccHelper { }
     const call = (path: string) => (inputs: unknown): unknown => {
         kernelCalls.push({ path, inputs });
         return { made: path };
@@ -58,9 +55,10 @@ vi.mock("@bitbybit-dev/occt", () => {
     }
     const constraints = { width: { kind: "number" }, length: { kind: "number", required: true }, height: { kind: "number" } };
     const rules = new Map([[BoxDto, [{ reads: ["width"], check: (inputs: { width: number }) => (inputs.width > 100 ? { property: "width", code: "custom", message: "must be at most 100" } : undefined) }]]]);
+    class OccHelper {
+        meshingService = {};
+    }
     return {
-        VectorHelperService,
-        ShapesHelperService,
         OccHelper,
         OCCTService,
         occtDtoRegistry: { "shapes.solid.createBox": { dto: BoxDto, constraints }, "shapes.solid.fail": { dto: BoxDto, constraints } },

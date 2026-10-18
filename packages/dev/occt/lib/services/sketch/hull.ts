@@ -1,5 +1,6 @@
 import type { ArcPiece, Outline, Piece, Vec2 } from "./outline";
 import { COINCIDENT } from "./outline";
+import { add2, dot2, leftOf2, length2, polar2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
 /**
  * Something the hull wraps: a point, or a disc of `radius` about `center` whose rim counts only
@@ -28,37 +29,52 @@ function radiusOf(part: HullPart): number {
     return part.kind === "point" ? 0 : part.radius;
 }
 
-function covers(part: HullPart, angle: number): boolean {
+function coversOnward(part: HullPart, angle: number): boolean {
     if (part.kind === "point" || part.range === undefined) {
         return true;
     }
     const into = ((angle - part.range.from) % FULL_TURN + FULL_TURN) % FULL_TURN;
-    return into <= part.range.span + SAME_ANGLE || into >= FULL_TURN - SAME_ANGLE;
+    return into < part.range.span - SAME_ANGLE || into >= FULL_TURN - SAME_ANGLE;
 }
 
 function reach(part: HullPart, angle: number): number {
-    const direction = outward(angle);
-    const center = centerOf(part);
-    return direction[0] * center[0] + direction[1] * center[1] + radiusOf(part);
+    return dot2(outward(angle), centerOf(part)) + radiusOf(part);
 }
 
 function touch(part: HullPart, angle: number): Vec2 {
     const center = centerOf(part);
     const radius = radiusOf(part);
-    return [center[0] + radius * Math.cos(angle), center[1] + radius * Math.sin(angle)];
+    return add2(center, polar2(radius, angle));
 }
 
 function overtakesAt(current: HullPart, next: HullPart, angle: number): number | undefined {
-    const between: Vec2 = [centerOf(next)[0] - centerOf(current)[0], centerOf(next)[1] - centerOf(current)[1]];
-    const distance = Math.hypot(between[0], between[1]);
+    const between = subtract2(centerOf(next), centerOf(current));
+    const distance = length2(between);
     const difference = radiusOf(current) - radiusOf(next);
-    if (distance <= COINCIDENT || difference >= distance - COINCIDENT) {
+    if (difference >= distance - COINCIDENT) {
         return undefined;
     }
+    if (-difference >= distance - COINCIDENT) {
+        if (coversOnward(next, angle)) {
+            return 0;
+        }
+        return next.kind === "disc" && next.range !== undefined ? ahead(angle, next.range.from) : undefined;
+    }
     const direction = Math.atan2(between[1], between[0]);
-    const tangent = difference <= COINCIDENT - distance ? direction + Math.PI : direction - Math.acos(difference / distance);
-    const turned = ahead(angle, tangent);
-    return covers(next, angle + turned) ? turned : undefined;
+    const turned = ahead(angle, direction - Math.acos(difference / distance));
+    return coversOnward(next, angle + turned) ? turned : undefined;
+}
+
+function overtakesFirst(part: HullPart, turn: number, rival: HullPart, rivalTurn: number, angle: number): boolean {
+    if (turn < rivalTurn - SAME_ANGLE) {
+        return true;
+    }
+    if (Math.abs(turn - rivalTurn) > SAME_ANGLE) {
+        return false;
+    }
+    const travel = leftOf2(polar2(1, angle + turn));
+    const further = dot2(touch(part, angle + turn), travel) - dot2(touch(rival, angle + turn), travel);
+    return further > COINCIDENT || (further >= -COINCIDENT && radiusOf(part) > radiusOf(rival) + COINCIDENT);
 }
 
 type Run = { part: HullPart; from: number; to: number };
@@ -69,7 +85,7 @@ type Run = { part: HullPart; from: number; to: number };
  */
 export function hullOf(parts: readonly HullPart[]): Outline | undefined {
     const startAngle = 0.123456789;
-    const candidates = parts.filter(part => covers(part, startAngle));
+    const candidates = parts.filter(part => coversOnward(part, startAngle));
     const first = candidates[0];
     if (first === undefined) {
         return undefined;
@@ -101,15 +117,7 @@ function nextEvent(parts: readonly HullPart[], current: HullPart, angle: number)
             continue;
         }
         const turn = overtakesAt(current, part, angle);
-        if (turn === undefined) {
-            continue;
-        }
-        const along = (candidate: HullPart): number => {
-            const point = touch(candidate, angle + turn);
-            const travel: Vec2 = [-Math.sin(angle + turn), Math.cos(angle + turn)];
-            return point[0] * travel[0] + point[1] * travel[1];
-        };
-        if (best === undefined || turn < best.turn - SAME_ANGLE || (Math.abs(turn - best.turn) <= SAME_ANGLE && along(part) > along(best.part))) {
+        if (turn !== undefined && (best === undefined || overtakesFirst(part, turn, best.part, best.turn, angle))) {
             best = { turn, part };
         }
     }
@@ -129,7 +137,7 @@ function samePart(a: HullPart, b: HullPart): boolean {
     if (a === b) {
         return true;
     }
-    return a.kind === "point" && b.kind === "point" && Math.hypot(a.at[0] - b.at[0], a.at[1] - b.at[1]) <= COINCIDENT;
+    return a.kind === "point" && b.kind === "point" && length2(subtract2(a.at, b.at)) <= COINCIDENT;
 }
 
 function piecesOf(runs: readonly Run[]): Piece[] {
@@ -153,7 +161,7 @@ function piecesOf(runs: readonly Run[]): Piece[] {
         const next = runs[(index + 1) % runs.length]!;
         const from = touch(run.part, run.to);
         const to = touch(next.part, run.to);
-        if (Math.hypot(to[0] - from[0], to[1] - from[1]) > COINCIDENT) {
+        if (length2(subtract2(to, from)) > COINCIDENT) {
             pieces.push({ kind: "line", from, to, owner: 0 });
         }
     });

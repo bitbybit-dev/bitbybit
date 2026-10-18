@@ -6,10 +6,11 @@ import type { EntitiesService } from "./entities.service";
 import type { EnumService } from "./enum.service";
 import type { ConverterService } from "./converter.service";
 import type { TransformsService } from "./transforms.service";
-import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { coordinatesOf, massesAndCentres } from "./kernel-arrays";
-import { checkedShapes } from "./input-checks";
+import { checkedDirection, checkedShapes } from "./input-checks";
+import { scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
 export class SolidsService {
 
@@ -20,16 +21,21 @@ export class SolidsService {
         private readonly entitiesService: EntitiesService,
         private readonly converterService: ConverterService,
         private readonly transformsService: TransformsService,
-        private readonly vectorHelperService: VectorHelperService
+        private readonly base: BaseBitByBit
     ) { }
 
     fromClosedShell(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): TopoDS_Solid {
         const shell = this.converterService.getActualTypeOfShape(inputs.shape);
-        const builder = new this.occ.BRepBuilderAPI_MakeSolid(shell);
-        const result = builder.Solid();
-        builder.delete();
-        shell.delete();
-        return result;
+        try {
+            const builder = new this.occ.BRepBuilderAPI_MakeSolid(shell);
+            try {
+                return builder.Solid();
+            } finally {
+                builder.delete();
+            }
+        } finally {
+            shell.delete();
+        }
     }
 
     createBox(inputs: Resolved.OCCT.BoxDto): TopoDS_Solid {
@@ -56,9 +62,9 @@ export class SolidsService {
     }
 
     createCylinder(inputs: Resolved.OCCT.CylinderDto): TopoDS_Solid {
-        const dir = inputs.direction ? inputs.direction : [0., 1., 0.];
+        const dir = inputs.direction ? checkedDirection(inputs.direction, "direction") : [0., 1., 0.];
         let result;
-        const angle = this.vectorHelperService.degToRad(inputs.angle);
+        const angle = this.base.math.degToRad({ number: inputs.angle });
         const cyl = this.entitiesService.bRepPrimAPIMakeCylinder(
             inputs.center,
             dir as Base.Vector3,
@@ -68,8 +74,8 @@ export class SolidsService {
         );
         if (inputs.originOnCenter) {
             const halfHeight = -(inputs.height / 2);
-            const normDir = this.vectorHelperService.normalize(dir);
-            result = this.transformsService.translate({ shape: cyl, translation: [normDir[0]! * halfHeight, normDir[1]! * halfHeight, normDir[2]! * halfHeight] });
+            const normDir = this.base.vector.normalized({ vector: dir })!;
+            result = this.transformsService.translate({ shape: cyl, translation: scale3(normDir as Base.Vector3, halfHeight) });
             cyl.delete();
         }
         else {
@@ -94,28 +100,35 @@ export class SolidsService {
     }
 
     createCone(inputs: Resolved.OCCT.ConeDto): TopoDS_Solid {
-        const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
-        const angle = this.vectorHelperService.degToRad(inputs.angle);
-        const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, angle);
-        const coneShape = makeCone.Shape();
-        makeCone.delete();
-        ax.delete();
-        return coneShape;
+        const ax = this.entitiesService.gpAx2(inputs.center, checkedDirection(inputs.direction, "direction"));
+        const angle = this.base.math.degToRad({ number: inputs.angle });
+        try {
+            const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, angle);
+            try {
+                return makeCone.Shape();
+            } finally {
+                makeCone.delete();
+            }
+        } finally {
+            ax.delete();
+        }
     }
 
     createTorus(inputs: Resolved.OCCT.TorusDto): TopoDS_Solid {
-        const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
-        const angle = this.vectorHelperService.degToRad(inputs.angle);
-        let makeTorus;
-        if (angle >= 2 * Math.PI - 1e-7) {
-            makeTorus = new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius);
-        } else {
-            makeTorus = new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius, 0, 2 * Math.PI, angle);
+        const ax = this.entitiesService.gpAx2(inputs.center, checkedDirection(inputs.direction, "direction"));
+        const angle = this.base.math.degToRad({ number: inputs.angle });
+        try {
+            const makeTorus = angle >= 2 * Math.PI - 1e-7
+                ? new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius)
+                : new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius, 0, 2 * Math.PI, angle);
+            try {
+                return makeTorus.Shape();
+            } finally {
+                makeTorus.delete();
+            }
+        } finally {
+            ax.delete();
         }
-        const torusShape = makeTorus.Shape();
-        makeTorus.delete();
-        ax.delete();
-        return torusShape;
     }
 
     filterSolidPoints(inputs: Resolved.OCCT.FilterSolidPointsDto<TopoDS_Face>): Base.Point3[] {

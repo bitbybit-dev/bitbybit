@@ -1,6 +1,7 @@
+import { MathBitByBit } from "@bitbybit-dev/base";
 import { FULL_TURN, HALF_TURN, QUARTER_SINES, RIGHT_ANGLE } from "./constants";
 
-const RADIANS_PER_DEGREE = Math.PI / HALF_TURN;
+const math = new MathBitByBit();
 
 const EXACT_SINES = new Map<number, number>([...QUARTER_SINES].flatMap(([angle, sine]) => [
     [angle, sine], [HALF_TURN - angle, sine], [HALF_TURN + angle, sine === 0 ? 0 : -sine], [(FULL_TURN - angle) % FULL_TURN, sine === 0 ? 0 : -sine],
@@ -12,7 +13,7 @@ function folded(degrees: number): number {
 
 function sine(degrees: number): number {
     const angle = folded(degrees);
-    return EXACT_SINES.get(angle) ?? Math.sin(angle * RADIANS_PER_DEGREE);
+    return EXACT_SINES.get(angle) ?? Math.sin(math.degToRad({ number: angle }));
 }
 
 function cosine(degrees: number): number {
@@ -20,7 +21,7 @@ function cosine(degrees: number): number {
 }
 
 function inverse(value: number, exact: ReadonlyMap<number, number>, fallback: (value: number) => number): number {
-    return exact.get(value) ?? fallback(value) / RADIANS_PER_DEGREE;
+    return exact.get(value) ?? math.radToDeg({ number: fallback(value) });
 }
 
 const EXACT_ARCSINES = new Map<number, number>([...QUARTER_SINES].flatMap(([angle, value]) => [[value, angle], [-value, angle === 0 ? 0 : -angle]]));
@@ -52,8 +53,8 @@ const FUNCTIONS = new Map<string, ExpressionFunction>(Object.entries({
     tan: { arity: 1, apply: value => sine(value) / cosine(value) },
     asin: { arity: 1, apply: value => inverse(value, EXACT_ARCSINES, Math.asin) },
     acos: { arity: 1, apply: value => inverse(value, EXACT_ARCCOSINES, Math.acos) },
-    atan: { arity: 1, apply: value => Math.atan(value) / RADIANS_PER_DEGREE },
-    atan2: { arity: 2, apply: (y, x) => Math.atan2(y, x) / RADIANS_PER_DEGREE },
+    atan: { arity: 1, apply: value => math.radToDeg({ number: Math.atan(value) }) },
+    atan2: { arity: 2, apply: (y, x) => math.radToDeg({ number: Math.atan2(y, x) }) },
     round: { arity: 1, apply: rounded },
     floor: { arity: 1, apply: Math.floor },
     ceil: { arity: 1, apply: Math.ceil },

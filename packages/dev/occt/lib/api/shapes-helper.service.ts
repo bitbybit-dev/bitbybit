@@ -1,4 +1,5 @@
 import { Base } from "./inputs";
+import { radiansOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 export class ShapesHelperService {
 
@@ -33,7 +34,7 @@ export class ShapesHelperService {
     }
 
     parallelogram(width: number, height: number, angle: number, center: boolean): Base.Line3[] {
-        const radians = (angle * Math.PI) / 180;
+        const radians = radiansOf(angle);
 
         let x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number;
         if (center) {

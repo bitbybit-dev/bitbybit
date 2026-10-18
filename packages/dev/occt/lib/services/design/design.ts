@@ -5,8 +5,9 @@ import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { occtDtoRegistry } from "../../api/dto-registry";
 import type { OCCTService } from "../../occ-service";
-import type { BaseBitByBit } from "../../base";
-import { DesignCache, release } from "./cache";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
+import { DesignCache } from "./cache";
+import { release } from "../base/release";
 import { hintedDocument } from "./hints";
 import { featuresReached, runAssembly } from "./assembly";
 import { DesignProgress } from "./progress";
@@ -16,6 +17,7 @@ import { libraryOf } from "./library";
 import { documentIssues } from "./document-check";
 import { probeRounding } from "./probe";
 import { clashesOf } from "./clashes";
+import { ClashStore } from "./clash-store";
 import { documentsFromStep } from "./from-step";
 import { sectionOf } from "./section";
 import { checkedFrame } from "../base/input-checks";
@@ -27,6 +29,7 @@ import { partStructureOf } from "./export-structure";
 import type { DesignTrace } from "./state";
 import { typescriptOf } from "./typescript-export";
 import type { ParameterChoice } from "./values";
+import { isExpressionObject } from "./values";
 
 const CACHE_CAPACITY = 256;
 
@@ -66,6 +69,7 @@ export class OCCTDesign {
     private readonly cache = new DesignCache(CACHE_CAPACITY);
     private readonly sections = new DesignCache(SECTION_CAPACITY);
     private readonly boxes = new Map<string, readonly number[]>();
+    private readonly clashStore = new ClashStore();
 
     constructor(
         private readonly occ: BitbybitOcctModule,
@@ -242,9 +246,13 @@ export class OCCTDesign {
         if (document.kind === "assembly") {
             throw new InputError("An assembly document is not written as TypeScript yet: write the documents of its parts one by one.", "document");
         }
-        const drawnApart = document.features.findIndex(feature => feature.type === "sketch" && (feature.loops !== undefined || (feature.pen ?? []).some(command => command.type === "circle")));
+        const drawnApart = document.features.findIndex(feature => feature.type === "sketch" && (feature.loops !== undefined || (feature.pen ?? []).some(command => command.type === "circle" || command.type === "gear" || command.type === "rack")));
         if (drawnApart >= 0) {
-            throw new InputError(`/features/${drawnApart}: a sketch with loops or a circle is not written as TypeScript yet`, "document");
+            throw new InputError(`/features/${drawnApart}: a sketch with loops, a circle, a gear or a rack is not written as TypeScript yet`, "document");
+        }
+        const parametricFastener = document.features.findIndex(feature => feature.type === "hole" && feature.fastener !== undefined && isExpressionObject(feature.fastener.size));
+        if (parametricFastener >= 0) {
+            throw new InputError(`/features/${parametricFastener}: a hole sized by a fastener whose size is an expression is not written as TypeScript yet`, "document");
         }
         const scripted = document.features.findIndex(feature => feature.type === "script");
         if (scripted >= 0) {
@@ -274,8 +282,10 @@ export class OCCTDesign {
      *
      * The document is built as `build` builds it and every part placement is checked against every
      * other in place. Two components a joint holds together are expected to touch, so a touch between
-     * them is left out and an overlap is listed with `joined` true. A part document's parts are checked
-     * where they were built.
+     * them is left out and an overlap is listed with `joined` true. So is a fastener's thread resting in
+     * a tapped hole, faces named in the role `thread` on both, with the hole's rim and the screw's end
+     * chamfer around it; anything else between the two is still listed. A part document's parts are
+     * checked where they were built.
      * @param inputs - The document, the documents an assembly places, the values to build with and the clearance
      * @returns The clashing pairs, with their distance, the volume they share and their nearest points
      * @group document
@@ -295,7 +305,10 @@ export class OCCTDesign {
         }
         const built = this.build({ document: resolved.document, documents: resolved.documents, configuration: resolved.configuration, parameters: resolved.parameters, assets: resolved.assets });
         try {
-            return clashesOf(built, resolved.clearance, this.service());
+            return clashesOf(built, resolved.clearance, { occt: this.service(), occ: this.occ, base: this.base, boxes: this.boxes, store: this.clashStore });
+        } catch (error) {
+            this.forgetAfterTrap(error);
+            throw error;
         } finally {
             built.parts.forEach(part => release(part.shape));
         }
@@ -448,11 +461,7 @@ export class OCCTDesign {
         try {
             return sectionOf(resolved.build, frame, { cut: resolved.cut, tolerance: resolved.tolerance }, { occt: this.service(), occ: this.occ, cache: this.sections, boxes: this.boxes });
         } catch (error) {
-            if (isKernelTrap(error)) {
-                this.cache.forget();
-                this.sections.forget();
-                this.boxes.clear();
-            }
+            this.forgetAfterTrap(error);
             throw error;
         }
     }
@@ -473,13 +482,20 @@ export class OCCTDesign {
         try {
             return run();
         } catch (error) {
-            if (isKernelTrap(error)) {
-                this.cache.forget();
-            }
+            this.forgetAfterTrap(error);
             if (error instanceof DesignProblem) {
                 throw new InputError(`${error.path}: ${error.message}.`, error.path.startsWith("/configurations") ? "configuration" : "parameters");
             }
             throw error;
+        }
+    }
+
+    private forgetAfterTrap(error: unknown): void {
+        if (isKernelTrap(error)) {
+            this.cache.forget();
+            this.sections.forget();
+            this.boxes.clear();
+            this.clashStore.clear();
         }
     }
 }

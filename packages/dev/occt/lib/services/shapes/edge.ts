@@ -5,8 +5,8 @@ import type * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { framesOnCurve, numbersOfFrames } from "../base/frames";
-import { checkedFlag, checkedFrame, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
-import { RADIANS_PER_DEGREE, checkedShapeCount, tangentEdges } from "../base/curve-analysis";
+import { checkedDirection, checkedFlag, checkedFrame, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
+import { checkedShapeCount, tangentEdges } from "../base/curve-analysis";
 
 const checkedEdge = (occ: BitbybitOcctModule, shape: unknown, property: string): TopoDS_Shape => {
     const edge = checkedShape(shape, property);
@@ -393,7 +393,7 @@ export class OCCTEdge {
      */
     createCircleEdge(inputs: Inputs.OCCT.CircleDto): TopoDS_Edge {
         const resolved = resolveDto(Inputs.OCCT.CircleDto, inputs) as Resolved.OCCT.CircleDto;
-        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.edge);
+        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, checkedDirection(resolved.direction, "direction"), Inputs.OCCT.typeSpecificityEnum.edge);
     }
 
     /**
@@ -412,7 +412,7 @@ export class OCCTEdge {
      */
     createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): TopoDS_Edge {
         const resolved = resolveDto(Inputs.OCCT.EllipseDto, inputs) as Resolved.OCCT.EllipseDto;
-        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.edge);
+        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, checkedDirection(resolved.direction, "direction"), Inputs.OCCT.typeSpecificityEnum.edge);
     }
 
     /**
@@ -777,8 +777,7 @@ export class OCCTEdge {
     reversedEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): TopoDS_Edge {
         const edge: TopoDS_Edge = inputs.shape;
         const reversed = edge.Reversed();
-        const result = this.och.converterService.getActualTypeOfShape(reversed);
-        reversed.delete();
+        const result = this.och.converterService.castAndRelease(reversed);
         return result;
     }
 
@@ -1493,7 +1492,7 @@ export class OCCTEdge {
         const angle = checkedNumber(resolved.angle, "angle");
         const angularTolerance = checkedWithin(resolved.angularTolerance, "angularTolerance", { above: 0 });
         const onArgumentsOnly = checkedFlag(resolved.onArgumentsOnly, "onArgumentsOnly");
-        return tangentEdges(this.occ.LinesTangentAtAngle(numbersOfFrames([frame]), curve, reference, angle * RADIANS_PER_DEGREE, angularTolerance), onArgumentsOnly);
+        return tangentEdges(this.occ.LinesTangentAtAngle(numbersOfFrames([frame]), curve, reference, this.och.base.math.degToRad({ number: angle }), angularTolerance), onArgumentsOnly);
     }
 
     /**

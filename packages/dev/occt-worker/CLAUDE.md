@@ -3,6 +3,21 @@
 The main-thread half of the occt-worker boundary. Shared package conventions, and the rules for crossing the
 worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the caches lives here.
 
+## Answers handed over, not copied
+
+`shapeToMeshBuffers` and `shapesToMeshBuffers` answer with typed arrays and hand their buffers to the
+calling thread: a handler's `transfer` list (`meshBuffersOf`, `lib/occ-worker/mesh-transfer.ts`)
+reaches `postMessage(message, { transfer })`, so the worker's own copy is emptied in the move. That is
+safe only because these commands keep nothing: they run as reserved command handlers, which never go
+through the cache, and must stay so, since a cached result whose buffers were handed over would be
+served again empty. They are also in `NON_CACHEABLE_FUNCTIONS`, which only stops
+`executeStandardFunction` from running them should their handler go missing. Every host wires the
+worker as `onMessageInput(data, postMessage)`, passing the worker's own `postMessage`, which takes the
+options form whether it is typed as a worker's or a window's (the runners compile against the DOM
+types); a host that wraps it drops the list and its answers are copied instead, and a host whose
+`postMessage` throws on the options form gets the answer posted again without it. Either costs time
+and nothing else.
+
 ## The caches
 
 - **The key is a pure function of the arguments.** `computeHash` is cyrb53 over the argument JSON,

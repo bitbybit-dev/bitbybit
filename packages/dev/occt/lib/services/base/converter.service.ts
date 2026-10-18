@@ -30,6 +30,14 @@ export class ConverterService {
         }
     }
 
+    castAndRelease(made: TopoDS_Shape): TopoDS_Edge | TopoDS_Wire | TopoDS_Vertex | TopoDS_Solid | TopoDS_Shell | TopoDS_Face | TopoDS_Compound {
+        const actual = this.getActualTypeOfShape(made);
+        if (actual !== made) {
+            made.delete();
+        }
+        return actual;
+    }
+
     combineEdgesAndWiresIntoAWire(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge | TopoDS_Wire>): TopoDS_Wire {
         checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {

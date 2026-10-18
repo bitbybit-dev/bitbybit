@@ -201,11 +201,11 @@ export class OCCTFace {
     }
 
     /**
-     * Creates one face from several wires: the first wire is the outer boundary and every further
-     * wire cuts a hole in it.
+     * Creates one face from several wires: the first is the outer boundary and every further one a
+     * hole, whichever way it runs.
      *
-     * With `planar` true the wires must lie in one plane. The hole wires must sit inside the outer
-     * one without crossing it or each other.
+     * The outer wire's direction sets which way the face faces; `planar` keeps it flat. Holes must
+     * lie inside it, apart from it and from each other.
      * @param inputs - The wires, outer boundary first, and whether the face must be flat
      * @returns The face with holes
      * @group from
@@ -223,8 +223,8 @@ export class OCCTFace {
     }
 
     /**
-     * Creates one face from several wires on the surface of a guiding face: the first wire is the
-     * outer boundary and every further wire cuts a hole.
+     * Creates one face on the surface of a guiding face: the first wire is the outer boundary and
+     * every further one a hole, whichever way it runs.
      *
      * The face takes the curvature of the guiding surface. `inside` applies to the first wire: true
      * turns it so the face is the region it encloses; false lets its own direction decide.
@@ -240,6 +240,25 @@ export class OCCTFace {
      */
     createFaceFromWiresOnFace(inputs: Inputs.OCCT.FaceFromWiresOnFaceDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createFaceFromWiresOnFace", inputs);
+    }
+
+    /**
+     * Creates the one face of a guiding face's surface that wires lying on it bound, given in 3D in
+     * any order: the outer boundary and holes, or two loops round a closed surface such as a cone.
+     *
+     * The edges get their curves on the surface, so wires built anywhere work if they lie on it.
+     * @param inputs - The wires and the guiding face
+     * @returns The bounded face
+     * @group from
+     * @shortname face bounded by wires on face
+     * @drawable true
+     * @example
+     * ```typescript
+     * const band = await bitbybit.occt.shapes.face.createFaceBoundedByWiresOnFace({ wires: [lowerCircle, upperCircle], face: coneFace });
+     * ```
+     */
+    createFaceBoundedByWiresOnFace(inputs: Inputs.OCCT.FaceBoundedByWiresOnFaceDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createFaceBoundedByWiresOnFace", inputs);
     }
 
     /**

@@ -3,8 +3,6 @@ import type { Base } from "@bitbybit-dev/base";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTAssemblyManager } from "../assembly/manager";
 import { OCCTRecipes } from "./recipes";
 
@@ -58,7 +56,7 @@ describe("OCCTRecipes and the brep node on a kernel that does not build exact br
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        occHelper = new OccHelper(occt);
     });
 
     afterEach(() => {
@@ -128,7 +126,7 @@ describe("OCCTRecipes and the brep node on a kernel that builds exact breps", ()
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        occHelper = new OccHelper(occt);
         recipes = new OCCTRecipes(occt, occHelper, new OCCTAssemblyManager(occt, occHelper));
     });
 

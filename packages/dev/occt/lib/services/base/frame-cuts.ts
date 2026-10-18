@@ -3,32 +3,13 @@ import * as Inputs from "../../api/inputs";
 import type { OccHelper } from "../../occ-helper";
 import { numbersOfFrames } from "./frames";
 
-function withCuttable<T>(och: OccHelper, shape: TopoDS_Shape, use: (cuttable: TopoDS_Shape) => T): T {
-    if (shape.ShapeType() !== och.occ.TopAbs_ShapeEnum.COMPOUND) {
-        return use(shape);
-    }
-    const solids = och.shapeGettersService.getSolids({ shape });
-    if (solids.length === 0) {
-        return use(shape);
-    }
-    const compound = och.converterService.makeCompound({ shapes: solids });
-    try {
-        return use(compound);
-    } finally {
-        solids.forEach(solid => { solid.delete(); });
-        compound.delete();
-    }
-}
-
 export function sliceAlongFrames(och: OccHelper, shape: TopoDS_Shape, frames: readonly Inputs.Base.Frame[], makeFaces: boolean, tolerance: number): TopoDS_Compound[] {
-    return withCuttable(och, shape, cuttable => och.occ.SliceByFrames(cuttable, numbersOfFrames(frames), makeFaces, tolerance));
+    return och.occ.SliceByFrames(shape, numbersOfFrames(frames), makeFaces, tolerance);
 }
 
 export function splitAlongFrame(och: OccHelper, shape: TopoDS_Shape, frame: Inputs.Base.Frame): [TopoDS_Compound, TopoDS_Compound] {
-    return withCuttable(och, shape, cuttable => {
-        const [front, back] = och.occ.SplitByFrame(cuttable, numbersOfFrames([frame]));
-        return [front!, back!];
-    });
+    const [front, back] = och.occ.SplitByFrame(shape, numbersOfFrames([frame]));
+    return [front!, back!];
 }
 
 export function keptBehind(och: OccHelper, shape: TopoDS_Shape, frames: readonly Inputs.Base.Frame[], keep: Inputs.OCCT.sectionKeepEnum): TopoDS_Compound {

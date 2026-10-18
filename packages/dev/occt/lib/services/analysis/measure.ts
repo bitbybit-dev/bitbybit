@@ -4,12 +4,14 @@ import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import type * as Resolved from "../../api/resolved-inputs";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { readKernelException } from "../../kernel-exception";
+import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { withKernelRefusals } from "../base/kernel-refusals";
 import { checkedFrame, checkedNumber, checkedShape, checkedWhole } from "../base/input-checks";
 import { framesFromNumbers, numbersOfFrames } from "../base/frames";
-import { DEGREES_PER_RADIAN, fractionsOnSupport, supportType } from "../base/surface-analysis";
+import { fractionsOnSupport, supportType } from "../base/surface-analysis";
+import { add3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { degreesOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 /**
  * Measurements of shapes: a bounding box that follows the geometry exactly, a box in a frame, the
@@ -52,8 +54,8 @@ export class OCCTAnalysisMeasure {
         return {
             min,
             max,
-            center: [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2, (min[2] + max[2]) / 2],
-            size: [max[0] - min[0], max[1] - min[1], max[2] - min[2]],
+            center: scale3(add3(min, max), 1 / 2),
+            size: subtract3(max, min),
         };
     }
 
@@ -198,7 +200,7 @@ export class OCCTAnalysisMeasure {
     angleBetween(inputs: Inputs.OCCT.TwoShapesDto<TopoDS_Shape>): Models.OCCT.AngleBetween {
         const resolved = resolveDto(Inputs.OCCT.TwoShapesDto, inputs) as Resolved.OCCT.TwoShapesDto<TopoDS_Shape>;
         const found = this.occ.AngleBetween(checkedShape(resolved.shapeA, "shapeA"), checkedShape(resolved.shapeB, "shapeB"));
-        return { angle: found.angle * DEGREES_PER_RADIAN, pointA: found.pointA, pointB: found.pointB, directionA: found.directionA, directionB: found.directionB };
+        return { angle: degreesOf(found.angle), pointA: found.pointA, pointB: found.pointB, directionA: found.directionA, directionB: found.directionB };
     }
 
     /**
@@ -224,7 +226,7 @@ export class OCCTAnalysisMeasure {
         const param = checkedNumber(resolved.param, "param", 0, 1);
         const found = this.withEdgeInRange(shape, index, () => this.occ.DihedralAngle(shape, index, param));
         return {
-            angle: found.angle * DEGREES_PER_RADIAN,
+            angle: degreesOf(found.angle),
             isConvex: found.isConvex,
             point: found.point,
             normalA: found.normalA,
@@ -259,18 +261,15 @@ export class OCCTAnalysisMeasure {
     }
 
     private withEdgeInRange<T>(shape: TopoDS_Shape, index: number, call: () => T): T {
-        try {
-            return call();
-        } catch (thrown) {
-            const read = readKernelException(this.occ, thrown);
-            if (!(read instanceof Error && read.message.endsWith("the shape has no edge at that index"))) {
-                throw read;
+        return withKernelRefusals(this.occ, call, message => {
+            if (!message.endsWith("the shape has no edge at that index")) {
+                return undefined;
             }
             const edges = this.occ.EdgesOf(shape, true);
             const count = edges.length;
             edges.forEach(edge => edge.delete());
             const counted = count === 0 ? "the shape has no edges" : `its edges are numbered from 0 to ${count - 1}`;
-            throw new InputError(`\`index\` is ${index}, past the shape's last edge: ${counted}.`, "index");
-        }
+            return new InputError(`\`index\` is ${index}, past the shape's last edge: ${counted}.`, "index");
+        });
     }
 }

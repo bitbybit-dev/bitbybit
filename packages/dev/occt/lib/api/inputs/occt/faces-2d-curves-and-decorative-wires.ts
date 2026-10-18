@@ -212,8 +212,29 @@ export class FaceFromWiresOnFaceDto<T, U> {
     inside?: boolean | undefined = true;
 }
 /**
- * Faces and a tolerance for `shapes.shell.sewFaces`, which stitches faces that share edges into one
- * shell.
+ * Wires and a guiding face for `shapes.face.createFaceBoundedByWiresOnFace`, which makes the one face
+ * of the guiding surface the wires bound.
+ */
+export class FaceBoundedByWiresOnFaceDto<T, U> {
+    constructor(wires?: T[], face?: U) {
+        if (wires !== undefined) { this.wires = wires; }
+        if (face !== undefined) { this.face = face; }
+    }
+    /**
+     * The wires on the guiding surface, in any order and either way round: the outer boundary and the
+     * holes, or two loops that go round a closed surface.
+     * @default undefined
+     */
+    wires!: T[];
+    /**
+     * The face whose surface the new face is cut from.
+     * @default undefined
+     */
+    face!: U;
+}
+/**
+ * Faces and a tolerance for `shapes.shell.sewFaces` and its twin with history, and for
+ * `shapes.solid.fromFaces`, which stitch faces that share edges into one shell or solid.
  */
 export class SewDto<T> {
     constructor(shapes?: T[], tolerance?: number) {

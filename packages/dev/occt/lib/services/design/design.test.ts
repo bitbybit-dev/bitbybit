@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 import * as Inputs from "../../api/inputs";
@@ -40,7 +38,7 @@ describe("OCCT design documents", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        const helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel);
+        const helper = new OccHelper(kernel);
         occt = new OCCTService(kernel, helper);
     }, 120_000);
 
@@ -689,7 +687,7 @@ describe("OCCT design documents", () => {
             // Assert
             expect(messages).toEqual([
                 ["/features/2/on/face/of: \"base\" made no faces of a body"],
-                ["/features/2/on/face: one face is needed here, and the reference finds 4"],
+                ["/features/2/on/face: one face is needed here, or faces in one plane, and the reference finds 4 that are not"],
                 ["/features/4/on/face: a flat face is needed here, and this one is a cylinder"],
                 ["/features/2/on/direction: the direction runs along the face's normal"],
             ]);

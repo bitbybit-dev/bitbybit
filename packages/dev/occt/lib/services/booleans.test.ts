@@ -2,29 +2,30 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
-import { VectorHelperService } from "../api/vector-helper.service";
-import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTBooleans } from "./booleans";
+import { OCCTOperations } from "./operations";
 import { OCCTSolid } from "./shapes/solid";
 import { OCCTWire } from "./shapes/wire";
 import * as Inputs from "../api/inputs";
+import { BaseBitByBit } from "@bitbybit-dev/base";
 
 describe("OCCT booleans unit tests", () => {
     let occt: BitbybitOcctModule;
     let solid: OCCTSolid;
     let wire: OCCTWire;
     let booleans: OCCTBooleans;
+    let operations: OCCTOperations;
     let occHelper: OccHelper;
+    const base = new BaseBitByBit();
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
 
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         solid = new OCCTSolid(occt, occHelper);
         wire = new OCCTWire(occt, occHelper);
         booleans = new OCCTBooleans(occt, occHelper);
+        operations = new OCCTOperations(occt, occHelper);
     });
 
     it("should compute difference of two boxes", () => {
@@ -213,13 +214,26 @@ describe("OCCT booleans unit tests", () => {
         box3.delete();
     });
 
-    it("should compute mesh mesh intersection with sphere and box", () => {
+    it("should trace where a sphere crosses a box, on both surfaces and through the three points where they touch", () => {
+        // Arrange
         const sphere = solid.createSphere({ radius: 1, center: [0, 0, 0] });
         const box = solid.createBox({ width: 1, height: 1, length: 1, center: [0.5, 0.5, 0.5] });
+
+        // Act
         const wires = booleans.meshMeshIntersectionWires({ shape1: sphere, shape2: box, precision1: 0.01, precision2: 0.01 });
-        expect(wires.length).toBe(12);
-        const points = booleans.meshMeshIntersectionPoints({ shape1: sphere, shape2: box, precision1: 0.01, precision2: 0.01 });
-        expect(points.length).toBe(12);
+        const lines = booleans.meshMeshIntersectionPoints({ shape1: sphere, shape2: box, precision1: 0.01, precision2: 0.01 });
+
+        // Assert
+        const points = lines.flat();
+        const distanceTo = (point: Inputs.Base.Point3, other: Inputs.Base.Point3): number => base.point.distance({ startPoint: point, endPoint: other });
+        const traced = lines.reduce((sum, line) => sum + base.polyline.length({ polyline: { points: line } }), 0);
+        expect(wires).toHaveLength(lines.length);
+        expect(points.every(point => Math.abs(distanceTo(point, [0, 0, 0]) - 1) < 0.01)).toBe(true);
+        expect(points.every(point => point.every(value => value > -1e-9 && value < 1 + 1e-9) && point.some(value => Math.abs(value) < 1e-9 || Math.abs(value - 1) < 1e-9))).toBe(true);
+        for (const touching of [[1, 0, 0], [0, 1, 0], [0, 0, 1]] as Inputs.Base.Point3[]) {
+            expect(Math.min(...points.map(point => distanceTo(point, touching)))).toBeLessThan(1e-6);
+        }
+        expect(traced).toBeGreaterThan(3 * Math.PI / 2 * 0.99);
         sphere.delete();
         box.delete();
         wires.forEach(w => w.delete());
@@ -257,6 +271,55 @@ describe("OCCT booleans unit tests", () => {
 
             // Assert
             expect(solid.getSolidVolume({ shape: cut })).toBeCloseTo(76.2286, 3);
+        });
+    });
+
+    describe("results OCCT gets wrong without saying so", () => {
+        it("should fuse a hose swept along a curve with a sleeve of its own radius over its end, in either order", () => {
+            // Arrange
+            const route: Inputs.Base.Point3[] = [[-70, -34.55, 99], [-70, -38.5, 99], [-68, -44.5, 98.5], [-62, -50.5, 98], [-50, -56, 97], [-30, -59.5, 97],
+                [-10, -61.5, 98], [4, -61.5, 101], [10.5, -61.5, 103], [14.5, -61.5, 103], [18.45, -61.5, 103]];
+            const path = wire.interpolatePoints({ points: route, tolerance: 1e-7, periodic: false, startTangent: [0, -1, 0], endTangent: [1, 0, 0] });
+            const hose = operations.pipeWireCylindrical({ shape: path, radius: 3.6, makeSolid: true });
+            const sleeve = booleans.difference({
+                shape: solid.createCylinder({ radius: 3.6, height: 5.75, center: [-70, -29.3, 99], direction: [0, -1, 0] }),
+                shapes: [solid.createCylinder({ radius: 2.45, height: 7.75, center: [-70, -28.3, 99], direction: [0, -1, 0] })],
+                keepEdges: false,
+            });
+
+            const expected = solid.getSolidVolume({ shape: hose }) + solid.getSolidVolume({ shape: sleeve }) - Math.PI * (3.6 ** 2 - 2.45 ** 2) * 0.5;
+
+            // Act
+            const fused = [[sleeve, hose], [hose, sleeve]].map(shapes => booleans.union({ shapes, keepEdges: false }));
+
+            // Assert
+            fused.forEach(shape => {
+                const solids = solid.getSolids({ shape });
+                expect(solids).toHaveLength(1);
+                expect(Math.abs(solid.getSolidVolume({ shape: solids[0]! }) - expected) / expected).toBeLessThan(5e-3);
+            });
+        });
+
+        it("should fuse the same hose with a sleeve wider than the hose into one solid", () => {
+            // Arrange
+            const route: Inputs.Base.Point3[] = [[-70, -34.55, 99], [-70, -38.5, 99], [-68, -44.5, 98.5], [-62, -50.5, 98], [-50, -56, 97], [-30, -59.5, 97],
+                [-10, -61.5, 98], [4, -61.5, 101], [10.5, -61.5, 103], [14.5, -61.5, 103], [18.45, -61.5, 103]];
+            const path = wire.interpolatePoints({ points: route, tolerance: 1e-7, periodic: false, startTangent: [0, -1, 0], endTangent: [1, 0, 0] });
+            const hose = operations.pipeWireCylindrical({ shape: path, radius: 3.6, makeSolid: true });
+            const sleeve = booleans.difference({
+                shape: solid.createCylinder({ radius: 3.9, height: 5.75, center: [-70, -29.3, 99], direction: [0, -1, 0] }),
+                shapes: [solid.createCylinder({ radius: 2.45, height: 7.75, center: [-70, -28.3, 99], direction: [0, -1, 0] })],
+                keepEdges: false,
+            });
+            const expected = solid.getSolidVolume({ shape: hose }) + solid.getSolidVolume({ shape: sleeve }) - Math.PI * (3.6 ** 2 - 2.45 ** 2) * 0.5;
+
+            // Act
+            const fused = booleans.union({ shapes: [sleeve, hose], keepEdges: false });
+
+            // Assert
+            const solids = solid.getSolids({ shape: fused });
+            expect(solids).toHaveLength(1);
+            expect(Math.abs(solid.getSolidVolume({ shape: solids[0]! }) - expected) / expected).toBeLessThan(5e-3);
         });
     });
 

@@ -3,6 +3,7 @@ import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
+import { checkedDirection } from "../base/input-checks";
 
 /**
  * Construction curves of OpenCascade: 2D curves in a plane or in the UV space of a surface
@@ -141,7 +142,7 @@ export class OCCTCurves {
      */
     geomCircleCurve(inputs: Inputs.OCCT.CircleDto): TopoDS_Wire {
         const resolved = resolveDto(Inputs.OCCT.CircleDto, inputs) as Resolved.OCCT.CircleDto;
-        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.wire);
+        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, checkedDirection(resolved.direction, "direction"), Inputs.OCCT.typeSpecificityEnum.wire);
     }
 
     /**
@@ -162,7 +163,7 @@ export class OCCTCurves {
      */
     geomEllipseCurve(inputs: Inputs.OCCT.EllipseDto): TopoDS_Wire {
         const resolved = resolveDto(Inputs.OCCT.EllipseDto, inputs) as Resolved.OCCT.EllipseDto;
-        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.wire);
+        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, checkedDirection(resolved.direction, "direction"), Inputs.OCCT.typeSpecificityEnum.wire);
     }
 
 }

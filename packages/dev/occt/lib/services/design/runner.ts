@@ -8,7 +8,8 @@ import type { DesignPlan, DesignRun, DesignRunContext, DesignTrace, HollowState,
 import { bodyKey, isBodyKey, isSketchKey, nameInKey, sketchKey } from "./state";
 import { importPlan, localPlan } from "./local-features";
 import { scriptPlan, suppliedOutcome } from "./scripts";
-import { bodyPlan, operationPlan, sketchPlan, sweepPlan } from "./steps";
+import { operationPlan } from "./operation-steps";
+import { bodyPlan, sketchPlan, sweepPlan } from "./steps";
 import { DesignPending, DesignProblem, isKernelTrap, pointer, tagTrap } from "./problems";
 import { readKernelException } from "../../kernel-exception";
 import { buildParts } from "./parts";

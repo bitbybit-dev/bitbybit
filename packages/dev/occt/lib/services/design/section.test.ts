@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeAll, vi } from "vitest";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 import type * as Inputs from "../../api/inputs";
@@ -61,7 +58,7 @@ describe("sections of a design build", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const placedBox = (shape: TopoDS_Shape, world?: Inputs.Base.TransformMatrix): Inputs.OCCT.BoundingBoxPropsDto => {

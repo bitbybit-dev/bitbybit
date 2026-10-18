@@ -1,7 +1,6 @@
 import type { BitbybitOcctModule, Geom_Surface, TopoDS_Face } from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import type { VectorHelperService } from "./api/vector-helper.service";
 import type * as Inputs from "./api/inputs";
-import type { ShapesHelperService } from "./api/shapes-helper.service";
+import { ShapesHelperService } from "./api/shapes-helper.service";
 import { IteratorService } from "./services/base/iterator.service";
 import { EnumService } from "./services/base/enum.service";
 import { ConverterService } from "./services/base/converter.service";
@@ -20,12 +19,13 @@ import { FilletsService } from "./services/base/fillets.service";
 import { SolidsService } from "./services/base/solids.service";
 import { DimensionsService } from "./services/base/dimensions.service";
 import { MeshingService } from "./services/base/meshing.service";
-import { BaseBitByBit } from "./base";
+import { BaseBitByBit } from "@bitbybit-dev/base";
 import { DxfService } from "./services/base/dxf.service";
 
 export class OccHelper {
 
     public readonly base: BaseBitByBit;
+    public readonly shapesHelperService: ShapesHelperService;
     
     public readonly iteratorService: IteratorService;
     public readonly converterService: ConverterService;
@@ -51,25 +51,24 @@ export class OccHelper {
 
 
     constructor(
-        public readonly vecHelper: VectorHelperService,
-        public readonly shapesHelperService: ShapesHelperService,
         public readonly occ: BitbybitOcctModule,
     ) {
         this.base = new BaseBitByBit();
+        this.shapesHelperService = new ShapesHelperService();
         this.iteratorService = new IteratorService(occ);
         this.enumService = new EnumService(occ);
         this.converterService = new ConverterService(occ);
         this.entitiesService = new EntitiesService(occ);
         this.shapeGettersService = new ShapeGettersService(occ, this.enumService);
-        this.geomService = new GeomService(occ, this.vecHelper, this.entitiesService);
-        this.transformsService = new TransformsService(occ, this.converterService, this.entitiesService, this.vecHelper);
+        this.geomService = new GeomService(occ, this.base, this.entitiesService);
+        this.transformsService = new TransformsService(occ, this.converterService, this.entitiesService, this.base);
         this.booleansService = new BooleansService(occ);
 
         this.edgesService = new EdgesService(occ, this.shapeGettersService, this.entitiesService,
-            this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
+            this.converterService, this.enumService, this.geomService, this.transformsService, this.base);
 
         this.wiresService = new WiresService(occ, this.base, this.shapesHelperService, this.shapeGettersService, this.transformsService,
-            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.vecHelper,
+            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService,
             () => this.operationsService);
 
         this.verticesService = new VerticesService(occ, this.entitiesService, this.converterService, this.shapeGettersService);
@@ -85,13 +84,13 @@ export class OccHelper {
         this.shellsService = new ShellsService(occ, this.converterService);
 
         this.solidsService = new SolidsService(occ, this.shapeGettersService, this.enumService,
-            this.entitiesService, this.converterService, this.transformsService, this.vecHelper);
+            this.entitiesService, this.converterService, this.transformsService, this.base);
 
         this.operationsService = new OperationsService(occ, this.enumService, this.entitiesService, this.converterService,
             this.shapeGettersService, this.edgesService, this.transformsService,
-            this.vecHelper, this.wiresService, this.facesService, this.solidsService);
+            this.base, this.wiresService, this.facesService, this.solidsService);
 
-        this.filletsService = new FilletsService(occ, this.vecHelper, this.iteratorService, this.converterService, this.entitiesService,
+        this.filletsService = new FilletsService(occ, this.base, this.iteratorService, this.converterService, this.entitiesService,
             this.shapeGettersService);
 
         this.dxfService = new DxfService(occ, this.base);

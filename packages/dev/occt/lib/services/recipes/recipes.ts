@@ -1,5 +1,5 @@
 import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { InputError, resolveDto, toRecipe } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type { Base } from "@bitbybit-dev/base";
 import * as Inputs from "../../api/inputs";
 import type * as Resolved from "../../api/resolved-inputs";
@@ -9,7 +9,8 @@ import { readKernelException } from "../../kernel-exception";
 import type { OCCTAssemblyManager } from "../assembly/manager";
 import { documentPlan, documentStructure } from "./recipe-document";
 import type { BuiltRoots, FirstFailure, KernelBrepDescription, KernelDescribedShape, KernelRecipeBuild, RecipeKernelReport, RecipeRootReport, StepFailure } from "./recipe-types";
-import { IDENTITY_MATRIX, MAX_KERNEL_COUNT, SPLINED_FOR_IFC, STEPS_BEFORE_EXACT_BREPS } from "./recipes.constants";
+import { MAX_KERNEL_COUNT, SPLINED_FOR_IFC, STEPS_BEFORE_EXACT_BREPS } from "./recipes.constants";
+import { IDENTITY_MATRIX } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices.constants";
 
 function failureOf(report: RecipeRootReport): StepFailure | undefined {
     return report.built ? report.uncut : { node: report.node, reason: report.reason };
@@ -53,7 +54,7 @@ export class OCCTRecipes {
      */
     build(inputs: Inputs.OCCT.BuildRecipeDto): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.BuildRecipeDto, inputs) as Resolved.OCCT.BuildRecipeDto;
-        const recipe = toRecipe(resolved.recipe);
+        const recipe = this.och.base.recipes.read({ recipe: resolved.recipe });
         const built = this.run(recipe, recipe.roots, resolved.adjustZtoY, resolved.facetedMeshes, resolved.maxTriangles);
         const failed = this.firstFailure(built);
         if (failed && !resolved.emptyWhenFailed) {
@@ -83,8 +84,8 @@ export class OCCTRecipes {
      */
     buildDocument(inputs: Inputs.OCCT.BuildRecipeDocumentDto): Handle_TDocStd_Document {
         const resolved = resolveDto(Inputs.OCCT.BuildRecipeDocumentDto, inputs) as Resolved.OCCT.BuildRecipeDocumentDto;
-        const recipe = toRecipe(resolved.recipe);
-        const plan = documentPlan(recipe);
+        const recipe = this.och.base.recipes.read({ recipe: resolved.recipe });
+        const plan = documentPlan(recipe, this.och.base.recipes);
         const built = this.run(recipe, plan.parts.map((part) => part.root), false, resolved.facetedMeshes, resolved.maxTriangles);
         try {
             const failed = this.firstFailure(built);
@@ -131,7 +132,7 @@ export class OCCTRecipes {
         }
         const { nodes, tolerance } = JSON.parse(described.description) as KernelDescribedShape;
         const steps: Base.RecipeNode[] = nodes.length > 1 ? [...nodes, { op: "compound", of: nodes.map((_, at) => at) }] : nodes;
-        return toRecipe({
+        return this.och.base.recipes.read({ recipe: {
             format: "bitbybit.recipe",
             version: 1,
             millimetresPerUnit: resolved.millimetresPerUnit,
@@ -139,7 +140,7 @@ export class OCCTRecipes {
             buffers: { f64: Float64Array.from(described.numbers), i32: new Int32Array(0) },
             nodes: steps,
             roots: [{ node: steps.length - 1, matrix: IDENTITY_MATRIX, tag: {} }],
-        });
+        } });
     }
 
     private run(recipe: Base.Recipe, roots: readonly Base.RecipeRoot[], adjustZtoY: boolean, facetedMeshes: boolean, maxTriangles: number): BuiltRoots<TopoDS_Shape> {

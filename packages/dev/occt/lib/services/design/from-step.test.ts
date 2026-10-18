@@ -2,9 +2,6 @@ import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
@@ -77,7 +74,7 @@ describe("design documents from a STEP file", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const stepOf = (parts: Models.OCCT.AssemblyPartDef<TopoDS_Shape>[], nodes: Models.OCCT.AssemblyNodeDef[]): Uint8Array => {
@@ -676,7 +673,7 @@ describe("an import that takes a child of a compound", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
         const shapes = [
             occt.shapes.solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] }),
             occt.shapes.solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] }),

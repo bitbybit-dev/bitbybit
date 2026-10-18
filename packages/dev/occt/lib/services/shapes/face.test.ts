@@ -3,8 +3,6 @@ import type { BitbybitOcctModule, Handle_Geom_Surface, TopoDS_Face, TopoDS_Wire 
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTFace } from "./face";
 import { OCCTSolid } from "./solid";
 import { OCCTGeom } from "../geom/geom";
@@ -20,9 +18,7 @@ describe("OCCT face unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         wire = new OCCTWire(occt, occHelper);
         face = new OCCTFace(occt, occHelper);
         geom = new OCCTGeom(occt, occHelper);
@@ -39,12 +35,13 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should create a face from closed non-planar wire", () => {
+    it("should create a face from closed non-planar wire, bounded by the C2 periodic spline through the corners of a unit square", () => {
         const w = wire.interpolatePoints({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], periodic: true, tolerance: 1e-7 });
         const f = face.createFaceFromWire({ shape: w, planar: false });
         const area = face.getFaceArea({ shape: f });
+        const bulgeOfEachSide = 0.75 * (1.5 / 30 + 0.75 / 6);
         expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.FACE);
-        expect(area).toBeCloseTo(1.5999655130076433);
+        expect(area).toBeCloseTo(1 + 4 * bulgeOfEachSide, 10);
         w.delete();
         f.delete();
     });
@@ -1237,6 +1234,37 @@ describe("OCCT face unit tests", () => {
         f1.delete();
     });
 
+    it("should cut every further wire as a hole whichever way it runs, and refuse one outside the outline", () => {
+        // Arrange
+        const outline = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+        const sameWay = wire.createCircleWire({ radius: 0.2, center: [0, 0, 0.3], direction: [0, 1, 0] });
+        const otherWay = wire.reversedWire({ shape: wire.createCircleWire({ radius: 0.1, center: [0, 0, -0.15], direction: [0, 1, 0] }) });
+        const outside = wire.createCircleWire({ radius: 0.2, center: [0, 0, 3], direction: [0, 1, 0] });
+
+        // Act
+        const ring = face.createFaceFromWires({ shapes: [outline, sameWay, otherWay], planar: true });
+        const act = (): TopoDS_Face => face.createFaceFromWires({ shapes: [outline, outside], planar: true });
+
+        // Assert
+        expect(face.getFaceArea({ shape: ring })).toBeCloseTo(Math.PI * (1 - 0.04 - 0.01), 9);
+        expect(act).toThrow(expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` cannot bound one face: wire 1 lies outside the outline (wire 0)." }));
+    });
+
+    it("should bound a face on another face's surface by wires drawn on it, and refuse wires off that surface", () => {
+        // Arrange
+        const square = face.createSquareFace({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+        const onIt = wire.createCircleWire({ radius: 2, center: [1, 0, 1], direction: [0, 1, 0] });
+        const above = wire.createCircleWire({ radius: 2, center: [1, 3, 1], direction: [0, 1, 0] });
+
+        // Act
+        const disc = face.createFaceBoundedByWiresOnFace({ face: square, wires: [onIt] });
+        const act = (): TopoDS_Face => face.createFaceBoundedByWiresOnFace({ face: square, wires: [above] });
+
+        // Assert
+        expect(face.getFaceArea({ shape: disc })).toBeCloseTo(4 * Math.PI, 9);
+        expect(act).toThrow(expect.objectContaining({ name: "InputError", property: "wires", message: "`wires` cannot bound one face: the wires do not lie on the face's surface." }));
+    });
+
     describe("Face from multiple circle tan wires", () => {
         it("should create face from two circle tan wires by using all with all strategy", () => {
             const circle1 = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
@@ -1950,7 +1978,7 @@ describe("OCCT face unit tests", () => {
             const f = face.createFaceFromWiresOnFace(dto);
             const area = face.getFaceArea({ shape: f });
             expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.FACE);
-            expect(area).toBeCloseTo(Math.PI * 10);
+            expect(area).toBeCloseTo(Math.PI * (9 - 1));
             baseFace.delete();
             outerWire.delete();
             innerWire.delete();

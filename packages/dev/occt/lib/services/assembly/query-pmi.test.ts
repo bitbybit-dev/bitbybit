@@ -3,8 +3,6 @@ import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTAssemblyManager } from "./manager";
 import { OCCTAssemblyQuery } from "./query";
 import { OCCTSolid } from "../shapes";
@@ -123,7 +121,7 @@ describe("OCCT assembly query reading product manufacturing information", () => 
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        occHelper = new OccHelper(occt);
         manager = new OCCTAssemblyManager(occt, occHelper);
         query = new OCCTAssemblyQuery(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);

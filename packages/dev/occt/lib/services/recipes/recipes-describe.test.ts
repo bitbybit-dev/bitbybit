@@ -1,14 +1,14 @@
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
-import { checkRecipe, InputError } from "@bitbybit-dev/base";
+import { Recipes, InputError, Inputs as BaseInputs } from "@bitbybit-dev/base";
 import type { Base } from "@bitbybit-dev/base";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { OCCTService } from "../../occ-service";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTAssemblyManager } from "../assembly/manager";
 import { OCCTRecipes } from "./recipes";
+
+const RECIPES = new Recipes();
 
 const RELATIVE = 1e-6;
 const ORIGIN: Base.Point3 = [0, 0, 0];
@@ -21,7 +21,7 @@ describe("OCCTRecipes.describe and the exact brep step", () => {
 
     beforeAll(async () => {
         occ = await createBitbybitOcct();
-        occt = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+        occt = new OCCTService(occ);
     });
 
     afterEach(() => {
@@ -54,7 +54,7 @@ describe("OCCTRecipes.describe and the exact brep step", () => {
         const { recipe, again } = rebuilt(box);
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         const node = recipe.nodes[0]!;
         if (node.op !== "brep") {
             throw new Error("not a brep step");
@@ -128,7 +128,7 @@ describe("OCCTRecipes.describe and the exact brep step", () => {
         const { recipe, again } = rebuilt(compound);
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         expect(recipe.nodes.map((node) => node.op)).toEqual(["brep", "brep", "compound"]);
         expect(recipe.roots[0]!.node).toBe(2);
         const [solids, loose] = recipe.nodes;
@@ -172,7 +172,7 @@ describe("OCCTRecipes.describe and the exact brep step", () => {
     it("should name a null shape, and say a kernel without the describer cannot describe", () => {
         // Arrange
         const older = Object.create(occ, { DescribeShapeExact: { value: undefined } }) as BitbybitOcctModule;
-        const helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ);
+        const helper = new OccHelper(occ);
         const olderRecipes = new OCCTRecipes(older, helper, new OCCTAssemblyManager(older, helper));
         const box = kept(occt.shapes.solid.createBox({ width: 1, length: 1, height: 1, center: ORIGIN }));
 
@@ -183,5 +183,44 @@ describe("OCCTRecipes.describe and the exact brep step", () => {
         // Assert
         expect(nullShape).toThrow("DescribeShapeExact: the shape is null");
         expect(tooOld).toThrow("This build of the Bitbybit OCCT Kernel cannot describe shapes exactly; a newer one can.");
+    });
+    describe("standard parts described and built back", () => {
+        const kindsOf = (recipe: Base.Recipe): string[] => recipe.nodes.flatMap((node) => node.op === "brep" ? [`${node.vertices[1]}:${node.edges.length}:${node.curves.map((curve) => curve.kind).sort().join(",")}:${node.surfaces.map((surface) => surface.kind).sort().join(",")}`] : [node.op]);
+        const faceCountOf = (shape: TopoDS_Shape): number => {
+            const faces = occt.shapes.face.getFaces({ shape });
+            faces.forEach((face) => face.delete());
+            return faces.length;
+        };
+        const solidsValid = (shape: TopoDS_Shape): boolean => {
+            const solids = occt.shapes.solid.getSolids({ shape });
+            const valid = solids.length > 0 && solids.every((solid) => occt.shapeFix.isValid({ shape: solid }));
+            solids.forEach((solid) => solid.delete());
+            return valid;
+        };
+
+        it.each([
+            ["a bored spur gear", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.gears.spurGear({ module: 1, teeth: 17, width: 4, bore: 5 })],
+            ["a ring gear", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.gears.ringGear({ module: 1, teeth: 40, width: 3 })],
+            ["a helical gear", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.gears.helicalGear({ module: 1, teeth: 15, helixAngle: 20, width: 6 })],
+            ["a rack", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.gears.rack({ module: 1, teeth: 6, height: 3, width: 2 })],
+            ["an M5 cap screw", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.fasteners.socketHeadCapScrew({ size: BaseInputs.Engineering.metricSizeEnum.m5, length: 12 })],
+            ["an M8 nut", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.fasteners.hexNut({ size: BaseInputs.Engineering.metricSizeEnum.m8 })],
+            ["a compression spring", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.springs.compressionSpring({ wireDiameter: 1, diameter: 8, activeCoils: 4, length: 12 })],
+            ["a 608 bearing of separate solids", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.bearings.ballBearing({ designation: BaseInputs.Engineering.ballBearingEnum.b608 })],
+        ])("should build %s back from its description with its volume, faces and validity, and describe the rebuilt part alike", (_name, make) => {
+            // Arrange
+            const part = kept(make(occt));
+
+            // Act
+            const { recipe, again } = rebuilt(part);
+            const described = occt.recipes.describe({ shape: again });
+
+            // Assert
+            expect(RECIPES.check({ recipe })).toEqual([]);
+            expect(Math.abs(volumeOf(again) / volumeOf(part) - 1)).toBeLessThan(RELATIVE);
+            expect(faceCountOf(again)).toBe(faceCountOf(part));
+            expect(solidsValid(again)).toBe(true);
+            expect(kindsOf(described)).toEqual(kindsOf(recipe));
+        }, 60_000);
     });
 });

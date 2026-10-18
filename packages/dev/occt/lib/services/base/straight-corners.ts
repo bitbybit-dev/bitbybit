@@ -1,6 +1,7 @@
 import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Inputs from "../../api/inputs";
 import type { EdgeEnds, EdgeSample, StraightCorner } from "./straight-corners-types";
+import { dot3, length3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
 type Point3 = Inputs.Base.Point3;
 type Vector3 = Inputs.Base.Vector3;
@@ -34,11 +35,11 @@ function endsOf(occ: BitbybitOcctModule, edge: TopoDS_Edge): EdgeEnds {
 }
 
 function continues(incoming: Vector3, outgoing: Vector3): boolean {
-    const length = Math.hypot(...incoming) * Math.hypot(...outgoing);
+    const length = length3(incoming) * length3(outgoing);
     if (length === 0) {
         return false;
     }
-    const cosine = (incoming[0] * outgoing[0] + incoming[1] * outgoing[1] + incoming[2] * outgoing[2]) / length;
+    const cosine = dot3(incoming, outgoing) / length;
     return 1 - cosine < STRAIGHT_TOLERANCE;
 }
 
@@ -59,7 +60,7 @@ export function straightCorners(occ: BitbybitOcctModule, wire: TopoDS_Wire): Str
 }
 
 export function isStraightCorner(straight: readonly StraightCorner[], point: Point3): boolean {
-    return straight.some(({ point: each }) => Math.hypot(each[0] - point[0], each[1] - point[1], each[2] - point[2]) < SAME_POINT_TOLERANCE);
+    return straight.some(({ point: each }) => length3(subtract3(each, point)) < SAME_POINT_TOLERANCE);
 }
 
 export function withoutStraightCorners(radii: readonly number[], straight: readonly StraightCorner[]): number[] {

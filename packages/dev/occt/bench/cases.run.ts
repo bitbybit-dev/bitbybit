@@ -3,10 +3,7 @@ import { writeFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../lib/occ-helper";
 import { OCCTService } from "../lib/occ-service";
-import { VectorHelperService } from "../lib/api/vector-helper.service";
-import { ShapesHelperService } from "../lib/api/shapes-helper.service";
 import { benchCases } from "./cases";
 import type { KernelGlue, LoadedKernel } from "./bench-types";
 
@@ -50,7 +47,7 @@ it("measures every case", async () => {
     if (process.env["BENCH_PARALLEL"] === "off") {
         occ.SetRunsInParallel(false);
     }
-    const occt = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+    const occt = new OCCTService(occ);
     const rows = benchCases.map(benchCase => {
         const fingerprint = fingerprintOf(benchCase.run(occt));
         const times: number[] = [];

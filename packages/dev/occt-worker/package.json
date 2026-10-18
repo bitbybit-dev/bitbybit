@@ -99,6 +99,16 @@
             "types": "./dist/lib/api/occt/geom/index.d.ts",
             "default": "./dist/lib/api/occt/geom/index.js"
         },
+        "./lib/api/occt/parts": {
+            "@bitbybit-dev/source": "./lib/api/occt/parts/index.ts",
+            "types": "./dist/lib/api/occt/parts/index.d.ts",
+            "default": "./dist/lib/api/occt/parts/index.js"
+        },
+        "./lib/api/occt/parts/mechanical": {
+            "@bitbybit-dev/source": "./lib/api/occt/parts/mechanical/index.ts",
+            "types": "./dist/lib/api/occt/parts/mechanical/index.d.ts",
+            "default": "./dist/lib/api/occt/parts/mechanical/index.js"
+        },
         "./lib/api/occt/select": {
             "@bitbybit-dev/source": "./lib/api/occt/select/index.ts",
             "types": "./dist/lib/api/occt/select/index.d.ts",
@@ -139,6 +149,7 @@
     },
     "devDependencies": {
         "@vitest/coverage-v8": "4.1.11",
+        "fast-check": "4.10.2",
         "shx": "0.4.0",
         "typescript": "5.9.3",
         "vitest": "4.1.11"

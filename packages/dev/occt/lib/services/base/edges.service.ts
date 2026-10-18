@@ -1,7 +1,7 @@
 import type { Geom2d_Curve, Geom_Surface, BitbybitOcctModule, Handle_Geom2d_Curve, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Circ2d, gp_Lin2d } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import type { Base } from "../../api/inputs";
-import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type { ConverterService } from "./converter.service";
 import type { EntitiesService } from "./entities.service";
 import type { ShapeGettersService } from "./shape-getters";
@@ -10,6 +10,7 @@ import type { GeomService } from "./geom.service";
 import type { TransformsService } from "./transforms.service";
 import type * as Resolved from "../../api/resolved-inputs";
 import { checkedShape, checkedShapes } from "./input-checks";
+import { releasedOnError } from "./release";
 
 export class EdgesService {
 
@@ -21,7 +22,7 @@ export class EdgesService {
         private readonly enumService: EnumService,
         private readonly geomService: GeomService,
         private readonly transformsService: TransformsService,
-        private readonly vecHelper: VectorHelperService
+        private readonly base: BaseBitByBit
     ) { }
 
     getCornerPointsOfEdgesForShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.Base.Point3[] {
@@ -29,7 +30,6 @@ export class EdgesService {
         let points: Inputs.Base.Point3[] = [];
         edges.forEach((edge) => {
             const crvHandle = this.occ.GetEdgeCurve(edge);
-
             try {
                 if (crvHandle && !crvHandle.IsNull()) {
                     const edgeParams = this.occ.BRep_Tool_GetEdgeParameters(edge);
@@ -43,24 +43,36 @@ export class EdgesService {
                         points.push(pt1g);
                         points.push(pt2g);
                     }
-                    crvHandle.delete();
                 }
             } catch (ex) {
                 console.log(ex);
+            } finally {
+                crvHandle?.delete();
+                if (edge !== inputs.shape) {
+                    edge.delete();
+                }
             }
         });
         if (points.length > 0) {
-            points = this.vecHelper.removeAllDuplicateVectors(points) as Inputs.Base.Point3[];
+            points = this.base.vector.removeAllDuplicateVectors({ vectors: points }) as Inputs.Base.Point3[];
         }
         return points;
     }
 
     getCircularEdgesAlongWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Edge[] {
-        return this.getEdgesAlongWire(inputs).filter(edge => this.isEdgeCircular({ shape: edge }));
+        return this.edgesAlongWireThat(inputs, edge => this.isEdgeCircular({ shape: edge }));
     }
 
     getLinearEdgesAlongWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Edge[] {
-        return this.getEdgesAlongWire(inputs).filter(edge => this.isEdgeLinear({ shape: edge }));
+        return this.edgesAlongWireThat(inputs, edge => this.isEdgeLinear({ shape: edge }));
+    }
+
+    private edgesAlongWireThat(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>, keep: (edge: TopoDS_Edge) => boolean): TopoDS_Edge[] {
+        const edges = this.getEdgesAlongWire(inputs);
+        const made = edges.filter(edge => edge !== inputs.shape);
+        const kept = releasedOnError(made, () => edges.filter(keep));
+        made.filter(edge => !kept.includes(edge)).forEach(edge => edge.delete());
+        return kept;
     }
 
     getEdgesAlongWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Edge[] {
@@ -108,8 +120,8 @@ export class EdgesService {
 
     arcFromCircleAndTwoAngles(inputs: Resolved.OCCT.ArcEdgeCircleTwoAnglesDto<TopoDS_Edge>) {
         const circle = this.getGpCircleFromEdge({ shape: inputs.circle });
-        const radAlpha1 = this.vecHelper.degToRad(inputs.alphaAngle1);
-        const radAlpha2 = this.vecHelper.degToRad(inputs.alphaAngle2);
+        const radAlpha1 = this.base.math.degToRad({ number: inputs.alphaAngle1 });
+        const radAlpha2 = this.base.math.degToRad({ number: inputs.alphaAngle2 });
         const shape = this.occ.MakeArcOnCircleByAngles(circle, radAlpha1, radAlpha2, inputs.sense);
         circle.delete();
         return shape;
@@ -117,7 +129,7 @@ export class EdgesService {
 
     arcFromCirclePointAndAngle(inputs: Resolved.OCCT.ArcEdgeCirclePointAngleDto<TopoDS_Edge>) {
         const circle = this.getGpCircleFromEdge({ shape: inputs.circle });
-        const radAlpha = this.vecHelper.degToRad(inputs.alphaAngle);
+        const radAlpha = this.base.math.degToRad({ number: inputs.alphaAngle });
         const point = this.entitiesService.gpPnt(inputs.point);
         const shape = this.occ.MakeArcOnCircleByAngle(circle, point, radAlpha, inputs.sense);
         circle.delete();
@@ -173,28 +185,33 @@ export class EdgesService {
         } else {
             edges = this.shapeGettersService.getEdges({ shape: inputs.shape });
         }
-        const allEdgePoints: Base.Point3[][] = edges.map(edge => {
-            return this.edgeToPoints({ ...inputs, shape: edge });
-        });
-        return allEdgePoints;
+        try {
+            return edges.map(edge => this.edgeToPoints({ ...inputs, shape: edge }));
+        } finally {
+            edges.filter(edge => edge !== inputs.shape).forEach(edge => edge.delete());
+        }
     }
 
     startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Base.Point3 {
-        const edge = inputs.shape;
-        const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const pt = this.geomService.pointOnCurveAtParam({ shape: curve, param: 0 });
-        curve.delete();
-        return pt;
+        return this.pointOnEdgeAt(inputs.shape, 0);
     }
 
     endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Base.Point3 {
-        const edge = inputs.shape;
+        return this.pointOnEdgeAt(inputs.shape, 1);
+    }
+
+    private pointOnEdgeAt(edge: TopoDS_Edge, param: number): Base.Point3 {
         const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const pt = this.geomService.pointOnCurveAtParam({ shape: curve, param: 1 });
-        curve.delete();
-        return pt;
+        try {
+            const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
+            try {
+                return this.geomService.pointOnCurveAtParam({ shape: curve, param });
+            } finally {
+                curve.delete();
+            }
+        } finally {
+            wire.delete();
+        }
     }
 
     edgeToPoints(inputs: Resolved.OCCT.EdgesToPointsDto<TopoDS_Edge>): Inputs.Base.Point3[] {
@@ -230,8 +247,8 @@ export class EdgesService {
             const tessStart = edgePoints[0]!;
             const tessEnd = edgePoints[edgePoints.length - 1]!;
             
-            const distStartToStart = this.vecHelper.distanceBetweenPoints(tessStart, edgeStart);
-            const distEndToStart = this.vecHelper.distanceBetweenPoints(tessEnd, edgeStart);
+            const distStartToStart = this.base.point.distance({ startPoint: tessStart, endPoint: edgeStart });
+            const distEndToStart = this.base.point.distance({ startPoint: tessEnd, endPoint: edgeStart });
             
             if (distEndToStart < distStartToStart) {
                 edgePoints.reverse();
@@ -528,6 +545,7 @@ export class EdgesService {
         } else {
             resultingSol = [...solutions];
         }
+        solutions.filter(solution => !resultingSol.includes(solution)).forEach(solution => solution.delete());
 
         if (resultingSol.length === 2 && inputs.circleRemainders !== Inputs.OCCT.twoCircleInclusionEnum.none) {
             let startPoint1: Base.Point3 | undefined;
@@ -699,7 +717,7 @@ export class EdgesService {
     pointOnEdgeAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const { uMin, uMax } = this.getEdgeBounds(edge);
-        const param = this.vecHelper.remap(inputs.param, 0, 1, uMin, uMax);
+        const param = this.base.math.remap({ number: inputs.param, fromLow: 0, fromHigh: 1, toLow: uMin, toHigh: uMax });
         const result = this.occ.EvaluateEdgeCurve(edge, param);
         if (!result.IsValid) {
             result.delete();
@@ -732,11 +750,13 @@ export class EdgesService {
         const circle = this.getGpCircleFromEdge({ shape: inputs.circle });
         const gpPnt1 = this.entitiesService.gpPnt(inputs.start);
         const gpPnt2 = this.entitiesService.gpPnt(inputs.end);
-        const shape = this.occ.MakeArcOnCircle(circle, gpPnt1, gpPnt2, inputs.sense);
-        circle.delete();
-        gpPnt1.delete();
-        gpPnt2.delete();
-        return shape;
+        try {
+            return this.occ.MakeArcOnCircle(circle, gpPnt1, gpPnt2, inputs.sense);
+        } finally {
+            circle.delete();
+            gpPnt1.delete();
+            gpPnt2.delete();
+        }
     }
 
 

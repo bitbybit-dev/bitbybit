@@ -11,13 +11,17 @@ import type { ConverterService } from "./converter.service";
 import type { EnumService } from "./enum.service";
 import { TextWiresDataDto, ObjectDefinition } from "../../api/models/bucket";
 import type { OperationsService } from "./operations.service";
-import type { BaseBitByBit } from "../../base";
-import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { resolveDto } from "@bitbybit-dev/base";
-import { checkedShapes } from "./input-checks";
+import { checkedDirection, checkedPoints, checkedShapes } from "./input-checks";
+import { released } from "./release";
+import { length3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+
+const SAME_POINT_TOLERANCE = 1e-5;
+
 export class WiresService {
 
     constructor(
@@ -31,7 +35,6 @@ export class WiresService {
         private readonly converterService: ConverterService,
         private readonly geomService: GeomService,
         private readonly edgesService: EdgesService,
-        private readonly vecHelper: VectorHelperService,
         private readonly operations: () => OperationsService,
     ) { }
 
@@ -76,48 +79,34 @@ export class WiresService {
     reversedWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Wire {
         const wire: TopoDS_Wire = inputs.shape;
         const reversed = wire.Reversed();
-        const result = this.converterService.getActualTypeOfShape(reversed);
-        reversed.delete();
+        const result = this.converterService.castAndRelease(reversed);
         return result;
     }
 
     reversedWireFromReversedEdges(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Wire {
         const wire: TopoDS_Wire = inputs.shape;
         const edges = this.edgesService.getEdgesAlongWire({ shape: wire });
-        const reversedEdges = edges.map(e => {
-            return this.converterService.getActualTypeOfShape(e.Reversed());
-        });
-        const reversed = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: reversedEdges.reverse() });
-        const result = this.converterService.getActualTypeOfShape(reversed);
-        reversed.delete();
-        reversedEdges.forEach(e => e.delete());
-        return result;
+        const reversedEdges: TopoDS_Shape[] = [];
+        try {
+            edges.forEach(e => reversedEdges.push(this.converterService.castAndRelease(e.Reversed())));
+            return this.converterService.castAndRelease(this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [...reversedEdges].reverse() }));
+        } finally {
+            [...edges.filter(e => e !== wire), ...reversedEdges].forEach(e => e.delete());
+        }
     }
 
     createChristmasTreeWire(inputs: Resolved.OCCT.ChristmasTreeDto) {
-        const frameInner = this.createLineWire({
-            start: [inputs.innerDist, 0, 0],
-            end: [0, inputs.height, 0],
-        });
-
-        const frameOuter = this.createLineWire({
-            start: [inputs.outerDist, 0, 0],
-            end: [0, inputs.height, 0],
-        });
-
-        const pointsOnInner = this.divideWireByEqualDistanceToPoints({
-            shape: frameInner,
-            nrOfDivisions: inputs.nrSkirts,
-            removeEndPoint: false,
-            removeStartPoint: false,
-        });
-
-        const pointsOnOuter = this.divideWireByEqualDistanceToPoints({
-            shape: frameOuter,
-            nrOfDivisions: inputs.nrSkirts,
-            removeEndPoint: false,
-            removeStartPoint: false,
-        });
+        const pointsAlong = (end: number): Base.Point3[] => {
+            const frame = this.createLineWire({ start: [end, 0, 0], end: [0, inputs.height, 0] });
+            return released([frame], () => this.divideWireByEqualDistanceToPoints({
+                shape: frame,
+                nrOfDivisions: inputs.nrSkirts,
+                removeEndPoint: false,
+                removeStartPoint: false,
+            }));
+        };
+        const pointsOnInner = pointsAlong(inputs.innerDist);
+        const pointsOnOuter = pointsAlong(inputs.outerDist);
         const halfShapeTreePts: Base.Point3[] = [];
         if (inputs.trunkWidth > 0 && inputs.trunkHeight > 0) {
             halfShapeTreePts.push([0, -inputs.trunkHeight, 0]);
@@ -302,7 +291,7 @@ export class WiresService {
     }
 
     private samePoint(first: Inputs.Base.Point3, second: Inputs.Base.Point3): boolean {
-        return Math.hypot(first[0] - second[0], first[1] - second[1], first[2] - second[2]) <= 1e-7;
+        return length3(subtract3(first, second)) <= 1e-7;
     }
 
     private wireThrough(points: Inputs.Base.Point3[], closed: boolean, kind: string): TopoDS_Wire {
@@ -448,7 +437,7 @@ export class WiresService {
         const tangents = new this.occ.VectorDouble();
         const flags = new this.occ.VectorInt();
         const enforced = (tangent: Inputs.Base.Vector3 | undefined): tangent is Inputs.Base.Vector3 =>
-            tangent !== undefined && Math.hypot(tangent[0], tangent[1], tangent[2]) > inputs.tolerance;
+            tangent !== undefined && length3(tangent) > inputs.tolerance;
         if (inputs.tangents && inputs.tangents.length === inputs.points.length) {
             for (const t of inputs.tangents) {
                 const used = enforced(t);
@@ -489,9 +478,9 @@ export class WiresService {
     }
 
     /**
-     * Interpolate points with an achiral, symmetric, periodic (closed) curve. Catmull-Rom tangents
-     * are loaded at their exact magnitude (no rescaling), so symmetric inputs (triangle, square, ...)
-     * produce a genuinely mirror-symmetric curve that is C2 at the seam - no irregular first/last point.
+     * Interpolate points with an achiral, symmetric, periodic (closed) curve: the kernel solves the
+     * tangents of the C2 periodic spline through the points, so symmetric inputs (triangle,
+     * square, ...) produce a mirror-symmetric curve that is C2 everywhere, the seam included.
      * @param inputs Points to interpolate and tolerance
      * @returns Symmetric periodic BSpline wire
      */
@@ -529,7 +518,7 @@ export class WiresService {
 
     splitOnPoints(inputs: Inputs.OCCT.SplitWireOnPointsDto<TopoDS_Wire>): TopoDS_Wire[] {
         const wire = inputs.shape;
-        const splitPoints = this.vecHelper.removeAllDuplicateVectors(inputs.points, 1e-7);
+        const splitPoints = this.base.vector.removeAllDuplicateVectors({ vectors: inputs.points, tolerance: 1e-7 });
 
         const edges = this.edgesService.getEdgesAlongWire({ shape: wire });
         if (edges.length === 0) {
@@ -555,10 +544,7 @@ export class WiresService {
                     const param = result.param;
                     const clampedParam = Math.max(firstVal, Math.min(lastVal, param));
                     const projectedPt = result.Point;
-                    const dx = projectedPt.X() - gpPnt.X();
-                    const dy = projectedPt.Y() - gpPnt.Y();
-                    const dz = projectedPt.Z() - gpPnt.Z();
-                    const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                    const dist = length3(subtract3([projectedPt.X(), projectedPt.Y(), projectedPt.Z()], [gpPnt.X(), gpPnt.Y(), gpPnt.Z()]));
                     if (dist < minDist) {
                         minDist = dist;
                         bestEdgeIndex = index;
@@ -645,24 +631,20 @@ export class WiresService {
     createWireFromTwoCirclesTan(inputs: Resolved.OCCT.WireFromTwoCirclesTanDto<TopoDS_Wire>) {
         const circleEdge1 = this.shapeGettersService.getEdges({ shape: inputs.circle1 });
         const circleEdge2 = this.shapeGettersService.getEdges({ shape: inputs.circle2 });
-        if (circleEdge1.length === 1 && circleEdge2.length === 1) {
-            const circularEdge1 = circleEdge1[0]!;
-            const circularEdge2 = circleEdge2[0]!;
+        const walked = [...circleEdge1, ...circleEdge2].filter(edge => edge !== inputs.circle1 && edge !== inputs.circle2);
+        return released(walked, () => {
+            if (circleEdge1.length !== 1 || circleEdge2.length !== 1) {
+                throw new Error("Could not find the edges of the provided circle wires.");
+            }
             const result = this.edgesService.constraintTanLinesOnTwoCircles({
-                circle1: circularEdge1,
-                circle2: circularEdge2,
+                circle1: circleEdge1[0]!,
+                circle2: circleEdge2[0]!,
                 positionResult: inputs.keepLines === Inputs.OCCT.twoSidesStrictEnum.outside ? Inputs.OCCT.positionResultEnum.keepSide2 : Inputs.OCCT.positionResultEnum.keepSide1,
                 circleRemainders: this.enumService.convertFourSidesStrictEnumToTwoCircleInclusionEnum(inputs.circleRemainders),
                 tolerance: inputs.tolerance,
             });
-            const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: result });
-            result.forEach(e => e.delete());
-            circularEdge1.delete();
-            circularEdge2.delete();
-            return wire;
-        } else {
-            throw new Error("Could not find the edges of the provided circle wires.");
-        }
+            return released(result, () => this.converterService.combineEdgesAndWiresIntoAWire({ shapes: result }));
+        });
     }
 
 
@@ -674,15 +656,14 @@ export class WiresService {
         let points2: Base.Point3[][];
 
         if (inputs.zigZagsPerEdge) {
-            const edges1 = this.edgesService.getEdgesAlongWire({ shape: wire1 });
-            const edges2 = this.edgesService.getEdgesAlongWire({ shape: wire2 });
-            if (inputs.divideByEqualDistance) {
-                points1 = edges1.map(e => this.edgesService.divideEdgeByEqualDistanceToPoints({ shape: e, nrOfDivisions: inputs.nrZigZags * 2, removeEndPoint: false, removeStartPoint: false }));
-                points2 = edges2.map(e => this.edgesService.divideEdgeByEqualDistanceToPoints({ shape: e, nrOfDivisions: inputs.nrZigZags * 2, removeEndPoint: false, removeStartPoint: false }));
-            } else {
-                points1 = edges1.map(e => this.edgesService.divideEdgeByParamsToPoints({ shape: e, nrOfDivisions: inputs.nrZigZags * 2, removeEndPoint: false, removeStartPoint: false }));
-                points2 = edges2.map(e => this.edgesService.divideEdgeByParamsToPoints({ shape: e, nrOfDivisions: inputs.nrZigZags * 2, removeEndPoint: false, removeStartPoint: false }));
-            }
+            const pointsOnEdgesOf = (wire: TopoDS_Wire): Base.Point3[][] => {
+                const edges = this.edgesService.getEdgesAlongWire({ shape: wire });
+                return released(edges.filter(edge => edge !== wire), () => edges.map(e => inputs.divideByEqualDistance
+                    ? this.edgesService.divideEdgeByEqualDistanceToPoints({ shape: e, nrOfDivisions: inputs.nrZigZags * 2, removeEndPoint: false, removeStartPoint: false })
+                    : this.edgesService.divideEdgeByParamsToPoints({ shape: e, nrOfDivisions: inputs.nrZigZags * 2, removeEndPoint: false, removeStartPoint: false })));
+            };
+            points1 = pointsOnEdgesOf(wire1);
+            points2 = pointsOnEdgesOf(wire2);
         } else {
             if (inputs.divideByEqualDistance) {
                 points1 = [this.divideWireByEqualDistanceToPoints({ shape: wire1, nrOfDivisions: inputs.nrZigZags * 2, removeEndPoint: false, removeStartPoint: false })];
@@ -713,7 +694,7 @@ export class WiresService {
             }
             return this.createPolylineWire({ points: ptsInZigZagOrder });
         });
-        return this.converterService.combineEdgesAndWiresIntoAWire({ shapes: wires });
+        return released(wires, () => this.converterService.combineEdgesAndWiresIntoAWire({ shapes: wires }));
     }
 
     createWiresBetweenStartEndPointsOfWiresAndEdges(inputs: Resolved.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire[] {
@@ -860,27 +841,31 @@ export class WiresService {
     }
 
     createBSpline(inputs: Resolved.OCCT.BSplineDto): TopoDS_Wire {
+        const points = checkedPoints(inputs.points, "points");
+        if (points.length < 2) {
+            throw new InputError(`A spline needs at least two points, and \`points\` has ${points.length}.`, "points");
+        }
         const coords = new this.occ.VectorDouble();
-        for (const pt of inputs.points) {
-            coords.push_back(pt[0]);
-            coords.push_back(pt[1]);
-            coords.push_back(pt[2]);
+        try {
+            [...points, ...(inputs.closed ? [points[0]!] : [])].forEach(pt => {
+                coords.push_back(pt[0]);
+                coords.push_back(pt[1]);
+                coords.push_back(pt[2]);
+            });
+            const edge = this.occ.MakeApproxBSplineEdge(coords, 3, 8, 1.0e-3);
+            try {
+                const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
+                try {
+                    return wireMaker.Wire();
+                } finally {
+                    wireMaker.delete();
+                }
+            } finally {
+                edge.delete();
+            }
+        } finally {
+            coords.delete();
         }
-        if (inputs.closed) {
-            coords.push_back(inputs.points[0]![0]);
-            coords.push_back(inputs.points[0]![1]);
-            coords.push_back(inputs.points[0]![2]);
-        }
-
-        const edge = this.occ.MakeApproxBSplineEdge(coords, 3, 8, 1.0e-3);
-        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
-        const wire = wireMaker.Wire();
-
-        coords.delete();
-        edge.delete();
-        wireMaker.delete();
-
-        return wire;
     }
 
     createBezier(inputs: Resolved.OCCT.BezierDto): TopoDS_Wire {
@@ -1052,6 +1037,7 @@ export class WiresService {
         });
 
         const compound = this.converterService.makeCompound({ shapes: wires });
+        wires.forEach(wire => wire.delete());
         const dataRes = new TextWiresDataDto<string>();
 
         const box = this.operationsService.boundingBoxOfShape({ shape: compound });
@@ -1113,41 +1099,45 @@ export class WiresService {
 
     wiresToPoints(inputs: Resolved.OCCT.WiresToPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         const wires = this.shapeGettersService.getWires({ shape: inputs.shape });
-        const allWirePoints: Inputs.Base.Point3[][] = [];
-        wires.forEach(w => {
+        return released(wires, () => wires.map(w => {
             const edgePoints = this.edgesService.edgesToPoints({ ...inputs, shape: w });
-            const flatPoints = edgePoints.flat();
-            const dupsRemoved = this.vecHelper.removeConsecutiveDuplicates(flatPoints, false);
-            allWirePoints.push(dupsRemoved);
-        });
-        return allWirePoints;
+            return this.base.point.removeConsecutiveDuplicates({ points: edgePoints.flat(), checkFirstAndLast: false, tolerance: SAME_POINT_TOLERANCE });
+        }));
     }
 
     createHelixWire(inputs: Resolved.OCCT.HelixWireDto): TopoDS_Wire {
-        const ax = this.entitiesService.gpAx3_4(inputs.center, inputs.direction);
-        const wire = this.occ.MakeHelixWire(ax, inputs.radius, inputs.pitch, inputs.height, inputs.clockwise, inputs.tolerance);
-        ax.delete();
-        return wire;
+        const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
+        try {
+            return this.occ.MakeHelixWire(ax, inputs.radius, inputs.pitch, inputs.height, inputs.clockwise, inputs.tolerance);
+        } finally {
+            ax.delete();
+        }
     }
 
     createHelixWireByTurns(inputs: Resolved.OCCT.HelixWireByTurnsDto): TopoDS_Wire {
-        const ax = this.entitiesService.gpAx3_4(inputs.center, inputs.direction);
-        const wire = this.occ.MakeHelixWireByTurns(ax, inputs.radius, inputs.pitch, inputs.numTurns, inputs.clockwise, inputs.tolerance);
-        ax.delete();
-        return wire;
+        const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
+        try {
+            return this.occ.MakeHelixWireByTurns(ax, inputs.radius, inputs.pitch, inputs.numTurns, inputs.clockwise, inputs.tolerance);
+        } finally {
+            ax.delete();
+        }
     }
 
     createTaperedHelixWire(inputs: Resolved.OCCT.TaperedHelixWireDto): TopoDS_Wire {
-        const ax = this.entitiesService.gpAx3_4(inputs.center, inputs.direction);
-        const wire = this.occ.MakeTaperedHelixWire(ax, inputs.startRadius, inputs.endRadius, inputs.pitch, inputs.height, inputs.clockwise, inputs.tolerance);
-        ax.delete();
-        return wire;
+        const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
+        try {
+            return this.occ.MakeTaperedHelixWire(ax, inputs.startRadius, inputs.endRadius, inputs.pitch, inputs.height, inputs.clockwise, inputs.tolerance);
+        } finally {
+            ax.delete();
+        }
     }
 
     createFlatSpiralWire(inputs: Resolved.OCCT.FlatSpiralWireDto): TopoDS_Wire {
-        const ax = this.entitiesService.gpAx3_4(inputs.center, inputs.direction);
-        const wire = this.occ.MakeFlatSpiralWire(ax, inputs.startRadius, inputs.endRadius, inputs.numTurns, inputs.clockwise, inputs.tolerance);
-        ax.delete();
-        return wire;
+        const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
+        try {
+            return this.occ.MakeFlatSpiralWire(ax, inputs.startRadius, inputs.endRadius, inputs.numTurns, inputs.clockwise, inputs.tolerance);
+        } finally {
+            ax.delete();
+        }
     }
 }

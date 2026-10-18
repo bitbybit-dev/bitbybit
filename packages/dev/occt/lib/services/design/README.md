@@ -209,17 +209,29 @@ The migrations described below are not built yet.
   suppliers live outside the document; `bomTreatment` is reserved for a later minor (phantom,
   purchased, excluded) and refused until then.
 - **Left for later**: closed loops of joints (a constraint solver), ball and planar joints,
-  interference checks, the kinematics section of STEP AP242, and an assembly, a sketch with loops or
-  a circle written as TypeScript (`toTypeScript` refuses them by name).
+  interference checks, the kinematics section of STEP AP242, and an assembly, a sketch with loops, a
+  circle, a gear or a rack written as TypeScript (`toTypeScript` refuses them by name).
 - **Sketches draw one outline or several.** `pen` draws one, from `start`; `loops` draws several,
   the first the outside and each further one a hole, turned to the right winding whichever way each
   is drawn, so one sketch makes a washer. A `circle` command draws an exact circle as one edge, a
-  loop by itself, so an extruded disc has one side face. Command ids are distinct across a sketch's
-  loops; constraints, when the solver comes, will be stored over them.
+  loop by itself, so an extruded disc has one side face. A `gear` command draws an involute spur
+  gear's outline, or with `internal` the teeth of a ring gear for a hole loop, also a loop by
+  itself, and names its edges by the gear's id and their part (`profile.teeth.tip`, `.flank`,
+  `.root`), so a reference reaches every tip at once. A `rack` command draws an involute rack from
+  `start` at `angle`, a loop by itself too, its edges named `.tip`, `.flank`, `.root`, `.back` and
+  `.side`. Command ids are distinct across a sketch's loops, a gear's three part names and a rack's
+  five included; constraints, when the solver comes, will be stored over them.
+- **Standard parts name their faces by role.** An `operation` feature whose method has a
+  `...WithRoles` twin, such as `parts.mechanical.gears.spurGear`, runs the twin and names each face by the role
+  it returns (`gear:tip`, `gear:bore`), every other face `face`. The twin is tried before a history
+  twin.
 - **Operations name their faces through history.** An `operation` feature whose method has a
   `...WithHistory` twin and is given bodies runs the twin, so the faces it carries keep their names
   (a face of the block keeps `block:face` after a fillet) and the faces it makes take roles: `round`
-  and `bevel` for fillets and chamfers, `side` for faces made of edges, `start` and `end`.
+  and `bevel` for every form of fillet and chamfer, `side` for faces made of edges, `start` and
+  `end`, read from every history the twin returns, so a rib's or a boss's new faces take them from
+  its wire's or profile's. Where the twin refuses what the method accepts and the method hands the
+  body back, as an offset of 0 does, the body keeps its names.
 
 ## The format and what stays outside it
 
@@ -432,7 +444,8 @@ than it expects:
   by `shapeHash`, for the drawing options given (`drawHelper.keptDesignMeshes`), and takes them back
   (`drawHelper.keepDesignMeshes`), passing over anything that is not a mesh of faces and edges. With
   each part's last outcome and its mesh kept, a caller reopens a design without making or meshing
-  anything.
+  anything. The meshes are the drawer's own typed buffers: they survive a structured clone, but one
+  stored as JSON or transferred to another thread is refused when it is handed back.
 
 ## How well references survive: the naming benchmark
 
@@ -503,6 +516,16 @@ reference. A feature prism stopped at a face, for one, reports neither its walls
 
 The naming logic is TypeScript over facts the kernel gives in bulk (histories, selectors, adjacency,
 signatures): one kernel call per shape, never one per face.
+
+A placement on a face (a sketch's plane, a hole's `on`) needs only the face's plane, so a reference
+that finds several flat faces in one plane, as a face a union split into pieces does, stands on that
+plane; faces in different planes are refused.
+
+Because names follow history rather than face numbers, a feature's booleans group their tools
+(`booleanStrategyEnum.inGroups`): tools whose boxes do not meet share one operation, which gives the
+same shape as one tool after another, numbered differently. An engine block's casting cut of
+twenty-four cavities went from 4.2 s to 1.7 s, and the forty-two part documents of an engine from 33 s
+to 28 s.
 
 ## Left out on purpose
 

@@ -78,6 +78,23 @@ export class OCCTFillets {
     }
 
     /**
+     * Rounds the given edges as `filletEdgesList` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the round made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, its edges to round and one radius per edge
+     * @returns The shape with rounded edges and its history
+     * @group 3d fillets
+     * @shortname fillet edges list with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.filletEdgesListWithHistory({ shape: box, edges: [edges[0], edges[1]], radiusList: [1, 2] });
+     * ```
+     */
+    filletEdgesListWithHistory(inputs: Inputs.OCCT.FilletEdgesListDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.filletEdgesListWithHistory", inputs);
+    }
+
+    /**
      * Rounds the given edges of a shape, all with the same radius.
      *
      * The edges must belong to the shape; an empty list throws an error.
@@ -94,6 +111,23 @@ export class OCCTFillets {
      */
     filletEdgesListOneRadius(inputs: Inputs.OCCT.FilletEdgesListOneRadiusDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("fillets.filletEdgesListOneRadius", inputs);
+    }
+
+    /**
+     * Rounds the given edges as `filletEdgesListOneRadius` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the round made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, its edges to round and the radius
+     * @returns The shape with rounded edges and its history
+     * @group 3d fillets
+     * @shortname fillet edges list one r with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.filletEdgesListOneRadiusWithHistory({ shape: box, edges: [edges[0], edges[1]], radius: 1 });
+     * ```
+     */
+    filletEdgesListOneRadiusWithHistory(inputs: Inputs.OCCT.FilletEdgesListOneRadiusDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.filletEdgesListOneRadiusWithHistory", inputs);
     }
 
     /**
@@ -118,6 +152,23 @@ export class OCCTFillets {
     }
 
     /**
+     * Rounds an edge with a changing radius as `filletEdgeVariableRadius` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the round made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, its edge, the radii and the positions along the edge they apply at
+     * @returns The shape with rounded edges and its history
+     * @group 3d fillets
+     * @shortname fillet edge variable r with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.filletEdgeVariableRadiusWithHistory({ shape: box, edge: edges[0], radiusList: [1, 2], paramsU: [0, 1] });
+     * ```
+     */
+    filletEdgeVariableRadiusWithHistory(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.filletEdgeVariableRadiusWithHistory", inputs);
+    }
+
+    /**
      * Rounds several edges of a shape, each with the same radius profile that changes along it.
      *
      * `paramsU` are positions along each edge as fractions from 0 to 1 and `radiusList` the radius
@@ -135,6 +186,23 @@ export class OCCTFillets {
      */
     filletEdgesSameVariableRadius(inputs: Inputs.OCCT.FilletEdgesSameVariableRadiusDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("fillets.filletEdgesSameVariableRadius", inputs);
+    }
+
+    /**
+     * Rounds edges with one changing radius as `filletEdgesSameVariableRadius` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the round made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, its edges, the radii and the positions along each edge they apply at
+     * @returns The shape with rounded edges and its history
+     * @group 3d fillets
+     * @shortname fillet edges same variable r with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.filletEdgesSameVariableRadiusWithHistory({ shape: box, edges: [edges[0], edges[1]], radiusList: [1, 2], paramsU: [0, 1] });
+     * ```
+     */
+    filletEdgesSameVariableRadiusWithHistory(inputs: Inputs.OCCT.FilletEdgesSameVariableRadiusDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.filletEdgesSameVariableRadiusWithHistory", inputs);
     }
 
     /**
@@ -161,6 +229,23 @@ export class OCCTFillets {
      */
     filletEdgesVariableRadius(inputs: Inputs.OCCT.FilletEdgesVariableRadiusDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("fillets.filletEdgesVariableRadius", inputs);
+    }
+
+    /**
+     * Rounds edges, each with its own changing radius, as `filletEdgesVariableRadius` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the round made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, its edges, one radius list per edge and one position list per edge
+     * @returns The shape with rounded edges and its history
+     * @group 3d fillets
+     * @shortname fillet edges variable r with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.filletEdgesVariableRadiusWithHistory({ shape: box, edges: [edges[0]], radiusLists: [[1, 2]], paramsULists: [[0, 1]] });
+     * ```
+     */
+    filletEdgesVariableRadiusWithHistory(inputs: Inputs.OCCT.FilletEdgesVariableRadiusDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.filletEdgesVariableRadiusWithHistory", inputs);
     }
 
     /**
@@ -204,9 +289,9 @@ export class OCCTFillets {
      * Bevels the edges of a shape by a distance, in model units, cutting each sharp edge back to a
      * flat strip.
      *
-     * Without `indexes` every edge is beveled. With `indexes`, counted from 0 as
-     * `shapes.edge.getEdges` lists them, only those are, each with `distance` or, in edge order,
-     * its entry of `distanceList`. Indexes naming no edge change nothing.
+     * Without `indexes` every edge is beveled; with them, counted from 0 as `shapes.edge.getEdges`
+     * lists them, only those, each by `distance` or its entry of `distanceList`. When no index
+     * names an edge the call throws.
      * @param inputs - The shape, the distance or the distance list, and the optional 0-based edge indexes
      * @returns The shape with beveled edges
      * @group 3d chamfers
@@ -260,6 +345,23 @@ export class OCCTFillets {
     }
 
     /**
+     * Bevels the given edges as `chamferEdgesList` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, its edges to bevel and one distance per edge
+     * @returns The shape with beveled edges and its history
+     * @group 3d chamfers
+     * @shortname chamfer edges list with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.chamferEdgesListWithHistory({ shape: box, edges: [edges[0], edges[1]], distanceList: [1, 2] });
+     * ```
+     */
+    chamferEdgesListWithHistory(inputs: Inputs.OCCT.ChamferEdgesListDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamferEdgesListWithHistory", inputs);
+    }
+
+    /**
      * Bevels one edge of a shape with an uneven chamfer: `distance1` is measured on `face`, one of
      * the two faces meeting at the edge, and `distance2` on the other.
      *
@@ -281,6 +383,23 @@ export class OCCTFillets {
     }
 
     /**
+     * Bevels an edge by two distances as `chamferEdgeTwoDistances` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, the edge, the face the first distance applies to, and the two distances
+     * @returns The shape with beveled edges and its history
+     * @group 3d chamfers
+     * @shortname chamfer edge 2 dist with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.chamferEdgeTwoDistancesWithHistory({ shape: box, edge: edges[0], face: faces[0], distance1: 1, distance2: 2 });
+     * ```
+     */
+    chamferEdgeTwoDistancesWithHistory(inputs: Inputs.OCCT.ChamferEdgeTwoDistancesDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamferEdgeTwoDistancesWithHistory", inputs);
+    }
+
+    /**
      * Bevels several edges of a shape with the same uneven chamfer: `distance1` is measured on each
      * edge's paired face and `distance2` on the other face.
      *
@@ -297,6 +416,23 @@ export class OCCTFillets {
      */
     chamferEdgesTwoDistances(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamferEdgesTwoDistances", inputs);
+    }
+
+    /**
+     * Bevels edges by two distances as `chamferEdgesTwoDistances` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, the edges, one paired face per edge, and the two distances
+     * @returns The shape with beveled edges and its history
+     * @group 3d chamfers
+     * @shortname chamfer edges 2 dist with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.chamferEdgesTwoDistancesWithHistory({ shape: box, edges: [edges[0]], faces: [faces[0]], distance1: 1, distance2: 2 });
+     * ```
+     */
+    chamferEdgesTwoDistancesWithHistory(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamferEdgesTwoDistancesWithHistory", inputs);
     }
 
     /**
@@ -326,6 +462,23 @@ export class OCCTFillets {
     }
 
     /**
+     * Bevels edges, each by its own two distances, as `chamferEdgesTwoDistancesLists` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, the edges, one paired face per edge, and the two distance lists
+     * @returns The shape with beveled edges and its history
+     * @group 3d chamfers
+     * @shortname chamfer edges 2 dist lists with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.chamferEdgesTwoDistancesListsWithHistory({ shape: box, edges: [edges[0]], faces: [faces[0]], distances1: [1], distances2: [2] });
+     * ```
+     */
+    chamferEdgesTwoDistancesListsWithHistory(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesListsDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamferEdgesTwoDistancesListsWithHistory", inputs);
+    }
+
+    /**
      * Bevels one edge of a shape by a distance measured on `face` and an angle in degrees from that
      * face.
      *
@@ -346,6 +499,23 @@ export class OCCTFillets {
     }
 
     /**
+     * Bevels an edge by a distance and an angle as `chamferEdgeDistAngle` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, the edge, the face the distance is measured on, the distance and the angle
+     * @returns The shape with beveled edges and its history
+     * @group 3d chamfers
+     * @shortname chamfer edge angle with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.chamferEdgeDistAngleWithHistory({ shape: box, edge: edges[0], face: faces[0], distance: 1, angle: 30 });
+     * ```
+     */
+    chamferEdgeDistAngleWithHistory(inputs: Inputs.OCCT.ChamferEdgeDistAngleDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamferEdgeDistAngleWithHistory", inputs);
+    }
+
+    /**
      * Bevels several edges of a shape by the same distance and angle, the distance measured on each
      * edge's paired face and the angle in degrees from it.
      *
@@ -362,6 +532,23 @@ export class OCCTFillets {
      */
     chamferEdgesDistAngle(inputs: Inputs.OCCT.ChamferEdgesDistAngleDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamferEdgesDistAngle", inputs);
+    }
+
+    /**
+     * Bevels edges by a distance and an angle as `chamferEdgesDistAngle` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, the edges, one paired face per edge, the distance and the angle
+     * @returns The shape with beveled edges and its history
+     * @group 3d chamfers
+     * @shortname chamfer edges angle with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.chamferEdgesDistAngleWithHistory({ shape: box, edges: [edges[0]], faces: [faces[0]], distance: 1, angle: 30 });
+     * ```
+     */
+    chamferEdgesDistAngleWithHistory(inputs: Inputs.OCCT.ChamferEdgesDistAngleDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamferEdgesDistAngleWithHistory", inputs);
     }
 
     /**
@@ -388,6 +575,23 @@ export class OCCTFillets {
      */
     chamferEdgesDistsAngles(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamferEdgesDistsAngles", inputs);
+    }
+
+    /**
+     * Bevels edges, each by its own distance and angle, as `chamferEdgesDistsAngles` does, and reports what became of every face, edge and vertex of the shape:
+     * `facesFromEdges` holds the bevel made along each edge, and `faces` what each face was trimmed to.
+     * @param inputs - The shape, the edges, one paired face per edge, the distances and the angles
+     * @returns The shape with beveled edges and its history
+     * @group 3d chamfers
+     * @shortname chamfer edges angles with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.chamferEdgesDistsAnglesWithHistory({ shape: box, edges: [edges[0]], faces: [faces[0]], distances: [1], angles: [30] });
+     * ```
+     */
+    chamferEdgesDistsAnglesWithHistory(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamferEdgesDistsAnglesWithHistory", inputs);
     }
 
     /**

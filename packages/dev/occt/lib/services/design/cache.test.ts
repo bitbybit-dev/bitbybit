@@ -2,7 +2,8 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { DesignOutcome } from "./cache";
-import { DesignCache, hashBytes, hashText, release, stableJson } from "./cache";
+import { DesignCache, hashBytes, hashText, stableJson } from "./cache";
+import { release } from "../base/release";
 
 describe("design cache", () => {
     let kernel: BitbybitOcctModule;

@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll, afterEach } from "vitest";
 import type { BitbybitOcctModule, ClassHandle } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 
 type Temporary = "gp_Pnt" | "gp_Dir" | "gp_Pnt2d" | "gp_Dir2d";
 
@@ -14,7 +12,7 @@ describe("EntitiesService", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        helper = new OccHelper(occt);
     });
 
     afterEach(() => {

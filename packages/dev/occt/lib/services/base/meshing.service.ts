@@ -1,12 +1,14 @@
 import type { BitbybitAnalysis_SurfaceQuantity, BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import type { WiresService } from "./wires.service";
-import type { BaseBitByBit } from "../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import { InputError } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import { decodeMeshArrays, decodePolylines, type MeshArrays, type MeshContents } from "./mesh-arrays";
+import { decodeMeshArrays, decodeMeshBuffers, decodePolylines, meshBuffersFromLists, type MeshArrays, type MeshContents } from "./mesh-arrays";
+import type { WithIsoCurves } from "./mesh-arrays-types";
 import { checkedChoice, checkedDirection, checkedNumber, checkedShapes, checkedWhole } from "./input-checks";
+import { degreesOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 const SURFACE_ANALYSES: readonly Inputs.OCCT.surfaceAnalysisEnum[] = [
     Inputs.OCCT.surfaceAnalysisEnum.none,
@@ -20,7 +22,6 @@ const SURFACE_ANALYSES: readonly Inputs.OCCT.surfaceAnalysisEnum[] = [
 
 const MOST_ISO_CURVES = 1000;
 
-const DEGREES_PER_RADIAN = 180 / Math.PI;
 
 const LEAST_ANGULAR_DEFLECTION = 0.001;
 
@@ -96,7 +97,11 @@ export class MeshingService {
     }
 
     shapesToMeshes(inputs: Resolved.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto[] {
-        return inputs.shapes.map(shape => this.shapeToMesh({
+        return this.eachShapeOf(inputs).map(shape => this.shapeToMesh(shape));
+    }
+
+    private eachShapeOf(inputs: Resolved.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>[] {
+        return inputs.shapes.map(shape => ({
             shape,
             precision: inputs.precision,
             angularDeflection: inputs.angularDeflection,
@@ -126,33 +131,54 @@ export class MeshingService {
         if (!resolved.shape || resolved.shape.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
+        return this.bufferedMesh(resolved, decodeMeshArrays) ?? this.jsonMesh(resolved);
+    }
+
+    shapeToMeshBuffers(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshBuffersDto {
+        const resolved = resolveDto(Inputs.OCCT.ShapeToMeshDto, inputs) as Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>;
+        if (!resolved.shape || resolved.shape.IsNull()) {
+            return { faceList: [], edgeList: [], pointsList: [] };
+        }
+        return this.bufferedMesh(resolved, decodeMeshBuffers) ?? meshBuffersFromLists(this.jsonMesh(resolved));
+    }
+
+    shapesToMeshBuffers(inputs: Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshBuffersDto[] {
+        const resolved = resolveDto(Inputs.OCCT.ShapesToMeshesDto, inputs) as Resolved.OCCT.ShapesToMeshesDto<TopoDS_Shape>;
+        return this.eachShapeOf(resolved).map(shape => this.shapeToMeshBuffers(shape));
+    }
+
+    private bufferedMesh<M extends WithIsoCurves>(resolved: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>, decode: (arrays: MeshArrays, contents: MeshContents) => M): M | undefined {
         const fineness = this.checkedFineness(resolved);
         const isoCurvesU = checkedWhole(resolved.isoCurvesU, "isoCurvesU", 0, MOST_ISO_CURVES);
         const isoCurvesV = checkedWhole(resolved.isoCurvesV, "isoCurvesV", 0, MOST_ISO_CURVES);
         const analysis = this.nodeAnalysis(resolved.shape, resolved.surfaceAnalysis, resolved.draftDirection);
-
-        if (this.kernelHasMeshBuffers()) {
-            const contents: MeshContents = { colors: false, metadata: resolved.computeMetadata, analysis: analysis !== undefined };
-            const meshCall = this.occ.ShapeToMeshBuffers.bind(this.occ) as (...args: unknown[]) => MeshBuffers;
-            const arrays = this.meshArrays(meshCall(
-                resolved.shape,
-                resolved.precision,
-                resolved.adjustYtoZ,
-                resolved.computeMetadata,
-                resolved.keepMeshData,
-                resolved.allowQualityDecrease,
-                resolved.forceFaceDeflection,
-                ...this.finenessFor(meshCall, 7, fineness),
-            ), contents, analysis);
-            if (arrays) {
-                const mesh = decodeMeshArrays(arrays, contents);
-                if (isoCurvesU + isoCurvesV > 0 && this.kernelHas("IsoCurvePolylines")) {
-                    const polylines = this.occ.IsoCurvePolylines(resolved.shape, isoCurvesU, isoCurvesV, resolved.precision);
-                    mesh.isoCurveList = decodePolylines(copied(polylines.points, Float64Array), copied(polylines.counts, Int32Array), resolved.adjustYtoZ);
-                }
-                return mesh;
-            }
+        if (!this.kernelHasMeshBuffers()) {
+            return undefined;
         }
+        const contents: MeshContents = { colors: false, metadata: resolved.computeMetadata, analysis: analysis !== undefined };
+        const meshCall = this.occ.ShapeToMeshBuffers.bind(this.occ) as (...args: unknown[]) => MeshBuffers;
+        const arrays = this.meshArrays(meshCall(
+            resolved.shape,
+            resolved.precision,
+            resolved.adjustYtoZ,
+            resolved.computeMetadata,
+            resolved.keepMeshData,
+            resolved.allowQualityDecrease,
+            resolved.forceFaceDeflection,
+            ...this.finenessFor(meshCall, 7, fineness),
+        ), contents, analysis);
+        if (!arrays) {
+            return undefined;
+        }
+        const mesh = decode(arrays, contents);
+        if (isoCurvesU + isoCurvesV > 0 && this.kernelHas("IsoCurvePolylines")) {
+            const polylines = this.occ.IsoCurvePolylines(resolved.shape, isoCurvesU, isoCurvesV, resolved.precision);
+            mesh.isoCurveList = decodePolylines(copied(polylines.points, Float64Array), copied(polylines.counts, Int32Array), resolved.adjustYtoZ);
+        }
+        return mesh;
+    }
+
+    private jsonMesh(resolved: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto {
         const json = this.occ.ShapeToMeshJson(
             resolved.shape,
             resolved.precision,
@@ -197,7 +223,7 @@ export class MeshingService {
         const quantity = surfaceQuantity(this.occ, analysis);
         return buffers => {
             const values = copied(this.occ.SurfaceAnalysisAtMeshNodes(shape, quantity, pull, buffers), Float64Array);
-            return isAngle ? values.map(value => value * DEGREES_PER_RADIAN) : values;
+            return isAngle ? values.map(degreesOf) : values;
         };
     }
 

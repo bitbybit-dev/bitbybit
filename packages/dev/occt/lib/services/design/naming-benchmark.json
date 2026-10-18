@@ -1,5 +1,5 @@
 {
-  "totals": {"kept":115,"lost":13,"ambiguous":0,"wrong":1},
+  "totals": {"kept":117,"lost":11,"ambiguous":0,"wrong":1},
   "hintedTotals": {"kept":120,"lost":8,"ambiguous":0,"wrong":1},
   "results": [
   ["boss-on-pad","as written","bossTop","kept","kept"],
@@ -98,8 +98,8 @@
   ["slotted-disk","twelve","bottom","kept","kept"],
   ["merged-tops","separate","aTop","kept","kept"],
   ["merged-tops","separate","bSide","kept","kept"],
-  ["merged-tops","merged","aTop","lost","kept"],
-  ["merged-tops","merged","bSide","lost","kept"],
+  ["merged-tops","merged","aTop","kept","kept"],
+  ["merged-tops","merged","bSide","kept","kept"],
   ["pocket-through","shallow","floor","kept","kept"],
   ["pocket-through","shallow","top","kept","kept"],
   ["pocket-through","deep","floor","kept","kept"],

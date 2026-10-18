@@ -721,11 +721,11 @@ export class OCCTWire {
 
     /**
      * Makes a smooth B-spline wire that approximates a list of points: it follows them closely but
-     * need not pass through each one exactly.
+     * need not pass through each one.
      *
-     * `closed` appends the first point again so the ends meet. The fit uses a degree between 3 and
-     * 8 and a tolerance of 0.001 model units; use `interpolatePoints` when the curve must go
-     * through the points.
+     * `closed` appends the first point so the ends meet. The fit has a degree of 3 to 8 and a
+     * tolerance of 0.001; use `interpolatePoints` to pass through the points. It needs two points
+     * or more.
      * @param inputs - The points and whether to close the curve
      * @returns The B-spline wire
      * @group via points

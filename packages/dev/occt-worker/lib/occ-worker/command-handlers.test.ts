@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { OCCTService, OccHelper, ShapesHelperService, VectorHelperService } from "@bitbybit-dev/occt";
+import { OccHelper, OCCTService } from "@bitbybit-dev/occt";
+import type { Inputs } from "@bitbybit-dev/occt";
 import type { CommandContext } from "./command-handlers";
 import { getCommandHandler, hasCommandHandler } from "./command-handlers";
 import { CacheHelper } from "./cache-helper";
@@ -11,12 +12,14 @@ import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES } from "./co
 describe("the reserved command handlers", () => {
     let occt: BitbybitOcctModule;
     let openCascade: OCCTService;
+    let occHelper: OccHelper;
     let cacheHelper: CacheHelper;
     let pending: [string, unknown][];
     let context: CommandContext;
 
     const run = (functionName: string, inputs: Record<string, unknown>) =>
         getCommandHandler(functionName)!(inputs, context);
+    const noShapes = expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` is not a list of at least one shape, so there is nothing to mesh." });
 
     const cacheDocument = (hash: string): void => {
         const box = openCascade.shapes.solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
@@ -37,7 +40,8 @@ describe("the reserved command handlers", () => {
 
     beforeAll(async () => {
         occt = await initOpenCascade();
-        openCascade = new OCCTService(occt, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt));
+        occHelper = new OccHelper(occt);
+        openCascade = new OCCTService(occt, occHelper);
     });
 
     beforeEach(() => {
@@ -46,6 +50,7 @@ describe("the reserved command handlers", () => {
         openCascade.plugins = { dependencies: {} };
         context = {
             openCascade,
+            meshing: occHelper.meshingService,
             kernel: occt,
             setMeshRetention: (triangles) => occt.SetMeshRetention(triangles),
             cacheHelper,
@@ -118,16 +123,79 @@ describe("the reserved command handlers", () => {
             expect(result.result).toHaveLength(2);
         });
 
-        it("should refuse a call naming no shapes", () => {
-            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, { shapes: [] })).toThrow("No shapes detected");
+        it("should refuse a call naming no shapes as an input error on shapes", () => {
+            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, { shapes: [] })).toThrow(noShapes);
         });
 
-        it("should refuse a call whose shapes are not a list", () => {
-            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, { shapes: "one shape" })).toThrow("No shapes detected");
+        it("should refuse a call whose shapes are not a list as an input error on shapes", () => {
+            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, { shapes: "one shape" })).toThrow(noShapes);
         });
 
-        it("should refuse a call with no shapes member at all", () => {
-            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, {})).toThrow("No shapes detected");
+        it("should refuse a call with no shapes member at all as an input error on shapes", () => {
+            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, {})).toThrow(noShapes);
+        });
+    });
+
+    describe("shapeToMeshBuffers and shapesToMeshBuffers", () => {
+        const cacheBox = (hash: string, x: number): void => {
+            cacheHelper.addToCache(hash, openCascade.shapes.solid.createBox({ width: 1, height: 2, length: 3, center: [x, 0, 0] }));
+        };
+
+        it("should mesh the shape the cache holds into typed views of shared buffers, the same numbers shapeToMesh gives", () => {
+            // Arrange
+            cacheBox("box-1", 0);
+            const lists = run(ReservedFunctions.SHAPE_TO_MESH, { shape: { type: "occ-shape", hash: "box-1" }, precision: 0.01 }).result as Inputs.OCCT.DecomposedMeshDto;
+
+            // Act
+            const answer = run(ReservedFunctions.SHAPE_TO_MESH_BUFFERS, { shape: { type: "occ-shape", hash: "box-1" }, precision: 0.01 });
+
+            // Assert
+            const mesh = answer.result as Inputs.OCCT.DecomposedMeshBuffersDto;
+            expect(mesh.faceList).toHaveLength(6);
+            mesh.faceList.forEach((face, at) => {
+                const listed = lists.faceList[at]!;
+                expect(face.vertexCoord).toBeInstanceOf(Float32Array);
+                expect(face.triIndexes).toBeInstanceOf(Uint32Array);
+                expect(face).not.toHaveProperty("vertexCoordVec");
+                expect(Array.from(face.triIndexes)).toEqual(listed.triIndexes);
+                expect(Array.from(face.vertexCoord)).toEqual(listed.vertexCoord.map(Math.fround));
+                expect(Array.from(face.normalCoord)).toEqual(listed.normalCoord.map(Math.fround));
+            });
+            expect(mesh.edgeList).toEqual(lists.edgeList);
+        });
+
+        it("should hand over every buffer the faces view, each once", () => {
+            // Arrange
+            cacheBox("box-1", 0);
+
+            // Act
+            const answer = run(ReservedFunctions.SHAPE_TO_MESH_BUFFERS, { shape: { type: "occ-shape", hash: "box-1" }, precision: 0.01 });
+
+            // Assert
+            const mesh = answer.result as Inputs.OCCT.DecomposedMeshBuffersDto;
+            const viewed = new Set(mesh.faceList.flatMap(face => [face.vertexCoord.buffer, face.normalCoord.buffer, face.uvs.buffer, face.triIndexes.buffer]));
+            expect(answer.transfer).toHaveLength(viewed.size);
+            expect(new Set(answer.transfer)).toEqual(viewed);
+        });
+
+        it("should mesh every shape the cache holds, handing over the buffers of all of them", () => {
+            // Arrange
+            cacheBox("box-1", 0);
+            cacheBox("box-2", 5);
+
+            // Act
+            const answer = run(ReservedFunctions.SHAPES_TO_MESH_BUFFERS, { shapes: [{ type: "occ-shape", hash: "box-1" }, { type: "occ-shape", hash: "box-2" }], precision: 0.01 });
+
+            // Assert
+            const meshes = answer.result as Inputs.OCCT.DecomposedMeshBuffersDto[];
+            expect(meshes).toHaveLength(2);
+            expect(meshes[1]!.faceList[0]!.vertexCoord.buffer).not.toBe(meshes[0]!.faceList[0]!.vertexCoord.buffer);
+            expect(answer.transfer).toHaveLength(8);
+        });
+
+        it("should refuse a call naming no shapes, or no list of them, as an input error on shapes", () => {
+            expect(() => run(ReservedFunctions.SHAPES_TO_MESH_BUFFERS, { shapes: [] })).toThrow(noShapes);
+            expect(() => run(ReservedFunctions.SHAPES_TO_MESH_BUFFERS, {})).toThrow(noShapes);
         });
     });
 

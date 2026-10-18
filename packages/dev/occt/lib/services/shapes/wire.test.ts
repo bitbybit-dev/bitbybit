@@ -4,8 +4,6 @@ import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import * as Inputs from "../../api/inputs";
 import { OCCTFace } from "./face";
 import { OCCTShape } from "./shape";
@@ -24,9 +22,7 @@ describe("OCCT wire unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         edge = new OCCTEdge(occt, occHelper);
         wire = new OCCTWire(occt, occHelper);
         face = new OCCTFace(occt, occHelper);
@@ -142,7 +138,7 @@ describe("OCCT wire unit tests", () => {
         const wires = wire.interpolateWires(interpolations) as TopoDS_Wire[];
 
         const lengths = wires.map(w => wire.getWireLength({ shape: w }));
-        expect(lengths).toEqual([7.253889764838339, 11.692896245003144].map(length => expect.closeTo(length, 11)));
+        expect(lengths).toEqual([7.253889764838339, 11.022164367007143].map(length => expect.closeTo(length, 11)));
         wires.forEach(w => w.delete());
     });
 
@@ -158,14 +154,14 @@ describe("OCCT wire unit tests", () => {
 
         const wires = wire.getWires({ shape: resCompound });
         const lengths = wires.map(w => wire.getWireLength({ shape: w }));
-        expect(lengths).toEqual([7.253889764838339, 11.692896245003144].map(length => expect.closeTo(length, 11)));
+        expect(lengths).toEqual([7.253889764838339, 11.022164367007143].map(length => expect.closeTo(length, 11)));
         wires.forEach(w => w.delete());
     });
 
     it("should interpolate points into periodic bspline", () => {
         const w = wire.interpolatePoints({ points: [[0, 0, 0], [1, 1, 0], [0, 2, 5]], periodic: true, tolerance: 1e-7 });
         const length = wire.getWireLength({ shape: w });
-        expect(length).toBeCloseTo(13.783010662282262, 11);
+        expect(length).toBeCloseTo(13.441541011447658, 11);
         w.delete();
     });
 

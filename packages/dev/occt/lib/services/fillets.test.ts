@@ -1,9 +1,7 @@
-import { describe, it, expect, beforeAll, vi } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, ClassHandle, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
-import { VectorHelperService } from "../api/vector-helper.service";
-import { ShapesHelperService } from "../api/shapes-helper.service";
 import * as Inputs from "../api/inputs";
 import { OCCTFillets } from "./fillets";
 import { OCCTEdge, OCCTFace, OCCTSolid, OCCTWire } from "./shapes";
@@ -36,10 +34,8 @@ describe("OCCT fillets unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
 
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         solid = new OCCTSolid(occt, occHelper);
         wire = new OCCTWire(occt, occHelper);
         edge = new OCCTEdge(occt, occHelper);
@@ -567,7 +563,7 @@ describe("OCCT fillets unit tests", () => {
         edge.delete();
     });
 
-    it("should release every shape its edge and vertex walks are handed", () => {
+    it("should release every shape its vertex walks are handed", () => {
         // Arrange
         const handedOut: { isDeleted(): boolean }[] = [];
         const vertices: { isDeleted(): boolean }[] = [];
@@ -591,12 +587,9 @@ describe("OCCT fillets unit tests", () => {
                 return made;
             },
         }));
-        const box = (): TopoDS_Shape => solid.createCube({ size: 2, center: [0, 0, 0] });
 
         // Act
         try {
-            fillets.filletEdges({ shape: box(), radius: 0.1 });
-            fillets.chamferEdges({ shape: box(), distance: 0.1 });
             fillets.fillet2d({ shape: occHelper.facesService.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }), radius: 0.1 });
             fillets.fillet2d({ shape: wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }), radius: 0.1 });
             fillets.chamfer2dVertices({ shape: wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }), distance: 0.1 });
@@ -606,10 +599,40 @@ describe("OCCT fillets unit tests", () => {
         }
 
         // Assert
-        expect(handedOut.length).toBeGreaterThan(40);
+        expect(handedOut.length).toBeGreaterThan(30);
         expect(handedOut.filter(shape => !shape.isDeleted())).toEqual([]);
         expect(vertices.length).toBeGreaterThan(8);
         expect(vertices.filter(vertex => !vertex.isDeleted())).toEqual([]);
+    });
+
+    it("should release every edge it walks to find the edges it was told to round or bevel", () => {
+        // Arrange
+        const walked: TopoDS_Edge[] = [];
+        const original: unknown = Reflect.get(occt, "EdgesOf");
+        const edgesOf = (original as (...args: unknown[]) => TopoDS_Edge[]).bind(occt);
+        Reflect.set(occt, "EdgesOf", (...args: unknown[]): TopoDS_Edge[] => {
+            const edges = edgesOf(...args);
+            walked.push(...edges);
+            return edges;
+        });
+        const box = solid.createCube({ size: 2, center: [0, 0, 0] });
+
+        // Act
+        try {
+            fillets.filletEdges({ shape: box, radius: 0.1 });
+            fillets.chamferEdges({ shape: box, distance: 0.1 });
+            fillets.filletEdges({ shape: box, radius: 0.1, indexes: [0, 3] });
+            fillets.filletEdges({ shape: box, radiusList: [0.1, 0.2], indexes: [0, 3] });
+            fillets.chamferEdges({ shape: box, distance: 0.1, indexes: [0, 3] });
+            fillets.chamferEdges({ shape: box, distanceList: [0.1, 0.2], indexes: [0, 3] });
+        } finally {
+            Reflect.set(occt, "EdgesOf", original);
+        }
+
+        // Assert
+        expect(walked.length).toBeGreaterThanOrEqual(72);
+        expect(walked.filter(walkedEdge => !walkedEdge.isDeleted())).toEqual([]);
+        expect(box.isDeleted()).toBe(false);
     });
 
     it("should delete the points and the list it builds a variable radius from", () => {
@@ -780,19 +803,16 @@ describe("OCCT fillets unit tests", () => {
         faces.forEach(f => f.delete());
     });
 
-    it("should return the shape unchanged, and leave the caller's shape intact, when no index names an edge", () => {
+    it("should refuse, as a fillet does, and leave the caller's shape intact, when no index names an edge", () => {
         // Arrange
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const errors = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
         // Act
-        const chamferRes = fillets.chamferEdges({ shape: cube, distance: 0.1, indexes: [999] });
+        const act = (): unknown => fillets.chamferEdges({ shape: cube, distance: 0.1, indexes: [999] });
 
         // Assert
-        expect(solid.getSolidVolume({ shape: chamferRes })).toBeCloseTo(8);
+        expect(act).toThrow("Chamfer Edges Not Found!");
         expect(solid.getSolidVolume({ shape: cube })).toBeCloseTo(8);
-        expect(errors).toHaveBeenCalledTimes(1);
-        errors.mockRestore();
     });
 
     it("should chamfer specific edges selected by indexes with specific distances", () => {

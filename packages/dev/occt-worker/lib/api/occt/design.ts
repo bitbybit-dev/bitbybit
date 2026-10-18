@@ -198,8 +198,10 @@ export class OCCTDesign {
      *
      * The document is built as `build` builds it and every part placement is checked against every
      * other in place. Two components a joint holds together are expected to touch, so a touch between
-     * them is left out and an overlap is listed with `joined` true. A part document's parts are checked
-     * where they were built.
+     * them is left out and an overlap is listed with `joined` true. So is a fastener's thread resting in
+     * a tapped hole, faces named in the role `thread` on both, with the hole's rim and the screw's end
+     * chamfer around it; anything else between the two is still listed. A part document's parts are
+     * checked where they were built.
      * @param inputs - The document, the documents an assembly places, the values to build with and the clearance
      * @returns The clashing pairs, with their distance, the volume they share and their nearest points
      * @group document

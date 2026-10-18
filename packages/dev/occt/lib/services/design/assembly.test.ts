@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
@@ -11,7 +9,7 @@ import { runAssembly } from "./assembly";
 import { itemKeyOf } from "./identity";
 import { libraryOf } from "./library";
 import { DesignCache } from "./cache";
-import { BaseBitByBit } from "../../base";
+import { BaseBitByBit } from "@bitbybit-dev/base";
 
 const base = new BaseBitByBit();
 
@@ -139,7 +137,7 @@ describe("design assemblies", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        const helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel);
+        const helper = new OccHelper(kernel);
         occt = new OCCTService(kernel, helper);
     }, 120_000);
 

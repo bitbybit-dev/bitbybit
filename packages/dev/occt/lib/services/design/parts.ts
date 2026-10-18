@@ -5,7 +5,7 @@ import { connectorFrame, contextOf } from "./helpers";
 import { connectorMembers } from "./connectors";
 import { resolveEdges, resolveFaces } from "./references";
 import * as Inputs from "../../api/inputs";
-import { release } from "./cache";
+import { release } from "../base/release";
 import type { BodyState, DesignRun } from "./state";
 import { bodyKey } from "./state";
 import { declaredValues, numberOf, parametersIn, propertyValue, textOf } from "./values";

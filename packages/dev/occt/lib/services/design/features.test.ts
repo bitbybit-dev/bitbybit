@@ -2,9 +2,8 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
+import type * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { sha256 } from "./digest";
 
@@ -34,7 +33,7 @@ describe("OCCT design features beyond the first slice", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        const helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel);
+        const helper = new OccHelper(kernel);
         occt = new OCCTService(kernel, helper);
     }, 120_000);
 
@@ -43,6 +42,111 @@ describe("OCCT design features beyond the first slice", () => {
     const centreOf = (part: Models.OCCT.DesignBuiltPart<TopoDS_Shape>, face: number): number[] => occt.analysis.signatures({ shape: part.shape }).faces[face]!.centre;
     const areaOf = (part: Models.OCCT.DesignBuiltPart<TopoDS_Shape>, face: number): number => occt.analysis.signatures({ shape: part.shape }).faces[face]!.area;
     const statuses = (result: Models.OCCT.DesignBuildResult<TopoDS_Shape>): string[] => result.report.map(entry => entry.status);
+
+    describe("operations whose parts name their faces", () => {
+        const gearDocument = (...extra: Models.OCCT.DesignFeature[]): Document => ({
+            schemaVersion: 1,
+            features: [{ id: "gear", type: "operation", operation: "occt.parts.mechanical.gears.spurGear", params: { module: 2, teeth: 20, width: 6, bore: 8 } }, ...extra],
+        });
+
+        it("should name each face by the role the part's twin gives it, so a gear's tips and bore are found by name", () => {
+            // Act
+            const gear = occt.design.build({ document: gearDocument() }).parts[0]!;
+
+            // Assert
+            expect(facesNamed(gear, "gear:tip")).toHaveLength(20);
+            expect(facesNamed(gear, "gear:bore").length).toBeGreaterThan(0);
+            expect(facesNamed(gear, "gear:start")).toHaveLength(1);
+            expect(facesNamed(gear, "gear:face")).toEqual([]);
+        });
+
+        it("should point an operation's refusal at the parameter it names, from a part's roles twin and from an operation without a twin alike", () => {
+            // Arrange
+            const polyline: Document = { schemaVersion: 1, features: [{ id: "line", type: "operation", operation: "occt.shapes.wire.createPolylineWire", params: { points: [[0, 0, 0]] } }] };
+
+            // Act
+            const bored = occt.design.build({ document: { schemaVersion: 1, features: [{ id: "gear", type: "operation", operation: "occt.parts.mechanical.gears.spurGear", params: { module: 2, teeth: 20, width: 6, bore: 100 } }] } }).report[0]!;
+            const short = occt.design.build({ document: polyline }).report[0]!;
+
+            // Assert
+            expect(bored.messages).toEqual(["/features/0/params/bore: `bore` reaches the root circle of the teeth: make it smaller than the root diameter."]);
+            expect(short.messages).toEqual(["/features/0/params/points: A polyline needs at least two points, and `points` has 1."]);
+        });
+
+        it("should let a later feature reach the edges between two roles", () => {
+            // Arrange
+            const document = gearDocument({ id: "tipBevel", type: "chamfer", body: "gear", distance: 0.2, edges: { between: [{ of: "gear", role: "end" }, { of: "gear", role: "tip" }], count: 20 } });
+
+            // Act
+            const result = occt.design.build({ document });
+
+            // Assert
+            expect(statuses(result)).toEqual(["ok", "ok"]);
+        });
+    });
+
+    describe("standard parts sized by their parameters", () => {
+        const screwDocument: Document = {
+            schemaVersion: 1,
+            parameters: { size: { type: "choice", value: "M3", options: [{ value: "M3" }, { value: "M4" }] }, length: { value: 10, min: 4 } },
+            features: [{ id: "screw", type: "operation", operation: "occt.parts.mechanical.fasteners.socketHeadCapScrew", params: { size: { expr: "size" }, length: { expr: "length" } } }],
+            parts: [{ id: "screw", body: "screw", connectors: [{ id: "seat", on: { of: "screw", role: "seat" }, axis: { of: "screw", role: "thread" } }] }],
+        };
+
+        it("should give an operation the text a choice parameter holds, so one screw document makes every size", () => {
+            // Act
+            const small = occt.design.build({ document: screwDocument }).parts[0]!;
+            const large = occt.design.build({ document: screwDocument, parameters: { size: "M4", length: 16 } }).parts[0]!;
+
+            // Assert
+            const across = (part: Models.OCCT.DesignBuiltPart<TopoDS_Shape>): number[] => {
+                const box = occt.analysis.measure.tightBoundingBox({ shape: part.shape });
+                return [box.max[0] - box.min[0], box.max[1] - box.min[1]];
+            };
+            expect(across(small)).toEqual([expect.closeTo(5.5, 4), expect.closeTo(13, 4)]);
+            expect(across(large)).toEqual([expect.closeTo(7, 4), expect.closeTo(20, 4)]);
+            expect(large.connectors.map(connector => [connector.id, connector.frame.origin.map(value => Math.round(value * 1e6) / 1e6), connector.frame.normal])).toEqual([["seat", [0, 0, 0], [0, -1, 0]]]);
+        });
+
+        it("should stand connectors on a bearing's ring sides and a spring's ground ends by the roles they name", () => {
+            // Arrange
+            const bearing: Document = {
+                schemaVersion: 1,
+                parameters: { designation: { type: "choice", value: "608", options: [{ value: "608" }, { value: "6204" }] } },
+                features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.bearings.ballBearing", params: { designation: { expr: "designation" }, shields: false } }],
+                parts: [{ id: "bearing", body: "part", connectors: [{ id: "inner", on: { of: "part", role: "innerStart" }, axis: { of: "part", role: "bore" } }, { id: "outer", on: { of: "part", role: "outerEnd" }, axis: { of: "part", role: "outside" } }] }],
+            };
+            const spring: Document = {
+                schemaVersion: 1,
+                parameters: { length: { value: 25, min: 1 } },
+                features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.springs.compressionSpring", params: { wireDiameter: 1, diameter: 10, activeCoils: 6, length: { expr: "length" } } }],
+                parts: [{ id: "spring", body: "part", connectors: [{ id: "bottom", on: { of: "part", role: "bottom" } }, { id: "top", on: { of: "part", role: "top" } }] }],
+            };
+
+            // Act
+            const ring = occt.design.build({ document: bearing, parameters: { designation: "6204" } });
+            const coil = occt.design.build({ document: spring, parameters: { length: 20 } });
+
+            // Assert
+            const frames = (result: Models.OCCT.DesignBuildResult<TopoDS_Shape>): (string | number)[][] => result.parts[0]!.connectors.map(connector => [connector.id, ...connector.frame.origin.map(value => Math.round(value * 1e6) / 1e6), ...connector.frame.normal.map(value => Math.round(value))]);
+            expect(ring.issues).toEqual([]);
+            expect(frames(ring)).toEqual([["inner", 0, 0, 0, 0, -1, 0], ["outer", 0, 14, 0, 0, 1, 0]]);
+            expect(coil.issues).toEqual([]);
+            expect(frames(coil)).toEqual([["bottom", 0, 0, 0, 0, -1, 0], ["top", 0, 20, 0, 0, 1, 0]]);
+        });
+
+        it("should refuse text where the operation takes a number, at the parameter that takes it", () => {
+            // Arrange
+            const document: Document = { ...screwDocument, features: [{ id: "screw", type: "operation", operation: "occt.parts.mechanical.fasteners.socketHeadCapScrew", params: { size: { expr: "size" }, length: { expr: "size" } } }] };
+
+            // Act
+            const result = occt.design.build({ document });
+
+            // Assert
+            expect(statuses(result)).toEqual(["failed"]);
+            expect(result.report[0]!.messages).toEqual(["/features/0/params/length: must be a number"]);
+        });
+    });
 
     describe("loops and circles", () => {
         const square = (id: string, size: number, at: number, anticlockwise = true): Models.OCCT.DesignLoop => ({
@@ -112,7 +216,7 @@ describe("OCCT design features beyond the first slice", () => {
             expect(both).toEqual(["/features/0/pen: a sketch draws with pen or with loops: give pen inside each loop"]);
             expect(crowded).toEqual(["/features/0/pen/0: a circle is a loop by itself: give it a pen or a loop of its own"]);
             expect(repeated).toEqual(["/features/0/loops/1/pen/0/id: command ids are distinct, start with a letter or _ and hold letters, digits, _ and -"]);
-            expect(outside.report[0]!.messages).toEqual(["/features/0/loops: the loops make no valid face: they cross, or a hole lies outside the first loop"]);
+            expect(outside.report[0]!.messages).toEqual(["/features/0/loops: the loops make no valid face: loop 1 lies outside the outline (loop 0)"]);
         });
     });
 
@@ -136,6 +240,235 @@ describe("OCCT design features beyond the first slice", () => {
             // Assert
             expect([named("block:face"), named("pin:face"), named("round:round")]).toEqual([6, 1, 1]);
             expect(part.faceNames.every(names => names.length > 0 && !names.includes("drilled:face") && !names.includes("round:face"))).toBe(true);
+        });
+    });
+
+    describe("faces the operations with history twins make from plain bodies", () => {
+        const block = { id: "block", type: "operation", operation: "occt.shapes.solid.createBox", params: { width: 20, length: 20, height: 10, center: [0, 5, 0] } } as const;
+        const rectangleFace = (id: string, width: number, length: number, center: Inputs.Base.Point3, direction: Inputs.Base.Vector3): Models.OCCT.DesignFeature => ({ id, type: "operation", operation: "occt.shapes.face.createRectangleFace", params: { width, length, center, direction } });
+        const edgeOfBlock: Models.OCCT.DesignFeature = { id: "edge", type: "operation", operation: "occt.shapes.edge.getEdge", params: { shape: { body: "block" }, index: 1 } };
+        const partBuilt = (document: Document, body: string): Models.OCCT.DesignBuiltPart<TopoDS_Shape> => occt.design.build({ document }).parts.find(part => part.id === body)!;
+        const counted = (part: Models.OCCT.DesignBuiltPart<TopoDS_Shape>, ...names: string[]): number[] => names.map(name => facesNamed(part, name).length);
+        const offsetBy = (distance: number): Document => ({ schemaVersion: 1, features: [block, { id: "grown", type: "operation", operation: "occt.operations.offset", params: { shape: { body: "block" }, distance, tolerance: 0.1 }, body: "block" }] });
+
+        it("should keep a block's names through an offset of 0, which hands the block back, as an offset of 1 keeps them and names its rounded joins", () => {
+            // Act
+            const still = partBuilt(offsetBy(0), "block");
+            const grown = partBuilt(offsetBy(1), "block");
+
+            // Assert
+            expect(still.faceNames).toEqual(Array.from({ length: 6 }, () => ["block:face"]));
+            expect(counted(grown, "block:face", "grown:side", "grown:face")).toEqual([6, 12, 8]);
+        });
+
+        it("should keep every face's names through an offset with sharp joins and through the faces a unify merges", () => {
+            // Arrange
+            const sharp: Document = { schemaVersion: 1, features: [block, { id: "grown", type: "operation", operation: "occt.operations.offsetAdv", params: { shape: { body: "block" }, distance: 1, tolerance: 0.1, joinType: "intersection", removeIntEdges: false }, body: "block" }] };
+            const merged: Document = {
+                schemaVersion: 1,
+                features: [
+                    block,
+                    { id: "other", type: "operation", operation: "occt.shapes.solid.createBox", params: { width: 20, length: 20, height: 10, center: [20, 5, 0] } },
+                    { id: "joined", type: "operation", operation: "occt.booleans.union", params: { shapes: [{ body: "block" }, { body: "other" }], keepEdges: true }, body: "block" },
+                    { id: "merged", type: "operation", operation: "occt.shapes.shape.unifySameDomain", params: { shape: { body: "block" }, unifyEdges: true, unifyFaces: true, concatBSplines: false }, body: "block" },
+                ],
+            };
+
+            // Act
+            const offset = partBuilt(sharp, "block");
+            const unified = partBuilt(merged, "block");
+
+            // Assert
+            expect(offset.faceNames).toEqual(Array.from({ length: 6 }, () => ["block:face"]));
+            expect(unified.faceNames).toHaveLength(6);
+            expect(counted(unified, "block:face", "other:face", "merged:face")).toEqual([5, 5, 0]);
+        });
+
+        it("should name a sewn shell's and a solid's faces after the face bodies they were made of", () => {
+            // Arrange
+            const shell: Document = {
+                schemaVersion: 1,
+                features: [
+                    rectangleFace("wall", 20, 10, [10, 0, 5], [0, 1, 0]), rectangleFace("left", 10, 10, [5, 5, 0], [0, 0, 1]), rectangleFace("right", 10, 10, [15, 5, 0], [0, 0, 1]),
+                    { id: "sewn", type: "operation", operation: "occt.shapes.shell.sewFaces", params: { shapes: [{ body: "wall" }, { body: "left" }, { body: "right" }], tolerance: 1e-7 } },
+                ],
+            };
+            const sides = ["bottom", "top", "east", "west", "north", "south"];
+            const cube: Document = {
+                schemaVersion: 1,
+                features: [
+                    rectangleFace("bottom", 10, 10, [0, 0, 0], [0, -1, 0]), rectangleFace("top", 10, 10, [0, 10, 0], [0, 1, 0]),
+                    rectangleFace("east", 10, 10, [5, 5, 0], [1, 0, 0]), rectangleFace("west", 10, 10, [-5, 5, 0], [-1, 0, 0]),
+                    rectangleFace("north", 10, 10, [0, 5, 5], [0, 0, 1]), rectangleFace("south", 10, 10, [0, 5, -5], [0, 0, -1]),
+                    { id: "cube", type: "operation", operation: "occt.shapes.solid.fromFaces", params: { shapes: sides.map(body => ({ body })), tolerance: 1e-7 } },
+                ],
+            };
+
+            // Act
+            const sewn = partBuilt(shell, "sewn");
+            const solid = partBuilt(cube, "cube");
+
+            // Assert
+            expect(sewn.faceNames).toHaveLength(3);
+            expect(sewn.faceNames).toEqual(expect.arrayContaining([["wall:face"], ["left:face"], ["right:face"]]));
+            expect(solid.faceNames).toHaveLength(6);
+            expect(solid.faceNames).toEqual(expect.arrayContaining(sides.map(side => [`${side}:face`])));
+        });
+
+        it("should keep the names of a split body's faces in both pieces and name the cut faces after the tool", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [
+                    block,
+                    rectangleFace("knife", 40, 40, [0, 5, 0], [1, 0, 0]),
+                    { id: "cut", type: "operation", operation: "occt.operations.splitShapeWithShapes", params: { shape: { body: "block" }, shapes: [{ body: "knife" }], localFuzzyTolerance: 1e-7, nonDestructive: false }, body: "block" },
+                ],
+            };
+
+            // Act
+            const split = partBuilt(document, "block");
+
+            // Assert
+            expect(split.faceNames).toHaveLength(12);
+            expect(counted(split, "block:face", "knife:face", "cut:face")).toEqual([10, 2, 0]);
+        });
+
+        it("should name the sides, start and end of a twisted extrusion and a polygon pipe, and the walls a drafted outline sweeps", () => {
+            // Arrange
+            const twisted: Document = {
+                schemaVersion: 1,
+                features: [
+                    { id: "square", type: "operation", operation: "occt.shapes.face.createSquareFace", params: { size: 5, center: [0, 0, 0], direction: [0, 1, 0] } },
+                    { id: "twisted", type: "operation", operation: "occt.operations.rotatedExtrude", params: { shape: { body: "square" }, height: 20, angle: 90, makeSolid: true }, body: "square" },
+                ],
+            };
+            const hexagonal: Document = {
+                schemaVersion: 1,
+                features: [
+                    { id: "path", type: "operation", operation: "occt.shapes.wire.createLineWire", params: { start: [0, 0, 0], end: [0, 10, 0] } },
+                    { id: "bar", type: "operation", operation: "occt.operations.pipePolylineWireNGon", params: { shape: { body: "path" }, radius: 0.5, nrCorners: 6, makeSolid: true }, body: "path" },
+                ],
+            };
+            const drafted: Document = {
+                schemaVersion: 1,
+                features: [
+                    { id: "outline", type: "operation", operation: "occt.shapes.wire.createRectangleWire", params: { width: 10, length: 10, center: [0, 0, 0], direction: [0, 1, 0] } },
+                    { id: "walls", type: "operation", operation: "occt.draft.makeDraft", params: { shape: { body: "outline" }, direction: [0, 1, 0], angle: 5, lengthMax: 20, internal: false }, body: "outline" },
+                ],
+            };
+
+            // Act
+            const turned = partBuilt(twisted, "square");
+            const bar = partBuilt(hexagonal, "path");
+            const walls = partBuilt(drafted, "outline");
+
+            // Assert
+            expect(counted(turned, "twisted:side", "twisted:start", "twisted:end", "twisted:face", "square:face")).toEqual([4, 1, 1, 0, 1]);
+            expect(turned.faceNames.find(names => names.includes("square:face"))).toEqual(["square:face", "twisted:start"]);
+            expect(counted(bar, "bar:side", "bar:start", "bar:end", "bar:face")).toEqual([6, 1, 1, 0]);
+            expect(counted(walls, "walls:side", "walls:face")).toEqual([4, 0]);
+        });
+
+        it("should give a rib's and a tapered boss's new faces the roles their profile's history names, keeping the body's names", () => {
+            // Arrange
+            const ribbed: Document = {
+                schemaVersion: 1,
+                features: [
+                    { id: "floor", type: "operation", operation: "occt.shapes.solid.createBox", params: { width: 20, length: 2, height: 10, center: [10, 5, 1] } },
+                    { id: "wall", type: "operation", operation: "occt.shapes.solid.createBox", params: { width: 2, length: 20, height: 10, center: [1, 5, 10] } },
+                    { id: "bracket", type: "operation", operation: "occt.booleans.union", params: { shapes: [{ body: "floor" }, { body: "wall" }], keepEdges: false }, body: "floor" },
+                    { id: "diagonal", type: "operation", operation: "occt.shapes.wire.createPolylineWire", params: { points: [[2, 5, 12], [12, 5, 2]] } },
+                    { id: "rib", type: "operation", operation: "occt.features.rib", params: { shape: { body: "floor" }, wire: { body: "diagonal" }, frame: { origin: [0, 5, 0], normal: [0, 1, 0], direction: [1, 0, 0] }, thickness: 0.5, otherSideThickness: 0.5 }, body: "floor" },
+                ],
+            };
+            const bossed: Document = {
+                schemaVersion: 1,
+                features: [
+                    block,
+                    { id: "top", type: "operation", operation: "occt.shapes.face.createSquareFace", params: { size: 4, center: [0, 10, 0], direction: [0, 1, 0] } },
+                    { id: "boss", type: "operation", operation: "occt.features.taperedBoss", params: { shape: { body: "block" }, profile: { body: "top" }, sketchFaceIndex: 3, angle: 10, length: 3 }, body: "block" },
+                ],
+            };
+
+            // Act
+            const rib = partBuilt(ribbed, "floor");
+            const boss = partBuilt(bossed, "block");
+
+            // Assert
+            expect(counted(rib, "floor:face", "wall:face", "rib:side", "rib:start", "rib:end", "rib:face")).toEqual([6, 6, 1, 1, 1, 0]);
+            expect(counted(boss, "block:face", "boss:side", "boss:end", "boss:face")).toEqual([6, 4, 1, 0]);
+        });
+
+        it("should name what every fillet makes round and what every chamfer makes bevel, whichever of their forms runs", () => {
+            // Arrange
+            const rounded = (operation: string, params: Record<string, unknown>): Document => ({ schemaVersion: 1, features: [block, edgeOfBlock, { id: "made", type: "operation", operation, params: { shape: { body: "block" }, ...params }, body: "block" }] });
+
+            // Act
+            const listed = partBuilt(rounded("occt.fillets.filletEdgesListOneRadius", { edges: [{ body: "edge" }], radius: 1 }), "block");
+            const varying = partBuilt(rounded("occt.fillets.filletEdgeVariableRadius", { edge: { body: "edge" }, radiusList: [1, 2], paramsU: [0, 1] }), "block");
+            const bevelled = partBuilt(rounded("occt.fillets.chamferEdgesList", { edges: [{ body: "edge" }], distanceList: [1] }), "block");
+
+            // Assert
+            expect(counted(listed, "block:face", "made:round", "made:side")).toEqual([6, 1, 0]);
+            expect(counted(varying, "block:face", "made:round", "made:side")).toEqual([6, 1, 0]);
+            expect(counted(bevelled, "block:face", "made:bevel", "made:side")).toEqual([6, 1, 0]);
+        });
+    });
+
+    describe("operations whose history twin refuses what they accept", () => {
+        const block = { id: "block", type: "operation", operation: "occt.shapes.solid.createBox", params: { width: 20, length: 20, height: 10, center: [0, 5, 0] } } as const;
+
+        it("should offset a solid by a distance of 0 as the plain operation does, leaving it as it was", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [block, { id: "grown", type: "operation", operation: "occt.operations.offset", params: { shape: { body: "block" }, distance: 0, tolerance: 0.1 }, body: "block" }],
+            };
+
+            // Act
+            const built = occt.design.build({ document });
+
+            // Assert
+            expect(statuses(built)).not.toContain("failed");
+            expect(volume(built.parts[0]!.shape)).toBeCloseTo(4000, 6);
+        });
+
+        it("should offset a wire body, whose offset keeps no history of faces, through the plain operation", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [
+                    { id: "ring", type: "operation", operation: "occt.shapes.wire.createCircleWire", params: { radius: 5, center: [0, 0, 0], direction: [0, 1, 0] } },
+                    { id: "wider", type: "operation", operation: "occt.operations.offset", params: { shape: { body: "ring" }, distance: 1, tolerance: 0.1 }, body: "ring" },
+                ],
+            };
+
+            // Act
+            const built = occt.design.build({ document });
+
+            // Assert
+            expect(statuses(built)).not.toContain("failed");
+            expect(occt.shapes.wire.getWireLength({ shape: built.parts[0]!.shape })).toBeCloseTo(2 * Math.PI * 6, 6);
+        });
+
+        it("should refuse a split that cuts nothing off the shape, as the plain operation does, rather than give an empty body", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [
+                    block,
+                    { id: "far", type: "operation", operation: "occt.shapes.solid.createBox", params: { width: 2, length: 2, height: 2, center: [100, 0, 0] } },
+                    { id: "cut", type: "operation", operation: "occt.operations.splitShapeWithShapes", params: { shape: { body: "block" }, shapes: [{ body: "far" }], localFuzzyTolerance: 1e-4, nonDestructive: false }, body: "block" },
+                ],
+            };
+
+            // Act
+            const built = occt.design.build({ document });
+
+            // Assert
+            const failed = built.report.find(entry => entry.status === "failed");
+            expect(failed?.messages.join(" ")).toContain("makes neither a shape nor a list of shapes");
         });
     });
 
@@ -340,6 +673,24 @@ describe("OCCT design features beyond the first slice", () => {
             expect(facesNamed(countersunk, "holes:wall:sink").length).toBeGreaterThanOrEqual(2);
             facesNamed(countersunk, "holes:wall:sink").forEach(face => expect(centreOf(countersunk, face).slice(0, 2)).toEqual([expect.closeTo(10, 6), expect.closeTo(14, 6)]));
             expect(volume(countersunk.shape)).toBeLessThan(40 * 20 * 10 - Math.PI * 4 * 5 + 1e-6);
+        });
+
+        it("should drill holes on a face a union split in two, its pieces still one plane", () => {
+            // Arrange
+            const split = plate(
+                rectangle("ribBase", 4, 20, { plane: "XY", offset: 10 }, [18, 0]),
+                { id: "rib", type: "extrude", profile: "ribBase", distance: 5 },
+                { id: "ribbed", type: "boolean", operation: "union", body: "plate", tools: ["rib"] },
+                { id: "holes", type: "hole", body: "plate", on: { of: "plate", role: "end" }, origin: [20, 10, 10], at: [{ id: "left", x: -10, y: 0 }, { id: "right", x: 10, y: 0 }], diameter: 4 },
+            );
+
+            // Act
+            const built = occt.design.build({ document: split });
+
+            // Assert
+            expect(statuses(built)).not.toContain("failed");
+            expect(volume(built.parts[0]!.shape)).toBeCloseTo(40 * 20 * 10 + 4 * 20 * 5 - 2 * Math.PI * 4 * 10, 4);
+            expect(facesNamed(built.parts[0]!, "holes:wall")).toHaveLength(2);
         });
 
         it("should remove a hole's wall and fill the hole, the faces that stay keeping their names, and ask how many faces it removes", () => {

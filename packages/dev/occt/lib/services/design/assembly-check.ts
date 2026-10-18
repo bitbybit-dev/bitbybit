@@ -1,14 +1,16 @@
 import type * as Models from "../../api/models";
 import type { DtoRegistry } from "@bitbybit-dev/base";
 import { isRecord } from "@bitbybit-dev/base";
-import type { Known } from "./document-check";
-import { DOCUMENT_KEYS, checkAxis, checkBoolean, checkFrame, checkHeader, checkNumber, checkParameters, checkPoint, checkProperties, checkSwitch, documentIssues, knownFor, lengthUnitOf, oneOf, recorderOf } from "./document-check";
+import type { Known } from "./document-check-types";
+import { checkNumber } from "./value-checks";
+import { DOCUMENT_KEYS, checkAxis, checkBoolean, checkFrame, checkHeader, checkParameters, checkPoint, checkProperties, checkSwitch, documentIssues, knownFor, lengthUnitOf, oneOf, recorderOf } from "./document-check";
 import { DesignProblem, pointer } from "./problems";
 import { checkIdList, checkKeys, checkObject, checkText } from "./structure";
 import { MAX_PATTERN_COUNT, isExpressionObject, parameterTypeOf } from "./values";
 import type { DesignLibrary } from "./library";
 import { sourceEntry, sourceOf } from "./library";
 import { connectorIdsOf } from "./connectors";
+import { checkWithinLimits } from "./joint-limits";
 
 function idsOf(value: unknown): string[] {
     return Array.isArray(value) ? value.flatMap(item => isRecord(item) && typeof item["id"] === "string" ? [item["id"]] : []) : [];
@@ -140,13 +142,8 @@ function checkLimits(joint: Record<string, unknown>, type: string, jointPath: st
         range.forEach((bound: unknown, index) => checkNumber(bound, pointer(keyPath, index), known));
         const [least, most] = range as unknown[];
         if (typeof least === "number" && typeof most === "number") {
-            if (least > most) {
-                throw new DesignProblem(keyPath, `the least, ${least}, is more than the most, ${most}`);
-            }
             const value = joint[key];
-            if (typeof value === "number" && (value < least || value > most)) {
-                throw new DesignProblem(pointer(jointPath, key), `${value} is outside the joint's limits, ${least} to ${most}`);
-            }
+            checkWithinLimits(typeof value === "number" ? value : undefined, least, most, keyPath, pointer(jointPath, key));
         }
     }
 }

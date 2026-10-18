@@ -3,8 +3,6 @@ import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTSolid } from "./solid";
 import { OCCTCompound } from "./compound";
 
@@ -16,9 +14,7 @@ describe("OCCT compound unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         solid = new OCCTSolid(occt, occHelper);
         compound = new OCCTCompound(occt, occHelper);
     });

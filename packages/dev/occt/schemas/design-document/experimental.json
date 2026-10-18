@@ -1081,6 +1081,69 @@
             ],
             "additionalProperties": false
         },
+        "DesignGearCommand": {
+            "description": "An involute spur gear's outline around `centre`, in the sketch's coordinates, as\n`parts.mechanical.gears.spurGearProfile` draws it: `module` and `teeth` size it, and the other numbers shape\nthe teeth as that method's inputs do, with the same defaults. With `internal` true it draws the\nteeth of a ring gear instead, pointing in toward `centre` as `parts.mechanical.gears.ringGearProfile` draws\nthem, for the edge of a hole in a larger loop; a ring takes no `profileShift`. It is a loop by\nitself, so it is the only command of its pen or loop. The faces made of it are named by its id and\ntheir part, such as `<sketch>.<id>.tip`, `<sketch>.<id>.flank` and `<sketch>.<id>.root`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "gear"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "internal": {
+                    "type": "boolean"
+                },
+                "centre": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2
+                },
+                "module": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "teeth": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "pressureAngle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "profileShift": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "backlash": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "addendum": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "dedendum": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "rootFillet": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "rotation": {
+                    "$ref": "#/$defs/DesignNumber"
+                }
+            },
+            "required": [
+                "type",
+                "centre",
+                "module",
+                "teeth"
+            ],
+            "additionalProperties": false
+        },
         "DesignHintBox": {
             "description": "A body's bounding box when a hint was written, by its least and greatest corners.",
             "type": "object",
@@ -1124,8 +1187,33 @@
             ],
             "additionalProperties": false
         },
+        "DesignHoleFastener": {
+            "description": "A hole sized by the metric screw it takes: `size` from `\"M1.6\"` to `\"M24\"` (text, or `{ \"expr\" }`\nso a parameter can choose it); `fit` `close`, `normal` (the default) or `loose` for a clearance\nhole after ISO 273, or `tapped` for a threaded hole at the thread's nominal diameter, whose walls\nare also named `thread`; and `head` `socket` for the counterbore DIN 974-1 gives a socket head cap\nscrew, as deep as its head plus half a millimetre.",
+            "type": "object",
+            "properties": {
+                "size": {
+                    "$ref": "#/$defs/DesignText"
+                },
+                "fit": {
+                    "type": "string",
+                    "enum": [
+                        "close",
+                        "loose",
+                        "normal",
+                        "tapped"
+                    ]
+                },
+                "head": {
+                    "const": "socket"
+                }
+            },
+            "required": [
+                "size"
+            ],
+            "additionalProperties": false
+        },
         "DesignHoleFeature": {
-            "description": "Drills holes into `body` through the flat face `on` names, at the points `at`, which are x and y\non that face as a sketch on it reads them (`origin` and `direction` as for a sketch on a face).\n`depth` 0, the default, drills through; `tipAngle` gives the bottom a drill point. A `counterbore`\nor a `countersink` widens each mouth. Every hole's faces are named `wall`, and a hole whose\nposition has an id, as `{ \"id\": \"left\", \"x\": -10, \"y\": 0 }`, also `wall` with that id, which a\nreference names it by; a position is never named by where it comes in `at`.",
+            "description": "Drills holes into `body` through the flat face `on` names, at the points `at`, which are x and y\non that face as a sketch on it reads them (`origin` and `direction` as for a sketch on a face).\nThe hole is `diameter` across, or sized by the screw `fastener` names. `depth` 0, the default,\ndrills through; `tipAngle` gives the bottom a drill point. A `counterbore` or a `countersink`\nwidens each mouth. Every hole's faces are named `wall`, and a hole whose position has an id, as\n`{ \"id\": \"left\", \"x\": -10, \"y\": 0 }`, also `wall` with that id, which a reference names it by; a\nposition is never named by where it comes in `at`.",
             "type": "object",
             "properties": {
                 "type": {
@@ -1168,6 +1256,9 @@
                 },
                 "diameter": {
                     "$ref": "#/$defs/DesignNumber"
+                },
+                "fastener": {
+                    "$ref": "#/$defs/DesignHoleFastener"
                 },
                 "depth": {
                     "$ref": "#/$defs/DesignNumber"
@@ -1238,7 +1329,6 @@
                 "body",
                 "on",
                 "at",
-                "diameter",
                 "id"
             ],
             "additionalProperties": false
@@ -1759,7 +1849,7 @@
             ]
         },
         "DesignOperationFeature": {
-            "description": "Runs any operation of this package by its dotted path with the kernel first, such as\n`\"occt.operations.offset\"`, with `params` as its inputs. In `params`, `{ \"body\": \"<id>\" }` passes a\nbody's shape and `{ \"expr\": \"<expression>\" }` a number. With `body` the result goes on as that\nbody, otherwise it starts a body named by the feature's id. An operation with a history twin\n(`...WithHistory`) given bodies keeps the names of the faces it carries through, and names the\nfaces it makes of edges `round` (a fillet), `bevel` (a chamfer) or `side`, and its first and last\nfaces `start` and `end`; every other face is named `face`. An operation that makes a list of\nshapes, such as `occt.shapes.face.subdivideToHexagonHoles`, makes their compound.",
+            "description": "Runs any operation of this package by its dotted path with the kernel first, such as\n`\"occt.operations.offset\"`, with `params` as its inputs. In `params`, `{ \"body\": \"<id>\" }` passes a\nbody's shape and `{ \"expr\": \"<expression>\" }` what its expression gives, a number or text such as a\nchoice parameter's `\"M8\"`. With `body` the result goes on as that body, otherwise it starts a body\nnamed by the feature's id. An operation with a roles twin (`...WithRoles`) names its faces by\nthose roles. One with a history twin (`...WithHistory`) given bodies keeps the names of the faces\nit carries through, names faces made of edges `round`, `bevel` or `side`, and its first and last\n`start` and `end`; every other face is `face`. A list of shapes makes their compound.",
             "type": "object",
             "properties": {
                 "type": {
@@ -2026,10 +2116,16 @@
             "additionalProperties": false
         },
         "DesignPenCommand": {
-            "description": "A pen command of a sketch feature: a `sketch.pen` command whose numbers may be expressions, or a\n`circle`.",
+            "description": "A pen command of a sketch feature: a `sketch.pen` command whose numbers may be expressions, a\n`circle`, a `gear` or a `rack`.",
             "anyOf": [
                 {
                     "$ref": "#/$defs/DesignCircleCommand"
+                },
+                {
+                    "$ref": "#/$defs/DesignGearCommand"
+                },
+                {
+                    "$ref": "#/$defs/DesignRackCommand"
                 },
                 {
                     "type": "object",
@@ -2716,6 +2812,66 @@
                 "extrude",
                 "offset"
             ]
+        },
+        "DesignRackCommand": {
+            "description": "An involute rack's outline, in the sketch's coordinates, as `parts.mechanical.gears.rackProfile` draws it:\n`start` is where the first tooth's middle sits on the pitch line, `angle` turns the rack from\nrunning along +x (in degrees), `module` and `teeth` size it, and the other numbers shape the teeth\nas that method's inputs do, with the same defaults. A gear meshes with its centre its pitch radius\nfrom the pitch line. It is a loop by itself, so it is the only command of its pen or loop. The faces\nmade of it are named by its id and their part: `tip`, `flank`, `root`, `back` and `side`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "rack"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "start": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2
+                },
+                "angle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "module": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "teeth": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "pressureAngle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "backlash": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "addendum": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "dedendum": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "rootFillet": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "height": {
+                    "$ref": "#/$defs/DesignNumber"
+                }
+            },
+            "required": [
+                "type",
+                "start",
+                "module",
+                "teeth"
+            ],
+            "additionalProperties": false
         },
         "DesignReferenceHint": {
             "description": "What a reference's faces were like when a tool last resolved it (`design.withHints`): the body's\nbounding `box` then, and one entry per face. A build reads it only to find the faces again by\nlikeness when their names are lost.",

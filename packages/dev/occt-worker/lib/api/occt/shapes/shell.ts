@@ -55,6 +55,27 @@ export class OCCTShell {
     }
 
     /**
+     * Sews faces and shells as `sewFaces` does, and reports per shape given which faces of the sewn
+     * shape each of its faces became.
+     *
+     * `histories[i].faces[j]` lists the result faces face `j` of shape `i` became, as
+     * `shapes.face.getFaces` numbers both.
+     * @param inputs - The faces or shells and the sewing tolerance
+     * @returns The sewn shape and one history per shape given
+     * @group create
+     * @shortname sew with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.shapes.shell.sewFacesWithHistory({ shapes: [top, bottom, side], tolerance: 1e-7 });
+     * const sewnTop = histories[0].faces[0];
+     * ```
+     */
+    sewFacesWithHistory(inputs: Inputs.OCCT.SewDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.shell.sewFacesWithHistory", inputs);
+    }
+
+    /**
      * Measures the total area of all the faces of a shell, in square model units.
      * @param inputs - The shell
      * @returns The surface area

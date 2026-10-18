@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
-import { VectorHelperService } from "../api/vector-helper.service";
-import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTSolid, OCCTWire } from "./shapes";
 import { OCCTIO } from "./io";
 import * as Inputs from "../api/inputs";
@@ -24,10 +22,8 @@ describe("OCCT io unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
 
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         solid = new OCCTSolid(occt, occHelper);
         wire = new OCCTWire(occt, occHelper);
         io = new OCCTIO(occt, occHelper);

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type * as Inputs from "../../api/inputs";
-import { BaseBitByBit } from "../../base";
+import { BaseBitByBit } from "@bitbybit-dev/base";
 import { DesignProblem } from "./problems";
 import { frameMatrix, jointMatrix, movedFrame, squaredFrame, tripleOf, unitVector } from "./placement";
 

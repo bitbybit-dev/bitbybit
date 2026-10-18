@@ -1,8 +1,15 @@
-import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BRepOffsetAPI_DraftAngle, BRepOffsetAPI_MakeDraft, BitbybitOcctModule, TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
+import type * as Models from "../../api/models";
+import { withHistory } from "../base/history";
+import { kernelObjects, releasedOnError } from "../base/release";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
+import { occtFailure } from "../../kernel-failures";
+import { withKernelRefusals } from "../base/kernel-refusals";
+
+const PROFILE_SAMPLED_PAST_ITS_END = /OCCT cannot draft this profile/;
 
 /**
  * Draft angles for OpenCascade shapes: the slight taper cast and molded parts need so they slide
@@ -21,9 +28,9 @@ export class OCCTDraft {
      * Tilts the selected faces of a shape by a draft angle so the part can be pulled out of a mold
      * along `direction`.
      *
-     * The faces pivot about the neutral plane, given by a point and a normal, which stays put;
-     * `angle` is in degrees. `flag` keeps the standard draft side, false tapers the other way.
-     * Undraftable faces throw.
+     * The faces pivot about the neutral plane, given by a point and a normal; `angle` is in
+     * degrees. `flag` keeps the standard draft side, false tapers the other way.
+     * Undraftable faces throw `occt.draft.failed`.
      * @param inputs - The shape, the faces to tilt, the pull direction, the angle, the neutral plane and the side flag
      * @returns The shape with drafted faces
      * @group draft
@@ -44,25 +51,47 @@ export class OCCTDraft {
      */
     draftAngle(inputs: Inputs.OCCT.DraftAngleDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.DraftAngleDto, inputs) as Resolved.OCCT.DraftAngleDto<TopoDS_Shape, TopoDS_Face>;
-        const draft = new this.occ.BRepOffsetAPI_DraftAngle(resolved.shape);
-        const direction = this.och.entitiesService.gpDir(resolved.direction);
-        const neutralPlane = this.och.entitiesService.gpPln(resolved.neutralPlaneOrigin, resolved.neutralPlaneDirection);
-        const angle = this.och.vecHelper.degToRad(resolved.angle);
+        return this.drafted(resolved);
+    }
 
-        resolved.faces.forEach(face => draft.Add(face, direction, angle, neutralPlane, resolved.flag));
-        draft.Build();
+    /**
+     * Drafts faces as `draftAngle` does, and reports what each face, edge and vertex of the shape
+     * became: a drafted face becomes its tilted successor in `faces`.
+     * @param inputs - The shape, the faces to tilt, the pull direction, the angle, the neutral plane and the side flag
+     * @returns The drafted shape and its history
+     * @group draft
+     * @shortname draft angle with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.draft.draftAngleWithHistory({ shape: box, faces: sideFaces, direction: [0, 1, 0], angle: 5, neutralPlaneOrigin: [0, 0, 0], neutralPlaneDirection: [0, 1, 0], flag: true });
+     * const tilted = history.faces[1];
+     * ```
+     */
+    draftAngleWithHistory(inputs: Inputs.OCCT.DraftAngleDto<TopoDS_Shape, TopoDS_Face>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.DraftAngleDto, inputs) as Resolved.OCCT.DraftAngleDto<TopoDS_Shape, TopoDS_Face>;
+        return withHistory((maker: BRepOffsetAPI_DraftAngle, result: TopoDS_Shape) => this.occ.HistoryOfDraftAngle(maker, resolved.shape, result), read => this.drafted(resolved, read), [resolved.shape]);
+    }
 
-        if (!draft.IsDone()) {
-            direction.delete();
-            neutralPlane.delete();
-            draft.delete();
-            throw new Error("Could not apply the draft angle to the given faces.");
+    private drafted(resolved: Resolved.OCCT.DraftAngleDto<TopoDS_Shape, TopoDS_Face>, read?: (maker: BRepOffsetAPI_DraftAngle, result: TopoDS_Shape) => void): TopoDS_Shape {
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const draft = own(new this.occ.BRepOffsetAPI_DraftAngle(resolved.shape));
+            const direction = own(this.och.entitiesService.gpDir(resolved.direction));
+            const neutralPlane = own(this.och.entitiesService.gpPln(resolved.neutralPlaneOrigin, resolved.neutralPlaneDirection));
+            const angle = this.och.base.math.degToRad({ number: resolved.angle });
+            resolved.faces.forEach(face => draft.Add(face, direction, angle, neutralPlane, resolved.flag));
+            draft.Build();
+            if (!draft.IsDone()) {
+                throw occtFailure("occt.draft.failed");
+            }
+            const made = draft.Shape();
+            const shape = this.och.converterService.castAndRelease(made);
+            releasedOnError([shape], () => read?.(draft, shape));
+            return shape;
+        } finally {
+            releaseAll();
         }
-        const shape = this.och.converterService.getActualTypeOfShape(draft.Shape());
-        direction.delete();
-        neutralPlane.delete();
-        draft.delete();
-        return shape;
     }
 
     /**
@@ -71,7 +100,7 @@ export class OCCTDraft {
      * `lengthMax` long.
      *
      * `internal` leans the skirt inward instead of outward. A draft the kernel cannot build throws
-     * an error.
+     * `occt.draft.failed`.
      * @param inputs - The wire or shape, the direction, the angle, the maximum length and whether to lean inward
      * @returns The drafted skirt
      * @group draft
@@ -84,21 +113,25 @@ export class OCCTDraft {
      */
     makeDraft(inputs: Inputs.OCCT.MakeDraftDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.MakeDraftDto, inputs) as Resolved.OCCT.MakeDraftDto<TopoDS_Shape>;
-        const direction = this.och.entitiesService.gpDir(resolved.direction);
-        const angle = this.och.vecHelper.degToRad(resolved.angle);
-        const maker = new this.occ.BRepOffsetAPI_MakeDraft(resolved.shape, direction, angle);
-        maker.SetDraft(resolved.internal);
-        maker.Perform(resolved.lengthMax);
+        return this.skirted(resolved.shape, resolved.direction, resolved.angle, resolved.internal, maker => maker.Perform(resolved.lengthMax));
+    }
 
-        if (!maker.IsDone()) {
-            direction.delete();
-            maker.delete();
-            throw new Error("Could not build the draft.");
-        }
-        const shape = this.och.converterService.getActualTypeOfShape(maker.Shape());
-        direction.delete();
-        maker.delete();
-        return shape;
+    /**
+     * Grows a skirt as `makeDraft` does, and reports what each edge of the wire or shape swept:
+     * `facesFromEdges[i]` holds the skirt faces edge `i` grew.
+     * @param inputs - The wire or shape, the direction, the angle, the maximum length and whether to lean inward
+     * @returns The drafted skirt and its history
+     * @group draft
+     * @shortname make draft with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.draft.makeDraftWithHistory({ shape: outlineWire, direction: [0, 1, 0], angle: 5, lengthMax: 10, internal: false });
+     * ```
+     */
+    makeDraftWithHistory(inputs: Inputs.OCCT.MakeDraftDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.MakeDraftDto, inputs) as Resolved.OCCT.MakeDraftDto<TopoDS_Shape>;
+        return this.skirtedWithHistory(resolved.shape, resolved.direction, resolved.angle, resolved.internal, maker => maker.Perform(resolved.lengthMax));
     }
 
     /**
@@ -106,7 +139,7 @@ export class OCCTDraft {
      * `makeDraft`, but stops it where it meets `stopShape` instead of at a fixed length.
      *
      * `keepOut` keeps the part of the stop shape outside the draft; `internal` leans the skirt
-     * inward. A draft the kernel cannot build throws an error.
+     * inward. A draft the kernel cannot build throws `occt.draft.failed`.
      * @param inputs - The wire or shape, the direction, the angle, the shape to stop at, the keep-out flag and whether to lean inward
      * @returns The drafted skirt
      * @group draft
@@ -119,21 +152,55 @@ export class OCCTDraft {
      */
     makeDraftToShape(inputs: Inputs.OCCT.MakeDraftToShapeDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.MakeDraftToShapeDto, inputs) as Resolved.OCCT.MakeDraftToShapeDto<TopoDS_Shape>;
-        const direction = this.och.entitiesService.gpDir(resolved.direction);
-        const angle = this.och.vecHelper.degToRad(resolved.angle);
-        const maker = new this.occ.BRepOffsetAPI_MakeDraft(resolved.shape, direction, angle);
-        maker.SetDraft(resolved.internal);
-        maker.PerformToShape(resolved.stopShape, resolved.keepOut);
+        return this.skirted(resolved.shape, resolved.direction, resolved.angle, resolved.internal, maker => maker.PerformToShape(resolved.stopShape, resolved.keepOut));
+    }
 
-        if (!maker.IsDone()) {
-            direction.delete();
-            maker.delete();
-            throw new Error("Could not build the draft up to the stop shape.");
+    /**
+     * Grows a skirt up to a stop shape as `makeDraftToShape` does, and reports what each edge of the
+     * wire or shape swept, as `makeDraftWithHistory` does.
+     * @param inputs - The wire or shape, the direction, the angle, the shape to stop at, the keep-out flag and whether to lean inward
+     * @returns The drafted skirt and its history
+     * @group draft
+     * @shortname make draft to shape with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.draft.makeDraftToShapeWithHistory({ shape: outlineWire, direction: [0, 1, 0], angle: 5, stopShape: ceilingFace, keepOut: false, internal: false });
+     * ```
+     */
+    makeDraftToShapeWithHistory(inputs: Inputs.OCCT.MakeDraftToShapeDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.MakeDraftToShapeDto, inputs) as Resolved.OCCT.MakeDraftToShapeDto<TopoDS_Shape>;
+        const made = this.skirtedWithHistory(resolved.shape, resolved.direction, resolved.angle, resolved.internal, maker => maker.PerformToShape(resolved.stopShape, resolved.keepOut));
+        if (made.history.lastFaces.length === 0) {
+            const named = new Set([made.history.faces, made.history.facesFromFaces, made.history.facesFromEdges, made.history.facesFromVertices, [made.history.firstFaces]].flat(2));
+            const faces = this.occ.CountSubShapes(made.shape, this.occ.TopAbs_ShapeEnum.FACE, false);
+            made.history.lastFaces = Array.from({ length: faces }, (_, face) => face).filter(face => !named.has(face));
         }
-        const shape = this.och.converterService.getActualTypeOfShape(maker.Shape());
-        direction.delete();
-        maker.delete();
-        return shape;
+        return made;
+    }
+
+    private skirtedWithHistory(profile: TopoDS_Shape, pull: Inputs.Base.Vector3, degrees: number, internal: boolean, perform: (maker: BRepOffsetAPI_MakeDraft) => void): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        return withHistory((maker: BRepOffsetAPI_MakeDraft, result: TopoDS_Shape) => this.occ.HistoryOfMakeDraft(maker, profile, result), read => this.skirted(profile, pull, degrees, internal, perform, read), [profile]);
+    }
+
+    private skirted(profile: TopoDS_Shape, pull: Inputs.Base.Vector3, degrees: number, internal: boolean, perform: (maker: BRepOffsetAPI_MakeDraft) => void, read?: (maker: BRepOffsetAPI_MakeDraft, result: TopoDS_Shape) => void): TopoDS_Shape {
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const direction = own(this.och.entitiesService.gpDir(pull));
+            const radians = this.och.base.math.degToRad({ number: degrees });
+            const maker = own(withKernelRefusals(this.occ, () => new this.occ.BRepOffsetAPI_MakeDraft(profile, direction, radians), message => PROFILE_SAMPLED_PAST_ITS_END.test(message) ? occtFailure("occt.draft.failed") : undefined));
+            maker.SetDraft(internal);
+            perform(maker);
+            if (!maker.IsDone()) {
+                throw occtFailure("occt.draft.failed");
+            }
+            const made = maker.Shape();
+            const shape = this.och.converterService.castAndRelease(made);
+            releasedOnError([shape], () => read?.(maker, shape));
+            return shape;
+        } finally {
+            releaseAll();
+        }
     }
 
 }
