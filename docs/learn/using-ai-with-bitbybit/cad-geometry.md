@@ -41,10 +41,10 @@ The methods have the same paths and the same inputs everywhere. What differs is 
 
   ```typescript
   import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
-  import { OCCTService, OccHelper, ShapesHelperService, VectorHelperService } from "@bitbybit-dev/occt";
+  import { OCCTService } from "@bitbybit-dev/occt";
 
   const occ = await initOpenCascade({ print: () => undefined });
-  const occt = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+  const occt = new OCCTService(occ);
   const box = occt.shapes.solid.createBox({ width: 80, length: 50, height: 8 });
   ```
 
@@ -124,7 +124,7 @@ The result is a valid solid of 18 faces, 80 by 28 by 50 mm, of about 36,556 mm³
 ```typescript
 import { writeFileSync } from "node:fs";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
-import { OCCTService, OccHelper, ShapesHelperService, VectorHelperService } from "@bitbybit-dev/occt";
+import { OCCTService } from "@bitbybit-dev/occt";
 import { buildBracket } from "./bracket.ts";
 
 type Occt = Parameters<typeof buildBracket>[0];
@@ -139,7 +139,7 @@ function asKernelShape(shape: object): KernelShape {
 }
 
 const occ = await initOpenCascade({ print: () => undefined });
-const service = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+const service = new OCCTService(occ);
 const bracket = asKernelShape(await buildBracket(asWorkerApi(service)));
 const upright = service.transforms.rotate({ shape: bracket, axis: [1, 0, 0], angle: 90 });
 writeFileSync("bracket.step", service.io.saveShapeSTEP({ shape: upright, fileName: "bracket.step" }));

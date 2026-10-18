@@ -5,7 +5,7 @@ sidebar_label: Sketches
 description: Draw a sketch in the Designer - pick a plane or a flat face, draw with the sketch bar's lines, arcs, rectangles, circles and polygons, round or bevel corners, and edit every point later as an expression.
 topic: designer.modelling.sketches
 type: how-to
-verified: 2026-10-09
+verified: 2026-10-15
 tags: [designer]
 ---
 
@@ -52,6 +52,7 @@ What you draw is kept as a list of pen commands, which the dialog shows under <U
 - **Numbers can be expressions.** Every number may be written in the part's parameters, such as `length + tip` or `tip / 4`, so the outline follows when a parameter changes. [Parameters](./parameters.md) explains them.
 - **Relative or absolute.** A point is measured from the one before it while <Ui>Relative</Ui> is ticked, or from the sketch's origin when it is not.
 - **Commands have ids.** A feature made from the sketch names its side faces after the pen commands' ids. A fillet can then name "the side made by the belly arc", and finds it again after the outline changes. [References](./references.md) explains why that matters.
+- **Circles and gears stand alone.** A <Ui>Circle</Ui> or a <Ui>Gear</Ui> command is a whole outline by itself, the only command of its loop. A gear draws every tooth from a module and a number of teeth; the faces made from it are named by the sketch, the gear's id and the part of a tooth, such as `gear1-sketch.teeth.tip`. Tick <Ui>Ring gear</Ui> and it draws a ring's teeth instead, pointing in, for a hole inside a larger circle.
 
 ## Closed outlines, holes and paths
 

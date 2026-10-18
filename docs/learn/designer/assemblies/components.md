@@ -5,7 +5,7 @@ sidebar_label: Components
 description: Place parts in a Designer assembly as components, give each its own sizes, place whole assemblies as sub-assemblies, move a component, and open the document a component comes from to change it.
 topic: designer.assemblies.components
 type: how-to
-verified: 2026-10-09
+verified: 2026-10-15
 tags: [designer]
 ---
 
@@ -20,6 +20,26 @@ An assembly document has no geometry of its own. It places parts from part docum
 Choose <Ui>Insert</Ui> > <Ui>Insert component</Ui>, or the toolbar button. <Ui>Insert a part</Ui> in <Ui>Properties</Ui> lists every part of the project's part documents, and every other assembly; click one to place it. It lands beside what is already there, ready to be joined.
 
 One part document can be placed many times, and in many assemblies. The bill of materials counts each placement.
+
+## Gears as parts
+
+[<Ui>File</Ui> > <Ui>New gear part</Ui>](../reference/commands.md#designer-file-new-gear-part) adds a part document for a spur gear whose module, teeth, width, bore and backlash are its parameters, with an `axis` connector at the centre of the face it stands on. Run in an assembly, it places the gear there too. Each component then sets its own teeth in its sizes, so one document makes both gears of a pair. Join each gear by its `axis` to the part it turns on with a revolute joint, half the module times their teeth added together apart, and give the joints' angles from one parameter, such as `turn`: the first `turn`, the second the other way by the ratio of their teeth, with 180 divided by its own teeth added so the teeth fall into each other's gaps. For 20 and 30 teeth that is `turn` and `180 / 30 - turn * 20 / 30`.
+
+## Standard parts
+
+<Ui>File</Ui> also makes part documents for the parts a machine is bolted and turned with, each one feature that the kernel's standard parts build, sized by its parameters, with its connectors on the faces that part names:
+
+| Command | Part | Parameters | Connectors |
+|---|---|---|---|
+| [<Ui>New screw part</Ui>](../reference/commands.md#designer-file-new-screw-part) | ISO 4762 socket head cap screw | `size` (M1.6 to M24), `length` | `seat`, under the head |
+| [<Ui>New bolt part</Ui>](../reference/commands.md#designer-file-new-bolt-part) | ISO 4014 hex bolt | `size`, `length` | `seat` |
+| [<Ui>New nut part</Ui>](../reference/commands.md#designer-file-new-nut-part) | ISO 4032 hex nut | `size` | `seat`, `top` |
+| [<Ui>New washer part</Ui>](../reference/commands.md#designer-file-new-washer-part) | ISO 7089 plain washer | `size` | `seat`, `top` |
+| [<Ui>New bearing part</Ui>](../reference/commands.md#designer-file-new-bearing-part) | deep groove ball bearing, rings, balls and cage | `designation` (623 to 6210) | `inner` and `outer`, on the rings' sides |
+| [<Ui>New spring part</Ui>](../reference/commands.md#designer-file-new-spring-part) | compression spring, ends closed and ground | `wireDiameter`, `diameter`, `activeCoils`, `length` | `bottom`, `top` |
+| [<Ui>New key part</Ui>](../reference/commands.md#designer-file-new-key-part) | DIN 6885 parallel key | `shaftDiameter`, `length` | `bottom` |
+
+Run in an assembly, each places its part too. Threads are drawn at the screw's full diameter and named, not cut, so a screw in its tapped hole or nut touches it without overlapping; the clash check leaves out a thread resting on a thread, whether or not a joint holds the two. One document serves every size: each component sets its own `size` and `length` under its sizes, and the part number, such as `ISO 4762 M8x25`, follows them into the bill of materials. A spring's `length` set by an expression of the assembly's parameters compresses it as the parameter that drives its joints changes. [Fasten](./replicate.md#fasten-a-screw-in-every-hole-at-once) puts screws in a hole set in one step.
 
 ## A component's own sizes
 

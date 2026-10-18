@@ -2,10 +2,10 @@
 sidebar_position: 6
 title: "Inspect an assembly: parts list, clashes and mass"
 sidebar_label: Inspect
-description: Check a Designer assembly - the bill of materials that counts every part through every level, the clash check that finds parts that overlap or come too close, and the volume and mass of each part.
+description: Check a Designer assembly - the bill of materials that counts every part through every level, the clash check that finds parts that overlap or come too close, in one pose or through a motion, and the volume and mass of each part.
 topic: designer.assemblies.inspect
 type: how-to
-verified: 2026-10-09
+verified: 2026-10-15
 tags: [designer]
 ---
 
@@ -29,7 +29,13 @@ A part placed at different sizes is a different part to make, so it has a line f
 - **touch**, which can be right, such as a screw head on its seat;
 - come closer than the <Ui>Clearance</Ui> you set, in the document's length unit. With 0, only overlaps and touches are listed.
 
-A touch that a joint asks for, two parts meeting at their connectors, is left out. Click a clash to see the two parts in the view. Check again after a change: the list shows the assembly as it was when you checked, in the pose it was in, so try each [configuration](./joints.md#pose-the-assembly) that matters.
+A touch that a joint asks for, two parts meeting at their connectors, is left out, and so is a screw's thread resting in a tapped hole, with the hole's rim and the screw's end chamfer around it, joint or not; a head sitting on the plate, or anything else the two meet at, is still listed. Click a clash to see the two parts in the view. Check again after a change: the list shows the assembly as it was when you checked, in the pose it was in, so try each [configuration](./joints.md#pose-the-assembly) that matters.
+
+## Sweep clashes through a motion
+
+A check sees one pose. <Ui>Sweep clashes</Ui>, in <Ui>Inspect</Ui>, or <Ui>Sweep</Ui> in the dock's <Ui>Clashes</Ui> tab, checks the assembly at even steps of a parameter from its least to its most value, so parts that collide only part way through a motion are found: a rod against the crankcase at one crank angle, a jaw against the base at full reach. Choose the parameter in <Ui>Through</Ui>; any parameter with a min and a max can be swept, and the [clearance](#check-clashes) applies at every step.
+
+Each pair is listed once, with its worst overlap, and with the values where it clashes, such as "at crank 90°, 100°". An angle whose range covers a whole turn is not checked twice where it starts again. The dock sweeps in 24 steps; agents run `assembly.sweepClashes` with the parameter's `name` and up to 360 `steps`. One check runs at a time, and <Ui>Stop</Ui> in the dock, or <Ui>Inspect</Ui> > <Ui>Stop sweeping</Ui>, ends a sweep before its last step. A sweep of a motion that [plays](../modelling/parameters.md#play-a-parameter) well is the check to run before a part is made.
 
 ## Volume and mass
 

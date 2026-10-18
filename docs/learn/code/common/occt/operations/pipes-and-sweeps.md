@@ -57,7 +57,7 @@ Here a circle swept along a helix makes a coil spring, and the same circle swept
 
 ## Tubes and bars, the profile made for you
 
-- `bitbybit.occt.operations.pipeWireCylindrical` sweeps a circle of `radius` along a wire: a round tube, a cable, a handrail, a spring. `pipeWiresCylindrical` does the same for several wires at once.
+- `bitbybit.occt.operations.pipeWireCylindrical` sweeps a circle of `radius` along a wire: a round tube, a cable, a handrail, a spring. `pipeWiresCylindrical` does the same for several wires at once. Give it `bendRadius` and every corner of the path is bent round that radius first, as a pipe bender would bend it, so a polyline becomes a tube of straight runs and bends. Along lines and arcs that join smoothly the tube is exact, cylinders and tori, which fuses cleanly with fittings of the same radius.
 - `bitbybit.occt.operations.pipePolylineWireNGon` sweeps a regular polygon with `nrCorners` corners: a square bar with 4, a hexagonal one with 6.
 
 Both take `makeSolid` (true for a solid, false for an open shell) and `trihedronEnum`, which decides how the profile turns as it travels. The default, `isConstantNormal`, keeps it steady; the Frenet modes turn it with the curve's bending, which can twist a profile along a path that bends one way and then the other.
@@ -78,6 +78,6 @@ Both take `makeSolid` (true for a solid, false for an open shell) and `trihedron
 
 - **The profile is wider than the path's tightest bend.** A tube whose radius is larger than the radius of a curve folds over itself there. Use a smaller profile or a gentler path.
 - **The profile is not at the start of the path.** `pipe` sweeps the profile from where it is, so a profile drawn at the origin sweeps a shape somewhere else entirely.
-- **The path has a sharp corner.** A profile swept round a sharp corner of a polyline comes out kinked or broken at the corner. Round the corners first with `bitbybit.occt.fillets.fillet2d`, as the example does with the star, and `forceApproxC1` smooths a tube that still came out with kinks.
+- **The path has a sharp corner.** A profile swept round a sharp corner of a polyline comes out kinked or broken at the corner. For a round tube, give `pipeWireCylindrical` a `bendRadius`; for other profiles, round the corners first with `bitbybit.occt.fillets.fillet2d` (flat paths) or `fillet3DWire`, as the example does with the star, and `forceApproxC1` smooths a tube that still came out with kinks. A bend radius the edges at a corner are too short for is refused with the corners it does not fit, and every bend must be wider than the tube, or the tube would fold through itself.
 
 Extrusions and lofts, the other ways to make a solid from outlines, are on [Extrusions](./extrusions) and [Simple loft](./simple-loft).

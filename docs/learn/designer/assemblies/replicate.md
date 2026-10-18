@@ -5,7 +5,7 @@ sidebar_label: Replicate
 description: Place a Designer component on every connector of a set in one step, such as a screw in every hole of a flange, so the copies follow when holes are added, moved or taken away.
 topic: designer.assemblies.replicate
 type: how-to
-verified: 2026-10-09
+verified: 2026-10-15
 tags: [designer]
 ---
 
@@ -23,6 +23,10 @@ A flange with eight bolt holes needs eight bolts. Rather than eight components a
 <Shot id="designer.assemblies.replicate/set" />
 
 The component now stands on every hole. The <Ui>Components</Ui> group shows it once, with how many it places, such as "×4", and its occurrences fold open under it. The picture shows the desk arm's base screws: one screw component on the four holes of the base's `bolts` set, each set two millimetres down its hole by an <Ui>Offset</Ui> of -2.
+
+## Fasten: a screw in every hole at once
+
+[<Ui>Insert</Ui> > <Ui>Fasten</Ui>](../reference/commands.md#designer-assembly-fasten) does the steps above for a standard screw or bolt. Select the component whose holes take the screws, or name it and its connector set, and it places a [standard screw part](./components.md#standard-parts) replicated onto the set. The size comes from the holes: a hole made by its fastener, such as `M8` with a normal fit, gives the screw its `M8`, also when a parameter gives the size. The length is the screw part's own unless you name one, and a size you name wins over the holes'. A component with several hole sets needs the set named. One <Ui>Undo</Ui> takes the fastening back. The first fasten adds the screw's part document; every one after places the same document again with its own size and length, so the bill of materials counts each size apart. Agents run it as `assembly.fasten` with `to`, and `kind` `bolt` for a hex bolt.
 
 ## Adjust the copies
 

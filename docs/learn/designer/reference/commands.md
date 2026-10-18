@@ -12,7 +12,7 @@ tags: [designer]
 
 # Designer commands
 
-Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 135 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
+Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 150 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
 
 Each entry's anchor is the command's help topic, such as `#designer-part-fillet`, so a link to it keeps working when the title changes.
 
@@ -189,6 +189,104 @@ Deletes the documents the last import of this session added, while no other docu
 - **For agents:** only a person runs it; agents see it as unavailable
 - **Values:**
   - `confirmed` (boolean): A person's run asks first unless this is true.
+
+### New gear part {#designer-file-new-gear-part}
+
+Adds a part document for an involute spur gear sized by its module, teeth, width, bore and backlash parameters, with an axis connector; an open assembly places it too.
+
+- **Where:** <Ui>File</Ui> > <Ui>New gear part</Ui>
+- **Works in:** part documents and assembly documents
+- **For agents:** `file.newGearPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `name` (string): The part's name; "Gear" and its teeth when left out.
+  - `module` (number): The size of the teeth: the pitch circle's diameter divided by the number of teeth; 2 when left out.
+  - `teeth` (number): How many teeth, a whole number of at least 3; 20 when left out.
+  - `width` (number): How thick the gear is; 10 when left out.
+  - `bore` (number): The diameter of the hole through its middle, inside the root circle; 6 when left out.
+  - `backlash` (number): How much thinner each tooth is than a tight fit; 0.1 when left out.
+
+### New screw part {#designer-file-new-screw-part}
+
+Adds a part document for an ISO 4762 socket head cap screw sized by its size and length parameters, its thread cosmetic, with a seat connector under the head; an open assembly places it too.
+
+- **Where:** <Ui>File</Ui> > <Ui>New screw part</Ui>
+- **Works in:** part documents and assembly documents
+- **For agents:** `file.newScrewPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `name` (string): The part's name; "Socket head cap screw" when left out.
+  - `size` (one of `"M1.6"`, `"M2"`, `"M2.5"`, `"M3"`, `"M4"`, `"M5"`, `"M6"`, `"M8"`, `"M10"`, `"M12"`, `"M14"`, `"M16"`, `"M20"`, `"M24"`): The ISO metric size of the screw, M1.6 to M24; M4 when left out.
+  - `length` (number): How long the screw is under its head; 12 when left out.
+
+### New bolt part {#designer-file-new-bolt-part}
+
+Adds a part document for an ISO 4014 hex bolt, or ISO 4017 threaded to the head, sized by its size and length parameters, with a seat connector under the head; an open assembly places it too.
+
+- **Where:** <Ui>File</Ui> > <Ui>New bolt part</Ui>
+- **Works in:** part documents and assembly documents
+- **For agents:** `file.newBoltPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `name` (string): The part's name; "Hex bolt" when left out.
+  - `size` (one of `"M1.6"`, `"M2"`, `"M2.5"`, `"M3"`, `"M4"`, `"M5"`, `"M6"`, `"M8"`, `"M10"`, `"M12"`, `"M14"`, `"M16"`, `"M20"`, `"M24"`): The ISO metric size of the bolt, M1.6 to M24; M8 when left out.
+  - `length` (number): How long the bolt is under its head; 30 when left out.
+
+### New nut part {#designer-file-new-nut-part}
+
+Adds a part document for an ISO 4032 hex nut sized by its size parameter, with seat and top connectors on its axis; an open assembly places it too.
+
+- **Where:** <Ui>File</Ui> > <Ui>New nut part</Ui>
+- **Works in:** part documents and assembly documents
+- **For agents:** `file.newNutPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `name` (string): The part's name; "Hex nut" when left out.
+  - `size` (one of `"M1.6"`, `"M2"`, `"M2.5"`, `"M3"`, `"M4"`, `"M5"`, `"M6"`, `"M8"`, `"M10"`, `"M12"`, `"M14"`, `"M16"`, `"M20"`, `"M24"`): The ISO metric size of the nut, M1.6 to M24; M8 when left out.
+
+### New washer part {#designer-file-new-washer-part}
+
+Adds a part document for an ISO 7089 plain washer sized by its size parameter, with seat and top connectors on its axis; an open assembly places it too.
+
+- **Where:** <Ui>File</Ui> > <Ui>New washer part</Ui>
+- **Works in:** part documents and assembly documents
+- **For agents:** `file.newWasherPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `name` (string): The part's name; "Plain washer" when left out.
+  - `size` (one of `"M1.6"`, `"M2"`, `"M2.5"`, `"M3"`, `"M4"`, `"M5"`, `"M6"`, `"M8"`, `"M10"`, `"M12"`, `"M14"`, `"M16"`, `"M20"`, `"M24"`): The ISO metric size of the washer, M1.6 to M24; M8 when left out.
+
+### New bearing part {#designer-file-new-bearing-part}
+
+Adds a part document for a deep groove ball bearing chosen by its designation parameter, with inner and outer connectors on the rings' sides; an open assembly places it too.
+
+- **Where:** <Ui>File</Ui> > <Ui>New bearing part</Ui>
+- **Works in:** part documents and assembly documents
+- **For agents:** `file.newBearingPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `name` (string): The part's name; "Ball bearing" when left out.
+  - `designation` (one of `"623"`, `"624"`, `"625"`, `"626"`, `"608"`, `"609"`, `"6000"`, `"6001"`, `"6002"`, `"6003"`, `"6004"`, `"6005"`, `"6006"`, `"6007"`, `"6008"`, `"6009"`, `"6010"`, `"6200"`, `"6201"`, `"6202"`, `"6203"`, `"6204"`, `"6205"`, `"6206"`, `"6207"`, `"6208"`, `"6209"`, `"6210"`): The bearing's designation, 623 to 6210, which sets its bore, outside and width; 608 when left out.
+
+### New spring part {#designer-file-new-spring-part}
+
+Adds a part document for a compression spring with closed and ground ends, sized by its wire, diameter, coils and length parameters, with bottom and top connectors; an open assembly places it too.
+
+- **Where:** <Ui>File</Ui> > <Ui>New spring part</Ui>
+- **Works in:** part documents and assembly documents
+- **For agents:** `file.newSpringPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `name` (string): The part's name; "Compression spring" when left out.
+  - `wireDiameter` (number): The diameter of the wire it is coiled from; 1 when left out.
+  - `diameter` (number): The coils' outside diameter; 10 when left out.
+  - `activeCoils` (number): How many coils spring, besides the closed one at each end; 6 when left out.
+  - `length` (number): How long it stands; shorter compresses it, down to solid, every coil touching; 25 when left out.
+
+### New key part {#designer-file-new-key-part}
+
+Adds a part document for a DIN 6885 parallel key with round ends, sized for its shaft by the shaft diameter and length parameters, with a bottom connector; an open assembly places it too.
+
+- **Where:** <Ui>File</Ui> > <Ui>New key part</Ui>
+- **Works in:** part documents and assembly documents
+- **For agents:** `file.newKeyPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `name` (string): The part's name; "Parallel key" when left out.
+  - `shaftDiameter` (number): The diameter of the shaft the key sits in, which sets its width and height; 20 when left out.
+  - `length` (number): How long the key is, more than its width; 20 when left out.
 
 ## Editing
 
@@ -643,6 +741,25 @@ Rebuilds a shared design with the values its author saved, after trying others.
 - **Works in:** part documents and assembly documents
 - **For agents:** `view.resetParameters`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 
+### Play parameter {#designer-view-play-parameter}
+
+Runs a parameter between its least and most values, on and on, so every joint and feature that reads it moves in the view; an angle over a whole turn keeps turning. Nothing is saved.
+
+- **Where:** the <Ui>Properties</Ui> panel
+- **Works in:** part documents and assembly documents
+- **For agents:** `view.playParameter`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `name` (string, required): The parameter to play; it needs a min and a max.
+  - `seconds` (number): How many seconds one run from the least value to the most takes; 4 when left out.
+
+### Stop playing {#designer-view-stop-playing}
+
+Stops the parameter that is playing, and the view shows the model as it stands again.
+
+- **Where:** the <Ui>Properties</Ui> panel
+- **Works in:** part documents and assembly documents
+- **For agents:** `view.stopPlaying`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+
 ## Solids
 
 ### Box {#designer-part-box}
@@ -714,6 +831,38 @@ A cone or a truncated cone on the ground: its side profile turned about the vert
   - `topRadius`: 0 for a point.
   - `height`: How tall it is.
   - `offset`: How far above the ground it starts.
+  - `x` (number): How far along the plane's x axis its centre sits, when it stands on a plane; 0 when left out, and beside the part's bodies when a person opens the dialog.
+  - `id` (string): The solid feature's id, its sketch taking the id with -sketch; the next free one when left out.
+
+### Gear {#designer-part-gear}
+
+An involute spur gear standing on a plane or a face: a sketch of its teeth and its bore, and an extrude.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Gear</Ui>; the toolbar
+- **Works in:** part documents
+- **For agents:** `part.gear`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `module`: The size of the teeth: the pitch circle's diameter divided by the number of teeth; gears mesh only with gears of the same module.
+  - `teeth`: How many teeth it has, at least 3.
+  - `height`: How thick the gear is.
+  - `bore`: The diameter of the hole through its middle; 0 leaves it whole.
+  - `on`: The plane it stands on, or a flat face it rises from.
+  - `x` (number): How far along the plane's x axis its centre sits, when it stands on a plane; 0 when left out, and beside the part's bodies when a person opens the dialog.
+  - `id` (string): The solid feature's id, its sketch taking the id with -sketch; the next free one when left out.
+
+### Ring gear {#designer-part-ring-gear}
+
+An involute ring gear standing on a plane or a face, its teeth pointing in: a sketch of its rim and teeth, and an extrude.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Ring gear</Ui>; the toolbar
+- **Works in:** part documents
+- **For agents:** `part.ringGear`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `module`: The size of the teeth: the pitch circle's diameter divided by the number of teeth; a gear meshes inside only with the same module.
+  - `teeth`: How many teeth it has, at least 34 so their tips stay outside the base circle.
+  - `height`: How thick the ring is.
+  - `rim`: How thick the ring is outside the bottoms of its gaps.
+  - `on`: The plane it stands on, or a flat face it rises from.
   - `x` (number): How far along the plane's x axis its centre sits, when it stands on a plane; 0 when left out, and beside the part's bodies when a person opens the dialog.
   - `id` (string): The solid feature's id, its sketch taking the id with -sketch; the next free one when left out.
 
@@ -964,6 +1113,7 @@ Drills holes through a flat face at positions on it.
   - `on`: The flat face the holes start from.
   - `at`: Where the holes go, as x and y on the face; give a position an id to name its walls.
   - `diameter`: The hole's diameter.
+  - `fastener`: Sizes the holes for a metric screw instead of a diameter, such as \{ "size": "M8", "fit": "normal" \}: a close, normal or loose clearance, or tapped for its thread.
   - `depth`: How deep; 0 drills through.
   - `tipAngle`: A drill point at the bottom of a blind hole.
   - `counterbore`: Widen each mouth to a diameter and depth.
@@ -1347,6 +1497,20 @@ Places copies of a component turned about an axis (polar) or stepped along a dir
   - `id` (string, required): The component to pattern.
   - `pattern` (object): \{ polar: \{ axis: \{ origin, direction \}, count, angle?, start? \} \} or \{ linear: \{ direction, spacing, count \} \}, every number a value or an expression; null takes the pattern away; left out, a person's run starts a polar pattern about the up axis.
 
+### Fasten {#designer-assembly-fasten}
+
+Puts a screw or a bolt in every hole of a connector set, sized by the holes' fastener unless a size is named: one screw part document serves every size, and each set is one replicated component.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Fasten</Ui>
+- **Works in:** assembly documents
+- **For agents:** `assembly.fasten`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `to` (object): \{ component, connector \}: the component whose holes take the fasteners, and its connector set on their axes; the selected component's one hole set when left out.
+  - `kind` (one of `"screw"`, `"bolt"`): Which fastener, a socket head cap screw or a hex bolt; screw when left out.
+  - `size` (string): The metric size, such as M8; the holes' fastener size when left out.
+  - `length` (number): How long under the head; the part's default when left out.
+  - `id` (string): The component's id; the fastener's kind and the next free number when left out.
+
 ## Inspecting
 
 ### Check clashes {#designer-assembly-check-clashes}
@@ -1382,6 +1546,26 @@ Cuts the view with a plane across X, Y or Z, hiding what lies on the side it fac
   - `offset` (number): Where the plane crosses the axis, in the document's length unit.
   - `flip` (boolean): Hides the other side of the plane: with false what lies beyond the offset along the axis is hidden.
   - `off` (boolean): Turns the section view off.
+
+### Sweep clashes {#designer-assembly-sweep-clashes}
+
+Checks the assembly for clashes at steps of a parameter from its least to its most value, so parts that collide only part way through a motion are found, with the values where each pair clashes.
+
+- **Where:** <Ui>Inspect</Ui> > <Ui>Sweep clashes</Ui>; the dock
+- **Works in:** assembly documents
+- **For agents:** `assembly.sweepClashes`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `name` (string): The parameter to sweep, one with a min and a max; the one playing, else the first that has both, when left out.
+  - `steps` (integer): How many steps between its least and most values, 1 to 360; 24 when left out. An angle over a whole turn wraps, so its last step is not checked twice.
+  - `clearance` (number): How close two parts may come before they are listed, 0 or more, in the document's length unit; 0 when left out.
+
+### Stop sweeping {#designer-assembly-stop-clash-sweep}
+
+Stops a clash sweep through a parameter before its last step; what it found so far is dropped.
+
+- **Where:** <Ui>Inspect</Ui> > <Ui>Stop sweeping</Ui>; the dock
+- **Works in:** assembly documents
+- **For agents:** `assembly.stopClashSweep`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 
 ## Operations
 

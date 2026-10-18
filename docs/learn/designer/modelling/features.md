@@ -5,7 +5,7 @@ sidebar_label: Features and dialogs
 description: Every feature the Designer adds to a part - solids, extrudes, revolves, sweeps and lofts, fillets, chamfers, shells, holes, bosses and pockets, booleans and patterns - and how their dialogs take values, picks and expressions.
 topic: designer.modelling.features
 type: how-to
-verified: 2026-10-09
+verified: 2026-10-15
 tags: [designer]
 ---
 
@@ -38,6 +38,10 @@ The features that make shape start a new body, named after the feature, unless y
 
 <Ui>Box</Ui>, <Ui>Cylinder</Ui>, <Ui>Prism</Ui>, <Ui>Sphere</Ui> and <Ui>Cone</Ui> make a whole solid from one dialog, standing on a plane or rising from a flat face you picked. Each is a sketch and an extrude or a revolve underneath, so its faces have the same names as if you had drawn it.
 
+[<Ui>Gear</Ui>](../reference/commands.md#designer-part-gear) makes an involute spur gear the same way: a <Ui>Module</Ui> for the size of its teeth, how many <Ui>Teeth</Ui>, a <Ui>Thickness</Ui> and a <Ui>Bore</Ui>, the hole through its middle. Two gears of the same module mesh when their centres are half the module times their teeth added together apart, so a 20-tooth and a 30-tooth gear of module 2 sit 50 apart. Its sketch keeps the teeth as one <Ui>Gear</Ui> pen command, where the pressure angle, the backlash and the rest of the tooth's shape can be changed, and its side faces are named by the part of a tooth they belong to: `tip`, `flank` or `root`. A feature that takes edges can name them by those parts, such as a chamfer on the edges round every tip and nothing else.
+
+[<Ui>Ring gear</Ui>](../reference/commands.md#designer-part-ring-gear) makes a gear with its teeth on the inside, as in a planetary set: its <Ui>Module</Ui>, its <Ui>Teeth</Ui>, a <Ui>Thickness</Ui> and the <Ui>Rim</Ui> outside the teeth. A gear of the same module turns inside it with its centre half the module times the difference of their teeth from the ring's, so a 20-tooth gear sits 40 from the centre of a 60-tooth ring. A ring needs at least 34 teeth, so their tips stay outside the circle the involute starts from.
+
 ## Features that make shape
 
 | Feature | What it does |
@@ -57,7 +61,7 @@ The features that make shape start a new body, named after the feature, unless y
 | [<Ui>Fillet</Ui>](../reference/commands.md#designer-part-fillet) | rounds the <Ui>Edges</Ui> you pick to a <Ui>Radius</Ui> |
 | [<Ui>Chamfer</Ui>](../reference/commands.md#designer-part-chamfer) | bevels the edges you pick by a <Ui>Distance</Ui> |
 | [<Ui>Shell</Ui>](../reference/commands.md#designer-part-shell) | hollows a body to a wall <Ui>Thickness</Ui>, leaving the faces you pick open |
-| [<Ui>Hole</Ui>](../reference/commands.md#designer-part-hole) | drills holes into a flat <Ui>Face</Ui> at <Ui>Positions</Ui> on it, through or to a <Ui>Depth</Ui>, with a counterbore or a countersink if you like |
+| [<Ui>Hole</Ui>](../reference/commands.md#designer-part-hole) | drills holes into a flat <Ui>Face</Ui> at <Ui>Positions</Ui> on it, through or to a <Ui>Depth</Ui>, with a counterbore or a countersink if you like; a <Ui>Fastener</Ui> such as `{ "size": "M8", "fit": "normal" }` sizes them for that screw instead of a <Ui>Diameter</Ui>, with a close, normal or loose clearance or tapped for its thread, and [Fasten](../assemblies/replicate.md#fasten-a-screw-in-every-hole-at-once) then reads it |
 | [<Ui>Boss</Ui>](../reference/commands.md#designer-part-boss) | raises a sketch drawn on a face out of it |
 | [<Ui>Pocket</Ui>](../reference/commands.md#designer-part-pocket) | sinks a sketch drawn on a face into the body, by a depth or through it |
 | [<Ui>Push/pull</Ui>](../reference/commands.md#designer-part-push-pull) | moves a face out or in, the faces around it following |
