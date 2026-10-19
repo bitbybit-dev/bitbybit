@@ -10,9 +10,11 @@ import { importPlan, localPlan } from "./local-features";
 import { scriptPlan, suppliedOutcome } from "./scripts";
 import { operationPlan } from "./operation-steps";
 import { bodyPlan, sketchPlan, sweepPlan } from "./steps";
-import { DesignPending, DesignProblem, isKernelTrap, pointer, tagTrap } from "./problems";
+import { cleanedUpOnError, DesignPending, DesignProblem, isKernelTrap, pointer, tagTrap } from "./problems";
 import { readKernelException } from "../../kernel-exception";
 import { buildParts } from "./parts";
+import { releasePending } from "./release-build";
+import { release } from "../base/release";
 import type { ParameterChoice } from "./values";
 import { parameterValues, parametersIn, truthOf } from "./values";
 
@@ -346,13 +348,21 @@ export function framingOf(document: Pick<Models.OCCT.DesignPartDocument, "units"
  * owns.
  */
 export function runDesign(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext): Models.OCCT.DesignBuildResult<TopoDS_Shape> {
+    return runDesignWaiting(document, choice, context)[0];
+}
+
+/**
+ * Builds a checked document as `runDesign` does, and names the bodies it could not make because they
+ * wait for an outcome the caller has still to make, such as a script's.
+ */
+export function runDesignWaiting(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext): readonly [Models.OCCT.DesignBuildResult<TopoDS_Shape>, ReadonlySet<string>] {
     const { run, report } = runFeatures(document, choice, context);
     if (context.used === undefined) {
         run.cache.trim(run.used);
     }
     const issues: Models.OCCT.DesignIssue[] = [];
     const before = run.rebinding.entries.length;
-    const parts = buildParts(document, run, issues);
+    const parts = cleanedUpOnError(() => buildParts(document, run, issues), () => releasePending(run.pending));
     run.rebinding.entries.slice(before).forEach(entry => issues.push({
         path: entry.path,
         message: entry.kind === "rebound"
@@ -360,7 +370,12 @@ export function runDesign(document: Models.OCCT.DesignPartDocument, choice: Para
             : `faces ${entry.faces.join(", ")} are the most like its hint (score ${entry.score}); ${entry.clear === true ? "a build with rebind \"report\" takes them" : "they do not stand clear of the others, so no build takes them"}`,
     }));
     const parameters = Object.fromEntries([...run.parameters].filter(([name]) => name !== "configuration"));
-    return {
+    const sketches = context.sketches === true ? cleanedUpOnError(() => builtSketches(document, run), () => {
+        releasePending(run.pending);
+        parts.forEach(part => release(part.shape));
+    }) : undefined;
+    const waiting = new Set([...run.failed].filter(([key, reason]) => reason === "pending" && isBodyKey(key)).map(([key]) => nameInKey(key)));
+    return [{
         parts,
         report,
         issues,
@@ -368,19 +383,20 @@ export function runDesign(document: Models.OCCT.DesignPartDocument, choice: Para
         parameters,
         ...framingOf(document),
         ...(run.pending.length === 0 ? {} : { pending: run.pending }),
-        ...(context.sketches === true ? { sketches: builtSketches(document, run) } : {}),
-    };
+        ...(sketches === undefined ? {} : { sketches }),
+    }, waiting];
 }
 
 function builtSketches(document: Models.OCCT.DesignPartDocument, run: DesignRun): Models.OCCT.DesignBuiltSketch<TopoDS_Shape>[] {
-    return document.features.flatMap(feature => {
-        const state = feature.type === "sketch" ? run.sketches.get(feature.id) : undefined;
-        return state === undefined || feature.type !== "sketch" ? [] : [{
-            id: feature.id,
-            shape: state.shape.clone(),
-            face: run.occ.CountSubShapes(state.shape, run.occ.TopAbs_ShapeEnum.FACE, false) > 0,
-            frame: state.frame,
-            commands: state.commands.map(command => command ?? null),
-        }];
-    });
+    const built: Models.OCCT.DesignBuiltSketch<TopoDS_Shape>[] = [];
+    return cleanedUpOnError(() => {
+        document.features.forEach(feature => {
+            const state = feature.type === "sketch" ? run.sketches.get(feature.id) : undefined;
+            if (state !== undefined) {
+                const face = run.occ.CountSubShapes(state.shape, run.occ.TopAbs_ShapeEnum.FACE, false) > 0;
+                built.push({ id: feature.id, shape: state.shape.clone(), face, frame: state.frame, commands: state.commands.map(command => command ?? null) });
+            }
+        });
+        return built;
+    }, () => built.forEach(sketch => release(sketch.shape)));
 }

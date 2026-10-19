@@ -62,12 +62,11 @@ export class OCCTDraft {
     }
 
     /**
-     * Grows a tapered skirt from a wire, or the edges of a shape, along a direction: each edge is
-     * swept along `direction`, leaning outward or inward by `angle` degrees, until the skirt is
-     * `lengthMax` long.
+     * Grows a tapered skirt from a wire, or the edges of a shape: each edge is swept along
+     * `direction`, leaning outward by `angle` degrees, until the skirt is `lengthMax` long.
      *
-     * `internal` leans the skirt inward instead of outward. A draft the kernel cannot build throws
-     * `occt.draft.failed`.
+     * `internal` leans it inward. A skirt at 90 degrees or an odd multiple lies flat and is refused;
+     * a draft the kernel cannot build throws `occt.draft.failed`.
      * @param inputs - The wire or shape, the direction, the angle, the maximum length and whether to lean inward
      * @returns The drafted skirt
      * @group draft
@@ -100,11 +99,12 @@ export class OCCTDraft {
     }
 
     /**
-     * Grows a tapered skirt from a wire, or the edges of a shape, along a direction like
-     * `makeDraft`, but stops it where it meets `stopShape` instead of at a fixed length.
+     * Grows a tapered skirt from a wire or the edges of a shape like `makeDraft`, stopping it where
+     * it meets `stopShape`.
      *
-     * `keepOut` keeps the part of the stop shape outside the draft; `internal` leans the skirt
-     * inward. A draft the kernel cannot build throws `occt.draft.failed`.
+     * `keepOut` keeps the part of the stop shape outside the draft and `internal` leans it inward. A
+     * skirt at 90 degrees or an odd multiple lies flat and is refused; a failed draft throws
+     * `occt.draft.failed`.
      * @param inputs - The wire or shape, the direction, the angle, the shape to stop at, the keep-out flag and whether to lean inward
      * @returns The drafted skirt
      * @group draft

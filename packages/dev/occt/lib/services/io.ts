@@ -12,6 +12,10 @@ import { SMALLEST_MESH_DEFLECTION, bytesOfFile, objNameOf, textOfFile } from "./
 import type { DrawingLine } from "./base/svg-drawing";
 import { svgOfDrawing } from "./base/svg-drawing";
 import { stlWithYAndZSwapped } from "./base/stl-data";
+import { readKernelException } from "../kernel-exception";
+import { trapOr } from "../kernel-traps";
+import { withKernelErrorsRead } from "./base/kernel-refusals";
+import { kernelObjects, released } from "./base/release";
 
 const BREP_HEADER = /^\s*(DBRep_DrawableShape\s+)?CASCADE Topology V\d/;
 
@@ -56,9 +60,9 @@ export class OCCTIO {
         try {
             let transferResult;
             try {
-                transferResult = writer.Transfer(adjustedShape ?? resolved.shape, this.occ.STEPControl_StepModelType.AsIs);
+                transferResult = withKernelErrorsRead(this.occ, () => writer.Transfer(adjustedShape ?? resolved.shape, this.occ.STEPControl_StepModelType.AsIs));
             } catch (ex) {
-                throw new Error("Failed when calling writer.Transfer.", { cause: ex });
+                throw trapOr(ex, () => new Error("Failed when calling writer.Transfer.", { cause: ex }));
             }
             if (transferResult !== this.occ.IFSelect_ReturnStatus.RetDone) {
                 throw (new Error("Failed when transfering to step writer."));
@@ -108,11 +112,14 @@ export class OCCTIO {
      */
     saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<TopoDS_Shape>): string | Uint8Array {
         const resolved = resolveDto(Inputs.OCCT.SaveStlDto, inputs) as Resolved.OCCT.SaveStlDto<TopoDS_Shape>;
-        const transferShape = this.occ.BRepBuilderAPI_Copy_Shape(resolved.shape, false);
+        const shape = checkedShape(resolved.shape);
+        const precision = checkedNumber(resolved.precision, "precision", SMALLEST_MESH_DEFLECTION);
         const fileName = "x";
-        const writer = new this.occ.StlAPI_Writer();
-        const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, resolved.precision, false, 0.5, this.occ.RunsInParallel());
+        const { own, releaseAll } = kernelObjects();
         try {
+            const transferShape = own(this.occ.BRepBuilderAPI_Copy_Shape(shape, false));
+            const writer = own(new this.occ.StlAPI_Writer());
+            own(new this.occ.BRepMesh_IncrementalMesh(transferShape, precision, false, 0.5, this.occ.RunsInParallel()));
             writer.SetASCIIMode(!resolved.binary);
             if (!writer.Write(transferShape, fileName)) {
                 throw (new Error("Failed when writing stl file."));
@@ -122,9 +129,7 @@ export class OCCTIO {
             return resolved.binary ? turned : new TextDecoder().decode(turned);
         } finally {
             this.removeFile("/" + fileName);
-            writer.delete();
-            incrementalMeshBuilder.delete();
-            transferShape.delete();
+            releaseAll();
         }
     }
 
@@ -308,50 +313,43 @@ export class OCCTIO {
             }
             
             if (!stepShape || stepShape.IsNull()) {
+                stepShape?.delete();
                 console.error("Failed to read " + fileType.toUpperCase() + " file: " + fileName);
                 return undefined;
             }
         } else {
             this.occ.FS.createDataFile("/", `file.${fileType}`, fileText, true, true, true);
             
-            let reader: STEPControl_Reader | IGESControl_Reader;
-            if (fileType === "step") {
-                reader = new this.occ.STEPControl_Reader();
-            } else {
-                reader = new this.occ.IGESControl_Reader();
-            }
-            
-            const readResult = reader.ReadFile(`file.${fileType}`);
-            if (readResult === this.occ.IFSelect_ReturnStatus.RetDone) {
-                reader.TransferRoots();
-                stepShape = reader.OneShape();
-                this.occ.FS.unlink(`/file.${fileType}`);
-                if (!stepShape || stepShape.IsNull()) {
-                    console.error("Failed to read " + fileType.toUpperCase() + " file: " + fileName);
+            const reader: STEPControl_Reader | IGESControl_Reader = fileType === "step" ? new this.occ.STEPControl_Reader() : new this.occ.IGESControl_Reader();
+            try {
+                const readResult = withKernelErrorsRead(this.occ, () => reader.ReadFile(`file.${fileType}`));
+                if (readResult !== this.occ.IFSelect_ReturnStatus.RetDone) {
+                    console.error("Something in OCCT went wrong trying to read " + fileName);
                     return undefined;
                 }
-            } else {
-                console.error("Something in OCCT went wrong trying to read " + fileName);
+                stepShape = withKernelErrorsRead(this.occ, () => {
+                    reader.TransferRoots();
+                    return reader.OneShape();
+                });
+            } finally {
+                reader.delete();
                 this.occ.FS.unlink(`/file.${fileType}`);
+            }
+            if (stepShape.IsNull()) {
+                stepShape.delete();
+                console.error("Failed to read " + fileType.toUpperCase() + " file: " + fileName);
                 return undefined;
             }
         }
         
-        let adjustedShape;
-        if (resolved.adjustZtoY && stepShape) {
-            const mirroredShape = this.och.transformsService.mirrorAlongNormal(
-                { shape: stepShape, origin: [0, 0, 0], normal: [0, 0, 1] }
-            );
-            adjustedShape = this.och.transformsService.rotate({ shape: mirroredShape, axis: [1, 0, 0], angle: 90 });
-            mirroredShape.delete();
+        const loaded = stepShape;
+        if (!resolved.adjustZtoY) {
+            return loaded;
         }
-        
-        if (adjustedShape) {
-            stepShape?.delete();
-            return adjustedShape;
-        }
-
-        return stepShape;
+        return released([loaded], () => {
+            const mirroredShape = this.och.transformsService.mirrorAlongNormal({ shape: loaded, origin: [0, 0, 0], normal: [0, 0, 1] });
+            return released([mirroredShape], () => this.och.transformsService.rotate({ shape: mirroredShape, axis: [1, 0, 0], angle: 90 }));
+        });
     }
 
     /**
@@ -546,7 +544,7 @@ export class OCCTIO {
             const controlSurfaceDeflection = resolved.controlSurfaceDeflection;
 
             if (stepData instanceof Uint8Array) {
-                result = this.occ.ConvertStepToGltfFromBinary(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinary(
                     stepData,
                     meshPrecision,
                     meshAngle,
@@ -554,9 +552,9 @@ export class OCCTIO {
                     internalVerticesMode,
                     controlSurfaceDeflection,
                     -1
-                );
+                ));
             } else if (stepData instanceof ArrayBuffer) {
-                result = this.occ.ConvertStepToGltfFromBinary(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinary(
                     new Uint8Array(stepData),
                     meshPrecision,
                     meshAngle,
@@ -564,9 +562,9 @@ export class OCCTIO {
                     internalVerticesMode,
                     controlSurfaceDeflection,
                     -1
-                );
+                ));
             } else if (typeof stepData === "string") {
-                result = this.occ.ConvertStepToGltfFromMemory(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromMemory(
                     stepData,
                     meshPrecision,
                     meshAngle,
@@ -574,7 +572,7 @@ export class OCCTIO {
                     internalVerticesMode,
                     controlSurfaceDeflection,
                     -1
-                );
+                ));
             } else {
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
@@ -586,7 +584,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = messageOf(error);
-            throw new Error(`STEP to glTF conversion failed: ${errorMessage}`, { cause: error });
+            throw trapOr(error, () => new Error(`STEP to glTF conversion failed: ${errorMessage}`, { cause: error }));
         }
     }
 
@@ -625,7 +623,7 @@ export class OCCTIO {
             const transformFormatNum = this.gltfTransformFormatEnumToOcct(resolved.transformFormat);
             
             if (stepData instanceof Uint8Array) {
-                result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     stepData,
                     resolved.readColors,
                     resolved.readNames,
@@ -649,9 +647,9 @@ export class OCCTIO {
                     transformFormatNum,
                     resolved.adjustZtoY,
                     resolved.scale
-                );
+                ));
             } else if (stepData instanceof ArrayBuffer) {
-                result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     new Uint8Array(stepData),
                     resolved.readColors,
                     resolved.readNames,
@@ -675,11 +673,11 @@ export class OCCTIO {
                     transformFormatNum,
                     resolved.adjustZtoY,
                     resolved.scale
-                );
+                ));
             } else if (typeof stepData === "string") {
                 const encoder = new TextEncoder();
                 const binaryData = encoder.encode(stepData);
-                result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     binaryData,
                     resolved.readColors,
                     resolved.readNames,
@@ -703,7 +701,7 @@ export class OCCTIO {
                     transformFormatNum,
                     resolved.adjustZtoY,
                     resolved.scale
-                );
+                ));
             } else {
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
@@ -715,7 +713,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = messageOf(error);
-            throw new Error(`STEP to glTF advanced conversion failed: ${errorMessage}`, { cause: error });
+            throw trapOr(error, () => new Error(`STEP to glTF advanced conversion failed: ${errorMessage}`, { cause: error }));
         }
     }
 
@@ -756,7 +754,7 @@ export class OCCTIO {
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
 
-            const result = this.occ.ConvertStepToGltfFromBinaryWithDraco(
+            const result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinaryWithDraco(
                 binaryData,
                 resolved.meshPrecision,
                 resolved.meshAngle,
@@ -772,7 +770,7 @@ export class OCCTIO {
                 resolved.dracoQuantizeColorBits,
                 resolved.dracoQuantizeGenericBits,
                 resolved.dracoUnifiedQuantization
-            );
+            ));
 
             if (result.length === 0) {
                 throw new Error("Failed to convert STEP to glTF");
@@ -781,7 +779,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = messageOf(error);
-            throw new Error(`STEP to glTF (Draco) conversion failed: ${errorMessage}`, { cause: error });
+            throw trapOr(error, () => new Error(`STEP to glTF (Draco) conversion failed: ${errorMessage}`, { cause: error }));
         }
     }
 
@@ -826,7 +824,7 @@ export class OCCTIO {
             const meshNameFormatNum = this.gltfNameFormatEnumToOcct(resolved.meshNameFormat);
             const transformFormatNum = this.gltfTransformFormatEnumToOcct(resolved.transformFormat);
 
-            const result = this.occ.ConvertStepToGltfFromBinaryAdvancedWithDraco(
+            const result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinaryAdvancedWithDraco(
                 binaryData,
                 resolved.readColors,
                 resolved.readNames,
@@ -858,7 +856,7 @@ export class OCCTIO {
                 resolved.dracoQuantizeColorBits,
                 resolved.dracoQuantizeGenericBits,
                 resolved.dracoUnifiedQuantization
-            );
+            ));
 
             if (result.length === 0) {
                 throw new Error("Failed to convert STEP to glTF");
@@ -867,7 +865,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = messageOf(error);
-            throw new Error(`STEP to glTF advanced (Draco) conversion failed: ${errorMessage}`, { cause: error });
+            throw trapOr(error, () => new Error(`STEP to glTF advanced (Draco) conversion failed: ${errorMessage}`, { cause: error }));
         }
     }
 
@@ -908,7 +906,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = messageOf(error);
+            const errorMessage = messageOf(readKernelException(this.occ, error));
             return {
                 version: "1.0",
                 nodes: [],

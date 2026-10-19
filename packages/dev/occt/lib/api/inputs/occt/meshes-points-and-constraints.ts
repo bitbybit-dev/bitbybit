@@ -547,6 +547,7 @@ export class ConstraintTanCirclesOnTwoCirclesDto<T> {
      * The radius of the circles to draw, in model units.
      * @default 0.3
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -585,6 +586,7 @@ export class ConstraintTanCirclesOnCircleAndPntDto<T> {
      * The radius of the circles to draw, in model units.
      * @default 0.3
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */

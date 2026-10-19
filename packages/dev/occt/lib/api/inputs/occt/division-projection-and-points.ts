@@ -478,9 +478,10 @@ export class CircleDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * The distance from the center to the circle, in model units.
+     * The distance from the center to the circle, in model units, above 0.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */

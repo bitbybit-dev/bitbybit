@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import type { TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { TopoDS_Edge, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService } from "../occ-service";
 import * as Inputs from "../api/inputs";
 import type * as Models from "../api/models";
 import { InputError } from "@bitbybit-dev/base";
+import type { LoftSections, Lofted } from "../__test__/test-types";
 
 describe("OCCT operations with history", () => {
     let occt: OCCTService;
@@ -159,6 +160,67 @@ describe("OCCT operations with history", () => {
             expect(areasOf(shape, history.facesFromEdges[0]!)).toEqual(Array(6).fill(expect.closeTo(5, 6)));
             expect(areasOf(shape, history.lastFaces)).toEqual([expect.closeTo(3 * Math.sqrt(3) / 8, 6)]);
             expect(reached([history])).toBe(faceCount(shape));
+        });
+    });
+
+    describe("loftWithHistory and loftAdvancedWithHistory", () => {
+        const circleWire = (radius: number, height: number): TopoDS_Wire => occt.shapes.wire.createCircleWire({ radius, center: [0, height, 0], direction: [0, 1, 0] });
+        const circleEdge = (radius: number, height: number): TopoDS_Edge => occt.shapes.edge.createCircleEdge({ radius, center: [0, height, 0], direction: [0, 1, 0] });
+        const squareWire = (size: number, height: number): TopoDS_Wire => occt.shapes.wire.createSquareWire({ size, center: [0, height, 0], direction: [0, 1, 0] });
+        const ringsAroundTheYAxis = (): TopoDS_Wire[] => [0, 1, 2].map(at => occt.shapes.wire.createCircleWire({ radius: 1, center: [5 * Math.cos(at * 2.1), 0, 5 * Math.sin(at * 2.1)], direction: [-Math.sin(at * 2.1), 0, Math.cos(at * 2.1)] }));
+        const advanced = (inputs: Partial<Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>>): Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge> => ({ ...new Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>(), ...inputs });
+        const history = (reported: Partial<Models.OCCT.ShapeHistory>): Models.OCCT.ShapeHistory => ({ faces: [], edges: [], facesFromFaces: [], edgesFromFaces: [], facesFromEdges: [], facesFromVertices: [], edgesFromVertices: [], firstFaces: [], lastFaces: [], ...reported });
+        const noFacesFrom = (vertices: number): number[][] => Array.from({ length: vertices }, (): number[] => []);
+        const lofted = ({ shape, histories }: Models.OCCT.ShapeWithHistories<TopoDS_Shape>): Lofted => ({ faces: faceCount(shape), histories });
+        const ruledLofts: [string, () => Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>, Lofted][] = [
+            ["two square wires", () => advanced({ shapes: [squareWire(2, 0), squareWire(1, 5)], makeSolid: true }), { faces: 6, histories: [
+                history({ edges: [[0], [4], [7], [10]], facesFromEdges: [[0], [1], [2], [3]], facesFromVertices: noFacesFrom(8), edgesFromVertices: [[3], [1], [1], [5], [5], [8], [8], [3]], firstFaces: [4] }),
+                history({ edges: [[2], [6], [9], [11]], facesFromEdges: [[0], [1], [2], [3]], facesFromVertices: noFacesFrom(8), edgesFromVertices: [[3], [1], [1], [5], [5], [8], [8], [3]], lastFaces: [5] }),
+            ] }],
+            ["three circle wires lofted straight", () => advanced({ shapes: [circleWire(2, 0), circleWire(1, 5), circleWire(1.5, 9)], makeSolid: true, straight: true }), { faces: 4, histories: [
+                history({ edges: [[0]], facesFromEdges: [[0, 1]], facesFromVertices: noFacesFrom(2), edgesFromVertices: [[1, 2], [1, 2]], firstFaces: [2] }),
+                history({ edges: [[2]], facesFromEdges: [[0, 1]], facesFromVertices: noFacesFrom(2), edgesFromVertices: [[1, 2], [1, 2]] }),
+                history({ edges: [[4]], facesFromEdges: [[0, 1]], facesFromVertices: noFacesFrom(2), edgesFromVertices: [[1, 2], [1, 2]], lastFaces: [3] }),
+            ] }],
+            ["three rings closed back to the first, lofted straight", () => advanced({ shapes: ringsAroundTheYAxis(), closed: true, straight: true, makeSolid: true }), { faces: 3, histories: [
+                history({ edges: [[0]], facesFromEdges: [[0, 1, 2]], facesFromVertices: noFacesFrom(2), edgesFromVertices: [[1, 3, 5], [1, 3, 5]] }),
+                history({ edges: [[2]], facesFromEdges: [[0, 1, 2]], facesFromVertices: noFacesFrom(2), edgesFromVertices: [[1, 3, 5], [1, 3, 5]] }),
+                history({ edges: [[4]], facesFromEdges: [[0, 1, 2]], facesFromVertices: noFacesFrom(2), edgesFromVertices: [[1, 3, 5], [1, 3, 5]] }),
+            ] }],
+            ["two circle edges", () => advanced({ shapes: [circleEdge(2, 0), circleEdge(1, 5)], makeSolid: true }), { faces: 3, histories: [
+                history({ edges: [[0]], facesFromEdges: [[0]], facesFromVertices: noFacesFrom(2), edgesFromVertices: [[1], [1]], firstFaces: [1] }),
+                history({ edges: [[2]], facesFromEdges: [[0]], facesFromVertices: noFacesFrom(2), edgesFromVertices: [[1], [1]], lastFaces: [2] }),
+            ] }],
+        ];
+        const lofts: [string, (shapes: LoftSections) => Models.OCCT.ShapeWithHistories<TopoDS_Shape>][] = [
+            ["loftWithHistory", shapes => occt.operations.loftWithHistory({ shapes, makeSolid: true })],
+            ["loftAdvancedWithHistory", shapes => occt.operations.loftAdvancedWithHistory(advanced({ shapes, makeSolid: true }))],
+        ];
+
+        it.each(ruledLofts)("should report for an advanced loft ruled through %s the faces and the history of each section the kernel gives", (_sections, inputsOf, expected) => {
+            // Arrange
+            const inputs = inputsOf();
+
+            // Act
+            const made = occt.operations.loftAdvancedWithHistory(inputs);
+
+            // Assert
+            expect(lofted(made)).toEqual(expected);
+        });
+
+        it.each(lofts)("should cap at both ends, with %s, a loft from a circle edge through a square back to that same edge, each edge given making a section of its own", (_method, loft) => {
+            // Arrange
+            const ring = circleEdge(2, 0);
+
+            // Act
+            const made = loft([ring, squareWire(3, 5), ring]);
+
+            // Assert
+            expect(lofted(made)).toEqual({ faces: 7, histories: [
+                history({ edges: [[]], facesFromEdges: [[0, 1, 2, 3, 4]], facesFromVertices: noFacesFrom(2), edgesFromVertices: [[13], [13]], firstFaces: [5] }),
+                history({ edges: [[], [], [], []], facesFromEdges: [[2], [3], [0, 4], [1]], facesFromVertices: noFacesFrom(8), edgesFromVertices: [[5], [8], [8], [11], [11], [1], [1], [5]] }),
+                history({ edges: [[]], facesFromEdges: [[0, 1, 2, 3, 4]], facesFromVertices: noFacesFrom(2), edgesFromVertices: [[13], [13]], lastFaces: [6] }),
+            ] });
         });
     });
 

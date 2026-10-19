@@ -5,6 +5,8 @@ import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
+import { releaseDesignCaches } from "../../release-design-caches";
+import { namesOf, openWindow } from "../../../../__test__/embind-ledger";
 
 const PLATE_ID = "11111111-1111-4111-8111-111111111111";
 const POST_ID = "22222222-2222-4222-8222-222222222222";
@@ -60,6 +62,22 @@ describe("clashes in a design build", () => {
         }
         throw new Error("the kernel measured two lone triangles");
     };
+
+    it("should keep nothing of the build it checked once the design caches are released", () => {
+        // Arrange
+        const opened = openWindow();
+
+        // Act
+        try {
+            occt.design.clashes({ document: stand([{ id: "near", source: { document: POST_ID, part: "post" }, at: { origin: [43, 10, 0], normal: [0, 0, 1], direction: [1, 0, 0] } }]), documents: [plate, post], clearance: 0.5 });
+        } finally {
+            opened.close();
+        }
+        releaseDesignCaches(occt);
+
+        // Assert
+        expect(namesOf(opened.made().filter(handle => !handle.isDeleted()))).toEqual([]);
+    });
 
     it("should find nothing where the only contact is the one a joint asks for", () => {
         // Act

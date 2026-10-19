@@ -637,6 +637,42 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
+    describe("counting the answers that carry a shape", () => {
+        it("should count each answer once per shape, keep counting a key after its shape is deleted, and forget every count with the whole cache", () => {
+            // Arrange
+            ["kept", "deleted"].forEach(hash => cacheHelper.addToCache(hash, { hash }));
+            cacheHelper.countAnswer(["kept", "deleted", "deleted"]);
+            cacheHelper.countAnswer(["kept"]);
+            const counted = ["kept", "deleted", "never"].map(hash => cacheHelper.answersOf(hash));
+
+            // Act
+            cacheHelper.cleanCacheForHash("deleted");
+            cacheHelper.addToCache("deleted", { hash: "deleted" });
+            cacheHelper.countAnswer(["deleted"]);
+            const afterMakingAgain = ["kept", "deleted"].map(hash => cacheHelper.answersOf(hash));
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect([counted, afterMakingAgain, ["kept", "deleted"].map(hash => cacheHelper.answersOf(hash))]).toEqual([[2, 1, 0], [2, 2], [0, 0]]);
+        });
+
+        it("should begin a new epoch with every clean of the whole cache, and never one an earlier cache had", () => {
+            // Arrange
+            const other = new CacheHelper();
+            const first = cacheHelper.epoch;
+
+            // Act
+            cacheHelper.cleanAllCache();
+            const afterCleaning = cacheHelper.epoch;
+            cacheHelper.cleanCacheForHash("any");
+            const later = new CacheHelper();
+
+            // Assert
+            expect(new Set([first, other.epoch, afterCleaning, later.epoch]).size).toBe(4);
+            expect(cacheHelper.epoch).toBe(afterCleaning);
+        });
+    });
+
     describe("cleanAllCache", () => {
         it("should clear all cache entries", () => {
             const hash1 = "hash1";
@@ -1466,6 +1502,36 @@ describe("CacheHelper unit tests", () => {
             // Assert
             expect(save).toHaveBeenCalledTimes(1);
             expect(second).toBe(first);
+        });
+
+        it("should key the shape of an answer it caches for the first time without walking into its bytes, buffers or views", () => {
+            // Arrange
+            const shape = { $$: {}, ShapeType: (): number => 7, IsNull: (): boolean => false, delete: vi.fn() };
+            const bytes = new Uint8Array(4096);
+            const answer = { bytes, floats: new Float32Array(16), buffer: bytes.buffer, view: new DataView(bytes.buffer), shape };
+            const walk = vi.spyOn(cacheHelper, "hashNestedShapes");
+
+            // Act
+            cacheHelper.cacheOp(args, () => answer);
+
+            // Assert
+            expect(walk).toHaveBeenCalledTimes(6);
+            expect(cacheHelper.checkCache((shape as { hash?: number }).hash!)).toBe(shape);
+        });
+
+        it("should give each shape of an answer its own hash when a key holds a dot or brackets that spell the path of another", () => {
+            // Arrange
+            const shapeOf = (): { $$: object; ShapeType: () => number; IsNull: () => boolean; delete: () => void; hash?: number } => ({ $$: {}, ShapeType: (): number => 7, IsNull: (): boolean => false, delete: vi.fn() });
+            const [plate, post, pin, lug] = [shapeOf(), shapeOf(), shapeOf(), shapeOf()];
+            const answer = { pending: [{ inputs: { "a.b": plate, a: { b: post }, c: { "[0]": pin, "": [lug] } } }] };
+
+            // Act
+            cacheHelper.cacheOp(args, () => answer);
+
+            // Assert
+            expect(new Set([plate, post, pin, lug].map(shape => shape.hash)).size).toBe(4);
+            expect([plate, post, pin, lug].map(shape => cacheHelper.checkCache(shape.hash!))).toEqual([plate, post, pin, lug]);
+            expect([plate, pin].map(shape => vi.mocked(shape.delete).mock.calls.length)).toEqual([0, 0]);
         });
 
         it("should compute an answer again once a shape nested in it has been deleted, and free the nested shapes it replaces", () => {

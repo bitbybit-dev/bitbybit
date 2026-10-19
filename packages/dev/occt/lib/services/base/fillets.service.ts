@@ -11,6 +11,7 @@ import type { KernelOperationError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { kernelObjects, release, releasedOnError } from "./release";
 import { withKernelFailure } from "./kernel-refusals";
+import { checkedShape } from "./input-checks";
 import { holdsSolid, unbrokenResult } from "./solid-results";
 import { isStraightCorner, straightCorners, withoutStraightCorners } from "./straight-corners";
 
@@ -52,7 +53,7 @@ export class FilletsService {
                             radiusIndex++;
                         }
                         if (radius === undefined) {
-                            throw (Error("Radius not defined, or radiusList not correct length"));
+                            throw new InputError("Radius not defined, or radiusList not correct length", inputs.radiusList ? "radiusList" : "radius");
                         }
                         maker.Add(radius, edge);
                         foundEdges++;
@@ -188,7 +189,7 @@ export class FilletsService {
                             distanceIndex++;
                         }
                         if (distance === undefined) {
-                            throw (Error("Distance not defined and/or distance list incorrect length"));
+                            throw new InputError("Distance not defined and/or distance list incorrect length", inputs.distanceList ? "distanceList" : "distance");
                         }
                         maker.Add(distance, edge);
                         foundEdges++;
@@ -245,6 +246,8 @@ export class FilletsService {
     }
 
     chamferEdgeDistAngle(inputs: Resolved.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
+        checkedShape(inputs.edge, "edge");
+        checkedShape(inputs.face, "face");
         const radians = this.base.math.degToRad({ number: inputs.angle });
         return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => maker.AddDA(inputs.distance, radians, inputs.edge, inputs.face), read));
     }

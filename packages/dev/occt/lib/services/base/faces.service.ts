@@ -12,8 +12,9 @@ import type * as Resolved from "../../api/resolved-inputs";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { coordinatesOf, massesAndCentres, pointsFromCoordinates } from "./kernel-arrays";
-import { checkedShape, checkedShapes } from "./input-checks";
-import { withKernelRefusals } from "./kernel-refusals";
+import { checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "./input-checks";
+import { withKernelErrorsRead, withKernelRefusals } from "./kernel-refusals";
+import { release, released, releasedOnError } from "./release";
 import { add3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
 const FACE_REFUSAL = /(?:^|\s)(?:MakeFaceFromWires(?:OnFace)?|MakeFaceFromFaceSurfaceAndWires): (.*)$/;
@@ -37,6 +38,8 @@ export class FacesService {
     }
 
     createFacesFromWiresOnFace(inputs: Resolved.OCCT.FacesFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face[] {
+        checkedShape(inputs.face, "face");
+        this.checkedWires(inputs.wires, "wires");
         const result = this.entitiesService.bRepBuilderAPIMakeFacesFromWiresOnFace(inputs.face, inputs.wires, inputs.inside);
         return result;
     }
@@ -44,30 +47,27 @@ export class FacesService {
     createFaceFromWire(inputs: Resolved.OCCT.FaceFromWireDto<TopoDS_Wire>): TopoDS_Face {
         let result: TopoDS_Face;
         if (this.enumService.getShapeTypeEnum(inputs.shape) !== Inputs.OCCT.shapeTypeEnum.wire) {
-            throw new Error("Provided input shape is not a wire");
+            throw new InputError("Provided input shape is not a wire", "shape");
         }
         if (inputs.planar) {
             const wire = this.occ.CastToWire(inputs.shape);
-            result = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, inputs.planar);
-            wire.delete();
+            try {
+                result = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, inputs.planar);
+            } finally {
+                wire.delete();
+            }
         } else {
             const wire = this.occ.CastToWire(inputs.shape);
-            const edges = this.shapeGettersService.getEdges({ shape: wire });
-            const filling = new this.occ.BRepFill_Filling();
-            try {
-                for (const edge of edges) {
-                    this.occ.BRepFill_Filling_AddEdge(filling, edge, 0, true);
-                    edge.delete();
-                }
+            const filling = releasedOnError([wire], () => new this.occ.BRepFill_Filling());
+            result = released([filling, wire], () => withKernelErrorsRead(this.occ, () => {
+                const edges = this.shapeGettersService.getEdges({ shape: wire });
+                released(edges, () => edges.forEach(edge => this.occ.BRepFill_Filling_AddEdge(filling, edge, 0, true)));
                 this.occ.BRepFill_Filling_Build(filling);
                 if (!this.occ.BRepFill_Filling_IsDone(filling)) {
                     throw new Error("BRepFill_Filling failed to create face from wire");
                 }
-                result = this.occ.BRepFill_Filling_Face(filling);
-            } finally {
-                filling.delete();
-                wire.delete();
-            }
+                return this.occ.BRepFill_Filling_Face(filling);
+            }));
         }
 
         return result;
@@ -148,140 +148,120 @@ export class FacesService {
     createFaceFromMultipleCircleTanWires(inputs: Resolved.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>): TopoDS_Shape {
         const circleWires = inputs.circles;
         const faces: TopoDS_Face[] = [];
-        if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.allWithAll) {
-            for (let i = 0; i < circleWires.length; i++) {
-                for (let j = i + 1; j < circleWires.length; j++) {
-                    const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: circleWires[i]!,
-                        circle2: circleWires[j]!,
-                        keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
-                        circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
-                        tolerance: inputs.tolerance,
-                    });
-                    const face = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, true);
-                    faces.push(face);
+        return releasedOnError(faces, () => {
+            if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.allWithAll) {
+                for (let i = 0; i < circleWires.length; i++) {
+                    for (let j = i + 1; j < circleWires.length; j++) {
+                        const wire = this.tangentWireBetween(circleWires[i]!, circleWires[j]!, inputs.tolerance, "circles", `at position ${i}`, `at position ${j}`);
+                        faces.push(this.faceOfTangentWire(wire));
+                    }
+                }
+            } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrder) {
+                for (let i = 0; i < circleWires.length - 1; i++) {
+                    const wire = this.tangentWireBetween(circleWires[i]!, circleWires[i + 1]!, inputs.tolerance, "circles", `at position ${i}`, `at position ${i + 1}`);
+                    faces.push(this.faceOfTangentWire(wire));
+                }
+            } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed) {
+                for (let i = 0; i < circleWires.length; i++) {
+                    const next = (i + 1) % circleWires.length;
+                    const wire = this.tangentWireBetween(circleWires[i]!, circleWires[next]!, inputs.tolerance, "circles", `at position ${i}`, `at position ${next}`);
+                    faces.push(this.faceOfTangentWire(wire));
                 }
             }
-        } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrder) {
-            for (let i = 0; i < circleWires.length - 1; i++) {
-                const wire = this.wiresService.createWireFromTwoCirclesTan({
-                    circle1: circleWires[i]!,
-                    circle2: circleWires[i + 1]!,
-                    keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
-                    circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
-                    tolerance: inputs.tolerance,
-                });
-                const face = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, true);
-                faces.push(face);
-            }
-        } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed) {
-            for (let i = 0; i < circleWires.length; i++) {
-                const wire = this.wiresService.createWireFromTwoCirclesTan({
-                    circle1: circleWires[i]!,
-                    circle2: circleWires[(i + 1) % circleWires.length]!,
-                    keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
-                    circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
-                    tolerance: inputs.tolerance,
-                });
-                const face = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, true);
-                faces.push(face);
-            }
-        }
-        let result;
-        if (inputs.unify) {
-            result = this.booleansService.union({ shapes: faces, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
-        } else {
-            result = this.converterService.makeCompound({ shapes: faces });
-        }
-        return result;
+            return this.joinedFaces(faces, inputs.unify);
+        });
     }
 
     createFaceFromMultipleCircleTanWireCollections(inputs: Resolved.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>): TopoDS_Shape {
         const listsOfCircles = inputs.listsOfCircles;
 
         const faces: TopoDS_Face[] = [];
-        if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.allWithAll) {
-            for (let i = 0; i < listsOfCircles.length; i++) {
-                const currentCirclesList = listsOfCircles[i]!;
-                const nextCirclesList = listsOfCircles[(i + 1)];
-                if (nextCirclesList) {
-                    for (let j = 0; j < currentCirclesList.length; j++) {
-                        for (let k = 0; k < nextCirclesList.length; k++) {
-                            const circle1 = currentCirclesList[j]!;
-                            const circle2 = nextCirclesList[k]!;
-                            const wire = this.wiresService.createWireFromTwoCirclesTan({
-                                circle1,
-                                circle2,
-                                keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
-                                circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
-                                tolerance: inputs.tolerance,
-                            });
-                            const face = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, true);
-                            faces.push(face);
+        return releasedOnError(faces, () => {
+            if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.allWithAll) {
+                for (let i = 0; i < listsOfCircles.length; i++) {
+                    const currentCirclesList = listsOfCircles[i]!;
+                    const nextCirclesList = listsOfCircles[(i + 1)];
+                    if (nextCirclesList) {
+                        for (let j = 0; j < currentCirclesList.length; j++) {
+                            for (let k = 0; k < nextCirclesList.length; k++) {
+                                const wire = this.tangentWireBetween(currentCirclesList[j]!, nextCirclesList[k]!, inputs.tolerance, "listsOfCircles", `at list ${i}, position ${j}`, `at list ${i + 1}, position ${k}`);
+                                faces.push(this.faceOfTangentWire(wire));
+                            }
                         }
+                    } else {
+                        break;
                     }
-                } else {
-                    break;
+                }
+            } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrder) {
+                for (let i = 0; i < listsOfCircles.length; i++) {
+                    if (listsOfCircles[i]!.length !== listsOfCircles[0]!.length) {
+                        throw new Error("All lists of circles must have the same length in order to use inOrder strategy.");
+                    }
+                }
+                for (let i = 0; i < listsOfCircles.length - 1; i++) {
+                    for (let j = 0; j < listsOfCircles[i]!.length; j++) {
+                        const wire = this.tangentWireBetween(listsOfCircles[i]![j]!, listsOfCircles[i + 1]![j]!, inputs.tolerance, "listsOfCircles", `at list ${i}, position ${j}`, `at list ${i + 1}, position ${j}`);
+                        faces.push(this.faceOfTangentWire(wire));
+                    }
+                }
+            } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed) {
+                for (let i = 0; i < listsOfCircles.length; i++) {
+                    if (listsOfCircles[i]!.length !== listsOfCircles[0]!.length) {
+                        throw new Error("All lists of circles must have the same length in order to use inOrderClosed strategy.");
+                    }
+                }
+                for (let i = 0; i < listsOfCircles.length - 1; i++) {
+                    for (let j = 0; j < listsOfCircles[i]!.length; j++) {
+                        const wire = this.tangentWireBetween(listsOfCircles[i]![j]!, listsOfCircles[i + 1]![j]!, inputs.tolerance, "listsOfCircles", `at list ${i}, position ${j}`, `at list ${i + 1}, position ${j}`);
+                        faces.push(this.faceOfTangentWire(wire));
+                    }
+                }
+                for (let i = 0; i < listsOfCircles.length; i++) {
+                    for (let j = 0; j < listsOfCircles[i]!.length; j++) {
+                        const next = (j + 1) % listsOfCircles[i]!.length;
+                        const wire = this.tangentWireBetween(listsOfCircles[i]![j]!, listsOfCircles[i]![next]!, inputs.tolerance, "listsOfCircles", `at list ${i}, position ${j}`, `at list ${i}, position ${next}`);
+                        faces.push(this.faceOfTangentWire(wire));
+                    }
                 }
             }
-        } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrder) {
-            for (let i = 0; i < listsOfCircles.length; i++) {
-                if (listsOfCircles[i]!.length !== listsOfCircles[0]!.length) {
-                    throw new Error("All lists of circles must have the same length in order to use inOrder strategy.");
-                }
-            }
-            for (let i = 0; i < listsOfCircles.length - 1; i++) {
-                for (let j = 0; j < listsOfCircles[i]!.length; j++) {
-                    const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: listsOfCircles[i]![j]!,
-                        circle2: listsOfCircles[i + 1]![j]!,
-                        keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
-                        circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
-                        tolerance: inputs.tolerance,
-                    });
-                    const face = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, true);
-                    faces.push(face);
-                }
-            }
-        } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed) {
-            for (let i = 0; i < listsOfCircles.length; i++) {
-                if (listsOfCircles[i]!.length !== listsOfCircles[0]!.length) {
-                    throw new Error("All lists of circles must have the same length in order to use inOrderClosed strategy.");
-                }
-            }
-            for (let i = 0; i < listsOfCircles.length - 1; i++) {
-                for (let j = 0; j < listsOfCircles[i]!.length; j++) {
-                    const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: listsOfCircles[i]![j]!,
-                        circle2: listsOfCircles[i + 1]![j]!,
-                        keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
-                        circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
-                        tolerance: inputs.tolerance,
-                    });
-                    const face = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, true);
-                    faces.push(face);
-                }
-            }
-            for (let i = 0; i < listsOfCircles.length; i++) {
-                for (let j = 0; j < listsOfCircles[i]!.length; j++) {
-                    const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: listsOfCircles[i]![j]!,
-                        circle2: listsOfCircles[i]![(j + 1) % listsOfCircles[i]!.length]!,
-                        keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
-                        circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
-                        tolerance: inputs.tolerance,
-                    });
-                    const face = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, true);
-                    faces.push(face);
-                }
-            }
+            return this.joinedFaces(faces, inputs.unify);
+        });
+    }
+
+    private checkedWires(shapes: unknown, property: string): void {
+        const checked = checkedShapes(shapes, property);
+        const notAWire = checked.findIndex(shape => this.enumService.getShapeTypeEnum(shape) !== Inputs.OCCT.shapeTypeEnum.wire);
+        if (notAWire !== -1) {
+            throw new InputError(`\`${property}\` holds something other than a wire at position ${notAWire}; each is a wire.`, property);
         }
-        let result;
-        if (inputs.unify) {
-            result = this.booleansService.union({ shapes: faces, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
-        } else {
-            result = this.converterService.makeCompound({ shapes: faces });
+    }
+
+    private tangentWireBetween(circle1: TopoDS_Wire, circle2: TopoDS_Wire, tolerance: number, property: string, first: string, second: string): TopoDS_Wire {
+        try {
+            return this.wiresService.createWireFromTwoCirclesTan({
+                circle1,
+                circle2,
+                keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
+                circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
+                tolerance,
+            });
+        } catch (error) {
+            if (error instanceof InputError && (error.property === "circle1" || error.property === "circle2")) {
+                throw new InputError(error.message.replace("`circle1`", `\`${property}\` ${first}`).replace("`circle2`", `\`${property}\` ${second}`), property);
+            }
+            throw error;
         }
+    }
+
+    private faceOfTangentWire(wire: TopoDS_Wire): TopoDS_Face {
+        return released([wire], () => this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, true));
+    }
+
+    private joinedFaces(faces: TopoDS_Face[], unify: boolean): TopoDS_Shape {
+        const result = unify
+            ? this.booleansService.union({ shapes: faces, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother })
+            : this.converterService.makeCompound({ shapes: faces });
+        faces.filter(face => face !== result).forEach(release);
         return result;
     }
 
@@ -334,11 +314,12 @@ export class FacesService {
     }
 
     createFacesFromWires(inputs: Resolved.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face[] {
-        checkedShapes(inputs.shapes);
-        const result = inputs.shapes.map(shape => {
-            return this.createFaceFromWire({ shape, planar: inputs.planar });
+        this.checkedWires(inputs.shapes, "shapes");
+        const faces: TopoDS_Face[] = [];
+        return releasedOnError(faces, () => {
+            inputs.shapes.forEach(shape => faces.push(this.createFaceFromWire({ shape, planar: inputs.planar })));
+            return faces;
         });
-        return result;
     }
 
     getUMinBound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
@@ -439,14 +420,10 @@ export class FacesService {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
-        const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
-        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-
+        const nrDivisions = checkedNumber(inputs.nrDivisions, "nrDivisions", 1);
         const params: number[] = [];
-        const step = 1 / inputs.nrDivisions;
-        for (let i = 0; i <= inputs.nrDivisions; i++) {
+        const step = 1 / nrDivisions;
+        for (let i = 0; i <= nrDivisions; i++) {
             const p = step * i;
             params.push(p);
         }
@@ -465,14 +442,7 @@ export class FacesService {
             });
         }
 
-        const wires: TopoDS_Wire[] = [];
-        for (let i = 0; i < params.length; i++) {
-            const param = params[i]!;
-            const placedWire = this.placeWireOnParamSurface(inputs.isU, param, uMin, uMax, vMin, vMax, surface);
-            wires.push(placedWire);
-        }
-        handle.delete();
-        return wires;
+        return this.wiresAlongFaceParams(inputs.shape, inputs.isU, params);
     }
 
     subdivideToRectangleWires(inputs: Resolved.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>): TopoDS_Wire[] {
@@ -713,13 +683,18 @@ export class FacesService {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
-        const face = inputs.shape;
+        return this.wiresAlongFaceParams(inputs.shape, inputs.isU, [checkedWithin(inputs.param, "param", {})])[0]!;
+    }
+
+    private wiresAlongFaceParams(face: TopoDS_Face, isU: boolean, params: readonly number[]): TopoDS_Wire[] {
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
-        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-        const placedWire = this.placeWireOnParamSurface(inputs.isU, inputs.param, uMin, uMax, vMin, vMax, surface);
-        handle.delete();
-        return placedWire;
+        const wires: TopoDS_Wire[] = [];
+        return released([handle], () => releasedOnError(wires, () => {
+            const surface = this.surfaceOf(handle);
+            const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
+            params.forEach(param => wires.push(this.placeWireOnParamSurface(isU, param, uMin, uMax, vMin, vMax, surface)));
+            return wires;
+        }));
     }
 
     private placeWireOnParamSurface(isU: boolean, param: number, uMin: number, uMax: number, vMin: number, vMax: number, surface: Geom_Surface) {
@@ -740,28 +715,14 @@ export class FacesService {
             });
         }
 
-        const placedWire = this.wiresService.placeWire(wire, surface);
-        wire.delete();
-        return placedWire;
+        return released([wire], () => this.wiresService.placeWire(wire, surface));
     }
 
     wiresAlongParams(inputs: Resolved.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Wire[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
-        const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
-        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-
-        const wires: TopoDS_Wire[] = [];
-        for (let i = 0; i < inputs.params.length; i++) {
-            const param = inputs.params[i]!;
-            const placedWire = this.placeWireOnParamSurface(inputs.isU, param, uMin, uMax, vMin, vMax, surface);
-            wires.push(placedWire);
-        }
-        handle.delete();
-        return wires;
+        return this.wiresAlongFaceParams(inputs.shape, inputs.isU, checkedNumberList(inputs.params, "params"));
     }
 
     subdivideToPointsOnParam(inputs: Resolved.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point3[] {
@@ -923,18 +884,15 @@ export class FacesService {
 
     private unitParameterLengths(face: TopoDS_Face): { alongU: number, alongV: number } {
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
-        const lengthAlong = (end: Base.Point3): number => {
-            const line = this.wiresService.createLineWire({ start: [0, 0, 0], end });
-            const placed = this.wiresService.placeWire(line, surface);
-            const length = this.wiresService.getWireLength({ shape: placed });
-            line.delete();
-            placed.delete();
-            return length;
-        };
-        const lengths = { alongU: lengthAlong([0, 0, 1]), alongV: lengthAlong([1, 0, 0]) };
-        handle.delete();
-        return lengths;
+        return released([handle], () => {
+            const surface = this.surfaceOf(handle);
+            const lengthAlong = (end: Base.Point3): number => {
+                const line = this.wiresService.createLineWire({ start: [0, 0, 0], end });
+                const placed = released([line], () => this.wiresService.placeWire(line, surface));
+                return released([placed], () => this.wiresService.getWireLength({ shape: placed }));
+            };
+            return { alongU: lengthAlong([0, 0, 1]), alongV: lengthAlong([1, 0, 0]) };
+        });
     }
 
     private outlinesOnFace(face: TopoDS_Face, outlines: OutlineList): TopoDS_Wire[] {

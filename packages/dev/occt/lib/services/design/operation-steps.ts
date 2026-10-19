@@ -86,6 +86,14 @@ function edgeFaceRoleOf(operation: string): string {
     return EDGE_FACE_ROLES.find(([prefix]) => operation.startsWith(prefix))?.[1] ?? "side";
 }
 
+const ANSWERS_WITH_ITS_INPUT: ReadonlySet<string> = new Set([
+    "operations.offset", "operations.offsetAdv",
+    "shapeFix.basicShapeRepair", "shapeFix.orientClosedSolid",
+    "shapes.shape.purgeInternalEdges", "shapes.edge.removeInternalEdges",
+    "shapes.face.reversedFace", "shapes.face.getFace",
+    "parts.mechanical.machining.flat", "parts.mechanical.machining.keyway", "parts.mechanical.machining.knurl", "parts.mechanical.machining.ringGroove",
+]);
+
 const FACE_KEEPING: ReadonlySet<string> = new Set([
     "transforms.transform", "transforms.rotate", "transforms.rotateAroundCenter", "transforms.rotateByQuaternion",
     "transforms.align", "transforms.alignNormAndAxis", "transforms.alignAndTranslate", "transforms.orient",
@@ -105,8 +113,10 @@ function keptNames(operation: string, inputs: unknown, shape: TopoDS_Shape, run:
     return FACE_KEEPING.has(operation) && isRecord(inputs) ? namesOfBody(inputs["shape"], shape, run) : undefined;
 }
 
-function returnedNames(result: unknown, inputs: readonly TopoDS_Shape[], shape: TopoDS_Shape, run: DesignRun): FaceNames | undefined {
-    return isShape(result) && inputs.includes(result) ? namesOfBody(result, shape, run) : undefined;
+function returnedNames(operation: string, result: unknown, inputs: readonly TopoDS_Shape[], shape: TopoDS_Shape, run: DesignRun): FaceNames | undefined {
+    const answersWithItsInput = ANSWERS_WITH_ITS_INPUT.has(operation);
+    const given = isShape(result) ? inputs.find(input => input === result || (answersWithItsInput && input.IsSame(result))) : undefined;
+    return given === undefined ? undefined : namesOfBody(given, shape, run);
 }
 
 function isRoled(result: unknown): result is Models.OCCT.ShapeWithRoles<TopoDS_Shape> {
@@ -183,11 +193,19 @@ function refusedOrResult(call: () => unknown): unknown {
     }
 }
 
+function withBooleanInputs(params: Readonly<Record<string, unknown>>, inputs: unknown, operation: string): unknown {
+    const constraints = occtDtoRegistry[operation]?.constraints;
+    if (constraints === undefined || !isRecord(inputs)) {
+        return inputs;
+    }
+    return Object.fromEntries(Object.entries(inputs).map(([key, value]) => [key, constraints[key]?.kind === "boolean" && isExpressionValue(params[key]) && typeof value === "number" ? value !== 0 : value]));
+}
+
 function operated(feature: Models.OCCT.DesignOperationFeature, path: string, run: DesignRun): DesignOutcome {
     const shapes: TopoDS_Shape[] = [];
     const at = pointer(path, "params");
-    const inputs = substituted(feature.params, at, run, shapes);
     const operation = operationPathOf(feature.operation)!;
+    const inputs = withBooleanInputs(feature.params, substituted(feature.params, at, run, shapes), operation);
     const issue = validateInputs(occtDtoRegistry, operation, resolveInputs(occtDtoRegistry, operation, inputs), occtDtoRules)[0];
     if (issue !== undefined) {
         throw new DesignProblem(pointer(at, issue.property), issue.message);
@@ -206,7 +224,7 @@ function operated(feature: Models.OCCT.DesignOperationFeature, path: string, run
         releaseShapesIn(result, shapes);
         throw new DesignProblem(pointer(path, "operation"), `${feature.operation} makes neither a shape nor a list of shapes`);
     }
-    const names = releasedOnError([shape], () => keptNames(operation, inputs, shape, run) ?? returnedNames(result, shapes, shape, run) ?? Array.from({ length: faceCount(shape, run) }, () => [nameOf(feature.id, "face")]));
+    const names = releasedOnError([shape], () => keptNames(operation, inputs, shape, run) ?? returnedNames(operation, result, shapes, shape, run) ?? Array.from({ length: faceCount(shape, run) }, () => [nameOf(feature.id, "face")]));
     return { kind: "body", shape, names };
 }
 

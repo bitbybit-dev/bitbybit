@@ -9,9 +9,10 @@ import { frameMatrix, jointMatrix, movedFrame, squaredFrame } from "./placement"
 import type { DesignLibrary, LibraryEntry } from "./library";
 import { sourceEntry, versionIn } from "./library";
 import { connectorIdsOf } from "./connectors";
-import { DesignProblem, pointer } from "./problems";
+import { cleanedUpOnError, DesignProblem, DesignWaiting, pointer, trapsPlacedUnder } from "./problems";
+import { releaseBuild, releasePending } from "./release-build";
 import { checkWithinLimits } from "./joint-limits";
-import { framingOf, runDesign } from "./runner";
+import { framingOf, runDesignWaiting } from "./runner";
 import { ROOT_NODE, structurePartOf, withProperties } from "./export-structure";
 import type { DesignRunContext } from "./state";
 import type { DesignValues, ParameterChoice } from "./values";
@@ -41,6 +42,7 @@ interface Gathered {
     context: DesignRunContext;
     library: BuildLibrary;
     builds: Map<string, Built>;
+    waiting: Map<string, ReadonlySet<string>>;
     parts: Map<string, Part>;
     components: Models.OCCT.DesignBuiltComponent[];
     products: Map<string, Record<string, string | number | boolean>>;
@@ -50,6 +52,11 @@ interface Gathered {
 }
 
 type Connectors = ReadonlyMap<string, Inputs.Base.Frame>;
+
+interface Published {
+    connectors: Connectors;
+    waiting: ReadonlySet<string>;
+}
 
 type Placing = { joint: Models.OCCT.DesignJoint; path: string };
 
@@ -70,6 +77,10 @@ function jointsByComponent(document: Models.OCCT.DesignAssemblyDocument): Map<st
 function membersOf(connectors: Connectors | undefined, name: string): string[] {
     const ids = [...(connectors?.keys() ?? [])];
     return ids.includes(name) ? [name] : ids.filter(id => id.startsWith(`${name}.`));
+}
+
+function waitsFor(waiting: ReadonlySet<string> | undefined, name: string): boolean {
+    return waiting !== undefined && [...waiting].some(id => id === name || id.startsWith(`${name}.`));
 }
 
 function frameOf(frame: Models.OCCT.DesignFrame, parameters: DesignValues, path: string, base: BaseBitByBit): Inputs.Base.Frame {
@@ -225,14 +236,21 @@ function builtPart(document: Models.OCCT.DesignPartDocument, index: number, vers
     let built = gathered.builds.get(variant);
     const cached = built !== undefined;
     if (built === undefined) {
-        const made = inSource(path, () => runDesign(document, choice, gathered.context));
-        made.issues.forEach(issue => gathered.issues.push({ path: `${pointer("/documents", index)}${issue.path}`, message: issue.message }));
-        gathered.builds.set(variant, made);
-        built = made;
+        const placedAt = pointer("/documents", index);
+        const [made, waiting] = inSource(path, () => trapsPlacedUnder(placedAt, () => runDesignWaiting(document, choice, gathered.context)));
+        built = made.pending === undefined ? made : { ...made, pending: made.pending.map(script => ({ ...script, path: `${placedAt}${script.path}` })) };
+        gathered.builds.set(variant, built);
+        gathered.waiting.set(variant, waiting);
+        made.issues.forEach(issue => gathered.issues.push({ path: `${placedAt}${issue.path}`, message: issue.message }));
     }
     const messages = built.report.filter(entry => entry.status === "failed").map(entry => `feature "${entry.id}" failed: ${entry.messages.join("; ")}`);
     const found = built.parts.find(part => part.id === source.part);
     if (found === undefined) {
+        const body = document.parts?.find(part => part.id === source.part)?.body ?? source.part!;
+        if (gathered.waiting.get(variant)?.has(body) === true) {
+            const scripts = (built.pending ?? []).map(script => `"${script.id}" at ${script.path}`).join(", ");
+            throw new DesignWaiting(pointer(path, "part"), `the part "${source.part}" waits for the outcome of a script: ${scripts}`);
+        }
         throw new DesignProblem(pointer(path, "part"), `the part "${source.part}" was not built${messages.length > 0 ? `: ${messages.join("; ")}` : ""}`);
     }
     const id = revisions > 1 ? `${found.id}-${found.itemKey}-${version.slice(0, VERSION_MARK_LENGTH)}` : `${found.id}-${found.itemKey}`;
@@ -334,10 +352,11 @@ function propertiesOf(properties: Models.OCCT.DesignProperties | undefined, para
     }));
 }
 
-function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: DesignValues, prefix: string, parent: string | undefined, gathered: Gathered): Connectors {
+function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: DesignValues, prefix: string, parent: string | undefined, gathered: Gathered): Published {
     const base = gathered.context.base;
     const placed = new Map<string, Connectors>();
-    const unplaced = new Map<string, "failed" | "suppressed">();
+    const waits = new Map<string, ReadonlySet<string>>();
+    const unplaced = new Map<string, "failed" | "suppressed" | "pending">();
     const moving = jointsByComponent(document);
     for (const index of placementOrder(document.components, moving)) {
         const component = document.components[index]!;
@@ -351,14 +370,21 @@ function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: Desi
         const placing = moving.get(component.id);
         const joinedTo = placing !== undefined && "component" in placing.joint.to ? placing.joint.to.component : undefined;
         const reason = joinedTo === undefined ? undefined : unplaced.get(joinedTo);
+        const targetConnector = placing !== undefined && "component" in placing.joint.to ? placing.joint.to.connector : undefined;
+        const targetWaits = joinedTo !== undefined && targetConnector !== undefined && membersOf(placed.get(joinedTo), targetConnector).length === 0 && waitsFor(waits.get(joinedTo), targetConnector);
+        let waitingInside: ReadonlySet<string> = new Set();
         try {
             if (component.suppressed !== undefined && truthOf(component.suppressed, parameters, pointer(documentPath, "suppressed"))) {
                 entry.status = "suppressed";
                 unplaced.set(component.id, "suppressed");
             } else if (reason !== undefined) {
                 entry.status = "skipped";
-                entry.messages.push(`the component "${joinedTo}" ${reason === "suppressed" ? "was suppressed" : "failed earlier"}`);
+                entry.messages.push(`the component "${joinedTo}" ${reason === "suppressed" ? "was suppressed" : reason === "pending" ? "waits for a script" : "failed earlier"}`);
                 unplaced.set(component.id, reason);
+            } else if (targetWaits) {
+                entry.status = "skipped";
+                entry.messages.push(`the connector "${targetConnector}" of "${joinedTo}" waits for a script`);
+                unplaced.set(component.id, "pending");
             } else {
                 const placedEntry = sourceDocument(gathered.library, component.source);
                 const { document: source, index: sourceIndex } = placedEntry;
@@ -383,10 +409,14 @@ function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: Desi
                         const inner = inSource(sourcePath, () => parameterValues(source.parameters, source.configurations, { configuration: component.source.configuration, overrides }));
                         gathered.products.set(occurrencePath, propertiesOf(source.properties, inner, pointer("/documents", sourceIndex), gathered));
                         const published = assemble(source, inner, `${occurrencePath}/`, occurrencePath, gathered);
-                        const placement = placementOf(component, published, how, target, parameters, documentPath, base);
+                        if (how !== undefined && !published.connectors.has(how.joint.connector) && waitsFor(published.waiting, how.joint.connector)) {
+                            throw new DesignWaiting(pointer(how.path, "connector"), `the connector "${how.joint.connector}" waits for a script`);
+                        }
+                        const placement = placementOf(component, published.connectors, how, target, parameters, documentPath, base);
                         listedComponent.matrix = after(placement.matrix);
                         joined(placement.values);
-                        return moved(listedComponent.matrix, published, base);
+                        waitingInside = published.waiting;
+                        return moved(listedComponent.matrix, published.connectors, base);
                     }
                     const revisions = gathered.library.get(component.source.document)?.length ?? 1;
                     const { part, cached, messages } = builtPart(source, sourceIndex, versionIn(placedEntry), revisions, component.source, overrides, gathered, sourcePath);
@@ -412,6 +442,7 @@ function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: Desi
                     });
                 } else if (replicate === undefined) {
                     placed.set(component.id, place(path, component.name ?? component.id, placing));
+                    waits.set(component.id, waitingInside);
                 } else {
                     const members = membersOf(placed.get(replicate.to.component), replicate.to.connector);
                     if (members.length === 0) {
@@ -431,32 +462,42 @@ function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: Desi
             }
             gathered.components.length = listed;
             gathered.joints.length = jointsListed;
-            entry.status = "failed";
+            const unmade = error instanceof DesignWaiting ? "pending" : "failed";
+            entry.status = unmade;
             entry.messages.push(`${error.path}: ${error.message}`);
-            unplaced.set(component.id, "failed");
+            unplaced.set(component.id, unmade);
             for (const inner of gathered.report.slice(reported)) {
                 if (inner.status === "ok") {
                     inner.status = "skipped";
-                    inner.messages.push(`the assembly "${path}" failed`);
+                    inner.messages.push(`the assembly "${path}" ${unmade === "pending" ? "waits for a script" : "failed"}`);
                 }
             }
         }
         entry.ms = performance.now() - started;
         gathered.report.push(entry);
     }
-    return new Map((document.connectors ?? []).flatMap(published => {
-        const frame = placed.get(published.component)?.get(published.connector);
-        return frame === undefined ? [] : [[published.id, frame] as const];
-    }));
+    const published = document.connectors ?? [];
+    return {
+        connectors: new Map(published.flatMap(connector => {
+            const frame = placed.get(connector.component)?.get(connector.connector);
+            return frame === undefined ? [] : [[connector.id, frame] as const];
+        })),
+        waiting: new Set(published.filter(connector => placed.get(connector.component)?.get(connector.connector) === undefined
+            && (unplaced.get(connector.component) === "pending" || waitsFor(waits.get(connector.component), connector.connector))).map(connector => connector.id)),
+    };
 }
 
 /**
  * Builds an assembly: its parameters, then each component in an order that places every joint's
  * target first, each part built once per document, configuration and parameter values,
  * sub-assemblies laid out before they are placed. Returns the parts it placed, the components with
- * their placements, the bill of materials and the structure the assembly builders take. A component
- * that fails is reported and left out with everything inside it, which is reported skipped; the
- * components joined to it, or to one that was suppressed, are skipped, as features are.
+ * their placements, the bill of materials, the structure the assembly builders take and the scripts
+ * the documents it places wait for, once per outcome, under `/documents/<position>`. A component
+ * that fails is reported and left out with everything inside it, which is reported skipped; one
+ * whose part waits for a script, or a sub-assembly joined by a connector it publishes from such a
+ * part, is reported pending and left out; the components joined to either, to a connector a placed
+ * sub-assembly publishes from such a part, or to one that was suppressed, are skipped, as features are. A kernel trap in a placed document
+ * is thrown on with its feature's path under the document's position.
  */
 export function runAssembly(document: Models.OCCT.DesignAssemblyDocument, choice: ParameterChoice, library: BuildLibrary, context: DesignRunContext): Built {
     const parameters = parameterValues(document.parameters, document.configurations, choice);
@@ -464,13 +505,25 @@ export function runAssembly(document: Models.OCCT.DesignAssemblyDocument, choice
         throw new DesignProblem("/components", `the assembly places more than ${MAX_OCCURRENCES} occurrences through its levels`);
     }
     const usedOutcomes = new Set<string>();
-    const gathered: Gathered = { context: { ...context, used: usedOutcomes, digests: new Map(), sketches: false }, library, builds: new Map(), parts: new Map(), components: [], products: new Map(), joints: [], report: [], issues: [] };
-    try {
-        assemble(document, parameters, "", undefined, gathered);
-    } catch (error) {
-        gathered.builds.forEach(built => built.parts.forEach(part => release(part.shape)));
-        throw error;
-    }
+    const gathered: Gathered = { context: { ...context, used: usedOutcomes, digests: new Map(), sketches: false }, library, builds: new Map(), waiting: new Map(), parts: new Map(), components: [], products: new Map(), joints: [], report: [], issues: [] };
+    return cleanedUpOnError(() => assembled(document, choice, parameters, gathered, usedOutcomes), () => gathered.builds.forEach(releaseBuild));
+}
+
+function pendingOf(builds: ReadonlyMap<string, Built>): Models.OCCT.DesignPendingScript<TopoDS_Shape>[] {
+    const byHash = new Map<string, Models.OCCT.DesignPendingScript<TopoDS_Shape>>();
+    builds.forEach(built => built.pending?.forEach(waiting => {
+        if (byHash.has(waiting.hash)) {
+            releasePending([waiting]);
+        } else {
+            byHash.set(waiting.hash, waiting);
+        }
+    }));
+    return [...byHash.values()];
+}
+
+function assembled(document: Models.OCCT.DesignAssemblyDocument, choice: ParameterChoice, parameters: DesignValues, gathered: Gathered, usedOutcomes: ReadonlySet<string>): Built {
+    const context = gathered.context;
+    assemble(document, parameters, "", undefined, gathered);
     context.cache.trim(usedOutcomes);
     const worlds = new Map<string, Matrix>();
     const counts = new Map<string, number>();
@@ -488,6 +541,7 @@ export function runAssembly(document: Models.OCCT.DesignAssemblyDocument, choice
             release(part.shape);
         }
     }));
+    const pending = pendingOf(gathered.builds);
     const bom = parts.map(part => ({ part: part.id, name: part.name, quantity: counts.get(part.id)!, properties: part.properties }));
     const properties = propertiesOf(document.properties, parameters, "", gathered);
     const structure: Models.OCCT.AssemblyStructureDef<TopoDS_Shape> = {
@@ -519,5 +573,6 @@ export function runAssembly(document: Models.OCCT.DesignAssemblyDocument, choice
         structure,
         ...(Object.keys(properties).length === 0 ? {} : { properties }),
         ...framingOf(document),
+        ...(pending.length === 0 ? {} : { pending }),
     };
 }

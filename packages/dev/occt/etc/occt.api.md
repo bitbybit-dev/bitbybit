@@ -4667,6 +4667,10 @@ export interface EmbindModule {
         new(): Handle_XCAFDoc_ShapeTool;
     };
     // (undocumented)
+    HeapBytes(): number;
+    // (undocumented)
+    HeapBytesInUse(): number;
+    // (undocumented)
     HiddenLines(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean, _3: boolean, _4: boolean, _5: number, _6: number): { visible: TopoDS_Compound; hidden: TopoDS_Compound };
     // (undocumented)
     HistoryOfBuilder(_0: BOPAlgo_Builder, _1: TopoDS_Shape[], _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[];
@@ -14429,6 +14433,9 @@ namespace Recipes_2 {
     // (undocumented)
     type RecipeSurfaceMeshesDto = WithDefaults<Inputs_3.Recipes.RecipeSurfaceMeshesDto, "adjustZtoY">;
 }
+
+// @public
+export function releaseDesignCaches(occt: OCCTService): void;
 
 declare namespace Resolved {
     export {

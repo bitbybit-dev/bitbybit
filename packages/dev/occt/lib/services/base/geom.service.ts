@@ -7,6 +7,7 @@ import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import type { MassAndCentre } from "./kernel-arrays";
 import { massesAndCentres, pointsFromCoordinates } from "./kernel-arrays";
+import { released } from "./release";
 
 export class GeomService {
 
@@ -91,12 +92,8 @@ export class GeomService {
 
     tangentOnCurveAtLengthCompCurve(inputs: Resolved.OCCT.DataOnGeometryAtLengthDto<BRepAdaptor_CompCurve>): Base.Point3 {
         const absc = this.occ.GCPnts_AbscissaPoint_FromCompCurve(inputs.shape, inputs.length, inputs.shape.FirstParameter());
-        const param = absc.Parameter();
-        const vec = this.occ.BRepAdaptor_CompCurve_DN(inputs.shape, param, 1);
-        const pt: Base.Point3 = [vec.X(), vec.Y(), vec.Z()];
-        vec.delete();
-        absc.delete();
-        return pt;
+        const vec = released([absc], () => this.occ.BRepAdaptor_CompCurve_DN(inputs.shape, absc.Parameter(), 1));
+        return released([vec], (): Base.Point3 => [vec.X(), vec.Y(), vec.Z()]);
     }
 
     tangentOnCurveAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<BRepAdaptor_CompCurve>): Base.Point3 {

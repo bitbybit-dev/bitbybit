@@ -10,7 +10,7 @@ import { holeSizeOf, tappedWallsOf } from "./hole-fastener";
 import { tripleOf } from "./placement";
 import type { FaceNames } from "./names";
 import { carryNames, give, nameOf } from "./names";
-import { DesignProblem, failedWith, pointer, unlessTrapped } from "./problems";
+import { cleanedUp, cleanedUpOnError, DesignProblem, failedWith, pointer, unlessTrapped } from "./problems";
 import { resolveFaces } from "./references";
 import type { BodyState, DesignPlan, DesignRun, DesignShellLid } from "./state";
 import { bodyKey, sketchKey } from "./state";
@@ -73,31 +73,35 @@ function joined(id: string, body: BodyState, open: number[], faces: TopoDS_Shape
     return { shape: made.shape, names: carryNames(faceCount(made.shape, run), [{ names: body.names, history: made.history }], given), join: joinType };
 }
 
+function facesOf(shape: TopoDS_Shape, indexes: readonly number[], run: DesignRun): TopoDS_Face[] {
+    const faces: TopoDS_Face[] = [];
+    return cleanedUpOnError(() => {
+        indexes.forEach(index => faces.push(run.occt.shapes.face.getFace({ shape, index })));
+        return faces;
+    }, () => faces.forEach(release));
+}
+
 function byJoins(id: string, body: BodyState, open: number[], offset: number, reasons: string[], run: DesignRun): Shelled | undefined {
-    const faces = open.map(index => run.occt.shapes.face.getFace({ shape: body.shape, index }));
-    try {
+    const faces = facesOf(body.shape, open, run);
+    return cleanedUp(() => {
         for (const joinType of SHELL_JOINS) {
-            const tried = unlessTrapped(() => joined(id, body, open, faces, offset, joinType, run), failedWith(`with ${joinType} joins`));
+            const tried = unlessTrapped(run.occ, () => joined(id, body, open, faces, offset, joinType, run), failedWith(`with ${joinType} joins`));
             if (typeof tried !== "string") {
                 return tried;
             }
             reasons.push(tried);
         }
         return undefined;
-    } finally {
-        faces.forEach(release);
-    }
+    }, () => faces.forEach(release));
 }
 
 function innerSolidOf(shape: TopoDS_Shape, thickness: number, run: DesignRun): TopoDS_Shape | undefined {
     const offset = run.occt.operations.offsetAdv({ shape, distance: -thickness, tolerance: 1e-7, joinType: Inputs.OCCT.joinTypeEnum.intersection, removeIntEdges: false });
-    if (run.occt.shapes.shape.getShapeType({ shape: offset }) !== Inputs.OCCT.shapeTypeEnum.shell) {
-        release(offset);
+    const inner = cleanedUp(() => run.occt.shapes.shape.getShapeType({ shape: offset }) === Inputs.OCCT.shapeTypeEnum.shell ? run.occt.shapes.solid.fromClosedShell({ shape: offset }) : undefined, () => release(offset));
+    if (inner === undefined) {
         return undefined;
     }
-    const inner = run.occt.shapes.solid.fromClosedShell({ shape: offset });
-    release(offset);
-    if (!run.occt.shapeFix.isValid({ shape: inner })) {
+    if (!cleanedUpOnError(() => run.occt.shapeFix.isValid({ shape: inner }), () => release(inner))) {
         release(inner);
         return undefined;
     }
@@ -127,48 +131,51 @@ function lidsOf(body: BodyState, open: number[], inner: TopoDS_Shape, thickness:
     return lids;
 }
 
+function openedByLids(hollow: TopoDS_Shape, lids: readonly DesignShellLid[], inner: TopoDS_Shape, run: DesignRun): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+    const tools: TopoDS_Shape[] = [];
+    return cleanedUp(() => {
+        lids.forEach(lid => {
+            const face = run.occt.shapes.face.getFace({ shape: inner, index: lid.face });
+            tools.push(cleanedUp(() => run.occt.operations.extrude({ shape: face, direction: lid.direction }), () => release(face)));
+        });
+        return run.occt.booleans.differenceWithHistory({ shape: hollow, shapes: tools, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
+    }, () => tools.forEach(release));
+}
+
 function cut(id: string, body: BodyState, open: number[], thickness: number, inner: TopoDS_Shape, run: DesignRun): Shelled | string {
     const lids = lidsOf(body, open, inner, thickness, run);
     if (lids === undefined) {
         return "by cutting, an open face is not flat or has no inner face below it";
     }
     const hollow = run.occt.booleans.differenceWithHistory({ shape: body.shape, shapes: [inner], keepEdges: false });
-    const hollowGiven = new Map<number, string[]>();
-    hollow.histories.slice(1).forEach(history => give(hollowGiven, history.faces.flat(), nameOf(id, "inner")));
-    const hollowNames = carryNames(faceCount(hollow.shape, run), hollow.histories.slice(0, 1).map(history => ({ names: body.names, history })), hollowGiven);
-    const tools = lids.map(lid => {
-        const face = run.occt.shapes.face.getFace({ shape: inner, index: lid.face });
-        const tool = run.occt.operations.extrude({ shape: face, direction: lid.direction });
-        release(face);
-        return tool;
-    });
-    const opened = run.occt.booleans.differenceWithHistory({ shape: hollow.shape, shapes: tools, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
-    tools.forEach(release);
-    release(hollow.shape);
-    if (!run.occt.shapeFix.isValid({ shape: opened.shape })) {
-        release(opened.shape);
-        return "by cutting, the solid is not valid";
-    }
-    const given = new Map<number, string[]>();
-    opened.histories.slice(1).forEach(history => give(given, history.faces.flat(), nameOf(id, "rim")));
-    opened.histories.slice(0, 1).forEach(history => hollow.histories.slice(0, 1).forEach(first => {
-        give(given, open.flatMap(index => first.faces[index] ?? []).flatMap(face => history.faces[face] ?? []), nameOf(id, "rim"));
-    }));
-    const names = carryNames(faceCount(opened.shape, run), opened.histories.slice(0, 1).map(history => ({ names: hollowNames, history })), given);
-    return { shape: opened.shape, names, join: "cut", lids };
+    const { hollowNames, opened } = cleanedUp(() => {
+        const hollowGiven = new Map<number, string[]>();
+        hollow.histories.slice(1).forEach(history => give(hollowGiven, history.faces.flat(), nameOf(id, "inner")));
+        const named = carryNames(faceCount(hollow.shape, run), hollow.histories.slice(0, 1).map(history => ({ names: body.names, history })), hollowGiven);
+        return { hollowNames: named, opened: openedByLids(hollow.shape, lids, inner, run) };
+    }, () => release(hollow.shape));
+    return cleanedUpOnError((): Shelled | string => {
+        if (!run.occt.shapeFix.isValid({ shape: opened.shape })) {
+            release(opened.shape);
+            return "by cutting, the solid is not valid";
+        }
+        const given = new Map<number, string[]>();
+        opened.histories.slice(1).forEach(history => give(given, history.faces.flat(), nameOf(id, "rim")));
+        opened.histories.slice(0, 1).forEach(history => hollow.histories.slice(0, 1).forEach(first => {
+            give(given, open.flatMap(index => first.faces[index] ?? []).flatMap(face => history.faces[face] ?? []), nameOf(id, "rim"));
+        }));
+        const names = carryNames(faceCount(opened.shape, run), opened.histories.slice(0, 1).map(history => ({ names: hollowNames, history })), given);
+        return { shape: opened.shape, names, join: "cut", lids };
+    }, () => release(opened.shape));
 }
 
 function byCutting(id: string, body: BodyState, open: number[], thickness: number, reasons: string[], run: DesignRun): Shelled | undefined {
-    const tried = unlessTrapped<Shelled | string>(() => {
+    const tried = unlessTrapped<Shelled | string>(run.occ, () => {
         const inner = innerSolidOf(body.shape, thickness, run);
         if (inner === undefined) {
             return "by cutting, the inward offset is not one closed solid";
         }
-        try {
-            return cut(id, body, open, thickness, inner, run);
-        } finally {
-            release(inner);
-        }
+        return cleanedUp(() => cut(id, body, open, thickness, inner, run), () => release(inner));
     }, failedWith("by cutting"));
     if (typeof tried === "string") {
         reasons.push(tried);
@@ -291,7 +298,7 @@ function extrudedFace(id: string, body: BodyState, indexes: number[], distance: 
 
 function offsetFaces(id: string, body: BodyState, indexes: number[], distance: number, path: string, run: DesignRun): DesignOutcome {
     run.trace?.set(path, { indexes });
-    const made = unlessTrapped(() => run.occt.features.pushPullFacesWithHistory({ shape: body.shape, indexes, distance }), () => {
+    const made = unlessTrapped(run.occ, () => run.occt.features.pushPullFacesWithHistory({ shape: body.shape, indexes, distance }), () => {
         const what = indexes.length === 1 ? "the face" : "the faces";
         throw new DesignProblem(pointer(path, "face"), `OCCT could not move ${what} with the faces around ${indexes.length === 1 ? "it" : "them"} following; mode "extrude" adds or cuts a flat face straight instead`);
     });

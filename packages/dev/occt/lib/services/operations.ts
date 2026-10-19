@@ -7,7 +7,17 @@ import type * as Models from "../api/models";
 import { numbersOfFrames } from "./base/frames";
 import { eachShape, keptBehind, sliceAlongFrames, splitAlongFrame } from "./base/frame-cuts";
 import { withHistories, withHistory } from "./base/history";
+import { released } from "./base/release";
 import { checkedFrame, checkedFrames, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "./base/input-checks";
+import { withKernelErrorsRead, withKernelRefusals } from "./base/kernel-refusals";
+
+const SPINE_OUT_OF_PLANE = /SweepEvolved: the spine does not lie in a plane/;
+const PERSPECTIVE_FROM_A_MESH = /HiddenLines: a perspective needs the exact algorithm/;
+const EYE_INSIDE_THE_SHAPE = /HiddenLines: the shape reaches the eye or lies behind it/;
+
+function withArticle(word: string): string {
+    return /^[aeiou]/.test(word) ? `an ${word}` : `a ${word}`;
+}
 
 /**
  * The modeling operations that turn OpenCascade wires and faces into surfaces and solids and
@@ -68,7 +78,7 @@ export class OCCTOperations {
     loftWithHistory(inputs: Inputs.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
         const resolved = resolveDto(Inputs.OCCT.LoftDto, inputs) as Resolved.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>;
         checkedShapes(resolved.shapes);
-        return withHistories((maker: BRepOffsetAPI_ThruSections, result: TopoDS_Shape) => this.och.occ.HistoryOfLoft(maker, resolved.shapes, result), read => this.och.operationsService.loft(resolved, read), resolved.shapes);
+        return withHistories((maker: BRepOffsetAPI_ThruSections, result: TopoDS_Shape, sections: TopoDS_Wire[]) => this.och.occ.HistoryOfLoft(maker, sections, result), read => this.och.operationsService.loft(resolved, read), resolved.shapes);
     }
 
     /**
@@ -140,7 +150,7 @@ export class OCCTOperations {
             throw new InputError("A `periodic` loft runs through curves resampled from its sections, not through the sections, so it has no history; use `loftAdvanced`.", "periodic");
         }
         checkedShapes(resolved.shapes);
-        return withHistories((maker: BRepOffsetAPI_ThruSections, result: TopoDS_Shape) => this.och.occ.HistoryOfLoft(maker, resolved.shapes, result), read => this.och.operationsService.loftAdvanced(resolved, read), resolved.shapes);
+        return withHistories((maker: BRepOffsetAPI_ThruSections, result: TopoDS_Shape, sections: TopoDS_Wire[]) => this.och.occ.HistoryOfLoft(maker, sections, result), read => this.och.operationsService.loftAdvanced(resolved, read), resolved.shapes);
     }
 
     /**
@@ -484,7 +494,7 @@ export class OCCTOperations {
     extrudeWithHistory(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
         const resolved = resolveDto(Inputs.OCCT.ExtrudeDto, inputs) as Resolved.OCCT.ExtrudeDto<TopoDS_Shape>;
         checkedShape(resolved.shape);
-        return withHistory((maker: BRepPrimAPI_MakePrism, result: TopoDS_Shape) => this.och.occ.HistoryOfPrism(maker, resolved.shape, result), read => this.och.operationsService.extrude(resolved, read), [resolved.shape]);
+        return withHistory((maker: BRepPrimAPI_MakePrism, result: TopoDS_Shape, profile: TopoDS_Shape) => this.och.occ.HistoryOfPrism(maker, profile, result), read => this.och.operationsService.extrude(resolved, read), [resolved.shape]);
     }
 
     /**
@@ -546,7 +556,6 @@ export class OCCTOperations {
      */
     splitShapeWithShapesWithHistory(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
         const resolved = resolveDto(Inputs.OCCT.SplitDto, inputs) as Resolved.OCCT.SplitDto<TopoDS_Shape>;
-        checkedShape(resolved.shape);
         return this.och.operationsService.splitShapeWithShapesWithHistory(resolved);
     }
 
@@ -589,7 +598,7 @@ export class OCCTOperations {
     revolveWithHistory(inputs: Inputs.OCCT.RevolveDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
         const resolved = resolveDto(Inputs.OCCT.RevolveDto, inputs) as Resolved.OCCT.RevolveDto<TopoDS_Shape>;
         checkedShape(resolved.shape);
-        return withHistory((maker: BRepPrimAPI_MakeRevol, result: TopoDS_Shape) => this.och.occ.HistoryOfRevol(maker, resolved.shape, result), read => this.och.operationsService.revolve(resolved, read), [resolved.shape]);
+        return withHistory((maker: BRepPrimAPI_MakeRevol, result: TopoDS_Shape, profile: TopoDS_Shape) => this.och.occ.HistoryOfRevol(maker, profile, result), read => this.och.operationsService.revolve(resolved, read), [resolved.shape]);
     }
 
     /**
@@ -680,11 +689,11 @@ export class OCCTOperations {
     }
 
     /**
-     * Sweeps a regular polygon along a wire, giving a bar with `nrCorners` flat sides.
+     * Sweeps a regular polygon along a wire, giving a bar with `nrCorners` flat sides, from 3 to 1000.
      *
      * The polygon of `radius` starts perpendicular to the wire. `makeSolid` gives a solid instead of
-     * a shell, `trihedronEnum` sets how the profile turns, and `forceApproxC1` smooths the result.
-     * An invalid bar is refused; on a nearly straight path, use the discrete trihedron.
+     * a shell, `trihedronEnum` sets how the profile turns and `forceApproxC1` smooths it. An invalid
+     * bar is refused; on a nearly straight path, use the discrete trihedron.
      * @param inputs - The path wire, the polygon radius and corner count, and the sweep options
      * @returns The swept solid or shell
      * @group pipeing
@@ -824,7 +833,11 @@ export class OCCTOperations {
         const resolved = resolveDto(Inputs.OCCT.SweepEvolvedDto, inputs) as Resolved.OCCT.SweepEvolvedDto<TopoDS_Wire | TopoDS_Face, TopoDS_Wire | TopoDS_Edge>;
         const spine = checkedShape(resolved.spine, "spine");
         const profile = checkedShape(resolved.profile, "profile");
-        return this.och.converterService.castAndRelease(this.och.occ.SweepEvolved(spine, profile, resolved.makeSolid));
+        this.checkedKind(spine, "spine", [Inputs.OCCT.shapeTypeEnum.wire, Inputs.OCCT.shapeTypeEnum.face], "an evolved sweep follows a wire or a planar face");
+        this.checkedKind(profile, "profile", [Inputs.OCCT.shapeTypeEnum.edge, Inputs.OCCT.shapeTypeEnum.wire], "an evolved sweep moves an edge or a wire along the spine");
+        return this.onCopyOf(spine, copiedSpine => this.och.converterService.castAndRelease(withKernelRefusals(this.och.occ, () => this.och.occ.SweepEvolved(copiedSpine, profile, resolved.makeSolid), message => SPINE_OUT_OF_PLANE.test(message)
+            ? new InputError("`spine` does not lie in a plane, and an evolved sweep follows a flat spine: give a wire or a face that lies in one plane.", "spine")
+            : undefined)));
     }
 
     /**
@@ -849,17 +862,26 @@ export class OCCTOperations {
         const resolved = resolveDto(Inputs.OCCT.PipeWithScalingDto, inputs) as Resolved.OCCT.PipeWithScalingDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Wire | TopoDS_Edge>;
         const spine = checkedShape(resolved.spine, "spine");
         const profile = checkedShape(resolved.profile, "profile");
+        this.checkedKind(spine, "spine", [Inputs.OCCT.shapeTypeEnum.edge, Inputs.OCCT.shapeTypeEnum.wire], "a scaled pipe follows an edge or a wire");
+        this.checkedKind(profile, "profile", [Inputs.OCCT.shapeTypeEnum.edge, Inputs.OCCT.shapeTypeEnum.wire], "a scaled pipe moves an edge or a wire along the spine");
         const params = checkedNumberList(resolved.params, "params", { atLeast: 0, atMost: 1 });
         const scales = checkedNumberList(resolved.scales, "scales", { above: 0 });
-        return this.och.converterService.castAndRelease(this.och.occ.PipeWithScaling(spine, profile, params, scales, resolved.makeSolid));
+        scales.forEach((scale, index) => this.och.transformsService.refuseCollapsingScale(scale, `scales[${index}]`));
+        if (params.length < 2) {
+            throw new InputError("`params` holds fewer than two places, and a scaled pipe needs at least two, the spine's start at 0 and its end at 1.", "params");
+        }
+        if (scales.length !== params.length) {
+            throw new InputError(`\`scales\` holds ${scales.length} and \`params\` ${params.length}: give one scale for each place along the spine.`, "scales");
+        }
+        return this.och.converterService.castAndRelease(withKernelErrorsRead(this.och.occ, () => this.och.occ.PipeWithScaling(spine, profile, params, scales, resolved.makeSolid)));
     }
 
     /**
-     * Moves the boundary of a shape outward, or inward for a negative distance, by a fixed
-     * distance: a wire grows into a parallel outline, a face or solid into a bigger one.
+     * Moves the boundary of a shape outward, or inward for a negative distance: a wire into a
+     * parallel outline, a face or solid into a bigger one.
      *
-     * A wire or edge is offset in its own plane, or on `face` when given; corners are rounded. A
-     * distance of 0 returns the shape as it is.
+     * A wire or edge is offset in its own plane, or on `face` when given, with rounded corners. A
+     * distance of 0 gives the same shape in a new handle the caller deletes.
      * @param inputs - The shape, an optional face to offset a wire on, the distance and the tolerance
      * @returns The offset shape
      * @group offsets
@@ -898,7 +920,8 @@ export class OCCTOperations {
      * Offsets a shape like `offset`, with a choice of how corners are joined: `arc` rounds them,
      * `intersection` extends the sides to a sharp corner, `tangent` keeps them tangent.
      *
-     * `removeIntEdges` drops the internal edges the offset can leave behind on a solid.
+     * `removeIntEdges` drops the internal edges the offset can leave behind on a solid. A distance
+     * of 0 gives the same shape in a new handle the caller deletes, as `offset` does.
      * @param inputs - The shape, an optional face to offset a wire on, the distance, the tolerance, the corner join type and whether to remove internal edges
      * @returns The offset shape
      * @group offsets
@@ -1143,7 +1166,7 @@ export class OCCTOperations {
         const shape = checkedShape(resolved.shape);
         const frames = checkedFrames(resolved.frames, "frames");
         const tolerance = checkedNumber(resolved.tolerance, "tolerance", 0);
-        return sliceAlongFrames(this.och, shape, frames, resolved.makeFaces, tolerance);
+        return this.onCopyOf(shape, copied => sliceAlongFrames(this.och, copied, frames, resolved.makeFaces, tolerance));
     }
 
     /**
@@ -1169,7 +1192,7 @@ export class OCCTOperations {
         const resolved = resolveDto(Inputs.OCCT.SplitByFrameDto, inputs) as Resolved.OCCT.SplitByFrameDto<TopoDS_Shape>;
         const shape = checkedShape(resolved.shape);
         const frame = checkedFrame(resolved.frame, "frame");
-        const [front, back] = splitAlongFrame(this.och, shape, frame);
+        const [front, back] = this.onCopyOf(shape, copied => splitAlongFrame(this.och, copied, frame));
         return { front, back };
     }
 
@@ -1200,7 +1223,7 @@ export class OCCTOperations {
         const shapes = checkedShapes(resolved.shapes);
         const frames = checkedFrames(resolved.frames, "frames");
         const tolerance = checkedNumber(resolved.tolerance, "tolerance", 0);
-        return eachShape(shapes, shape => sliceAlongFrames(this.och, shape, frames, resolved.makeFaces, tolerance));
+        return eachShape(shapes, shape => this.onCopyOf(shape, copied => sliceAlongFrames(this.och, copied, frames, resolved.makeFaces, tolerance)));
     }
 
     /**
@@ -1233,7 +1256,7 @@ export class OCCTOperations {
         if (frames.length === 0) {
             throw new InputError("`frames` is empty: give at least one frame to cut along.", "frames");
         }
-        return eachShape(shapes, shape => keptBehind(this.och, shape, frames, resolved.keep));
+        return eachShape(shapes, shape => this.onCopyOf(shape, copied => keptBehind(this.och, copied, frames, resolved.keep)));
     }
 
     /**
@@ -1311,7 +1334,14 @@ export class OCCTOperations {
         const frame = checkedFrame(resolved.frame, "frame");
         const focus = checkedNumber(resolved.focus, "focus", 0);
         const precision = resolved.exact ? 0 : checkedWithin(resolved.precision, "precision", { above: 0 });
-        const drawing = this.och.occ.HiddenLines(shape, numbersOfFrames([frame]), resolved.exact, resolved.smoothEdges, resolved.hiddenEdges, focus, precision);
+        const drawing = withKernelRefusals(this.och.occ, () => this.och.occ.HiddenLines(shape, numbersOfFrames([frame]), resolved.exact, resolved.smoothEdges, resolved.hiddenEdges, focus, precision), message => {
+            if (PERSPECTIVE_FROM_A_MESH.test(message)) {
+                return new InputError("`exact` is false, and only the exact algorithm draws a perspective: set `exact` to true, or `focus` to 0 for a parallel view.", "exact");
+            }
+            return EYE_INSIDE_THE_SHAPE.test(message)
+                ? new InputError(`\`focus\` is ${focus}, which puts the eye inside the shape or leaves part of it behind the eye: give a focus that keeps the whole shape in front of the eye, or 0 for a parallel view.`, "focus")
+                : undefined;
+        });
         return { visible: this.ontoGround(drawing.visible), hidden: this.ontoGround(drawing.hidden) };
     }
 
@@ -1321,6 +1351,18 @@ export class OCCTOperations {
             throw new InputError("`distance` is 0, so nothing is offset and no face has a successor to follow: give a distance other than 0.", "distance");
         }
         return withHistory((maker: BRepOffsetAPI_MakeOffsetShape, result: TopoDS_Shape) => this.och.occ.HistoryOfOffsetShape(maker, inputs.shape, result), read => this.och.operationsService.offsetAdv(inputs, read), [inputs.shape]);
+    }
+
+    private checkedKind(shape: TopoDS_Shape, property: string, kinds: readonly Inputs.OCCT.shapeTypeEnum[], takes: string): void {
+        const kind = this.och.enumService.getShapeTypeEnum(shape);
+        if (!kinds.includes(kind)) {
+            throw new InputError(`\`${property}\` is ${withArticle(kind)}, and ${takes}.`, property);
+        }
+    }
+
+    private onCopyOf<T>(shape: TopoDS_Shape, use: (copied: TopoDS_Shape) => T): T {
+        const copied = this.och.occ.BRepBuilderAPI_Copy_Shape(shape, false);
+        return released([copied], () => use(copied));
     }
 
     private ontoGround(drawing: TopoDS_Compound): TopoDS_Compound {

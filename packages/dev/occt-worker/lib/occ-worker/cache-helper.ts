@@ -5,11 +5,25 @@ type ItemList = { itemHashes: (string | number)[] };
 
 const isItemList = (entry: unknown): entry is ItemList => typeof entry === "object" && entry !== null && "itemHashes" in entry && Array.isArray(entry.itemHashes);
 
+const PLAIN_KEY = /^[A-Za-z_$][\w$]*$/;
+
 export class CacheHelper {
+
+    private static epochsBegun = 0;
 
     usedHashes: Record<string, string | number> = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     argCache: Record<string, any> = {};
+    private answers = new Map<string, number>();
+    private currentEpoch = CacheHelper.beginEpoch();
+
+    /**
+     * The epoch of this cache: a number no other cache in this worker had, replaced by a new one each
+     * time `cleanAllCache` empties it. The answers counted for a key count only within one epoch.
+     */
+    get epoch(): number {
+        return this.currentEpoch;
+    }
 
     cleanAllCache(): void {
         const allCacheKeys = Object.keys(this.argCache);
@@ -18,12 +32,33 @@ export class CacheHelper {
 
         this.argCache = {};
         this.usedHashes = {};
+        this.answers.clear();
+        this.currentEpoch = CacheHelper.beginEpoch();
     }
 
     cleanCacheForHash(hash: string): void {
         this.freeEntry(this.argCache[hash]);
         delete this.argCache[hash];
         delete this.usedHashes[hash];
+    }
+
+    /** Counts one answer that carried each of the shapes whose hashes are given, each counted once. */
+    countAnswer(hashes: Iterable<string | number>): void {
+        new Set([...hashes].map(String)).forEach(hash => this.answers.set(hash, (this.answers.get(hash) ?? 0) + 1));
+    }
+
+    /**
+     * How many answers in this epoch have carried a shape cached under `hash`, the shapes deleted from
+     * under it before the one it holds now included, so a count taken before a delete never matches
+     * again; 0 for a key never handed out.
+     */
+    answersOf(hash: string | number): number {
+        return this.answers.get(String(hash)) ?? 0;
+    }
+
+    private static beginEpoch(): number {
+        CacheHelper.epochsBegun += 1;
+        return CacheHelper.epochsBegun;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -199,8 +234,10 @@ export class CacheHelper {
      * add it to the cache, so shapes returned inside arbitrary structures (e.g. the SVG importer's
      * `{ shapes: [{ shape, ... }], ... }`) are cached exactly like shapes returned directly or inside
      * an ObjectDefinition. The hash is derived from the call's key plus the value's path, so it is
-     * stable across runs (enabling cache hits) and unique per shape. embind objects (shapes/entity
-     * handles) are never recursed into; only shapes are hashed here.
+     * stable across runs (enabling cache hits) and unique per shape: a key that is not a plain name
+     * is written quoted in brackets (`result.inputs["a.b"]`), so no key spells the path of another.
+     * embind objects (shapes/entity handles) are never recursed into, nor are bytes, buffers and
+     * their views; only shapes are hashed here.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     hashNestedShapes(value: any, callHash: string | number, path: string): void {
@@ -213,12 +250,15 @@ export class CacheHelper {
             }
             return;
         }
+        if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
+            return;
+        }
         if (Array.isArray(value)) {
             value.forEach((item, index) => this.hashNestedShapes(item, callHash, `${path}[${index}]`));
             return;
         }
         for (const key of Object.keys(value)) {
-            this.hashNestedShapes(value[key], callHash, `${path}.${key}`);
+            this.hashNestedShapes(value[key], callHash, PLAIN_KEY.test(key) ? `${path}.${key}` : `${path}[${JSON.stringify(key)}]`);
         }
     }
 

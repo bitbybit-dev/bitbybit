@@ -74,11 +74,11 @@ export class OCCTDesign {
      * Builds the parts of a design document, with a configuration's values and then `parameters`
      * replacing the document's own.
      *
-     * A document `validate` faults is refused. A failed feature is reported and what uses it
-     * skipped; unchanged features are reused. `structure` exports the parts to STEP and glTF through
-     * `assembly.manager.buildAssemblyDocument`; an assembly adds components and a bill of materials.
+     * A document `validate` faults is refused; a failed feature is reported and what uses it skipped.
+     * The caller deletes every shape returned, and an identical call returns the same ones while they
+     * live, so one delete frees both answers.
      * @param inputs - The document, the configuration and the parameter values to build it with
-     * @returns The parts, a report per feature, the problems found after the features ran, and the parameter values used
+     * @returns The parts, a report per feature, the problems found after the features ran, the parameter values used, and the `structure` that `assembly.manager.buildAssemblyDocument` exports to STEP and glTF; an assembly adds its components and bill of materials
      * @group document
      * @shortname build design
      * @drawable true
@@ -101,7 +101,10 @@ export class OCCTDesign {
     /**
      * Builds a design document whose script features run here, on the main thread, as the kernel runs no
      * code: it builds, runs the code of every script the build lists as `pending`, and builds again
-     * with what each made, until no script waits.
+     * with what each made, until no script waits. The shapes of earlier rounds and those the scripts
+     * returned are deleted on the way, each unless another call was answered with it too, so only what
+     * the last build returns is the caller's to delete; as with `build`, an identical call returns the
+     * same shapes while they live.
      *
      * A script's code is the asset its feature names, given in `assets` as an import's file is, and
      * is the body of an async function given `inputs`, the feature's params with bodies as shapes and

@@ -613,6 +613,31 @@ describe("OCCT solid unit tests", () => {
         });
     });
 
+    describe("primitives of a size the kernel cannot build", () => {
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
+
+        it.each([
+            ["a ball of radius 0", (): unknown => solid.createSphere({ radius: 0, center: [0, 0, 0] }), "MakeSphereFromAx2: the radius must be more than 1e-7"],
+            ["a box of width 0", (): unknown => solid.createBox({ width: 0, length: 1, height: 1, center: [0, 0, 0] }), "MakeBoxFromPntAndDims: every size must be more than 1e-7 in magnitude"],
+            ["a cylinder of radius 0", (): unknown => solid.createCylinder({ radius: 0, height: 2, center: [0, 0, 0], direction: [0, 1, 0] }), "BRepPrimAPI_MakeCylinder.Shape: the radius must be more than 1e-7"],
+            ["a torus of minor radius 0", (): unknown => solid.createTorus({ majorRadius: 2, minorRadius: 0, angle: 360, center: [0, 0, 0], direction: [0, 1, 0] }), "BRepPrimAPI_MakeTorus.Shape: the minor radius must be more than 1e-7"],
+            ["a cone of two equal radii", (): unknown => solid.createCone({ radius1: 0, radius2: 0, height: 2, angle: 360, center: [0, 0, 0], direction: [0, 1, 0] }), "cone with two identic radii"],
+        ] as [string, () => unknown, string][])("should pass on the kernel's reason for refusing %s, read rather than raw", (_primitive, build, reason) => {
+            // Act
+            const refused = refusalOf(build);
+
+            // Assert
+            expect(refused).toEqual(new Error(`Standard_DomainError: ${reason}`));
+        });
+    });
+
     describe("createTorus", () => {
         it("should build a whole ring when no angle was asked for", () => {
             // Act

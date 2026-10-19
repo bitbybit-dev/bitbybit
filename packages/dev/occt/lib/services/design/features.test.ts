@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
@@ -6,6 +6,8 @@ import { OCCTService } from "../../occ-service";
 import type * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { sha256 } from "./digest";
+import { releaseDesignCaches } from "../../release-design-caches";
+import { handlesIn, namesOf, openWindow } from "../../../../__test__/embind-ledger";
 
 type Document = Models.OCCT.DesignPartDocument;
 
@@ -42,6 +44,18 @@ describe("OCCT design features beyond the first slice", () => {
     const centreOf = (part: Models.OCCT.DesignBuiltPart<TopoDS_Shape>, face: number): number[] => occt.analysis.signatures({ shape: part.shape }).faces[face]!.centre;
     const areaOf = (part: Models.OCCT.DesignBuiltPart<TopoDS_Shape>, face: number): number => occt.analysis.signatures({ shape: part.shape }).faces[face]!.area;
     const statuses = (result: Models.OCCT.DesignBuildResult<TopoDS_Shape>): string[] => result.report.map(entry => entry.status);
+    const keptAfter = <T>(act: () => T): { answer: T; kept: string[] } => {
+        const opened = openWindow();
+        let answer: T;
+        try {
+            answer = act();
+            handlesIn(answer).forEach(handle => { handle.delete(); });
+        } finally {
+            opened.close();
+        }
+        releaseDesignCaches(occt);
+        return { answer, kept: namesOf(opened.made().filter(handle => !handle.isDeleted())) };
+    };
 
     describe("operations whose parts name their faces", () => {
         const gearDocument = (...extra: Models.OCCT.DesignFeature[]): Document => ({
@@ -251,7 +265,7 @@ describe("OCCT design features beyond the first slice", () => {
         const counted = (part: Models.OCCT.DesignBuiltPart<TopoDS_Shape>, ...names: string[]): number[] => names.map(name => facesNamed(part, name).length);
         const offsetBy = (distance: number): Document => ({ schemaVersion: 1, features: [block, { id: "grown", type: "operation", operation: "occt.operations.offset", params: { shape: { body: "block" }, distance, tolerance: 0.1 }, body: "block" }] });
 
-        it("should keep a block's names through an offset of 0, which hands the block back, as an offset of 1 keeps them and names its rounded joins", () => {
+        it("should keep a block's names through an offset of 0, which answers with the block's own shape in a handle of its own, as an offset of 1 keeps them and names its rounded joins", () => {
             // Act
             const still = partBuilt(offsetBy(0), "block");
             const grown = partBuilt(offsetBy(1), "block");
@@ -259,6 +273,40 @@ describe("OCCT design features beyond the first slice", () => {
             // Assert
             expect(still.faceNames).toEqual(Array.from({ length: 6 }, () => ["block:face"]));
             expect(counted(grown, "block:face", "grown:side", "grown:face")).toEqual([6, 12, 8]);
+        });
+
+        it("should keep nothing alive once an offset of 0 and the caches are released, its answer being a handle the outcome owns", () => {
+            // Act
+            const { answer, kept } = keptAfter(() => occt.design.build({ document: offsetBy(0) }));
+
+            // Assert
+            expect(statuses(answer)).toEqual(["ok", "ok"]);
+            expect(kept).toEqual([]);
+        });
+
+        const farFrame = { origin: [100, 100, 100], normal: [0, 0, 1], direction: [1, 0, 0] };
+        const answeringWithTheBody: [string, Models.OCCT.DesignFeature, Record<string, unknown>, number][] = [
+            ["occt.shapeFix.basicShapeRepair", block, {}, 6],
+            ["occt.shapeFix.orientClosedSolid", block, {}, 6],
+            ["occt.shapes.shape.purgeInternalEdges", block, {}, 6],
+            ["occt.shapes.edge.removeInternalEdges", block, {}, 6],
+            ["occt.shapes.face.reversedFace", rectangleFace("block", 20, 10, [0, 0, 0], [0, 0, 1]), {}, 1],
+            ["occt.shapes.face.getFace", rectangleFace("block", 20, 10, [0, 0, 0], [0, 0, 1]), { index: 0 }, 1],
+            ["occt.parts.mechanical.machining.flat", block, { frame: farFrame }, 6],
+            ["occt.parts.mechanical.machining.keyway", block, { frame: farFrame }, 6],
+            ["occt.parts.mechanical.machining.knurl", block, { frame: farFrame }, 6],
+            ["occt.parts.mechanical.machining.ringGroove", block, { frame: farFrame }, 6],
+        ];
+
+        it.each(answeringWithTheBody)("should keep the body's names through %s, which answers with the body's own shape in a handle of its own where it changes nothing", (operation, made, params, faces) => {
+            // Arrange
+            const document: Document = { schemaVersion: 1, features: [made, { id: "kept", type: "operation", operation, params: { shape: { body: "block" }, ...params }, body: "block" }] };
+
+            // Act
+            const { answer, kept } = keptAfter(() => occt.design.build({ document }));
+
+            // Assert
+            expect([statuses(answer), answer.parts.find(part => part.id === "block")!.faceNames, kept]).toEqual([["ok", "ok"], Array.from({ length: faces }, () => ["block:face"]), []]);
         });
 
         it("should keep every face's names through an offset with sharp joins and through the faces a unify merges", () => {
@@ -550,6 +598,115 @@ describe("OCCT design features beyond the first slice", () => {
     });
 
     describe("shell, holes, boss and pocket", () => {
+        it("should refuse a shell of thickness 0 before it offsets or thickens the body, leaving nothing of its own behind", () => {
+            // Arrange
+            const empty = plate({ id: "hollow", type: "shell", body: "plate", thickness: 0, open: { of: "plate", role: "end", count: 1 } });
+            const offsets = vi.spyOn(occt.operations, "offsetAdv");
+            const thickened = vi.spyOn(occt.operations, "makeThickSolidByJoinWithHistory");
+
+            // Act
+            const { answer, kept } = keptAfter(() => occt.design.build({ document: empty }));
+            const calls = [offsets.mock.calls.length, thickened.mock.calls.length];
+            offsets.mockRestore();
+            thickened.mockRestore();
+
+            // Assert
+            expect(calls).toEqual([0, 0]);
+            expect(statuses(answer)).toEqual(["ok", "ok", "failed"]);
+            expect(kept).toEqual([]);
+        });
+
+        it("should keep none of the shapes it made cutting a shell open when a lid or the cut that opens it throws", () => {
+            // Arrange
+            const flatFacesOpen: Document = {
+                schemaVersion: 1,
+                features: [
+                    { id: "block", type: "operation", operation: "occt.shapes.solid.createBox", params: { width: 20, length: 20, height: 10, center: [0, 5, 0] } },
+                    { id: "round", type: "operation", operation: "occt.fillets.filletEdges", params: { shape: { body: "block" }, radius: 1 }, body: "block" },
+                    { id: "hollow", type: "shell", body: "block", thickness: 0.5, open: { of: "block", role: "face", filter: { select: "ofType", type: "plane" }, count: 6 } },
+                ],
+            };
+            const joins = vi.spyOn(occt.operations, "makeThickSolidByJoinWithHistory").mockImplementation(() => { throw new Error("no joins"); });
+            const extrude = occt.operations.extrude.bind(occt.operations);
+            const difference = occt.booleans.differenceWithHistory.bind(occt.booleans);
+
+            // Act
+            const lids = vi.spyOn(occt.operations, "extrude").mockImplementation(inputs => {
+                if ((inputs.direction?.[1] ?? 0) < 0) {
+                    throw new Error("no lid facing -Y");
+                }
+                return extrude(inputs);
+            });
+            const lidFailed = keptAfter(() => occt.design.build({ document: flatFacesOpen }));
+            lids.mockRestore();
+            const cuts = vi.spyOn(occt.booleans, "differenceWithHistory").mockImplementation(inputs => {
+                if (inputs.strategy !== undefined) {
+                    throw new Error("no opening cut");
+                }
+                return difference(inputs);
+            });
+            const cutFailed = keptAfter(() => occt.design.build({ document: flatFacesOpen }));
+            cuts.mockRestore();
+            joins.mockRestore();
+
+            // Assert
+            expect(lidFailed.answer.report[2]?.messages[0]).toMatch(/by cutting: no lid facing -Y\)$/);
+            expect(cutFailed.answer.report[2]?.messages[0]).toMatch(/by cutting: no opening cut\)$/);
+            expect([lidFailed.kept, cutFailed.kept]).toEqual([[], []]);
+        });
+
+        const roundedAllOpen: Document = {
+            schemaVersion: 1,
+            features: [
+                { id: "block", type: "operation", operation: "occt.shapes.solid.createBox", params: { width: 20, length: 20, height: 10, center: [0, 5, 0] } },
+                { id: "round", type: "operation", operation: "occt.fillets.filletEdges", params: { shape: { body: "block" }, radius: 1 }, body: "block" },
+                { id: "hollow", type: "shell", body: "block", thickness: 0.5, open: { of: "block", role: "face", filter: { select: "ofType", type: "plane" }, count: 6 } },
+            ],
+        };
+        const shellParts: [string, () => { mockRestore: () => void }][] = [
+            ["taking the third face it opens", () => {
+                const getFace = occt.shapes.face.getFace.bind(occt.shapes.face);
+                let taken = 0;
+                return vi.spyOn(occt.shapes.face, "getFace").mockImplementation(inputs => {
+                    taken += 1;
+                    if (taken === 3) {
+                        throw new Error("no third face");
+                    }
+                    return getFace(inputs);
+                });
+            }],
+            ["reading the inward offset's type", () => {
+                const getShapeType = occt.shapes.shape.getShapeType.bind(occt.shapes.shape);
+                return vi.spyOn(occt.shapes.shape, "getShapeType").mockImplementation(inputs => {
+                    const type = getShapeType(inputs);
+                    if (String(type) === "shell") {
+                        throw new Error("no type");
+                    }
+                    return type;
+                });
+            }],
+            ["closing the inward offset into a solid", () => vi.spyOn(occt.shapes.solid, "fromClosedShell").mockImplementation(() => { throw new Error("no solid"); })],
+            ["checking the inner solid", () => vi.spyOn(occt.shapeFix, "isValid").mockImplementation(() => { throw new Error("no check"); })],
+        ];
+
+        it.each(shellParts)("should keep none of the shapes a shell took or made when %s throws", (_what, failing) => {
+            // Arrange
+            const joins = vi.spyOn(occt.operations, "makeThickSolidByJoinWithHistory").mockImplementation(() => { throw new Error("no joins"); });
+            const failed = failing();
+
+            // Act
+            let built: { answer: Models.OCCT.DesignBuildResult<TopoDS_Shape>; kept: string[] } | undefined;
+            try {
+                built = keptAfter(() => occt.design.build({ document: roundedAllOpen }));
+            } finally {
+                failed.mockRestore();
+                joins.mockRestore();
+            }
+
+            // Assert
+            expect([statuses(built.answer), built.kept]).toEqual([["ok", "ok", "failed"], []]);
+        });
+
         it("should hollow a body, naming the rim where the open face was and the inner walls", () => {
             // Arrange
             const document = plate({ id: "hollow", type: "shell", body: "plate", thickness: 2, open: { of: "plate", role: "end", count: 1 } });

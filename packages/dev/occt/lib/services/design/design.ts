@@ -7,7 +7,6 @@ import { occtDtoRegistry } from "../../api/dto-registry";
 import type { OCCTService } from "../../occ-service";
 import type { BaseBitByBit } from "@bitbybit-dev/base";
 import { DesignCache } from "./cache";
-import { release } from "../base/release";
 import { hintedDocument } from "./hints";
 import { featuresReached, runAssembly } from "./assembly";
 import { DesignProgress } from "./progress";
@@ -18,12 +17,14 @@ import { documentIssues } from "./document-check";
 import { probeRounding } from "./probe";
 import { clashesOf } from "./clashes";
 import { ClashStore } from "./clash-store";
+import { registerDesignCaches } from "./cache-registry";
+import { releaseBuild } from "./release-build";
 import { documentsFromStep } from "./from-step";
 import { sectionOf } from "./section";
 import { checkedFrame } from "../base/input-checks";
 import type { DesignPicked } from "./reference-for";
 import { referenceFor } from "./reference-for";
-import { DesignProblem, isKernelTrap } from "./problems";
+import { cleanedUp, DesignProblem, isKernelTrap } from "./problems";
 import { runDesign, runFeatures } from "./runner";
 import { partStructureOf } from "./export-structure";
 import type { DesignTrace } from "./state";
@@ -75,7 +76,9 @@ export class OCCTDesign {
         private readonly occ: BitbybitOcctModule,
         private readonly service: () => OCCTService,
         private readonly base: BaseBitByBit,
-    ) {}
+    ) {
+        registerDesignCaches(this, { cache: this.cache, sections: this.sections, boxes: this.boxes, clashStore: this.clashStore });
+    }
 
     /**
      * Checks a design document without building it and lists every problem found.
@@ -138,11 +141,11 @@ export class OCCTDesign {
      * Builds the parts of a design document, with a configuration's values and then `parameters`
      * replacing the document's own.
      *
-     * A document `validate` faults is refused. A failed feature is reported and what uses it
-     * skipped; unchanged features are reused. `structure` exports the parts to STEP and glTF through
-     * `assembly.manager.buildAssemblyDocument`; an assembly adds components and a bill of materials.
+     * A document `validate` faults is refused; a failed feature is reported and what uses it skipped.
+     * The caller deletes every shape returned, and an identical call returns the same ones while they
+     * live, so one delete frees both answers.
      * @param inputs - The document, the configuration and the parameter values to build it with
-     * @returns The parts, a report per feature, the problems found after the features ran, and the parameter values used
+     * @returns The parts, a report per feature, the problems found after the features ran, the parameter values used, and the `structure` that `assembly.manager.buildAssemblyDocument` exports to STEP and glTF; an assembly adds its components and bill of materials
      * @group document
      * @shortname build design
      * @drawable true
@@ -207,12 +210,7 @@ export class OCCTDesign {
         }
         const hints = new Map<string, Models.OCCT.DesignReferenceHint | null>();
         const cache = new DesignCache(0);
-        try {
-            const built = this.inputProblems(() => runDesign(document, this.choiceOf(inputs), { occt: this.service(), occ: this.occ, base: this.base, cache, assets: inputs.assets, hints, outcomes: inputs.outcomes }));
-            built.parts.forEach(part => release(part.shape));
-        } finally {
-            cache.clear();
-        }
+        cleanedUp(() => releaseBuild(this.inputProblems(() => runDesign(document, this.choiceOf(inputs), { occt: this.service(), occ: this.occ, base: this.base, cache, assets: inputs.assets, hints, outcomes: inputs.outcomes }))), () => cache.clear());
         return hintedDocument(document, hints);
     }
 
@@ -261,19 +259,15 @@ export class OCCTDesign {
         const choice = this.choiceOf(inputs);
         const cache = new DesignCache(0);
         const trace = new Map<string, DesignTrace>();
-        try {
-            return this.inputProblems(() => {
-                const { run, report } = runFeatures(document, choice, { occt: this.service(), occ: this.occ, base: this.base, cache, assets: inputs.assets }, trace);
-                const broken = report.filter(entry => entry.status === "failed" || entry.status === "skipped");
-                if (broken.length > 0) {
-                    const listed = broken.slice(0, PROBLEMS_LISTED).map(entry => `"${entry.id}": ${entry.messages.join("; ")}`).join("; ");
-                    throw new InputError(`The design document does not build with these values, so it has no code: ${listed}${broken.length > PROBLEMS_LISTED ? "; and more" : ""}.`, "document");
-                }
-                return typescriptOf(document, run, trace, choice);
-            });
-        } finally {
-            cache.clear();
-        }
+        return cleanedUp(() => this.inputProblems(() => {
+            const { run, report } = runFeatures(document, choice, { occt: this.service(), occ: this.occ, base: this.base, cache, assets: inputs.assets }, trace);
+            const broken = report.filter(entry => entry.status === "failed" || entry.status === "skipped");
+            if (broken.length > 0) {
+                const listed = broken.slice(0, PROBLEMS_LISTED).map(entry => `"${entry.id}": ${entry.messages.join("; ")}`).join("; ");
+                throw new InputError(`The design document does not build with these values, so it has no code: ${listed}${broken.length > PROBLEMS_LISTED ? "; and more" : ""}.`, "document");
+            }
+            return typescriptOf(document, run, trace, choice);
+        }), () => cache.clear());
     }
 
     /**
@@ -305,12 +299,10 @@ export class OCCTDesign {
         }
         const built = this.build({ document: resolved.document, documents: resolved.documents, configuration: resolved.configuration, parameters: resolved.parameters, assets: resolved.assets });
         try {
-            return clashesOf(built, resolved.clearance, { occt: this.service(), occ: this.occ, base: this.base, boxes: this.boxes, store: this.clashStore });
+            return cleanedUp(() => clashesOf(built, resolved.clearance, { occt: this.service(), occ: this.occ, base: this.base, boxes: this.boxes, store: this.clashStore }), () => releaseBuild(built));
         } catch (error) {
             this.forgetAfterTrap(error);
             throw error;
-        } finally {
-            built.parts.forEach(part => release(part.shape));
         }
     }
 

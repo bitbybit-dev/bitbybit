@@ -1,10 +1,12 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape, TopoDS_Shell } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService } from "../occ-service";
 import { readKernelException } from "../kernel-exception";
 import * as Inputs from "../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
+import type { Base } from "@bitbybit-dev/base";
+import { ledgerRun, namesOf } from "../../../__test__/embind-ledger";
 
 describe("OCCT sections and splitting", () => {
     let occt: OCCTService;
@@ -24,6 +26,15 @@ describe("OCCT sections and splitting", () => {
         keepEdges: false,
     });
     const square = (): TopoDS_Shape => occt.shapes.face.createSquareFace({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+    const tetrahedronKeptAsTriangles = (): Base.Recipe => ({
+        format: "bitbybit.recipe",
+        version: 1,
+        millimetresPerUnit: 1,
+        tolerance: 1e-7,
+        buffers: { f64: new Float64Array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]), i32: new Int32Array([0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3]) },
+        nodes: [{ op: "triangles", positions: [0, 12], indices: [0, 12] }],
+        roots: [{ node: 0, matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], tag: {} }],
+    });
     const areaOf = (shape: TopoDS_Shape): number => occt.shapes.face.getFaces({ shape }).reduce((sum, face) => sum + occt.shapes.face.getFaceArea({ shape: face }), 0);
     const volumeOf = (shape: TopoDS_Shape): number => occt.shapes.solid.getSolids({ shape }).reduce((sum, solid) => sum + occt.shapes.solid.getSolidVolume({ shape: solid }), 0);
     const lengthOf = (shape: TopoDS_Shape): number => occt.shapes.edge.getEdges({ shape }).reduce((sum, edge) => sum + occt.shapes.edge.getEdgeLength({ shape: edge }), 0);
@@ -467,6 +478,20 @@ describe("OCCT sections and splitting", () => {
 
             // Assert
             expect(act).toThrow(new InputError("`step` would cut the shape into more than 100000 slices; use a larger spacing.", "step"));
+        });
+
+        it("should throw the kernel's refusal of a mesh kept as its triangles read into an error, and leave alive no slice of the box beside it", () => {
+            // Arrange
+            const [keptTriangles] = occt.recipes.build({ recipe: tetrahedronKeptAsTriangles() });
+            const meshSolid = occt.shapes.solid.fromClosedShell({ shape: keptTriangles as TopoDS_Shell });
+            const pair = occt.shapes.compound.makeCompound({ shapes: [cube(), meshSolid] });
+
+            // Act
+            const run = ledgerRun(() => occt.operations.slice({ shape: pair, step: 1, direction: [0, 1, 0] }));
+
+            // Assert
+            expect(namesOf(run.leaked)).toEqual([]);
+            expect(run.thrown).toStrictEqual(new Error("Standard_DomainError: SliceByFrames: the shape holds a face without a surface, such as a mesh kept as its triangles"));
         });
 
         it("should refuse a step pattern that would cut more than 100000 slices", () => {

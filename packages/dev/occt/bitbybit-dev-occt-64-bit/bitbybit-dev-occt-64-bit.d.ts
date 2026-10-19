@@ -2613,6 +2613,8 @@ interface EmbindModule {
   SetRunsInParallel(_0: boolean): void;
   ThreadCount(): number;
   SetThreadCount(_0: number): void;
+  HeapBytesInUse(): number;
+  HeapBytes(): number;
   ProgressControl(): Int32Array;
   ProgressBeginCall(): void;
   ProgressRequestStop(): void;

@@ -2,7 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService } from "../occ-service";
-import { readKernelException } from "../kernel-exception";
 import type * as Inputs from "../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
 
@@ -27,15 +26,6 @@ describe("OCCT hidden lines", () => {
     const cube = (): TopoDS_Shape => block([0, 0, 0], [10, 10, 10]);
     const lengthOf = (shape: TopoDS_Shape): number => occt.shapes.edge.getEdges({ shape }).reduce((sum, edge) => sum + occt.shapes.edge.getEdgeLength({ shape: edge }), 0);
     const boxOf = (shape: TopoDS_Shape): Inputs.OCCT.BoundingBoxPropsDto => occt.operations.boundingBoxOfShape({ shape });
-    const kernelMessage = (action: () => unknown): string => {
-        try {
-            action();
-        } catch (error) {
-            const read = readKernelException(kernel, error);
-            return read instanceof Error ? read.message : String(read);
-        }
-        return "nothing thrown";
-    };
     const thrownBy = (action: () => unknown): InputError => {
         try {
             action();
@@ -154,16 +144,16 @@ describe("OCCT hidden lines", () => {
         expect(lengthOf(exactIgnoresPrecision.visible)).toBeCloseTo(90 * Math.sqrt(2 / 3), 6);
     });
 
-    it("should pass on the kernel's refusal of a perspective from a mesh and of an eye inside the shape", () => {
+    it("should refuse a perspective from a mesh as an input error on exact, and an eye inside the shape as one on focus", () => {
         // Arrange
         const shape = cube();
 
         // Act
-        const meshed = kernelMessage(() => occt.operations.hiddenLines({ shape, frame: fromAbove, exact: false, focus: 50 }));
-        const inside = kernelMessage(() => occt.operations.hiddenLines({ shape, frame: fromAbove, focus: 5 }));
+        const meshed = thrownBy(() => occt.operations.hiddenLines({ shape, frame: fromAbove, exact: false, focus: 50 }));
+        const inside = thrownBy(() => occt.operations.hiddenLines({ shape, frame: fromAbove, focus: 5 }));
 
         // Assert
-        expect(meshed).toBe("Standard_DomainError: HiddenLines: a perspective needs the exact algorithm; the mesh one draws parallel views only");
-        expect(inside).toBe("Standard_DomainError: HiddenLines: the shape reaches the eye or lies behind it");
+        expect([meshed.property, meshed.message]).toEqual(["exact", "`exact` is false, and only the exact algorithm draws a perspective: set `exact` to true, or `focus` to 0 for a parallel view."]);
+        expect([inside.property, inside.message]).toEqual(["focus", "`focus` is 5, which puts the eye inside the shape or leaves part of it behind the eye: give a focus that keeps the whole shape in front of the eye, or 0 for a parallel view."]);
     });
 });

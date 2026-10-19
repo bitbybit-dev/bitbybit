@@ -1,7 +1,10 @@
 import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire, gp_Ax1, gp_Ax2, gp_Ax22d, gp_Ax2d, gp_Ax3, gp_Dir2d, gp_Dir, gp_Pln, gp_Pnt2d, gp_Pnt, gp_Vec2d, gp_Vec, gp_XYZ } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import type { Base } from "../../api/inputs";
-import { release, releasedOnError } from "./release";
+import { released, releasedOnError } from "./release";
+import { withKernelErrorsRead } from "./kernel-refusals";
+import { checkedWithin } from "./input-checks";
+import { InputError } from "@bitbybit-dev/base";
 import { length3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
 export class EntitiesService {
@@ -11,47 +14,29 @@ export class EntitiesService {
     ) { }
 
     createCircle(radius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum): TopoDS_Edge | TopoDS_Wire | TopoDS_Face {
-        const ax = this.gpAx2(center, direction);
-        if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
-            const edge = this.occ.MakeCircleEdge(ax, radius);
-            ax.delete();
-            return edge;
-        } else if (type === Inputs.OCCT.typeSpecificityEnum.wire) {
-            const wire = this.occ.MakeCircleWire(ax, radius);
-            ax.delete();
-            return wire;
-        } else if (type === Inputs.OCCT.typeSpecificityEnum.face) {
-            const wire = this.occ.MakeCircleWire(ax, radius);
-            ax.delete();
-            const face = this.bRepBuilderAPIMakeFaceFromWire(wire, true);
-            wire.delete();
-            return face;
-        }
-        const wire = this.occ.MakeCircleWire(ax, radius);
-        ax.delete();
-        return wire;
+        const checkedRadius = checkedWithin(radius, "radius", { above: 0 });
+        return this.closedCurveOfType(type, axis => this.occ.MakeCircleEdge(axis, checkedRadius), axis => this.occ.MakeCircleWire(axis, checkedRadius), center, direction);
     }
 
     createEllipse(minorRadius: number, majorRadius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum): TopoDS_Edge | TopoDS_Wire | TopoDS_Face {
-        const ax = this.gpAx2(center, direction);
-        if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
-            const edge = this.occ.MakeEllipseEdge(ax, majorRadius, minorRadius);
-            ax.delete();
-            return edge;
-        } else if (type === Inputs.OCCT.typeSpecificityEnum.wire) {
-            const wire = this.occ.MakeEllipseWire(ax, majorRadius, minorRadius);
-            ax.delete();
-            return wire;
-        } else if (type === Inputs.OCCT.typeSpecificityEnum.face) {
-            const wire = this.occ.MakeEllipseWire(ax, majorRadius, minorRadius);
-            ax.delete();
-            const face = this.bRepBuilderAPIMakeFaceFromWire(wire, true);
-            wire.delete();
-            return face;
+        const radiusMinor = checkedWithin(minorRadius, "radiusMinor", { above: 0 });
+        const radiusMajor = checkedWithin(majorRadius, "radiusMajor", { above: 0 });
+        if (radiusMinor > radiusMajor) {
+            throw new InputError(`\`radiusMinor\` must not exceed \`radiusMajor\`; it is ${radiusMinor} and \`radiusMajor\` is ${radiusMajor}.`, "radiusMinor");
         }
-        const wire = this.occ.MakeEllipseWire(ax, majorRadius, minorRadius);
-        ax.delete();
-        return wire;
+        return this.closedCurveOfType(type, axis => this.occ.MakeEllipseEdge(axis, radiusMajor, radiusMinor), axis => this.occ.MakeEllipseWire(axis, radiusMajor, radiusMinor), center, direction);
+    }
+
+    private closedCurveOfType(type: Inputs.OCCT.typeSpecificityEnum, edgeOn: (axis: gp_Ax2) => TopoDS_Edge, wireOn: (axis: gp_Ax2) => TopoDS_Wire, center: Base.Point3, direction: Base.Vector3): TopoDS_Edge | TopoDS_Wire | TopoDS_Face {
+        const axis = this.gpAx2(center, direction);
+        if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
+            return released([axis], () => edgeOn(axis));
+        }
+        const wire = released([axis], () => wireOn(axis));
+        if (type !== Inputs.OCCT.typeSpecificityEnum.face) {
+            return wire;
+        }
+        return released([wire], () => this.bRepBuilderAPIMakeFaceFromWire(wire, true));
     }
 
     makeVertex(pt: Base.Point3): TopoDS_Vertex {
@@ -110,115 +95,106 @@ export class EntitiesService {
     }
 
     bRepBuilderAPIMakeFacesFromWiresOnFace(face: TopoDS_Face, wires: TopoDS_Wire[], inside: boolean): TopoDS_Face[] {
-        return wires.map(wire => this.occ.MakeFaceFromFaceSurfaceAndWire(face, wire, inside));
+        const faces: TopoDS_Face[] = [];
+        return releasedOnError(faces, () => {
+            wires.forEach(wire => faces.push(this.bRepBuilderAPIMakeFaceFromWireOnFace(face, wire, inside)));
+            return faces;
+        });
     }
 
     bRepBuilderAPIMakeFaceFromWireOnFace(face: TopoDS_Face, wire: TopoDS_Wire, inside: boolean): TopoDS_Face {
-        return this.occ.MakeFaceFromFaceSurfaceAndWire(face, wire, inside);
+        return withKernelErrorsRead(this.occ, () => this.occ.MakeFaceFromFaceSurfaceAndWire(face, wire, inside));
     }
 
     bRepPrimAPIMakeSphere(center: Base.Point3, direction: Base.Vector3, radius: number): TopoDS_Shape {
         const ax = this.gpAx2(center, direction);
         try {
-            const sphereMaker = this.occ.MakeSphereFromAx2(ax, radius);
-            if (!sphereMaker) {
-                throw new Error("Failed to create the sphere");
-            }
-            const sphere = sphereMaker.Shape();
-            sphereMaker.delete();
-            return sphere;
+            return withKernelErrorsRead(this.occ, () => {
+                const sphereMaker = this.occ.MakeSphereFromAx2(ax, radius);
+                if (!sphereMaker) {
+                    throw new Error("Failed to create the sphere");
+                }
+                return released([sphereMaker], () => sphereMaker.Shape());
+            });
         } finally {
             ax.delete();
         }
     }
 
     gpAx3_3(point: Base.Point3, normal: Base.Vector3, direction: Base.Vector3): gp_Ax3 {
-        const norm = this.gpDir(normal);
-        const dir = releasedOnError([norm], () => this.gpDir(direction));
-        const pt = this.gpPnt(point);
-        try {
-            return new this.occ.gp_Ax3(pt, norm, dir);
-        } finally {
-            [pt, norm, dir].forEach(release);
-        }
+        return withKernelErrorsRead(this.occ, () => {
+            const norm = this.gpDir(normal);
+            const dir = releasedOnError([norm], () => this.gpDir(direction));
+            const pt = this.gpPnt(point);
+            return released([pt, norm, dir], () => new this.occ.gp_Ax3(pt, norm, dir));
+        });
     }
 
     gpAx3_4(point: Base.Point3, direction: Base.Vector3): gp_Ax3 {
-        const dir = this.gpDir(direction);
-        const pt = this.gpPnt(point);
-        const ax = new this.occ.gp_Ax3(pt, dir);
-        pt.delete();
-        dir.delete();
-        return ax;
+        return withKernelErrorsRead(this.occ, () => {
+            const dir = this.gpDir(direction);
+            const pt = this.gpPnt(point);
+            return released([pt, dir], () => new this.occ.gp_Ax3(pt, dir));
+        });
     }
 
     gpAx2(point: Base.Point3, direction: Base.Vector3): gp_Ax2 {
-        const dir = this.gpDir(direction);
-        const pt = this.gpPnt(point);
-        const ax = new this.occ.gp_Ax2(pt, dir);
-        pt.delete();
-        dir.delete();
-        return ax;
+        return withKernelErrorsRead(this.occ, () => {
+            const dir = this.gpDir(direction);
+            const pt = this.gpPnt(point);
+            return released([pt, dir], () => new this.occ.gp_Ax2(pt, dir));
+        });
     }
 
     gpAx2FromTwoVectors(point: Base.Point3, directionFirst: Base.Vector3, directionSecond: Base.Vector3): gp_Ax2 {
-        const first = this.gpDir(directionFirst);
-        const second = releasedOnError([first], () => this.gpDir(directionSecond));
-        const pt = this.gpPnt(point);
-        try {
-            return new this.occ.gp_Ax2(pt, first, second);
-        } finally {
-            [pt, first, second].forEach(release);
-        }
+        return withKernelErrorsRead(this.occ, () => {
+            const first = this.gpDir(directionFirst);
+            const second = releasedOnError([first], () => this.gpDir(directionSecond));
+            const pt = this.gpPnt(point);
+            return released([pt, first, second], () => new this.occ.gp_Ax2(pt, first, second));
+        });
     }
 
     gpAx1(point: Base.Point3, direction: Base.Vector3): gp_Ax1 {
-        const dir = this.gpDir(direction);
-        const pt = this.gpPnt(point);
-        const ax = new this.occ.gp_Ax1(pt, dir);
-        pt.delete();
-        dir.delete();
-        return ax;
+        return withKernelErrorsRead(this.occ, () => {
+            const dir = this.gpDir(direction);
+            const pt = this.gpPnt(point);
+            return released([pt, dir], () => new this.occ.gp_Ax1(pt, dir));
+        });
     }
 
     gpAx2d(point: Base.Point2, direction: Base.Vector2): gp_Ax2d {
-        const dir = this.gpDir2d(direction);
-        const pt = this.gpPnt2d(point);
-        const ax = new this.occ.gp_Ax2d(pt, dir);
-        pt.delete();
-        dir.delete();
-        return ax;
+        return withKernelErrorsRead(this.occ, () => {
+            const dir = this.gpDir2d(direction);
+            const pt = this.gpPnt2d(point);
+            return released([pt, dir], () => new this.occ.gp_Ax2d(pt, dir));
+        });
     }
 
     gpAx22d(point: Base.Point2, direction1: Base.Vector2, direction2: Base.Vector2): gp_Ax22d {
-        const dir1 = this.gpDir2d(direction1);
-        const dir2 = releasedOnError([dir1], () => this.gpDir2d(direction2));
-        const pt = this.gpPnt2d(point);
-        try {
-            return new this.occ.gp_Ax22d(pt, dir1, dir2);
-        } finally {
-            [pt, dir1, dir2].forEach(release);
-        }
+        return withKernelErrorsRead(this.occ, () => {
+            const dir1 = this.gpDir2d(direction1);
+            const dir2 = releasedOnError([dir1], () => this.gpDir2d(direction2));
+            const pt = this.gpPnt2d(point);
+            return released([pt, dir1, dir2], () => new this.occ.gp_Ax22d(pt, dir1, dir2));
+        });
     }
 
     gpPln(point: Base.Point3, direction: Base.Vector3): gp_Pln {
-        const gpDir = this.gpDir(direction);
-        const gpPnt = this.gpPnt(point);
-        const pln = new this.occ.gp_Pln(gpPnt, gpDir);
-        gpPnt.delete();
-        gpDir.delete();
-        return pln;
+        return withKernelErrorsRead(this.occ, () => {
+            const dir = this.gpDir(direction);
+            const pt = this.gpPnt(point);
+            return released([pt, dir], () => new this.occ.gp_Pln(pt, dir));
+        });
     }
 
     bRepPrimAPIMakeCylinder(center: Base.Point3, direction: Base.Vector3, radius: number, height: number, angle: number): TopoDS_Shape {
         const ax = this.gpAx2(center, direction);
         try {
-            const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder(ax, radius, height, angle);
-            try {
-                return cylinderMaker.Shape();
-            } finally {
-                cylinderMaker.delete();
-            }
+            return withKernelErrorsRead(this.occ, () => {
+                const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder(ax, radius, height, angle);
+                return released([cylinderMaker], () => cylinderMaker.Shape());
+            });
         } finally {
             ax.delete();
         }
@@ -228,12 +204,10 @@ export class EntitiesService {
         const along = subtract3(end, start);
         const ax = this.gpAx2(start, along);
         try {
-            const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder(ax, radius, length3(along));
-            try {
-                return cylinderMaker.Shape();
-            } finally {
-                cylinderMaker.delete();
-            }
+            return withKernelErrorsRead(this.occ, () => {
+                const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder(ax, radius, length3(along));
+                return released([cylinderMaker], () => cylinderMaker.Shape());
+            });
         } finally {
             ax.delete();
         }
@@ -246,7 +220,7 @@ export class EntitiesService {
             -length / 2 + center[2]!
         ]);
         try {
-            return this.occ.MakeBoxFromPntAndDims(pt, width, height, length);
+            return withKernelErrorsRead(this.occ, () => this.occ.MakeBoxFromPntAndDims(pt, width, height, length));
         } finally {
             pt.delete();
         }

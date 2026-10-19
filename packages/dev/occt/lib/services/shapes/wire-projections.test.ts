@@ -232,4 +232,42 @@ describe("OCCT wires projected and wrapped onto shapes", () => {
             expect(sphere).toBe("Standard_DomainError: WrapOnFace: the face is not a plane, a cylinder or a cone, which unroll without stretching");
         });
     });
+
+    describe("project and projectWires", () => {
+        const box = (): TopoDS_Shape => occt.shapes.solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] });
+
+        it("should give an empty compound, not a null one, when the projection misses the shape", () => {
+            // Arrange
+            const beside = circleAbove(1, [100, 5, 0]);
+
+            // Act
+            const projected = occt.shapes.wire.project({ wire: beside, shape: box(), direction: [0, -1, 0] });
+
+            // Assert
+            expect([projected.IsNull(), wiresIn(projected)]).toEqual([false, []]);
+        });
+
+        it("should give an empty compound, not a null one, for each wire whose projection misses the shape", () => {
+            // Arrange
+            const wires = [circleAbove(0.5, [0, 5, 0]), circleAbove(1, [100, 5, 0])];
+
+            // Act
+            const projected = occt.shapes.wire.projectWires({ wires, shape: box(), direction: [0, -1, 0] });
+
+            // Assert
+            expect(projected.map(compound => [compound.IsNull(), wiresIn(compound).length])).toEqual([[false, 2], [false, 0]]);
+        });
+
+        it("should refuse a direction with no length for one wire and for a list of them, naming the direction", () => {
+            // Arrange
+            const wire = circleAbove(0.5, [0, 5, 0]);
+
+            // Act
+            const one = thrownBy(() => occt.shapes.wire.project({ wire, shape: box(), direction: [0, 0, 0] }));
+            const many = thrownBy(() => occt.shapes.wire.projectWires({ wires: [wire], shape: box(), direction: [0, 0, 0] }));
+
+            // Assert
+            expect([one.property, one.message, many.property, many.message]).toEqual(["direction", "`direction` is [0, 0, 0], which points nowhere.", "direction", "`direction` is [0, 0, 0], which points nowhere."]);
+        });
+    });
 });

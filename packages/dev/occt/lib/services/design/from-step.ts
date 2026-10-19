@@ -9,6 +9,7 @@ import { followedBy, isRigidMatrix } from "@bitbybit-dev/base/lib/api/services/h
 import { sha256 } from "./digest";
 import { isKernelTrap } from "./problems";
 import { IDENTITY_MATRIX } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices.constants";
+import { readKernelException } from "../../kernel-exception";
 
 type Node = Models.OCCT.AssemblyHierarchyNode;
 type Rgba = Models.OCCT.LabelColorInfo;
@@ -585,7 +586,8 @@ function stepDocument(bytes: Uint8Array, context: StepImportContext): Handle_TDo
         if (isKernelTrap(error)) {
             throw error;
         }
-        throw new InputError(`The file could not be read as STEP${error instanceof Error ? ` (${error.message})` : ""}.`, "step");
+        const read = readKernelException(context.occ, error);
+        throw new InputError(`The file could not be read as STEP${read instanceof Error ? ` (${read.message})` : ""}.`, "step");
     }
 }
 

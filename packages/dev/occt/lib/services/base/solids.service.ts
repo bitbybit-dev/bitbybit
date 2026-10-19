@@ -10,7 +10,12 @@ import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { coordinatesOf, massesAndCentres } from "./kernel-arrays";
 import { checkedDirection, checkedShapes } from "./input-checks";
-import { scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { InputError } from "@bitbybit-dev/base";
+import { released, releasedOnError } from "./release";
+import { withKernelErrorsRead } from "./kernel-refusals";
+
+const SAME_POINT_TOLERANCE = 1e-7;
 
 export class SolidsService {
 
@@ -85,14 +90,15 @@ export class SolidsService {
     }
 
     createCylindersOnLines(inputs: Resolved.OCCT.CylindersOnLinesDto): TopoDS_Solid[] {
-        const cylinders = inputs.lines.map(line => {
-            return this.entitiesService.bRepPrimAPIMakeCylinderBetweenPoints(
-                line.start,
-                line.end,
-                inputs.radius,
-            );
+        const withoutLength = inputs.lines.findIndex(line => length3(subtract3(line.end, line.start)) <= SAME_POINT_TOLERANCE);
+        if (withoutLength !== -1) {
+            throw new InputError(`\`lines\` at position ${withoutLength} starts and ends at the same point, so there is no cylinder along it.`, "lines");
+        }
+        const cylinders: TopoDS_Solid[] = [];
+        return releasedOnError(cylinders, () => {
+            inputs.lines.forEach(line => cylinders.push(this.entitiesService.bRepPrimAPIMakeCylinderBetweenPoints(line.start, line.end, inputs.radius)));
+            return cylinders;
         });
-        return cylinders;
     }
 
     createSphere(inputs: Resolved.OCCT.SphereDto): TopoDS_Solid {
@@ -103,12 +109,10 @@ export class SolidsService {
         const ax = this.entitiesService.gpAx2(inputs.center, checkedDirection(inputs.direction, "direction"));
         const angle = this.base.math.degToRad({ number: inputs.angle });
         try {
-            const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, angle);
-            try {
-                return makeCone.Shape();
-            } finally {
-                makeCone.delete();
-            }
+            return withKernelErrorsRead(this.occ, () => {
+                const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, angle);
+                return released([makeCone], () => makeCone.Shape());
+            });
         } finally {
             ax.delete();
         }
@@ -118,14 +122,12 @@ export class SolidsService {
         const ax = this.entitiesService.gpAx2(inputs.center, checkedDirection(inputs.direction, "direction"));
         const angle = this.base.math.degToRad({ number: inputs.angle });
         try {
-            const makeTorus = angle >= 2 * Math.PI - 1e-7
-                ? new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius)
-                : new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius, 0, 2 * Math.PI, angle);
-            try {
-                return makeTorus.Shape();
-            } finally {
-                makeTorus.delete();
-            }
+            return withKernelErrorsRead(this.occ, () => {
+                const makeTorus = angle >= 2 * Math.PI - 1e-7
+                    ? new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius)
+                    : new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius, 0, 2 * Math.PI, angle);
+                return released([makeTorus], () => makeTorus.Shape());
+            });
         } finally {
             ax.delete();
         }

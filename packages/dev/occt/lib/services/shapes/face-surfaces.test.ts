@@ -285,13 +285,15 @@ describe("OCCT faces through points and between edges", () => {
         const rimPoints: Inputs.Base.Point3[] = [[2, 0, 5], [0, 2, 5], [-2, 0, 5], [0, -2, 5]];
         const radialAlignment = (patch: TopoDS_Face): number[] => occt.analysis.surfaces.closestPoints({ shape: patch, points: rimPoints })
             .map(found => Math.abs(found.normal[0] * found.point[0] / 2 + found.normal[1] * found.point[1] / 2));
-        const prismRimAndWalls = (): { rim: TopoDS_Edge[]; walls: TopoDS_Face[] } => {
+        const prismRimAndWalls = (): { rim: TopoDS_Edge[]; apart: TopoDS_Edge[]; walls: TopoDS_Face[] } => {
             const prism = occt.operations.extrude({ shape: occt.shapes.face.createSquareFace({ size: 10, center: [0, 0, 0], direction: [0, 0, 1] }), direction: [0, 0, 5] });
             const [top] = occt.select.faces.facing({ shape: prism, direction: [0, 0, 1], angle: 0 });
-            const rim = occt.select.edges.ofFaces({ shape: prism, indexes: [top!] });
+            const indexes = occt.select.edges.ofFaces({ shape: prism, indexes: [top!] });
+            const rim = indexes.map(index => occt.shapes.edge.getEdge({ shape: prism, index }));
             return {
-                rim: rim.map(index => occt.shapes.edge.getEdge({ shape: prism, index })),
-                walls: rim.map(index => occt.shapes.face.getFace({ shape: prism, index: occt.select.faces.ofEdges({ shape: prism, indexes: [index] }).find(face => face !== top)! })),
+                rim,
+                apart: rim.map(edge => occt.shapes.edge.line({ start: occt.shapes.edge.startPointOnEdge({ shape: edge }), end: occt.shapes.edge.endPointOnEdge({ shape: edge }) })),
+                walls: indexes.map(index => occt.shapes.face.getFace({ shape: prism, index: occt.select.faces.ofEdges({ shape: prism, indexes: [index] }).find(face => face !== top)! })),
             };
         };
         const quarterCylinder = (): TopoDS_Face => loose<TopoDS_Face>(occt.operations.revolve({ shape: occt.shapes.edge.line({ start: [2, 0, 0], end: [2, 0, 5] }), angle: 90, direction: [0, 0, 1] }));
@@ -325,14 +327,14 @@ describe("OCCT faces through points and between edges", () => {
             expect(farthest(tangent, [[0, 0, 7]])).toBeLessThan(1e-3);
         });
 
-        it("should hold a lid upright on a prism's walls given as supports, which its rim does not bound as curves", () => {
+        it("should hold a lid upright on a prism's walls given as supports, and refuse to make a rim drawn apart from them tangent without its supports", () => {
             // Arrange
-            const { rim, walls } = prismRimAndWalls();
+            const { rim, apart, walls } = prismRimAndWalls();
             const tangent = rim.map(() => Inputs.OCCT.continuityEnum.tangent);
 
             // Act
             const lid = occt.shapes.face.fillPatch({ edges: rim, continuities: tangent, supports: walls, points: [[0, 0, 7]] });
-            const unsupported = messageOf(() => occt.shapes.face.fillPatch({ edges: rim, continuities: tangent, points: [[0, 0, 7]] }));
+            const unsupported = messageOf(() => occt.shapes.face.fillPatch({ edges: apart, continuities: tangent, points: [[0, 0, 7]] }));
 
             // Assert
             occt.analysis.surfaces.closestPoints({ shape: lid, points: [[5, 0, 5], [0, 5, 5], [-5, 0, 5], [0, -5, 5]] })
@@ -340,13 +342,27 @@ describe("OCCT faces through points and between edges", () => {
             expect(unsupported).toBe("Standard_DomainError: FillPatch: boundary edge 0 lies on no face to be tangent to; give it a support face");
         });
 
-        it("should give an edge whose support entry is undefined no support face, at its own position", () => {
+        it("should fill a prism's own top rim tangent to its cap when no supports are given, since the extrusion leaves that rim lying on the cap", () => {
             // Arrange
-            const { rim, walls } = prismRimAndWalls();
+            const { rim } = prismRimAndWalls();
             const tangent = rim.map(() => Inputs.OCCT.continuityEnum.tangent);
 
             // Act
-            const secondMissing = messageOf(() => occt.shapes.face.fillPatch({ edges: rim, continuities: tangent, supports: [walls[0], undefined, walls[2], walls[3]], points: [[0, 0, 7]] }));
+            const dome = occt.shapes.face.fillPatch({ edges: rim, continuities: tangent, points: [[0, 0, 7]] });
+
+            // Assert
+            occt.analysis.surfaces.closestPoints({ shape: dome, points: [[5, 0, 5], [0, 5, 5], [-5, 0, 5], [0, -5, 5]] })
+                .forEach(found => expect(Math.abs(found.normal[2])).toBeGreaterThan(Math.cos(0.02)));
+            expect(farthest(dome, [[0, 0, 7]])).toBeLessThan(1e-3);
+        });
+
+        it("should give an edge whose support entry is undefined no support face, at its own position", () => {
+            // Arrange
+            const { apart, walls } = prismRimAndWalls();
+            const tangent = apart.map(() => Inputs.OCCT.continuityEnum.tangent);
+
+            // Act
+            const secondMissing = messageOf(() => occt.shapes.face.fillPatch({ edges: apart, continuities: tangent, supports: [walls[0], undefined, walls[2], walls[3]], points: [[0, 0, 7]] }));
 
             // Assert
             expect(secondMissing).toBe("Standard_DomainError: FillPatch: boundary edge 1 lies on no face to be tangent to; give it a support face");

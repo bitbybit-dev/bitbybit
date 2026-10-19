@@ -2,12 +2,21 @@ import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper, OCCTService } from "@bitbybit-dev/occt";
-import type { Inputs } from "@bitbybit-dev/occt";
+import type { Inputs, Models } from "@bitbybit-dev/occt";
 import type { CommandContext } from "./command-handlers";
 import { getCommandHandler, hasCommandHandler } from "./command-handlers";
 import { CacheHelper } from "./cache-helper";
 import { ShapeResolver } from "./shape-resolver";
 import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES } from "./constants";
+import { handlesIn } from "../../../__test__/embind-ledger";
+
+const plateDocument: Models.OCCT.DesignPartDocument = {
+    schemaVersion: 1,
+    features: [
+        { id: "base", type: "sketch", on: { plane: "XY" }, start: [0, 0], pen: [{ type: "hLine", length: 40 }, { type: "vLine", length: 20 }, { type: "hLine", length: -40 }, { type: "close" }] },
+        { id: "plate", type: "extrude", profile: "base", distance: 10 },
+    ],
+};
 
 describe("the reserved command handlers", () => {
     let occt: BitbybitOcctModule;
@@ -70,6 +79,15 @@ describe("the reserved command handlers", () => {
     const meshBox = (hash: string): void => {
         run(ReservedFunctions.SHAPE_TO_MESH, { shape: { type: "occ-shape", hash }, precision: 0.1, adjustYtoZ: false });
     };
+
+    const featuresReusedByABuild = (): boolean[] => {
+        const built = openCascade.design.build({ document: plateDocument });
+        handlesIn(built).forEach(handle => { handle.delete(); });
+        return built.report.map(entry => entry.cached);
+    };
+
+    const hashesPastTheThreshold = (): Record<string, number> =>
+        Object.fromEntries(Array.from({ length: CACHE_THRESHOLD + 1 }, (_, index) => [index, index]));
 
     describe("hasCommandHandler", () => {
         it("should know the reserved function names", () => {
@@ -261,6 +279,94 @@ describe("the reserved command handlers", () => {
         });
     });
 
+    describe("deleteUnsharedShapes", () => {
+        const answeredOnce = (hash: string): Record<string, unknown> => ({ type: "occ-shape", hash, answers: 1 });
+
+        it("should delete a shape only when the answers counted for it are every answer that carried it, and answer with the epoch", () => {
+            // Arrange
+            ["shape-1", "shape-2", "shape-3"].forEach(hash => cacheHelper.addToCache(hash, { hash }));
+            cacheHelper.countAnswer(["shape-1", "shape-2"]);
+            cacheHelper.countAnswer(["shape-2"]);
+
+            // Act
+            const result = run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { epoch: cacheHelper.epoch, shapes: ["shape-1", "shape-2", "shape-3"].map(answeredOnce) });
+
+            // Assert
+            expect(["shape-1", "shape-2", "shape-3"].map(hash => cacheHelper.checkCache(hash))).toEqual([null, { hash: "shape-2" }, { hash: "shape-3" }]);
+            expect(result).toStrictEqual({ handled: true, result: { epoch: cacheHelper.epoch } });
+        });
+
+        it("should delete nothing in an epoch that has ended, as the cache was cleared since and what a key holds now is another caller's, and answer with the current epoch", () => {
+            // Arrange
+            const ended = cacheHelper.epoch;
+            run(ReservedFunctions.CLEAN_ALL_CACHE, {});
+            cacheHelper.addToCache("shape-1", { hash: "shape-1" });
+            cacheHelper.countAnswer(["shape-1"]);
+
+            // Act
+            const result = run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { epoch: ended, shapes: [answeredOnce("shape-1")] });
+
+            // Assert
+            expect(cacheHelper.checkCache("shape-1")).toEqual({ hash: "shape-1" });
+            expect(result).toStrictEqual({ handled: true, result: { epoch: cacheHelper.epoch } });
+            expect(cacheHelper.epoch).not.toBe(ended);
+        });
+
+        it("should delete nothing in an epoch the threshold reset has ended", () => {
+            // Arrange
+            const ended = cacheHelper.epoch;
+            cacheHelper.usedHashes = hashesPastTheThreshold();
+            run(ReservedFunctions.STARTED_THE_RUN, {});
+            cacheHelper.addToCache("shape-1", { hash: "shape-1" });
+            cacheHelper.countAnswer(["shape-1"]);
+
+            // Act
+            run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { epoch: ended, shapes: [answeredOnce("shape-1")] });
+
+            // Assert
+            expect(cacheHelper.checkCache("shape-1")).toEqual({ hash: "shape-1" });
+        });
+
+        it.each([ReservedFunctions.DELETE_SHAPE, ReservedFunctions.DELETE_SHAPES, ReservedFunctions.DELETE_UNSHARED_SHAPES])("should keep the shape a key holds again after %s deleted the one before, whose answers still count", (deletion) => {
+            // Arrange
+            cacheHelper.addToCache("shape-1", { hash: "shape-1" });
+            cacheHelper.countAnswer(["shape-1"]);
+            const deleted = { shape: answeredOnce("shape-1"), shapes: [answeredOnce("shape-1")], epoch: cacheHelper.epoch };
+            run(deletion, deleted);
+            cacheHelper.addToCache("shape-1", { hash: "shape-1", made: "again" });
+            cacheHelper.countAnswer(["shape-1"]);
+
+            // Act
+            run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { epoch: cacheHelper.epoch, shapes: [answeredOnce("shape-1")] });
+
+            // Assert
+            expect(cacheHelper.checkCache("shape-1")).toEqual({ hash: "shape-1", made: "again" });
+        });
+
+        it("should delete nothing when asked without an epoch, and answer with the one a later call names", () => {
+            // Arrange
+            cacheHelper.addToCache("shape-1", { hash: "shape-1" });
+            cacheHelper.countAnswer(["shape-1"]);
+
+            // Act
+            const result = run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { shapes: [answeredOnce("shape-1")] });
+
+            // Assert
+            expect(cacheHelper.checkCache("shape-1")).toEqual({ hash: "shape-1" });
+            expect(result).toStrictEqual({ handled: true, result: { epoch: cacheHelper.epoch } });
+        });
+
+        it("should refuse shapes that are not a list", () => {
+            // Act & Assert
+            expect(() => run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { shapes: "shape-1" })).toThrow(expect.objectContaining({ name: "InputError", property: "shapes" }));
+        });
+
+        it("should refuse an epoch that is not a number", () => {
+            // Act & Assert
+            expect(() => run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { epoch: "1", shapes: [] })).toThrow(expect.objectContaining({ name: "InputError", property: "epoch" }));
+        });
+    });
+
     describe("deleteDocument", () => {
         it("should forget the document it was given", () => {
             // Arrange
@@ -294,7 +400,7 @@ describe("the reserved command handlers", () => {
             cacheBox("box");
             meshBox("box");
             const keptBefore = occt.KeptMeshFaces();
-            cacheHelper.usedHashes = Object.fromEntries(Array.from({ length: CACHE_THRESHOLD + 1 }, (_, index) => [index, index]));
+            cacheHelper.usedHashes = hashesPastTheThreshold();
 
             // Act
             run(ReservedFunctions.STARTED_THE_RUN, {});
@@ -304,6 +410,30 @@ describe("the reserved command handlers", () => {
             expect(cacheHelper.usedHashes).toEqual({});
             expect(occt.KeptMeshFaces()).toBe(0);
             expect(occt.MeshRetentionBudget()).toBe(100);
+        });
+
+        it("should leave the design builder what it kept while the cache is a manageable size, so the next build reuses every feature", () => {
+            // Arrange
+            featuresReusedByABuild();
+            cacheHelper.usedHashes = { one: 1 };
+
+            // Act
+            run(ReservedFunctions.STARTED_THE_RUN, {});
+
+            // Assert
+            expect(featuresReusedByABuild()).toEqual([true, true]);
+        });
+
+        it("should free what the design builder kept once the cache has outgrown the run, so the next build makes every feature again", () => {
+            // Arrange
+            featuresReusedByABuild();
+            cacheHelper.usedHashes = hashesPastTheThreshold();
+
+            // Act
+            run(ReservedFunctions.STARTED_THE_RUN, {});
+
+            // Assert
+            expect(featuresReusedByABuild()).toEqual([false, false]);
         });
     });
 
@@ -387,6 +517,17 @@ describe("the reserved command handlers", () => {
             // Assert
             expect(cacheHelper.argCache).toEqual({});
             expect(result).toEqual({ handled: true, result: {} });
+        });
+
+        it("should free what the design builder kept, so the next build makes every feature again", () => {
+            // Arrange
+            featuresReusedByABuild();
+
+            // Act
+            run(ReservedFunctions.CLEAN_ALL_CACHE, {});
+
+            // Assert
+            expect(featuresReusedByABuild()).toEqual([false, false]);
         });
     });
 

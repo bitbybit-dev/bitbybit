@@ -11,7 +11,7 @@ import { carryNames, copyNames, give, nameOf } from "./names";
 import { resolveEdges } from "./references";
 import type { BodyState, DesignPlan, DesignRun, SketchState } from "./state";
 import { bodyKey, sketchKey } from "./state";
-import { DesignProblem, pointer } from "./problems";
+import { cleanedUp, cleanedUpOnError, DesignProblem, pointer } from "./problems";
 import type { DesignValues } from "./values";
 import { MAX_PATTERN_COUNT, countOf, directionOf, numberOf, pointOf } from "./values";
 import type { ProfileHistory } from "./helpers";
@@ -193,11 +193,8 @@ export function sketchPlan(feature: Models.OCCT.DesignSketchFeature, path: strin
                 ? undefined
                 : [numberOf(feature.start[0], run.parameters, pointer(path, "start", 0)), numberOf(feature.start[1], run.parameters, pointer(path, "start", 1))];
             const outline = run.occt.sketch.penWithSegments({ commands, start, frame, makeFace: false });
-            const face = feature.face !== false && run.occt.shapes.wire.isWireClosed({ shape: outline.shape });
-            const drawn = face ? run.occt.sketch.penWithSegments({ commands, start, frame, makeFace: true }) : outline;
-            if (face) {
-                release(outline.shape);
-            }
+            const face = cleanedUpOnError(() => feature.face !== false && run.occt.shapes.wire.isWireClosed({ shape: outline.shape }), () => release(outline.shape));
+            const drawn = face ? cleanedUp(() => run.occt.sketch.penWithSegments({ commands, start, frame, makeFace: true }), () => release(outline.shape)) : outline;
             run.trace?.set(path, { frame, face });
             const byEdge: (string | undefined)[] = Array.from({ length: Math.max(0, ...drawn.segments.flatMap(segment => segment.edges.map(edge => edge + 1))) }, () => undefined);
             drawn.segments.forEach(segment => {

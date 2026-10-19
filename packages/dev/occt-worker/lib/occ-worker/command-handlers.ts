@@ -1,9 +1,9 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import type { CacheHelper } from "./cache-helper";
 import type { MeshRetention } from "./constants";
-import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES } from "./constants";
+import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES, isShapeReference } from "./constants";
 import type { ShapeResolver } from "./shape-resolver";
-import { Inputs } from "@bitbybit-dev/occt";
+import { Inputs, releaseDesignCaches } from "@bitbybit-dev/occt";
 import type { OccHelper, OCCTService, TopoDS_Shape } from "@bitbybit-dev/occt";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import { meshBuffersOf } from "./mesh-transfer";
@@ -166,6 +166,33 @@ export const CommandHandlers: Record<string, CommandHandler> = {
     },
 
     /**
+     * Deletes each shape given whose `answers`, the answers the caller counted carrying it, are every
+     * answer that has carried a shape under its key in this epoch, so no other caller was handed it:
+     * the cache answers an identical call with the same shape. Any other shape stays. Only an `epoch`
+     * that is still the cache's deletes anything, since emptying the cache began a new one and what a
+     * key holds since is another caller's; without one, nothing is deleted. Answers `{ epoch }`, the
+     * cache's epoch now.
+     */
+    [ReservedFunctions.DELETE_UNSHARED_SHAPES]: (inputs, context): CommandResult => {
+        const shapesInput = inputs["shapes"];
+        const epoch = inputs["epoch"];
+        if (!Array.isArray(shapesInput)) {
+            throw new InputError("`shapes` is not a list of shapes, each with the answers that carried it.", "shapes");
+        }
+        if (epoch !== undefined && typeof epoch !== "number") {
+            throw new InputError("`epoch` is not a number: it is the epoch an earlier answer of deleteUnsharedShapes named.", "epoch");
+        }
+        if (epoch === context.cacheHelper.epoch) {
+            shapesInput.forEach((shape: unknown) => {
+                if (isShapeReference(shape) && "answers" in shape && context.cacheHelper.answersOf(shape.hash) === shape.answers) {
+                    context.cacheHelper.cleanCacheForHash(String(shape.hash));
+                }
+            });
+        }
+        return { handled: true, result: { epoch: context.cacheHelper.epoch } };
+    },
+
+    /**
      * Handles assembly document deletion from cache. A document handle lives in the same cache
      * as shapes; releasing it here frees the OCCT object and forgets the reference, exactly as
      * shape deletion does. Previously this was dispatched to a kernel method that does not exist.
@@ -184,6 +211,7 @@ export const CommandHandlers: Record<string, CommandHandler> = {
         if (Object.keys(context.cacheHelper.usedHashes).length > CACHE_THRESHOLD) {
             context.kernel.ReleaseKeptMeshes();
             context.cacheHelper.cleanAllCache();
+            releaseDesignCaches(context.openCascade);
         }
         return { handled: true, result: {} };
     },
@@ -194,6 +222,7 @@ export const CommandHandlers: Record<string, CommandHandler> = {
     [ReservedFunctions.CLEAN_ALL_CACHE]: (_inputs, context): CommandResult => {
         context.kernel.ReleaseKeptMeshes();
         context.cacheHelper.cleanAllCache();
+        releaseDesignCaches(context.openCascade);
         return { handled: true, result: {} };
     },
 

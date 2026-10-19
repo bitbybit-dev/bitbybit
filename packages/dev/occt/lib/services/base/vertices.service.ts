@@ -4,7 +4,8 @@ import type { ConverterService } from "./converter.service";
 import type { EntitiesService } from "./entities.service";
 import type { ShapeGettersService } from "./shape-getters";
 import type * as Resolved from "../../api/resolved-inputs";
-import { checkedShapes } from "./input-checks";
+import { checkedPoints, checkedShapes } from "./input-checks";
+import { released, releasedOnError } from "./release";
 
 export class VerticesService {
 
@@ -25,12 +26,17 @@ export class VerticesService {
     }
 
     verticesFromPoints(inputs: Inputs.OCCT.PointsDto): TopoDS_Vertex[] {
-        return inputs.points.map(p => this.vertexFromPoint({ point: p }));
+        const points = checkedPoints(inputs.points, "points");
+        const vertices: TopoDS_Vertex[] = [];
+        return releasedOnError(vertices, () => {
+            points.forEach(point => vertices.push(this.vertexFromPoint({ point })));
+            return vertices;
+        });
     }
 
     verticesCompoundFromPoints(inputs: Inputs.OCCT.PointsDto): TopoDS_Compound {
         const vertexes = this.verticesFromPoints(inputs);
-        return this.converterService.makeCompound({ shapes: vertexes });
+        return released(vertexes, () => this.converterService.makeCompound({ shapes: vertexes }));
     }
 
     getVertices(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Vertex[] {

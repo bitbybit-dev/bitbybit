@@ -1,10 +1,12 @@
 import { describe, it, expect, beforeAll, vi } from "vitest";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 import type * as Inputs from "../../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
+import { releaseDesignCaches } from "../../release-design-caches";
+import { handlesIn, namesOf, openWindow } from "../../../../__test__/embind-ledger";
 
 const PLATE_ID = "33333333-3333-4333-8333-333333333333";
 const POST_ID = "44444444-4444-4444-8444-444444444444";
@@ -54,12 +56,35 @@ const stand: Models.OCCT.DesignAssemblyDocument = {
 };
 
 describe("sections of a design build", () => {
+    let kernel: BitbybitOcctModule;
     let occt: OCCTService;
 
     beforeAll(async () => {
-        const kernel = await createBitbybitOcct();
+        kernel = await createBitbybitOcct();
         occt = new OCCTService(kernel);
     }, 120_000);
+
+    const armedTrap = (): { trap: WebAssembly.RuntimeError; spring: () => never; disarm: () => void } => {
+        const trap = new WebAssembly.RuntimeError("unreachable");
+        const shapes: unknown = Reflect.get(kernel.TopoDS_Shape, "prototype");
+        const prototype = shapes as { delete: () => void };
+        const deleteShape = prototype.delete;
+        let sprung = false;
+        const deletes = vi.spyOn(prototype, "delete").mockImplementation(function (this: unknown): void {
+            if (sprung) {
+                throw new WebAssembly.RuntimeError("a shape deleted after the trap");
+            }
+            Reflect.apply(deleteShape, this, []);
+        });
+        return {
+            trap,
+            spring: (): never => {
+                sprung = true;
+                throw trap;
+            },
+            disarm: (): void => deletes.mockRestore(),
+        };
+    };
 
     const placedBox = (shape: TopoDS_Shape, world?: Inputs.Base.TransformMatrix): Inputs.OCCT.BoundingBoxPropsDto => {
         const placed = world === undefined ? shape : occt.transforms.transformByMatrix({ shape, transformation: world });
@@ -73,6 +98,68 @@ describe("sections of a design build", () => {
     const freed = (section: Models.OCCT.DesignSection<TopoDS_Shape>): void => {
         section.parts.forEach(part => { part.shape.delete(); });
     };
+
+    it("should keep none of the pieces it cut from a part when a later cut of the same part throws", () => {
+        // Arrange
+        const built = occt.design.build({ document: stand, documents: [plate, post] });
+        const postShape = built.parts.find(part => part.name === "post")!.shape;
+        const split = occt.operations.splitByFrame.bind(occt.operations);
+        const postFrames: Inputs.Base.Frame[] = [];
+        const cutting = vi.spyOn(occt.operations, "splitByFrame").mockImplementation(inputs => {
+            if (inputs.shape === postShape) {
+                postFrames.push(inputs.frame);
+                if (postFrames.length === 2) {
+                    throw new Error("no second piece");
+                }
+            }
+            return split(inputs);
+        });
+        const opened = openWindow();
+
+        // Act
+        let thrown: unknown;
+        try {
+            occt.design.section({ build: built, frame: ACROSS_X, cut: true });
+        } catch (error) {
+            thrown = error;
+        } finally {
+            opened.close();
+            cutting.mockRestore();
+        }
+        handlesIn(built).forEach(handle => { handle.delete(); });
+        releaseDesignCaches(occt);
+
+        // Assert
+        expect(thrown).toEqual(new Error("no second piece"));
+        expect(namesOf(opened.made().filter(handle => !handle.isDeleted()))).toEqual([]);
+    });
+
+    it("should hand a trap while cutting on unchanged, asking the trapped kernel to free nothing, not even the caps it made before", () => {
+        // Arrange
+        const built = occt.design.build({ document: stand, documents: [plate, post] });
+        const slice = occt.operations.sliceByFrames.bind(occt.operations);
+        const cutting = armedTrap();
+        const slicing = vi.spyOn(occt.operations, "sliceByFrames").mockImplementationOnce(slice).mockImplementationOnce(cutting.spring);
+        const opened = openWindow();
+
+        // Act
+        let thrown: unknown;
+        try {
+            occt.design.section({ build: built, frame: ACROSS_X });
+        } catch (error) {
+            thrown = error;
+        } finally {
+            opened.close();
+            cutting.disarm();
+            slicing.mockRestore();
+        }
+        opened.made().filter(handle => !handle.isDeleted()).forEach(handle => { handle.delete(); });
+        handlesIn(built).forEach(handle => { handle.delete(); });
+        releaseDesignCaches(occt);
+
+        // Assert
+        expect(thrown).toBe(cutting.trap);
+    });
 
     it("should cap a part document where the plane passes through it, in the part's colour without its face colours", () => {
         // Arrange

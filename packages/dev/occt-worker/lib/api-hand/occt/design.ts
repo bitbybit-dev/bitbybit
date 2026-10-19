@@ -9,7 +9,10 @@ export class OCCTDesign {
     /**
      * Builds a design document whose script features run here, on the main thread, as the kernel runs no
      * code: it builds, runs the code of every script the build lists as `pending`, and builds again
-     * with what each made, until no script waits.
+     * with what each made, until no script waits. The shapes of earlier rounds and those the scripts
+     * returned are deleted on the way, each unless another call was answered with it too, so only what
+     * the last build returns is the caller's to delete; as with `build`, an identical call returns the
+     * same shapes while they live.
      *
      * A script's code is the asset its feature names, given in `assets` as an import's file is, and
      * is the body of an async function given `inputs`, the feature's params with bodies as shapes and

@@ -26,10 +26,10 @@ export function historiesFromKernel(histories: KernelHistory[]): Models.OCCT.Sha
     return histories.map(historyFromKernel);
 }
 
-export function withHistory<M>(historyOf: (maker: M, result: TopoDS_Shape) => KernelHistory, build: (read: (maker: M, result: TopoDS_Shape) => void) => TopoDS_Shape, inputs?: readonly TopoDS_Shape[]): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+export function withHistory<A extends [unknown, TopoDS_Shape, ...unknown[]]>(historyOf: (...read: A) => KernelHistory, build: (read: (...read: A) => void) => TopoDS_Shape, inputs?: readonly TopoDS_Shape[]): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
     let history: Models.OCCT.ShapeHistory | undefined;
-    const shape = build((maker, result) => {
-        history = historyFromKernel(historyOf(maker, result));
+    const shape = build((...read: A) => {
+        history = historyFromKernel(historyOf(...read));
     });
     if (history === undefined) {
         throw unreadBuild(shape, inputs);
@@ -37,10 +37,10 @@ export function withHistory<M>(historyOf: (maker: M, result: TopoDS_Shape) => Ke
     return { shape, history };
 }
 
-export function withHistories<M>(historiesOf: (maker: M, result: TopoDS_Shape) => KernelHistory[], build: (read: (maker: M, result: TopoDS_Shape) => void) => TopoDS_Shape, inputs?: readonly TopoDS_Shape[]): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+export function withHistories<A extends [unknown, TopoDS_Shape, ...unknown[]]>(historiesOf: (...read: A) => KernelHistory[], build: (read: (...read: A) => void) => TopoDS_Shape, inputs?: readonly TopoDS_Shape[]): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
     let histories: Models.OCCT.ShapeHistory[] | undefined;
-    const shape = build((maker, result) => {
-        histories = historiesFromKernel(historiesOf(maker, result));
+    const shape = build((...read: A) => {
+        histories = historiesFromKernel(historiesOf(...read));
     });
     if (histories === undefined) {
         throw unreadBuild(shape, inputs);

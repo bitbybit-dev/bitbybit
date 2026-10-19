@@ -51,6 +51,36 @@ and nothing else.
   the call's key holds the list of those keys, so an identical call is a hit. A list with an item
   deleted since is computed again, and the old items still alive are freed as the new ones take their
   keys - an object the new list hands back again is kept.
+- **A shape inside a structure is keyed by its path in the answer** (`hashNestedShapes`:
+  `result.parts[0].shape`), and a key that is not a plain name is written quoted in brackets
+  (`result.inputs["a.b"]`). Script params let a document choose its keys, and written plainly `a.b`
+  spells the path of `{ a: { b } }`: the two shapes took one key, the first was freed and the cached
+  answer held a deleted handle. The walk passes over bytes, buffers and views, as every walker here
+  does; walking an 8 MB answer key by key took 784 ms on every miss.
+- **`design.buildWithScripts` deletes what it does not hand back** (`lib/occ-worker/design-scripts.ts`).
+  Only the last build's shapes reach the caller, so each earlier build's shapes are deleted once the
+  next build has run, and the shapes the scripts made once the last build has taken them - a build
+  keeps its own copy of every outcome it is given. A shape a script handed back as its outcome is
+  passed to every later build, so it stays until the last. On a failure both are deleted before it
+  is thrown on; nothing the caller supplied in `outcomes` is. Through the worker's cache an identical
+  call elsewhere is answered with the same shape, before the build or between its rounds, so the
+  worker counts the answers that carry each shape (`CacheHelper.countAnswer`, once the answer is
+  posted) and the loop deletes through `deleteUnsharedShapes`, which frees a shape only when every
+  answer that carried it was the loop's own; a shared one stays until `deleteShape`, `cleanAllCache`
+  or the threshold frees it. Keys are deterministic, so a count belongs to the key, not to the shape
+  under it now: a delete of one key (`deleteShape`, `deleteShapes`, `deleteUnsharedShapes`) keeps its
+  count, and a shape made again under it counts on, so a count taken before can never match again.
+  Such a key is never freed by a later loop in that epoch; it stays cached, one shape, until a delete
+  command or a full clear. The two full clears (`cleanAllCache`, the threshold reset) drop every count
+  and begin a new epoch, and the cache a restarted kernel gets begins one no earlier cache had. The
+  loop asks for the epoch before its first build (`deleteUnsharedShapes` with an empty list and no
+  epoch) and names it in every delete; the worker deletes nothing for an epoch that has ended, since
+  that clear freed all the loop held and what a key holds since is another caller's. A worker without
+  the command (an older bundle) refuses the ask as a kernel failure - on one that has it, an empty ask
+  can fail only as a cancel or a crash, which are thrown - and the loop then deletes nothing, as
+  before the cleanup existed. A delete refused later, for any reason, still frees what it can and is
+  thrown. `occ-worker-lifetimes.test.ts` pins the shared cases, both clears and the older worker
+  through a real worker, `design-scripts.test.ts` which shapes go when.
 - **Retention is bounded by a count, not by memory.** Only two things bound it: the count threshold in
   `startedTheRun`, which clears everything once more than `CACHE_THRESHOLD` hashes have been used, and
   the delete commands (`deleteShape`, `deleteShapes`, `deleteDocument`, `cleanAllCache`). An entry a
@@ -68,6 +98,20 @@ and nothing else.
   live. This is the one strip that is safe: the kernel cleans only a face whose triangulation is still
   the one it recorded, never the geometry. `cleanAllCache` and the threshold reset release the kept
   meshes first (`ReleaseKeptMeshes`) and keep the budget.
+
+- **The design builder keeps kernel shapes of its own, and only the two full clears free them.**
+  Between builds it keeps each feature's outcome, so an unchanged feature is not built again, and
+  between sections each cut, so the same section makes nothing. When a build ends it frees the least
+  recently used outcomes beyond 256, and when a section ends the cuts beyond 512, but never one that
+  call used: a build that uses more than 256 outcomes keeps every one of them, so neither number is
+  a bound. `cleanAllCache` and the threshold reset free all of them through `releaseDesignCaches`,
+  after the kept meshes and this cache, together with the boxes and clash meshes it keeps outside
+  the kernel; the delete commands never reach them. `occ-worker-lifetimes.test.ts` pins both clears
+  on the kernel objects (none a design build made is alive after either, while the sketch's face and
+  the extruded shape are after a run under the threshold), and `command-handlers.test.ts` pins that
+  the next build makes every feature again after either and reuses them after a run under the
+  threshold. No worker test measures the heap here; the occt package's `npm run heap` measures a
+  design session released this way, outside `npm test`.
 
 - **`manifoldObjectHashes` is the liveness ledger** in the Manifold worker's sibling of this cache: an
   entry that was a handle but no longer carries embind's `$$` marker is evicted and reported as a miss

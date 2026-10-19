@@ -81,8 +81,12 @@ export class LoftAdvancedDto<T> {
      */
     useSmoothing?: boolean | undefined = false;
     /**
-     * The highest polynomial degree the surface may use across the sections.
+     * The highest polynomial degree the surface may use across the sections, a whole number up to
+     * 25; 0 leaves the kernel's own limit.
      * @default 3
+     * @minimum 0
+     * @maximum 25
+     * @step 1
      */
     maxUDegree?: number | undefined = 3;
     /**
@@ -394,10 +398,10 @@ export class PipePolygonWireNGonDto<T> {
      */
     radius?: number | undefined = 0.1;
     /**
-     * How many corners, and so flat sides, the tube has.
+     * How many corners, and so flat sides, the tube has, from 3 to 1000.
      * @default 6
      * @minimum 3
-     * @maximum Infinity
+     * @maximum 1000
      * @step 1
      */
     nrCorners?: number | undefined = 6;

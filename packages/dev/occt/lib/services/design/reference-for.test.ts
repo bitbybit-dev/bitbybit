@@ -5,6 +5,9 @@ import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 import * as Inputs from "../../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
+import { releaseDesignCaches } from "../../release-design-caches";
+import { handlesIn, namesOf, openWindow } from "../../../../__test__/embind-ledger";
+import { sha256 } from "./digest";
 
 type Document = Models.OCCT.DesignPartDocument;
 
@@ -31,6 +34,14 @@ const plate = (sketch: Models.OCCT.DesignSketchFeature, ...extra: Models.OCCT.De
     schemaVersion: 1,
     parameters: { width: 40, height: 10 },
     features: [sketch, { id: "plate", type: "extrude", profile: sketch.id, distance: "height" }, ...extra],
+});
+
+const LUG_CODE = "return occt.shapes.solid.createBox(inputs);";
+
+const scripted = (document: Document): Document => ({
+    ...document,
+    assets: [{ id: "lugScript", uri: "lug.js", sha256: sha256(new TextEncoder().encode(LUG_CODE)) }],
+    features: [...document.features, { id: "lug", type: "script", script: "lugScript", params: { plate: { body: "plate" }, list: [{ body: "plate" }, { expr: "height" }] } }],
 });
 
 describe("naming picked faces and edges", () => {
@@ -63,6 +74,19 @@ describe("naming picked faces and edges", () => {
         return { ...found, reference: "between" in reference ? { ...reference, between: [withoutHint(reference.between[0]), withoutHint(reference.between[1])] } : withoutHint(reference) };
     };
 
+    const keptAfter = <T>(act: () => T): { answer: T; kept: string[] } => {
+        const opened = openWindow();
+        let answer: T;
+        try {
+            answer = act();
+            handlesIn(answer).forEach(handle => { handle.delete(); });
+        } finally {
+            opened.close();
+        }
+        releaseDesignCaches(occt);
+        return { answer, kept: namesOf(opened.made().filter(handle => !handle.isDeleted())) };
+    };
+
     it("should hint the faces it names, and both sides of the edges it names, as a build writing hints would", () => {
         // Arrange
         const document = plate(named("base"));
@@ -91,6 +115,19 @@ describe("naming picked faces and edges", () => {
 
         // Assert
         expect(found).toEqual({ reference: { of: "plate", role: "end", count: 1 }, nudged: ["height", "width"], lost: [] });
+    });
+
+    it("should keep none of the shapes a waiting script was given, in its own build or in a build after any nudge", () => {
+        // Arrange
+        const top = facing(plate(named("base")), [0, 0, 1]);
+        const document = scripted(plate(named("base")));
+
+        // Act
+        const { answer, kept } = keptAfter(() => occt.design.referenceFor({ document, body: "plate", faces: top, assets: { lugScript: LUG_CODE } }));
+
+        // Assert
+        expect(answer.nudged).toEqual(["height", "width"]);
+        expect(kept).toEqual([]);
     });
 
     it("should name a side by the sketch command that drew it, or by a filter when the commands have no ids", () => {

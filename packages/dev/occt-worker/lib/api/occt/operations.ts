@@ -637,11 +637,11 @@ export class OCCTOperations {
     }
 
     /**
-     * Sweeps a regular polygon along a wire, giving a bar with `nrCorners` flat sides.
+     * Sweeps a regular polygon along a wire, giving a bar with `nrCorners` flat sides, from 3 to 1000.
      *
      * The polygon of `radius` starts perpendicular to the wire. `makeSolid` gives a solid instead of
-     * a shell, `trihedronEnum` sets how the profile turns, and `forceApproxC1` smooths the result.
-     * An invalid bar is refused; on a nearly straight path, use the discrete trihedron.
+     * a shell, `trihedronEnum` sets how the profile turns and `forceApproxC1` smooths it. An invalid
+     * bar is refused; on a nearly straight path, use the discrete trihedron.
      * @param inputs - The path wire, the polygon radius and corner count, and the sweep options
      * @returns The swept solid or shell
      * @group pipeing
@@ -796,11 +796,11 @@ export class OCCTOperations {
     }
 
     /**
-     * Moves the boundary of a shape outward, or inward for a negative distance, by a fixed
-     * distance: a wire grows into a parallel outline, a face or solid into a bigger one.
+     * Moves the boundary of a shape outward, or inward for a negative distance: a wire into a
+     * parallel outline, a face or solid into a bigger one.
      *
-     * A wire or edge is offset in its own plane, or on `face` when given; corners are rounded. A
-     * distance of 0 returns the shape as it is.
+     * A wire or edge is offset in its own plane, or on `face` when given, with rounded corners. A
+     * distance of 0 gives the same shape in a new handle the caller deletes.
      * @param inputs - The shape, an optional face to offset a wire on, the distance and the tolerance
      * @returns The offset shape
      * @group offsets
@@ -837,7 +837,8 @@ export class OCCTOperations {
      * Offsets a shape like `offset`, with a choice of how corners are joined: `arc` rounds them,
      * `intersection` extends the sides to a sharp corner, `tangent` keeps them tangent.
      *
-     * `removeIntEdges` drops the internal edges the offset can leave behind on a solid.
+     * `removeIntEdges` drops the internal edges the offset can leave behind on a solid. A distance
+     * of 0 gives the same shape in a new handle the caller deletes, as `offset` does.
      * @param inputs - The shape, an optional face to offset a wire on, the distance, the tolerance, the corner join type and whether to remove internal edges
      * @returns The offset shape
      * @group offsets

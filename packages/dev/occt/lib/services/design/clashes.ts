@@ -10,6 +10,7 @@ import { knownBox } from "./boxes";
 import type { ClashContext, PlacedPart, ThreadSide } from "./clash-types";
 import { beyondThreads, facesInRole } from "./thread-contacts";
 import { rounded } from "./section";
+import { cleanedUp } from "./problems";
 
 const SHARED_VOLUME = 1e-9;
 const THREAD_ROLE = "thread";
@@ -88,37 +89,34 @@ export function clashesOf(built: Models.OCCT.DesignBuildResult<TopoDS_Shape>, cl
     };
     const inverses = placed.map(entry => once(() => entry.world === undefined ? undefined : rigidInverse(entry.world)));
     const threadSideOf = (index: number): ThreadSide => ({ shape: copyOf(index), own: placed[index]!.shape, faces: new Set(placed[index]!.threads), ends: new Set(placed[index]!.ends) });
-    try {
-        return placed.flatMap((first, a) => placed.slice(a + 1).flatMap((second, offset): Models.OCCT.DesignClash[] => {
-            const b = a + 1 + offset;
-            if (boxesApart(items[a]!.box(), items[b]!.box(), clearance)) {
-                return [];
-            }
-            const needsMeasuring = (): boolean => orAfterKernelFailure(context, () => pairNeedsMeasuring(items[a]!, items[b]!, clearance, precision => context.occt.analysis.clashes.facesWithin({ shapeA: copyOf(a), shapeB: copyOf(b), clearance, precision }).length), () => true);
-            const measured = (): Models.OCCT.Clash[] => needsMeasuring()
-                ? context.occt.analysis.clashes.betweenShapes({ shapes: [copyOf(a), copyOf(b)], clearance, prefilter: false })
-                : [];
-            const measure = (): Models.OCCT.Clash[] => isThreaded(first, second)
-                ? measured().flatMap(clash => clash.volume <= SHARED_VOLUME ? orAfterKernelFailure(context, () => beyondThreads(clash, [threadSideOf(a), threadSideOf(b)], clearance, pairPrecision(first, second, context), context), () => [clash]) : [clash])
-                : measured();
-            const inverse = inverses[a]!();
-            const key = pairKeyOf(first, inverse, second, clearance);
-            const world = first.world;
-            const found = key === undefined || world === undefined || inverse === undefined
-                ? measure()
-                : placedClashes(context.store.pair(key, () => placedClashes(measure(), inverse)), world);
-            return found.flatMap((clash): Models.OCCT.DesignClash[] => {
-                const components: [string, string] = [first.path, second.path];
-                const isJoined = joined.has(pairKey(...components));
-                return isJoined && clash.volume <= SHARED_VOLUME ? [] : [{ components, distance: clash.distance, volume: clash.volume, pointA: clash.pointA, pointB: clash.pointB, joined: isJoined }];
-            });
-        }));
-    } finally {
-        placed.forEach((entry, index) => {
-            const copy = copies.get(index);
-            if (copy !== undefined && copy !== entry.shape) {
-                release(copy);
-            }
+    const releaseCopies = (): void => placed.forEach((entry, index) => {
+        const copy = copies.get(index);
+        if (copy !== undefined && copy !== entry.shape) {
+            release(copy);
+        }
+    });
+    return cleanedUp(() => placed.flatMap((first, a) => placed.slice(a + 1).flatMap((second, offset): Models.OCCT.DesignClash[] => {
+        const b = a + 1 + offset;
+        if (boxesApart(items[a]!.box(), items[b]!.box(), clearance)) {
+            return [];
+        }
+        const needsMeasuring = (): boolean => orAfterKernelFailure(context, () => pairNeedsMeasuring(items[a]!, items[b]!, clearance, precision => context.occt.analysis.clashes.facesWithin({ shapeA: copyOf(a), shapeB: copyOf(b), clearance, precision }).length), () => true);
+        const measured = (): Models.OCCT.Clash[] => needsMeasuring()
+            ? context.occt.analysis.clashes.betweenShapes({ shapes: [copyOf(a), copyOf(b)], clearance, prefilter: false })
+            : [];
+        const measure = (): Models.OCCT.Clash[] => isThreaded(first, second)
+            ? measured().flatMap(clash => clash.volume <= SHARED_VOLUME ? orAfterKernelFailure(context, () => beyondThreads(clash, [threadSideOf(a), threadSideOf(b)], clearance, pairPrecision(first, second, context), context), () => [clash]) : [clash])
+            : measured();
+        const inverse = inverses[a]!();
+        const key = pairKeyOf(first, inverse, second, clearance);
+        const world = first.world;
+        const found = key === undefined || world === undefined || inverse === undefined
+            ? measure()
+            : placedClashes(context.store.pair(key, () => placedClashes(measure(), inverse)), world);
+        return found.flatMap((clash): Models.OCCT.DesignClash[] => {
+            const components: [string, string] = [first.path, second.path];
+            const isJoined = joined.has(pairKey(...components));
+            return isJoined && clash.volume <= SHARED_VOLUME ? [] : [{ components, distance: clash.distance, volume: clash.volume, pointA: clash.pointA, pointB: clash.pointB, joined: isJoined }];
         });
-    }
+    })), releaseCopies);
 }

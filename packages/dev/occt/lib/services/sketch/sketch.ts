@@ -13,11 +13,15 @@ import type { OCCTOperations } from "../operations";
 import type { OCCTBooleans } from "../booleans";
 import { checkedChoice, checkedFlag, checkedFrame, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
 import { numbersOfFrames } from "../base/frames";
+import { kernelObjects, released, releasedOnError } from "../base/release";
+import type { KernelObjects } from "../base/release-types";
 import { OCCTSketchCommands } from "./commands";
 import type { Outline, Vec2 } from "./outline";
 import { COINCIDENT, outlineOf, segmentsOf, signedArea, subpathOf } from "./outline";
 import type { HullPart } from "./hull";
 import { hullOf } from "./hull";
+
+const NARROWEST_STROKE = 2 * COINCIDENT;
 
 type Vec3 = Inputs.Base.Vector3;
 
@@ -126,7 +130,7 @@ export class OCCTSketch {
     stroke(inputs: Inputs.OCCT.SketchStrokeDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.SketchStrokeDto, inputs) as Resolved.OCCT.SketchStrokeDto<TopoDS_Wire | TopoDS_Edge>;
         const shape = checkedShape(resolved.shape);
-        const width = checkedWithin(resolved.width, "width", { above: 0 });
+        const width = checkedWithin(resolved.width, "width", { above: NARROWEST_STROKE });
         const cap = checkedChoice(resolved.cap, CAPS, "cap");
         const join = checkedChoice(resolved.join, JOINS, "join");
         const frame = this.frameOf(resolved.frame);
@@ -136,24 +140,22 @@ export class OCCTSketch {
             throw new InputError("`shape` is not a wire or an edge.", "shape");
         }
         this.inPlane(shape, frame, "shape");
-        const wire = type === Inputs.OCCT.shapeTypeEnum.edge
-            ? this.shapes.wire.createWireFromEdge({ shape: shape })
-            : shape;
-        const plane = this.built({ pieces: [
-            { kind: "line", from: [0, 0], to: [1, 0], owner: 0 },
-            { kind: "line", from: [1, 0], to: [1, 1], owner: 0 },
-            { kind: "line", from: [1, 1], to: [0, 1], owner: 0 },
-            { kind: "line", from: [0, 1], to: [0, 0], owner: 0 },
-        ], closed: true }, frame, true, "shape");
+        const { own, releaseAll } = kernelObjects();
         try {
+            const wire = type === Inputs.OCCT.shapeTypeEnum.edge
+                ? own(this.shapes.wire.createWireFromEdge({ shape: shape }))
+                : shape;
+            const plane = own(this.built({ pieces: [
+                { kind: "line", from: [0, 0], to: [1, 0], owner: 0 },
+                { kind: "line", from: [1, 0], to: [1, 1], owner: 0 },
+                { kind: "line", from: [1, 1], to: [0, 1], owner: 0 },
+                { kind: "line", from: [0, 1], to: [0, 0], owner: 0 },
+            ], closed: true }, frame, true, "shape"));
             return this.shapes.wire.isWireClosed({ shape: wire })
                 ? this.ring(wire, plane, width, join, makeFace)
                 : this.band(wire, plane, width, cap, join, makeFace);
         } finally {
-            plane.delete();
-            if (wire !== shape) {
-                wire.delete();
-            }
+            releaseAll();
         }
     }
 
@@ -232,24 +234,14 @@ export class OCCTSketch {
                 wire.delete();
                 throw new InputError(`\`${property}\` draw an outline that encloses no area.`, property);
             }
-            flat = this.faceOf(wire, area < 0, property);
-            wire.delete();
+            flat = released([wire], () => this.faceOf(wire, area < 0, property));
         }
-        const placed = this.placed(flat, XY_FRAME, frame);
-        flat.delete();
-        return placed;
+        return released([flat], () => this.placed(flat, XY_FRAME, frame));
     }
 
     private faceOf(wire: TopoDS_Wire, clockwise: boolean, property: string): TopoDS_Face {
-        const reversed = clockwise ? wire.Reversed() : undefined;
-        const source = reversed === undefined ? wire : this.och.converterService.getActualTypeOfShape(reversed);
-        if (reversed !== undefined && reversed !== source) {
-            reversed.delete();
-        }
-        const face = this.och.facesService.createFaceFromWire({ shape: source, planar: true });
-        if (source !== wire) {
-            source.delete();
-        }
+        const source = clockwise ? this.och.converterService.castAndRelease(wire.Reversed()) : wire;
+        const face = released(source === wire ? [] : [source], () => this.och.facesService.createFaceFromWire({ shape: source, planar: true }));
         if (!this.occ.ShapeIsValid(face)) {
             face.delete();
             throw new InputError(`\`${property}\` draw an outline that crosses itself, so it bounds no valid face.`, property);
@@ -284,32 +276,25 @@ export class OCCTSketch {
 
     private ring(wire: TopoDS_Wire, plane: TopoDS_Face, width: number, join: Inputs.OCCT.joinTypeEnum, makeFace: boolean): TopoDS_Shape {
         const offset = (distance: number): TopoDS_Wire => this.onlyWire(this.operations.offsetAdv({ shape: wire, distance, tolerance: COINCIDENT, joinType: join, removeIntEdges: false }));
-        const outer = offset(width / 2);
-        const inner = offset(-width / 2);
+        const { own, releaseAll } = kernelObjects();
         try {
+            const outer = own(offset(width / 2));
+            const inner = own(offset(-width / 2));
             if (!makeFace) {
                 return this.och.converterService.makeCompound({ shapes: [outer, inner] });
             }
-            const outerFace = this.shapes.face.createFaceFromWire({ shape: outer, planar: true });
-            const innerFace = this.shapes.face.createFaceFromWire({ shape: inner, planar: true });
-            try {
-                const cut = this.booleans.difference({ shape: outerFace, shapes: [innerFace], keepEdges: false });
-                const faces = this.shapes.face.getFaces({ shape: cut });
-                const face = faces[0];
-                faces.slice(1).forEach(other => other.delete());
-                cut.delete();
-                if (face === undefined || faces.length !== 1) {
-                    face?.delete();
-                    throw new InputError("`width` is too wide for the wire: the inside of the ring closes up.", "width");
-                }
-                return this.facingAlong(face, plane);
-            } finally {
-                outerFace.delete();
-                innerFace.delete();
+            const outerFace = own(this.shapes.face.createFaceFromWire({ shape: outer, planar: true }));
+            const innerFace = own(this.shapes.face.createFaceFromWire({ shape: inner, planar: true }));
+            const cut = own(this.booleans.difference({ shape: outerFace, shapes: [innerFace], keepEdges: false }));
+            const faces = this.shapes.face.getFaces({ shape: cut });
+            const face = faces[0];
+            if (face === undefined || faces.length !== 1) {
+                faces.forEach(own);
+                throw new InputError("`width` is too wide for the wire: the inside of the ring closes up.", "width");
             }
+            return this.facingAlong(face, plane);
         } finally {
-            outer.delete();
-            inner.delete();
+            releaseAll();
         }
     }
 
@@ -331,59 +316,58 @@ export class OCCTSketch {
             throw new InputError(`\`shape\` has no direction at its ${startTangent === undefined ? "start" : "end"}, so its ends cannot be capped: remove the doubled point or the piece of no length there.`, "shape");
         }
         const half = width / 2;
-        const right = this.shapes.wire.offsetOpen({ shape: wire, face: plane, distance: half, joinType: join });
-        const left = this.shapes.wire.offsetOpen({ shape: wire, face: plane, distance: -half, joinType: join });
-        const rightEdges = this.shapes.edge.getEdgesAlongWire({ shape: right });
-        const leftEdges = this.shapes.edge.getEdgesAlongWire({ shape: left });
-        right.delete();
-        left.delete();
-        const leftBack = leftEdges.slice().reverse().map(edge => this.shapes.edge.reversedEdge({ shape: edge }));
-        const firstOf = (edges: TopoDS_Edge[]): Vec3 => this.shapes.edge.startPointOnEdge({ shape: edges[0]! });
-        const lastOf = (edges: TopoDS_Edge[]): Vec3 => this.shapes.edge.endPointOnEdge({ shape: edges[edges.length - 1]! });
-        const start = this.shapes.wire.startPointOnWire({ shape: wire });
-        const end = this.shapes.wire.endPointOnWire({ shape: wire });
-        const endCap = this.cap(lastOf(rightEdges), lastOf(leftEdges), end, endTangent, half, cap);
-        const startCap = this.cap(firstOf(leftEdges), firstOf(rightEdges), start, scale3(startTangent, -1), half, cap);
-        const edges = [...rightEdges, ...endCap, ...leftBack, ...startCap];
+        const { own, releaseAll } = kernelObjects();
         try {
-            const outline = this.shapes.wire.combineEdgesAndWiresIntoAWire({ shapes: edges });
+            const right = own(this.shapes.wire.offsetOpen({ shape: wire, face: plane, distance: half, joinType: join }));
+            const left = own(this.shapes.wire.offsetOpen({ shape: wire, face: plane, distance: -half, joinType: join }));
+            const rightEdges = this.shapes.edge.getEdgesAlongWire({ shape: right }).map(edge => own(edge));
+            const leftEdges = this.shapes.edge.getEdgesAlongWire({ shape: left }).map(edge => own(edge));
+            const leftBack = leftEdges.slice().reverse().map(edge => own(this.shapes.edge.reversedEdge({ shape: edge })));
+            const firstOf = (edges: TopoDS_Edge[]): Vec3 => this.shapes.edge.startPointOnEdge({ shape: edges[0]! });
+            const lastOf = (edges: TopoDS_Edge[]): Vec3 => this.shapes.edge.endPointOnEdge({ shape: edges[edges.length - 1]! });
+            const start = this.shapes.wire.startPointOnWire({ shape: wire });
+            const end = this.shapes.wire.endPointOnWire({ shape: wire });
+            const endCap = this.cap(lastOf(rightEdges), lastOf(leftEdges), end, endTangent, half, cap, own);
+            const startCap = this.cap(firstOf(leftEdges), firstOf(rightEdges), start, scale3(startTangent, -1), half, cap, own);
+            const outline = this.shapes.wire.combineEdgesAndWiresIntoAWire({ shapes: [...rightEdges, ...endCap, ...leftBack, ...startCap] });
             if (!makeFace) {
                 return outline;
             }
-            const face = this.shapes.face.createFaceFromWire({ shape: outline, planar: true });
-            outline.delete();
+            const face = this.shapes.face.createFaceFromWire({ shape: own(outline), planar: true });
             if (!this.occ.ShapeIsValid(face)) {
                 face.delete();
                 throw new InputError("`width` is too wide for the wire: the outline crosses itself.", "width");
             }
             return this.facingAlong(face, plane);
         } finally {
-            [...edges, ...leftEdges].forEach(edge => edge.delete());
+            releaseAll();
         }
     }
 
-    private cap(from: Vec3, to: Vec3, end: Vec3, outward: Vec3, half: number, cap: Inputs.OCCT.strokeCapEnum): TopoDS_Edge[] {
+    private cap(from: Vec3, to: Vec3, end: Vec3, outward: Vec3, half: number, cap: Inputs.OCCT.strokeCapEnum, own: KernelObjects["own"]): TopoDS_Edge[] {
         if (cap === Inputs.OCCT.strokeCapEnum.round) {
-            return [this.shapes.edge.arcThroughThreePoints({ start: from, middle: add3(end, scale3(outward, half)), end: to })];
+            return [own(this.shapes.edge.arcThroughThreePoints({ start: from, middle: add3(end, scale3(outward, half)), end: to }))];
         }
         if (cap === Inputs.OCCT.strokeCapEnum.flat) {
-            return [this.shapes.edge.line({ start: from, end: to })];
+            return [own(this.shapes.edge.line({ start: from, end: to }))];
         }
         const fromOut = add3(from, scale3(outward, half));
         const toOut = add3(to, scale3(outward, half));
-        return [this.shapes.edge.line({ start: from, end: fromOut }), this.shapes.edge.line({ start: fromOut, end: toOut }), this.shapes.edge.line({ start: toOut, end: to })];
+        const outwardSide = own(this.shapes.edge.line({ start: from, end: fromOut }));
+        const across = own(this.shapes.edge.line({ start: fromOut, end: toOut }));
+        return [outwardSide, across, own(this.shapes.edge.line({ start: toOut, end: to }))];
     }
 
     private facingAlong(face: TopoDS_Face, plane: TopoDS_Face): TopoDS_Face {
-        const normal = this.shapes.face.normalOnUV({ shape: plane, paramU: 0.5, paramV: 0.5 });
-        const facing = this.shapes.face.normalOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
-        if (dot3(normal, facing) >= 0) {
+        const alongPlane = releasedOnError([face], () => {
+            const normal = this.shapes.face.normalOnUV({ shape: plane, paramU: 0.5, paramV: 0.5 });
+            const facing = this.shapes.face.normalOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
+            return dot3(normal, facing) >= 0;
+        });
+        if (alongPlane) {
             return face;
         }
-        const reversed = face.Reversed();
-        const typed = this.och.converterService.castAndRelease(reversed);
-        face.delete();
-        return typed;
+        return released([face], () => this.och.converterService.castAndRelease(face.Reversed()));
     }
 
     private hullParts(shape: TopoDS_Shape, index: number, axes: FrameAxes): HullPart[] {
@@ -399,7 +383,7 @@ export class OCCTSketch {
             return [{ kind: "point", at: flat(this.shapes.vertex.vertexToPoint({ shape: shape })) }];
         }
         const edges = this.shapes.edge.getEdges({ shape });
-        try {
+        return released(edges.filter(edge => edge !== shape), () => {
             if (edges.length === 0) {
                 throw new InputError(`\`${property}\` at position ${index} has no vertex or edge to wrap.`, property);
             }
@@ -424,9 +408,7 @@ export class OCCTSketch {
                 const middle = flat(this.shapes.edge.pointOnEdgeAtParam({ shape: edge, param: 0.5 }));
                 return [{ kind: "point", at: start }, { kind: "point", at: end }, { kind: "disc", center, radius, range: arcRange(center, start, middle, end) }];
             });
-        } finally {
-            edges.forEach(edge => edge.delete());
-        }
+        });
     }
 }
 

@@ -51,6 +51,18 @@ describe("input checks", () => {
             expect(error.property).toBe("tool");
         });
 
+        it("should refuse a deleted shape as an input error naming the property, without asking it whether it is empty", () => {
+            // Arrange
+            const deleted = { isDeleted: (): boolean => true, IsNull: (): boolean => rethrown(new Error("BindingError: TopoDS_Shape instance already deleted")) };
+
+            // Act
+            const error = thrownBy(() => checkedShape(deleted, "tool"));
+
+            // Assert
+            expect(error.property).toBe("tool");
+            expect(error.message).toBe("`tool` was deleted, so nothing of it is left to work on.");
+        });
+
         it("should hand back a shape that is not empty", () => {
             // Arrange
             const shape = { IsNull: () => false };
@@ -78,6 +90,18 @@ describe("input checks", () => {
             // Assert
             expect(error.property).toBe("sections");
             expect(error.message).toBe(`\`sections\` holds a missing or empty shape at position ${position}, as an operation that failed can leave it.`);
+        });
+
+        it("should refuse a list holding a deleted shape at its position, without asking it whether it is empty", () => {
+            // Arrange
+            const deleted = { isDeleted: (): boolean => true, IsNull: (): boolean => rethrown(new Error("BindingError: TopoDS_Shape instance already deleted")) };
+
+            // Act
+            const error = thrownBy(() => checkedShapes([shape, deleted], "sections"));
+
+            // Assert
+            expect(error.property).toBe("sections");
+            expect(error.message).toBe("`sections` holds a deleted shape at position 1, so nothing of it is left to work on.");
         });
 
         it("should refuse shapes that are not a list", () => {

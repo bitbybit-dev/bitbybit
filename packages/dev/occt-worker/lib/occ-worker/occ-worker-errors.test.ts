@@ -372,6 +372,22 @@ describe("what the worker says when a call fails", () => {
             expect(messages.filter((message) => message === "busy")).toHaveLength(1);
         });
 
+        it("should answer a call as a crash when the kernel traps while reading the C++ exception the call threw", () => {
+            // Arrange
+            const trap = new RuntimeError("memory access out of bounds");
+            const kernel = { getExceptionMessage: (): never => { throw trap; }, decrementExceptionRefcount: (): void => undefined };
+            initializationComplete(kernel as Partial<BitbybitOcctModule> as BitbybitOcctModule, undefined, true);
+            thrown.value = 70632;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+            run({ functionName: "echo", inputs: { size: 1 } });
+
+            // Assert
+            expect(answers()[0]).toEqual(expect.objectContaining({ errorKind: "crash", error: "OCCT crashed while executing function 'boom': RuntimeError: memory access out of bounds. Every shape made before it is gone; create a new worker to continue, or give initializationComplete a restart function." }));
+            expect(answers()[1]).toEqual({ uid: "uid-1", result: undefined, error: "OCCT cannot run 'echo': the kernel crashed earlier and was not restarted (memory access out of bounds).", errorKind: "crash" });
+        });
+
         it("should pass on the feature a design build tagged its crash with, so the caller can leave it out", () => {
             // Arrange
             const trap = new RuntimeError("null function");

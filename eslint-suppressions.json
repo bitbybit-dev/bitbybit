@@ -856,7 +856,7 @@
   },
   "packages/dev/occt/lib/services/base/edges.service.ts": {
     "@typescript-eslint/explicit-function-return-type": {
-      "count": 13
+      "count": 6
     },
     "@typescript-eslint/no-magic-numbers": {
       "count": 3
@@ -959,7 +959,7 @@
   },
   "packages/dev/occt/lib/services/base/transforms.service.ts": {
     "@typescript-eslint/explicit-function-return-type": {
-      "count": 4
+      "count": 3
     },
     "@typescript-eslint/no-magic-numbers": {
       "count": 42
@@ -972,7 +972,7 @@
   },
   "packages/dev/occt/lib/services/base/wires.service.ts": {
     "@typescript-eslint/explicit-function-return-type": {
-      "count": 13
+      "count": 12
     },
     "@typescript-eslint/no-magic-numbers": {
       "count": 17
@@ -1159,7 +1159,7 @@
       "count": 1
     },
     "bitbybit/no-inline-object-types": {
-      "count": 22
+      "count": 19
     },
     "max-lines": {
       "count": 1

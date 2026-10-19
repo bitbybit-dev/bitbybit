@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { OCCTSolid, OCCTWire } from "./shapes";
 import { OCCTIO } from "./io";
 import * as Inputs from "../api/inputs";
+import { ledgerRun, namesOf } from "../__test__/kernel-ledger";
 
 const asciiStl = (stl: string | Uint8Array): string => {
     if (typeof stl !== "string") {
@@ -841,6 +842,27 @@ describe("OCCT io unit tests", () => {
         });
     });
 
+    describe("reading STEP text when the reader cannot read the file", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it("should free its reader and remove the file it wrote when reading it throws", () => {
+            // Arrange
+            vi.spyOn(occt.STEPControl_Reader.prototype, "ReadFile").mockImplementation(() => {
+                throw new Error("the reader could not read the file");
+            });
+
+            // Act
+            const run = ledgerRun(occt, () => io.loadSTEPorIGES({ filetext: "ISO-10303-21;", fileName: "part.step", adjustZtoY: false }));
+
+            // Assert
+            expect(run.thrown).toEqual(new Error("the reader could not read the file"));
+            expect([run.made, namesOf(run.leaked)]).toEqual([1, []]);
+            expect(occt.FS.analyzePath("/file.step", false).exists).toBe(false);
+        });
+    });
+
     describe("reading an IGES file as text", () => {
         it("should refuse text it can make no model out of", () => {
             // Arrange
@@ -1184,6 +1206,56 @@ describe("OCCT io unit tests", () => {
 
             // Assert
             expect(isGlb(result)).toBe(true);
+        });
+    });
+
+    describe("a trap inside a writer or a conversion", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        const thrownBy = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (error) {
+                return error;
+            }
+            return undefined;
+        };
+        const stepBytes = (): Uint8Array => new TextEncoder().encode(io.saveShapeSTEP({ shape: solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] }), fileName: "box.step", adjustYtoZ: false }));
+        const trapping = (trap: WebAssembly.RuntimeError) => (): never => {
+            throw trap;
+        };
+
+        it("should let a trap the STEP writer hits while transferring a shape through as itself", () => {
+            // Arrange
+            const shape = solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] });
+            const trap = new WebAssembly.RuntimeError("memory access out of bounds");
+            vi.spyOn(occt.STEPControl_Writer.prototype, "Transfer").mockImplementation(trapping(trap));
+
+            // Act
+            const thrown = thrownBy(() => io.saveShapeSTEP({ shape, fileName: "box.step", adjustYtoZ: false }));
+
+            // Assert
+            expect(thrown).toBe(trap);
+        });
+
+        it.each([
+            ["ConvertStepToGltfFromBinary", (stepData: Uint8Array): unknown => io.convertStepToGltf({ ...new Inputs.OCCT.ConvertStepToGltfDto(), stepData })],
+            ["ConvertStepToGltfFromBinaryAdvanced", (stepData: Uint8Array): unknown => io.convertStepToGltfAdvanced({ ...new Inputs.OCCT.ConvertStepToGltfAdvancedDto(), stepData })],
+            ["ConvertStepToGltfFromBinaryWithDraco", (stepData: Uint8Array): unknown => io.convertStepToGltfWithDraco({ ...new Inputs.OCCT.ConvertStepToGltfWithDracoDto(), stepData })],
+            ["ConvertStepToGltfFromBinaryAdvancedWithDraco", (stepData: Uint8Array): unknown => io.convertStepToGltfAdvancedWithDraco({ ...new Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto(), stepData })],
+        ] as const)("should let a trap the kernel hits in %s through as itself, so a crash is not reported as a failed conversion", (kernelFunction, convert) => {
+            // Arrange
+            const stepData = stepBytes();
+            const trap = new WebAssembly.RuntimeError("memory access out of bounds");
+            vi.spyOn(occt, kernelFunction).mockImplementation(trapping(trap));
+
+            // Act
+            const thrown = thrownBy(() => convert(stepData));
+
+            // Assert
+            expect(thrown).toBe(trap);
         });
     });
 });

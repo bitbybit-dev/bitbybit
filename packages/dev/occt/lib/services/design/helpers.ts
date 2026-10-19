@@ -15,7 +15,7 @@ export function faceCount(shape: TopoDS_Shape, run: DesignRun): number {
 }
 
 export function contextOf(body: BodyState, run: DesignRun): ResolveContext {
-    return { shape: body.shape, names: body.names, occt: run.occt, base: run.base, suppressed: run.suppressed, rebinding: run.rebinding };
+    return { shape: body.shape, names: body.names, occt: run.occt, occ: run.occ, base: run.base, suppressed: run.suppressed, rebinding: run.rebinding };
 }
 
 export function bodyOf(name: string, run: DesignRun): BodyState {

@@ -1,6 +1,6 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Models from "../../api/models";
-import { DesignProblem, pointer } from "./problems";
+import { cleanedUpOnError, DesignProblem, pointer } from "./problems";
 import { connectorFrame, contextOf } from "./helpers";
 import { connectorMembers } from "./connectors";
 import { resolveEdges, resolveFaces } from "./references";
@@ -151,8 +151,11 @@ export function buildParts(document: Models.OCCT.DesignPartDocument, run: Design
         const path = pointer("/parts", index);
         const body = run.bodies.get(part.body);
         if (body === undefined) {
-            const reason = run.failed.get(bodyKey(part.body)) === "suppressed" ? "was suppressed" : "failed";
-            issues.push({ path: pointer(path, "body"), message: `the body "${part.body}" ${reason}, so the part was not built` });
+            const reason = run.failed.get(bodyKey(part.body));
+            const message = reason === "pending"
+                ? `the body "${part.body}" waits for the outcome of its script, so the part was not built yet`
+                : `the body "${part.body}" ${reason === "suppressed" ? "was suppressed" : "failed"}, so the part was not built`;
+            issues.push({ path: pointer(path, "body"), message });
             return undefined;
         }
         const materialId = part.material === undefined ? undefined : attempt(issues, () => materialIdOf(part.material!, materials, pointer(path, "material"), run));
@@ -193,18 +196,15 @@ export function buildParts(document: Models.OCCT.DesignPartDocument, run: Design
         };
     };
     const built: Models.OCCT.DesignBuiltPart<TopoDS_Shape>[] = [];
-    try {
+    return cleanedUpOnError(() => {
         declaredParts(document, run).forEach((part, index) => {
             const made = builtPart(part, index);
             if (made !== undefined) {
                 built.push(made);
             }
         });
-    } catch (error) {
-        built.forEach(part => release(part.shape));
-        throw error;
-    }
-    return built;
+        return built;
+    }, () => built.forEach(part => release(part.shape)));
 }
 
 const volumes = new WeakMap<TopoDS_Shape, number | null>();

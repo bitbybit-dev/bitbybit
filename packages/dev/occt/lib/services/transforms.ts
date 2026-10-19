@@ -7,6 +7,7 @@ import type * as Resolved from "../api/resolved-inputs";
 import { numbersOfFrames, WORLD_FRAME } from "./base/frames";
 import { checkedFrame, checkedFrames, checkedPlacements, checkedShape, checkedShapes } from "./base/input-checks";
 import { withKernelRefusals } from "./base/kernel-refusals";
+import { madeFromEach } from "./base/release";
 
 /**
  * Moving, turning, scaling and mirroring OpenCascade shapes, and building the 4x4 matrices that
@@ -366,7 +367,7 @@ export class OCCTTransforms {
         checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([resolved.shapes, resolved.translations, resolved.rotationAxes, resolved.rotationAngles, resolved.scaleFactors]);
         resolved.scaleFactors.forEach((factor, index) => this.och.transformsService.refuseCollapsingScale(factor, `scaleFactors[${index}]`));
-        return resolved.shapes.map((s, index) => this.transform({
+        return madeFromEach(resolved.shapes, (s, index) => this.transform({
             shape: s,
             translation: resolved.translations[index]!,
             rotationAxis: resolved.rotationAxes[index]!,
@@ -394,7 +395,7 @@ export class OCCTTransforms {
         const resolved = resolveDto(Inputs.OCCT.RotateShapesDto, inputs) as Resolved.OCCT.RotateShapesDto<TopoDS_Shape>;
         checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([resolved.shapes, resolved.axes, resolved.angles]);
-        return resolved.shapes.map((s, index) => this.rotate({
+        return madeFromEach(resolved.shapes, (s, index) => this.rotate({
             shape: s,
             axis: resolved.axes[index]!,
             angle: resolved.angles[index]!,
@@ -425,7 +426,7 @@ export class OCCTTransforms {
         const resolved = resolveDto(Inputs.OCCT.RotateAroundCenterShapesDto, inputs) as Resolved.OCCT.RotateAroundCenterShapesDto<TopoDS_Shape>;
         checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([resolved.shapes, resolved.axes, resolved.angles]);
-        return resolved.shapes.map((s, index) => this.rotateAroundCenter({
+        return madeFromEach(resolved.shapes, (s, index) => this.rotateAroundCenter({
             shape: s,
             axis: resolved.axes[index]!,
             angle: resolved.angles[index]!,
@@ -457,7 +458,7 @@ export class OCCTTransforms {
         const resolved = resolveDto(Inputs.OCCT.AlignShapesDto, inputs) as Resolved.OCCT.AlignShapesDto<TopoDS_Shape>;
         checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Point3 | Base.Vector3>([resolved.shapes, resolved.fromOrigins, resolved.fromDirections, resolved.toOrigins, resolved.toDirections]);
-        return resolved.shapes.map((s, index) => this.align({
+        return madeFromEach(resolved.shapes, (s, index) => this.align({
             shape: s,
             fromOrigin: resolved.fromOrigins[index]!,
             fromDirection: resolved.fromDirections[index]!,
@@ -488,7 +489,7 @@ export class OCCTTransforms {
         const resolved = resolveDto(Inputs.OCCT.AlignAndTranslateShapesDto, inputs) as Resolved.OCCT.AlignAndTranslateShapesDto<TopoDS_Shape>;
         checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([resolved.shapes, resolved.centers, resolved.directions]);
-        return resolved.shapes.map((s, index) => this.alignAndTranslate({
+        return madeFromEach(resolved.shapes, (s, index) => this.alignAndTranslate({
             shape: s,
             center: resolved.centers[index]!,
             direction: resolved.directions[index]!,
@@ -513,7 +514,7 @@ export class OCCTTransforms {
         const resolved = resolveDto(Inputs.OCCT.TranslateShapesDto, inputs) as Resolved.OCCT.TranslateShapesDto<TopoDS_Shape>;
         checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([resolved.shapes, resolved.translations]);
-        return resolved.shapes.map((s, index) => this.translate({
+        return madeFromEach(resolved.shapes, (s, index) => this.translate({
             shape: s,
             translation: resolved.translations[index]!,
         }));
@@ -538,7 +539,7 @@ export class OCCTTransforms {
         checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | number>([resolved.shapes, resolved.factors]);
         resolved.factors.forEach((factor, index) => this.och.transformsService.refuseCollapsingScale(factor, `factors[${index}]`));
-        return resolved.shapes.map((s, index) => this.scale({
+        return madeFromEach(resolved.shapes, (s, index) => this.scale({
             shape: s,
             factor: resolved.factors[index]!,
         }));
@@ -566,7 +567,7 @@ export class OCCTTransforms {
         const resolved = resolveDto(Inputs.OCCT.Scale3DShapesDto, inputs) as Resolved.OCCT.Scale3DShapesDto<TopoDS_Shape>;
         checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([resolved.shapes, resolved.scales, resolved.centers]);
-        return resolved.shapes.map((s, index) => this.scale3d({
+        return madeFromEach(resolved.shapes, (s, index) => this.scale3d({
             shape: s,
             scale: resolved.scales[index]!,
             center: resolved.centers[index]!,
@@ -596,7 +597,7 @@ export class OCCTTransforms {
         const resolved = resolveDto(Inputs.OCCT.MirrorShapesDto, inputs) as Resolved.OCCT.MirrorShapesDto<TopoDS_Shape>;
         checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([resolved.shapes, resolved.directions, resolved.origins]);
-        return resolved.shapes.map((s, index) => this.mirror({
+        return madeFromEach(resolved.shapes, (s, index) => this.mirror({
             shape: s,
             origin: resolved.origins[index]!,
             direction: resolved.directions[index]!,
@@ -625,7 +626,7 @@ export class OCCTTransforms {
         const resolved = resolveDto(Inputs.OCCT.MirrorAlongNormalShapesDto, inputs) as Resolved.OCCT.MirrorAlongNormalShapesDto<TopoDS_Shape>;
         checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([resolved.shapes, resolved.normals, resolved.origins]);
-        return resolved.shapes.map((s, index) => this.mirrorAlongNormal({
+        return madeFromEach(resolved.shapes, (s, index) => this.mirrorAlongNormal({
             shape: s,
             normal: resolved.normals[index]!,
             origin: resolved.origins[index]!,

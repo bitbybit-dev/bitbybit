@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, vi, afterEach } from "vitest";
 import type { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { readKernelException } from "./kernel-exception";
+import { wasReadFromKernel } from "./kernel-exception-reads";
 
 describe("readKernelException", () => {
     let occt: BitbybitOcctModule;
@@ -107,7 +108,7 @@ describe("readKernelException", () => {
         expect(read).toBe(70632);
     });
 
-    it("returns the number unchanged, and still frees it, when the kernel cannot read it", () => {
+    it("frees an exception the kernel cannot read and returns an Error saying so, never the freed exception", () => {
         // Arrange
         const kernel = { getExceptionMessage: (): [string, string] => { throw new Error("unreadable"); }, decrementExceptionRefcount: vi.fn() };
 
@@ -115,7 +116,79 @@ describe("readKernelException", () => {
         const read = readKernelException(kernel, 70632);
 
         // Assert
-        expect(read).toBe(70632);
+        expect(read).toBeInstanceOf(Error);
+        expect((read as Error).message).toBe("A C++ exception was thrown whose type and message the kernel could not read");
         expect(kernel.decrementExceptionRefcount).toHaveBeenCalledWith(70632);
+    });
+
+    it("lets a trap the kernel hits while reading the exception through, so a crash is not hidden as an unreadable exception", () => {
+        // Arrange
+        const trap = new WebAssembly.RuntimeError("memory access out of bounds");
+        const kernel = { getExceptionMessage: (): [string, string] => { throw trap; }, decrementExceptionRefcount: vi.fn() };
+
+        // Act
+        const read = (): unknown => readKernelException(kernel, 70632);
+
+        // Assert
+        expect(read).toThrow(trap);
+    });
+
+    it("frees the exception it was reading when the kernel traps while reading it", () => {
+        // Arrange
+        const kernel = { getExceptionMessage: (): [string, string] => { throw new WebAssembly.RuntimeError("unreachable"); }, decrementExceptionRefcount: vi.fn() };
+
+        // Act
+        const read = (): unknown => readKernelException(kernel, 70632);
+
+        // Assert
+        expect(read).toThrow(WebAssembly.RuntimeError);
+        expect(kernel.decrementExceptionRefcount).toHaveBeenCalledWith(70632);
+    });
+
+    it("marks the Error it reads from a C++ exception as read from the kernel, and leaves it a plain Error", () => {
+        // Arrange
+        const thrown = failEdge();
+
+        // Act
+        const read = readKernelException(occt, thrown);
+
+        // Assert
+        expect(wasReadFromKernel(read)).toBe(true);
+        expect(Object.getPrototypeOf(read)).toBe(Error.prototype);
+        expect(Object.keys(read as Error)).toEqual([]);
+    });
+
+    it("marks the Error it gives for an exception the kernel cannot read as read from the kernel", () => {
+        // Arrange
+        const kernel = { getExceptionMessage: (): [string, string] => { throw new Error("unreadable"); }, decrementExceptionRefcount: vi.fn() };
+
+        // Act
+        const read = readKernelException(kernel, 70632);
+
+        // Assert
+        expect(wasReadFromKernel(read)).toBe(true);
+    });
+
+    it("leaves an Error it hands back unchanged unmarked, since the kernel did not throw it", () => {
+        // Arrange
+        const kernel = { getExceptionMessage: vi.fn(), decrementExceptionRefcount: vi.fn() };
+
+        // Act
+        const read = readKernelException(kernel, new Error("the inputs were wrong"));
+
+        // Assert
+        expect(wasReadFromKernel(read)).toBe(false);
+    });
+
+    it("frees an exception only once when what it reads is read again", () => {
+        // Arrange
+        const kernel = { getExceptionMessage: (): [string, string] => { throw new Error("unreadable"); }, decrementExceptionRefcount: vi.fn() };
+        const read = readKernelException(kernel, 70632);
+
+        // Act
+        readKernelException(kernel, read);
+
+        // Assert
+        expect(kernel.decrementExceptionRefcount).toHaveBeenCalledTimes(1);
     });
 });

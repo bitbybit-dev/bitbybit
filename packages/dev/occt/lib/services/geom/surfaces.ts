@@ -3,6 +3,8 @@ import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
+import { checkedDirection, checkedWithin } from "../base/input-checks";
+import { released } from "../base/release";
 
 /**
  * Construction surfaces of OpenCascade: the infinite mathematical surfaces that faces are cut from.
@@ -38,10 +40,9 @@ export class OCCTSurfaces {
      */
     cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto): Geom_CylindricalSurface {
         const resolved = resolveDto(Inputs.OCCT.GeomCylindricalSurfaceDto, inputs) as Resolved.OCCT.GeomCylindricalSurfaceDto;
-        const ax = this.och.entitiesService.gpAx3_4(resolved.center, resolved.direction);
-        const res = new this.occ.Geom_CylindricalSurface(ax, resolved.radius);
-        ax.delete();
-        return res;
+        const radius = checkedWithin(resolved.radius, "radius", { above: 0 });
+        const axis = this.och.entitiesService.gpAx3_4(resolved.center, checkedDirection(resolved.direction, "direction"));
+        return released([axis], () => new this.occ.Geom_CylindricalSurface(axis, radius));
     }
 
     /**

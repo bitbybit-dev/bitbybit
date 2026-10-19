@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { OCCTEdge, OCCTSolid } from "./shapes";
 import { OCCTTransforms } from "./transforms";
 import * as Inputs from "../api/inputs";
+import { ledgerRun, namesOf } from "../../../__test__/embind-ledger";
 
 const closeTo12 = (points: number[][]): unknown[] => points.map(point => point.map(value => expect.closeTo(value, 12)));
 
@@ -838,6 +839,8 @@ describe("OCCT transforms unit tests", () => {
                 ["scaleFactor", () => transforms.transform({ shape: box(), translation: [0, 0, 0], rotationAxis: [0, 1, 0], rotationAngle: 0, scaleFactor: factor })],
                 ["factors[1]", () => transforms.scaleShapes({ shapes: [box(), box()], factors: [2, factor] })],
                 ["scaleFactors[1]", () => transforms.transformShapes({ shapes: [box(), box()], translations: [[0, 0, 0], [0, 0, 0]], rotationAxes: [[0, 1, 0], [0, 1, 0]], rotationAngles: [0, 0], scaleFactors: [2, factor] })],
+                ["scale", () => transforms.composeTransform({ translation: [0, 0, 0], rotation: [0, 0, 0], scale: factor })],
+                ["factor", () => transforms.scaleUniformToMatrix({ factor, center: [1, 0, 0] })],
             ];
 
             // Act
@@ -1049,6 +1052,22 @@ describe("OCCT transforms unit tests", () => {
 
     });
 
+    describe("matrix transforms of several shapes when the kernel cannot stretch one of them", () => {
+        it("should pass the failure on and leave alive no stretched copy of the box before the unbounded plane", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
+            const unboundedPlane = occt.MakeFaceFromFaceSurface(occHelper.shapeGettersService.getFace({ shape: box, index: 0 }), 0);
+            const stretch: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1];
+
+            // Act
+            const run = ledgerRun(() => transforms.transformShapesByMatrix({ shapes: [box, unboundedPlane], transformation: stretch }));
+
+            // Assert
+            expect(run.thrown).toMatchObject({ message: "Could not apply the transformation matrix to the shape." });
+            expect(namesOf(run.leaked)).toEqual([]);
+        });
+    });
+
     describe("the matrix builders a script composes transforms from", () => {
         const applyTo = (matrix: Inputs.Base.TransformMatrix, point: Inputs.Base.Point3): Inputs.Base.Point3 => {
             const box = solid.createBox({ width: 0.001, height: 0.001, length: 0.001, center: point });
@@ -1154,6 +1173,63 @@ describe("OCCT transforms unit tests", () => {
         });
     });
 
+    describe("directions and matrices a transform cannot be built from", () => {
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
+        const noLength: Inputs.Base.Vector3 = [0, 0, 0];
+        const collapsingMatrix: Inputs.Base.TransformMatrix = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
+
+        it("should refuse a matrix that has no inverse as an input error naming it", () => {
+            // Act
+            const refused = refusalOf(() => transforms.invertTransform({ transformation: collapsingMatrix }));
+
+            // Assert
+            expect(refused).toEqual(expect.objectContaining({ name: "InputError", property: "transformation", message: "`transformation` has no inverse: its determinant is 0 or not a finite number." }));
+        });
+
+        it.each([
+            ["axis", (): unknown => transforms.rotationAxisAngleToMatrix({ axis: noLength, angle: 30, center: [0, 0, 0] })],
+            ["direction", (): unknown => transforms.mirrorAxisToMatrix({ origin: [0, 0, 0], direction: noLength })],
+            ["normal", (): unknown => transforms.mirrorPlaneToMatrix({ origin: [0, 0, 0], normal: noLength })],
+        ] as [string, () => unknown][])("should refuse a matrix builder's %s with no length as an input error naming it", (property, build) => {
+            // Act
+            const refused = refusalOf(build);
+
+            // Assert
+            expect(refused).toEqual(expect.objectContaining({ name: "InputError", property, message: `\`${property}\` is [0, 0, 0], which points nowhere.` }));
+        });
+
+        it("should refuse a deleted shape among the shapes to move as an input error at its position", () => {
+            // Arrange
+            const kept = solid.createBox({ width: 2, length: 3, height: 4, center: [0, 0, 0] });
+            const deleted = solid.createBox({ width: 2, length: 3, height: 4, center: [5, 0, 0] });
+            deleted.delete();
+
+            // Act
+            const refused = refusalOf(() => transforms.translateShapes({ shapes: [kept, deleted], translations: [[1, 0, 0], [1, 0, 0]] }));
+
+            // Assert
+            expect(refused).toEqual(expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` holds a deleted shape at position 1, so nothing of it is left to work on." }));
+        });
+
+        it("should refuse a rotation axis with no length when the transform turns the shape, naming it", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 3, height: 4, center: [0, 0, 0] });
+
+            // Act
+            const refused = refusalOf(() => transforms.transform({ shape: box, translation: [0, 0, 0], rotationAxis: noLength, rotationAngle: 30, scaleFactor: 1 }));
+
+            // Assert
+            expect(refused).toEqual(expect.objectContaining({ name: "InputError", property: "rotationAxis", message: "`rotationAxis` is [0, 0, 0], which points nowhere." }));
+        });
+    });
+
     describe("reading a rotation back out of a shape's placement", () => {
         it("should read the identity off a turned shape, because a turn is baked into its geometry", () => {
             // Arrange
@@ -1172,6 +1248,141 @@ describe("OCCT transforms unit tests", () => {
 
             box.delete();
             turned.delete();
+        });
+    });
+
+    describe("a shape a single transform is handed that holds nothing to move", () => {
+        const loose = <T>(value: unknown): T => value as T;
+        const box = (): TopoDS_Shape => solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
+        const deletedBox = (): TopoDS_Shape => {
+            const gone = box();
+            gone.delete();
+            return gone;
+        };
+        const moves: [string, (shape: TopoDS_Shape) => unknown][] = [
+            ["translate", (shape): unknown => transforms.translate({ shape, translation: [1, 0, 0] })],
+            ["rotate", (shape): unknown => transforms.rotate({ shape, axis: [0, 1, 0], angle: 30 })],
+            ["rotate by 0", (shape): unknown => transforms.rotate({ shape, axis: [0, 1, 0], angle: 0 })],
+            ["rotateAroundCenter", (shape): unknown => transforms.rotateAroundCenter({ shape, axis: [0, 1, 0], angle: 30, center: [1, 0, 0] })],
+            ["align", (shape): unknown => transforms.align({ shape, fromOrigin: [0, 0, 0], fromDirection: [0, 1, 0], toOrigin: [1, 0, 0], toDirection: [1, 0, 0] })],
+            ["alignNormAndAxis", (shape): unknown => transforms.alignNormAndAxis({ shape, fromOrigin: [0, 0, 0], fromNorm: [0, 1, 0], fromAx: [1, 0, 0], toOrigin: [1, 0, 0], toNorm: [1, 0, 0], toAx: [0, 1, 0] })],
+            ["alignAndTranslate", (shape): unknown => transforms.alignAndTranslate({ shape, direction: [1, 0, 0], center: [1, 0, 0] })],
+            ["scale", (shape): unknown => transforms.scale({ shape, factor: 2 })],
+            ["scale3d", (shape): unknown => transforms.scale3d({ shape, scale: [1, 2, 3], center: [0, 0, 0] })],
+            ["scaleFromCenter", (shape): unknown => transforms.scaleFromCenter({ shape, factor: 2, center: [1, 0, 0] })],
+            ["mirror", (shape): unknown => transforms.mirror({ shape, origin: [0, 0, 0], direction: [0, 1, 0] })],
+            ["mirrorAlongNormal", (shape): unknown => transforms.mirrorAlongNormal({ shape, origin: [0, 0, 0], normal: [0, 1, 0] })],
+            ["mirrorAboutPoint", (shape): unknown => transforms.mirrorAboutPoint({ shape, point: [1, 0, 0] })],
+            ["rotateByQuaternion", (shape): unknown => transforms.rotateByQuaternion({ shape, quaternion: [0, 0, 0, 1] })],
+            ["transform", (shape): unknown => transforms.transform({ shape, translation: [1, 0, 0], rotationAxis: [0, 1, 0], rotationAngle: 30, scaleFactor: 2 })],
+            ["transformByMatrix", (shape): unknown => transforms.transformByMatrix({ shape, transformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1] })],
+            ["transformByMatrix stretching", (shape): unknown => transforms.transformByMatrix({ shape, transformation: [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1] })],
+        ];
+
+        describe.each([
+            ["a deleted shape", deletedBox, "`shape` was deleted, so nothing of it is left to work on."],
+            ["an empty shape", (): TopoDS_Shape => new occt.TopoDS_Shape(), "`shape` is missing or empty, as an operation that failed can leave it."],
+            ["no shape at all", (): TopoDS_Shape => loose<TopoDS_Shape>(undefined), "`shape` is missing or empty, as an operation that failed can leave it."],
+        ] as [string, () => TopoDS_Shape, string][])("handed %s", (handed, shapeOf, message) => {
+            it.each(moves)(`should refuse %s ${handed} as an input error on the shape, leaving alive nothing it made`, (_method, move) => {
+                // Arrange
+                const shape = shapeOf();
+
+                // Act
+                const run = ledgerRun(() => move(shape));
+
+                // Assert
+                expect(run.thrown).toEqual(expect.objectContaining({ name: "InputError", property: "shape", message }));
+                expect(namesOf(run.leaked)).toEqual([]);
+            });
+        });
+    });
+
+    describe("numbers a single transform cannot turn, move or scale a shape by", () => {
+        const box = (): TopoDS_Shape => solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
+        const finite = (property: string, value: number): unknown => expect.objectContaining({ name: "InputError", property, message: `\`${property}\` must be a finite number; it is ${value}.` });
+        const finiteAt = (property: string, value: number, position: number): unknown => expect.objectContaining({ name: "InputError", property, message: `\`${property}\` holds ${value} at position ${position}; each is a finite number.` });
+
+        it.each([
+            ["rotate by NaN", (shape: TopoDS_Shape): unknown => transforms.rotate({ shape, axis: [0, 1, 0], angle: Number.NaN }), finite("angle", Number.NaN)],
+            ["rotate by Infinity", (shape: TopoDS_Shape): unknown => transforms.rotate({ shape, axis: [0, 1, 0], angle: Number.POSITIVE_INFINITY }), finite("angle", Number.POSITIVE_INFINITY)],
+            ["rotateAroundCenter by NaN", (shape: TopoDS_Shape): unknown => transforms.rotateAroundCenter({ shape, axis: [0, 1, 0], angle: Number.NaN, center: [1, 0, 0] }), finite("angle", Number.NaN)],
+            ["transform by a rotation of NaN", (shape: TopoDS_Shape): unknown => transforms.transform({ shape, translation: [0, 0, 0], rotationAxis: [0, 1, 0], rotationAngle: Number.NaN, scaleFactor: 1 }), finite("rotationAngle", Number.NaN)],
+            ["transform by a translation holding NaN", (shape: TopoDS_Shape): unknown => transforms.transform({ shape, translation: [0, Number.NaN, 0], rotationAxis: [0, 1, 0], rotationAngle: 0, scaleFactor: 1 }), finiteAt("translation", Number.NaN, 1)],
+            ["translate by a translation holding NaN", (shape: TopoDS_Shape): unknown => transforms.translate({ shape, translation: [Number.NaN, 0, 0] }), finiteAt("translation", Number.NaN, 0)],
+            ["rotateByQuaternion by a quaternion holding NaN", (shape: TopoDS_Shape): unknown => transforms.rotateByQuaternion({ shape, quaternion: [Number.NaN, 0, 0, 1] }), finiteAt("quaternion", Number.NaN, 0)],
+            ["scale3d by a scale holding NaN", (shape: TopoDS_Shape): unknown => transforms.scale3d({ shape, scale: [1, Number.NaN, 3], center: [0, 0, 0] }), finiteAt("scale", Number.NaN, 1)],
+            ["scale3d by a scale holding Infinity", (shape: TopoDS_Shape): unknown => transforms.scale3d({ shape, scale: [1, 2, Number.POSITIVE_INFINITY], center: [0, 0, 0] }), finiteAt("scale", Number.POSITIVE_INFINITY, 2)],
+            ["transformByMatrix by a matrix moving by NaN", (shape: TopoDS_Shape): unknown => transforms.transformByMatrix({ shape, transformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, Number.NaN, 0, 0, 1] }), finiteAt("transformation", Number.NaN, 12)],
+        ] as [string, (shape: TopoDS_Shape) => unknown, unknown][])("should refuse %s as an input error naming the number, leaving alive nothing it made", (_call, move, refusal) => {
+            // Arrange
+            const shape = box();
+
+            // Act
+            const run = ledgerRun(() => move(shape));
+
+            // Assert
+            expect(run.thrown).toEqual(refusal);
+            expect(namesOf(run.leaked)).toEqual([]);
+        });
+
+        it.each([
+            ["composeTransform by a rotation holding NaN", (): unknown => transforms.composeTransform({ translation: [0, 0, 0], rotation: [Number.NaN, 0, 0], scale: 1 }), finiteAt("rotation", Number.NaN, 0)],
+            ["composeTransform by a translation holding NaN", (): unknown => transforms.composeTransform({ translation: [0, 0, Number.NaN], rotation: [0, 0, 0], scale: 1 }), finiteAt("translation", Number.NaN, 2)],
+            ["quaternionToMatrix of a quaternion holding Infinity", (): unknown => transforms.quaternionToMatrix({ quaternion: [0, 0, Number.POSITIVE_INFINITY, 1] }), finiteAt("quaternion", Number.POSITIVE_INFINITY, 2)],
+            ["rotationAxisAngleToMatrix by NaN", (): unknown => transforms.rotationAxisAngleToMatrix({ axis: [0, 1, 0], angle: Number.NaN, center: [0, 0, 0] }), finite("angle", Number.NaN)],
+            ["composeTransform by a scale of 0", (): unknown => transforms.composeTransform({ translation: [0, 0, 0], rotation: [0, 0, 0], scale: 0 }), expect.objectContaining({ name: "InputError", property: "scale" })],
+            ["scaleUniformToMatrix by a factor of NaN", (): unknown => transforms.scaleUniformToMatrix({ factor: Number.NaN, center: [0, 0, 0] }), expect.objectContaining({ name: "InputError", property: "factor" })],
+        ] as [string, () => unknown, unknown][])("should refuse a matrix from %s as an input error naming the number, leaving alive nothing it made", (_call, build, refusal) => {
+            // Act
+            const run = ledgerRun(build);
+
+            // Assert
+            expect(run.thrown).toEqual(refusal);
+            expect(namesOf(run.leaked)).toEqual([]);
+        });
+
+        it("should refuse a quaternion of three numbers as an input error on the quaternion", () => {
+            // Arrange
+            const threeNumbers: unknown = [0, 0, 1];
+
+            // Act
+            const run = ledgerRun(() => transforms.quaternionToMatrix({ quaternion: threeNumbers as [number, number, number, number] }));
+
+            // Assert
+            expect(run.thrown).toEqual(expect.objectContaining({ name: "InputError", property: "quaternion", message: "`quaternion` holds 3 numbers, and a quaternion is four: x, y, z and w." }));
+        });
+    });
+
+    describe("a trap inside a stretch", () => {
+        const thrownBy = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (error) {
+                return error;
+            }
+            return undefined;
+        };
+        const unitBox = (): TopoDS_Shape => solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] });
+        const stretchedAlongY: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
+        it.each([
+            ["scaling a box unevenly", (shape: TopoDS_Shape): unknown => transforms.scale3d({ shape, scale: [1, 2, 1], center: [0, 0, 0] })],
+            ["stretching a box by a matrix", (shape: TopoDS_Shape): unknown => transforms.transformByMatrix({ shape, transformation: stretchedAlongY })],
+        ])("should let a trap the kernel hits while %s through as itself, so a crash is not reported as a failed transform", (_name, stretch) => {
+            // Arrange
+            const shape = unitBox();
+            const trap = new WebAssembly.RuntimeError("memory access out of bounds");
+            const spy = vi.spyOn(occt.BRepBuilderAPI_GTransform.prototype, "Shape").mockImplementation(() => {
+                throw trap;
+            });
+
+            // Act
+            const thrown = thrownBy(() => stretch(shape));
+            spy.mockRestore();
+
+            // Assert
+            expect(thrown).toBe(trap);
         });
     });
 });

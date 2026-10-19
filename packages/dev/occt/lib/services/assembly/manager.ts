@@ -12,6 +12,7 @@ type GltfExportCall = (...args: unknown[]) => Uint8Array | undefined;
 export type { Handle_TDocStd_Document };
 
 const GLB_MAGIC: readonly number[] = [0x67, 0x6c, 0x54, 0x46];
+const LENGTH_UNITS: readonly unknown[] = ["mm", "cm", "m", "in"];
 
 /**
  * Building and changing assembly documents: describe parts, assembly nodes and instance nodes one
@@ -228,6 +229,9 @@ export class OCCTAssemblyManager {
      */
     buildAssemblyDocument(inputs: Inputs.OCCT.BuildAssemblyDocumentDto<TopoDS_Shape, Handle_TDocStd_Document>): Handle_TDocStd_Document {
         const { structure, existingDocument, sourceDocuments } = inputs;
+        if (structure.lengthUnit !== undefined && !LENGTH_UNITS.includes(structure.lengthUnit)) {
+            throw new InputError(`\`structure.lengthUnit\` is ${String(structure.lengthUnit)}, which is none of ${LENGTH_UNITS.join(", ")}.`, "structure");
+        }
         
         const shapes: TopoDS_Shape[] = [];
         const partsJson: (Omit<Models.OCCT.AssemblyPartDef<TopoDS_Shape>, "shape"> & { shapeIndex: number })[] = [];
@@ -305,6 +309,7 @@ export class OCCTAssemblyManager {
         );
         
         if (document.IsNull()) {
+            document.delete();
             throw new Error("Failed to create assembly document");
         }
         
@@ -359,7 +364,8 @@ export class OCCTAssemblyManager {
         const document = this.occ.LoadStepToDoc(bytesOfFile(inputs.stepData, "stepData"));
 
         if (document.IsNull()) {
-            throw new Error("Failed to load STEP file");
+            document.delete();
+            throw new InputError("Failed to load STEP file", "stepData");
         }
 
         return document;

@@ -8,6 +8,8 @@ import { OCCTEdge, OCCTFace, OCCTShell, OCCTSolid, OCCTWire } from "./shapes";
 import { OCCTTransforms } from "./transforms";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../api/resolved-inputs";
+import { ledgerRun, namesOf } from "../../../__test__/embind-ledger";
+import type { LoftSections } from "../__test__/test-types";
 
 describe("OCCT operations unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -836,17 +838,44 @@ describe("OCCT operations unit tests", () => {
             wires.forEach(w => w.delete());
         });
 
-        it("should return original shape when distance is zero", () => {
-            const squareWire = wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
-            const offsetRes = operations.offsetAdv({
-                shape: squareWire,
-                distance: 0,
-                tolerance: 1e-7,
-                joinType: Inputs.OCCT.joinTypeEnum.arc,
-                removeIntEdges: false
-            });
-            expect(offsetRes).toBe(squareWire);
-            squareWire.delete();
+        const byZero = {
+            offset: (shape: TopoDS_Shape): TopoDS_Shape => operations.offset({ shape, distance: 0, tolerance: 1e-7 }),
+            offsetAdv: (shape: TopoDS_Shape): TopoDS_Shape => operations.offsetAdv({ shape, distance: 0, tolerance: 1e-7, joinType: Inputs.OCCT.joinTypeEnum.arc, removeIntEdges: false }),
+        };
+        const toOffset = {
+            "a square wire": (): TopoDS_Shape => wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }),
+            "a box": (): TopoDS_Shape => solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] }),
+        };
+
+        it.each([
+            ["offset", "a square wire"],
+            ["offset", "a box"],
+            ["offsetAdv", "a square wire"],
+            ["offsetAdv", "a box"],
+        ] as const)("should answer %s by 0 of %s with the same shape in a handle of its own, so deleting the answer leaves the shape it was given alive", (method, kind) => {
+            // Arrange
+            const given = toOffset[kind]();
+
+            // Act
+            const answer = byZero[method](given);
+            const sameShape = answer.IsSame(given);
+            const sameHandle = answer.isAliasOf(given);
+            answer.delete();
+
+            // Assert
+            expect([sameShape, sameHandle, given.isDeleted()]).toEqual([true, false, false]);
+            given.delete();
+        });
+
+        it.each([0, 1])("should refuse an empty shape to offset by %s as an input error on the shape", distance => {
+            // Arrange
+            const empty = new occt.TopoDS_Shape();
+
+            // Act
+            const act = (): TopoDS_Shape => operations.offset({ shape: empty, distance, tolerance: 1e-7 });
+
+            // Assert
+            expect(act).toThrow(expect.objectContaining({ name: "InputError", property: "shape", message: "`shape` is missing or empty, as an operation that failed can leave it." }));
         });
 
         it("should offset a box solid", () => {
@@ -1749,6 +1778,7 @@ describe("OCCT operations unit tests", () => {
             return { made, thrown };
         };
         const thrownBy = (act: () => unknown): unknown => madeBy([], act).thrown;
+        const loose = <T>(value: unknown): T => value as T;
         const failingRead = new Error("the history could not be read");
         const readThatFails = (): never => {
             throw failingRead;
@@ -1871,6 +1901,56 @@ describe("OCCT operations unit tests", () => {
                 // Assert
                 expect(thrown).toEqual(expect.objectContaining({ name: "InputError", property: "shape", message: "`shape` is a face without an outline, such as an unbounded plane, and a twisted sweep follows one outline: give a bounded face, or a wire." }));
             });
+
+            it("should refuse to close the twist of a closed outline that does not lie flat into a solid, rather than hand back a shell, and release what it made", () => {
+                // Arrange
+                const bentOutline = wire.createPolygonWire({ points: [[2, 0, 0], [3, 1, 1], [4, 0, 0], [3, 2, -1]] });
+                const refusal = { name: "InputError", property: "shape", message: "`shape` is a closed outline that does not lie flat, so its twist cannot be capped into a solid: give a flat outline, or set `makeSolid` to false." };
+
+                // Act
+                const plain = madeBy(["BRepOffsetAPI_MakePipeShell"], () => operations.rotatedExtrude({ shape: bentOutline, height: 5, angle: 45, makeSolid: true }));
+                const twin = madeBy(["BRepOffsetAPI_MakePipeShell"], () => operations.rotatedExtrudeWithHistory({ shape: bentOutline, height: 5, angle: 45, makeSolid: true }));
+
+                // Assert
+                expect([plain.thrown, twin.thrown]).toEqual([expect.objectContaining(refusal), expect.objectContaining(refusal)]);
+                expect(alive([...plain.made, ...twin.made])).toEqual([]);
+                expect(bentOutline.isDeleted()).toBe(false);
+            });
+
+            it("should still twist an open outline into a shell when a solid is asked for, as no open outline can close one", () => {
+                // Arrange
+                const openOutline = wire.createPolylineWire({ points: [[2, 0, 0], [3, 0, 1], [4, 0, 0]] });
+
+                // Act
+                const twisted = operations.rotatedExtrude({ shape: openOutline, height: 5, angle: 45, makeSolid: true });
+
+                // Assert
+                expect(occHelper.enumService.getShapeTypeEnum(twisted)).toBe(Inputs.OCCT.shapeTypeEnum.shell);
+            });
+        });
+
+        describe("pipeWithBinormal", () => {
+            const spine = (): TopoDS_Wire => wire.createLineWire({ start: [0, 0, 0], end: [0, 10, 0] });
+            const ring = (): TopoDS_Wire => wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            it.each([
+                ["a point as the profile", (): TopoDS_Shape => occHelper.entitiesService.makeVertex([0, 0, 0]), [1, 0, 0]],
+                ["a solid as the profile", (): TopoDS_Shape => solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] }), [1, 0, 0]],
+                ["a binormal with no length", ring, [0, 0, 0]],
+            ] as [string, () => TopoDS_Shape, Inputs.Base.Vector3][])("should name a pipe it could not build with %s as a failed pipe rather than pass on the kernel's exception, and release the maker", (_case, profile, binormal) => {
+                // Arrange
+                const path = spine();
+                const given = profile();
+
+                // Act
+                const { made, thrown } = madeBy(["BRepOffsetAPI_MakePipeShell"], () => occHelper.operationsService.pipeWithBinormal(path, given, binormal));
+
+                // Assert
+                expect(thrown).toEqual(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.failed" }));
+                expect(made).toHaveLength(1);
+                expect(alive(made)).toEqual([]);
+                expect([path.isDeleted(), given.isDeleted()]).toEqual([false, false]);
+            });
         });
 
         describe("loft and loftAdvanced", () => {
@@ -1974,6 +2054,55 @@ describe("OCCT operations unit tests", () => {
 
                 // Assert
                 expect(thrown).toEqual(expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` cut nothing off `shape`, so there are no pieces to follow: give shapes that cut through it." }));
+            });
+
+            it("should refuse a missing shape to split as an input error, and leave no builder alive", () => {
+                // Act
+                const run = madeBy(["BOPAlgo_Builder"], () => operations.splitShapeWithShapes({ shape: loose(undefined), shapes: [knifeThrough()], localFuzzyTolerance: 1e-7, nonDestructive: false }));
+
+                // Assert
+                expect(run.thrown).toEqual(expect.objectContaining({ name: "InputError", property: "shape", message: "`shape` is missing or empty, as an operation that failed can leave it." }));
+                expect(alive(run.made)).toEqual([]);
+            });
+
+            it("should leave no builder alive when the shape to split was deleted", () => {
+                // Arrange
+                const deleted = cube();
+                deleted.delete();
+
+                // Act
+                const run = madeBy(["BOPAlgo_Builder"], () => operations.splitShapeWithShapes({ shape: deleted, shapes: [knifeThrough()], localFuzzyTolerance: 1e-7, nonDestructive: false }));
+
+                // Assert
+                expect(run.thrown).toEqual(expect.objectContaining({ name: "InputError", property: "shape", message: "`shape` was deleted, so nothing of it is left to work on." }));
+                expect(alive(run.made)).toEqual([]);
+            });
+
+            it.each([false, true])("should refuse an empty shape to split as an input error, as its history twin does (nonDestructive %s)", nonDestructive => {
+                // Arrange
+                const empty = new occt.TopoDS_Shape();
+
+                // Act
+                const thrown = thrownBy(() => operations.splitShapeWithShapes({ shape: empty, shapes: [knifeThrough()], localFuzzyTolerance: 1e-7, nonDestructive }));
+
+                // Assert
+                expect(thrown).toEqual(expect.objectContaining({ name: "InputError", property: "shape", message: "`shape` is missing or empty, as an operation that failed can leave it." }));
+            });
+
+            it("should release the builder and pass the error on when the split itself fails", () => {
+                // Arrange
+                const failure = new Error("the kernel could not split the shape");
+                vi.spyOn(occt.BOPAlgo_Builder.prototype, "Perform").mockImplementation(() => {
+                    throw failure;
+                });
+
+                // Act
+                const run = madeBy(["BOPAlgo_Builder"], () => operations.splitShapeWithShapes({ shape: cube(), shapes: [knifeThrough()], localFuzzyTolerance: 1e-7, nonDestructive: false }));
+
+                // Assert
+                expect(run.thrown).toBe(failure);
+                expect(run.made).toHaveLength(1);
+                expect(alive(run.made)).toEqual([]);
             });
 
             it("should release the builder, what it modified and the compound of it, and hand back only the pieces", () => {
@@ -2092,6 +2221,250 @@ describe("OCCT operations unit tests", () => {
                 expect([returnedBy(...made).length, run.made.length]).toEqual([4, 2]);
                 expect(alive([...returnedBy(...made), ...run.made])).toEqual([]);
             });
+        });
+    });
+
+    describe("the spines, sections, corners and steps a sweep, a loft and a slice are handed", () => {
+        const loose = <T>(value: unknown): T => value as T;
+        const ring = (): TopoDS_Wire => wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+        const upright = (): TopoDS_Wire => wire.createLineWire({ start: [0, 0, 0], end: [0, 10, 0] });
+        const deletedUpright = (): TopoDS_Wire => {
+            const gone = upright();
+            gone.delete();
+            return gone;
+        };
+        const deletedBox = (): TopoDS_Shape => {
+            const gone = solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] });
+            gone.delete();
+            return gone;
+        };
+        const asPlainShape = <T extends TopoDS_Shape>(shape: T): T => loose<T>(occt.BRepBuilderAPI_Copy_Shape(shape, false));
+        const circleEdge = (radius: number, height: number): TopoDS_Edge => edge.createCircleEdge({ radius, center: [0, height, 0], direction: [0, 1, 0] });
+        const advanced = (inputs: Partial<Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>>): Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge> =>
+            ({ ...new Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>(), ...inputs });
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
+        const emptyOrDeleted: [string, () => TopoDS_Shape, string][] = [
+            ["an empty shape", (): TopoDS_Shape => new occt.TopoDS_Shape(), "`shape` is missing or empty, as an operation that failed can leave it."],
+            ["a deleted shape", deletedBox, "`shape` was deleted, so nothing of it is left to work on."],
+        ];
+        const sweeps: [string, (spine: TopoDS_Wire, profiles: TopoDS_Shape[]) => TopoDS_Shape][] = [
+            ["pipe", (shape, shapes): TopoDS_Shape => operations.pipe({ shape, shapes })],
+            ["pipeWithHistory", (shape, shapes): TopoDS_Shape => operations.pipeWithHistory({ shape, shapes }).shape],
+        ];
+
+        describe.each(sweeps)("%s", (method, sweep) => {
+            it.each([
+                ["an empty wire", (): TopoDS_Wire => new occt.TopoDS_Wire(), "`shape` is missing or empty, as an operation that failed can leave it."],
+                ["a deleted wire", deletedUpright, "`shape` was deleted, so nothing of it is left to work on."],
+                ["no wire at all", (): TopoDS_Wire => loose<TopoDS_Wire>(undefined), "`shape` is missing or empty, as an operation that failed can leave it."],
+            ] as [string, () => TopoDS_Wire, string][])(`should refuse ${method} along %s as an input error on the shape before the kernel sweeps, leaving alive nothing it made`, (_spine, spineOf, message) => {
+                // Arrange
+                const spine = spineOf();
+                const profiles = [ring()];
+
+                // Act
+                const run = ledgerRun(() => sweep(spine, profiles));
+
+                // Assert
+                expect(run.thrown).toEqual(expect.objectContaining({ name: "InputError", property: "shape", message }));
+                expect(namesOf(run.leaked)).toEqual([]);
+            });
+
+            it(`should refuse ${method} along a solid as an input error naming the shape`, () => {
+                // Arrange
+                const block = loose<TopoDS_Wire>(solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] }));
+                const profiles = [ring()];
+
+                // Act
+                const refused = refusalOf(() => sweep(block, profiles));
+
+                // Assert
+                expect(refused).toEqual(expect.objectContaining({ name: "InputError", property: "shape", message: "`shape` is a solid, and a pipe follows a wire." }));
+            });
+
+            it(`should sweep with ${method} along a wire handed as a plain shape as it sweeps along the wire`, () => {
+                // Arrange
+                const path = upright();
+
+                // Act
+                const alongPlainShape = sweep(asPlainShape(path), [ring()]);
+                const alongWire = sweep(path, [ring()]);
+
+                // Assert
+                expect([solid.getSolidVolume({ shape: alongPlainShape }), solid.getSolidVolume({ shape: alongWire })]).toEqual([expect.closeTo(10 * Math.PI, 6), expect.closeTo(10 * Math.PI, 6)]);
+            });
+
+            it(`should sweep with ${method} an edge handed as a plain shape as it sweeps the edge`, () => {
+                // Arrange
+                const circle = circleEdge(1, 0);
+
+                // Act
+                const ofPlainShape = sweep(upright(), [asPlainShape(circle)]);
+                const ofEdge = sweep(upright(), [circle]);
+
+                // Assert
+                expect([solid.getSolidVolume({ shape: ofPlainShape }), solid.getSolidVolume({ shape: ofEdge })]).toEqual([expect.closeTo(10 * Math.PI, 6), expect.closeTo(10 * Math.PI, 6)]);
+            });
+        });
+
+        it.each([
+            ["loft", (shapes: LoftSections): TopoDS_Shape => operations.loft({ shapes, makeSolid: true })],
+            ["loftWithHistory", (shapes: LoftSections): TopoDS_Shape => operations.loftWithHistory({ shapes, makeSolid: true }).shape],
+            ["loftAdvanced", (shapes: LoftSections): TopoDS_Shape => operations.loftAdvanced(advanced({ shapes, makeSolid: true }))],
+            ["loftAdvancedWithHistory", (shapes: LoftSections): TopoDS_Shape => operations.loftAdvancedWithHistory(advanced({ shapes, makeSolid: true })).shape],
+        ] as [string, (shapes: LoftSections) => TopoDS_Shape][])("should loft with %s through circle edges handed as plain shapes as through the edges", (_method, loft) => {
+            // Arrange
+            const sections = [circleEdge(2, 0), circleEdge(1, 5)];
+
+            // Act
+            const throughPlainShapes = loft(sections.map(section => asPlainShape(section)));
+            const throughEdges = loft(sections);
+
+            // Assert
+            expect([solid.getSolidVolume({ shape: throughPlainShapes }), solid.getSolidVolume({ shape: throughEdges })]).toEqual([expect.closeTo(Math.PI * 5 * (4 + 2 + 1) / 3, 3), expect.closeTo(Math.PI * 5 * (4 + 2 + 1) / 3, 3)]);
+        });
+
+        it("should loft periodically through circle edges handed as plain shapes as through the edges", () => {
+            // Arrange
+            const sections = [circleEdge(2, 0), circleEdge(1, 5), circleEdge(2, 10)];
+            const periodic = (shapes: LoftSections): TopoDS_Shape => operations.loftAdvanced(advanced({ shapes, makeSolid: true, closed: true, periodic: true }));
+
+            // Act
+            const throughPlainShapes = periodic(sections.map(section => asPlainShape(section)));
+            const throughEdges = periodic(sections);
+
+            // Assert
+            expect(occHelper.operationsService.boundingBoxOfShape({ shape: throughPlainShapes })).toEqual(occHelper.operationsService.boundingBoxOfShape({ shape: throughEdges }));
+        });
+
+        it.each([
+            ["loftAdvanced", (shapes: LoftSections, maxUDegree: number): TopoDS_Shape => operations.loftAdvanced(advanced({ shapes, makeSolid: true, maxUDegree }))],
+            ["loftAdvancedWithHistory", (shapes: LoftSections, maxUDegree: number): TopoDS_Shape => operations.loftAdvancedWithHistory(advanced({ shapes, makeSolid: true, maxUDegree })).shape],
+        ] as [string, (shapes: LoftSections, maxUDegree: number) => TopoDS_Shape][])("should refuse %s a degree above 25, below 0 or a part of one as an input error on maxUDegree, leaving alive nothing it made", (_method, loft) => {
+            // Arrange
+            const sections = [circleEdge(2, 0), circleEdge(1, 5), circleEdge(2, 10)];
+
+            // Act
+            const runs = [26, -1, 2.5].map(maxUDegree => ledgerRun(() => loft(sections, maxUDegree)));
+
+            // Assert
+            expect(runs.map(run => [run.thrown, namesOf(run.leaked)])).toEqual([26, -1, 2.5].map(maxUDegree => [
+                expect.objectContaining({ name: "InputError", property: "maxUDegree", message: `\`maxUDegree\` must be a whole number from 0 to 25; it is ${maxUDegree}.` }),
+                [],
+            ]));
+        });
+
+        it("should loft through sections at the highest degree it takes, 25, and at 0, which leaves the kernel's own limit", () => {
+            // Arrange
+            const sections = [circleEdge(2, 0), circleEdge(1, 5), circleEdge(2, 10)];
+
+            // Act
+            const lofts = [25, 0].map(maxUDegree => operations.loftAdvanced(advanced({ shapes: sections, makeSolid: true, maxUDegree })));
+
+            // Assert
+            expect(lofts.map(loft => solid.getSolidVolume({ shape: loft }) > 0)).toEqual([true, true]);
+        });
+
+        it.each([
+            ["pipePolylineWireNGon", (nrCorners: number): unknown => operations.pipePolylineWireNGon({ shape: upright(), radius: 0.5, nrCorners })],
+            ["pipePolylineWireNGonWithHistory", (nrCorners: number): unknown => operations.pipePolylineWireNGonWithHistory({ shape: upright(), radius: 0.5, nrCorners })],
+        ] as [string, (nrCorners: number) => unknown][])("should refuse %s fewer than 3 corners, more than 1000 or a part of one as an input error on nrCorners", (_method, bar) => {
+            // Act
+            const refusals = [2, 1001, 6.5].map(nrCorners => refusalOf(() => bar(nrCorners)));
+
+            // Assert
+            expect(refusals).toEqual([
+                expect.objectContaining({ name: "InputError", property: "nrCorners", message: "`nrCorners` must be a whole number from 3 to 1000; it is 2." }),
+                expect.objectContaining({ name: "InputError", property: "nrCorners", message: "`nrCorners` must be a whole number from 3 to 1000; it is 1001." }),
+                expect.objectContaining({ name: "InputError", property: "nrCorners", message: "`nrCorners` must be a whole number from 3 to 1000; it is 6.5." }),
+            ]);
+        });
+
+        it("should sweep a bar of 1000 corners, as many as it takes, with a flat side for each", () => {
+            // Act
+            const bar = operations.pipePolylineWireNGon({ shape: upright(), radius: 0.5, nrCorners: 1000, makeSolid: true });
+
+            // Assert
+            expect(face.getFaces({ shape: bar })).toHaveLength(1002);
+        });
+
+        it.each([
+            ["slice", (shape: TopoDS_Shape): unknown => operations.slice({ shape, step: 1, direction: [0, 1, 0] })],
+            ["sliceInStepPattern", (shape: TopoDS_Shape): unknown => operations.sliceInStepPattern({ shape, steps: [1, 2], direction: [0, 1, 0] })],
+            ["rotatedExtrude", (shape: TopoDS_Shape): unknown => operations.rotatedExtrude({ shape, height: 5, angle: 30, makeSolid: true })],
+        ] as [string, (shape: TopoDS_Shape) => unknown][])("should refuse %s an empty or a deleted shape as an input error on the shape, leaving alive nothing it made", (_method, act) => {
+            // Arrange
+            const shapes = emptyOrDeleted.map(([, shapeOf]) => shapeOf());
+
+            // Act
+            const runs = shapes.map(shape => ledgerRun(() => act(shape)));
+
+            // Assert
+            expect(runs.map(run => [run.thrown, namesOf(run.leaked)])).toEqual(emptyOrDeleted.map(([, , message]) => [expect.objectContaining({ name: "InputError", property: "shape", message }), []]));
+        });
+
+        it("should refuse a slice step that is not a number as it refuses a step of 0", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] });
+
+            // Act
+            const act = (): unknown => operations.slice({ shape: box, step: Number.NaN, direction: [0, 1, 0] });
+
+            // Assert
+            expect(act).toThrow("Step needs to be positive.");
+        });
+
+        it("should refuse a step pattern holding a step that is not a number as an input error on steps", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] });
+
+            // Act
+            const refused = refusalOf(() => operations.sliceInStepPattern({ shape: box, steps: [0.5, Number.NaN], direction: [0, 1, 0] }));
+
+            // Assert
+            expect(refused).toEqual(expect.objectContaining({ name: "InputError", property: "steps", message: "`steps` holds NaN at position 1; each is a finite number." }));
+        });
+
+        it.each([
+            ["shape1", (box: TopoDS_Shape, other: TopoDS_Shape): unknown => operations.closestPointsBetweenTwoShapes({ shape1: other, shape2: box })],
+            ["shape2", (box: TopoDS_Shape, other: TopoDS_Shape): unknown => operations.closestPointsBetweenTwoShapes({ shape1: box, shape2: other })],
+        ] as [string, (box: TopoDS_Shape, other: TopoDS_Shape) => unknown][])("should refuse the closest points to an empty or a deleted %s as an input error naming it", (property, act) => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] });
+            const others = emptyOrDeleted.map(([, shapeOf]) => shapeOf());
+
+            // Act
+            const refusals = others.map(other => refusalOf(() => act(box, other)));
+
+            // Assert
+            expect(refusals).toEqual(emptyOrDeleted.map(([, , message]) => expect.objectContaining({ name: "InputError", property, message: message.replace("`shape`", `\`${property}\``) })));
+        });
+
+        it.each([
+            ["an empty face", (): TopoDS_Face => new occt.TopoDS_Face(), "`face` is missing or empty, as an operation that failed can leave it."],
+            ["a deleted face", (): TopoDS_Face => {
+                const gone = face.createCircleFace({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+                gone.delete();
+                return gone;
+            }, "`face` was deleted, so nothing of it is left to work on."],
+        ] as [string, () => TopoDS_Face, string][])("should refuse to offset a wire on %s as an input error on the face, leaving alive nothing it made", (_face, faceOf, message) => {
+            // Arrange
+            const given = faceOf();
+            const circle = ring();
+
+            // Act
+            const run = ledgerRun(() => operations.offset({ shape: circle, face: given, distance: 0.1, tolerance: 1e-7 }));
+
+            // Assert
+            expect(run.thrown).toEqual(expect.objectContaining({ name: "InputError", property: "face", message }));
+            expect(namesOf(run.leaked)).toEqual([]);
         });
     });
 });

@@ -7,6 +7,9 @@ import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type { EdgesService } from "./edges.service";
 import type { EntitiesService } from "./entities.service";
 import type * as Resolved from "../../api/resolved-inputs";
+import { kernelObjects } from "./release";
+import { InputError } from "@bitbybit-dev/base";
+import type { ObjectDefinition, TextWiresDataDto } from "../../api/models/bucket";
 
 export class DimensionsService {
 
@@ -18,6 +21,17 @@ export class DimensionsService {
         private readonly edgesService: EdgesService,
         private readonly wiresService: WiresService
     ) { }
+
+    private labelWires(text: Inputs.OCCT.TextWiresDto): ObjectDefinition<TextWiresDataDto<string>, TopoDS_Shape> {
+        try {
+            return this.wiresService.textWiresWithData(text);
+        } catch (error) {
+            if (error instanceof InputError && error.property === "height") {
+                throw new InputError(error.message.replace("`height`", "`labelSize`"), "labelSize");
+            }
+            throw error;
+        }
+    }
 
     private evaluateExpression(expression: string, value: number, decimalPlaces: number, removeTrailingZeros = false): string {
         try {
@@ -135,514 +149,477 @@ export class DimensionsService {
     }
 
     simpleLinearLengthDimension(inputs: Resolved.OCCT.SimpleLinearLengthDimensionDto): TopoDS_Compound {
-        const shapesToDelete: TopoDS_Shape[] = [];
-        const lineBetweenPoints = this.wiresService.createLineWireWithExtensions({
-            start: inputs.start,
-            end: inputs.end,
-            extensionStart: inputs.crossingSize,
-            extensionEnd: inputs.crossingSize,
-        });
-        shapesToDelete.push(lineBetweenPoints);
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const lineBetweenPoints = own(this.wiresService.createLineWireWithExtensions({
+                start: inputs.start,
+                end: inputs.end,
+                extensionStart: inputs.crossingSize,
+                extensionEnd: inputs.crossingSize,
+            }));
 
-        const translatedLine = this.transformsService.translate({
-            shape: lineBetweenPoints,
-            translation: inputs.direction,
-        });
+            const translatedLine = own(this.transformsService.translate({
+                shape: lineBetweenPoints,
+                translation: inputs.direction,
+            }));
 
-        const translatedPts = this.base.point.translatePoints({
-            points: [inputs.start, inputs.end],
-            translation: inputs.direction,
-        });
+            const translatedPts = this.base.point.translatePoints({
+                points: [inputs.start, inputs.end],
+                translation: inputs.direction,
+            });
 
-        const translatedStartPt = translatedPts[0]!;
-        const translatedEndPt = translatedPts[1]!;
+            const translatedStartPt = translatedPts[0]!;
+            const translatedEndPt = translatedPts[1]!;
 
-        const startLineToTranslatedPoint = this.wiresService.createLineWireWithExtensions({
-            start: inputs.start,
-            end: translatedStartPt,
-            extensionStart: -(inputs.offsetFromPoints),
-            extensionEnd: inputs.crossingSize,
-        });
+            const startLineToTranslatedPoint = own(this.wiresService.createLineWireWithExtensions({
+                start: inputs.start,
+                end: translatedStartPt,
+                extensionStart: -(inputs.offsetFromPoints),
+                extensionEnd: inputs.crossingSize,
+            }));
 
-        const endLineToTranslatedPoint = this.wiresService.createLineWireWithExtensions({
-            start: inputs.end,
-            end: translatedEndPt,
-            extensionStart: -(inputs.offsetFromPoints),
-            extensionEnd: inputs.crossingSize,
-        });
+            const endLineToTranslatedPoint = own(this.wiresService.createLineWireWithExtensions({
+                start: inputs.end,
+                end: translatedEndPt,
+                extensionStart: -(inputs.offsetFromPoints),
+                extensionEnd: inputs.crossingSize,
+            }));
 
-        const midPt = this.wiresService.midPointOnWire({ shape: translatedLine });
-        const length = this.base.point.distance({
-            startPoint: inputs.start,
-            endPoint: inputs.end,
-        });
+            const midPt = this.wiresService.midPointOnWire({ shape: translatedLine });
+            const length = this.base.point.distance({
+                startPoint: inputs.start,
+                endPoint: inputs.end,
+            });
 
-        const labelText = this.formatDimensionLabel(
-            length,
-            inputs.labelOverwrite,
-            inputs.decimalPlaces,
-            inputs.labelSuffix,
-            inputs.removeTrailingZeros
-        );
+            const labelText = this.formatDimensionLabel(
+                length,
+                inputs.labelOverwrite,
+                inputs.decimalPlaces,
+                inputs.labelSuffix,
+                inputs.removeTrailingZeros
+            );
 
-        const txtOpt = new Inputs.OCCT.TextWiresDto();
-        txtOpt.text = labelText;
-        txtOpt.xOffset = 0;
-        txtOpt.yOffset = 0;
-        txtOpt.height = inputs.labelSize;
-        txtOpt.centerOnOrigin = true;
+            const txtOpt = new Inputs.OCCT.TextWiresDto();
+            txtOpt.text = labelText;
+            txtOpt.xOffset = 0;
+            txtOpt.yOffset = 0;
+            txtOpt.height = inputs.labelSize;
+            txtOpt.centerOnOrigin = true;
 
-        const txt = this.wiresService.textWiresWithData(txtOpt);
-        if (!txt.compound || !txt.shapes) {
-            throw new Error("Dimension label could not be created");
-        }
+            const txt = this.labelWires(txtOpt);
+            txt.shapes?.forEach(entry => own(entry.shape));
+            if (!txt.compound || !txt.shapes) {
+                throw new Error("Dimension label could not be created");
+            }
 
-        const normalThreePoints = this.base.point.normalFromThreePoints({
-            point1: inputs.start,
-            point2: inputs.end,
-            point3: midPt,
-            reverseNormal: true,
-        });
-        if (!normalThreePoints) {
-            throw new Error("Dimension points must not be collinear");
-        }
+            const normalThreePoints = this.base.point.normalFromThreePoints({
+                point1: inputs.start,
+                point2: inputs.end,
+                point3: midPt,
+                reverseNormal: true,
+            });
+            if (!normalThreePoints) {
+                throw new Error("Dimension points must not be collinear");
+            }
 
-        const dirStartEnd = this.base.vector.sub({
-            first: inputs.end,
-            second: inputs.start,
-        }) as Inputs.Base.Vector3;
+            const dirStartEnd = this.base.vector.sub({
+                first: inputs.end,
+                second: inputs.start,
+            }) as Inputs.Base.Vector3;
 
-        let currentShape = this.transformsService.rotate({
-            shape: txt.compound,
-            angle: -90 + (inputs.labelRotation || 0),
-            axis: [0, 1, 0],
-        });
+            let currentShape = own(this.transformsService.rotate({
+                shape: txt.compound,
+                angle: -90 + (inputs.labelRotation || 0),
+                axis: [0, 1, 0],
+            }));
 
-        shapesToDelete.push(...txt.shapes.map((s) => s.shape));
-        let previousShape = currentShape;
+            if (inputs.labelFlipHorizontal) {
+                currentShape = own(this.transformsService.scale3d({
+                    shape: currentShape,
+                    scale: [-1, 1, 1],
+                    center: [0, 0, 0]
+                }));
+            }
 
-        if (inputs.labelFlipHorizontal) {
-            currentShape = this.transformsService.scale3d({
+            if (inputs.labelFlipVertical) {
+                currentShape = own(this.transformsService.scale3d({
+                    shape: currentShape,
+                    scale: [1, 1, -1],
+                    center: [0, 0, 0]
+                }));
+            }
+
+            const alignedLabelTxtToDir = own(this.transformsService.alignNormAndAxis({
                 shape: currentShape,
-                scale: [-1, 1, 1],
-                center: [0, 0, 0]
-            });
-            shapesToDelete.push(previousShape);
-            previousShape = currentShape;
+                fromOrigin: [0, 0, 0],
+                fromNorm: [0, 1, 0],
+                fromAx: [0, 0, 1],
+                toOrigin: [0, 0, 0],
+                toNorm: normalThreePoints,
+                toAx: dirStartEnd,
+            }));
+
+            const normDir = this.base.vector.normalized({ vector: inputs.direction });
+            if (!normDir) {
+                throw new Error("Dimension direction must not be a zero vector");
+            }
+            const offsetLabelVec = this.base.vector.mul({ vector: normDir, scalar: inputs.labelOffset });
+
+            const addToDir = this.base.vector.add({
+                first: midPt,
+                second: offsetLabelVec,
+            }) as Inputs.Base.Vector3;
+
+            const labelTransformed = own(this.transformsService.translate({
+                shape: alignedLabelTxtToDir,
+                translation: addToDir
+            }));
+
+            const shapesToInclude: TopoDS_Shape[] = [translatedLine, startLineToTranslatedPoint, endLineToTranslatedPoint, labelTransformed];
+
+            if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
+                const startArrow = own(this.createArrow({
+                    tipPoint: translatedStartPt,
+                    direction: dirStartEnd,
+                    normal: normalThreePoints,
+                    size: inputs.arrowSize,
+                    angle: inputs.arrowAngle,
+                    flipped: !inputs.arrowsFlipped
+                }));
+                shapesToInclude.push(startArrow);
+
+                const endArrowDir = this.base.vector.mul({ vector: dirStartEnd, scalar: -1 }) as Inputs.Base.Vector3;
+                const endArrow = own(this.createArrow({
+                    tipPoint: translatedEndPt,
+                    direction: endArrowDir,
+                    normal: normalThreePoints,
+                    size: inputs.arrowSize,
+                    angle: inputs.arrowAngle,
+                    flipped: !inputs.arrowsFlipped
+                }));
+                shapesToInclude.push(endArrow);
+            }
+
+            return this.converterService.makeCompound({ shapes: shapesToInclude });
+        } finally {
+            releaseAll();
         }
-
-        if (inputs.labelFlipVertical) {
-            currentShape = this.transformsService.scale3d({
-                shape: currentShape,
-                scale: [1, 1, -1],
-                center: [0, 0, 0]
-            });
-            shapesToDelete.push(previousShape);
-            previousShape = currentShape;
-        }
-
-        const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
-            shape: currentShape,
-            fromOrigin: [0, 0, 0],
-            fromNorm: [0, 1, 0],
-            fromAx: [0, 0, 1],
-            toOrigin: [0, 0, 0],
-            toNorm: normalThreePoints,
-            toAx: dirStartEnd,
-        });
-
-        shapesToDelete.push(previousShape);
-
-        const normDir = this.base.vector.normalized({ vector: inputs.direction });
-        if (!normDir) {
-            throw new Error("Dimension direction must not be a zero vector");
-        }
-        const offsetLabelVec = this.base.vector.mul({ vector: normDir, scalar: inputs.labelOffset });
-
-        const addToDir = this.base.vector.add({
-            first: midPt,
-            second: offsetLabelVec,
-        }) as Inputs.Base.Vector3;
-
-        const labelTransformed = this.transformsService.translate({
-            shape: alignedLabelTxtToDir,
-            translation: addToDir
-        });
-
-        shapesToDelete.push(alignedLabelTxtToDir);
-
-        const shapesToInclude: TopoDS_Shape[] = [translatedLine, startLineToTranslatedPoint, endLineToTranslatedPoint, labelTransformed];
-
-        if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
-            const startArrow = this.createArrow({
-                tipPoint: translatedStartPt,
-                direction: dirStartEnd,
-                normal: normalThreePoints,
-                size: inputs.arrowSize,
-                angle: inputs.arrowAngle,
-                flipped: !inputs.arrowsFlipped
-            });
-            shapesToInclude.push(startArrow);
-
-            const endArrowDir = this.base.vector.mul({ vector: dirStartEnd, scalar: -1 }) as Inputs.Base.Vector3;
-            const endArrow = this.createArrow({
-                tipPoint: translatedEndPt,
-                direction: endArrowDir,
-                normal: normalThreePoints,
-                size: inputs.arrowSize,
-                angle: inputs.arrowAngle,
-                flipped: !inputs.arrowsFlipped
-            });
-            shapesToInclude.push(endArrow);
-        }
-
-        const res = this.converterService.makeCompound({ shapes: shapesToInclude });
-        shapesToDelete.push(...shapesToInclude);
-
-        shapesToDelete.forEach((shape) => {
-            shape.delete();
-        });
-
-        return res;
     }
 
     simpleAngularDimension(inputs: Resolved.OCCT.SimpleAngularDimensionDto): TopoDS_Compound {
-        const shapesToDelete: TopoDS_Shape[] = [];
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const normDir1 = this.base.vector.normalized({ vector: inputs.direction1 });
+            if (!normDir1) {
+                throw new Error("Dimension direction must not be a zero vector");
+            }
+            const endVec = this.base.vector.mul({ vector: normDir1, scalar: inputs.radius }) as Inputs.Base.Point3;
+            const endPt = this.base.point.translatePoints({
+                points: [endVec],
+                translation: inputs.center,
+            })[0]!;
 
-        const normDir1 = this.base.vector.normalized({ vector: inputs.direction1 });
-        if (!normDir1) {
-            throw new Error("Dimension direction must not be a zero vector");
-        }
-        const endVec = this.base.vector.mul({ vector: normDir1, scalar: inputs.radius }) as Inputs.Base.Point3;
-        const endPt = this.base.point.translatePoints({
-            points: [endVec],
-            translation: inputs.center,
-        })[0]!;
+            const line1WithExt = own(this.wiresService.createLineWireWithExtensions({
+                start: inputs.center,
+                end: endPt,
+                extensionStart: -inputs.offsetFromCenter,
+                extensionEnd: inputs.extraSize,
+            }));
 
-        const line1WithExt = this.wiresService.createLineWireWithExtensions({
-            start: inputs.center,
-            end: endPt,
-            extensionStart: -inputs.offsetFromCenter,
-            extensionEnd: inputs.extraSize,
-        });
+            const normDir2 = this.base.vector.normalized({ vector: inputs.direction2 });
+            if (!normDir2) {
+                throw new Error("Dimension direction must not be a zero vector");
+            }
+            const endVec2 = this.base.vector.mul({ vector: normDir2, scalar: inputs.radius }) as Inputs.Base.Point3;
+            const endPt2 = this.base.point.translatePoints({
+                points: [endVec2],
+                translation: inputs.center,
+            })[0]!;
+            const line2WithExt = own(this.wiresService.createLineWireWithExtensions({
+                start: inputs.center,
+                end: endPt2,
+                extensionStart: -inputs.offsetFromCenter,
+                extensionEnd: inputs.extraSize,
+            }));
 
-        const normDir2 = this.base.vector.normalized({ vector: inputs.direction2 });
-        if (!normDir2) {
-            throw new Error("Dimension direction must not be a zero vector");
-        }
-        const endVec2 = this.base.vector.mul({ vector: normDir2, scalar: inputs.radius }) as Inputs.Base.Point3;
-        const endPt2 = this.base.point.translatePoints({
-            points: [endVec2],
-            translation: inputs.center,
-        })[0]!;
-        const line2WithExt = this.wiresService.createLineWireWithExtensions({
-            start: inputs.center,
-            end: endPt2,
-            extensionStart: -inputs.offsetFromCenter,
-            extensionEnd: inputs.extraSize,
-        });
-
-        const normalThreePoints = this.base.point.normalFromThreePoints({
-            point1: inputs.center,
-            point2: endPt,
-            point3: endPt2,
-            reverseNormal: true,
-        });
-        if (!normalThreePoints) {
-            throw new Error("Dimension points must not be collinear");
-        }
-
-        const normalThreePointsRev = this.base.point.normalFromThreePoints({
-            point1: inputs.center,
-            point2: endPt,
-            point3: endPt2,
-            reverseNormal: false,
-        });
-        if (!normalThreePointsRev) {
-            throw new Error("Dimension points must not be collinear");
-        }
-
-        const circ = this.entitiesService.createCircle(inputs.radius, inputs.center, normalThreePointsRev, Inputs.OCCT.typeSpecificityEnum.edge);
-        shapesToDelete.push(circ);
-        const arc = this.edgesService.arcFromCircleAndTwoPoints({
-            circle: circ,
-            start: endPt,
-            end: endPt2,
-            sense: false,
-        });
-        shapesToDelete.push(arc);
-        const wireArc = this.wiresService.createWireFromEdge({ shape: arc });
-
-        const midPt = this.wiresService.midPointOnWire({ shape: wireArc });
-        let angle = this.base.vector.angleBetween({
-            first: inputs.direction1,
-            second: inputs.direction2,
-        });
-
-        if (inputs.radians) {
-            angle = this.base.math.degToRad({ number: angle });
-        }
-
-        const labelText = this.formatDimensionLabel(
-            angle,
-            inputs.labelOverwrite,
-            inputs.decimalPlaces,
-            inputs.labelSuffix,
-            inputs.removeTrailingZeros
-        );
-
-        const txtOpt = new Inputs.OCCT.TextWiresDto();
-        txtOpt.text = labelText;
-        txtOpt.xOffset = 0;
-        txtOpt.yOffset = 0;
-        txtOpt.height = inputs.labelSize;
-        txtOpt.centerOnOrigin = true;
-        const txt = this.wiresService.textWiresWithData(txtOpt);
-        if (!txt.compound || !txt.shapes) {
-            throw new Error("Dimension label could not be created");
-        }
-
-        const vectorToMid = this.base.vector.sub({
-            first: midPt,
-            second: inputs.center,
-        }) as Inputs.Base.Vector3;
-        const normVecToMid = this.base.vector.normalized({ vector: vectorToMid }) as Inputs.Base.Vector3;
-
-        let currentShape = this.transformsService.rotate({
-            shape: txt.compound,
-            angle: inputs.labelRotation || 0,
-            axis: [0, 1, 0],
-        });
-
-        shapesToDelete.push(...txt.shapes.map((s) => s.shape));
-        let previousShape = currentShape;
-
-        if (inputs.labelFlipHorizontal) {
-            currentShape = this.transformsService.scale3d({
-                shape: currentShape,
-                scale: [-1, 1, 1],
-                center: [0, 0, 0]
+            const normalThreePoints = this.base.point.normalFromThreePoints({
+                point1: inputs.center,
+                point2: endPt,
+                point3: endPt2,
+                reverseNormal: true,
             });
-            shapesToDelete.push(previousShape);
-            previousShape = currentShape;
-        }
+            if (!normalThreePoints) {
+                throw new Error("Dimension points must not be collinear");
+            }
 
-        if (inputs.labelFlipVertical) {
-            currentShape = this.transformsService.scale3d({
-                shape: currentShape,
-                scale: [1, 1, -1],
-                center: [0, 0, 0]
+            const normalThreePointsRev = this.base.point.normalFromThreePoints({
+                point1: inputs.center,
+                point2: endPt,
+                point3: endPt2,
+                reverseNormal: false,
             });
-            shapesToDelete.push(previousShape);
-            previousShape = currentShape;
-        }
+            if (!normalThreePointsRev) {
+                throw new Error("Dimension points must not be collinear");
+            }
 
-        const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
-            shape: currentShape,
-            fromOrigin: [0, 0, 0],
-            fromNorm: [0, 1, 0],
-            fromAx: [0, 0, 1],
-            toOrigin: [0, 0, 0],
-            toNorm: normalThreePoints,
-            toAx: normVecToMid,
-        });
-        shapesToDelete.push(previousShape);
-        const offsetLabelVec = this.base.vector.mul({ vector: normVecToMid, scalar: inputs.labelOffset });
-        const addToDir = this.base.vector.add({
-            first: midPt,
-            second: offsetLabelVec,
-        }) as Inputs.Base.Vector3;
-        const labelTransformed = this.transformsService.translate({
-            shape: alignedLabelTxtToDir,
-            translation: addToDir
-        });
-        shapesToDelete.push(alignedLabelTxtToDir);
+            const circ = own(this.entitiesService.createCircle(inputs.radius, inputs.center, normalThreePointsRev, Inputs.OCCT.typeSpecificityEnum.edge));
+            const arc = own(this.edgesService.arcFromCircleAndTwoPoints({
+                circle: circ,
+                start: endPt,
+                end: endPt2,
+                sense: false,
+            }));
+            const wireArc = own(this.wiresService.createWireFromEdge({ shape: arc }));
 
-        const shapesToInclude: TopoDS_Shape[] = [line1WithExt, line2WithExt, wireArc, labelTransformed];
-
-        if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
-            const arcStartPoint = this.edgesService.pointOnEdgeAtParam({
-                shape: arc,
-                param: 0
-            });
-            const arcEndPoint = this.edgesService.pointOnEdgeAtParam({
-                shape: arc,
-                param: 1
+            const midPt = this.wiresService.midPointOnWire({ shape: wireArc });
+            let angle = this.base.vector.angleBetween({
+                first: inputs.direction1,
+                second: inputs.direction2,
             });
 
-            const arcStartTangent = this.edgesService.tangentOnEdgeAtParam({
-                shape: arc,
-                param: 0
-            });
-            const arcEndTangent = this.edgesService.tangentOnEdgeAtParam({
-                shape: arc,
-                param: 1
-            });
+            if (inputs.radians) {
+                angle = this.base.math.degToRad({ number: angle });
+            }
 
-            const startArrow = this.createArrow({
-                tipPoint: arcStartPoint,
-                direction: arcStartTangent,
-                normal: normalThreePoints,
-                size: inputs.arrowSize,
-                angle: inputs.arrowAngle,
-                flipped: !inputs.arrowsFlipped
-            });
-            shapesToInclude.push(startArrow);
+            const labelText = this.formatDimensionLabel(
+                angle,
+                inputs.labelOverwrite,
+                inputs.decimalPlaces,
+                inputs.labelSuffix,
+                inputs.removeTrailingZeros
+            );
 
-            const reversedEndTangent = this.base.vector.mul({ 
-                vector: arcEndTangent, 
-                scalar: -1 
+            const txtOpt = new Inputs.OCCT.TextWiresDto();
+            txtOpt.text = labelText;
+            txtOpt.xOffset = 0;
+            txtOpt.yOffset = 0;
+            txtOpt.height = inputs.labelSize;
+            txtOpt.centerOnOrigin = true;
+            const txt = this.labelWires(txtOpt);
+            txt.shapes?.forEach(entry => own(entry.shape));
+            if (!txt.compound || !txt.shapes) {
+                throw new Error("Dimension label could not be created");
+            }
+
+            const vectorToMid = this.base.vector.sub({
+                first: midPt,
+                second: inputs.center,
             }) as Inputs.Base.Vector3;
+            const normVecToMid = this.base.vector.normalized({ vector: vectorToMid }) as Inputs.Base.Vector3;
 
-            const endArrow = this.createArrow({
-                tipPoint: arcEndPoint,
-                direction: reversedEndTangent,
-                normal: normalThreePoints,
-                size: inputs.arrowSize,
-                angle: inputs.arrowAngle,
-                flipped: !inputs.arrowsFlipped
-            });
-            shapesToInclude.push(endArrow);
+            let currentShape = own(this.transformsService.rotate({
+                shape: txt.compound,
+                angle: inputs.labelRotation || 0,
+                axis: [0, 1, 0],
+            }));
+
+            if (inputs.labelFlipHorizontal) {
+                currentShape = own(this.transformsService.scale3d({
+                    shape: currentShape,
+                    scale: [-1, 1, 1],
+                    center: [0, 0, 0]
+                }));
+            }
+
+            if (inputs.labelFlipVertical) {
+                currentShape = own(this.transformsService.scale3d({
+                    shape: currentShape,
+                    scale: [1, 1, -1],
+                    center: [0, 0, 0]
+                }));
+            }
+
+            const alignedLabelTxtToDir = own(this.transformsService.alignNormAndAxis({
+                shape: currentShape,
+                fromOrigin: [0, 0, 0],
+                fromNorm: [0, 1, 0],
+                fromAx: [0, 0, 1],
+                toOrigin: [0, 0, 0],
+                toNorm: normalThreePoints,
+                toAx: normVecToMid,
+            }));
+            const offsetLabelVec = this.base.vector.mul({ vector: normVecToMid, scalar: inputs.labelOffset });
+            const addToDir = this.base.vector.add({
+                first: midPt,
+                second: offsetLabelVec,
+            }) as Inputs.Base.Vector3;
+            const labelTransformed = own(this.transformsService.translate({
+                shape: alignedLabelTxtToDir,
+                translation: addToDir
+            }));
+
+            const shapesToInclude: TopoDS_Shape[] = [line1WithExt, line2WithExt, wireArc, labelTransformed];
+
+            if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
+                const arcStartPoint = this.edgesService.pointOnEdgeAtParam({
+                    shape: arc,
+                    param: 0
+                });
+                const arcEndPoint = this.edgesService.pointOnEdgeAtParam({
+                    shape: arc,
+                    param: 1
+                });
+
+                const arcStartTangent = this.edgesService.tangentOnEdgeAtParam({
+                    shape: arc,
+                    param: 0
+                });
+                const arcEndTangent = this.edgesService.tangentOnEdgeAtParam({
+                    shape: arc,
+                    param: 1
+                });
+
+                const startArrow = own(this.createArrow({
+                    tipPoint: arcStartPoint,
+                    direction: arcStartTangent,
+                    normal: normalThreePoints,
+                    size: inputs.arrowSize,
+                    angle: inputs.arrowAngle,
+                    flipped: !inputs.arrowsFlipped
+                }));
+                shapesToInclude.push(startArrow);
+
+                const reversedEndTangent = this.base.vector.mul({ 
+                    vector: arcEndTangent, 
+                    scalar: -1 
+                }) as Inputs.Base.Vector3;
+
+                const endArrow = own(this.createArrow({
+                    tipPoint: arcEndPoint,
+                    direction: reversedEndTangent,
+                    normal: normalThreePoints,
+                    size: inputs.arrowSize,
+                    angle: inputs.arrowAngle,
+                    flipped: !inputs.arrowsFlipped
+                }));
+                shapesToInclude.push(endArrow);
+            }
+
+            return this.converterService.makeCompound({ shapes: shapesToInclude });
+        } finally {
+            releaseAll();
         }
-
-        const res = this.converterService.makeCompound({ shapes: shapesToInclude });
-        shapesToDelete.push(...shapesToInclude);
-
-        shapesToDelete.forEach((shape) => {
-            shape.delete();
-        });
-
-        return res;
     }
 
     pinWithLabel(inputs: Resolved.OCCT.PinWithLabelDto): TopoDS_Compound {
-        const endPoint = inputs.endPoint;
-        const direction = inputs.direction;
-        const pinLine = this.wiresService.createLineWireWithExtensions({
-            start: inputs.startPoint,
-            end: endPoint,
-            extensionStart: -(inputs.offsetFromStart),
-            extensionEnd: 0,
-        });
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const endPoint = inputs.endPoint;
+            const direction = inputs.direction;
+            const pinLine = own(this.wiresService.createLineWireWithExtensions({
+                start: inputs.startPoint,
+                end: endPoint,
+                extensionStart: -(inputs.offsetFromStart),
+                extensionEnd: 0,
+            }));
 
-        const txtOpt = new Inputs.OCCT.TextWiresDto();
-        txtOpt.text = inputs.label;
-        txtOpt.xOffset = 0;
-        txtOpt.yOffset = 0;
-        txtOpt.height = inputs.labelSize;
-        txtOpt.centerOnOrigin = true;
+            const txtOpt = new Inputs.OCCT.TextWiresDto();
+            txtOpt.text = inputs.label;
+            txtOpt.xOffset = 0;
+            txtOpt.yOffset = 0;
+            txtOpt.height = inputs.labelSize;
+            txtOpt.centerOnOrigin = true;
 
-        const text = this.wiresService.textWiresWithData(txtOpt);
-        if (!text.compound || !text.shapes || !text.data) {
-            throw new Error("Pin label could not be created");
-        }
+            const text = this.labelWires(txtOpt);
+            text.shapes?.forEach(entry => own(entry.shape));
+            if (!text.compound || !text.shapes || !text.data) {
+                throw new Error("Pin label could not be created");
+            }
 
-        const textWidth = text.data.width;
-        const dirNorm = this.base.vector.normalized({ vector: direction });
-        if (!dirNorm) {
-            throw new Error("Pin direction must not be a zero vector");
-        }
-        const offsetLabelVec = this.base.vector.mul({ vector: dirNorm, scalar: textWidth / 2 + (inputs.labelOffset) });
+            const textWidth = text.data.width;
+            const dirNorm = this.base.vector.normalized({ vector: direction });
+            if (!dirNorm) {
+                throw new Error("Pin direction must not be a zero vector");
+            }
+            const offsetLabelVec = this.base.vector.mul({ vector: dirNorm, scalar: textWidth / 2 + (inputs.labelOffset) });
 
-        const endPtLabelLine = this.base.point.translatePoints({
-            points: [endPoint],
-            translation: direction,
-        })[0]!;
+            const endPtLabelLine = this.base.point.translatePoints({
+                points: [endPoint],
+                translation: direction,
+            })[0]!;
 
-        const lineBeneathLabel = this.wiresService.createLineWireWithExtensions({
-            start: endPoint,
-            end: endPtLabelLine,
-            extensionStart: 0,
-            extensionEnd: 0,
-        });
+            const lineBeneathLabel = own(this.wiresService.createLineWireWithExtensions({
+                start: endPoint,
+                end: endPtLabelLine,
+                extensionStart: 0,
+                extensionEnd: 0,
+            }));
 
-        const normalThreePoints = this.base.point.normalFromThreePoints({
-            point1: inputs.startPoint,
-            point2: endPoint,
-            point3: endPtLabelLine,
-            reverseNormal: false,
-        });
-        if (!normalThreePoints) {
-            throw new Error("Dimension points must not be collinear");
-        }
-        let currentShape = this.transformsService.rotate({
-            shape: text.compound,
-            angle: -90 + (inputs.labelRotation || 0),
-            axis: [0, 1, 0],
-        });
-
-        const shapesToDelete = text.shapes.map((s) => s.shape);
-        let previousShape = currentShape;
-
-        if (inputs.labelFlipHorizontal) {
-            currentShape = this.transformsService.scale3d({
-                shape: currentShape,
-                scale: [-1, 1, 1],
-                center: [0, 0, 0]
+            const normalThreePoints = this.base.point.normalFromThreePoints({
+                point1: inputs.startPoint,
+                point2: endPoint,
+                point3: endPtLabelLine,
+                reverseNormal: false,
             });
-            shapesToDelete.push(previousShape);
-            previousShape = currentShape;
-        }
+            if (!normalThreePoints) {
+                throw new Error("Dimension points must not be collinear");
+            }
+            let currentShape = own(this.transformsService.rotate({
+                shape: text.compound,
+                angle: -90 + (inputs.labelRotation || 0),
+                axis: [0, 1, 0],
+            }));
 
-        if (inputs.labelFlipVertical) {
-            currentShape = this.transformsService.scale3d({
+            if (inputs.labelFlipHorizontal) {
+                currentShape = own(this.transformsService.scale3d({
+                    shape: currentShape,
+                    scale: [-1, 1, 1],
+                    center: [0, 0, 0]
+                }));
+            }
+
+            if (inputs.labelFlipVertical) {
+                currentShape = own(this.transformsService.scale3d({
+                    shape: currentShape,
+                    scale: [1, 1, -1],
+                    center: [0, 0, 0]
+                }));
+            }
+
+            const alignedLabelTxtToDir = own(this.transformsService.alignNormAndAxis({
                 shape: currentShape,
-                scale: [1, 1, -1],
-                center: [0, 0, 0]
-            });
-            shapesToDelete.push(previousShape);
-            previousShape = currentShape;
-        }
-
-        const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
-            shape: currentShape,
-            fromOrigin: [0, 0, 0],
-            fromNorm: [0, 1, 0],
-            fromAx: [0, 0, 1],
-            toOrigin: [0, 0, 0],
-            toNorm: normalThreePoints,
-            toAx: dirNorm as Inputs.Base.Vector3,
-        });
+                fromOrigin: [0, 0, 0],
+                fromNorm: [0, 1, 0],
+                fromAx: [0, 0, 1],
+                toOrigin: [0, 0, 0],
+                toNorm: normalThreePoints,
+                toAx: dirNorm as Inputs.Base.Vector3,
+            }));
         
-        shapesToDelete.push(previousShape);
 
-        const addToDir = this.base.vector.add({
-            first: endPtLabelLine,
-            second: offsetLabelVec,
-        }) as Inputs.Base.Vector3;
-
-        const labelTransformed = this.transformsService.translate({
-            shape: alignedLabelTxtToDir,
-            translation: addToDir,
-        });
-        shapesToDelete.push(alignedLabelTxtToDir);
-
-        const shapesToInclude: TopoDS_Shape[] = [pinLine, labelTransformed, lineBeneathLabel];
-
-        if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
-            const pinDirection = this.base.vector.sub({
-                first: endPoint,
-                second: inputs.startPoint,
+            const addToDir = this.base.vector.add({
+                first: endPtLabelLine,
+                second: offsetLabelVec,
             }) as Inputs.Base.Vector3;
 
-            const arrow = this.createArrow({
-                tipPoint: inputs.startPoint,
-                direction: pinDirection,
-                normal: normalThreePoints,
-                size: inputs.arrowSize,
-                angle: inputs.arrowAngle,
-                flipped: !inputs.arrowsFlipped
-            });
-            shapesToInclude.push(arrow);
+            const labelTransformed = own(this.transformsService.translate({
+                shape: alignedLabelTxtToDir,
+                translation: addToDir,
+            }));
+
+            const shapesToInclude: TopoDS_Shape[] = [pinLine, labelTransformed, lineBeneathLabel];
+
+            if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
+                const pinDirection = this.base.vector.sub({
+                    first: endPoint,
+                    second: inputs.startPoint,
+                }) as Inputs.Base.Vector3;
+
+                const arrow = own(this.createArrow({
+                    tipPoint: inputs.startPoint,
+                    direction: pinDirection,
+                    normal: normalThreePoints,
+                    size: inputs.arrowSize,
+                    angle: inputs.arrowAngle,
+                    flipped: !inputs.arrowsFlipped
+                }));
+                shapesToInclude.push(arrow);
+            }
+
+            return this.converterService.makeCompound({ shapes: shapesToInclude });
+        } finally {
+            releaseAll();
         }
-
-        const res = this.converterService.makeCompound({ shapes: shapesToInclude });
-        shapesToDelete.push(...shapesToInclude);
-
-        shapesToDelete.forEach((shape) => {
-            shape.delete();
-        });
-        return res;
     }
 
 }

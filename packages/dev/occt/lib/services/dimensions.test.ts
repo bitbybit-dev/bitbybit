@@ -1157,6 +1157,25 @@ describe("OCCT dimensions unit tests", () => {
             expect(() => dimensions.pinWithLabel(inputs)).toThrow(/must not be a zero vector/);
         });
 
+        it.each([
+            ["a linear dimension", (): unknown => dimensions.simpleLinearLengthDimension({ ...new Inputs.OCCT.SimpleLinearLengthDimensionDto(), start: [0, 0, 0], end: [10, 0, 0], direction: [0, 0, 2], labelSize: 0 })],
+            ["an angular dimension", (): unknown => dimensions.simpleAngularDimension({ ...new Inputs.OCCT.SimpleAngularDimensionDto(), direction1: [1, 0, 0], direction2: [0, 0, 1], labelSize: 0 })],
+            ["a pin", (): unknown => dimensions.pinWithLabel({ ...new Inputs.OCCT.PinWithLabelDto(), labelSize: 0 })],
+        ])("should name the label size when %s is asked for a label of size 0", (_name, act) => {
+            // Arrange
+            let refusal: unknown;
+
+            // Act
+            try {
+                act();
+            } catch (failure) {
+                refusal = failure;
+            }
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property: "labelSize", message: "`labelSize` is 0, too small to tell the points of the letters apart." });
+        });
+
         it("should refuse an arrow pointed along the plane the dimension sits in", () => {
             const inputs = new Inputs.OCCT.SimpleLinearLengthDimensionDto();
             inputs.start = [0, 0, 0];

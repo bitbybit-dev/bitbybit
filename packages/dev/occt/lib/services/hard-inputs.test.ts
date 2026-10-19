@@ -1,20 +1,22 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import type { TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { OCCTService } from "../occ-service";
 import * as Inputs from "../api/inputs";
 import { HistoryOracles, nameOf, outcomeOf, refusalParity } from "../__test__/history-oracles";
 import type { Outcome } from "../__test__/history-oracles";
+import { namesOf, openWindow } from "../../../__test__/embind-ledger";
 
 const NAMED_REFUSALS = ["InputError", "KernelOperationError"];
 
 describe("OCCT operations on the inputs real models give them", () => {
+    let kernel: BitbybitOcctModule;
     let occt: OCCTService;
     let oracles: HistoryOracles;
 
     beforeAll(async () => {
-        const kernel = await createBitbybitOcct();
+        kernel = await createBitbybitOcct();
         occt = new OCCTService(kernel, new OccHelper(kernel));
         oracles = new HistoryOracles(occt);
     }, 120_000);
@@ -22,6 +24,14 @@ describe("OCCT operations on the inputs real models give them", () => {
     const box = (size = 10, center: Inputs.Base.Point3 = [0, 0, 0]): TopoDS_Shape => occt.shapes.solid.createBox({ width: size, length: size, height: size, center });
     const circle = (radius: number, height: number): TopoDS_Wire => occt.shapes.wire.createCircleWire({ radius, center: [0, height, 0], direction: [0, 1, 0] });
     const square = (size: number, height: number): TopoDS_Wire => occt.shapes.wire.createSquareWire({ size, center: [0, height, 0], direction: [0, 1, 0] });
+    const leftAliveBy = <T>(act: () => T): { outcome: Outcome<T>; alive: string[] } => {
+        const opened = openWindow();
+        try {
+            return { outcome: outcomeOf(act), alive: namesOf(opened.made().filter(handle => !handle.isDeleted())) };
+        } finally {
+            opened.close();
+        }
+    };
     const validOrRefused = (outcome: Outcome<TopoDS_Shape>): string => outcome.value === undefined
         ? `refused with ${nameOf(outcome.thrown)}`
         : `${occt.shapeFix.isValid({ shape: outcome.value }) ? "valid" : "not valid"}, holding ${oracles.volume(outcome.value)}`;
@@ -273,6 +283,41 @@ describe("OCCT operations on the inputs real models give them", () => {
             expect(lofted.value === undefined ? nameOf(lofted.thrown) : String(occt.shapeFix.isValid({ shape: lofted.value }))).toMatch(/^(InputError|KernelOperationError|true)$/);
         });
 
+        it.each([
+            ["face", (): TopoDS_Shape => occt.shapes.face.createSquareFace({ size: 3, center: [0, 5, 0], direction: [0, 1, 0] })],
+            ["solid", (): TopoDS_Shape => box(3, [0, 5, 0])],
+            ["vertex", (): TopoDS_Shape => occt.shapes.vertex.vertexFromXYZ({ x: 0, y: 5, z: 0 })],
+            ["compound", (): TopoDS_Shape => occt.shapes.compound.makeCompound({ shapes: [circle(1.5, 5)] })],
+        ] as [string, () => TopoDS_Shape][])("should refuse a %s among the sections of every loft as an input error at its position, and leave alive no kernel object it made", (kind, section) => {
+            // Arrange
+            const shapes = [circle(2, 0), section(), circle(1, 10)];
+            const advanced = { ...new Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire>(), shapes, makeSolid: true };
+            const refusal = { name: "InputError", property: "shapes", message: `\`shapes\` holds a ${kind} at position 1, and a loft runs only through wires and edges.` };
+
+            // Act
+            const lofts = [
+                leftAliveBy(() => occt.operations.loft({ shapes, makeSolid: true })),
+                leftAliveBy(() => occt.operations.loftWithHistory({ shapes, makeSolid: true })),
+                leftAliveBy(() => occt.operations.loftAdvanced(advanced)),
+                leftAliveBy(() => occt.operations.loftAdvanced({ ...advanced, closed: true, periodic: true })),
+                leftAliveBy(() => occt.operations.loftAdvancedWithHistory(advanced)),
+            ];
+
+            // Assert
+            expect(lofts.map(loft => [loft.outcome.thrown, loft.alive])).toEqual(lofts.map(() => [expect.objectContaining(refusal), []]));
+        });
+
+        it("should loft through a wire it is handed as a plain shape as it lofts through the wire", () => {
+            // Arrange
+            const plainShape = kernel.BRepBuilderAPI_Copy_Shape(circle(1, 5), false);
+
+            // Act
+            const lofted = occt.operations.loft({ shapes: [circle(2, 0), plainShape], makeSolid: true });
+
+            // Assert
+            expect(oracles.volume(lofted)).toBeCloseTo(oracles.volume(occt.operations.loft({ shapes: [circle(2, 0), circle(1, 5)], makeSolid: true })), 9);
+        });
+
         it("should close a loft through one ring into a cone at a start point", () => {
             // Act
             const cone = occt.operations.loftAdvanced({ ...new Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire>(), shapes: [circle(2, 0)], startVertex: [0, -5, 0], makeSolid: true });
@@ -345,6 +390,30 @@ describe("OCCT operations on the inputs real models give them", () => {
             expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.revolve.failed" }));
         });
 
+        it.each([90, 360])("should name the failure of revolving an empty shape by %s degrees, and leave alive no kernel object it made", angle => {
+            // Arrange
+            const empty = new kernel.TopoDS_Shape();
+
+            // Act
+            const revolved = leftAliveBy(() => occt.operations.revolve({ shape: empty, angle, direction: [0, 1, 0], copy: false }));
+
+            // Assert
+            expect(revolved.outcome.thrown).toEqual(expect.objectContaining({ name: "KernelOperationError", code: "occt.revolve.failed" }));
+            expect(revolved.alive).toEqual([]);
+        });
+
+        it("should throw the kernel's exception read into an error when it extrudes an empty shape, and leave alive no kernel object it made", () => {
+            // Arrange
+            const empty = new kernel.TopoDS_Shape();
+
+            // Act
+            const extruded = leftAliveBy(() => occt.operations.extrude({ shape: empty, direction: [0, 0, 1] }));
+
+            // Assert
+            expect(extruded.outcome.thrown).toStrictEqual(new Error("Standard_NullObject"));
+            expect(extruded.alive).toEqual([]);
+        });
+
         it("should extrude a face with a hole into a solid with the hole through it", () => {
             // Arrange
             const holed = occt.shapes.face.createFaceFromWires({ shapes: [square(4, 0), occt.shapes.wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, -1, 0] })], planar: true });
@@ -382,6 +451,32 @@ describe("OCCT operations on the inputs real models give them", () => {
 
             // Assert
             expect(nameOf(drafted.thrown)).toBe("KernelOperationError");
+        });
+    });
+
+    describe("calls over several shapes, one of which is refused", () => {
+        it("should refuse to extrude a list holding a solid after a face, and leave alive no prism of the face before it", () => {
+            // Arrange
+            const shapes = [occt.shapes.face.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }), box(2)];
+
+            // Act
+            const extruded = leftAliveBy(() => occt.operations.extrudeShapes({ shapes, direction: [0, 1, 0] }));
+
+            // Assert
+            expect(extruded.outcome.thrown).toEqual(expect.objectContaining({ name: "InputError", property: "shape" }));
+            expect(extruded.alive).toEqual([]);
+        });
+
+        it("should refuse tubes along a list whose second path bends tighter than the radius, and leave alive no tube along the first", () => {
+            // Arrange
+            const shapes = [occt.shapes.wire.createPolylineWire({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] }), circle(1, 0)];
+
+            // Act
+            const piped = leftAliveBy(() => occt.operations.pipeWiresCylindrical({ shapes, radius: 2 }));
+
+            // Assert
+            expect(piped.outcome.thrown).toEqual(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.tooTight" }));
+            expect(piped.alive).toEqual([]);
         });
     });
 

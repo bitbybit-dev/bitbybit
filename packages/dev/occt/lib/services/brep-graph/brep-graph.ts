@@ -2,7 +2,7 @@ import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occ
 import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
-import { resolveDto } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 
 /**
@@ -258,7 +258,7 @@ export class OCCTBrepGraph {
         const shape = this.occ.BRepGraphReconstruct(resolved.shape, resolved.kind, resolved.index);
         if (shape.IsNull()) {
             shape.delete();
-            throw new Error("Could not reconstruct a sub-shape for the given node.");
+            throw new InputError(`\`index\` is ${resolved.index}, and the shape's graph holds no ${resolved.kind} node there, so no sub-shape could be reconstructed.`, "index");
         }
         return this.och.converterService.castAndRelease(shape);
     }

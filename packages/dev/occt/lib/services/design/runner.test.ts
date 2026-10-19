@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
@@ -7,8 +7,12 @@ import type * as Models from "../../api/models";
 import { DesignCache } from "./cache";
 import { runDesign, runFeatures } from "./runner";
 import { BaseBitByBit } from "@bitbybit-dev/base";
+import { sha256 } from "./digest";
+import { namesOf, openWindow } from "../../../../__test__/embind-ledger";
 
 const base = new BaseBitByBit();
+
+const LUG_CODE = "return occt.shapes.solid.createBox(inputs);";
 
 class KeepingCache extends DesignCache {
     readonly kept: string[] = [];
@@ -43,6 +47,16 @@ const withPurge = (id: string): Models.OCCT.DesignPartDocument => ({
         { id, type: "operation", operation: "occt.shapes.shape.purgeInternalEdges", params: { shape: { body: "block" } } },
     ],
 });
+
+const scriptedBlock: Models.OCCT.DesignPartDocument = {
+    schemaVersion: 1,
+    assets: [{ id: "lugScript", uri: "lug.js", sha256: sha256(new TextEncoder().encode(LUG_CODE)) }],
+    features: [
+        { id: "base", type: "sketch", on: { plane: "XY" }, pen: SQUARE },
+        { id: "block", type: "extrude", profile: "base", distance: 2 },
+        { id: "lug", type: "script", script: "lugScript", params: { block: { body: "block" }, list: [{ body: "block" }] } },
+    ],
+};
 
 describe("design runner", () => {
     let kernel: BitbybitOcctModule;
@@ -251,5 +265,40 @@ describe("design runner", () => {
 
         // Assert
         expect(cache.size).toBe(0);
+    });
+
+    it("should free the shapes a waiting script was given when the parts or the sketches after the features throw", () => {
+        // Arrange
+        const cache = new DesignCache(0);
+        const context = { occt, occ: kernel, base, cache, assets: { lugScript: LUG_CODE } };
+        const counted = kernel.CountSubShapes.bind(kernel);
+        const opened = openWindow();
+        const thrownBy = (build: () => unknown): string => {
+            try {
+                build();
+                return "built";
+            } catch (error) {
+                return error instanceof Error ? error.message : String(error);
+            }
+        };
+
+        // Act
+        const volumes = vi.spyOn(occt.shapes.solid, "getSolidVolume").mockImplementation(() => { throw new Error("no volume"); });
+        const parts = thrownBy(() => runDesign(scriptedBlock, {}, context));
+        volumes.mockRestore();
+        const faces = vi.spyOn(kernel, "CountSubShapes").mockImplementation((shape, type, flag) => {
+            if (type === kernel.TopAbs_ShapeEnum.FACE) {
+                throw new Error("no faces");
+            }
+            return counted(shape, type, flag);
+        });
+        const sketches = thrownBy(() => runDesign(scriptedBlock, {}, { ...context, sketches: true }));
+        faces.mockRestore();
+        opened.close();
+        cache.clear();
+
+        // Assert
+        expect([parts, sketches]).toEqual(["no volume", "no faces"]);
+        expect(namesOf(opened.made().filter(handle => !handle.isDeleted()))).toEqual([]);
     });
 });

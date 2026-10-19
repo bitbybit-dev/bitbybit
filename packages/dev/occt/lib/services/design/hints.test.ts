@@ -32,7 +32,7 @@ const mergedTops = (): Document => ({
         { id: "b", type: "extrude", profile: "bSketch", distance: 5 },
         { id: "joined", type: "boolean", operation: "union", body: "a", tools: ["b"] },
         { id: "unified", type: "operation", operation: "occt.shapes.shape.unifySameDomain", params: { shape: { body: "a" }, unifyEdges: true, unifyFaces: true, concatBSplines: true }, body: "a", suppressed: "!merged" },
-        { id: "rebuilt", type: "operation", operation: "occt.shapes.shape.purgeInternalEdges", params: { shape: { body: "a" } }, body: "a", suppressed: "!merged" },
+        { id: "rebuilt", type: "operation", operation: "occt.shapes.solid.getSolids", params: { shape: { body: "a" } }, body: "a", suppressed: "!merged" },
         { id: "dent", type: "sketch", on: { face: A_TOP, origin: [5, 5, 0], direction: [1, 0, 0] }, start: [-1, -1], pen: [{ type: "hLine", length: 2 }, { type: "vLine", length: 2 }, { type: "hLine", length: -2 }, { type: "close" }] },
         { id: "dip", type: "pocket", profile: "dent", body: "a", distance: 1 },
     ],

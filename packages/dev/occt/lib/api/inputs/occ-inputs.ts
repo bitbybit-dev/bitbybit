@@ -1051,6 +1051,7 @@ export namespace OCCT {
          * The radius of the circles to draw, in model units.
          * @default 0.3
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -1089,6 +1090,7 @@ export namespace OCCT {
          * The radius of the circles to draw, in model units.
          * @default 0.3
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3758,8 +3760,8 @@ export namespace OCCT {
         sense?: boolean | undefined = true;
     }
     /**
-     * A circle edge, a point on it and an angle for `shapes.edge.arcFromCirclePointAndAngle`, which
-     * cuts an arc of that angle from the point.
+     * A circle edge, a point on it and an angle on it for `shapes.edge.arcFromCirclePointAndAngle`,
+     * which cuts the arc from the point to that angle.
      */
     export class ArcEdgeCirclePointAngleDto<T> {
         constructor(circle?: T, alphaAngle?: number, sense?: boolean) {
@@ -3778,7 +3780,8 @@ export namespace OCCT {
          */
         point!: Base.Point3;
         /**
-         * How far the arc spans from the point, in degrees.
+         * Where the arc ends, in degrees on the circle, measured from the circle's own start rather
+         * than from `point`; an angle that lands on `point` is refused.
          * @default 90
          * @minimum -Infinity
          * @maximum Infinity
@@ -5738,9 +5741,10 @@ export namespace OCCT {
             if (direction !== undefined) { this.direction = direction; }
         }
         /**
-         * The distance from the center to the circle, in model units.
+         * The distance from the center to the circle, in model units, above 0.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -5947,8 +5951,12 @@ export namespace OCCT {
          */
         useSmoothing?: boolean | undefined = false;
         /**
-         * The highest polynomial degree the surface may use across the sections.
+         * The highest polynomial degree the surface may use across the sections, a whole number up to
+         * 25; 0 leaves the kernel's own limit.
          * @default 3
+         * @minimum 0
+         * @maximum 25
+         * @step 1
          */
         maxUDegree?: number | undefined = 3;
         /**
@@ -6260,10 +6268,10 @@ export namespace OCCT {
          */
         radius?: number | undefined = 0.1;
         /**
-         * How many corners, and so flat sides, the tube has.
+         * How many corners, and so flat sides, the tube has, from 3 to 1000.
          * @default 6
          * @minimum 3
-         * @maximum Infinity
+         * @maximum 1000
          * @step 1
          */
         nrCorners?: number | undefined = 6;
@@ -10461,17 +10469,19 @@ export namespace OCCT {
          */
         direction?: Base.Vector2 | undefined = [1, 0];
         /**
-         * The half-width across the ellipse's short axis; must not exceed `radiusMajor`.
+         * The half-width across the ellipse's short axis, above 0; must not exceed `radiusMajor`.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
         radiusMinor?: number | undefined = 1;
         /**
-         * The half-width along the ellipse's long axis.
+         * The half-width along the ellipse's long axis, above 0.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -10503,9 +10513,10 @@ export namespace OCCT {
          */
         direction?: Base.Vector2 | undefined = [1, 0];
         /**
-         * The distance from the center to the curve.
+         * The distance from the center to the curve, above 0.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -10826,18 +10837,20 @@ export namespace OCCT {
          */
         direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
-         * The half-width across the ellipse's short axis, in model units; must not exceed
-         * `radiusMajor`.
+         * The half-width across the ellipse's short axis, in model units, above 0; must not
+         * exceed `radiusMajor`.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
         radiusMinor?: number | undefined = 1;
         /**
-         * The half-width along the ellipse's long axis, in model units.
+         * The half-width along the ellipse's long axis, in model units, above 0.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -10858,25 +10871,28 @@ export namespace OCCT {
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * The distance from the axis to the coil, in model units.
+         * The distance from the axis to the coil, in model units, above 0.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
         radius?: number | undefined = 1;
         /**
-         * How far the coil climbs along the axis in one full turn, in model units.
+         * How far the coil climbs along the axis in one full turn, in model units, above 0.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
         pitch?: number | undefined = 1;
         /**
-         * The total climb of the coil along the axis, in model units.
+         * The total climb of the coil along the axis, in model units, above 0.
          * @default 5
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -10920,25 +10936,28 @@ export namespace OCCT {
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * The distance from the axis to the coil, in model units.
+         * The distance from the axis to the coil, in model units, above 0.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
         radius?: number | undefined = 1;
         /**
-         * How far the coil climbs along the axis in one full turn, in model units.
+         * How far the coil climbs along the axis in one full turn, in model units, above 0.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
         pitch?: number | undefined = 1;
         /**
-         * How many full turns the coil makes; fractions are allowed.
+         * How many full turns the coil makes, above 0; fractions are allowed.
          * @default 5
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.5
          */
@@ -10983,33 +11002,37 @@ export namespace OCCT {
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * The distance from the axis to the coil at its base, in model units.
+         * The distance from the axis to the coil at its base, in model units, above 0.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
         startRadius?: number | undefined = 2;
         /**
-         * The distance from the axis to the coil at its top, in model units.
+         * The distance from the axis to the coil at its top, in model units, above 0.
          * @default 0.5
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
         endRadius?: number | undefined = 0.5;
         /**
-         * How far the coil climbs along the axis in one full turn, in model units.
+         * How far the coil climbs along the axis in one full turn, in model units, above 0.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
         pitch?: number | undefined = 1;
         /**
-         * The total climb of the coil along the axis, in model units.
+         * The total climb of the coil along the axis, in model units, above 0.
          * @default 5
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -11061,17 +11084,20 @@ export namespace OCCT {
          */
         startRadius?: number | undefined = 0.5;
         /**
-         * The distance from the center where the spiral ends, in model units.
+         * The distance from the center where the spiral ends, in model units, above 0.
          * @default 5
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
         endRadius?: number | undefined = 5;
         /**
-         * How many full turns the spiral makes between the two radii; fractions are allowed.
+         * How many full turns the spiral makes between the two radii, above 0; fractions are
+         * allowed.
          * @default 5
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.5
          */
@@ -11192,9 +11218,10 @@ export namespace OCCT {
             if (direction !== undefined) { this.direction = direction; }
         }
         /**
-         * The distance from the axis to the surface, in model units.
+         * The distance from the axis to the surface, in model units, above 0.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */

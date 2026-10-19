@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
+import { InputError } from "@bitbybit-dev/base";
 import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
@@ -128,4 +129,86 @@ describe("OCCT edge unit tests", () => {
         segment.delete();
     });
 
+    describe("refusing a curve or a surface that cannot be made", () => {
+        it.each([-1, 0])("should refuse a 2d circle of radius %s", radius => {
+            // Act
+            const act = (): unknown => geom.curves.geom2dCircle({ center: [0, 0], direction: [1, 0], radius, sense: false });
+
+            // Assert
+            expect(act).toThrow(new InputError(`\`radius\` must be a finite number above 0; it is ${radius}.`, "radius"));
+        });
+
+        it.each([-1, 0])("should refuse a circle wire of radius %s, as it refuses a 2d circle, rather than hand back an empty wire", radius => {
+            // Act
+            const act = (): unknown => geom.curves.geomCircleCurve({ center: [0, 0, 0], direction: [0, 1, 0], radius });
+
+            // Assert
+            expect(act).toThrow(new InputError(`\`radius\` must be a finite number above 0; it is ${radius}.`, "radius"));
+        });
+
+        it("should refuse an ellipse wire whose minor radius exceeds its major one, as it refuses a 2d ellipse, rather than hand back an empty wire", () => {
+            // Act
+            const act = (): unknown => geom.curves.geomEllipseCurve({ center: [0, 0, 0], direction: [0, 1, 0], radiusMinor: 3, radiusMajor: 2 });
+
+            // Assert
+            expect(act).toThrow(new InputError("`radiusMinor` must not exceed `radiusMajor`; it is 3 and `radiusMajor` is 2.", "radiusMinor"));
+        });
+
+        it("should say why a 2d circle along a direction with no length cannot be made", () => {
+            // Act
+            const act = (): unknown => geom.curves.geom2dCircle({ center: [0, 0], direction: [0, 0], radius: 1, sense: false });
+
+            // Assert
+            expect(act).toThrow("Standard_DomainError: gp_Dir2d: the vector has no length");
+        });
+
+        it.each([-1, 0])("should refuse a 2d ellipse of minor radius %s", radiusMinor => {
+            // Act
+            const act = (): unknown => geom.curves.geom2dEllipse({ center: [0, 0], direction: [1, 0], radiusMinor, radiusMajor: 2, sense: false });
+
+            // Assert
+            expect(act).toThrow(new InputError(`\`radiusMinor\` must be a finite number above 0; it is ${radiusMinor}.`, "radiusMinor"));
+        });
+
+        it("should refuse a 2d ellipse whose minor radius exceeds its major one, which the kernel would hand back as no curve", () => {
+            // Act
+            const act = (): unknown => geom.curves.geom2dEllipse({ center: [0, 0], direction: [1, 0], radiusMinor: 3, radiusMajor: 2, sense: false });
+
+            // Assert
+            expect(act).toThrow(new InputError("`radiusMinor` must not exceed `radiusMajor`; it is 3 and `radiusMajor` is 2.", "radiusMinor"));
+        });
+
+        it("should refuse a 2d segment between two equal points, which the kernel would hand back as no curve", () => {
+            // Act
+            const act = (): unknown => geom.curves.geom2dSegment({ start: [1, 1], end: [1, 1] });
+
+            // Assert
+            expect(act).toThrow(new InputError("`start` and `end` are the same point, so there is no segment between them.", "end"));
+        });
+
+        it.each([-1, 0])("should refuse a cylindrical surface of radius %s", radius => {
+            // Act
+            const act = (): unknown => geom.surfaces.cylindricalSurface({ radius, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Assert
+            expect(act).toThrow(new InputError(`\`radius\` must be a finite number above 0; it is ${radius}.`, "radius"));
+        });
+
+        it("should refuse a cylindrical surface along a direction with no length", () => {
+            // Act
+            const act = (): unknown => geom.surfaces.cylindricalSurface({ radius: 1, center: [0, 0, 0], direction: [0, 0, 0] });
+
+            // Assert
+            expect(act).toThrow(new InputError("`direction` is [0, 0, 0], which points nowhere.", "direction"));
+        });
+
+        it("should keep making a cylindrical surface of the radius it is given", () => {
+            // Act
+            const surface = geom.surfaces.cylindricalSurface({ radius: 2.5, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Assert
+            expect(surface.Radius()).toBe(2.5);
+            surface.delete();
+        });
+    });
 });

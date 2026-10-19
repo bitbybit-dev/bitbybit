@@ -158,9 +158,10 @@ These function names have special behavior and bypass the standard function disp
 | `docToMeshes` | Convert several assembly documents to mesh data |
 | `deleteShape` | Remove a single shape from the internal cache |
 | `deleteShapes` | Remove multiple shapes from the internal cache |
+| `deleteUnsharedShapes` | Remove the shapes no other call was answered with. Takes `{ epoch, shapes: [{ type, hash, answers }] }`: each shape goes only when `epoch` is still the cache's and the worker's count of answers that carried a shape under that key in this epoch equals `answers`; a delete of one key keeps its count, and `cleanAllCache` or the threshold reset begins a new epoch. Without `epoch` nothing is deleted. Answers `{ epoch }`, the current epoch. `design.buildWithScripts` asks for it with `{ shapes: [] }` before its first build and frees its earlier rounds through it |
 | `deleteDocument` | Remove an assembly document handle from the cache |
 | `startedTheRun` | Signal a new computation run; may clean cache if too large |
-| `cleanAllCache` | Clear all cached shapes and entities, and any meshes kept on them |
+| `cleanAllCache` | Clear all cached shapes and entities, any meshes kept on them, and what the design builder keeps between builds |
 | `setMeshRetention` | Set how many triangles meshing may keep on shapes for reuse (`{ triangles }`, 0 keeps none); answers with what is kept |
 | `addOc` | Add OpenCascade dependencies or plugins |
 | `saveShapeSTEP` | Export a shape to STEP format |

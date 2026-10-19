@@ -4,6 +4,7 @@ import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { Inputs as BaseInputs } from "@bitbybit-dev/base";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
+import { handlesIn } from "../../../../__test__/embind-ledger";
 
 type Part = Models.OCCT.DesignPartDocument;
 type Assembly = Models.OCCT.DesignAssemblyDocument;
@@ -87,9 +88,13 @@ describe("OCCT design: fastener assemblies and joints at their limits", () => {
         occt = new OCCTService(await createBitbybitOcct());
     }, 120_000);
 
+    const freed = (built: Models.OCCT.DesignBuildResult<unknown>): void => {
+        handlesIn(built).forEach(handle => { handle.delete(); });
+    };
+
     const slideStatus = (document: Assembly, parameters: Record<string, number> = {}, configuration?: string): Models.OCCT.DesignFeatureReport => {
         const built = occt.design.build({ document, documents: [baseBlock, slideBlock], parameters, ...(configuration === undefined ? {} : { configuration }) });
-        built.parts.forEach(part => part.shape.delete());
+        freed(built);
         return built.report.find(entry => entry.id === "slide")!;
     };
 
@@ -101,12 +106,37 @@ describe("OCCT design: fastener assemblies and joints at their limits", () => {
             // Act
             const clashes = occt.design.clashes({ document: screwedDown, documents });
             const built = occt.design.build({ document: screwedDown, documents });
-            built.parts.forEach(part => part.shape.delete());
+            freed(built);
 
             // Assert
             expect(clashes).toEqual([]);
             expect(built.components!.map(component => component.path)).toEqual(["plate", "screws.left", "screws.right"]);
             expect(built.bom!.map(line => line.quantity)).toEqual([1, 2]);
+        });
+    });
+
+    describe("a boolean input an expression gives", () => {
+        const hexBolt = (full: boolean): Part => ({
+            schemaVersion: 1,
+            id: SCREW_ID,
+            parameters: { full: { type: "boolean", value: full }, length: 30 },
+            features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.fasteners.hexBolt", params: { size: "M8", length: { expr: "length" }, fullyThreaded: { expr: "full" } } }],
+            parts: [{ id: "bolt", body: "part" }],
+        });
+
+        it("should take a boolean parameter as true or false where the operation's input is a boolean, and make a different bolt of each", () => {
+            // Arrange
+            const threaded = hexBolt(true);
+            const plain = hexBolt(false);
+
+            // Act
+            const builds = [occt.design.build({ document: threaded }), occt.design.build({ document: plain })];
+            const shapes = builds.map(built => built.parts[0]?.shapeHash);
+            builds.forEach(freed);
+
+            // Assert
+            expect(builds.map(built => [built.issues, built.report.filter(entry => entry.status !== "ok")])).toEqual([[[], []], [[], []]]);
+            expect(shapes[0]).not.toBe(shapes[1]);
         });
     });
 
@@ -125,7 +155,7 @@ describe("OCCT design: fastener assemblies and joints at their limits", () => {
             // Arrange
             const offsetOf = (document: Assembly): number => {
                 const built = occt.design.build({ document, documents: [baseBlock, slideBlock] });
-                built.parts.forEach(part => part.shape.delete());
+                freed(built);
                 return built.joints!.find(joint => joint.path === "rail")!.offset;
             };
 
@@ -163,7 +193,7 @@ describe("OCCT design: fastener assemblies and joints at their limits", () => {
             const document = slider("lift", [0, 3]);
             const liftOf = (parameters: Record<string, number>, configuration?: string): number => {
                 const built = occt.design.build({ document, documents: [baseBlock, slideBlock], parameters, ...(configuration === undefined ? {} : { configuration }) });
-                built.parts.forEach(part => part.shape.delete());
+                freed(built);
                 return built.joints!.find(joint => joint.path === "rail")!.offset;
             };
 

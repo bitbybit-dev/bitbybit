@@ -24,6 +24,16 @@ export function released<T>(objects: readonly ClassHandle[], use: () => T): T {
     }
 }
 
+export function madeFromEach<S, T extends ClassHandle>(items: readonly S[], make: (item: S, index: number) => T): T[] {
+    const made: T[] = [];
+    return releasedOnError(made, () => {
+        items.forEach((item, index) => {
+            made.push(make(item, index));
+        });
+        return made;
+    });
+}
+
 export function kernelObjects(): KernelObjects {
     const owned: ClassHandle[] = [];
     return {

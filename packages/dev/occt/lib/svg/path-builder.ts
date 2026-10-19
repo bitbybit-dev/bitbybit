@@ -133,6 +133,7 @@ export class PathBuilder {
         }
 
         if (!compound || compound.IsNull()) {
+            compound?.delete();
             opts.warnings.push("Failed to build shapes from the supplied path.");
             return groups.map((): BuiltElement | undefined => undefined);
         }

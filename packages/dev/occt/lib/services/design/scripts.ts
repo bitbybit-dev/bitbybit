@@ -7,12 +7,13 @@ import { sha256 } from "./digest";
 import { bodyOf, contextOf, faceCount, ownerOf } from "./helpers";
 import type { FaceNames } from "./names";
 import { nameOf } from "./names";
-import { DesignPending, DesignProblem, pointer } from "./problems";
+import { cleanedUpOnError, DesignPending, DesignProblem, pointer } from "./problems";
 import { resolveEdges, resolveFaces } from "./references";
 import type { DesignPlan, DesignRun } from "./state";
 import { bodyKey } from "./state";
 import { ownValue } from "./structure";
 import { hasOnlyKey, numberOf } from "./values";
+import { release } from "../base/release";
 
 function bodiesReadBy(value: unknown, path: string, run: DesignRun): string[] {
     if (hasOnlyKey(value, "body") && typeof value["body"] === "string") {
@@ -31,9 +32,11 @@ function bodiesReadBy(value: unknown, path: string, run: DesignRun): string[] {
     return isRecord(value) ? Object.entries(value).flatMap(([key, inner]) => bodiesReadBy(inner, pointer(path, key), run)) : [];
 }
 
-function inputsOf(value: unknown, path: string, run: DesignRun): unknown {
+function inputsOf(value: unknown, path: string, run: DesignRun, cloned: TopoDS_Shape[]): unknown {
     if (hasOnlyKey(value, "body") && typeof value["body"] === "string") {
-        return bodyOf(value["body"], run).shape.clone();
+        const clone = bodyOf(value["body"], run).shape.clone();
+        cloned.push(clone);
+        return clone;
     }
     if (hasOnlyKey(value, "expr")) {
         return numberOf(value["expr"], run.parameters, pointer(path, "expr"));
@@ -49,9 +52,9 @@ function inputsOf(value: unknown, path: string, run: DesignRun): unknown {
         return resolveEdges(reference, contextOf(owner, run), pointer(path, "edges"));
     }
     if (Array.isArray(value)) {
-        return value.map((inner, index) => inputsOf(inner, pointer(path, index), run));
+        return value.map((inner, index) => inputsOf(inner, pointer(path, index), run, cloned));
     }
-    return isRecord(value) ? Object.fromEntries(Object.entries(value).map(([key, inner]) => [key, inputsOf(inner, pointer(path, key), run)])) : value;
+    return isRecord(value) ? Object.fromEntries(Object.entries(value).map(([key, inner]) => [key, inputsOf(inner, pointer(path, key), run, cloned)])) : value;
 }
 
 /**
@@ -75,7 +78,8 @@ export function scriptPlan(feature: Models.OCCT.DesignScriptFeature, path: strin
         reads: [...new Set(bodiesReadBy(params, pointer(path, "params"), run))].map(bodyKey),
         salt: `${digest} ${stableJson(asset)}`,
         make: () => {
-            const inputs = inputsOf(params, pointer(path, "params"), run) as Record<string, unknown>;
+            const cloned: TopoDS_Shape[] = [];
+            const inputs = cleanedUpOnError(() => inputsOf(params, pointer(path, "params"), run, cloned), () => cloned.forEach(release)) as Record<string, unknown>;
             throw new DesignPending({ id: feature.id, path, script: feature.script, inputs });
         },
     };

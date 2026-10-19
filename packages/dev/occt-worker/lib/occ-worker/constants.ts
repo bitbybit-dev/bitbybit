@@ -44,6 +44,8 @@ export const ReservedFunctions = {
     DELETE_SHAPE: "deleteShape",
     /** Delete multiple shapes from cache */
     DELETE_SHAPES: "deleteShapes",
+    /** Delete each of the shapes given whose answers counted beside it are every answer that carried it in the epoch named, so no other caller holds it; answers with the current epoch */
+    DELETE_UNSHARED_SHAPES: "deleteUnsharedShapes",
     /** Delete an assembly document handle from cache */
     DELETE_DOCUMENT: "deleteDocument",
     /** Signal that a new run has started (used for cache cleanup) */
@@ -71,6 +73,7 @@ export const NON_CACHEABLE_FUNCTIONS = new Set<string>([
     ReservedFunctions.DOC_TO_MESHES,
     ReservedFunctions.DELETE_SHAPE,
     ReservedFunctions.DELETE_SHAPES,
+    ReservedFunctions.DELETE_UNSHARED_SHAPES,
     ReservedFunctions.DELETE_DOCUMENT,
     ReservedFunctions.STARTED_THE_RUN,
     ReservedFunctions.CLEAN_ALL_CACHE,

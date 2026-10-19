@@ -16,9 +16,11 @@ import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { resolveDto } from "@bitbybit-dev/base";
-import { checkedDirection, checkedPoints, checkedShapes } from "./input-checks";
-import { released } from "./release";
+import { checkedDirection, checkedPoints, checkedShapes, checkedWithin, withCurveAlongWire } from "./input-checks";
+import { kernelObjects, release, released, releasedOnError } from "./release";
 import { length3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { readKernelException } from "../../kernel-exception";
+import { withKernelErrorsRead } from "./kernel-refusals";
 
 const SAME_POINT_TOLERANCE = 1e-5;
 
@@ -294,6 +296,13 @@ export class WiresService {
         return length3(subtract3(first, second)) <= 1e-7;
     }
 
+    private checkedControlPoints(points: unknown, controlPoints: number): void {
+        checkedPoints(points, "points");
+        if (controlPoints < 2) {
+            throw new InputError(`A Bezier curve needs at least two points, and \`points\` has ${controlPoints}.`, "points");
+        }
+    }
+
     private wireThrough(points: Inputs.Base.Point3[], closed: boolean, kind: string): TopoDS_Wire {
         if (points.length < 2) {
             throw new InputError(`A ${kind} needs at least two points, and \`points\` has ${points.length}.`, "points");
@@ -335,11 +344,10 @@ export class WiresService {
     }
 
     tangentOnWireAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Base.Vector3 {
-        const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const tangent = this.geomService.tangentOnCurveAtParam({ ...inputs, shape: curve });
-        curve.delete();
-        return tangent;
+        return withCurveAlongWire(this.occ, "shape", () => {
+            const curve = new this.occ.BRepAdaptor_CompCurve(inputs.shape, false);
+            return released([curve], () => this.geomService.tangentOnCurveAtParam({ ...inputs, shape: curve }));
+        });
     }
 
     pointOnWireAtLength(inputs: Resolved.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Base.Point3 {
@@ -414,11 +422,10 @@ export class WiresService {
     }
 
     tangentOnWireAtLength(inputs: Resolved.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Base.Vector3 {
-        const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const res = this.geomService.tangentOnCurveAtLengthCompCurve({ ...inputs, shape: curve });
-        curve.delete();
-        return res;
+        return withCurveAlongWire(this.occ, "shape", () => {
+            const curve = new this.occ.BRepAdaptor_CompCurve(inputs.shape, false);
+            return released([curve], () => this.geomService.tangentOnCurveAtLengthCompCurve({ ...inputs, shape: curve }));
+        });
     }
 
     private parametrizationToInt(p?: Inputs.OCCT.bSplineParametrizationEnum): number {
@@ -452,10 +459,10 @@ export class WiresService {
 
         let edge: TopoDS_Edge | undefined;
         try {
-            edge = this.occ.MakeInterpolatedBSplineEdge(
+            edge = withKernelErrorsRead(this.occ, () => this.occ.MakeInterpolatedBSplineEdge(
                 coords, periodic, this.parametrizationToInt(parametrizationOverride ?? inputs.parametrization),
                 inputs.tolerance, tangents, flags
-            );
+            ));
         } finally {
             coords.delete(); tangents.delete(); flags.delete();
         }
@@ -470,6 +477,10 @@ export class WiresService {
 
     interpolatePoints(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Wire {
         const resolved = resolveDto(Inputs.OCCT.InterpolationDto, inputs) as Resolved.OCCT.InterpolationDto;
+        const points = checkedPoints(resolved.points, "points");
+        if (points.length < 2) {
+            throw new InputError(`An interpolated curve needs at least two points, and \`points\` has ${points.length}.`, "points");
+        }
         const wire = this.buildInterpolatedWire(resolved);
         if (!wire) {
             throw new Error("Failed to interpolate the points");
@@ -494,7 +505,7 @@ export class WiresService {
 
         let edge: TopoDS_Edge | undefined;
         try {
-            edge = this.occ.MakeSymmetricInterpolatedBSplineEdge(coords, inputs.tolerance);
+            edge = withKernelErrorsRead(this.occ, () => this.occ.MakeSymmetricInterpolatedBSplineEdge(coords, inputs.tolerance));
         } finally {
             coords.delete();
         }
@@ -519,113 +530,123 @@ export class WiresService {
     splitOnPoints(inputs: Inputs.OCCT.SplitWireOnPointsDto<TopoDS_Wire>): TopoDS_Wire[] {
         const wire = inputs.shape;
         const splitPoints = this.base.vector.removeAllDuplicateVectors({ vectors: inputs.points, tolerance: 1e-7 });
+        const { own, releaseAll } = kernelObjects();
+        const newWires: TopoDS_Wire[] = [];
+        try {
+            const edges = this.edgesService.getEdgesAlongWire({ shape: wire });
+            edges.filter(edge => edge !== wire).forEach(own);
+            if (edges.length === 0) {
+                return [];
+            }
 
-        const edges = this.edgesService.getEdgesAlongWire({ shape: wire });
-        if (edges.length === 0) {
-            return [];
-        }
+            const splitLocations: { edgeIndex: number; parameter: number }[] = [];
 
-        const splitLocations: { edgeIndex: number; parameter: number }[] = [];
+            const firstEdge = edges[0]!;
+            splitLocations.push({ edgeIndex: 0, parameter: this.edgeParameterRange(firstEdge).first });
 
-        const firstEdge = edges[0]!;
-        splitLocations.push({ edgeIndex: 0, parameter: this.edgeParameterRange(firstEdge).first });
+            splitPoints.forEach((pt) => {
+                let minDist = Infinity;
+                let bestEdgeIndex = -1;
+                let bestParam = 0;
 
-        splitPoints.forEach((pt) => {
-            let minDist = Infinity;
-            let bestEdgeIndex = -1;
-            let bestParam = 0;
+                edges.forEach((edge, index) => {
+                    const { first: firstVal, last: lastVal } = this.edgeParameterRange(edge);
 
-            edges.forEach((edge, index) => {
-                const { first: firstVal, last: lastVal } = this.edgeParameterRange(edge);
-
-                const gpPnt = this.entitiesService.gpPnt(pt as Base.Point3);
-                try {
-                    const result = this.occ.ProjectPointOnCurve(gpPnt, edge);
-                    const param = result.param;
-                    const clampedParam = Math.max(firstVal, Math.min(lastVal, param));
-                    const projectedPt = result.Point;
-                    const dist = length3(subtract3([projectedPt.X(), projectedPt.Y(), projectedPt.Z()], [gpPnt.X(), gpPnt.Y(), gpPnt.Z()]));
-                    if (dist < minDist) {
-                        minDist = dist;
-                        bestEdgeIndex = index;
-                        bestParam = clampedParam;
+                    const gpPnt = this.entitiesService.gpPnt(pt as Base.Point3);
+                    try {
+                        const result = this.occ.ProjectPointOnCurve(gpPnt, edge);
+                        released([result], () => {
+                            const projectedPt = result.Point;
+                            released([projectedPt], () => {
+                                const clampedParam = Math.max(firstVal, Math.min(lastVal, result.param));
+                                const dist = length3(subtract3([projectedPt.X(), projectedPt.Y(), projectedPt.Z()], [gpPnt.X(), gpPnt.Y(), gpPnt.Z()]));
+                                if (dist < minDist) {
+                                    minDist = dist;
+                                    bestEdgeIndex = index;
+                                    bestParam = clampedParam;
+                                }
+                            });
+                        });
+                    } catch (error) {
+                        readKernelException(this.occ, error);
+                        return;
+                    } finally {
+                        gpPnt.delete();
                     }
-                    projectedPt.delete();
-                } catch {
-                    return;
-                } finally {
-                    gpPnt.delete();
+                });
+
+                if (bestEdgeIndex >= 0) {
+                    splitLocations.push({ edgeIndex: bestEdgeIndex, parameter: this.snappedToEdgeEnds(edges[bestEdgeIndex]!, bestParam, pt as Base.Point3) });
                 }
             });
 
-            if (bestEdgeIndex >= 0) {
-                splitLocations.push({ edgeIndex: bestEdgeIndex, parameter: this.snappedToEdgeEnds(edges[bestEdgeIndex]!, bestParam, pt as Base.Point3) });
-            }
-        });
+            const lastEdge = edges[edges.length - 1]!;
+            splitLocations.push({ edgeIndex: edges.length - 1, parameter: this.edgeParameterRange(lastEdge).last });
 
-        const lastEdge = edges[edges.length - 1]!;
-        splitLocations.push({ edgeIndex: edges.length - 1, parameter: this.edgeParameterRange(lastEdge).last });
-
-        const uniqueLocations = splitLocations.filter((loc, index, self) =>
-            index === self.findIndex((t) => t.edgeIndex === loc.edgeIndex && t.parameter === loc.parameter)
-        );
-        uniqueLocations.sort((a, b) => {
-            if (a.edgeIndex !== b.edgeIndex) {
-                return a.edgeIndex - b.edgeIndex;
-            }
-            return a.parameter - b.parameter;
-        });
-
-        const newWires: TopoDS_Wire[] = [];
-        for (let i = 0; i < uniqueLocations.length - 1; i++) {
-            const startLoc = uniqueLocations[i]!;
-            const endLoc = uniqueLocations[i + 1]!;
-            const wireBuilder = new this.occ.BRepBuilderAPI_MakeWire();
-
-            if (startLoc.edgeIndex === endLoc.edgeIndex) {
-                const edge = edges[startLoc.edgeIndex]!;
-
-                if (startLoc.parameter === endLoc.parameter) {
-                    continue;
+            const uniqueLocations = splitLocations.filter((loc, index, self) =>
+                index === self.findIndex((t) => t.edgeIndex === loc.edgeIndex && t.parameter === loc.parameter)
+            );
+            uniqueLocations.sort((a, b) => {
+                if (a.edgeIndex !== b.edgeIndex) {
+                    return a.edgeIndex - b.edgeIndex;
                 }
+                return a.parameter - b.parameter;
+            });
 
-                const newEdge = this.occ.TrimEdgeToParams(edge, startLoc.parameter, endLoc.parameter);
-                if (!newEdge.IsNull()) {
-                    wireBuilder.AddEdge(newEdge);
-                }
-            } else {
-                const startEdge = edges[startLoc.edgeIndex]!;
-                const startLastVal = this.edgeParameterRange(startEdge).last;
+            for (let i = 0; i < uniqueLocations.length - 1; i++) {
+                const startLoc = uniqueLocations[i]!;
+                const endLoc = uniqueLocations[i + 1]!;
+                const wireBuilder = own(new this.occ.BRepBuilderAPI_MakeWire());
 
-                if (startLoc.parameter < startLastVal) {
-                    const newStartEdge = this.occ.TrimEdgeToParams(startEdge, startLoc.parameter, startLastVal);
-                    if (!newStartEdge.IsNull()) {
-                        wireBuilder.AddEdge(newStartEdge);
+                if (startLoc.edgeIndex === endLoc.edgeIndex) {
+                    const edge = edges[startLoc.edgeIndex]!;
+
+                    if (startLoc.parameter === endLoc.parameter) {
+                        continue;
+                    }
+
+                    const newEdge = own(this.occ.TrimEdgeToParams(edge, startLoc.parameter, endLoc.parameter));
+                    if (!newEdge.IsNull()) {
+                        wireBuilder.AddEdge(newEdge);
+                    }
+                } else {
+                    const startEdge = edges[startLoc.edgeIndex]!;
+                    const startLastVal = this.edgeParameterRange(startEdge).last;
+
+                    if (startLoc.parameter < startLastVal) {
+                        const newStartEdge = own(this.occ.TrimEdgeToParams(startEdge, startLoc.parameter, startLastVal));
+                        if (!newStartEdge.IsNull()) {
+                            wireBuilder.AddEdge(newStartEdge);
+                        }
+                    }
+
+                    for (let j = startLoc.edgeIndex + 1; j < endLoc.edgeIndex; j++) {
+                        wireBuilder.AddEdge(edges[j]!);
+                    }
+
+                    const endEdge = edges[endLoc.edgeIndex]!;
+                    const endFirstVal = this.edgeParameterRange(endEdge).first;
+
+                    if (endLoc.parameter > endFirstVal) {
+                        const newEndEdge = own(this.occ.TrimEdgeToParams(endEdge, endFirstVal, endLoc.parameter));
+                        if (!newEndEdge.IsNull()) {
+                            wireBuilder.AddEdge(newEndEdge);
+                        }
                     }
                 }
 
-                for (let j = startLoc.edgeIndex + 1; j < endLoc.edgeIndex; j++) {
-                    wireBuilder.AddEdge(edges[j]!);
-                }
-
-                const endEdge = edges[endLoc.edgeIndex]!;
-                const endFirstVal = this.edgeParameterRange(endEdge).first;
-
-                if (endLoc.parameter > endFirstVal) {
-                    const newEndEdge = this.occ.TrimEdgeToParams(endEdge, endFirstVal, endLoc.parameter);
-                    if (!newEndEdge.IsNull()) {
-                        wireBuilder.AddEdge(newEndEdge);
-                    }
+                if (wireBuilder.IsDone()) {
+                    newWires.push(wireBuilder.Wire());
                 }
             }
 
-            if (wireBuilder.IsDone()) {
-                const newWire = wireBuilder.Wire();
-                newWires.push(newWire);
-            }
+            return newWires;
+        } catch (error) {
+            newWires.forEach(release);
+            throw error;
+        } finally {
+            releaseAll();
         }
-
-        return newWires;
     }
 
     createWireFromTwoCirclesTan(inputs: Resolved.OCCT.WireFromTwoCirclesTanDto<TopoDS_Wire>) {
@@ -643,8 +664,16 @@ export class WiresService {
                 circleRemainders: this.enumService.convertFourSidesStrictEnumToTwoCircleInclusionEnum(inputs.circleRemainders),
                 tolerance: inputs.tolerance,
             });
+            if (result.length === 0) {
+                throw this.nestedCircles(circleEdge1[0]!, circleEdge2[0]!);
+            }
             return released(result, () => this.converterService.combineEdgesAndWiresIntoAWire({ shapes: result }));
         });
+    }
+
+    private nestedCircles(circle1: TopoDS_Edge, circle2: TopoDS_Edge): InputError {
+        const [inner, outer] = this.edgesService.getCircularEdgeRadius({ shape: circle2 }) < this.edgesService.getCircularEdgeRadius({ shape: circle1 }) ? ["circle2", "circle1"] : ["circle1", "circle2"];
+        return new InputError(`\`${inner}\` lies inside \`${outer}\`, so no line is tangent to both and there is no wire to make.`, inner);
     }
 
 
@@ -713,8 +742,10 @@ export class WiresService {
                 endPoints.push(this.endPointOnWire({ shape: shape }));
             }
         });
+        this.refuseShapesMeeting(startPoints, inputs.closed, "start at the same point", "their start points");
+        this.refuseShapesMeeting(endPoints, inputs.closed, "end at the same point", "their end points");
         const startWire = this.createWireFromPointsByType(startPoints, inputs.wireType, inputs.closed, inputs.tolerance);
-        const endWire = this.createWireFromPointsByType(endPoints, inputs.wireType, inputs.closed, inputs.tolerance);
+        const endWire = releasedOnError([startWire], () => this.createWireFromPointsByType(endPoints, inputs.wireType, inputs.closed, inputs.tolerance));
         return [startWire, endWire];
     }
 
@@ -727,12 +758,24 @@ export class WiresService {
         const divideByEqualDistance = inputs.divideByEqualDistance;
         const pointsPerShape = inputs.shapes.map((shape) => this.subdivideWireOrEdgeToPoints(shape, nrOfDivisions, divideByEqualDistance));
         const nrOfPoints = pointsPerShape[0]!.length;
+        const pointsAtDivisions = Array.from({ length: nrOfPoints }, (_, division) => pointsPerShape.map((points) => points[division]!));
+        pointsAtDivisions.forEach((points, division) => this.refuseShapesMeeting(points, inputs.closed, `share their point at division ${division} of ${nrOfPoints - 1}`, "those points"));
         const wires: TopoDS_Wire[] = [];
-        for (let i = 0; i < nrOfPoints; i++) {
-            const pointsAtIndex = pointsPerShape.map((points) => points[i]!);
-            wires.push(this.createWireFromPointsByType(pointsAtIndex, inputs.wireType, inputs.closed, inputs.tolerance));
+        return releasedOnError(wires, () => {
+            pointsAtDivisions.forEach(points => wires.push(this.createWireFromPointsByType(points, inputs.wireType, inputs.closed, inputs.tolerance)));
+            return wires;
+        });
+    }
+
+    private refuseShapesMeeting(points: Base.Point3[], closed: boolean, meeting: string, through: string): void {
+        const repeated = points.findIndex((point, index) => index > 0 && this.samePoint(points[index - 1]!, point));
+        if (repeated > 0) {
+            throw new InputError(`\`shapes\` at positions ${repeated - 1} and ${repeated} ${meeting}, so the wire through ${through} would join a point to itself.`, "shapes");
         }
-        return wires;
+        const last = points.length - 1;
+        if (closed && this.samePoint(points[last]!, points[0]!)) {
+            throw new InputError(`\`shapes\` at positions ${last} and 0 ${meeting}, and \`closed\` joins them, so the wire through ${through} would join a point to itself.`, "shapes");
+        }
     }
 
     private subdivideWireOrEdgeToPoints(shape: TopoDS_Wire | TopoDS_Edge, nrOfDivisions: number, divideByEqualDistance: boolean): Base.Point3[] {
@@ -852,7 +895,7 @@ export class WiresService {
                 coords.push_back(pt[1]);
                 coords.push_back(pt[2]);
             });
-            const edge = this.occ.MakeApproxBSplineEdge(coords, 3, 8, 1.0e-3);
+            const edge = withKernelErrorsRead(this.occ, () => this.occ.MakeApproxBSplineEdge(coords, 3, 8, 1.0e-3));
             try {
                 const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
                 try {
@@ -871,6 +914,7 @@ export class WiresService {
     createBezier(inputs: Resolved.OCCT.BezierDto): TopoDS_Wire {
         const periodic = inputs.periodic === true;
         const totalControlPoints = inputs.points.length + (inputs.closed && !periodic ? 1 : 0);
+        this.checkedControlPoints(inputs.points, totalControlPoints);
         const useBoundedDegree = inputs.degree !== undefined || totalControlPoints - 1 > 25;
 
         const coords = new this.occ.VectorDouble();
@@ -910,6 +954,7 @@ export class WiresService {
 
         coords.delete();
         if (!wire || wire.IsNull()) {
+            wire?.delete();
             throw new Error("Failed to create the Bezier wire");
         }
         return wire;
@@ -926,6 +971,7 @@ export class WiresService {
         } else if (!periodic && inputs.closed && inputs.points.length !== inputs.weights.length - 1) {
             throw new Error("Number of points must be one less than number of weights when bezier is closed.");
         }
+        this.checkedControlPoints(inputs.points, inputs.points.length + (inputs.closed && !periodic ? 1 : 0));
 
         const coords = new this.occ.VectorDouble();
         for (const pt of inputs.points) {
@@ -960,6 +1006,7 @@ export class WiresService {
         coords.delete();
         weights.delete();
         if (!wire || wire.IsNull()) {
+            wire?.delete();
             throw new Error("Failed to create the Bezier wire");
         }
         return wire;
@@ -968,22 +1015,20 @@ export class WiresService {
     addEdgesAndWiresToWire(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire {
         checkedShapes(inputs.shapes);
         const makeWire = new this.occ.BRepBuilderAPI_MakeWire();
-        makeWire.AddWire(inputs.shape);
-        inputs.shapes.forEach((shape) => {
-            if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.EDGE) {
-                makeWire.AddEdge(shape);
-            } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
-                makeWire.AddWire(shape);
+        return released([makeWire], () => {
+            makeWire.AddWire(inputs.shape);
+            inputs.shapes.forEach((shape) => {
+                if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.EDGE) {
+                    makeWire.AddEdge(shape);
+                } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
+                    makeWire.AddWire(shape);
+                }
+            });
+            if (!makeWire.IsDone()) {
+                throw new InputError("Wire could not be constructed. Check if edges and wires do not have disconnected elements.", "shapes");
             }
+            return makeWire.Wire();
         });
-        let result;
-        if (makeWire.IsDone()) {
-            result = makeWire.Wire();
-        } else {
-            throw new Error("Wire could not be constructed. Check if edges and wires do not have disconnected elements.");
-        }
-        makeWire.delete();
-        return result;
     }
 
     startPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Base.Point3 {
@@ -1001,58 +1046,69 @@ export class WiresService {
     textWires(inputs: Resolved.OCCT.TextWiresDto): TopoDS_Wire[] {
         const lines = this.base.textService.vectorText(inputs);
         const wires: TopoDS_Wire[] = [];
-        lines.forEach((line) => {
-            line.chars.forEach((char) => {
-                char.paths.forEach(polyline => {
-                    const wire = this.createPolylineWire({ points: polyline });
-                    if (wire) {
-                        wires.push(wire);
-                    }
+        return releasedOnError(wires, () => {
+            lines.forEach((line) => {
+                line.chars.forEach((char) => {
+                    char.paths.forEach(polyline => {
+                        wires.push(this.strokeWire(polyline, inputs.height));
+                    });
                 });
             });
+            return wires;
         });
-        return wires;
+    }
+
+    private strokeWire(points: Base.Point3[], height: number): TopoDS_Wire {
+        try {
+            return this.createPolylineWire({ points });
+        } catch (error) {
+            if (error instanceof InputError && error.property === "points") {
+                throw new InputError(`\`height\` is ${height}, too small to tell the points of the letters apart.`, "height");
+            }
+            throw error;
+        }
     }
 
     textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): ObjectDefinition<TextWiresDataDto<string>, TopoDS_Shape> {
         const resolved = resolveDto(Inputs.OCCT.TextWiresDto, inputs) as Resolved.OCCT.TextWiresDto;
         const lines = this.base.textService.vectorText(resolved);
         const wires: TopoDS_Wire[] = [];
+        const compounds: TopoDS_Compound[] = [];
+        return releasedOnError(compounds, () => released(wires, () => {
+            const characterCompounds: { id: string, shape: TopoDS_Compound }[] = [];
 
-        const characterCompounds: { id: string, shape: TopoDS_Compound }[] = [];
-
-        lines.forEach((line) => {
-            line.chars.forEach((char, index) => {
-                const characterWires: TopoDS_Wire[] = [];
-                char.paths.forEach(polyline => {
-                    const wire = this.createPolylineWire({ points: polyline });
-                    if (wire) {
+            lines.forEach((line) => {
+                line.chars.forEach((char, index) => {
+                    const characterWires: TopoDS_Wire[] = [];
+                    char.paths.forEach(polyline => {
+                        const wire = this.strokeWire(polyline, resolved.height);
                         wires.push(wire);
                         characterWires.push(wire);
-                    }
+                    });
+                    const characterCompound = this.converterService.makeCompound({ shapes: characterWires });
+                    compounds.push(characterCompound);
+                    characterCompounds.push({ id: `char-${index}`, shape: characterCompound });
                 });
-                const characterCompound = this.converterService.makeCompound({ shapes: characterWires });
-                characterCompounds.push({ id: `char-${index}`, shape: characterCompound });
             });
-        });
 
-        const compound = this.converterService.makeCompound({ shapes: wires });
-        wires.forEach(wire => wire.delete());
-        const dataRes = new TextWiresDataDto<string>();
+            const compound = this.converterService.makeCompound({ shapes: wires });
+            compounds.push(compound);
+            const dataRes = new TextWiresDataDto<string>();
 
-        const box = this.operationsService.boundingBoxOfShape({ shape: compound });
-        dataRes.width = box.size[0];
-        dataRes.height = box.size[2];
-        dataRes.center = box.center;
-        dataRes.compound = "text-compound";
-        dataRes.characters = characterCompounds.map(c => ({ id: c.id, shapes: { compound: c.id } }));
+            const box = this.operationsService.boundingBoxOfShape({ shape: compound });
+            dataRes.width = box.size[0];
+            dataRes.height = box.size[2];
+            dataRes.center = box.center;
+            dataRes.compound = "text-compound";
+            dataRes.characters = characterCompounds.map(c => ({ id: c.id, shapes: { compound: c.id } }));
 
-        const res = new ObjectDefinition<TextWiresDataDto<string>, TopoDS_Compound>();
-        res.data = dataRes;
-        res.compound = compound;
-        res.shapes = [{ id: "text-compound", shape: compound }, ...characterCompounds];
+            const res = new ObjectDefinition<TextWiresDataDto<string>, TopoDS_Compound>();
+            res.data = dataRes;
+            res.compound = compound;
+            res.shapes = [{ id: "text-compound", shape: compound }, ...characterCompounds];
 
-        return res;
+            return res;
+        }));
     }
 
     private snappedToEdgeEnds(edge: TopoDS_Edge, parameter: number, point: Base.Point3): number {
@@ -1073,28 +1129,34 @@ export class WiresService {
         return result.IsValid ? { first: result.First, last: result.Last } : { first: 0, last: 0 };
     }
 
-    placeWire(wire: TopoDS_Wire, surface: Geom_Surface) {
+    placeWire(wire: TopoDS_Wire, surface: Geom_Surface): TopoDS_Wire {
         const edges = this.shapeGettersService.getEdges({ shape: wire });
         const newEdges: TopoDS_Edge[] = [];
-        edges.forEach(e => {
-            const { first: umin, last: umax } = this.edgeParameterRange(e);
-            const crv = this.occ.GetEdgeCurve(e);
-            if (crv && !crv.IsNull()) {
-                const plane = this.entitiesService.gpPln([0, 0, 0], [0, 1, 0]);
-                const c2 = this.occ.GeomAPI_To2d(crv, plane);
-                const newEdgeOnSrf = this.edgesService.makeEdgeFromGeom2dCurveAndSurfaceBounded({ curve: c2, surface }, umin, umax);
-                if (newEdgeOnSrf) {
-                    newEdges.push(newEdgeOnSrf);
+        return released(edges.filter(edge => edge !== wire), () => released(newEdges, () => {
+            edges.forEach(edge => {
+                const placed = this.edgePlacedOnSurface(edge, surface);
+                if (placed !== undefined) {
+                    newEdges.push(placed);
                 }
-                plane.delete();
-                c2.delete();
-                crv.delete();
+            });
+            return this.converterService.combineEdgesAndWiresIntoAWire({ shapes: newEdges });
+        }));
+    }
+
+    private edgePlacedOnSurface(edge: TopoDS_Edge, surface: Geom_Surface): TopoDS_Edge | undefined {
+        const { first, last } = this.edgeParameterRange(edge);
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const curve = own(this.occ.GetEdgeCurve(edge));
+            if (curve.IsNull()) {
+                return undefined;
             }
-        });
-        edges.forEach(e => e.delete());
-        const res = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: newEdges });
-        newEdges.forEach(e => e.delete());
-        return res;
+            const plane = own(this.entitiesService.gpPln([0, 0, 0], [0, 1, 0]));
+            const flat = own(this.occ.GeomAPI_To2d(curve, plane));
+            return this.edgesService.makeEdgeFromGeom2dCurveAndSurfaceBounded({ curve: flat, surface }, first, last);
+        } finally {
+            releaseAll();
+        }
     }
 
     wiresToPoints(inputs: Resolved.OCCT.WiresToPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
@@ -1106,36 +1168,49 @@ export class WiresService {
     }
 
     createHelixWire(inputs: Resolved.OCCT.HelixWireDto): TopoDS_Wire {
+        const radius = checkedWithin(inputs.radius, "radius", { above: 0 });
+        const pitch = checkedWithin(inputs.pitch, "pitch", { above: 0 });
+        const height = checkedWithin(inputs.height, "height", { above: 0 });
         const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
         try {
-            return this.occ.MakeHelixWire(ax, inputs.radius, inputs.pitch, inputs.height, inputs.clockwise, inputs.tolerance);
+            return this.occ.MakeHelixWire(ax, radius, pitch, height, inputs.clockwise, inputs.tolerance);
         } finally {
             ax.delete();
         }
     }
 
     createHelixWireByTurns(inputs: Resolved.OCCT.HelixWireByTurnsDto): TopoDS_Wire {
+        const radius = checkedWithin(inputs.radius, "radius", { above: 0 });
+        const pitch = checkedWithin(inputs.pitch, "pitch", { above: 0 });
+        const numTurns = checkedWithin(inputs.numTurns, "numTurns", { above: 0 });
         const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
         try {
-            return this.occ.MakeHelixWireByTurns(ax, inputs.radius, inputs.pitch, inputs.numTurns, inputs.clockwise, inputs.tolerance);
+            return this.occ.MakeHelixWireByTurns(ax, radius, pitch, numTurns, inputs.clockwise, inputs.tolerance);
         } finally {
             ax.delete();
         }
     }
 
     createTaperedHelixWire(inputs: Resolved.OCCT.TaperedHelixWireDto): TopoDS_Wire {
+        const startRadius = checkedWithin(inputs.startRadius, "startRadius", { above: 0 });
+        const endRadius = checkedWithin(inputs.endRadius, "endRadius", { above: 0 });
+        const pitch = checkedWithin(inputs.pitch, "pitch", { above: 0 });
+        const height = checkedWithin(inputs.height, "height", { above: 0 });
         const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
         try {
-            return this.occ.MakeTaperedHelixWire(ax, inputs.startRadius, inputs.endRadius, inputs.pitch, inputs.height, inputs.clockwise, inputs.tolerance);
+            return this.occ.MakeTaperedHelixWire(ax, startRadius, endRadius, pitch, height, inputs.clockwise, inputs.tolerance);
         } finally {
             ax.delete();
         }
     }
 
     createFlatSpiralWire(inputs: Resolved.OCCT.FlatSpiralWireDto): TopoDS_Wire {
+        const startRadius = checkedWithin(inputs.startRadius, "startRadius", { atLeast: 0 });
+        const endRadius = checkedWithin(inputs.endRadius, "endRadius", { above: 0 });
+        const numTurns = checkedWithin(inputs.numTurns, "numTurns", { above: 0 });
         const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
         try {
-            return this.occ.MakeFlatSpiralWire(ax, inputs.startRadius, inputs.endRadius, inputs.numTurns, inputs.clockwise, inputs.tolerance);
+            return this.occ.MakeFlatSpiralWire(ax, startRadius, endRadius, numTurns, inputs.clockwise, inputs.tolerance);
         } finally {
             ax.delete();
         }

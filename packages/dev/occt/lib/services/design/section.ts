@@ -9,6 +9,8 @@ import { rigidInverse, turnedVector } from "@bitbybit-dev/base/lib/api/services/
 import { dot3, length3, scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type { Crossing, Kind, LocalPlane, Made, PartCut, Placement, SectionContext, SectionOptions, SourcePart, Vec3 } from "./section-types";
 import { IDENTITY_MATRIX } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices.constants";
+import { release } from "../base/release";
+import { cleanedUp, cleanedUpOnError } from "./problems";
 
 const KEY_DIGITS = 9;
 const BOX_VALUES = 6;
@@ -131,6 +133,18 @@ function lookOf(part: SourcePart): Models.OCCT.DesignBuiltAppearance | undefined
     return look;
 }
 
+function piecesBehind(shape: TopoDS_Shape, frames: readonly Inputs.Base.Frame[], context: SectionContext): TopoDS_Shape[] {
+    const backs: TopoDS_Shape[] = [];
+    return cleanedUpOnError(() => {
+        frames.forEach(frame => {
+            const { front, back } = context.occt.operations.splitByFrame({ shape, frame });
+            backs.push(back);
+            release(front);
+        });
+        return backs;
+    }, () => backs.forEach(release));
+}
+
 function madeFor(cut: PartCut, kind: Exclude<Kind, "whole">, options: SectionOptions, context: SectionContext, used: Set<string>): Map<string, TopoDS_Shape> {
     const keyed = cut.crossings.map(crossing => ({ plane: crossing.plane, key: keyOf(kind, cut.part, crossing.plane, options.tolerance) }));
     const missing = keyed.filter(each => !context.cache.has(each.key));
@@ -139,11 +153,7 @@ function madeFor(cut: PartCut, kind: Exclude<Kind, "whole">, options: SectionOpt
         const shape = cut.part.shape;
         const made = kind === "cap"
             ? context.occt.operations.sliceByFrames({ shape, frames, makeFaces: true, tolerance: options.tolerance })
-            : frames.map(frame => {
-                const { front, back } = context.occt.operations.splitByFrame({ shape, frame });
-                front.delete();
-                return back;
-            });
+            : piecesBehind(shape, frames, context);
         missing.forEach((each, index) => {
             const shape = made[index];
             if (shape !== undefined) {
@@ -227,19 +237,14 @@ export function sectionOf(source: Models.OCCT.DesignSectionSource<TopoDS_Shape>,
     const placements = placementsOf(source, parts);
     const used = new Set<string>();
     const made: Made[] = [];
-    try {
+    cleanedUp(() => cleanedUpOnError(() => {
         for (const cut of cutsOf(parts, placements, frame, options.tolerance, context)) {
             made.push(...sectionParts(cut, "cap", options, context, used));
             if (options.cut) {
                 made.push(...sectionParts(cut, "piece", options, context, used), ...wholePart(cut, context.occ));
             }
         }
-    } catch (error) {
-        made.forEach(each => { each.part.shape.delete(); });
-        throw error;
-    } finally {
-        context.cache.trim(used);
-    }
+    }, () => made.forEach(each => release(each.part.shape))), () => context.cache.trim(used));
     const section: Models.OCCT.DesignSection<TopoDS_Shape> = { frame, parts: made.map(each => each.part) };
     return source.components === undefined
         ? section

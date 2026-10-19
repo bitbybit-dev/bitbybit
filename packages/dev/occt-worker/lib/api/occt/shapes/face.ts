@@ -566,7 +566,7 @@ export class OCCTFace {
      * Creates a flat elliptical face.
      *
      * `direction` is the normal of its plane: the default `[0, 1, 0]` lays it flat on the ground.
-     * `radiusMajor` must be at least `radiusMinor`.
+     * Both radii must be above 0, and `radiusMajor` must be at least `radiusMinor`.
      * @param inputs - The two radii, the center and the plane normal
      * @returns The ellipse face
      * @group primitives

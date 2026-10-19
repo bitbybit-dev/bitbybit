@@ -18,3 +18,11 @@ export function withKernelFailure<T>(occ: KernelExceptionReader, call: () => T, 
         throw read === thrown ? thrown : failure();
     }
 }
+
+export function withKernelErrorsRead<T>(occ: KernelExceptionReader, call: () => T): T {
+    try {
+        return call();
+    } catch (thrown) {
+        throw readKernelException(occ, thrown);
+    }
+}

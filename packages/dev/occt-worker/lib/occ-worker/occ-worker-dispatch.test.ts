@@ -43,6 +43,10 @@ vi.mock("@bitbybit-dev/occt", () => {
             kernelCalls.push({ path: "falsy", inputs: undefined });
             return 0;
         };
+        twice = (): unknown => {
+            const shape = { $$: {}, ShapeType: (): number => 7, IsNull: (): boolean => false, delete: (): void => undefined };
+            return { first: shape, again: [shape] };
+        };
         pieces = (): unknown[] => {
             kernelCalls.push({ path: "pieces", inputs: undefined });
             return [1, 2].map(() => ({ $$: {}, ShapeType: (): number => 7, IsNull: (): boolean => false, delete: (): void => undefined }));
@@ -399,6 +403,37 @@ describe("the call shape every OCCT operation goes through", () => {
             expect(kernelCalls).toHaveLength(1);
             expect(second.result).toEqual(first.result);
             expect(second.result).toHaveLength(2);
+        });
+
+        it("should count every answer that carries a shape, one served from the cache too, once however often the answer names it, and a refused call not at all", () => {
+            // Arrange
+            const pieces = answerTo({ functionName: "pieces", inputs: {} }, "uid-1");
+            const twice = answerTo({ functionName: "twice", inputs: {} }, "uid-2");
+
+            // Act
+            answerTo({ functionName: "pieces", inputs: {} }, "uid-3");
+            answerTo({ functionName: "shapes.solid.fail", inputs: {} }, "uid-4");
+
+            // Assert
+            const hashes = [...(pieces.result as { hash: number }[]), (twice.result as { first: { hash: number } }).first].map(reference => reference.hash);
+            expect(hashes.map(hash => cacheHelper.answersOf(hash))).toEqual([2, 2, 1]);
+        });
+
+        it("should not count an answer that could not be posted, so the shapes it carried count only the answers that reached the caller", () => {
+            // Arrange
+            const refusingAnswers = (message: unknown): void => {
+                if (typeof message === "object" && message !== null && "result" in message && message.result !== undefined) {
+                    throw new DOMException("the answer could not be cloned", "DataCloneError");
+                }
+            };
+            onMessageInput({ action: { functionName: "pieces", inputs: {} }, uid: "uid-1" }, refusingAnswers);
+
+            // Act
+            const pieces = answerTo({ functionName: "pieces", inputs: {} }, "uid-2");
+
+            // Assert
+            expect(kernelCalls).toHaveLength(1);
+            expect((pieces.result as { hash: number }[]).map(reference => cacheHelper.answersOf(reference.hash))).toEqual([1, 1]);
         });
 
         it("should answer a cached 0 as 0 without running the kernel again", () => {

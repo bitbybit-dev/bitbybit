@@ -9,6 +9,7 @@ import { framesFromNumbers } from "../base/frames";
 import { checkedChoice, checkedDirection, checkedNumber, checkedNumberList, checkedPoint, checkedPoints, checkedShape, checkedShapes, checkedWhole, checkedWithin } from "../base/input-checks";
 import { checkedPointGrid } from "../base/surface-analysis";
 import { released } from "../base/release";
+import { readKernelException } from "../../kernel-exception";
 
 const FILLING_STYLES: readonly Inputs.OCCT.fillingStyleEnum[] = [
     Inputs.OCCT.fillingStyleEnum.stretch,
@@ -164,7 +165,8 @@ export class OCCTFace {
         inputs.mesh.forEach((triangle) => {
             try {
                 faces.push(this.fromBaseTriangle({ triangle }));
-            } catch {
+            } catch (error) {
+                readKernelException(this.occ, error);
                 console.warn("Failed to make face for triangle", triangle);
             }
         });
@@ -661,7 +663,7 @@ export class OCCTFace {
      * Creates a flat elliptical face.
      *
      * `direction` is the normal of its plane: the default `[0, 1, 0]` lays it flat on the ground.
-     * `radiusMajor` must be at least `radiusMinor`.
+     * Both radii must be above 0, and `radiusMajor` must be at least `radiusMinor`.
      * @param inputs - The two radii, the center and the plane normal
      * @returns The ellipse face
      * @group primitives

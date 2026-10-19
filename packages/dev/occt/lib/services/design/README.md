@@ -28,8 +28,10 @@ each idea comes from, so the reasoning stays next to the code that implements it
   mass.
 - A WebAssembly trap is never reported as a failed feature: after one the kernel cannot be trusted,
   so the build throws it on, tagged `occt.design.crashed` with the id and path of the feature it was
-  making (`tagTrap` in `problems.ts`; an inner build's tag stays). The worker restarts the kernel, and
-  the caller can build again with that feature suppressed or changed.
+  making (`tagTrap` in `problems.ts`; an inner build's tag stays, and a trap inside a document an
+  assembly places carries that document's position in its path, `/documents/<position>/features/<i>`,
+  since feature ids repeat across documents). The worker restarts the kernel, and the caller can build
+  again with that feature suppressed or changed.
 - A shell tries arc joins, OCCT's default, then intersection joins: OCCT builds an invalid shell of
   some filleted bodies with arc joins, refuses others, and returns the body itself, unhollowed and
   "valid", for a thickness well past what the body allows. When neither builds a valid solid with an
@@ -90,10 +92,15 @@ each idea comes from, so the reasoning stays next to the code that implements it
   revolved body with nine edges rounded, a radius that builds took under 2 s and one that failed just
   past the largest took up to 113 s, all of it inside OCCT's fillet, so finer steps would cost minutes.
 - `cache.ts` keeps each outcome by a hash of the feature, the parameter values it reads and the
-  hashes of its inputs, and frees the least recently used beyond its capacity when a build ends. It
+  hashes of its inputs, and frees the least recently used beyond its capacity when a build ends,
+  never one that build used, so a build that uses more than the capacity keeps them all. It
   owns every shape it holds: an operation that returns one of its inputs is given its own handle, one
   that returns a list of shapes makes their compound, and the parts a build returns hold new handles
-  the caller owns.
+  the caller owns. The other route out is `releaseDesignCaches` (`release-design-caches.ts` at the
+  package root, reaching the caches through `cache-registry.ts`): it frees every outcome and every
+  cut `section` kept, and empties the boxes and clash meshes, so the next build makes every feature
+  again. It is for whoever frees every kernel object at once; the occt worker calls it from
+  `cleanAllCache` and from the reset when a run outgrows its cache threshold.
 - `assembly-check.ts` is `validate` for an assembly document: each component's source against the
   `documents` given beside it, its joints and their limits, joints that close a loop, and the
   problems of every document it places under `/documents/<position>`. `assembly.ts` builds one: each
@@ -230,8 +237,14 @@ The migrations described below are not built yet.
   (a face of the block keeps `block:face` after a fillet) and the faces it makes take roles: `round`
   and `bevel` for every form of fillet and chamfer, `side` for faces made of edges, `start` and
   `end`, read from every history the twin returns, so a rib's or a boss's new faces take them from
-  its wire's or profile's. Where the twin refuses what the method accepts and the method hands the
-  body back, as an offset of 0 does, the body keeps its names.
+  its wire's or profile's. A method that answers with the body's own shape in a handle of its own
+  where it changes nothing keeps the body's names, as do an offset of 0 where the twin refuses it, a
+  repair or a reorientation of a valid body (`shapeFix.basicShapeRepair`, `orientClosedSolid`), a
+  purge of internal edges the body does not have (`shapes.shape.purgeInternalEdges`,
+  `shapes.edge.removeInternalEdges`), a face reversed or taken from a face (`shapes.face.reversedFace`,
+  `getFace`) and a machining cut that misses the body (`parts.mechanical.machining.flat`, `keyway`,
+  `knurl`, `ringGroove`). `ANSWERS_WITH_ITS_INPUT` in `operation-steps.ts` lists them, matched by
+  shape; any other method keeps them only when it hands back the very handle it was given.
 
 ## The format and what stays outside it
 
@@ -426,7 +439,17 @@ than it expects:
 - **`design.buildWithScripts`** (the worker API, on the main thread) is that loop: it runs each
   script as the body of an async function given `inputs` and `occt`, the package's API reached by
   dotted path, one worker call each, and builds again until nothing waits or every script has had
-  its turn. Scripts run with the rights of the page, so an application runs only the documents it trusts.
+  its turn. It deletes each earlier round's shapes once the next round has used them, and the scripts'
+  outcomes once the last build has cloned them, so only the last result's shapes stay for the caller;
+  on a failure or a cancel it deletes the last round's too. The worker's cache answers an identical
+  call with the same shape, and other calls can be answered between the loop's own, so the worker
+  counts the answers that carry each shape and deletes one only when every answer that carried it
+  was one of the loop's (`deleteUnsharedShapes`): a shape the caller or another call was handed
+  too, before the loop or while it ran, stays.
+  In an assembly, a component whose part waits for a script is reported `pending`, and a component
+  joined to it, or to a connector a sub-assembly publishes from it, is skipped as waiting; a
+  sub-assembly joined by such a connector is `pending` too. Scripts run with the rights of the page,
+  so an application runs only the documents it trusts.
 - **Why not in the kernel:** the worker runs one synchronous call at a time, and an awaiting runner
   would break its posting, cancelling and busy signal; and code a document carries runs where its
   caller decides, never inside the library.
@@ -440,6 +463,10 @@ than it expects:
   them, and so does one that traces. A caller that kept each part's last outcome therefore rebuilds a
   document by reading those back, with nothing before them made.
 - **An assembly builds its documents without their sketches**, since it hands none back.
+- **An assembly hands back the scripts its documents wait for.** Each placed document's pending
+  scripts come back in the assembly's `pending`, one per outcome hash, with their paths under
+  `/documents/<position>`, and the outcomes given to the assembly's build reach those documents'
+  builds, so a caller runs them as it runs a part document's.
 - **Meshes a caller keeps.** Each engine's drawer hands out the meshes it made for design parts,
   by `shapeHash`, for the drawing options given (`drawHelper.keptDesignMeshes`), and takes them back
   (`drawHelper.keepDesignMeshes`), passing over anything that is not a mesh of faces and edges. With

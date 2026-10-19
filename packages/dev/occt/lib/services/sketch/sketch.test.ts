@@ -5,6 +5,7 @@ import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
+import { ledgerRun, namesOf } from "../../../../__test__/embind-ledger";
 
 type Point3 = Inputs.Base.Point3;
 
@@ -465,6 +466,21 @@ describe("OCCT sketch", () => {
             expectPoint(normalOf(ring), [0, 1, 0]);
         });
 
+        it.each([
+            ["a closed wire", Number.MIN_VALUE, true], ["a closed wire", Number.MIN_VALUE, false], ["a closed wire", 1e-8, true],
+            ["an open wire", Number.MIN_VALUE, true], ["an open wire", Number.MIN_VALUE, false], ["an open wire", 1e-8, false],
+        ])("should refuse to stroke %s %s wide as too narrow to offset (as a face: %s), leaving the wire alive and nothing of its own behind", (kind, width, makeFace) => {
+            // Arrange
+            const wire = kind === "a closed wire" ? occt.shapes.wire.createCircleWire({ radius: 10, center: [0, 0, 0], direction: [0, 1, 0] }) : line();
+
+            // Act
+            const stroked = ledgerRun(() => occt.sketch.stroke({ shape: wire, width, makeFace }));
+
+            // Assert
+            expect([namesOf(stroked.leaked), wire.isDeleted()]).toEqual([[], false]);
+            expect(stroked.thrown).toMatchObject({ name: "InputError", property: "width" });
+        });
+
         it("should refuse a width that splits the inside of a closed wire apart", () => {
             // Arrange
             const dumbbell = occt.sketch.pen({ commands: [
@@ -693,6 +709,23 @@ describe("OCCT sketch", () => {
             // Assert
             expect(areaOf(hull)).toBeCloseTo(20 + Math.PI, 5);
             expectPoint(normalOf(hull), [0, 0, 1]);
+        });
+
+        it("should wrap the same circle and line edges a second time and leave them alive", () => {
+            // Arrange
+            const edges = [
+                occt.shapes.edge.createCircleEdge({ radius: 2, center: ground(0, 0), direction: [0, 1, 0] }),
+                occt.shapes.edge.createCircleEdge({ radius: 1, center: ground(10, 0), direction: [0, 1, 0] }),
+                occt.shapes.edge.line({ start: ground(0, 5), end: ground(10, 5) }),
+            ];
+            const first = occt.sketch.hull({ shapes: edges });
+
+            // Act
+            const second = occt.sketch.hull({ shapes: edges });
+
+            // Assert
+            expect(areaOf(second)).toBeCloseTo(areaOf(first), 9);
+            expect(edges.map(edge => edge.isDeleted())).toEqual([false, false, false]);
         });
 
         it("should give a wire when no face is asked for", () => {

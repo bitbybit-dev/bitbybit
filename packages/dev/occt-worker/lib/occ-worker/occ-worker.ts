@@ -168,6 +168,14 @@ const unreportableFailure = (functionName: unknown): string => typeof functionNa
     ? `OCCT '${functionName}' failed, and the failure could not be reported.`
     : "OCCT computation failed, and the failure could not be reported.";
 
+function readOrTrapped(thrown: unknown): unknown {
+    try {
+        return readKernelException(kernel, thrown);
+    } catch (trap) {
+        return trap;
+    }
+}
+
 function afterCrash(crash: string): string {
     const restart = restartKernel;
     if (restart === undefined) {
@@ -202,7 +210,8 @@ function postHandedOver(message: Parameters<PostMessage>[0], transfer: ArrayBuff
 }
 
 function executeStandardFunction(
-    action: DataInput["action"]
+    action: DataInput["action"],
+    carried: Set<string | number>
 ): unknown {
     const call = prepareKernelCall("OCCT", occtDtoRegistry, action.functionName, action.inputs, occtDtoRules);
 
@@ -217,7 +226,7 @@ function executeStandardFunction(
         return computed;
     });
 
-    return resultSerializer.serializeResult(res);
+    return resultSerializer.serializeResult(res, carried);
 }
 
 /**
@@ -255,6 +264,7 @@ export const onMessageInput = (
     let result: unknown;
     let transfer: ArrayBuffer[] | undefined;
     let started = "";
+    const carried = new Set<string | number>();
 
     try {
         if (typeof d.action?.functionName !== "string" || d.action.functionName === "") {
@@ -270,7 +280,7 @@ export const onMessageInput = (
             result = commandResult.result;
             transfer = commandResult.transfer;
         } else if (!NON_CACHEABLE_FUNCTIONS.has(functionName)) {
-            result = executeStandardFunction(d.action);
+            result = executeStandardFunction(d.action, carried);
         }
 
         if (stopRequested()) {
@@ -281,6 +291,7 @@ export const onMessageInput = (
         } else {
             postMessage({ uid: d.uid, result });
         }
+        cacheHelper.countAnswer(carried);
     } catch (e) {
         const cancelled = (): void => postMessage({ uid: d.uid, result: undefined, error: `OCCT '${started}' was cancelled before it finished; nothing it made was kept.`, errorKind: "cancelled" });
         if (e instanceof CallStopped) {
@@ -288,7 +299,7 @@ export const onMessageInput = (
             return;
         }
         try {
-            const read = readKernelException(kernel, e);
+            const read = readOrTrapped(e);
             const failure = describeKernelFailure("OCCT", d.action?.functionName ?? "", d.action?.inputs, read);
             if (failure.kind !== "crash" && started !== "" && stopRequested()) {
                 cancelled();

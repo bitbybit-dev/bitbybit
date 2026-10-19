@@ -99,13 +99,19 @@ export class ResultSerializer {
      * Recursively traverses the result to find and serialize all OCCT shapes and documents.
      * 
      * @param result - The result from an OCCT operation
+     * @param carried - Where to note the hash of every shape the answer refers to
      * @returns A serializable version with references instead of actual objects
      */
-    serializeResult(result: unknown): unknown {
-        return this.serializeRecursively(result);
+    serializeResult(result: unknown, carried?: Set<string | number>): unknown {
+        return this.serializeRecursively(result, carried);
     }
 
-    private serializeRecursively(value: unknown): unknown {
+    private shapeReference(hash: string | number, carried: Set<string | number> | undefined): ReturnType<typeof createShapeReference> {
+        carried?.add(hash);
+        return createShapeReference(hash);
+    }
+
+    private serializeRecursively(value: unknown, carried: Set<string | number> | undefined): unknown {
         if (value === null || value === undefined) {
             return value;
         }
@@ -114,12 +120,12 @@ export class ResultSerializer {
             return value;
         }
 
-        if (ArrayBuffer.isView(value)) {
+        if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
             return value;
         }
 
         if (this.cacheHelper.isShape(value) && !Array.isArray(value)) {
-            return createShapeReference((value as { hash: number | string }).hash);
+            return this.shapeReference((value as { hash: number | string }).hash, carried);
         }
 
         if (this.cacheHelper.isEntityHandle(value) && !Array.isArray(value)) {
@@ -128,16 +134,16 @@ export class ResultSerializer {
 
         if (Array.isArray(value)) {
             if (value.length > 0 && this.cacheHelper.isShape(value[0])) {
-                return value.map(shape => createShapeReference(shape.hash));
+                return value.map(shape => this.shapeReference(shape.hash, carried));
             }
-            return value.map(item => this.serializeRecursively(item));
+            return value.map(item => this.serializeRecursively(item, carried));
         }
 
         if (this.isObjectDefinition(value)) {
-            return this.serializeObjectDefinition(value);
+            return this.serializeObjectDefinition(value, carried);
         }
 
-        return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, this.serializeRecursively(item)]));
+        return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, this.serializeRecursively(item, carried)]));
     }
 
     private isObjectDefinition(value: unknown): value is ObjectDefinitionLike {
@@ -151,13 +157,13 @@ export class ResultSerializer {
         );
     }
 
-    private serializeObjectDefinition(objDef: ObjectDefinitionLike): ObjectDefinitionLike {
+    private serializeObjectDefinition(objDef: ObjectDefinitionLike, carried: Set<string | number> | undefined): ObjectDefinitionLike {
         return {
             ...objDef,
-            compound: createShapeReference((objDef.compound as { hash: number | string }).hash),
+            compound: this.shapeReference((objDef.compound as { hash: number | string }).hash, carried),
             shapes: objDef.shapes.map(s => ({
                 id: s.id,
-                shape: createShapeReference(s.shape.hash),
+                shape: this.shapeReference(s.shape.hash, carried),
             })),
         };
     }

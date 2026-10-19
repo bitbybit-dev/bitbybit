@@ -16,8 +16,22 @@ export const isShape = (value: unknown): value is TopoDS_Shape => {
     return candidate !== null && candidate !== undefined && typeof candidate.IsNull === "function" && !(value as TopoDS_Shape).IsNull();
 };
 
-/** A shape the caller handed in, refused when it is missing or empty, as an operation that failed can leave it. */
+const isDeletedHandle = (value: unknown): boolean => {
+    if (value === null || typeof value !== "object") {
+        return false;
+    }
+    const isDeleted: unknown = Reflect.get(value, "isDeleted");
+    return typeof isDeleted === "function" && Reflect.apply(isDeleted, value, []) === true;
+};
+
+/**
+ * A shape the caller handed in, refused when it was deleted, or when it is missing or empty, as an
+ * operation that failed can leave it.
+ */
 export function checkedShape(shape: unknown, property = "shape"): TopoDS_Shape {
+    if (isDeletedHandle(shape)) {
+        throw new InputError(`\`${property}\` was deleted, so nothing of it is left to work on.`, property);
+    }
     if (!isShape(shape)) {
         throw new InputError(`\`${property}\` is missing or empty, as an operation that failed can leave it.`, property);
     }
@@ -26,13 +40,16 @@ export function checkedShape(shape: unknown, property = "shape"): TopoDS_Shape {
 
 /**
  * A list of shapes the caller handed in, each refused as `checkedShape` refuses one, with the
- * position of the first that is missing or empty.
+ * position of the first that was deleted, or is missing or empty.
  */
 export function checkedShapes<T extends TopoDS_Shape = TopoDS_Shape>(shapes: unknown, property = "shapes"): T[] {
     if (!Array.isArray(shapes)) {
         throw new InputError(`\`${property}\` is not a list of shapes.`, property);
     }
-    const faulty = shapes.findIndex(shape => !isShape(shape));
+    const faulty = shapes.findIndex(shape => isDeletedHandle(shape) || !isShape(shape));
+    if (faulty !== -1 && isDeletedHandle(shapes[faulty])) {
+        throw new InputError(`\`${property}\` holds a deleted shape at position ${faulty}, so nothing of it is left to work on.`, property);
+    }
     if (faulty !== -1) {
         throw new InputError(`\`${property}\` holds a missing or empty shape at position ${faulty}, as an operation that failed can leave it.`, property);
     }
@@ -224,6 +241,20 @@ export function checkedPlacements(value: unknown, property: string): number[][] 
         }
         return composed(matrices);
     });
+}
+
+/**
+ * Runs a kernel call that follows a wire as one curve, turning the kernel's refusal of a wire with no
+ * edge that has a curve - an empty wire, or one of degenerate edges only such as the pole of a ball -
+ * into an input error naming the property that held the wire.
+ * @param occ - The kernel the call runs in, which reads its exception
+ * @param property - The property that held the wire
+ * @param call - The kernel call
+ */
+export function withCurveAlongWire<T>(occ: KernelExceptionReader, property: string, call: () => T): T {
+    return withKernelRefusals(occ, call, message => message.endsWith("the wire has no edge with a curve")
+        ? new InputError(`\`${property}\` has no edge with a curve, only degenerate edges such as the pole of a ball or none at all, so there is no curve to follow along it.`, property)
+        : undefined);
 }
 
 /**
