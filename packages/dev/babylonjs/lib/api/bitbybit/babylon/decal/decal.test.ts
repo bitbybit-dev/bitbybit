@@ -3,6 +3,7 @@ import * as BABYLON from "@babylonjs/core";
 import type { HeadlessScene } from "../../../__test__/headless";
 import { createHeadlessScene } from "../../../__test__/headless";
 import { BabylonDecal } from "./decal";
+import { BabylonMesh } from "../mesh";
 import * as Inputs from "../../../inputs";
 
 const PIXEL = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
@@ -87,6 +88,79 @@ describe("BabylonDecal", () => {
             // Assert
             expect((culled.material as BABYLON.StandardMaterial).backFaceCulling).toBe(true);
             expect((notCulled.material as BABYLON.StandardMaterial).backFaceCulling).toBe(false);
+        });
+
+        it("should free the decal's own material once the decal is disposed", () => {
+            // Arrange
+            const decal = decalFor();
+            const material = decal.material!;
+
+            // Act
+            decal.dispose();
+
+            // Assert
+            expect(headless.scene.materials).not.toContain(material);
+        });
+
+        it("should leave the texture it was given when the decal and its material go", () => {
+            // Arrange
+            const decal = decalFor();
+
+            // Act
+            decal.dispose();
+
+            // Assert
+            expect(headless.scene.textures).toContain(texture);
+            expect(texture.getInternalTexture()).not.toBeNull();
+        });
+
+        it("should keep the decal's material while a clone of the decal still wears it", () => {
+            // Arrange
+            const decal = decalFor();
+            const clone = decal.clone();
+
+            // Act
+            decal.dispose();
+
+            // Assert
+            expect(headless.scene.materials).toContain(clone.material);
+        });
+
+        it("should free the decal's material with the mesh it lies on, which takes the decal with it", () => {
+            // Arrange
+            const material = decalFor().material!;
+
+            // Act
+            sourceMesh.dispose();
+
+            // Assert
+            expect(headless.scene.materials).not.toContain(material);
+        });
+
+        it("should keep the decal's material alive on the mesh a merge that builds a multi-material of its own makes from the decal", () => {
+            // Arrange
+            const decal = decalFor();
+            const material = decal.material!;
+
+            // Act
+            const merged = new BabylonMesh(headless.context).mergeMeshes(new Inputs.BabylonMesh.MergeMeshesDto([decal, decal.clone()], true, true, undefined, false, true));
+
+            // Assert
+            expect((merged.material as BABYLON.MultiMaterial).subMaterials).toContain(material);
+            expect(headless.scene.materials).toContain(material);
+        });
+
+        it("should leave a material a script put on the decal in its place when the decal is disposed", () => {
+            // Arrange
+            const decal = decalFor();
+            const own = new BABYLON.StandardMaterial("own", headless.scene);
+            decal.material = own;
+
+            // Act
+            decal.dispose();
+
+            // Assert
+            expect(headless.scene.materials).toContain(own);
         });
 
         it("should give each decal a name of its own", () => {

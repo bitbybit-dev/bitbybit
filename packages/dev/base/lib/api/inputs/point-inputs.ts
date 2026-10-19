@@ -163,8 +163,8 @@ export namespace Point {
          */
         updatable?: boolean | undefined = false;
         /**
-         * A mesh drawn earlier for this point; when given it is updated in place instead of a new
-         * one being made.
+         * A mesh drawn earlier with `updatable` on: moved in place while `colours`, `opacity` and
+         * `size` stay the same, else freed and redrawn. Use the returned mesh.
          * @default undefined
          * @optional true
          */
@@ -219,8 +219,8 @@ export namespace Point {
          */
         updatable?: boolean | undefined = false;
         /**
-         * A mesh drawn earlier for these points; when given it is updated in place instead of a new
-         * one being made.
+         * A mesh drawn earlier with `updatable` on: moved in place while the `points` count,
+         * `colours`, `opacity` and `size` stay the same, else freed and redrawn. Use the returned mesh.
          * @default undefined
          * @optional true
          */

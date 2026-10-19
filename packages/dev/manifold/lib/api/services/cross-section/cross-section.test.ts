@@ -18,6 +18,10 @@ const SHIFT = 10;
 const OVERLAP_OFFSET = 2;
 const OVERLAP_AREA = 4;
 const SCALE: Inputs.Base.Vector2 = [2, 3];
+const EXTRUDE_HEIGHT = 3;
+const QUARTER_TURN_DEGREES = 90;
+const TWIST_DIVISIONS = 8;
+const NARROWED_TOP = 0.5;
 
 describe("ManifoldCrossSection", () => {
     let manifold: ManifoldService;
@@ -28,6 +32,10 @@ describe("ManifoldCrossSection", () => {
         manifold.crossSection.evaluate.area(new Inputs.Manifold.CrossSectionDto(shape));
     const boundsOf = (shape: Manifold3D.CrossSection): [Inputs.Base.Vector2, Inputs.Base.Vector2] =>
         manifold.crossSection.evaluate.bounds(new Inputs.Manifold.CrossSectionDto(shape)) as [Inputs.Base.Vector2, Inputs.Base.Vector2];
+    const heightRangeOf = (solid: Manifold3D.Manifold): [number, number] => {
+        const [min, max] = manifold.manifold.evaluate.boundingBox(new Inputs.Manifold.ManifoldDto(solid)) as [Inputs.Base.Vector3, Inputs.Base.Vector3];
+        return [min[2], max[2]];
+    };
 
     beforeAll(async () => {
         manifold = await getManifold();
@@ -323,6 +331,46 @@ describe("ManifoldCrossSection", () => {
 
             // Assert
             expect(manifold.manifold.evaluate.volume(new Inputs.Manifold.ManifoldDto(solid))).toBeCloseTo(SQUARE_AREA * 3, 5);
+        });
+
+        it("should centre an extruded solid on the plane of its section when asked to", () => {
+            // Act
+            const solid = manifold.crossSection.operations.extrude({ crossSection: square, height: EXTRUDE_HEIGHT, nDivisions: 1, twistDegrees: 0, scaleTopX: 1, scaleTopY: 1, center: true });
+
+            // Assert
+            const [bottom, top] = heightRangeOf(solid);
+            expect(bottom).toBeCloseTo(-EXTRUDE_HEIGHT / 2, 6);
+            expect(top).toBeCloseTo(EXTRUDE_HEIGHT / 2, 6);
+        });
+
+        it("should centre an extruded solid on the plane of its section when nothing says otherwise", () => {
+            // Act
+            const solid = manifold.crossSection.operations.extrude({ crossSection: square, height: EXTRUDE_HEIGHT });
+
+            // Assert
+            const [bottom, top] = heightRangeOf(solid);
+            expect(bottom).toBeCloseTo(-EXTRUDE_HEIGHT / 2, 6);
+            expect(top).toBeCloseTo(EXTRUDE_HEIGHT / 2, 6);
+        });
+
+        it("should centre an extruded solid that twists and narrows towards its top", () => {
+            // Act
+            const solid = manifold.crossSection.operations.extrude({ crossSection: square, height: EXTRUDE_HEIGHT, nDivisions: TWIST_DIVISIONS, twistDegrees: QUARTER_TURN_DEGREES, scaleTopX: NARROWED_TOP, scaleTopY: NARROWED_TOP, center: true });
+
+            // Assert
+            const [bottom, top] = heightRangeOf(solid);
+            expect(bottom).toBeCloseTo(-EXTRUDE_HEIGHT / 2, 6);
+            expect(top).toBeCloseTo(EXTRUDE_HEIGHT / 2, 6);
+        });
+
+        it("should stand an extruded solid on the plane of its section when it is not centred", () => {
+            // Act
+            const solid = manifold.crossSection.operations.extrude({ crossSection: square, height: EXTRUDE_HEIGHT, nDivisions: 1, twistDegrees: 0, scaleTopX: 1, scaleTopY: 1, center: false });
+
+            // Assert
+            const [bottom, top] = heightRangeOf(solid);
+            expect(bottom).toBeCloseTo(0, 6);
+            expect(top).toBeCloseTo(EXTRUDE_HEIGHT, 6);
         });
 
         it("should revolve a section into a solid of revolution", () => {

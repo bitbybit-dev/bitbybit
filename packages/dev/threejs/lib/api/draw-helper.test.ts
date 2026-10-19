@@ -109,14 +109,8 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(THREEJS.Group);
         });
 
-        it("should update existing point mesh when updatable is true", () => {
-            const existingMesh = new THREEJS.Group();
-            existingMesh.name = "existingPointMesh";
-            const geometry = new THREEJS.SphereGeometry(0.5);
-            const material = new THREEJS.MeshBasicMaterial();
-            const instancedMesh = new THREEJS.InstancedMesh(geometry, material, 1);
-            instancedMesh.userData = { index: 0 };
-            existingMesh.add(instancedMesh);
+        it("should update existing point mesh when updatable is true and its look is the same", () => {
+            const existingMesh = drawHelper.drawPoint(new Inputs.Point.DrawPointDto<THREEJS.Group>([0, 0, 0], 1, 0.5, "#0000ff", true));
 
             const inputs = new Inputs.Point.DrawPointDto<THREEJS.Group>(
                 [5, 5, 5],

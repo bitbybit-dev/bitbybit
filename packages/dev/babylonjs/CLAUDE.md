@@ -25,7 +25,9 @@ The shared draw rules live in `core`'s `CLAUDE.md`. What Babylon itself forces:
   switch it on, and enabling it globally taxes every polyline draw.
 - Point clouds are thin instances of one sphere per distinct colour, built with 6 segments but **1
   above 1000 points** of that colour. A deliberate quality-for-throughput threshold, and why large
-  point sets look faceted.
+  point sets look faceted. An updatable redraw moves the instances in place only while the count
+  and the look the helper drew them in (each point's colour, the opacity, the size) are the same;
+  otherwise it draws them again, as the other two renderers do.
 - **`scene.metadata = { shadowGenerators: [] }` is the integration contract.** Every ShadowGenerator
   made for the scene must be pushed into that array; the io, glTF and scene paths all read it. A scene
   built by hand without it makes every shadow path throw or silently do nothing.
@@ -63,6 +65,41 @@ The shared draw rules live in `core`'s `CLAUDE.md`. What Babylon itself forces:
   buffer per part, so a placement adds no node. The line follows the instances because the greased
   line's camera-facing vertex code places vertices through `finalWorld`, which carries the thin
   instance matrix on the PBR material type the lines use. A pose writes that buffer, calls
-  `thinInstanceBufferUpdated` and refreshes the bounding info. A redraw disposes the part meshes,
-  their `MultiMaterial` and the lines with their own materials, never the cached look materials.
+  `thinInstanceBufferUpdated` and refreshes the bounding info. A redraw disposes the part meshes and
+  the lines, never the cached look materials.
   `draw-appearance.test.ts` runs all of it on the `NullEngine`, not the engine mock.
+- **A material the library made goes with the last mesh that wears it** (`freeWithItsLastUser`,
+  `lib/api/material-lifetime.ts`): a line's greased-line material (with its colours texture), a
+  shape's `MultiMaterial`, a grid's `GridMaterial` and a decal's material are disposed from the mesh's
+  `onDisposeObservable` once no live mesh wears them, directly or as a sub-material of a
+  `MultiMaterial`, so a clone keeps them and any way of disposing the drawing frees them - a redraw,
+  `bitbybit.babylon.mesh.dispose`, or `mesh.dispose()`. A material the caller set on the mesh, and the
+  cached look materials, are never disposed this way. `draw-helper-redraws.test.ts` and
+  `draw-appearance.test.ts` hold the counts flat.
+- **Babylon's `Mesh.MergeMeshes` disposes the sources before the merged mesh takes their material**,
+  which would free that material with its last user while nothing wears it. `mesh.mergeMeshes`
+  therefore merges with `disposeSource` false and disposes the sources itself once the merged mesh
+  wears the material; a script calling `MergeMeshes` directly with `disposeSource` true still gets a
+  disposed material.
+- **`clearAllDrawn` disposes the textures the drawing holds and leaves every other one to its
+  owner.** The drawing holds what the materials it disposes wear (`getActiveTextures`, read before
+  anything goes, a mirror or a render target among them), the render targets a script added to
+  `scene.customRenderTargets` (disposing one takes it off the list) and the procedural textures;
+  shadow maps go with their generators and the environment texture by name. A texture no drawn
+  material wears is someone else's - a pipeline's or post-process's noise, grain or lookup table, an
+  effect layer's or depth renderer's target, a post-process's own target (registered on its camera,
+  not the scene), a particle system's, a GUI layer's, a decal map's - and goes when its owner does:
+  disposing one leaves a live owner reading nothing (SSAO an all-zero noise). The scene's lookups
+  are never the drawing's: a BRDF lookup (`environmentBRDFTexture`, its fuzz and OpenPBR siblings)
+  is made again only while the scene property is empty, so a disposed one leaves every PBR material
+  made afterwards waiting forever to be ready, and a disposed colour grading texture blocks every
+  material the same way. Nor is a reflection probe's cube that a drawn material wears for its
+  reflections: the probe renders into it. `scene.test.ts` pins each case on the `NullEngine`. A
+  skybox drawn over another disposes the environment texture the library made for the old one,
+  never one a script handed in or a material still wears.
+- **Only the glTF loader makes a `__root__`.** A loaded model's parentless meshes and nodes are hung
+  under the container, so STL and OBJ files load too. `hidden` applies whether or not the scene
+  casts shadows, and so does picking: a loaded model is not pickable, as nothing drawn is and as the
+  glTF container loader's models are not, until `mesh.setPickable` turns it on. It once stayed
+  pickable in a scene without shadows only because the shadow branch also held the picking and
+  `hidden` lines. Drawing a node again replaces its axis triad rather than adding one.

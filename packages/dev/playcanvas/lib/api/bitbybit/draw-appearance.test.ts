@@ -115,13 +115,14 @@ const partEntitiesOf = (root: pc.Entity): (pc.Entity & { designPart?: { part: st
 
 describe("drawing shapes with their appearance and design builds in PlayCanvas", () => {
     let app: pc.AppBase;
+    let device: pc.NullGraphicsDevice;
     let draw: Draw;
     let drawHelper: DrawHelper;
     let workerCall: Mock;
 
     beforeEach(() => {
         const canvas = document.createElement("canvas");
-        const device = new pc.NullGraphicsDevice(canvas);
+        device = new pc.NullGraphicsDevice(canvas);
         app = new pc.AppBase(canvas);
         const appOptions = new pc.AppOptions();
         appOptions.graphicsDevice = device;
@@ -390,6 +391,44 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             expect(partEntitiesOf(drawn)).toHaveLength(1);
             expect(partEntitiesOf(drawn)[0]).toBe(box);
             expect(pin!.parent).toBeNull();
+        });
+
+        it("should free every GPU buffer of a build when the caller destroys it", async () => {
+            // Arrange
+            const buffersBefore = device.buffers.size;
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options });
+
+            // Act
+            drawn.destroy();
+
+            // Assert
+            expect(device.buffers.size).toBe(buffersBefore);
+        });
+
+        it("should free the GPU buffer a redraw gave a part placed more often when the caller destroys the build", async () => {
+            // Arrange
+            const buffersBefore = device.buffers.size;
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            await draw.drawAnyAsync({ entity: buildOf([0, 10, 30], [20]), options, group: drawn });
+
+            // Act
+            drawn.destroy();
+
+            // Assert
+            expect(device.buffers.size).toBe(buffersBefore);
+        });
+
+        it("should hold as many GPU buffers after a part is dropped and placed again as after the build was drawn once", async () => {
+            // Arrange
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const buffersOnce = device.buffers.size;
+
+            // Act
+            await draw.drawAnyAsync({ entity: buildOf([0], []), options, group: drawn });
+            await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options, group: drawn });
+
+            // Assert
+            expect(device.buffers.size).toBe(buffersOnce);
         });
 
         it("should mesh and draw again only a part whose shape changed under the same id", async () => {

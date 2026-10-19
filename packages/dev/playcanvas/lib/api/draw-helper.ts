@@ -14,6 +14,7 @@ import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as pc from "playcanvas";
 import { DEFAULT_COLORS, CACHE_CONFIG } from "./constants";
 import type * as Resolved from "./resolved-inputs";
+import type { InstancedPointsEntity, PointsLook } from "./draw-helper-types";
 import { RecipeMeshesDrawer } from "./draw-recipe-meshes";
 
 function float32ViewOf(locked: ArrayBuffer | ArrayBufferView): Float32Array {
@@ -56,6 +57,10 @@ export class DrawHelper extends DrawHelperCore {
     private readonly materialCache = new Map<string, pc.StandardMaterial>();
 
     private readonly designStates = new WeakMap<pc.Entity, DesignDrawState>();
+
+    private readonly designBuffers = new WeakMap<pc.Entity, pc.VertexBuffer>();
+
+    private readonly pointsLooks = new WeakMap<pc.Entity, PointsLook>();
 
     private readonly recipeDrawer = new RecipeMeshesDrawer({
         scene: () => this.context.scene,
@@ -334,14 +339,16 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.Point.DrawPointDto, inputs) as Resolved.Point.DrawPointDto<pc.Entity>;
         const vectorPoints = [resolved.point];
 
-        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours : [resolved.colours];
-        if (resolved.pointMesh && resolved.updatable) {
+        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours.slice() : [resolved.colours];
+        const look: PointsLook = { colours: colorsHex, opacity: resolved.opacity, size: resolved.size };
+        if (resolved.pointMesh && resolved.updatable && this.drawnInLook(resolved.pointMesh, look)) {
             this.updatePointsInstances(resolved.pointMesh, vectorPoints);
-        } else {
-            resolved.pointMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointMesh"), vectorPoints, colorsHex, resolved.opacity, resolved.size
-            );
+            return resolved.pointMesh;
         }
+        if (resolved.pointMesh && resolved.updatable) {
+            resolved.pointMesh.destroy();
+        }
+        resolved.pointMesh = this.createPointsInLook("pointMesh", vectorPoints, look);
         return resolved.pointMesh;
     }
 
@@ -366,14 +373,10 @@ export class DrawHelper extends DrawHelperCore {
         pointsToDraw: Inputs.Base.Point3[],
         updatable: boolean, size: number, opacity: number, colours: string | string[],
         arrowSize = 0, arrowAngle = 30): pc.Entity {
-        const polylines = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours,
+        const existingLine = updatable && mesh ? mesh.children[0] as pc.Entity | undefined : undefined;
+        const polyline = this.drawPolylines(existingLine, [pointsToDraw], updatable, size, opacity, colours,
             Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize, arrowAngle);
-        if (!mesh) {
-            mesh = new pc.Entity(this.generateEntityId("polyline"));
-            mesh.addChild(polylines!);
-            this.context.scene.addChild(mesh);
-        }
-        return mesh;
+        return this.wrapPolylineInGroup(polyline!, mesh, updatable);
     }
 
     drawCurve(inputs: Inputs.Verb.DrawCurveDto<pc.Entity>): pc.Entity {
@@ -396,21 +399,16 @@ export class DrawHelper extends DrawHelperCore {
         
         const coloursHex = this.resolveAllColors(resolved.colours, vectorPoints.length, strategy);
         
-        if (resolved.pointsMesh && resolved.updatable) {
-            const children = resolved.pointsMesh.children;
-            if (children.length === vectorPoints.length) {
-                this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
-            } else {
-                resolved.pointsMesh.destroy();
-                resolved.pointsMesh = this.createPointSpheresMesh(
-                    this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size
-                );
-            }
-        } else {
-            resolved.pointsMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size
-            );
+        const look: PointsLook = { colours: coloursHex, opacity: resolved.opacity, size: resolved.size };
+        if (resolved.pointsMesh && resolved.updatable
+            && this.instancedPointCount(resolved.pointsMesh) === vectorPoints.length && this.drawnInLook(resolved.pointsMesh, look)) {
+            this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
+            return resolved.pointsMesh;
         }
+        if (resolved.pointsMesh && resolved.updatable) {
+            resolved.pointsMesh.destroy();
+        }
+        resolved.pointsMesh = this.createPointsInLook("pointsMesh", vectorPoints, look);
         return resolved.pointsMesh;
     }
 
@@ -424,7 +422,7 @@ export class DrawHelper extends DrawHelperCore {
 
         (children as pc.Entity[]).forEach((child: pc.Entity) => {
             if (child.tags?.has("instancedPoints")) {
-                const extendedChild = child as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] };
+                const extendedChild = child as InstancedPointsEntity;
                 const instanceBuffer = extendedChild.instanceBuffer;
                 const pointIndices = extendedChild.pointIndices;
                 
@@ -932,7 +930,8 @@ export class DrawHelper extends DrawHelperCore {
             }
             const buffer = reused && sameCount ? reused.buffer : new pc.VertexBuffer(device, pc.VertexFormat.getDefaultInstancingFormat(device), partPlacements.length, { usage: pc.BUFFER_DYNAMIC });
             this.writeInstances(buffer, matrices);
-            const entity: DesignPartEntity = reused ? reused.entity : new pc.Entity(this.generateEntityId("designPart"));
+            const entity: DesignPartEntity = reused ? reused.entity : this.newDesignPart();
+            this.designBuffers.set(entity, buffer);
             entity.designPart = { part: id, paths: partPlacements.map(placement => placement.path) };
             const mesh = reused ? undefined : meshes.get(id)!;
             const faces = reused ? reused.faces : mesh && options.drawFaces && mesh.faceList.length > 0
@@ -957,6 +956,12 @@ export class DrawHelper extends DrawHelperCore {
         });
     }
 
+    private newDesignPart(): DesignPartEntity {
+        const entity = new pc.Entity(this.generateEntityId("designPart"));
+        entity.once("destroy", () => this.designBuffers.get(entity)?.destroy());
+        return entity;
+    }
+
     private writeInstances(buffer: pc.VertexBuffer, matrices: Float32Array): void {
         const locked = buffer.lock();
         if (locked) {
@@ -978,7 +983,6 @@ export class DrawHelper extends DrawHelperCore {
             const lineMaterials = (drawn.edges?.render?.meshInstances ?? []).map(meshInstance => meshInstance.material);
             drawn.entity.destroy();
             lineMaterials.forEach(material => material.destroy());
-            drawn.buffer.destroy();
         }
     }
 
@@ -1528,6 +1532,22 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
+    private createPointsInLook(name: string, points: Inputs.Base.Point3[], look: PointsLook): pc.Entity {
+        const drawn = this.createPointSpheresMesh(this.generateEntityId(name), points, look.colours, look.opacity, look.size);
+        this.pointsLooks.set(drawn, look);
+        return drawn;
+    }
+
+    private drawnInLook(group: pc.Entity, look: PointsLook): boolean {
+        const drawnLook = this.pointsLooks.get(group);
+        return drawnLook !== undefined && drawnLook.opacity === look.opacity && drawnLook.size === look.size
+            && drawnLook.colours.length === look.colours.length && drawnLook.colours.every((colour, at) => colour === look.colours[at]);
+    }
+
+    private instancedPointCount(group: pc.Entity): number {
+        return (group.children as InstancedPointsEntity[]).reduce((count, child) => count + (child.pointIndices?.length ?? 0), 0);
+    }
+
     private clearEntity(entity: pc.Entity): void {
         while (entity.children.length > 0) {
             const child = entity.children[0]!;
@@ -1760,16 +1780,17 @@ export class DrawHelper extends DrawHelperCore {
         meshInstance.castShadow = false;
         meshInstance.receiveShadow = false;
         
-        const entity = new pc.Entity(name);
+        const entity: InstancedPointsEntity = new pc.Entity(name);
         entity.addComponent("render", {
             meshInstances: [meshInstance],
             castShadows: false,
             receiveShadows: false
         });
+        entity.once("destroy", () => instanceBuffer.destroy());
         
         entity.tags?.add("instancedPoints");
-        (entity as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] }).instanceBuffer = instanceBuffer;
-        (entity as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] }).pointIndices = positions.map(p => p.index);
+        entity.instanceBuffer = instanceBuffer;
+        entity.pointIndices = positions.map(p => p.index);
         
         return entity;
     }

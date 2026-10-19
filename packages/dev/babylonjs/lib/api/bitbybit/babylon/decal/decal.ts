@@ -1,6 +1,7 @@
 
 import { uniqueName } from "../../../unique-name";
 import type { Context } from "../../../context";
+import { freeWithItsLastUser } from "../../../material-lifetime";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
@@ -46,6 +47,7 @@ export class BabylonDecal {
         material.zOffset = resolved.zOffset;
         material.backFaceCulling = resolved.cullBackFaces;
         decal.material = material;
+        freeWithItsLastUser(material, decal);
 
         decal.setParent(resolved.sourceMesh);
         decal.isPickable = false;

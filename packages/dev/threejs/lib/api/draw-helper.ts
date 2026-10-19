@@ -19,6 +19,7 @@ import { CACHE_CONFIG, DEFAULT_COLORS, MATERIAL_DEFAULTS } from "./constants";
 import type * as Resolved from "./resolved-inputs";
 import { batchedLineShader, matricesTexture, writeMatrices } from "./batched-lines";
 import { RecipeMeshesDrawer } from "./draw-recipe-meshes";
+import type { PointsLook } from "./draw-helper-types";
 
 const NORMAL_ITEM_SIZE = 3;
 
@@ -62,6 +63,8 @@ export class DrawHelper extends DrawHelperCore {
     private readonly lineMaterialCache = new Map<string, LineMaterial>();
 
     private readonly designStates = new WeakMap<THREEJS.Group, DesignDrawState>();
+
+    private readonly pointsLooks = new WeakMap<THREEJS.Group, PointsLook>();
 
     private readonly designMeshes = new DesignMeshCache<DrawableShapeMesh>();
     private readonly scratchMatrix = new THREEJS.Matrix4();
@@ -769,14 +772,16 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.Point.DrawPointDto, inputs) as Resolved.Point.DrawPointDto<THREEJS.Group>;
         const vectorPoints = [resolved.point];
 
-        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours : [resolved.colours];
-        if (resolved.pointMesh && resolved.updatable) {
+        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours.slice() : [resolved.colours];
+        const look: PointsLook = { colours: colorsHex, opacity: resolved.opacity, size: resolved.size };
+        if (resolved.pointMesh && resolved.updatable && this.drawnInLook(resolved.pointMesh, look)) {
             this.updatePointsInstances(resolved.pointMesh, vectorPoints);
-        } else {
-            resolved.pointMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointMesh"), vectorPoints, colorsHex, resolved.opacity, resolved.size, resolved.updatable
-            );
+            return resolved.pointMesh;
         }
+        if (resolved.pointMesh && resolved.updatable) {
+            this.freePoints(resolved.pointMesh);
+        }
+        resolved.pointMesh = this.createPointsInLook("pointMesh", vectorPoints, look, resolved.updatable);
         return resolved.pointMesh;
     }
 
@@ -844,40 +849,45 @@ export class DrawHelper extends DrawHelperCore {
 
         const coloursHex = this.resolveAllColors(resolved.colours, vectorPoints.length, strategy);
 
-        if (resolved.pointsMesh && resolved.updatable) {
-            const currentPointCount = resolved.pointsMesh.children.reduce((sum, child) => {
-                if (child instanceof THREEJS.InstancedMesh) {
-                    return sum + child.count;
-                }
-                return sum + 1;
-            }, 0);
-
-            if (currentPointCount === vectorPoints.length) {
-                this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
-            } else {
-                resolved.pointsMesh.children.forEach(child => {
-                    if (child instanceof THREEJS.Mesh || child instanceof THREEJS.InstancedMesh) {
-                        child.geometry?.dispose();
-                        if (child.material) {
-                            if (Array.isArray(child.material)) {
-                                child.material.forEach(m => m.dispose());
-                            } else {
-                                child.material.dispose();
-                            }
-                        }
-                    }
-                });
-                resolved.pointsMesh.remove();
-                resolved.pointsMesh = this.createPointSpheresMesh(
-                    this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size, resolved.updatable
-                );
-            }
-        } else {
-            resolved.pointsMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size, resolved.updatable
-            );
+        const look: PointsLook = { colours: coloursHex, opacity: resolved.opacity, size: resolved.size };
+        if (resolved.pointsMesh && resolved.updatable
+            && this.drawnPointCount(resolved.pointsMesh) === vectorPoints.length && this.drawnInLook(resolved.pointsMesh, look)) {
+            this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
+            return resolved.pointsMesh;
         }
+        if (resolved.pointsMesh && resolved.updatable) {
+            this.freePoints(resolved.pointsMesh);
+        }
+        resolved.pointsMesh = this.createPointsInLook("pointsMesh", vectorPoints, look, resolved.updatable);
         return resolved.pointsMesh;
+    }
+
+    private drawnPointCount(points: THREEJS.Group): number {
+        return points.children.reduce((sum, child) => sum + (child instanceof THREEJS.InstancedMesh ? child.count : 1), 0);
+    }
+
+    private freePoints(points: THREEJS.Group): void {
+        points.children.forEach(child => {
+            if (child instanceof THREEJS.Mesh) {
+                child.geometry.dispose();
+            }
+            if (child instanceof THREEJS.InstancedMesh) {
+                child.dispose();
+            }
+        });
+        points.removeFromParent();
+    }
+
+    private createPointsInLook(name: string, points: Inputs.Base.Point3[], look: PointsLook, updatable: boolean): THREEJS.Group {
+        const drawn = this.createPointSpheresMesh(this.generateEntityId(name), points, look.colours, look.opacity, look.size, updatable);
+        this.pointsLooks.set(drawn, look);
+        return drawn;
+    }
+
+    private drawnInLook(points: THREEJS.Group, look: PointsLook): boolean {
+        const drawnLook = this.pointsLooks.get(points);
+        return drawnLook !== undefined && drawnLook.opacity === look.opacity && drawnLook.size === look.size
+            && drawnLook.colours.length === look.colours.length && drawnLook.colours.every((colour, at) => colour === look.colours[at]);
     }
 
     updatePointsInstances(group: THREEJS.Group, positions: Inputs.Base.Point3[]): void {

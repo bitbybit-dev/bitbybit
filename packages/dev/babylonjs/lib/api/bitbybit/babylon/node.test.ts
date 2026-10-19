@@ -7,6 +7,8 @@ import { DrawHelper } from "../../draw-helper";
 import type { Context } from "../../context";
 import * as Inputs from "../../inputs";
 
+const AXES_MESHES = 4;
+
 const drawHelperFor = (context: Context): DrawHelper =>
     new DrawHelper(context, undefined!, undefined!, undefined!, undefined!, undefined!);
 
@@ -326,6 +328,71 @@ describe("BabylonNode", () => {
             // Assert
             expect(service.getChildren(new Inputs.BabylonNode.NodeDto(first))).toHaveLength(1);
             expect(service.getChildren(new Inputs.BabylonNode.NodeDto(second))).toHaveLength(1);
+        });
+
+        it("should replace the axes it drew on a node before rather than add a second set", () => {
+            // Arrange
+            const node = new BABYLON.TransformNode("node", headless.scene);
+            service.drawNode(new Inputs.BabylonNode.DrawNodeDto(node));
+
+            // Act
+            service.drawNode(new Inputs.BabylonNode.DrawNodeDto(node));
+
+            // Assert
+            expect(node.getChildMeshes()).toHaveLength(AXES_MESHES);
+        });
+
+        it("should dispose the axes it replaces", () => {
+            // Arrange
+            const node = new BABYLON.TransformNode("node", headless.scene);
+            service.drawNode(new Inputs.BabylonNode.DrawNodeDto(node));
+            const replaced = node.getChildMeshes();
+
+            // Act
+            service.drawNode(new Inputs.BabylonNode.DrawNodeDto(node));
+
+            // Assert
+            expect(replaced.map(mesh => mesh.isDisposed())).toEqual(Array<boolean>(AXES_MESHES).fill(true));
+        });
+
+        it("should replace the axes of every node it drew before rather than add a second set to each", () => {
+            // Arrange
+            const first = new BABYLON.TransformNode("first", headless.scene);
+            const second = new BABYLON.TransformNode("second", headless.scene);
+            service.drawNodes(new Inputs.BabylonNode.DrawNodesDto([first, second]));
+
+            // Act
+            service.drawNodes(new Inputs.BabylonNode.DrawNodesDto([first, second]));
+
+            // Assert
+            expect([first.getChildMeshes().length, second.getChildMeshes().length]).toEqual([AXES_MESHES, AXES_MESHES]);
+        });
+
+        it("should replace the axes drawn on a node one at a time when it is drawn again among others", () => {
+            // Arrange
+            const node = new BABYLON.TransformNode("node", headless.scene);
+            service.drawNode(new Inputs.BabylonNode.DrawNodeDto(node));
+
+            // Act
+            service.drawNodes(new Inputs.BabylonNode.DrawNodesDto([node]));
+
+            // Assert
+            expect(node.getChildMeshes()).toHaveLength(AXES_MESHES);
+        });
+
+        it("should leave a mesh a script hung off the node when it draws the axes again", () => {
+            // Arrange
+            const node = new BABYLON.TransformNode("node", headless.scene);
+            const own = BABYLON.MeshBuilder.CreateBox("own", { size: 1 }, headless.scene);
+            own.parent = node;
+            service.drawNode(new Inputs.BabylonNode.DrawNodeDto(node));
+
+            // Act
+            service.drawNode(new Inputs.BabylonNode.DrawNodeDto(node));
+
+            // Assert
+            expect(own.isDisposed()).toBe(false);
+            expect(node.getChildMeshes()).toHaveLength(AXES_MESHES + 1);
         });
     });
 });

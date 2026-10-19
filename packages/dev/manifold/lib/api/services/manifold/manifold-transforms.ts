@@ -192,17 +192,21 @@ export class ManifoldTransforms {
     transforms(inputs: Inputs.Manifold.TransformsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         let currentShape = inputs.manifold;
         const transformedShapes: Manifold3D.Manifold[] = [];
-        inputs.transforms.forEach(transform => {
-            currentShape = currentShape.transform(transform);
-            transformedShapes.push(currentShape);
-        });
-        const res = transformedShapes.pop();
+        let res: Manifold3D.Manifold | undefined;
+        try {
+            inputs.transforms.forEach(transform => {
+                currentShape = currentShape.transform(transform);
+                transformedShapes.push(currentShape);
+            });
+            res = transformedShapes.pop();
+        } finally {
+            transformedShapes.forEach(shape => {
+                shape.delete();
+            });
+        }
         if (!res) {
             throw new Error("At least one transform is required");
         }
-        transformedShapes.forEach(shape => {
-            shape.delete();
-        });
         return res;
     }
 

@@ -487,6 +487,80 @@ describe("BabylonIO", () => {
             expect(container).toBeInstanceOf(BABYLON.Mesh);
             expect(container.getChildMeshes().length).toBeGreaterThan(0);
         });
+
+        it("should hide what it loaded when it was asked to, where the scene casts no shadows", async () => {
+            // Act
+            const container = await io.loadAssetIntoScene(new Inputs.Asset.AssetFileDto(oneNodeFile(), true));
+
+            // Assert
+            expect(container.getChildMeshes().map(m => m.isVisible)).toEqual([false]);
+        });
+
+        it("should leave what it loaded out of picking where the scene casts no shadows, as the glTF container loader and every drawing do", async () => {
+            // Act
+            const container = await io.loadAssetIntoScene(new Inputs.Asset.AssetFileDto(oneNodeFile(), false));
+
+            // Assert
+            expect(container.getChildMeshes().map(m => m.isPickable)).toEqual([false]);
+        });
+    });
+
+    describe("models that have no glTF root", () => {
+        const ONE_TRIANGLE_STL = [
+            "solid part",
+            "facet normal 0 0 1",
+            "outer loop",
+            "vertex 0 0 0",
+            "vertex 1 0 0",
+            "vertex 0 1 0",
+            "endloop",
+            "endfacet",
+            "endsolid part",
+        ].join("\n");
+        const ONE_TRIANGLE_OBJ = ["o part", "v 0 0 0", "v 1 0 0", "v 0 1 0", "f 1 2 3"].join("\n");
+        const stlFile = (): File => new File([ONE_TRIANGLE_STL], "part.stl", { type: "model/stl" });
+        const objFile = (): File => new File([ONE_TRIANGLE_OBJ], "part.obj", { type: "model/obj" });
+
+        it("should hang an STL model under the container it hands back", async () => {
+            // Act
+            const container = await io.loadAssetIntoScene(new Inputs.Asset.AssetFileDto(stlFile(), false));
+
+            // Assert
+            expect(container.getChildMeshes().map(m => m.getTotalVertices())).toEqual([3]);
+        });
+
+        it("should hang an OBJ model under the container it hands back", async () => {
+            // Act
+            const container = await io.loadAssetIntoScene(new Inputs.Asset.AssetFileDto(objFile(), false));
+
+            // Assert
+            expect(container.getChildMeshes().map(m => m.getTotalVertices())).toEqual([3]);
+        });
+
+        it("should leave nothing it loaded outside the container", async () => {
+            // Arrange
+            const before = headless.scene.meshes.slice();
+
+            // Act
+            const container = await io.loadAssetIntoScene(new Inputs.Asset.AssetFileDto(stlFile(), false));
+
+            // Assert
+            expect(headless.scene.meshes.filter(m => !before.includes(m) && m !== container && !m.isDescendantOf(container))).toEqual([]);
+        });
+
+        it("should hide an STL model and sign it up to the shadows as it does a glTF one", async () => {
+            // Arrange
+            const generator = addShadowGenerator(headless.scene);
+
+            // Act
+            const container = await io.loadAssetIntoScene(new Inputs.Asset.AssetFileDto(stlFile(), true));
+
+            // Assert
+            const [part] = container.getChildMeshes();
+            expect(part!.isVisible).toBe(false);
+            expect(part!.isPickable).toBe(false);
+            expect(generator.getShadowMap()!.renderList).toContain(part);
+        });
     });
 
     describe("loadAssetIntoSceneFromRootUrl", () => {

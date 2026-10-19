@@ -429,12 +429,15 @@ export class BabylonMesh {
         const resolved = resolveDto(Inputs.BabylonMesh.MergeMeshesDto, inputs) as Resolved.BabylonMesh.MergeMeshesDto;
         const newMesh = BABYLON.Mesh.MergeMeshes(
             resolved.arrayOfMeshes,
-            resolved.disposeSource,
+            false,
             resolved.allow32BitsIndices,
             resolved.meshSubclass,
             resolved.subdivideWithSubMeshes,
             resolved.multiMultiMaterials
         );
+        if (newMesh && resolved.disposeSource) {
+            resolved.arrayOfMeshes.filter(Boolean).forEach(source => source.dispose());
+        }
         return newMesh!;
     }
 

@@ -13,6 +13,8 @@ import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { CACHE_CONFIG, DEFAULT_COLORS, BABYLONJS_MATERIAL_DEFAULTS } from "./constants";
 import type * as Resolved from "./resolved-inputs";
 import { RecipeMeshesDrawer } from "./draw-recipe-meshes";
+import { freeWithItsLastUser } from "./material-lifetime";
+import type { PointsLook } from "./draw-helper-types";
 
 const POSITION_SIZE = 3;
 const SIXTEEN_BIT_VERTICES = 65536;
@@ -42,6 +44,8 @@ export class DrawHelper extends DrawHelperCore {
     private readonly designStates = new WeakMap<BABYLON.Mesh, DesignDrawState>();
 
     private readonly jscadBackFaces = new WeakMap<BABYLON.Mesh, BABYLON.Mesh>();
+
+    private readonly pointsLooks = new WeakMap<BABYLON.Mesh, PointsLook>();
 
     private readonly designMeshes = new DesignMeshCache<DrawableShapeMesh>();
 
@@ -658,6 +662,7 @@ export class DrawHelper extends DrawHelperCore {
         if (visibility < 1) {
             result.material!.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
         }
+        freeWithItsLastUser(result.material!, result);
         return result as BABYLON.GreasedLineMesh;
     }
 
@@ -762,14 +767,16 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.Point.DrawPointDto, inputs) as Resolved.Point.DrawPointDto<BABYLON.Mesh>;
         const vectorPoints = [resolved.point];
 
-        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours : [resolved.colours];
-        if (resolved.pointMesh && resolved.updatable) {
+        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours.slice() : [resolved.colours];
+        const look: PointsLook = { colours: colorsHex, opacity: resolved.opacity, size: resolved.size };
+        if (resolved.pointMesh && resolved.updatable && this.drawnInLook(resolved.pointMesh, look)) {
             this.updatePointsInstances(resolved.pointMesh, vectorPoints);
-        } else {
-            resolved.pointMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointMesh"), vectorPoints, colorsHex, resolved.opacity, resolved.size, resolved.updatable
-            );
+            return resolved.pointMesh;
         }
+        if (resolved.pointMesh && resolved.updatable) {
+            resolved.pointMesh.dispose();
+        }
+        resolved.pointMesh = this.createPointsInLook("pointMesh", vectorPoints, look, resolved.updatable);
         return resolved.pointMesh;
     }
 
@@ -780,22 +787,16 @@ export class DrawHelper extends DrawHelperCore {
         
         const coloursHex = this.resolveAllColors(resolved.colours, vectorPoints.length, strategy);
         
-        if (resolved.pointsMesh && resolved.updatable) {
-            const storedPointCount = resolved.pointsMesh.metadata?.originalPointCount;
-            if (storedPointCount === vectorPoints.length && resolved.pointsMesh.metadata?.canUpdate) {
-                this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
-                return resolved.pointsMesh;
-            } else {
-                resolved.pointsMesh.dispose();
-                resolved.pointsMesh = this.createPointSpheresMesh(
-                    this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size, resolved.updatable
-                );
-            }
-        } else {
-            resolved.pointsMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size, resolved.updatable
-            );
+        const look: PointsLook = { colours: coloursHex, opacity: resolved.opacity, size: resolved.size };
+        if (resolved.pointsMesh && resolved.updatable && resolved.pointsMesh.metadata?.originalPointCount === vectorPoints.length
+            && resolved.pointsMesh.metadata?.canUpdate && this.drawnInLook(resolved.pointsMesh, look)) {
+            this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
+            return resolved.pointsMesh;
         }
+        if (resolved.pointsMesh && resolved.updatable) {
+            resolved.pointsMesh.dispose();
+        }
+        resolved.pointsMesh = this.createPointsInLook("pointsMesh", vectorPoints, look, resolved.updatable);
         return resolved.pointsMesh;
     }
 
@@ -823,6 +824,18 @@ export class DrawHelper extends DrawHelperCore {
                 child.thinInstanceSetBuffer("matrix", matricesData, 16, false);
             }
         });
+    }
+
+    private createPointsInLook(name: string, points: Inputs.Base.Point3[], look: PointsLook, updatable: boolean): BABYLON.Mesh {
+        const drawn = this.createPointSpheresMesh(this.generateEntityId(name), points, look.colours, look.opacity, look.size, updatable);
+        this.pointsLooks.set(drawn, look);
+        return drawn;
+    }
+
+    private drawnInLook(points: BABYLON.Mesh, look: PointsLook): boolean {
+        const drawnLook = this.pointsLooks.get(points);
+        return drawnLook !== undefined && drawnLook.opacity === look.opacity && drawnLook.size === look.size
+            && drawnLook.colours.length === look.colours.length && drawnLook.colours.every((colour, at) => colour === look.colours[at]);
     }
 
     private createPointSpheresMesh(
@@ -1286,6 +1299,7 @@ export class DrawHelper extends DrawHelperCore {
             const multi = new BABYLON.MultiMaterial(this.generateEntityId("lookMaterials"), this.context.scene);
             multi.subMaterials = materials;
             mesh.material = multi;
+            freeWithItsLastUser(multi, mesh);
             mesh.subMeshes = [];
             drawn.forEach((span, materialIndex) => new BABYLON.SubMesh(materialIndex, span.vertexStart, span.vertexCount, span.indexStart, span.indexCount, mesh));
         }
@@ -1360,14 +1374,8 @@ export class DrawHelper extends DrawHelperCore {
 
     private clearDesign(parts: readonly DesignPartDrawn[]): void {
         for (const drawn of parts) {
-            if (drawn.faces) {
-                const material = drawn.faces.material;
-                drawn.faces.dispose(false, false);
-                if (material instanceof BABYLON.MultiMaterial) {
-                    material.dispose();
-                }
-            }
-            drawn.edges?.dispose(false, true);
+            drawn.faces?.dispose();
+            drawn.edges?.dispose();
         }
     }
 

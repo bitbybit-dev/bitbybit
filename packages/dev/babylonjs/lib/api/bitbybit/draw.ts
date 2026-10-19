@@ -8,6 +8,7 @@ import { DrawCore, checkDrawableMesh } from "@bitbybit-dev/core";
 import type { Context } from "../context";
 import { GridMaterial } from "@babylonjs/materials";
 import type { DrawHelper } from "../draw-helper";
+import { freeWithItsLastUser } from "../material-lifetime";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../resolved-inputs";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
@@ -416,6 +417,7 @@ export class Draw extends DrawCore {
             );
             ground.isPickable = false;
             ground.material = groundMaterial;
+            freeWithItsLastUser(groundMaterial, ground);
             return ground;
         } catch (e) {
             console.log("Error happened: ", e);

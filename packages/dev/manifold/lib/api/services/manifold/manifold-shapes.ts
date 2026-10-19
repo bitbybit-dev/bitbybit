@@ -2,6 +2,7 @@ import * as Inputs from "../../inputs/manifold-inputs";
 import type * as Manifold3D from "manifold-3d";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../resolved-inputs";
+import { manifoldOfMesh } from "../manifold-of-mesh";
 
 const VERTEX_MERGE_TOLERANCE = 1e-7;
 
@@ -38,8 +39,7 @@ export class ManifoldShapes {
      * ```
      */
     manifoldFromMesh(inputs: Inputs.Manifold.CreateFromMeshDto): Manifold3D.Manifold {
-        const { Manifold } = this.manifold;
-        return new Manifold(inputs.mesh as Manifold3D.Mesh);
+        return manifoldOfMesh(this.manifold, inputs.mesh as Manifold3D.Mesh);
     }
 
     /**
@@ -59,7 +59,6 @@ export class ManifoldShapes {
      * ```
      */
     fromPolygonPoints(inputs: Inputs.Manifold.FromPolygonPointsDto): Manifold3D.Manifold {
-        const { Manifold } = this.manifold;
         const polygons = inputs.polygonPoints;
         const vertexMap = new Map<string, number>();
 
@@ -108,7 +107,7 @@ export class ManifoldShapes {
         meshDto.vertProperties = vertProperties;
         meshDto.triVerts = triVerts;
 
-        return new Manifold(meshDto as Manifold3D.Mesh);
+        return manifoldOfMesh(this.manifold, meshDto as Manifold3D.Mesh);
     }
 
     /**

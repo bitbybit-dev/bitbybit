@@ -12,6 +12,7 @@ import { DrawHelper } from "../draw-helper";
 import * as Inputs from "../inputs";
 import type * as Resolved from "../resolved-inputs";
 import { meshBuffersOf } from "../__mocks__/mesh-buffers";
+import { BabylonMesh } from "./babylon/mesh";
 import { BabylonNode } from "./babylon/node";
 import { Draw } from "./draw";
 
@@ -106,6 +107,7 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
     let scene: BABYLON.Scene;
     let draw: Draw;
     let drawHelper: DrawHelper;
+    let meshService: BabylonMesh;
     let workerCall: Mock;
 
     beforeEach(() => {
@@ -118,6 +120,7 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
         const occtWorkerManager = new OCCTWorkerManager();
         drawHelper = new DrawHelper(context, new JSCADText(jscadWorkerManager), new Vector(new MathBitByBit(), new GeometryHelper()), jscadWorkerManager, new ManifoldWorkerManager(), occtWorkerManager);
         draw = new Draw(drawHelper, new BabylonNode(context, drawHelper), new Tag(context), context);
+        meshService = new BabylonMesh(context);
         workerCall = vi.fn((_method: string, inputs: { shapes: unknown[] }) => Promise.resolve(inputs.shapes.map(() => boxBuffers())));
         occtWorkerManager.genericCallToWorkerPromise = workerCall;
     });
@@ -126,6 +129,8 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
         scene.dispose();
         engine.dispose();
     });
+
+    const sceneCounts = (): number[] => [scene.meshes.length, scene.materials.length, scene.multiMaterials.length, scene.textures.length, scene.geometries.length];
 
     describe("a shape with its appearance", () => {
         it("should draw one mesh with a sub-mesh and a material per look", async () => {
@@ -243,6 +248,128 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             // Assert
             const back = surfacesOf(drawn)[1]!;
             expect((back.material as BABYLON.PBRMetallicRoughnessMaterial).baseColor.toHexString().toLowerCase()).toBe(DEFAULT_COLORS.BACK_FACE.toLowerCase());
+        });
+
+        it("should hold as many meshes, materials, multi-materials, textures and geometries after a shape with its appearance is drawn and disposed through the mesh service as before it was drawn", async () => {
+            // Arrange
+            const entity = { shape: shapeA, appearance: boxAppearance };
+            const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), drawTwoSided: false };
+            meshService.dispose(new Inputs.BabylonMesh.BabylonMeshDto(await draw.drawAnyAsync({ entity, options })));
+            const before = sceneCounts();
+            const drawn = await draw.drawAnyAsync({ entity, options });
+
+            // Act
+            meshService.dispose(new Inputs.BabylonMesh.BabylonMeshDto(drawn));
+
+            // Assert
+            expect(sceneCounts()).toEqual(before);
+        });
+
+        it("should keep the multi-material a clone of a shape with its appearance still wears when the shape is disposed through the mesh service", async () => {
+            // Arrange
+            const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), drawTwoSided: false, drawEdges: false };
+            const drawn = await draw.drawAnyAsync({ entity: { shape: shapeA, appearance: boxAppearance }, options });
+            const clone = meshService.clone(new Inputs.BabylonMesh.BabylonMeshDto(drawn));
+            const looks = surfacesOf(drawn)[0]!.material!;
+
+            // Act
+            meshService.dispose(new Inputs.BabylonMesh.BabylonMeshDto(drawn));
+
+            // Assert
+            expect(surfacesOf(clone)[0]!.material).toBe(looks);
+            expect(scene.multiMaterials).toContain(looks);
+        });
+
+        it("should hold as many meshes, materials, multi-materials, textures and geometries once a shape with its appearance and its clone are both disposed as before it was drawn", async () => {
+            // Arrange
+            const entity = { shape: shapeA, appearance: boxAppearance };
+            const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), drawTwoSided: false, drawEdges: false };
+            meshService.dispose(new Inputs.BabylonMesh.BabylonMeshDto(await draw.drawAnyAsync({ entity, options })));
+            const before = sceneCounts();
+            const drawn = await draw.drawAnyAsync({ entity, options });
+            const clone = meshService.clone(new Inputs.BabylonMesh.BabylonMeshDto(drawn));
+
+            // Act
+            meshService.dispose(new Inputs.BabylonMesh.BabylonMeshDto(drawn));
+            meshService.dispose(new Inputs.BabylonMesh.BabylonMeshDto(clone));
+
+            // Assert
+            expect(sceneCounts()).toEqual(before);
+        });
+
+        it("should keep the cached look materials when a shape with its appearance is disposed through the mesh service", async () => {
+            // Arrange
+            const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), drawTwoSided: false };
+            const drawn = await draw.drawAnyAsync({ entity: { shape: shapeA, appearance: boxAppearance }, options });
+            const looks = (surfacesOf(drawn)[0]!.material as BABYLON.MultiMaterial).subMaterials;
+
+            // Act
+            meshService.dispose(new Inputs.BabylonMesh.BabylonMeshDto(drawn));
+
+            // Assert
+            expect(looks.every(material => material !== null && scene.materials.includes(material))).toBe(true);
+        });
+
+        it("should leave the multi-material of a shape with its appearance alive on the mesh a merge of the shape's surfaces builds", async () => {
+            // Arrange
+            const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), drawTwoSided: false, drawEdges: false };
+            const surface = surfacesOf(await draw.drawAnyAsync({ entity: { shape: shapeA, appearance: boxAppearance }, options }))[0]!;
+            const looks = surface.material!;
+
+            // Act
+            const merged = meshService.mergeMeshes(new Inputs.BabylonMesh.MergeMeshesDto([surface, surface.clone()], true, true));
+
+            // Assert
+            expect(merged.material).toBe(looks);
+            expect(scene.multiMaterials).toContain(looks);
+        });
+
+        it("should free the multi-material a merge took over once the merged mesh is disposed", async () => {
+            // Arrange
+            const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), drawTwoSided: false, drawEdges: false };
+            const surface = surfacesOf(await draw.drawAnyAsync({ entity: { shape: shapeA, appearance: boxAppearance }, options }))[0]!;
+            const looks = surface.material!;
+            const merged = meshService.mergeMeshes(new Inputs.BabylonMesh.MergeMeshesDto([surface, surface.clone()], true, true));
+
+            // Act
+            merged.dispose();
+
+            // Assert
+            expect(scene.multiMaterials).not.toContain(looks);
+        });
+
+        it("should free the multi-material of a shape with its appearance when a merge builds a multi-material of its own from the looks", async () => {
+            // Arrange
+            const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), drawTwoSided: false, drawEdges: false };
+            const surface = surfacesOf(await draw.drawAnyAsync({ entity: { shape: shapeA, appearance: boxAppearance }, options }))[0]!;
+            const looks = surface.material as BABYLON.MultiMaterial;
+            const lookIds = looks.subMaterials.map(material => material!.uniqueId);
+
+            // Act
+            const merged = meshService.mergeMeshes(new Inputs.BabylonMesh.MergeMeshesDto([surface, surface.clone()], true, true, undefined, false, true));
+
+            // Assert
+            expect(merged.material).not.toBe(looks);
+            expect(scene.multiMaterials).not.toContain(looks);
+            expect((merged.material as BABYLON.MultiMaterial).subMaterials.map(material => material!.uniqueId)).toEqual(lookIds);
+        });
+
+        it("should leave the shapes it was asked to merge in the scene, and their multi-material with them, when the merge fails", async () => {
+            // Arrange
+            const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), drawTwoSided: false, drawEdges: false };
+            const surface = surfacesOf(await draw.drawAnyAsync({ entity: { shape: shapeA, appearance: boxAppearance }, options }))[0]!;
+            const other = surface.clone();
+            surface.sideOrientation = BABYLON.Material.CounterClockWiseSideOrientation;
+            other.sideOrientation = BABYLON.Material.ClockWiseSideOrientation;
+            vi.spyOn(BABYLON.Logger, "Warn").mockImplementation(() => undefined);
+
+            // Act
+            const merged = meshService.mergeMeshes(new Inputs.BabylonMesh.MergeMeshesDto([surface, other], true, true));
+
+            // Assert
+            expect(merged).toBeNull();
+            expect([surface.isDisposed(), other.isDisposed()]).toEqual([false, false]);
+            expect(scene.multiMaterials).toContain(surface.material);
         });
 
         it("should draw a mesh without a material for faces that have no triangles", async () => {
@@ -633,6 +760,19 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             const surface = surfacesOf(drawn)[0]!;
             expect(surface.thinInstanceCount).toBe(1);
             expect(instanceMatrices(surface)[0]).toEqual(at(0));
+        });
+
+        it("should hold as many meshes, materials, multi-materials, textures and geometries after a build is drawn and disposed through the mesh service as before it was drawn", async () => {
+            // Arrange
+            meshService.dispose(new Inputs.BabylonMesh.BabylonMeshDto(await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options })));
+            const before = sceneCounts();
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options });
+
+            // Act
+            meshService.dispose(new Inputs.BabylonMesh.BabylonMeshDto(drawn));
+
+            // Assert
+            expect(sceneCounts()).toEqual(before);
         });
 
         it("should draw no faces and no edges when the options turn them off", async () => {

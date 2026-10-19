@@ -1,6 +1,7 @@
 import type * as Manifold3D from "manifold-3d";
 import type { Base } from "@bitbybit-dev/base";
 import { loftMesh } from "./recipe-loft";
+import { manifoldOfMesh } from "../manifold-of-mesh";
 import type { Built, ProfileRings } from "./recipe-types";
 import { degreesOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
@@ -275,7 +276,7 @@ class RecipeExecutor {
     private loft(node: Base.RecipeLoftNode, index: number): Manifold3D.Manifold {
         const frames = this.recipe.buffers.f64.subarray(node.frames[0], node.frames[0] + node.frames[1]);
         const sections = node.profiles.map((profile) => this.profileRings(profile));
-        return this.wasm.Manifold.ofMesh(loftMesh(this.wasm, sections, frames, this.recipe.tolerance, `Recipe node ${index}`));
+        return manifoldOfMesh(this.wasm, loftMesh(this.wasm, sections, frames, this.recipe.tolerance, `Recipe node ${index}`));
     }
 
     private polygon(node: Base.RecipePolygonNode): Manifold3D.CrossSection {
@@ -350,7 +351,7 @@ class RecipeExecutor {
         const mesh = new this.wasm.Mesh({ numProp: POSITION_PROPERTIES, vertProperties: Float32Array.from(positions), triVerts: Uint32Array.from(indices) });
         mesh.merge();
         try {
-            return this.wasm.Manifold.ofMesh(mesh);
+            return manifoldOfMesh(this.wasm, mesh);
         } catch (error) {
             throw new Error(`Recipe node ${index} is a triangle mesh that is not closed, so it cannot be built as a solid`, { cause: error });
         }

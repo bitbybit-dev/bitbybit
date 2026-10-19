@@ -162,7 +162,7 @@ describe("DrawHelper unit tests", () => {
             expect(result.getChildMeshes().length).toBe(1);
         });
 
-        it("should update existing point mesh when updatable is true", () => {
+        it("should update existing point mesh when updatable is true and its look is the same", () => {
             const initialInputs = new Inputs.Point.DrawPointDto<BABYLON.Mesh>(
                 [0, 0, 0],
                 1,
@@ -176,7 +176,7 @@ describe("DrawHelper unit tests", () => {
                 [5, 5, 5],
                 1,
                 0.5,
-                "#0000ff",
+                "#ff0000",
                 true,
                 existingMesh
             );

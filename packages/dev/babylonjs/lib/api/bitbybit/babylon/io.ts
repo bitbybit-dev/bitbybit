@@ -32,7 +32,8 @@ export class BabylonIO {
      * Loads a glTF, glb, STL or OBJ model from a File into the scene and gives back a container
      * mesh with the model's meshes as its children; any other extension throws an error.
      *
-     * The loaded meshes cast and receive shadows and start hidden when `hidden` is true.
+     * The loaded meshes cast and receive shadows and start hidden when `hidden` is true. Like drawn
+     * meshes, they are not pickable until `bitbybit.babylon.mesh.setPickable` makes them so.
      * @param inputs - The model file and whether it starts hidden
      * @returns The container mesh holding the loaded model
      * @group load
@@ -81,8 +82,9 @@ export class BabylonIO {
      * Loads a glTF, glb, STL or OBJ model from a web address into the scene and gives back a
      * container mesh with the model's meshes as its children.
      *
-     * `rootUrl` is the folder and `assetFile` the file name in it, so textures beside the model
-     * resolve too; the server must allow cross-origin requests.
+     * `rootUrl` is the folder and `assetFile` the file in it, so textures beside the model resolve;
+     * the server must allow cross-origin requests. The meshes are not pickable until
+     * `bitbybit.babylon.mesh.setPickable` makes them so.
      * @param inputs - The folder URL, the file name and whether it starts hidden
      * @returns The container mesh holding the loaded model
      * @group load
@@ -127,6 +129,9 @@ export class BabylonIO {
      * Loads a glb model held as bytes into the scene, such as the output of
      * `occt.io.convertStepToGltf`, and gives back a container mesh with the model's meshes as its
      * children.
+     *
+     * Like drawn meshes, the loaded ones are not pickable until `bitbybit.babylon.mesh.setPickable`
+     * makes them so.
      * @param inputs - The glb bytes, a name for the model and whether it starts hidden
      * @returns The container mesh holding the loaded model
      * @group load
@@ -338,36 +343,19 @@ export class BabylonIO {
         const res = await BABYLON.SceneLoader.ImportMeshAsync("", rootUrl, fileOrName, this.context.scene);
         const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
         const container = new BABYLON.Mesh(uniqueName("ImportedMeshContainer"), this.context.scene);
-        if (sgs.length > 0) {
-            res.meshes.forEach(mesh => {
-                mesh.isPickable = false;
-                if (importHidden) {
-                    mesh.isVisible = false;
-                }
-                const children = mesh.getChildMeshes();
-                children.forEach(c => {
-                    c.isPickable = false;
-                    if (importHidden) {
-                        c.isVisible = false;
-                    }
-                });
-                if (this.context.scene.metadata.shadowGenerators.length > 0) {
-                    receiveShadowsWhereSupported(mesh);
-                    sgs.forEach(sg => {
-                        sg.addShadowCaster(mesh);
-                    });
-                    const children = mesh.getChildMeshes();
-                    children.forEach(child => {
-                        receiveShadowsWhereSupported(child);
-                        sgs.forEach(sg => {
-                            sg.addShadowCaster(child);
-                        });
-                    });
-                }
-            });
-        }
-        const root = res.meshes.find(m => m.name === "__root__")!;
-        root.parent = container;
+        [...res.meshes, ...res.transformNodes]
+            .filter(node => node.parent === null)
+            .forEach(node => { node.parent = container; });
+        container.getChildMeshes().forEach(mesh => {
+            mesh.isPickable = false;
+            if (importHidden) {
+                mesh.isVisible = false;
+            }
+            if (sgs.length > 0) {
+                receiveShadowsWhereSupported(mesh);
+                sgs.forEach(sg => sg.addShadowCaster(mesh, false));
+            }
+        });
         return container;
     }
 

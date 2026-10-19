@@ -7,6 +7,9 @@ import * as Inputs from "../../inputs";
 const A_COLOUR = "#ff0000";
 const A_POSITION: Inputs.Base.Point3 = [1, 2, 3];
 const A_DIRECTION: Inputs.Base.Vector3 = [0, -1, 0];
+const MANY = 20;
+const PIXEL = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
+const READY_WAIT_MS = 1000;
 
 describe("BabylonScene", () => {
     let engine: BABYLON.NullEngine;
@@ -25,6 +28,19 @@ describe("BabylonScene", () => {
         const inputs = new Inputs.BabylonScene.DirectionalLightDto(A_DIRECTION, 1, A_COLOUR, A_COLOUR, 512, false);
         adjust(inputs);
         return inputs;
+    };
+
+    const madeWithItsTextures = <T>(make: () => T): { made: T; textures: BABYLON.BaseTexture[] } => {
+        const before = scene.textures.slice();
+        const made = make();
+        return { made, textures: scene.textures.filter(texture => !before.includes(texture)) };
+    };
+
+    const stillLoaded = (textures: BABYLON.BaseTexture[]): boolean[] => textures.map(texture => scene.textures.includes(texture) && texture.getInternalTexture() !== null);
+
+    const wear = (mesh: BABYLON.Mesh, texture: BABYLON.BaseTexture, slot: "diffuseTexture" | "reflectionTexture"): void => {
+        const material = mesh.material as BABYLON.StandardMaterial;
+        material[slot] = texture;
     };
 
     beforeEach(() => {
@@ -1073,6 +1089,478 @@ describe("BabylonScene", () => {
 
             // Assert
             expect(scene.activeCamera).toBe(camera);
+        });
+    });
+
+    describe("the environment texture a skybox replaces", () => {
+        const defaultSkybox = (): Inputs.BabylonScene.SkyboxDto => new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1);
+        const groundProjectedSkybox = (): Inputs.BabylonScene.SkyboxDto => new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1, false, true);
+
+        it("should dispose the environment texture it made for the skybox it replaces", () => {
+            // Arrange
+            sceneService.enableSkybox(defaultSkybox());
+            const replaced = scene.environmentTexture!;
+
+            // Act
+            sceneService.enableSkybox(defaultSkybox());
+
+            // Assert
+            expect(scene.environmentTexture).not.toBe(replaced);
+            expect(scene.textures).not.toContain(replaced);
+        });
+
+        it("should dispose the environment texture it made for a ground projected skybox it replaces", () => {
+            // Arrange
+            sceneService.enableSkybox(groundProjectedSkybox());
+            const replaced = scene.environmentTexture!;
+
+            // Act
+            sceneService.enableSkybox(groundProjectedSkybox());
+
+            // Assert
+            expect(scene.textures).not.toContain(replaced);
+        });
+
+        it("should dispose the environment texture it loaded from a url when the skybox is replaced", () => {
+            // Arrange
+            sceneService.enableSkyboxCustomTexture(new Inputs.BabylonScene.SkyboxCustomTextureDto("https://example.test/sky.env", 256, 100, 0.1, 1));
+            const replaced = scene.environmentTexture!;
+
+            // Act
+            sceneService.enableSkybox(defaultSkybox());
+
+            // Assert
+            expect(scene.textures).not.toContain(replaced);
+        });
+
+        it("should hold as many textures after replacing its skybox again and again as after making it once", () => {
+            // Arrange
+            sceneService.enableSkybox(defaultSkybox());
+            const once = scene.textures.length;
+
+            // Act
+            for (let replacement = 0; replacement < MANY; replacement++) {
+                sceneService.enableSkybox(defaultSkybox());
+            }
+
+            // Assert
+            expect(scene.textures).toHaveLength(once);
+        });
+
+        it("should leave the texture a script handed it when the skybox is replaced", () => {
+            // Arrange
+            const own = new BABYLON.CubeTexture("https://example.test/sky", scene);
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(own, 100, 0.1, 1));
+
+            // Act
+            sceneService.enableSkybox(defaultSkybox());
+
+            // Assert
+            expect(scene.textures).toContain(own);
+        });
+
+        it("should leave the environment texture it made when a script's material wears it", () => {
+            // Arrange
+            sceneService.enableSkybox(defaultSkybox());
+            const worn = scene.environmentTexture!;
+            const material = new BABYLON.PBRMaterial("mirror", scene);
+            material.reflectionTexture = worn;
+
+            // Act
+            sceneService.enableSkybox(defaultSkybox());
+
+            // Assert
+            expect(scene.textures).toContain(worn);
+        });
+    });
+
+    describe("what clearAllDrawn leaves to the scene's own systems", () => {
+        const pbrBox = (name: string): BABYLON.Mesh => {
+            const box = BABYLON.MeshBuilder.CreateBox(name, { size: 1 }, scene);
+            box.material = new BABYLON.PBRMaterial(`${name}Material`, scene);
+            return box;
+        };
+        const standardBox = (name: string): BABYLON.Mesh => {
+            const box = BABYLON.MeshBuilder.CreateBox(name, { size: 1 }, scene);
+            box.material = new BABYLON.StandardMaterial(`${name}Material`, scene);
+            return box;
+        };
+        const drawLikeInitBabylonJS = (): void => {
+            new BABYLON.HemisphericLight("hemisphericLight", new BABYLON.Vector3(0, 1, 0), scene);
+            sceneService.drawDirectionalLight(directionalLight((inputs) => { inputs.enableShadows = true; }));
+            const ground = standardBox("ground");
+            ground.receiveShadows = true;
+            pbrBox("part");
+        };
+        const readyInTime = (): Promise<boolean> => Promise.race([
+            scene.whenReadyAsync().then(() => true),
+            new Promise<boolean>(resolve => setTimeout(() => resolve(false), READY_WAIT_MS)),
+        ]);
+
+        it("should let a PBR mesh drawn after it become ready, because the BRDF lookup PBR materials read stays", async () => {
+            // Arrange
+            drawLikeInitBabylonJS();
+            sceneService.clearAllDrawn();
+            const redrawn = pbrBox("redrawn");
+
+            // Act
+            const ready = await readyInTime();
+
+            // Assert
+            expect(ready).toBe(true);
+            expect(redrawn.isReady(true)).toBe(true);
+        });
+
+        it("should keep the BRDF lookup the scene hands every PBR material", () => {
+            // Arrange
+            drawLikeInitBabylonJS();
+            const lookup = scene.environmentBRDFTexture;
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.environmentBRDFTexture).toBe(lookup);
+            expect(scene.textures).toEqual([lookup]);
+            expect(lookup.getInternalTexture()).not.toBeNull();
+        });
+
+        it("should keep every texture the effect layers it leaves in the scene render into", () => {
+            // Arrange
+            const highlight = new BABYLON.HighlightLayer("highlight", scene);
+            new BABYLON.GlowLayer("glow", scene);
+            const layerTextures = scene.textures.slice();
+            standardBox("part");
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.effectLayers).toHaveLength(2);
+            expect(scene.textures).toEqual(layerTextures);
+            expect(highlight.mainTexture.getInternalTexture()).not.toBeNull();
+        });
+
+        it("should let a mesh drawn after it become ready where the scene grades its colours through a texture", async () => {
+            // Arrange
+            const grading = new BABYLON.Texture(PIXEL, scene);
+            scene.imageProcessingConfiguration.colorGradingTexture = grading;
+            scene.imageProcessingConfiguration.colorGradingEnabled = true;
+            sceneService.clearAllDrawn();
+            standardBox("redrawn");
+
+            // Act
+            const ready = await readyInTime();
+
+            // Assert
+            expect(ready).toBe(true);
+            expect(scene.textures).toEqual([grading]);
+        });
+
+        it("should dispose the shadow map of every shadow generator it takes with it", () => {
+            // Arrange
+            sceneService.drawDirectionalLight(directionalLight((inputs) => { inputs.enableShadows = true; }));
+            const [generator] = sceneService.getShadowGenerators();
+            const shadowMap = generator!.getShadowMap()!;
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.textures).not.toContain(shadowMap);
+            expect(shadowMap.getInternalTexture()).toBeNull();
+        });
+
+        it("should dispose a procedural texture a script made, which renders into itself every frame", () => {
+            // Arrange
+            const procedural = new BABYLON.ProceduralTexture("noise", 16, "noise", scene, null, false, false);
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.proceduralTextures).toEqual([]);
+            expect(scene.textures).not.toContain(procedural);
+        });
+
+        it("should keep the noise an SSAO pipeline reads and leave the pipeline on the camera", () => {
+            // Arrange
+            const { made: pipeline, textures } = madeWithItsTextures(() => new BABYLON.SSAORenderingPipeline("ssao", scene, 1, [scene.activeCamera!]));
+            standardBox("part");
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(textures).toHaveLength(2);
+            expect(stillLoaded(textures)).toEqual([true, true]);
+            expect(scene.postProcessRenderPipelineManager.supportedPipelines).toContain(pipeline);
+        });
+
+        it("should keep the noise an SSAO2 pipeline reads", () => {
+            // Arrange
+            const { made: pipeline, textures } = madeWithItsTextures(() => new BABYLON.SSAO2RenderingPipeline("ssao2", scene, 1, [scene.activeCamera!]));
+            standardBox("part");
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(textures).toHaveLength(1);
+            expect(stillLoaded(textures)).toEqual([true]);
+            expect(scene.postProcessRenderPipelineManager.supportedPipelines).toContain(pipeline);
+        });
+
+        it("should keep the grain a lens pipeline reads", () => {
+            // Arrange
+            const { made: pipeline, textures } = madeWithItsTextures(() => new BABYLON.LensRenderingPipeline("lens", { grain_amount: 1 }, scene, 1, [scene.activeCamera!]));
+            standardBox("part");
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(textures).toHaveLength(2);
+            expect(stillLoaded(textures)).toEqual([true, true]);
+            expect(scene.postProcessRenderPipelineManager.supportedPipelines).toContain(pipeline);
+        });
+
+        it("should keep the lookup table a colour correction post-process reads", () => {
+            // Arrange
+            const { made: postProcess, textures } = madeWithItsTextures(() => new BABYLON.ColorCorrectionPostProcess("correction", PIXEL, 1, scene.activeCamera));
+            standardBox("part");
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(textures).toHaveLength(1);
+            expect(stillLoaded(textures)).toEqual([true]);
+            expect(scene.postProcesses).toContain(postProcess);
+        });
+
+        it("should keep the texture of a particle system it leaves in the scene, because a texture no drawn material wears belongs to whoever made it", () => {
+            // Arrange
+            const particles = new BABYLON.ParticleSystem("particles", 10, scene);
+            particles.emitter = BABYLON.Vector3.Zero();
+            const particleTexture = new BABYLON.Texture(PIXEL, scene);
+            particles.particleTexture = particleTexture;
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.particleSystems).toEqual([particles]);
+            expect(stillLoaded([particleTexture])).toEqual([true]);
+        });
+
+        it("should keep the cube a reflection probe renders into although a drawn material wore it", () => {
+            // Arrange
+            const probe = new BABYLON.ReflectionProbe("probe", 16, scene);
+            const part = standardBox("part");
+            probe.renderList!.push(part);
+            wear(part, probe.cubeTexture, "reflectionTexture");
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.reflectionProbes).toEqual([probe]);
+            expect(scene.textures).toContain(probe.cubeTexture);
+        });
+    });
+
+    describe("what clearAllDrawn frees with the drawing", () => {
+        const drawnBox = (name: string): BABYLON.Mesh => {
+            const box = BABYLON.MeshBuilder.CreateBox(name, { size: 1 }, scene);
+            box.material = new BABYLON.StandardMaterial(`${name}Material`, scene);
+            return box;
+        };
+
+        it("should dispose a mirror a drawn material wears", () => {
+            // Arrange
+            const mirror = new BABYLON.MirrorTexture("mirror", 16, scene);
+            wear(drawnBox("part"), mirror, "reflectionTexture");
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.textures).not.toContain(mirror);
+            expect(mirror.getInternalTexture()).toBeNull();
+        });
+
+        it("should dispose a render target a script registered with the scene and take it off the scene's list", () => {
+            // Arrange
+            const target = new BABYLON.RenderTargetTexture("target", 16, scene);
+            target.renderList!.push(drawnBox("part"));
+            scene.customRenderTargets.push(target);
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.customRenderTargets).toEqual([]);
+            expect(scene.textures).not.toContain(target);
+            expect(target.getInternalTexture()).toBeNull();
+        });
+
+        it("should hold as many textures after a script draws a box with its own render target again and again as before it first drew one", () => {
+            // Arrange
+            const drawWithItsOwnTarget = (): void => {
+                const target = new BABYLON.RenderTargetTexture("target", 16, scene);
+                target.renderList!.push(drawnBox("part"));
+                scene.customRenderTargets.push(target);
+            };
+            const before = scene.textures.length;
+
+            // Act
+            for (let rerun = 0; rerun < MANY; rerun++) {
+                drawWithItsOwnTarget();
+                sceneService.clearAllDrawn();
+            }
+
+            // Assert
+            expect(scene.textures).toHaveLength(before);
+            expect(scene.customRenderTargets).toEqual([]);
+        });
+
+        it("should dispose a texture a drawn material wears", () => {
+            // Arrange
+            const image = new BABYLON.Texture(PIXEL, scene);
+            wear(drawnBox("part"), image, "diffuseTexture");
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.textures).not.toContain(image);
+            expect(image.getInternalTexture()).toBeNull();
+        });
+
+        it("should dispose a texture the material of a drawn mesh wears when the material goes with the mesh", () => {
+            // Arrange
+            const part = drawnBox("part");
+            const image = new BABYLON.Texture(PIXEL, scene);
+            wear(part, image, "diffuseTexture");
+            part.onDisposeObservable.addOnce(() => part.material!.dispose());
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.textures).not.toContain(image);
+        });
+
+        it("should dispose the environment texture it takes away", () => {
+            // Arrange
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1));
+            const environment = scene.environmentTexture!;
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.environmentTexture).toBeNull();
+            expect(scene.textures).not.toContain(environment);
+        });
+    });
+
+    describe("clearAllDrawn over many of each kind", () => {
+        const manyOf = <T>(make: (at: number) => T): T[] => Array.from({ length: MANY }, (_, at) => make(at));
+        const allDisposed = Array<boolean>(MANY).fill(true);
+        const disposalsOf = (items: { onDisposeObservable: { addOnce: (callback: () => void) => unknown } }[]): { count: number } => {
+            const disposals = { count: 0 };
+            items.forEach(item => item.onDisposeObservable.addOnce(() => { disposals.count++; }));
+            return disposals;
+        };
+
+        it("should dispose every mesh in the scene, not every other one", () => {
+            // Arrange
+            const boxes = manyOf(at => BABYLON.MeshBuilder.CreateBox(`box${at}`, { size: 1 }, scene));
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(boxes.map(box => box.isDisposed())).toEqual(allDisposed);
+            expect(scene.meshes).toEqual([]);
+        });
+
+        it("should dispose every material in the scene, not every other one", () => {
+            // Arrange
+            const disposals = disposalsOf(manyOf(at => new BABYLON.StandardMaterial(`material${at}`, scene)));
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(disposals.count).toBe(MANY);
+            expect(scene.materials).toEqual([]);
+        });
+
+        it("should dispose every texture the drawn materials wear, not every other one, and keep only the BRDF lookup the scene owns", () => {
+            // Arrange
+            const disposals = disposalsOf(manyOf(at => {
+                const texture = new BABYLON.Texture(PIXEL, scene);
+                new BABYLON.StandardMaterial(`material${at}`, scene).diffuseTexture = texture;
+                return texture;
+            }));
+            new BABYLON.PBRMaterial("pbr", scene);
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(disposals.count).toBe(MANY);
+            expect(scene.textures).toEqual([scene.environmentBRDFTexture]);
+        });
+
+        it("should dispose every geometry in the scene, not every other one", () => {
+            // Arrange
+            const geometries = manyOf(at => new BABYLON.Geometry(`geometry${at}`, scene, BABYLON.CreateBoxVertexData({ size: 1 })));
+            geometries.forEach(geometry => scene.pushGeometry(geometry));
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(geometries.map(geometry => geometry.isDisposed())).toEqual(allDisposed);
+            expect(scene.geometries).toEqual([]);
+        });
+
+        it("should dispose every light but the hemispheric one, not every other one", () => {
+            // Arrange
+            const lights = manyOf(at => new BABYLON.PointLight(`light${at}`, BABYLON.Vector3.Zero(), scene));
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(lights.map(light => light.isDisposed())).toEqual(allDisposed);
+        });
+
+        it("should dispose every transform node but the root, not every other one", () => {
+            // Arrange
+            const nodes = manyOf(at => new BABYLON.TransformNode(`node${at}`, scene));
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(nodes.map(node => node.isDisposed())).toEqual(allDisposed);
+        });
+
+        it("should dispose every camera when a script had swapped the default one, not every other one", () => {
+            // Arrange
+            const cameras = manyOf(at => new BABYLON.FreeCamera(`camera${at}`, BABYLON.Vector3.Zero(), scene));
+            scene.activeCamera = cameras[0]!;
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(cameras.map(camera => camera.isDisposed())).toEqual(allDisposed);
         });
     });
 });
