@@ -2,10 +2,10 @@
 sidebar_position: 7
 title: "When a build has problems"
 sidebar_label: Problems
-description: What the Designer's Problems tab tells you when a feature cannot be built, how a failure carries through the features after it, and what to do - edit, undo, suppress, copy the problem or send a crash report.
+description: What the Designer's Problems tab tells you when a feature cannot be built, how a failure carries through the features after it, and what to do - edit, undo, suppress, copy the problem or send a crash report - and how to follow or stop a long build.
 topic: designer.modelling.problems
 type: how-to
-verified: 2026-10-09
+verified: 2026-10-19
 tags: [designer]
 ---
 
@@ -34,6 +34,12 @@ The first problem in the list is usually the cause; the ones after it often say 
 ## Copy a problem
 
 <Ui>Copy this problem</Ui> beside a problem, or <Ui>Copy every problem</Ui> under the list, puts the text on the clipboard: where it is and what it says, ready to paste to a colleague, an agent or a forum.
+
+## While it builds {#while-it-builds}
+
+Most changes build in a moment. When one takes longer, a card in the view says what is happening and for how long: checking the document, loading the files it imports, reading the shapes kept from the last build, building its features ("Feature 4 of 12" and the feature's name, with a bar that fills as they are made) and drawing its parts. A build of a large assembly can take a while the first time, since each different part is made once.
+
+[<Ui>Stop</Ui>](../reference/commands.md#designer-view-stop-build) on the card ends the build. What was drawn before stays in the view, and the card offers [<Ui>Build again</Ui>](../reference/commands.md#designer-view-build-again); any change to the design builds it anew too.
 
 ## When the kernel crashed
 

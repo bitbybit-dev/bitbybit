@@ -2,10 +2,10 @@
 sidebar_position: 2
 title: "Features and their dialogs"
 sidebar_label: Features and dialogs
-description: Every feature the Designer adds to a part - solids, extrudes, revolves, sweeps and lofts, fillets, chamfers, shells, holes, bosses and pockets, booleans and patterns - and how their dialogs take values, picks and expressions.
+description: Every feature the Designer adds to a part - solids, extrudes, revolves, sweeps and lofts, fillets, chamfers, shells, holes, bosses and pockets, keyways, threads and other machining, booleans and patterns - and how their dialogs take values, picks and expressions.
 topic: designer.modelling.features
 type: how-to
-verified: 2026-10-15
+verified: 2026-10-19
 tags: [designer]
 ---
 
@@ -36,7 +36,7 @@ The features that make shape start a new body, named after the feature, unless y
 
 ## Solids
 
-<Ui>Box</Ui>, <Ui>Cylinder</Ui>, <Ui>Prism</Ui>, <Ui>Sphere</Ui> and <Ui>Cone</Ui> make a whole solid from one dialog, standing on a plane or rising from a flat face you picked. Each is a sketch and an extrude or a revolve underneath, so its faces have the same names as if you had drawn it.
+<Ui>Box</Ui>, <Ui>Cylinder</Ui>, <Ui>Prism</Ui>, <Ui>Sphere</Ui> and <Ui>Cone</Ui> make a whole solid from one dialog, standing on a plane or rising from a flat face you picked. Each is a sketch and an extrude or a revolve underneath, so its faces have the same names as if you had drawn it. A part with no features yet offers them in the middle of the view, beside <Ui>Start a sketch on the ground</Ui>.
 
 [<Ui>Gear</Ui>](../reference/commands.md#designer-part-gear) makes an involute spur gear the same way: a <Ui>Module</Ui> for the size of its teeth, how many <Ui>Teeth</Ui>, a <Ui>Thickness</Ui> and a <Ui>Bore</Ui>, the hole through its middle. Two gears of the same module mesh when their centres are half the module times their teeth added together apart, so a 20-tooth and a 30-tooth gear of module 2 sit 50 apart. Its sketch keeps the teeth as one <Ui>Gear</Ui> pen command, where the pressure angle, the backlash and the rest of the tooth's shape can be changed, and its side faces are named by the part of a tooth they belong to: `tip`, `flank` or `root`. A feature that takes edges can name them by those parts, such as a chamfer on the edges round every tip and nothing else.
 
@@ -69,6 +69,23 @@ The features that make shape start a new body, named after the feature, unless y
 | [<Ui>Move</Ui>](../reference/commands.md#designer-part-transform) | moves and turns a body as one piece |
 
 A hole shows a marker for each position. Click the face to move the last hole there, <kbd>Shift</kbd>+click to add another, or drag a marker; the picture shows the hole at the end of the desk arm's link, whose position is written in its `length` parameter.
+
+## Machining shafts and bores
+
+{/* shot: designer.modelling.features/keyway */}
+
+Six features in the <Ui>Insert</Ui> menu cut standard machining into a round face: pick a shaft's side or a bore's wall as the <Ui>Face</Ui>, and each sizes itself for that face's diameter.
+
+| Feature | What it does | Its faces are named |
+|---|---|---|
+| [<Ui>Keyway</Ui>](../reference/commands.md#designer-part-keyway) | mills a DIN 6885 keyway into a shaft, or cuts one through a hub's bore, over a <Ui>Length</Ui> | `keyway` |
+| [<Ui>Flat</Ui>](../reference/commands.md#designer-part-flat) | takes a flat a <Ui>Depth</Ui> deep off a shaft, such as the one a set screw bears on | `flat` |
+| [<Ui>Ring groove</Ui>](../reference/commands.md#designer-part-ring-groove) | cuts the groove a DIN 471 retaining ring sits in on a shaft, or a DIN 472 ring in a bore | `groove` |
+| [<Ui>Knurl</Ui>](../reference/commands.md#designer-part-knurl) | knurls a shaft in a straight, left, right or diamond <Ui>Pattern</Ui> | `knurl` |
+| [<Ui>Spline</Ui>](../reference/commands.md#designer-part-spline) | cuts DIN 5480 involute spline teeth of a <Ui>Module</Ui> into a bore; drill the bore to where the hub's teeth end, or give the <Ui>Reference diameter</Ui> | `spline` |
+| [<Ui>Thread</Ui>](../reference/commands.md#designer-part-thread) | models an ISO metric thread on a shaft of its size or in a bore drilled for its tap; the <Ui>Size</Ui>, such as `M8`, is found from the diameter when left empty | `thread` |
+
+Each cut starts <Ui>From the end</Ui> its distance along the face's axis. The axis points along the world axis nearest it, and the end it starts from is the one it points away from, so a shaft standing on the ground is measured from its foot; <Ui>From the other end</Ui> measures from the far end. A keyway or a flat faces world X, or world Y on a shaft that lies along X, and its <Ui>Angle</Ui> turns it from there. A face that is not round, a flat or knurl on a bore, a spline on a shaft and a thread on a diameter no metric size has are refused with the reason, so the feature turns red rather than cutting something else. A modelled thread is heavy to build and draw; keep it to the parts that need it, and leave the rest to the cosmetic threads of the [standard parts](../assemblies/components.md#standard-parts).
 
 ## Combining bodies and patterns
 

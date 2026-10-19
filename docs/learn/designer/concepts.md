@@ -5,7 +5,7 @@ sidebar_label: How it works
 description: The ideas behind the Designer - documents, features built in order, sketches, parameters and expressions, references that survive edits, parts, and assemblies with connectors and joints.
 topic: designer.concepts
 type: explanation
-verified: 2026-10-08
+verified: 2026-10-18
 tags: [designer]
 ---
 
@@ -21,6 +21,8 @@ A Designer project holds any number of documents, listed at the top of the <Ui>F
 - an **assembly document** places parts of other documents, and whole assemblies, as components, and holds them together with joints. It has no geometry of its own.
 
 <Ui>File</Ui> > <Ui>New part</Ui> and <Ui>File</Ui> > <Ui>New assembly</Ui> add one. A part document can be inserted into many assemblies, and many times into one, each time at its own sizes.
+
+To begin again, <Ui>File</Ui> > <Ui>New design</Ui> makes an empty design beside this one in the same project and opens it, and <Ui>File</Ui> > <Ui>Start over</Ui> empties this one, after asking; on bitbybit.dev its History brings the old version back. To delete documents, right-click one in the list; choose several with Ctrl (Cmd on a Mac) or Shift to delete them together, and on an assembly <Ui>Delete with its parts</Ui> also takes the parts and sub-assemblies only it uses.
 
 ## A part is a list of features
 

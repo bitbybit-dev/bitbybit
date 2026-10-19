@@ -5,7 +5,7 @@ sidebar_label: Introduction
 description: The Designer is Bitbybit's interactive CAD modeller. Make parametric parts and assemblies by clicking, work beside an AI agent in the same document, and export STEP, GLB or STL.
 topic: designer.start
 type: landing
-verified: 2026-10-09
+verified: 2026-10-19
 tags: [designer]
 ---
 
@@ -34,7 +34,7 @@ The Designer is made for two kinds of author at once. You work with the mouse an
 
 <Shot ids={["designer.showcases/robot-arm-cover", "designer.showcases/jet-engine-cover", "designer.showcases/desk-arm-cover"]} columns={3} />
 
-A six-axis robot arm, a turbofan engine and the desk arm of the tutorial, each modelled in the Designer. [The showcases](./showcases.md) say what each one shows, and offer them to download and open.
+A six-axis robot arm, a turbofan engine, a single-cylinder engine and the desk arm of the tutorial, each modelled in the Designer. [The showcases](./showcases.md) say what each one shows, and offer them to download and open.
 
 ## Open the Designer
 

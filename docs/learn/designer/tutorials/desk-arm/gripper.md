@@ -3,10 +3,10 @@ sidebar_position: 5
 slug: /designer/tutorials/desk-arm/gripper
 title: "Model a desk robot arm: the gripper"
 sidebar_label: 5. The gripper
-description: The fifth chapter of the desk arm - the gripper's palm with two pocketed jaw rails, four counterbored cover screws, and a neck blended into the palm, with connectors for the wrist, both jaws and the screws.
+description: The fifth chapter of the desk arm - the gripper's palm with two pocketed jaw rails, four holes for M3 cover screws, and a neck blended into the palm, with connectors for the wrist, both jaws and the screws.
 topic: designer.tutorials.desk-arm.gripper
 type: tutorial
-verified: 2026-10-12
+verified: 2026-10-19
 tags: [designer]
 ---
 
@@ -72,9 +72,9 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
     <Shot id="designer.tutorials.desk-arm/step-78" />
 
-79. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id screws, body palm, on the end face of palm, diameter 3.
+79. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id screws, body palm, on the end face of palm.
 
-    Drill four counterbored holes for the cover screws, one near each corner.
+    Drill four holes for the cover screws, one near each corner, sized for M3 socket head cap screws with their counterbores.
 
     <Shot id="designer.tutorials.desk-arm/step-79" />
 

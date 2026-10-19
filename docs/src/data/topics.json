@@ -1319,7 +1319,7 @@
     "type": "how-to",
     "url": "/learn/designer/assemblies/components",
     "path": "learn/designer/assemblies/components.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.assemblies.connectors",
@@ -1335,7 +1335,7 @@
     "type": "how-to",
     "url": "/learn/designer/assemblies/inspect",
     "path": "learn/designer/assemblies/inspect.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-15"
   },
   {
     "id": "designer.assemblies.joints",
@@ -1343,7 +1343,7 @@
     "type": "how-to",
     "url": "/learn/designer/assemblies/joints",
     "path": "learn/designer/assemblies/joints.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.assemblies.patterns",
@@ -1359,7 +1359,7 @@
     "type": "how-to",
     "url": "/learn/designer/assemblies/replicate",
     "path": "learn/designer/assemblies/replicate.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-15"
   },
   {
     "id": "designer.concepts",
@@ -1367,7 +1367,7 @@
     "type": "explanation",
     "url": "/learn/designer/concepts",
     "path": "learn/designer/concepts.md",
-    "verified": "2026-10-08"
+    "verified": "2026-10-18"
   },
   {
     "id": "designer.get-started.create-project",
@@ -1383,7 +1383,7 @@
     "type": "how-to",
     "url": "/learn/designer/get-started/export-import",
     "path": "learn/designer/get-started/export-import.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-18"
   },
   {
     "id": "designer.get-started.open",
@@ -1399,7 +1399,7 @@
     "type": "how-to",
     "url": "/learn/designer/get-started/open-design",
     "path": "learn/designer/get-started/open-design.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-18"
   },
   {
     "id": "designer.get-started.save",
@@ -1423,7 +1423,7 @@
     "type": "how-to",
     "url": "/learn/designer/modelling/features",
     "path": "learn/designer/modelling/features.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.modelling.history",
@@ -1439,7 +1439,7 @@
     "type": "how-to",
     "url": "/learn/designer/modelling/parameters",
     "path": "learn/designer/modelling/parameters.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-15"
   },
   {
     "id": "designer.modelling.parts",
@@ -1471,7 +1471,7 @@
     "type": "how-to",
     "url": "/learn/designer/modelling/sketches",
     "path": "learn/designer/modelling/sketches.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-15"
   },
   {
     "id": "designer.modelling.views",
@@ -1508,7 +1508,7 @@
     "type": "landing",
     "url": "/learn/designer/showcases",
     "path": "learn/designer/showcases.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.start",
@@ -1532,7 +1532,7 @@
     "type": "tutorial",
     "url": "/learn/designer/tutorials/desk-arm",
     "path": "learn/designer/tutorials/desk-arm/index.md",
-    "verified": "2026-10-12"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.tutorials.desk-arm.arm",
@@ -1540,7 +1540,7 @@
     "type": "tutorial",
     "url": "/learn/designer/tutorials/desk-arm/assembly",
     "path": "learn/designer/tutorials/desk-arm/assembly.md",
-    "verified": "2026-10-12"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.tutorials.desk-arm.base",
@@ -1548,7 +1548,7 @@
     "type": "tutorial",
     "url": "/learn/designer/tutorials/desk-arm/base",
     "path": "learn/designer/tutorials/desk-arm/base.md",
-    "verified": "2026-10-12"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.tutorials.desk-arm.gripper",
@@ -1556,7 +1556,7 @@
     "type": "tutorial",
     "url": "/learn/designer/tutorials/desk-arm/gripper",
     "path": "learn/designer/tutorials/desk-arm/gripper.md",
-    "verified": "2026-10-12"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.tutorials.desk-arm.jaw",
@@ -1564,7 +1564,7 @@
     "type": "tutorial",
     "url": "/learn/designer/tutorials/desk-arm/jaw",
     "path": "learn/designer/tutorials/desk-arm/jaw.md",
-    "verified": "2026-10-12"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.tutorials.desk-arm.link",
@@ -1572,23 +1572,7 @@
     "type": "tutorial",
     "url": "/learn/designer/tutorials/desk-arm/link",
     "path": "learn/designer/tutorials/desk-arm/link.md",
-    "verified": "2026-10-12"
-  },
-  {
-    "id": "designer.tutorials.desk-arm.nut",
-    "title": "Model a desk robot arm: the nut",
-    "type": "tutorial",
-    "url": "/learn/designer/tutorials/desk-arm/nut",
-    "path": "learn/designer/tutorials/desk-arm/nut.md",
-    "verified": "2026-10-12"
-  },
-  {
-    "id": "designer.tutorials.desk-arm.screw",
-    "title": "Model a desk robot arm: the screw",
-    "type": "tutorial",
-    "url": "/learn/designer/tutorials/desk-arm/screw",
-    "path": "learn/designer/tutorials/desk-arm/screw.md",
-    "verified": "2026-10-12"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.tutorials.desk-arm.turntable",
@@ -1596,7 +1580,7 @@
     "type": "tutorial",
     "url": "/learn/designer/tutorials/desk-arm/shoulder",
     "path": "learn/designer/tutorials/desk-arm/shoulder.md",
-    "verified": "2026-10-12"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.tutorials.desk-arm.wrist",
@@ -1604,7 +1588,7 @@
     "type": "tutorial",
     "url": "/learn/designer/tutorials/desk-arm/wrist",
     "path": "learn/designer/tutorials/desk-arm/wrist.md",
-    "verified": "2026-10-12"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.tutorials.first-part",

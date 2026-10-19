@@ -12,7 +12,7 @@ tags: [designer]
 
 # Designer commands
 
-Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 150 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
+Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 169 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
 
 Each entry's anchor is the command's help topic, such as `#designer-part-fillet`, so a link to it keeps working when the title changes.
 
@@ -22,7 +22,7 @@ Each entry's anchor is the command's help topic, such as `#designer-part-fillet`
 
 Adds a part document to the design and opens it.
 
-- **Where:** <Ui>File</Ui> > <Ui>New part</Ui>; the documents list
+- **Where:** <Ui>File</Ui> > <Ui>New part</Ui>; the documents list; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents and assembly documents
 - **For agents:** `file.newPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -32,7 +32,7 @@ Adds a part document to the design and opens it.
 
 Adds an assembly document to the design and opens it.
 
-- **Where:** <Ui>File</Ui> > <Ui>New assembly</Ui>; the documents list
+- **Where:** <Ui>File</Ui> > <Ui>New assembly</Ui>; the documents list; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents and assembly documents
 - **For agents:** `file.newAssembly`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -61,13 +61,14 @@ Renames a part or assembly document; a person's run without a name asks for it i
 
 ### Delete document {#designer-file-delete-document}
 
-Deletes a part or assembly document from the design, once no assembly uses it.
+Deletes a part or assembly document from the design, or several at once, once no other assembly uses them.
 
 - **Where:** <Ui>File</Ui> > <Ui>Delete document</Ui>; the right-click menu; the documents list
 - **Works in:** part documents and assembly documents
 - **For agents:** only a person runs it; agents see it as unavailable
 - **Values:**
   - `document` (string): The document's id; the open one when left out.
+  - `documents` (array): The ids of several documents to delete at once, in place of document; an assembly among them may place the others.
   - `confirmed` (boolean): A person's run asks first unless this is true.
 
 ### Load files from a site {#designer-file-allow-files-from}
@@ -84,7 +85,7 @@ Lets the design load the files it names from another site, until the Designer cl
 
 Adds the design documents of .design.json or Designer project files, replacing the ones with the same id.
 
-- **Where:** <Ui>File</Ui> > <Ui>Import design documents</Ui>
+- **Where:** <Ui>File</Ui> > <Ui>Import design documents</Ui>; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents and assembly documents
 - **For agents:** only a person runs it; agents see it as unavailable
 - **Values:**
@@ -94,7 +95,7 @@ Adds the design documents of .design.json or Designer project files, replacing t
 
 Imports a STEP file as its parts and assemblies, or an IGES or BREP file as a part, keeping the shapes with the project.
 
-- **Where:** <Ui>File</Ui> > <Ui>Import STEP, IGES or BREP</Ui>
+- **Where:** <Ui>File</Ui> > <Ui>Import STEP, IGES or BREP</Ui>; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents and assembly documents
 - **For agents:** only a person runs it; agents see it as unavailable
 - **Values:**
@@ -184,109 +185,99 @@ Saves the project where it was opened from.
 
 Deletes the documents the last import of this session added, while no other document uses them; the imported file stays with the project.
 
-- **Where:** <Ui>File</Ui> > <Ui>Remove the last import</Ui>; the documents list
+- **Where:** <Ui>File</Ui> > <Ui>Remove the last import</Ui>; the question in the middle of the view, before starting over or placing an import
 - **Works in:** part documents and assembly documents
 - **For agents:** only a person runs it; agents see it as unavailable
 - **Values:**
   - `confirmed` (boolean): A person's run asks first unless this is true.
 
-### New gear part {#designer-file-new-gear-part}
+### Reorder document {#designer-file-move-document}
 
-Adds a part document for an involute spur gear sized by its module, teeth, width, bore and backlash parameters, with an axis connector; an open assembly places it too.
+Moves a document before or after another in the design, as dragging its row in the documents list does; a design opens on its first top-level assembly.
 
-- **Where:** <Ui>File</Ui> > <Ui>New gear part</Ui>
+- **Where:** the documents list
 - **Works in:** part documents and assembly documents
-- **For agents:** `file.newGearPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **For agents:** `file.moveDocument`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
-  - `name` (string): The part's name; "Gear" and its teeth when left out.
-  - `module` (number): The size of the teeth: the pitch circle's diameter divided by the number of teeth; 2 when left out.
-  - `teeth` (number): How many teeth, a whole number of at least 3; 20 when left out.
-  - `width` (number): How thick the gear is; 10 when left out.
-  - `bore` (number): The diameter of the hole through its middle, inside the root circle; 6 when left out.
-  - `backlash` (number): How much thinner each tooth is than a tight fit; 0.1 when left out.
+  - `document` (string, required): The id of the document to move.
+  - `target` (string, required): The id of the document it goes next to.
+  - `after` (boolean): After the target; before it when false.
 
-### New screw part {#designer-file-new-screw-part}
+### Delete with its parts {#designer-file-delete-with-parts}
 
-Adds a part document for an ISO 4762 socket head cap screw sized by its size and length parameters, its thread cosmetic, with a seat connector under the head; an open assembly places it too.
+Deletes an assembly with the part documents and sub-assemblies it places that no other assembly uses.
 
-- **Where:** <Ui>File</Ui> > <Ui>New screw part</Ui>
+- **Where:** the right-click menu
 - **Works in:** part documents and assembly documents
-- **For agents:** `file.newScrewPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **For agents:** only a person runs it; agents see it as unavailable
 - **Values:**
-  - `name` (string): The part's name; "Socket head cap screw" when left out.
-  - `size` (one of `"M1.6"`, `"M2"`, `"M2.5"`, `"M3"`, `"M4"`, `"M5"`, `"M6"`, `"M8"`, `"M10"`, `"M12"`, `"M14"`, `"M16"`, `"M20"`, `"M24"`): The ISO metric size of the screw, M1.6 to M24; M4 when left out.
-  - `length` (number): How long the screw is under its head; 12 when left out.
+  - `document` (string): The assembly's id; the open document when left out.
+  - `confirmed` (boolean): A person's run asks first unless this is true.
 
-### New bolt part {#designer-file-new-bolt-part}
+### Start over {#designer-file-start-over}
 
-Adds a part document for an ISO 4014 hex bolt, or ISO 4017 threaded to the head, sized by its size and length parameters, with a seat connector under the head; an open assembly places it too.
+Removes every document of this design, back to an empty start; on bitbybit.dev, History keeps the design as it was.
 
-- **Where:** <Ui>File</Ui> > <Ui>New bolt part</Ui>
+- **Where:** <Ui>File</Ui> > <Ui>Start over</Ui>; the question in the middle of the view, before starting over or placing an import
 - **Works in:** part documents and assembly documents
-- **For agents:** `file.newBoltPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **For agents:** only a person runs it; agents see it as unavailable
 - **Values:**
-  - `name` (string): The part's name; "Hex bolt" when left out.
-  - `size` (one of `"M1.6"`, `"M2"`, `"M2.5"`, `"M3"`, `"M4"`, `"M5"`, `"M6"`, `"M8"`, `"M10"`, `"M12"`, `"M14"`, `"M16"`, `"M20"`, `"M24"`): The ISO metric size of the bolt, M1.6 to M24; M8 when left out.
-  - `length` (number): How long the bolt is under its head; 30 when left out.
+  - `confirmed` (boolean): A person's run asks first unless this is true.
 
-### New nut part {#designer-file-new-nut-part}
+### New design {#designer-file-new-design}
 
-Adds a part document for an ISO 4032 hex nut sized by its size parameter, with seat and top connectors on its axis; an open assembly places it too.
+Makes a new, empty design in this project and opens it, keeping this one as it is; where no project holds the design, it starts this one over.
 
-- **Where:** <Ui>File</Ui> > <Ui>New nut part</Ui>
+- **Where:** <Ui>File</Ui> > <Ui>New design</Ui>
 - **Works in:** part documents and assembly documents
-- **For agents:** `file.newNutPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **For agents:** only a person runs it; agents see it as unavailable
 - **Values:**
-  - `name` (string): The part's name; "Hex nut" when left out.
-  - `size` (one of `"M1.6"`, `"M2"`, `"M2.5"`, `"M3"`, `"M4"`, `"M5"`, `"M6"`, `"M8"`, `"M10"`, `"M12"`, `"M14"`, `"M16"`, `"M20"`, `"M24"`): The ISO metric size of the nut, M1.6 to M24; M8 when left out.
+  - `title` (string): The new design's name; New design when left out.
 
-### New washer part {#designer-file-new-washer-part}
+### Put the import in place {#designer-file-finish-import}
 
-Adds a part document for an ISO 7089 plain washer sized by its size parameter, with seat and top connectors on its axis; an open assembly places it too.
+Adds what an import read to this design, or opens it as a new design in this project, when the design already held documents.
 
-- **Where:** <Ui>File</Ui> > <Ui>New washer part</Ui>
+- **Where:** the question in the middle of the view, before starting over or placing an import
 - **Works in:** part documents and assembly documents
-- **For agents:** `file.newWasherPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **For agents:** only a person runs it; agents see it as unavailable
 - **Values:**
-  - `name` (string): The part's name; "Plain washer" when left out.
-  - `size` (one of `"M1.6"`, `"M2"`, `"M2.5"`, `"M3"`, `"M4"`, `"M5"`, `"M6"`, `"M8"`, `"M10"`, `"M12"`, `"M14"`, `"M16"`, `"M20"`, `"M24"`): The ISO metric size of the washer, M1.6 to M24; M8 when left out.
+  - `into` (one of `"this"`, `"new"`, required): this adds it to this design; new opens it as a new design.
 
-### New bearing part {#designer-file-new-bearing-part}
+### Standard part {#designer-file-standard-part}
 
-Adds a part document for a deep groove ball bearing chosen by its designation parameter, with inner and outer connectors on the rings' sides; an open assembly places it too.
+Adds a standard part from the library, a screw, bolt, nut, washer, set screw, dowel pin, gear, rack, bearing, spring, key or retaining ring, as a part document sized by its parameters; in an assembly it places it too, one document for each kind with each component's own sizes. With no kind it opens the library.
 
-- **Where:** <Ui>File</Ui> > <Ui>New bearing part</Ui>
+- **Where:** <Ui>Insert</Ui> > <Ui>Standard part</Ui>; the start view, in the middle of an empty design, part or assembly; the standard parts library, in the <Ui>Properties</Ui> panel
 - **Works in:** part documents and assembly documents
-- **For agents:** `file.newBearingPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **For agents:** `file.standardPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
-  - `name` (string): The part's name; "Ball bearing" when left out.
-  - `designation` (one of `"623"`, `"624"`, `"625"`, `"626"`, `"608"`, `"609"`, `"6000"`, `"6001"`, `"6002"`, `"6003"`, `"6004"`, `"6005"`, `"6006"`, `"6007"`, `"6008"`, `"6009"`, `"6010"`, `"6200"`, `"6201"`, `"6202"`, `"6203"`, `"6204"`, `"6205"`, `"6206"`, `"6207"`, `"6208"`, `"6209"`, `"6210"`): The bearing's designation, 623 to 6210, which sets its bore, outside and width; 608 when left out.
+  - `kind` (one of `"screw"`, `"bolt"`, `"nut"`, `"washer"`, `"setScrew"`, `"dowel"`, `"gear"`, `"helicalGear"`, `"bevelGear"`, `"ringGear"`, `"rack"`, `"bearing"`, `"spring"`, `"key"`, `"retainingRing"`): Which part, one of screw, bolt, nut, washer, setScrew, dowel, gear, helicalGear, bevelGear, ringGear, rack, bearing, spring, key, retainingRing; a person's run with none opens the library.
+  - `values` (object): Its sizes by parameter name, each left out taking its starting value: screw: size, length, modelledThread; bolt: size, length, fullyThreaded, modelledThread; nut: size; washer: size, chamfered; setScrew: size, length, point; dowel: diameter, length; gear: module, teeth, width, bore, keyway, hub, hubLength, pressureAngle, profileShift, backlash; helicalGear: module, teeth, helixAngle, herringbone, width, bore, keyway, hub, hubLength, pressureAngle, profileShift, backlash; bevelGear: module, teeth, mateTeeth, shaftAngle, faceWidth, bore, pressureAngle, backlash; ringGear: module, teeth, width, rim, pressureAngle, backlash; rack: module, teeth, width, height, pressureAngle, backlash; bearing: designation, shields; spring: wireDiameter, diameter, activeCoils, length; key: shaftDiameter, length; retainingRing: kind, diameter.
+  - `name` (string): The new part document's name; the part's own when left out.
+  - `id` (string): The component's id in an assembly; the kind and the next free number when left out.
 
-### New spring part {#designer-file-new-spring-part}
+### New assembly from these {#designer-file-new-assembly-from}
 
-Adds a part document for a compression spring with closed and ground ends, sized by its wire, diameter, coils and length parameters, with bottom and top connectors; an open assembly places it too.
+Adds an assembly document placing the parts of the chosen part documents, and the chosen assemblies as sub-assemblies, side by side, and opens it.
 
-- **Where:** <Ui>File</Ui> > <Ui>New spring part</Ui>
+- **Where:** <Ui>File</Ui> > <Ui>New assembly from these</Ui>; the right-click menu
 - **Works in:** part documents and assembly documents
-- **For agents:** `file.newSpringPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **For agents:** `file.newAssemblyFrom`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
-  - `name` (string): The part's name; "Compression spring" when left out.
-  - `wireDiameter` (number): The diameter of the wire it is coiled from; 1 when left out.
-  - `diameter` (number): The coils' outside diameter; 10 when left out.
-  - `activeCoils` (number): How many coils spring, besides the closed one at each end; 6 when left out.
-  - `length` (number): How long it stands; shorter compresses it, down to solid, every coil touching; 25 when left out.
+  - `documents` (list of strings): The documents to place; the ones chosen in the documents list when left out.
+  - `document` (string): One document to place.
+  - `name` (string): The new assembly's name; "Assembly" when left out.
 
-### New key part {#designer-file-new-key-part}
+### Open an example {#designer-file-open-example}
 
-Adds a part document for a DIN 6885 parallel key with round ends, sized for its shaft by the shaft diameter and length parameters, with a bottom connector; an open assembly places it too.
+Adds one of the showcase designs learn.bitbybit.dev publishes, such as the robot arm, to take apart and learn from; a person's run with none named shows them all.
 
-- **Where:** <Ui>File</Ui> > <Ui>New key part</Ui>
+- **Where:** <Ui>File</Ui> > <Ui>Open an example</Ui>; the examples gallery, in the middle of the view; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents and assembly documents
-- **For agents:** `file.newKeyPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **For agents:** `file.openExample`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
-  - `name` (string): The part's name; "Parallel key" when left out.
-  - `shaftDiameter` (number): The diameter of the shaft the key sits in, which sets its width and height; 20 when left out.
-  - `length` (number): How long the key is, more than its width; 20 when left out.
+  - `example` (one of `"desk-arm"`, `"jet-engine"`, `"robot-arm"`): Which example: desk-arm (Desk arm), jet-engine (Jet engine), robot-arm (Robot arm).
 
 ## Editing
 
@@ -513,6 +504,37 @@ Closes the open dialog and drops what it would add or change.
 - **Where:** a feature's dialog; a solid's dialog
 - **Works in:** part documents and assembly documents
 - **For agents:** `dialog.cancel`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+
+### Copy {#designer-assembly-copy}
+
+Copies the selected components with their sizes, where they stand, to paste into this or another assembly.
+
+- **Where:** <Ui>Edit</Ui> > <Ui>Copy</Ui>; the right-click menu
+- **Key:** <kbd>Ctrl+C</kbd>, <kbd>⌘C</kbd> on macOS
+- **Works in:** assembly documents
+- **For agents:** only a person runs it; agents see it as unavailable
+- **Values:**
+  - `ids` (list of strings): The components' ids; the selected ones, or the one picked in the view, when left out.
+
+### Paste {#designer-assembly-paste}
+
+Places the copied components again beside where they stood, each with its sizes and its pattern, under new ids.
+
+- **Where:** <Ui>Edit</Ui> > <Ui>Paste</Ui>
+- **Key:** <kbd>Ctrl+V</kbd>, <kbd>⌘V</kbd> on macOS
+- **Works in:** assembly documents
+- **For agents:** only a person runs it; agents see it as unavailable
+
+### Duplicate {#designer-assembly-duplicate}
+
+Places a copy of each selected component beside it, with its sizes and its pattern, under a new id.
+
+- **Where:** <Ui>Edit</Ui> > <Ui>Duplicate</Ui>; the right-click menu
+- **Key:** <kbd>Ctrl+D</kbd>, <kbd>⌘D</kbd> on macOS
+- **Works in:** assembly documents
+- **For agents:** `assembly.duplicate`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `ids` (list of strings): The components' ids; the selected ones, or the one picked in the view, when left out.
 
 ## The view
 
@@ -760,13 +782,70 @@ Stops the parameter that is playing, and the view shows the model as it stands a
 - **Works in:** part documents and assembly documents
 - **For agents:** `view.stopPlaying`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 
+### Stop building {#designer-view-stop-build}
+
+Stops the build the kernel is making now; what was drawn before stays, and a change or Build again builds it anew.
+
+- **Where:** the build progress card, while a long build runs
+- **Key:** <kbd>Ctrl+.</kbd>, <kbd>⌘.</kbd> on macOS
+- **Works in:** part documents and assembly documents
+- **For agents:** `view.stopBuild`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+
+### Build again {#designer-view-build-again}
+
+Builds the open document again after its build was stopped.
+
+- **Where:** the build progress card, while a long build runs
+- **Works in:** part documents and assembly documents
+- **For agents:** `view.buildAgain`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+
+### Hide {#designer-view-hide}
+
+Hides the selected components or sub-assemblies in the view, or the ones the picks lie on, until Show all or another document opens; the tree marks them hidden and the design is unchanged.
+
+- **Where:** <Ui>View</Ui> > <Ui>Hide</Ui>; the right-click menu
+- **Key:** <kbd>H</kbd>
+- **Works in:** assembly documents
+- **For agents:** `view.hide`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `rows` (list of strings): The tree rows: component:&lt;id&gt; or occurrence:&lt;path&gt;; with none, the selected ones, else the components the picks lie on.
+
+### Show only these {#designer-view-show-only}
+
+Hides every other component of this assembly, keeping the selected ones, or the ones the picks lie on, in the view.
+
+- **Where:** <Ui>View</Ui> > <Ui>Show only these</Ui>; the right-click menu
+- **Works in:** assembly documents
+- **For agents:** `view.showOnly`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `rows` (list of strings): The tree rows: component:&lt;id&gt; or occurrence:&lt;path&gt;; with none, the selected ones, else the components the picks lie on.
+
+### Show all {#designer-view-show-all}
+
+Shows every hidden component again.
+
+- **Where:** <Ui>View</Ui> > <Ui>Show all</Ui>; the right-click menu; the status bar
+- **Key:** <kbd>Shift+H</kbd>, <kbd>⇧H</kbd> on macOS
+- **Works in:** assembly documents
+- **For agents:** `view.showAll`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+
+### Show {#designer-view-show}
+
+Shows hidden components or sub-assemblies again: the selected ones, or the ones named; showing one inside a hidden sub-assembly shows that sub-assembly too.
+
+- **Where:** the right-click menu
+- **Works in:** assembly documents
+- **For agents:** `view.show`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `rows` (list of strings): The tree rows: component:&lt;id&gt; or occurrence:&lt;path&gt;; with none, the selected ones, else the components the picks lie on.
+
 ## Solids
 
 ### Box {#designer-part-box}
 
 A block standing on a plane or a face: a rectangle sketch and an extrude.
 
-- **Where:** <Ui>Insert</Ui> > <Ui>Box</Ui>; the toolbar
+- **Where:** <Ui>Insert</Ui> > <Ui>Box</Ui>; the toolbar; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents
 - **For agents:** `part.box`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -781,7 +860,7 @@ A block standing on a plane or a face: a rectangle sketch and an extrude.
 
 A cylinder standing on a plane or a face: a circle sketch and an extrude.
 
-- **Where:** <Ui>Insert</Ui> > <Ui>Cylinder</Ui>; the toolbar
+- **Where:** <Ui>Insert</Ui> > <Ui>Cylinder</Ui>; the toolbar; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents
 - **For agents:** `part.cylinder`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -810,7 +889,7 @@ A regular polygon standing on a plane or a face: a polygon sketch and an extrude
 
 A ball resting on the ground: a half-disc sketch turned about the vertical axis.
 
-- **Where:** <Ui>Insert</Ui> > <Ui>Sphere</Ui>; the toolbar
+- **Where:** <Ui>Insert</Ui> > <Ui>Sphere</Ui>; the toolbar; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents
 - **For agents:** `part.sphere`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -838,7 +917,7 @@ A cone or a truncated cone on the ground: its side profile turned about the vert
 
 An involute spur gear standing on a plane or a face: a sketch of its teeth and its bore, and an extrude.
 
-- **Where:** <Ui>Insert</Ui> > <Ui>Gear</Ui>; the toolbar
+- **Where:** <Ui>Insert</Ui> > <Ui>Gear</Ui>; the toolbar; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents
 - **For agents:** `part.gear`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -854,7 +933,7 @@ An involute spur gear standing on a plane or a face: a sketch of its teeth and i
 
 An involute ring gear standing on a plane or a face, its teeth pointing in: a sketch of its rim and teeth, and an extrude.
 
-- **Where:** <Ui>Insert</Ui> > <Ui>Ring gear</Ui>; the toolbar
+- **Where:** <Ui>Insert</Ui> > <Ui>Ring gear</Ui>; the toolbar; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents
 - **For agents:** `part.ringGear`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -984,7 +1063,7 @@ Pulls the pointer to the sketch's points, to lines level or upright with them, a
 
 An outline drawn by pen commands on a plane, a frame or a flat face; a closed outline makes a face.
 
-- **Where:** <Ui>Insert</Ui> > <Ui>Sketch</Ui>; the toolbar
+- **Where:** <Ui>Insert</Ui> > <Ui>Sketch</Ui>; the toolbar; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents
 - **For agents:** `part.sketch`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -1239,6 +1318,100 @@ Mirrors a body across a plane and fuses the image with it.
   - `plane`: The mirror plane, by a point on it and its normal.
   - `keepOriginal`: Keep the original and fuse the image with it.
 
+## undefined
+
+### Keyway {#designer-part-keyway}
+
+Mills a DIN 6885 keyway into a shaft, or cuts one through a hub's bore, sized for its diameter.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Keyway</Ui>; the toolbar
+- **Works in:** part documents
+- **For agents:** `part.keyway`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `body`: The body this feature changes.
+  - `on`: The round face to machine: a shaft's side or a bore's wall.
+  - `at`: How far along the axis the cut starts, from the end the axis points away from.
+  - `length`: How long the keyway runs along the axis; through a bore, its length.
+  - `angle`: Turns the keyway about the axis, from facing world X (world Y on an axis along X).
+  - `flip`: Measure from the other end of the face.
+
+### Flat {#designer-part-flat}
+
+Takes a flat off a shaft, such as the one a set screw bears on.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Flat</Ui>; the toolbar
+- **Works in:** part documents
+- **For agents:** `part.flat`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `body`: The body this feature changes.
+  - `on`: The shaft's round side.
+  - `at`: How far along the axis the cut starts, from the end the axis points away from.
+  - `length`: How long the flat runs along the axis.
+  - `depth`: How deep the flat is cut in from the surface.
+  - `angle`: Turns the flat about the axis, from facing world X (world Y on an axis along X).
+  - `flip`: Measure from the other end of the face.
+
+### Ring groove {#designer-part-ring-groove}
+
+Cuts the groove a DIN 471 retaining ring sits in on a shaft, or a DIN 472 ring in a bore.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Ring groove</Ui>; the toolbar
+- **Works in:** part documents
+- **For agents:** `part.ringGroove`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `body`: The body this feature changes.
+  - `on`: The round face to machine: a shaft's side or a bore's wall.
+  - `at`: How far along the axis the cut starts, from the end the axis points away from.
+  - `flip`: Measure from the other end of the face.
+
+### Knurl {#designer-part-knurl}
+
+Knurls a shaft for grip, with DIN 82 grooves.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Knurl</Ui>; the toolbar
+- **Works in:** part documents
+- **For agents:** `part.knurl`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `body`: The body this feature changes.
+  - `on`: The shaft's round side.
+  - `at`: How far along the axis the cut starts, from the end the axis points away from.
+  - `length`: How long the knurl runs along the axis.
+  - `pattern`: Straight ridges along the shaft, ridges leaning left or right, or a raised diamond.
+  - `pitch`: How far apart the ridges are.
+  - `flip`: Measure from the other end of the face.
+
+### Spline {#designer-part-spline}
+
+Cuts DIN 5480 involute spline teeth into a bore, for the splined shaft that slides into it.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Spline</Ui>; the toolbar
+- **Works in:** part documents
+- **For agents:** `part.spline`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `body`: The body this feature changes.
+  - `on`: The bore's wall.
+  - `at`: How far along the axis the cut starts, from the end the axis points away from.
+  - `length`: How long the teeth run along the axis.
+  - `module`: The teeth's size, one of DIN 5480's modules.
+  - `diameter`: The spline's reference diameter; left empty, the spline whose hub teeth end on the bore.
+  - `flip`: Measure from the other end of the face.
+
+### Thread {#designer-part-thread}
+
+Models an ISO metric thread on a shaft of its size, or in a bore drilled for its tap.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Thread</Ui>; the toolbar
+- **Works in:** part documents
+- **For agents:** `part.thread`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `body`: The body this feature changes.
+  - `on`: The round face to machine: a shaft's side or a bore's wall.
+  - `at`: How far along the axis the cut starts, from the end the axis points away from.
+  - `length`: How long the thread runs along the axis.
+  - `size`: The metric size, such as M8; left empty, it is found from the face's diameter, a shaft's nominal or a bore's tap drill.
+  - `pitch`: The pitch; the size's coarse pitch when left empty.
+  - `flip`: Measure from the other end of the face.
+
 ## Parts, parameters and connectors
 
 ### Add connector {#designer-product-add-connector}
@@ -1353,7 +1526,7 @@ Removes a parameter nothing uses.
 
 Opens the document a component, or a part inside a sub-assembly, comes from, with that part selected, to change its features.
 
-- **Where:** the <Ui>Features</Ui> panel; the <Ui>Properties</Ui> panel
+- **Where:** the right-click menu; the <Ui>Features</Ui> panel; the <Ui>Properties</Ui> panel
 - **Works in:** assembly documents
 - **For agents:** `assembly.openSource`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -1363,7 +1536,7 @@ Opens the document a component, or a part inside a sub-assembly, comes from, wit
 
 Places a part of a part document, or a whole assembly as a sub-assembly, in this assembly.
 
-- **Where:** <Ui>Insert</Ui> > <Ui>Insert component</Ui>; the toolbar; the <Ui>Properties</Ui> panel
+- **Where:** <Ui>Insert</Ui> > <Ui>Insert component</Ui>; the toolbar; the <Ui>Properties</Ui> panel; the start view, in the middle of an empty design, part or assembly
 - **Works in:** assembly documents
 - **For agents:** `assembly.insert`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -1407,9 +1580,10 @@ Gives a component its own values for its document's parameters, such as a link's
 
 ### Remove component {#designer-assembly-remove}
 
-Takes a component out of the assembly with the joints that hold it.
+Takes a component out of the assembly with the joints that hold it: the one selected in the tree, or picked in the view.
 
-- **Where:** <Ui>Edit</Ui> > <Ui>Remove component</Ui>; the <Ui>Properties</Ui> panel
+- **Where:** <Ui>Edit</Ui> > <Ui>Remove component</Ui>; the right-click menu; the <Ui>Features</Ui> panel; the <Ui>Properties</Ui> panel
+- **Key:** <kbd>Del</kbd>
 - **Works in:** assembly documents
 - **For agents:** `assembly.remove`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -1455,7 +1629,8 @@ Sets a joint's type, connectors, flip, angle, offset or limits; null drops a val
 
 Takes a joint out; its component stays where its frame puts it.
 
-- **Where:** the <Ui>Properties</Ui> panel
+- **Where:** the right-click menu; the <Ui>Features</Ui> panel; the <Ui>Properties</Ui> panel
+- **Key:** <kbd>Del</kbd>
 - **Works in:** assembly documents
 - **For agents:** `assembly.removeJoint`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -1465,7 +1640,7 @@ Takes a joint out; its component stays where its frame puts it.
 
 Places a component once on every connector of a set, such as a bolt in every hole of a flange: its own connector fastened to each member; on a component replicated already it changes the replicate, and null drops flip, angle or offset.
 
-- **Where:** <Ui>Insert</Ui> > <Ui>Replicate</Ui>; the <Ui>Properties</Ui> panel
+- **Where:** <Ui>Insert</Ui> > <Ui>Replicate</Ui>; the right-click menu; the <Ui>Properties</Ui> panel
 - **Works in:** assembly documents
 - **For agents:** `assembly.replicate`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -1490,7 +1665,7 @@ Places a replicated component once again, where its document has it.
 
 Places copies of a component turned about an axis (polar) or stepped along a direction (linear), each counted in the bill of materials; on a patterned component it changes the pattern, and null takes it away.
 
-- **Where:** <Ui>Insert</Ui> > <Ui>Pattern</Ui>; the <Ui>Properties</Ui> panel
+- **Where:** <Ui>Insert</Ui> > <Ui>Pattern</Ui>; the right-click menu; the <Ui>Properties</Ui> panel
 - **Works in:** assembly documents
 - **For agents:** `assembly.pattern`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -1499,7 +1674,7 @@ Places copies of a component turned about an axis (polar) or stepped along a dir
 
 ### Fasten {#designer-assembly-fasten}
 
-Puts a screw or a bolt in every hole of a connector set, sized by the holes' fastener unless a size is named: one screw part document serves every size, and each set is one replicated component.
+Puts a screw or a bolt in every hole of a connector set, sized by the holes' fastener unless a size is named, its head down in the counterbore when the holes are counterbored for a socket head: one screw part document serves every size, and each set is one replicated component.
 
 - **Where:** <Ui>Insert</Ui> > <Ui>Fasten</Ui>
 - **Works in:** assembly documents
@@ -1510,6 +1685,41 @@ Puts a screw or a bolt in every hole of a connector set, sized by the holes' fas
   - `size` (string): The metric size, such as M8; the holes' fastener size when left out.
   - `length` (number): How long under the head; the part's default when left out.
   - `id` (string): The component's id; the fastener's kind and the next free number when left out.
+
+### Drop a part {#designer-assembly-drop}
+
+Places a part, a sub-assembly or a standard part where it was dropped in the view, lying on the face or ground under it, and joins it to the connector it was dropped on, all as one change.
+
+- **Where:** <Ui>Help</Ui> > <Ui>Find a command</Ui>, then <Ui>Drop a part</Ui>
+- **Works in:** assembly documents
+- **For agents:** `assembly.drop`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `document` (string): The id of the part document, or of an assembly to place as a sub-assembly.
+  - `part` (string): The part of that document; left out for a sub-assembly.
+  - `kind` (string): A standard part's kind, instead of a document.
+  - `values` (object): The standard part's sizes, by parameter name.
+  - `at` (object, required): Where it goes, as a frame \{ origin, normal, direction \}.
+  - `join` (object): \{ component, connector, own, type \}: joins its own connector to a placed component's, fastened or revolute; its frame then comes from the joint.
+
+### Insert again {#designer-assembly-insert-again}
+
+Places another of the part last inserted, with the same sizes, beside the rest.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Insert again</Ui>
+- **Works in:** assembly documents
+- **For agents:** `assembly.insertAgain`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+
+### Mesh gears {#designer-assembly-mesh-gears}
+
+Sets two spur gears of one module turning together: each on a revolute joint about its axis, their centres as far apart as the pair needs, the teeth in mesh, both turned by one angle parameter.
+
+- **Where:** <Ui>Insert</Ui> > <Ui>Mesh gears</Ui>; the right-click menu
+- **Works in:** assembly documents
+- **For agents:** `assembly.meshGears`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `driver` (string): The gear the angle turns; the first of the two selected when left out.
+  - `driven` (string): The gear it turns, placed beside it on the side it stands.
+  - `turn` (string): The assembly parameter that turns the driver, in degrees; "turn" when left out, added when the assembly has none.
 
 ## Inspecting
 
@@ -1599,7 +1809,7 @@ Runs a script the document carries as an asset on the document's geometry.
 
 Lists the tutorials, or starts the one named: each shows the way step by step while you do the work, and can do a step for you.
 
-- **Where:** <Ui>Help</Ui> > <Ui>Tutorials</Ui>
+- **Where:** <Ui>Help</Ui> > <Ui>Tutorials</Ui>; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents and assembly documents
 - **For agents:** `help.tutorials`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
@@ -1647,3 +1857,11 @@ Searches every command by name.
 - **Key:** <kbd>Ctrl+K</kbd>, <kbd>⌘K</kbd> on macOS
 - **Works in:** part documents and assembly documents
 - **For agents:** only a person runs it; agents see it as unavailable
+
+### Showcases {#designer-help-showcases}
+
+Opens the Designer's showcase projects on learn.bitbybit.dev: a desk arm, a robot arm and a jet engine to open, take apart and learn from.
+
+- **Where:** <Ui>Help</Ui> > <Ui>Showcases</Ui>
+- **Works in:** part documents and assembly documents
+- **For agents:** `help.showcases`, through [`designer-run-command`](./agent-tools.md#designer-run-command)

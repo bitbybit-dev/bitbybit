@@ -20,7 +20,7 @@ The Designer runs in your browser on bitbybit.dev and is part of the Gold plan.
 1. Open <Ui>Apps</Ui> in the bitbybit.dev header.
 2. Choose <Ui>Designer</Ui>.
 
-The Designer opens with an empty project. Nothing is saved until you make your first change; then your work is kept as a draft in this browser, in the <Ui>Drafts</Ui> project, and you can [move it to the cloud](./save.md#move-to-the-cloud) later.
+The Designer opens with an empty project, on a start view: a new part or a new assembly, the two imports, the tutorials and the showcases. Nothing is saved until you make your first change; then your work is kept as a draft in this browser, in the <Ui>Drafts</Ui> project, and you can [move it to the cloud](./save.md#move-to-the-cloud) later.
 
 ## From the start dialog
 

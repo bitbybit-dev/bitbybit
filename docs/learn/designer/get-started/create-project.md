@@ -24,7 +24,7 @@ A project holds scripts, and a Designer script holds a whole design: every part 
 5. For a cloud project, name its first script and choose <Ui>Designer</Ui> as its editor.
 6. Choose <Ui>Create project</Ui>.
 
-A cloud project opens its first script in the Designer straight away, with no documents yet: start with a new part. A project in this browser starts empty: add a script to it as below.
+A cloud project opens its first script in the Designer straight away, with no documents yet, on a start view that offers a new part or a new assembly, the imports, the tutorials and the showcases. A project in this browser starts empty: add a script to it as below.
 
 ## A Designer script in a project you have
 

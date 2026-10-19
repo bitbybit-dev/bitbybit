@@ -6,7 +6,7 @@ sidebar_label: 3. The link
 description: The third chapter of the desk arm - one link document with five parameters, whose waisted side, forked hub, lightening window and pivot holes all follow them, so the arm uses it twice at two sizes.
 topic: designer.tutorials.desk-arm.link
 type: tutorial
-verified: 2026-10-12
+verified: 2026-10-19
 tags: [designer]
 ---
 
@@ -134,9 +134,9 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
     <Shot id="designer.tutorials.desk-arm/step-44" />
 
-45. **[Sketch](../../reference/commands.md#designer-part-sketch)**, from <Ui>Insert</Ui> > <Ui>Sketch</Ui>: id slot, on the XY plane, start length, -(tip + 1).
+45. **[Sketch](../../reference/commands.md#designer-part-sketch)**, from <Ui>Insert</Ui> > <Ui>Sketch</Ui>: id slot, on the XY plane, start length, -(tip + 6).
 
-    Sketch the fork's slot on a plane half the gap in front of the centre: open at the far end, with a round seat around the pivot.
+    Sketch the fork's slot on a plane half the gap in front of the centre: open at the far end, with a round seat around the pivot, 6 mm wider than the nose, so the next part can swing a hundred degrees either way without touching the link.
 
     <Shot id="designer.tutorials.desk-arm/step-45" />
 
@@ -172,15 +172,15 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
     <Shot id="designer.tutorials.desk-arm/step-50" />
 
-51. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id root, body link, on the end face of link, diameter 8.
+51. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id root, body link, on the end face of link.
 
-    Drill the 8 mm pivot hole at the near end.
+    Drill the pivot hole at the near end, sized for an M8 bolt.
 
     <Shot id="designer.tutorials.desk-arm/step-51" />
 
-52. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id end, body link, on the end face of hubs, diameter 8.
+52. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id end, body link, on the end face of hubs.
 
-    Drill the 8 mm pivot hole through the fork's hub at the far end.
+    Drill the pivot hole through the fork's hub at the far end, for an M8 bolt too.
 
     <Shot id="designer.tutorials.desk-arm/step-52" />
 

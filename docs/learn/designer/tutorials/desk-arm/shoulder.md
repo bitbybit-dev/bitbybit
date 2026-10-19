@@ -6,7 +6,7 @@ sidebar_label: 2. The shoulder
 description: The second chapter of the desk arm - a clevis cheek extruded, given a hub and rounded, mirrored into a pair, and joined to a revolved drum, with the pivot hole and four connectors.
 topic: designer.tutorials.desk-arm.turntable
 type: tutorial
-verified: 2026-10-12
+verified: 2026-10-19
 tags: [designer]
 ---
 
@@ -100,9 +100,9 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
     <Shot id="designer.tutorials.desk-arm/step-19" />
 
-20. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id pivot, body turntable, on the end face of hubA, diameter 8.
+20. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id pivot, body turntable, on the end face of hubA.
 
-    Drill the 8 mm pivot hole through both hubs.
+    Drill the pivot hole through both hubs, sized for an M8 bolt.
 
     <Shot id="designer.tutorials.desk-arm/step-20" />
 
