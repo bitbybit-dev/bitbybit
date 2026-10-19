@@ -148,11 +148,11 @@
     },
     "devDependencies": {
         "@microsoft/api-extractor": "7.59.1",
-        "@vitest/coverage-v8": "4.1.11",
+        "@vitest/coverage-v8": "5.0.5",
         "jsdom": "29.0.1",
         "manifold-3d": "3.5.3",
         "shx": "0.4.0",
         "typescript": "5.9.3",
-        "vitest": "4.1.11"
+        "vitest": "5.0.5"
     }
 }
