@@ -2702,7 +2702,7 @@ interface DesignFaceReference {
 }
 
 // @public
-type DesignFeature = DesignSketchFeature | DesignExtrudeFeature | DesignRevolveFeature | DesignBooleanFeature | DesignFilletFeature | DesignChamferFeature | DesignLinearPatternFeature | DesignPolarPatternFeature | DesignMirrorFeature | DesignTransformFeature | DesignPushPullFeature | DesignRemoveFacesFeature | DesignSweepFeature | DesignLoftFeature | DesignShellFeature | DesignHoleFeature | DesignBossFeature | DesignPocketFeature | DesignImportFeature | DesignOperationFeature | DesignScriptFeature;
+type DesignFeature = DesignSketchFeature | DesignExtrudeFeature | DesignRevolveFeature | DesignBooleanFeature | DesignFilletFeature | DesignChamferFeature | DesignLinearPatternFeature | DesignPolarPatternFeature | DesignMirrorFeature | DesignTransformFeature | DesignPushPullFeature | DesignRemoveFacesFeature | DesignSweepFeature | DesignLoftFeature | DesignShellFeature | DesignHoleFeature | DesignBossFeature | DesignPocketFeature | DesignKeywayFeature | DesignFlatFeature | DesignRingGrooveFeature | DesignKnurlFeature | DesignSplineFeature | DesignThreadFeature | DesignImportFeature | DesignOperationFeature | DesignScriptFeature;
 
 // @public
 interface DesignFeatureBase extends DesignExtensible {
@@ -2776,6 +2776,18 @@ interface DesignFilter {
     [input: string]: unknown;
     // (undocumented)
     select: string;
+}
+
+// @public
+interface DesignFlatFeature extends DesignMachiningFeatureBase {
+    // (undocumented)
+    angle?: DesignNumber;
+    // (undocumented)
+    depth: DesignNumber;
+    // (undocumented)
+    length: DesignNumber;
+    // (undocumented)
+    type: "flat";
 }
 
 // @public
@@ -2980,6 +2992,28 @@ interface DesignJointLimits {
 type DesignJointType = "fastened" | "revolute" | "slider" | "cylindrical";
 
 // @public
+interface DesignKeywayFeature extends DesignMachiningFeatureBase {
+    // (undocumented)
+    angle?: DesignNumber;
+    // (undocumented)
+    length: DesignNumber;
+    // (undocumented)
+    type: "keyway";
+}
+
+// @public
+interface DesignKnurlFeature extends DesignMachiningFeatureBase {
+    // (undocumented)
+    length: DesignNumber;
+    // (undocumented)
+    pattern?: "straight" | "left" | "right" | "diamond";
+    // (undocumented)
+    pitch?: DesignNumber;
+    // (undocumented)
+    type: "knurl";
+}
+
+// @public
 type DesignLabel = string | Record<string, string>;
 
 // @public
@@ -3026,6 +3060,18 @@ interface DesignLoop {
     pen: DesignPenCommand[];
     // (undocumented)
     start?: [DesignNumber, DesignNumber];
+}
+
+// @public
+interface DesignMachiningFeatureBase extends DesignFeatureBase {
+    // (undocumented)
+    at?: DesignNumber;
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    flip?: boolean;
+    // (undocumented)
+    on: DesignFaceReference;
 }
 
 // @public
@@ -3383,6 +3429,12 @@ interface DesignRevolveFeature extends DesignFeatureBase {
 }
 
 // @public
+interface DesignRingGrooveFeature extends DesignMachiningFeatureBase {
+    // (undocumented)
+    type: "ringGroove";
+}
+
+// @public
 interface DesignScriptFeature extends DesignFeatureBase {
     // (undocumented)
     body?: string;
@@ -3508,6 +3560,18 @@ type DesignSketchPlacement = {
 };
 
 // @public
+interface DesignSplineFeature extends DesignMachiningFeatureBase {
+    // (undocumented)
+    diameter?: DesignNumber;
+    // (undocumented)
+    length: DesignNumber;
+    // (undocumented)
+    module: DesignNumber;
+    // (undocumented)
+    type: "spline";
+}
+
+// @public
 interface DesignSuppliedOutcome<T> {
     // (undocumented)
     hash: string;
@@ -3535,6 +3599,18 @@ interface DesignSweepFeature extends DesignFeatureBase {
 
 // @public
 type DesignText = string | DesignExpression;
+
+// @public
+interface DesignThreadFeature extends DesignMachiningFeatureBase {
+    // (undocumented)
+    length: DesignNumber;
+    // (undocumented)
+    pitch?: DesignNumber;
+    // (undocumented)
+    size?: DesignText;
+    // (undocumented)
+    type: "thread";
+}
 
 // @public
 interface DesignTransformFeature extends DesignFeatureBase {
@@ -8527,6 +8603,13 @@ declare namespace OCCT {
         DesignHoleFeature,
         DesignBossFeature,
         DesignPocketFeature,
+        DesignMachiningFeatureBase,
+        DesignKeywayFeature,
+        DesignFlatFeature,
+        DesignRingGrooveFeature,
+        DesignKnurlFeature,
+        DesignSplineFeature,
+        DesignThreadFeature,
         DesignImportFeature,
         DesignOperationFeature,
         DesignScriptFeature,

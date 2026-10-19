@@ -1410,8 +1410,8 @@ export interface OperationParams {
     /**
      * Writes three channel values as a hex color.
      *
-     * `min` and `max` say which range the values use; a range other than 0 to 255 is remapped
-     * first, so channels from 0 to 1 work as well.
+     * `min` and `max` give the values' range; a range other than 0 to 255 is remapped first, and
+     * each channel is rounded and held between 0 and 255.
      * Example: r 255, g 87, b 51 in [0,255] -> '#ff5733'; r 1, g 0.5, b 0.2 in [0,1] -> '#ff8033'
      */
     "color.rgbToHex": {
@@ -7213,9 +7213,9 @@ export interface OperationParams {
      * Builds the parts of a design document, with a configuration's values and then `parameters`
      * replacing the document's own.
      *
-     * A document `validate` faults is refused. A failed feature is reported and what uses it
-     * skipped; unchanged features are reused. `structure` exports the parts to STEP and glTF through
-     * `assembly.manager.buildAssemblyDocument`; an assembly adds components and a bill of materials.
+     * A document `validate` faults is refused; a failed feature is reported and what uses it skipped.
+     * The caller deletes every shape returned, and an identical call returns the same ones while they
+     * live, so one delete frees both answers.
      */
     "occt.design.build": {
         /**
@@ -7587,9 +7587,9 @@ export interface OperationParams {
      * Tilts the selected faces of a shape by a draft angle so the part can be pulled out of a mold
      * along `direction`.
      *
-     * The faces pivot about the neutral plane, given by a point and a normal, which stays put;
-     * `angle` is in degrees. `flag` keeps the standard draft side, false tapers the other way.
-     * Undraftable faces throw.
+     * The faces pivot about the neutral plane, given by a point and a normal; `angle` is in
+     * degrees. `flag` keeps the standard draft side, false tapers the other way.
+     * Undraftable faces throw `occt.draft.failed`.
      */
     "occt.draft.draftAngle": {
         /** The solid whose faces are tilted. */
@@ -7634,12 +7634,11 @@ export interface OperationParams {
         flag?: boolean | PipelineRef;
     };
     /**
-     * Grows a tapered skirt from a wire, or the edges of a shape, along a direction: each edge is
-     * swept along `direction`, leaning outward or inward by `angle` degrees, until the skirt is
-     * `lengthMax` long.
+     * Grows a tapered skirt from a wire, or the edges of a shape: each edge is swept along
+     * `direction`, leaning outward by `angle` degrees, until the skirt is `lengthMax` long.
      *
-     * `internal` leans the skirt inward instead of outward. A draft the kernel cannot build throws
-     * an error.
+     * `internal` leans it inward. A skirt at 90 degrees or an odd multiple lies flat and is refused;
+     * a draft the kernel cannot build throws `occt.draft.failed`.
      */
     "occt.draft.makeDraft": {
         /** The wire, face or shape whose edges the skirt grows from. */
@@ -7657,11 +7656,12 @@ export interface OperationParams {
         internal?: boolean | PipelineRef;
     };
     /**
-     * Grows a tapered skirt from a wire, or the edges of a shape, along a direction like
-     * `makeDraft`, but stops it where it meets `stopShape` instead of at a fixed length.
+     * Grows a tapered skirt from a wire or the edges of a shape like `makeDraft`, stopping it where
+     * it meets `stopShape`.
      *
-     * `keepOut` keeps the part of the stop shape outside the draft; `internal` leans the skirt
-     * inward. A draft the kernel cannot build throws an error.
+     * `keepOut` keeps the part of the stop shape outside the draft and `internal` leans it inward. A
+     * skirt at 90 degrees or an odd multiple lies flat and is refused; a failed draft throws
+     * `occt.draft.failed`.
      */
     "occt.draft.makeDraftToShape": {
         /** The wire, face or shape whose edges the skirt grows from. */
@@ -7980,8 +7980,8 @@ export interface OperationParams {
      * Drills plain holes into a shape, one at each frame: its origin is where the hole enters and its
      * normal points out of the material.
      *
-     * `depth` 0 drills through the whole shape; `tipAngle` 0 leaves a flat bottom and 118 the point of
-     * a twist drill, in degrees. Holes that meet are cut as one.
+     * `depth` 0 drills through the shape; `tipAngle`, in degrees, is 0 for a flat bottom and 118 for
+     * a drill point. Holes that meet are cut as one; give at least one frame.
      */
     "occt.features.holes": {
         /** The shape to drill into. */
@@ -8504,9 +8504,9 @@ export interface OperationParams {
      * Bevels the edges of a shape by a distance, in model units, cutting each sharp edge back to a
      * flat strip.
      *
-     * Without `indexes` every edge is beveled. With `indexes`, counted from 0 as
-     * `shapes.edge.getEdges` lists them, only those are, each with `distance` or, in edge order,
-     * its entry of `distanceList`. Indexes naming no edge change nothing.
+     * Without `indexes` every edge is beveled; with them, counted from 0 as `shapes.edge.getEdges`
+     * lists them, only those, each by `distance` or its entry of `distanceList`. When no index
+     * names an edge the call throws.
      */
     "occt.fillets.chamferEdges": {
         /** The shape whose edges are beveled. */
@@ -9101,9 +9101,9 @@ export interface OperationParams {
         center?: [number, number] | PipelineRef;
         /** The direction of the major axis in the plane. */
         direction?: [number, number] | PipelineRef;
-        /** The half-width across the ellipse's short axis; must not exceed `radiusMajor`. */
+        /** The half-width across the ellipse's short axis, above 0; must not exceed `radiusMajor`. */
         radiusMinor?: number | PipelineRef;
-        /** The half-width along the ellipse's long axis. */
+        /** The half-width along the ellipse's long axis, above 0. */
         radiusMajor?: number | PipelineRef;
         /** When true, the curve runs the other way round. */
         sense?: boolean | PipelineRef;
@@ -9148,7 +9148,7 @@ export interface OperationParams {
      * The same as `shapes.wire.createCircleWire`, kept here beside the 2D curves.
      */
     "occt.geom.curves.geomCircleCurve": {
-        /** The distance from the center to the circle, in model units. */
+        /** The distance from the center to the circle, in model units, above 0. */
         radius?: number | PipelineRef;
         /** The point the circle is centered on. */
         center?: [number, number, number] | PipelineRef;
@@ -9168,11 +9168,11 @@ export interface OperationParams {
         /** The normal of the plane the ellipse lies in; the default lays it flat on the ground. */
         direction?: [number, number, number] | PipelineRef;
         /**
-         * The half-width across the ellipse's short axis, in model units; must not exceed
-         * `radiusMajor`.
+         * The half-width across the ellipse's short axis, in model units, above 0; must not
+         * exceed `radiusMajor`.
          */
         radiusMinor?: number | PipelineRef;
-        /** The half-width along the ellipse's long axis, in model units. */
+        /** The half-width along the ellipse's long axis, in model units, above 0. */
         radiusMajor?: number | PipelineRef;
     };
     /**
@@ -9199,7 +9199,7 @@ export interface OperationParams {
      * after making a face.
      */
     "occt.geom.surfaces.cylindricalSurface": {
-        /** The distance from the axis to the surface, in model units. */
+        /** The distance from the axis to the surface, in model units, above 0. */
         radius?: number | PipelineRef;
         /** A point on the axis of the cylinder. */
         center?: [number, number, number] | PipelineRef;
@@ -10311,7 +10311,10 @@ export interface OperationParams {
         nrPeriodicSections?: number | PipelineRef;
         /** When true, the kernel smooths the fitted surface. */
         useSmoothing?: boolean | PipelineRef;
-        /** The highest polynomial degree the surface may use across the sections. */
+        /**
+         * The highest polynomial degree the surface may use across the sections, a whole number up to
+         * 25; 0 leaves the kernel's own limit.
+         */
         maxUDegree?: number | PipelineRef;
         /** How far the fitted surface may stray from the sections, in model units. */
         tolerance?: number | PipelineRef;
@@ -10360,7 +10363,10 @@ export interface OperationParams {
         nrPeriodicSections?: number | PipelineRef;
         /** When true, the kernel smooths the fitted surface. */
         useSmoothing?: boolean | PipelineRef;
-        /** The highest polynomial degree the surface may use across the sections. */
+        /**
+         * The highest polynomial degree the surface may use across the sections, a whole number up to
+         * 25; 0 leaves the kernel's own limit.
+         */
         maxUDegree?: number | PipelineRef;
         /** How far the fitted surface may stray from the sections, in model units. */
         tolerance?: number | PipelineRef;
@@ -10496,11 +10502,11 @@ export interface OperationParams {
         offset?: number | PipelineRef;
     };
     /**
-     * Moves the boundary of a shape outward, or inward for a negative distance, by a fixed
-     * distance: a wire grows into a parallel outline, a face or solid into a bigger one.
+     * Moves the boundary of a shape outward, or inward for a negative distance: a wire into a
+     * parallel outline, a face or solid into a bigger one.
      *
-     * A wire or edge is offset in its own plane, or on `face` when given; corners are rounded. A
-     * distance of 0 returns the shape as it is.
+     * A wire or edge is offset in its own plane, or on `face` when given, with rounded corners. A
+     * distance of 0 gives the same shape in a new handle the caller deletes.
      */
     "occt.operations.offset": {
         /** The shape to offset: a wire, edge, face, shell or solid. */
@@ -10543,7 +10549,8 @@ export interface OperationParams {
      * Offsets a shape like `offset`, with a choice of how corners are joined: `arc` rounds them,
      * `intersection` extends the sides to a sharp corner, `tangent` keeps them tangent.
      *
-     * `removeIntEdges` drops the internal edges the offset can leave behind on a solid.
+     * `removeIntEdges` drops the internal edges the offset can leave behind on a solid. A distance
+     * of 0 gives the same shape in a new handle the caller deletes, as `offset` does.
      */
     "occt.operations.offsetAdv": {
         /** The shape to offset: a wire, edge, face, shell or solid. */
@@ -10620,7 +10627,7 @@ export interface OperationParams {
      * Sweeps one or more profile shapes along a path wire and closes the result into a solid.
      *
      * The profiles should be placed on the path; with several profiles the sweep blends from one to
-     * the next along the way.
+     * the next along the way. An edge profile is swept as a one-edge wire.
      */
     "occt.operations.pipe": {
         /** The main shape: the path wire for a pipe, the wire to extend when adding edges. */
@@ -10629,18 +10636,18 @@ export interface OperationParams {
         shapes: unknown[] | PipelineRef;
     };
     /**
-     * Sweeps a regular polygon along a wire, giving a bar with `nrCorners` flat sides.
+     * Sweeps a regular polygon along a wire, giving a bar with `nrCorners` flat sides, from 3 to 1000.
      *
      * The polygon of `radius` starts perpendicular to the wire. `makeSolid` gives a solid instead of
-     * a shell, `trihedronEnum` sets how the profile turns, and `forceApproxC1` smooths the result.
-     * An invalid bar is refused; on a nearly straight path, use the discrete trihedron.
+     * a shell, `trihedronEnum` sets how the profile turns and `forceApproxC1` smooths it. An invalid
+     * bar is refused; on a nearly straight path, use the discrete trihedron.
      */
     "occt.operations.pipePolylineWireNGon": {
         /** The path wire the tube follows. */
         shape: unknown | PipelineRef;
         /** The distance from the path to each corner of the polygon, in model units. */
         radius?: number | PipelineRef;
-        /** How many corners, and so flat sides, the tube has. */
+        /** How many corners, and so flat sides, the tube has, from 3 to 1000. */
         nrCorners?: number | PipelineRef;
         /** When true, the tube is a solid; when false it is an open shell. */
         makeSolid?: boolean | PipelineRef;
@@ -10662,7 +10669,7 @@ export interface OperationParams {
         shape: unknown | PipelineRef;
         /** The distance from the path to each corner of the polygon, in model units. */
         radius?: number | PipelineRef;
-        /** How many corners, and so flat sides, the tube has. */
+        /** How many corners, and so flat sides, the tube has, from 3 to 1000. */
         nrCorners?: number | PipelineRef;
         /** When true, the tube is a solid; when false it is an open shell. */
         makeSolid?: boolean | PipelineRef;
@@ -10832,13 +10839,13 @@ export interface OperationParams {
      * Extrudes a flat shape up along Y by `height` while twisting it by `angle` degrees about the Y
      * axis, like a twisted column.
      *
-     * The profile is a flat wire, or a face without holes whose outline is swept. With `makeSolid`
-     * true, the default, the twist is closed into a solid; otherwise it is a twisted shell.
+     * The profile is a flat wire or edge, or a face without holes, whose outline is swept from its
+     * own plane. With `makeSolid` true, the default, the twist is a solid, otherwise a shell.
      */
     "occt.operations.rotatedExtrude": {
         /** The flat profile to extrude, a wire or a face lying on the ground. */
         shape: unknown | PipelineRef;
-        /** How far the profile is extruded along Y, in model units. */
+        /** How far the profile is extruded along Y, in model units; 0 leaves nothing to twist along. */
         height?: number | PipelineRef;
         /** How far the profile turns about the Y axis over the height, in degrees. */
         angle?: number | PipelineRef;
@@ -10848,12 +10855,12 @@ export interface OperationParams {
     /**
      * Twists a profile upward as `rotatedExtrude` does, and reports what each part of the profile
      * became: `facesFromEdges` the twisted side each edge swept, `firstFaces` and `lastFaces` the
-     * bottom and top of a solid.
+     * bottom and top of a solid. A face profile becomes the bottom (`faces`), where it lay.
      */
     "occt.operations.rotatedExtrudeWithHistory": {
         /** The flat profile to extrude, a wire or a face lying on the ground. */
         shape: unknown | PipelineRef;
-        /** How far the profile is extruded along Y, in model units. */
+        /** How far the profile is extruded along Y, in model units; 0 leaves nothing to twist along. */
         height?: number | PipelineRef;
         /** How far the profile turns about the Y axis over the height, in degrees. */
         angle?: number | PipelineRef;
@@ -11011,6 +11018,9 @@ export interface OperationParams {
      * Splits a shape as `splitShapeWithShapes` does and gives the pieces as one compound, with one
      * history per shape given, the shape to split first: `faces` names the pieces each face was
      * cut into.
+     *
+     * With `nonDestructive` false, shapes that cut nothing off `shape` leave no pieces to follow,
+     * and the call is refused.
      */
     "occt.operations.splitShapeWithShapesWithHistory": {
         /** The shape to cut into pieces. */
@@ -11515,7 +11525,10 @@ export interface OperationParams {
          * toward the normal. Left out, the ground, facing +Y.
          */
         frame?: unknown | PipelineRef;
-        /** How thick the gear is along the frame's normal, in model units. */
+        /**
+         * How thick the gear is along the frame's normal, in model units. The teeth twist through at
+         * most 1000 degrees across it, or across each half of a herringbone gear.
+         */
         width?: number | PipelineRef;
         /**
          * The diameter of the hole through the middle of the gear, in model units; 0 leaves the gear
@@ -11597,7 +11610,10 @@ export interface OperationParams {
          * toward the normal. Left out, the ground, facing +Y.
          */
         frame?: unknown | PipelineRef;
-        /** How thick the gear is along the frame's normal, in model units. */
+        /**
+         * How thick the gear is along the frame's normal, in model units. The teeth twist through at
+         * most 1000 degrees across it, or across each half of a herringbone gear.
+         */
         width?: number | PipelineRef;
         /**
          * The diameter of the hole through the middle of the gear, in model units; 0 leaves the gear
@@ -12221,7 +12237,10 @@ export interface OperationParams {
          * divides evenly.
          */
         diameter?: number | PipelineRef;
-        /** The knurl's length along the axis, in millimetres. */
+        /**
+         * The knurl's length along the axis, in millimetres. A left, right or diamond knurl's grooves
+         * twist through at most 1000 degrees along it.
+         */
         length?: number | PipelineRef;
         /**
          * The distance between grooves round the circumference, one of DIN 82's: 0.5, 0.6, 0.8, 1, 1.2
@@ -12249,7 +12268,10 @@ export interface OperationParams {
          * divides evenly.
          */
         diameter?: number | PipelineRef;
-        /** The knurl's length along the axis, in millimetres. */
+        /**
+         * The knurl's length along the axis, in millimetres. A left, right or diamond knurl's grooves
+         * twist through at most 1000 degrees along it.
+         */
         length?: number | PipelineRef;
         /**
          * The distance between grooves round the circumference, one of DIN 82's: 0.5, 0.6, 0.8, 1, 1.2
@@ -12374,7 +12396,7 @@ export interface OperationParams {
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
         /** The distance from one crest to the next, in millimetres. Left out, the size's coarse pitch. */
         pitch?: number | PipelineRef;
-        /** The threaded length along the axis, in millimetres. */
+        /** The threaded length along the axis, in millimetres: at most 400 turns of the pitch. */
         length?: number | PipelineRef;
         /**
          * When true, the thread is cut in a hole drilled to the minor diameter, as in a nut; when false,
@@ -12400,7 +12422,7 @@ export interface OperationParams {
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
         /** The distance from one crest to the next, in millimetres. Left out, the size's coarse pitch. */
         pitch?: number | PipelineRef;
-        /** The threaded length along the axis, in millimetres. */
+        /** The threaded length along the axis, in millimetres: at most 400 turns of the pitch. */
         length?: number | PipelineRef;
         /**
          * When true, the thread is cut in a hole drilled to the minor diameter, as in a nut; when false,
@@ -13307,8 +13329,8 @@ export interface OperationParams {
         sense?: boolean | PipelineRef;
     };
     /**
-     * Cuts an arc out of a circle edge that starts at a point on the circle and spans a given
-     * angle, in degrees.
+     * Cuts an arc out of a circle edge from a point on the circle to an angle on it, in degrees,
+     * measured from the circle's own start rather than from the point.
      *
      * `sense` picks which way round the circle the arc runs.
      */
@@ -13317,7 +13339,10 @@ export interface OperationParams {
         circle: unknown | PipelineRef;
         /** The point on the circle where the arc starts. */
         point: [number, number, number] | PipelineRef;
-        /** How far the arc spans from the point, in degrees. */
+        /**
+         * Where the arc ends, in degrees on the circle, measured from the circle's own start rather
+         * than from `point`; an angle that lands on `point` is refused.
+         */
         alphaAngle?: number | PipelineRef;
         /**
          * Which way round the circle the arc runs: true follows the circle's own direction, false goes
@@ -13328,6 +13353,8 @@ export interface OperationParams {
     /**
      * Makes a circular arc that starts at the first point, passes through the middle one and ends
      * at the last.
+     *
+     * No arc passes through three points on one line or two at the same place, so those are refused.
      */
     "occt.shapes.edge.arcThroughThreePoints": {
         /** The point the arc begins at. */
@@ -13341,7 +13368,8 @@ export interface OperationParams {
      * Makes a circular arc from one point to another that leaves the first point in a given
      * direction.
      *
-     * The tangent fixes the plane and the radius of the arc.
+     * The tangent fixes the plane and the radius of the arc, so it must not run along the line from
+     * the start to the end, and the two points must differ.
      */
     "occt.shapes.edge.arcThroughTwoPointsAndTangent": {
         /** The point the arc begins at, where the tangent applies. */
@@ -13557,7 +13585,7 @@ export interface OperationParams {
     };
     /** Makes a full circle as one closed edge, lying in the plane whose normal is `direction`. */
     "occt.shapes.edge.createCircleEdge": {
-        /** The distance from the center to the circle, in model units. */
+        /** The distance from the center to the circle, in model units, above 0. */
         radius?: number | PipelineRef;
         /** The point the circle is centered on. */
         center?: [number, number, number] | PipelineRef;
@@ -13567,7 +13595,7 @@ export interface OperationParams {
     /**
      * Makes a full ellipse as one closed edge, lying in the plane whose normal is `direction`.
      *
-     * `radiusMajor` must not be smaller than `radiusMinor`, or the kernel refuses the ellipse.
+     * Both radii must be above 0, and `radiusMajor` must not be smaller than `radiusMinor`.
      */
     "occt.shapes.edge.createEllipseEdge": {
         /** The point the ellipse is centered on. */
@@ -13575,11 +13603,11 @@ export interface OperationParams {
         /** The normal of the plane the ellipse lies in; the default lays it flat on the ground. */
         direction?: [number, number, number] | PipelineRef;
         /**
-         * The half-width across the ellipse's short axis, in model units; must not exceed
-         * `radiusMajor`.
+         * The half-width across the ellipse's short axis, in model units, above 0; must not
+         * exceed `radiusMajor`.
          */
         radiusMinor?: number | PipelineRef;
-        /** The half-width along the ellipse's long axis, in model units. */
+        /** The half-width along the ellipse's long axis, in model units, above 0. */
         radiusMajor?: number | PipelineRef;
     };
     /**
@@ -13688,7 +13716,11 @@ export interface OperationParams {
         /** Edges shorter than this, in model units, are traced with the minimum number of points. */
         minimumLength?: number | PipelineRef;
     };
-    /** Reads the point where an edge ends, in the edge's own direction. */
+    /**
+     * Reads the point where an edge ends, in the edge's own direction.
+     *
+     * A degenerate edge, such as the pole of a ball, is a single point, and that point is its end.
+     */
     "occt.shapes.edge.endPointOnEdge": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -14171,7 +14203,11 @@ export interface OperationParams {
          */
         params: number[] | PipelineRef;
     };
-    /** Reads the point where an edge starts, in the edge's own direction. */
+    /**
+     * Reads the point where an edge starts, in the edge's own direction.
+     *
+     * A degenerate edge, such as the pole of a ball, is a single point, and that point is its start.
+     */
     "occt.shapes.edge.startPointOnEdge": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -14276,7 +14312,7 @@ export interface OperationParams {
      * `direction` is the normal of its plane: the default `[0, 1, 0]` lays it flat on the ground.
      */
     "occt.shapes.face.createCircleFace": {
-        /** The distance from the center to the circle, in model units. */
+        /** The distance from the center to the circle, in model units, above 0. */
         radius?: number | PipelineRef;
         /** The point the circle is centered on. */
         center?: [number, number, number] | PipelineRef;
@@ -14287,7 +14323,7 @@ export interface OperationParams {
      * Creates a flat elliptical face.
      *
      * `direction` is the normal of its plane: the default `[0, 1, 0]` lays it flat on the ground.
-     * `radiusMajor` must be at least `radiusMinor`.
+     * Both radii must be above 0, and `radiusMajor` must be at least `radiusMinor`.
      */
     "occt.shapes.face.createEllipseFace": {
         /** The point the ellipse is centered on. */
@@ -14295,11 +14331,11 @@ export interface OperationParams {
         /** The normal of the plane the ellipse lies in; the default lays it flat on the ground. */
         direction?: [number, number, number] | PipelineRef;
         /**
-         * The half-width across the ellipse's short axis, in model units; must not exceed
-         * `radiusMajor`.
+         * The half-width across the ellipse's short axis, in model units, above 0; must not
+         * exceed `radiusMajor`.
          */
         radiusMinor?: number | PipelineRef;
-        /** The half-width along the ellipse's long axis, in model units. */
+        /** The half-width along the ellipse's long axis, in model units, above 0. */
         radiusMajor?: number | PipelineRef;
     };
     /**
@@ -16660,11 +16696,11 @@ export interface OperationParams {
     };
     /**
      * Makes a smooth B-spline wire that approximates a list of points: it follows them closely but
-     * need not pass through each one exactly.
+     * need not pass through each one.
      *
-     * `closed` appends the first point again so the ends meet. The fit uses a degree between 3 and
-     * 8 and a tolerance of 0.001 model units; use `interpolatePoints` when the curve must go
-     * through the points.
+     * `closed` appends the first point so the ends meet. The fit has a degree of 3 to 8 and a
+     * tolerance of 0.001; use `interpolatePoints` to pass through the points. It needs two points
+     * or more.
      */
     "occt.shapes.wire.createBSpline": {
         /** The points the curve follows closely, in order; it need not pass through them exactly. */
@@ -16724,7 +16760,7 @@ export interface OperationParams {
      * `direction`; the default `[0, 1, 0]` lays it flat on the ground.
      */
     "occt.shapes.wire.createCircleWire": {
-        /** The distance from the center to the circle, in model units. */
+        /** The distance from the center to the circle, in model units, above 0. */
         radius?: number | PipelineRef;
         /** The point the circle is centered on. */
         center?: [number, number, number] | PipelineRef;
@@ -16735,7 +16771,7 @@ export interface OperationParams {
      * Makes a full ellipse as a closed single-edge wire, lying in the plane whose normal is
      * `direction`.
      *
-     * `radiusMajor` must not be smaller than `radiusMinor`, or the kernel refuses the ellipse; the
+     * Both radii must be above 0 and `radiusMajor` must not be smaller than `radiusMinor`; the
      * default direction `[0, 1, 0]` lays it flat on the ground.
      */
     "occt.shapes.wire.createEllipseWire": {
@@ -16744,11 +16780,11 @@ export interface OperationParams {
         /** The normal of the plane the ellipse lies in; the default lays it flat on the ground. */
         direction?: [number, number, number] | PipelineRef;
         /**
-         * The half-width across the ellipse's short axis, in model units; must not exceed
-         * `radiusMajor`.
+         * The half-width across the ellipse's short axis, in model units, above 0; must not
+         * exceed `radiusMajor`.
          */
         radiusMinor?: number | PipelineRef;
-        /** The half-width along the ellipse's long axis, in model units. */
+        /** The half-width along the ellipse's long axis, in model units, above 0. */
         radiusMajor?: number | PipelineRef;
     };
     /**
@@ -16756,14 +16792,18 @@ export interface OperationParams {
      * radius grows evenly from `startRadius` to `endRadius`.
      *
      * The default direction `[0, 1, 0]` lays it flat on the ground; `clockwise` reverses the
-     * winding, and the curve is approximated within `tolerance`.
+     * winding and `tolerance` bounds the fit. It may start at the center; an `endRadius` or
+     * `numTurns` of 0 or less is refused.
      */
     "occt.shapes.wire.createFlatSpiralWire": {
         /** The distance from the center where the spiral starts, in model units. */
         startRadius?: number | PipelineRef;
-        /** The distance from the center where the spiral ends, in model units. */
+        /** The distance from the center where the spiral ends, in model units, above 0. */
         endRadius?: number | PipelineRef;
-        /** How many full turns the spiral makes between the two radii; fractions are allowed. */
+        /**
+         * How many full turns the spiral makes between the two radii, above 0; fractions are
+         * allowed.
+         */
         numTurns?: number | PipelineRef;
         /** The point the spiral winds around. */
         center?: [number, number, number] | PipelineRef;
@@ -16826,14 +16866,14 @@ export interface OperationParams {
      *
      * It starts beside `center` and climbs along `direction`; `clockwise` reverses the winding. The
      * helix is approximated by a smooth curve within `tolerance`. A radius, pitch or height of 0 or
-     * less gives a null wire.
+     * less is refused.
      */
     "occt.shapes.wire.createHelixWire": {
-        /** The distance from the axis to the coil, in model units. */
+        /** The distance from the axis to the coil, in model units, above 0. */
         radius?: number | PipelineRef;
-        /** How far the coil climbs along the axis in one full turn, in model units. */
+        /** How far the coil climbs along the axis in one full turn, in model units, above 0. */
         pitch?: number | PipelineRef;
-        /** The total climb of the coil along the axis, in model units. */
+        /** The total climb of the coil along the axis, in model units, above 0. */
         height?: number | PipelineRef;
         /** The point on the axis where the coil starts climbing from. */
         center?: [number, number, number] | PipelineRef;
@@ -16846,14 +16886,15 @@ export interface OperationParams {
     };
     /**
      * Makes a helix wire like `createHelixWire`, but sized by `numTurns` instead of a height: the
-     * coil climbs `pitch` model units per turn, `numTurns` times.
+     * coil climbs `pitch` model units per turn, `numTurns` times. A radius, pitch or number of turns
+     * of 0 or less is refused.
      */
     "occt.shapes.wire.createHelixWireByTurns": {
-        /** The distance from the axis to the coil, in model units. */
+        /** The distance from the axis to the coil, in model units, above 0. */
         radius?: number | PipelineRef;
-        /** How far the coil climbs along the axis in one full turn, in model units. */
+        /** How far the coil climbs along the axis in one full turn, in model units, above 0. */
         pitch?: number | PipelineRef;
-        /** How many full turns the coil makes; fractions are allowed. */
+        /** How many full turns the coil makes, above 0; fractions are allowed. */
         numTurns?: number | PipelineRef;
         /** The point on the axis where the coil starts climbing from. */
         center?: [number, number, number] | PipelineRef;
@@ -17103,17 +17144,17 @@ export interface OperationParams {
      * Makes a conical helix wire whose radius changes evenly from `startRadius` at the base to
      * `endRadius` at the top, climbing `pitch` model units per turn until it reaches `height`.
      *
-     * It starts beside `center` and climbs along `direction`; `clockwise` reverses the winding. The
-     * curve is approximated within `tolerance`.
+     * It starts beside `center`, climbs along `direction` and is approximated within `tolerance`;
+     * `clockwise` reverses the winding. A radius, pitch or height of 0 or less is refused.
      */
     "occt.shapes.wire.createTaperedHelixWire": {
-        /** The distance from the axis to the coil at its base, in model units. */
+        /** The distance from the axis to the coil at its base, in model units, above 0. */
         startRadius?: number | PipelineRef;
-        /** The distance from the axis to the coil at its top, in model units. */
+        /** The distance from the axis to the coil at its top, in model units, above 0. */
         endRadius?: number | PipelineRef;
-        /** How far the coil climbs along the axis in one full turn, in model units. */
+        /** How far the coil climbs along the axis in one full turn, in model units, above 0. */
         pitch?: number | PipelineRef;
-        /** The total climb of the coil along the axis, in model units. */
+        /** The total climb of the coil along the axis, in model units, above 0. */
         height?: number | PipelineRef;
         /** The point on the axis where the coil starts climbing from. */
         center?: [number, number, number] | PipelineRef;
@@ -17910,8 +17951,8 @@ export interface OperationParams {
     /**
      * Projects a wire onto a shape along a direction, like casting its shadow onto the surface.
      *
-     * The result is a compound of the curves where the projection meets the shape's faces, which
-     * can be on both its near and far side. Cut a face with it through
+     * The result is a compound of the curves where the projection meets the shape's faces, near
+     * side and far side alike, and empty when it misses. Cut a face with it through
      * `shapes.face.createFaceFromWireOnFace` or use it as a path.
      */
     "occt.shapes.wire.project": {
@@ -17957,7 +17998,10 @@ export interface OperationParams {
          */
         maxDistance?: number | PipelineRef;
     };
-    /** Projects several wires onto a shape along one direction, as `project` does for one. */
+    /**
+     * Projects several wires onto a shape along one direction, as `project` does for one: a wire
+     * whose projection misses gives an empty compound.
+     */
     "occt.shapes.wire.projectWires": {
         /** The wires to cast onto the shape, one result per wire. */
         wires: unknown[] | PipelineRef;
@@ -19985,11 +20029,11 @@ export interface OperationParams {
      * Rounds the corners of a path in space with arcs, drawn as short straight pieces.
      *
      * Where the segments beside a corner are too short for `radius`, it gets the largest arc that
-     * fits half of each. The ends stay where they are.
+     * fits half of each. The ends stay; a closed polyline is refused.
      * Example: [[0,0,0], [10,0,0], [10,10,0]], radius 2 -> one quarter arc at the corner
      */
     "polyline.roundCorners": {
-        /** The path, an open polyline of at least two points. */
+        /** The path, an open polyline of at least two points; one with `isClosed` set is refused. */
         polyline: unknown | PipelineRef;
         /** The radius each corner is rounded with; it shrinks where the segments beside it are short. */
         radius?: number | PipelineRef;
@@ -20058,7 +20102,7 @@ export interface OperationParams {
      * Example: a straight path along X -> frames that differ only in origin
      */
     "polyline.sweepFrames": {
-        /** The path, an open polyline of at least two points. */
+        /** The path, an open polyline of at least two points; one with `isClosed` set is refused. */
         polyline: unknown | PipelineRef;
         /** Roughly where the profile's X axis points at the start; it is turned square to the path. */
         firstDirection?: [number, number, number] | PipelineRef;
@@ -20071,7 +20115,7 @@ export interface OperationParams {
      * Example: a straight path along Z -> matrices that only move up it
      */
     "polyline.sweepPlacements": {
-        /** The path, an open polyline of at least two points. */
+        /** The path, an open polyline of at least two points; one with `isClosed` set is refused. */
         polyline: unknown | PipelineRef;
         /** Roughly where the profile's X axis points at the start; it is turned square to the path. */
         firstDirection?: [number, number, number] | PipelineRef;
@@ -20080,11 +20124,12 @@ export interface OperationParams {
      * Finds the direction a path heads in at each of its points.
      *
      * At an inner point it bisects the segments either side; at the ends it follows the end
-     * segments, unless `startTangent` or `endTangent` is given. Every direction has length 1.
+     * segments, unless `startTangent` or `endTangent` is given. Every direction has length 1. A
+     * closed polyline is refused.
      * Example: [[0,0,0], [1,0,0], [1,1,0]] -> [[1,0,0], [0.707,0.707,0], [0,1,0]]
      */
     "polyline.tangents": {
-        /** The path, an open polyline of at least two points. */
+        /** The path, an open polyline of at least two points; one with `isClosed` set is refused. */
         polyline: unknown | PipelineRef;
         /** The direction at the first point; left out, the first segment's. */
         startTangent?: [number, number, number] | PipelineRef;

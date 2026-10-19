@@ -11,6 +11,7 @@ import {
     CLEARANCE_HOLES,
     COARSE_THREADS,
     CONE_LONG_ANGLE,
+    COUNTERBORE_SINK,
     CONE_SHORT_ANGLE,
     CUP_ANGLE,
     HEX_BOLT_HEADS,
@@ -72,7 +73,7 @@ export function clearanceHoleDiameter(size: MetricSize, fit: ClearanceFit = "nor
 
 export function socketHeadCapScrewSizes(size: MetricSize): SocketHeadCapScrewSizes {
     const row = SOCKET_HEAD_CAP_SCREWS[checkedSize(size)];
-    return { ...row, threadLength: Math.round(2 * COARSE_THREADS[size].diameter + SCREW_THREAD_EXTRA) };
+    return { ...row, threadLength: Math.round(2 * COARSE_THREADS[size].diameter + SCREW_THREAD_EXTRA), counterboreDepth: roundedToMillionths(row.headHeight + COUNTERBORE_SINK) };
 }
 
 export function hexBoltSizes(size: MetricSize, length: number): HexBoltSizes {

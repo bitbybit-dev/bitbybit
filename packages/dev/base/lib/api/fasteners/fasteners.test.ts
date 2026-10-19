@@ -49,7 +49,7 @@ describe("fasteners", () => {
             const screw = socketHeadCapScrewSizes("M5");
 
             // Assert
-            expect(screw).toEqual({ headDiameter: 8.5, headHeight: 5, socketSize: 4, socketDepth: 2.5, counterboreDiameter: 10, threadLength: 22 });
+            expect(screw).toEqual({ headDiameter: 8.5, headHeight: 5, socketSize: 4, socketDepth: 2.5, counterboreDiameter: 10, threadLength: 22, counterboreDepth: 5.5 });
         });
 
         it("should thread more of a longer ISO 4014 bolt", () => {

@@ -47,6 +47,8 @@ export interface SocketHeadCapScrewSizes {
     readonly threadLength: number;
     /** The diameter of the counterbore that sinks the head, after DIN 974-1. */
     readonly counterboreDiameter: number;
+    /** The depth of that counterbore: the head's height and half a millimetre more, so the head sits just below the face. */
+    readonly counterboreDepth: number;
 }
 
 /**

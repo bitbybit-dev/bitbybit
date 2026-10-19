@@ -171,7 +171,7 @@ export class OCCTDesign {
         }
         return this.inputProblems(() => {
             const built = runDesign(document, this.choiceOf(inputs), { ...context, progress: new DesignProgress(document.features.length) });
-            return { ...built, structure: partStructureOf(document, built.parts) };
+            return { ...built, structure: partStructureOf(document, built.parts, this.occ) };
         });
     }
 

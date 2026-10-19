@@ -115,6 +115,32 @@ describe("OCCT design: fastener assemblies and joints at their limits", () => {
         });
     });
 
+    describe("standard parts in an exported assembly", () => {
+        it("should hand the assembly document every placed screw as a part, its placement baked, though the kernel moved the screw by a location", () => {
+            // Arrange
+            const documents = [tappedPlate("M6"), capScrew("M6")];
+            const built = occt.design.build({ document: screwedDown, documents });
+            const screw = built.parts.find(part => part.id.startsWith("screw"))!;
+
+            // Act
+            const document = occt.assembly.manager.buildAssemblyDocument({ structure: built.structure! });
+            const tree = occt.assembly.query.getAssemblyHierarchy({ document });
+            const placed = built.structure!.parts.map(part => part.shape.Location());
+            const identities = placed.map(location => location.IsIdentity());
+            placed.forEach(location => { location.delete(); });
+            const screwLocation = screw.shape.Location();
+            const located = !screwLocation.IsIdentity();
+            screwLocation.delete();
+            freed(built);
+            document.delete();
+
+            // Assert
+            expect(located).toBe(true);
+            expect(identities).toEqual([true, true]);
+            expect(tree.nodes.filter(node => node.nodeType === "instance-part").map(node => node.name).sort()).toEqual(["plate", "screws left", "screws right"].sort());
+        });
+    });
+
     describe("a boolean input an expression gives", () => {
         const hexBolt = (full: boolean): Part => ({
             schemaVersion: 1,

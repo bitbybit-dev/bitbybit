@@ -1,7 +1,8 @@
 import { linearToSrgb, srgbToLinear } from "@bitbybit-dev/base/lib/api/services/helpers/color/color-space";
-import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
+import { release } from "../base/release";
 import { stableJson } from "./cache";
 
 type Part = Models.OCCT.DesignBuiltPart<TopoDS_Shape>;
@@ -137,10 +138,30 @@ export function withProperties(values: PropertyValues | undefined): CarriedPrope
     return values === undefined || Object.keys(values).length === 0 ? {} : { properties: values };
 }
 
-/** A built part as the assembly builders take it: a new handle on its shape, its name, its colours and finish, and its properties. */
-export function structurePartOf(part: Part): Models.OCCT.AssemblyPartDef<TopoDS_Shape> {
+function placementBaked(shape: TopoDS_Shape, occ: BitbybitOcctModule): TopoDS_Shape {
+    const location = shape.Location();
+    try {
+        if (location.IsIdentity()) {
+            return shape.clone();
+        }
+        const transformation = location.Transformation();
+        const identity = new occ.TopLoc_Location();
+        const unplaced = shape.Located(identity);
+        const baking = new occ.BRepBuilderAPI_Transform(unplaced, transformation, true);
+        try {
+            return baking.Shape();
+        } finally {
+            [baking, unplaced, identity, transformation].forEach(release);
+        }
+    } finally {
+        release(location);
+    }
+}
+
+/** A built part as the assembly builders take it: its shape, with a placement it carries baked into its geometry so the document holds it as a part and not a reference, its name, its colours and finish, and its properties. */
+export function structurePartOf(part: Part, occ: BitbybitOcctModule): Models.OCCT.AssemblyPartDef<TopoDS_Shape> {
     const colorRgba = colourOf(part);
-    return { id: part.id, shape: part.shape.clone(), name: part.name, ...(colorRgba === undefined ? {} : { colorRgba }), ...structureLookOf(part), ...withProperties(part.properties) };
+    return { id: part.id, shape: placementBaked(part.shape, occ), name: part.name, ...(colorRgba === undefined ? {} : { colorRgba }), ...structureLookOf(part), ...withProperties(part.properties) };
 }
 
 /**
@@ -148,9 +169,9 @@ export function structurePartOf(part: Part): Models.OCCT.AssemblyPartDef<TopoDS_
  * placed once under it where it was built, so STEP and glTF keep the parts' names, colours and
  * properties, as an assembly's build does.
  */
-export function partStructureOf(document: Models.OCCT.DesignPartDocument, parts: readonly Part[]): Models.OCCT.AssemblyStructureDef<TopoDS_Shape> {
+export function partStructureOf(document: Models.OCCT.DesignPartDocument, parts: readonly Part[], occ: BitbybitOcctModule): Models.OCCT.AssemblyStructureDef<TopoDS_Shape> {
     return {
-        parts: parts.map(structurePartOf),
+        parts: parts.map(part => structurePartOf(part, occ)),
         nodes: [
             { id: ROOT_NODE, type: "assembly", name: document.meta?.name ?? "Part" },
             ...parts.map((part): Models.OCCT.AssemblyNodeDef => ({ id: part.id, type: "instance", name: part.name, parentId: ROOT_NODE, partId: part.id })),

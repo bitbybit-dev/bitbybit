@@ -545,7 +545,7 @@ function assembled(document: Models.OCCT.DesignAssemblyDocument, choice: Paramet
     const bom = parts.map(part => ({ part: part.id, name: part.name, quantity: counts.get(part.id)!, properties: part.properties }));
     const properties = propertiesOf(document.properties, parameters, "", gathered);
     const structure: Models.OCCT.AssemblyStructureDef<TopoDS_Shape> = {
-        parts: parts.map(structurePartOf),
+        parts: parts.map(part => structurePartOf(part, context.occ)),
         nodes: [
             { id: ROOT_NODE, type: "assembly", name: document.meta?.name ?? "Assembly", ...withProperties(properties) },
             ...gathered.components.map((component): Models.OCCT.AssemblyNodeDef => ({

@@ -9,6 +9,7 @@ import { bodyKey, isBodyKey, isSketchKey, nameInKey, sketchKey } from "./state";
 import { importPlan, localPlan } from "./local-features";
 import { scriptPlan, suppliedOutcome } from "./scripts";
 import { operationPlan } from "./operation-steps";
+import { machiningPlan } from "./machining-features";
 import { bodyPlan, sketchPlan, sweepPlan } from "./steps";
 import { cleanedUpOnError, DesignPending, DesignProblem, isKernelTrap, pointer, tagTrap } from "./problems";
 import { readKernelException } from "../../kernel-exception";
@@ -71,6 +72,13 @@ function planOf(feature: Feature, path: string, run: DesignRun): DesignPlan {
         case "boss":
         case "pocket":
             return localPlan(feature, path, run);
+        case "keyway":
+        case "flat":
+        case "ringGroove":
+        case "knurl":
+        case "spline":
+        case "thread":
+            return machiningPlan(feature, path, run);
         case "import":
             return importPlan(feature, path, run);
         case "operation":

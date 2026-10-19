@@ -947,10 +947,19 @@
                     "$ref": "#/$defs/DesignFilletFeature"
                 },
                 {
+                    "$ref": "#/$defs/DesignFlatFeature"
+                },
+                {
                     "$ref": "#/$defs/DesignHoleFeature"
                 },
                 {
                     "$ref": "#/$defs/DesignImportFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignKeywayFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignKnurlFeature"
                 },
                 {
                     "$ref": "#/$defs/DesignLinearPatternFeature"
@@ -980,6 +989,9 @@
                     "$ref": "#/$defs/DesignRevolveFeature"
                 },
                 {
+                    "$ref": "#/$defs/DesignRingGrooveFeature"
+                },
+                {
                     "$ref": "#/$defs/DesignScriptFeature"
                 },
                 {
@@ -989,7 +1001,13 @@
                     "$ref": "#/$defs/DesignSketchFeature"
                 },
                 {
+                    "$ref": "#/$defs/DesignSplineFeature"
+                },
+                {
                     "$ref": "#/$defs/DesignSweepFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignThreadFeature"
                 },
                 {
                     "$ref": "#/$defs/DesignTransformFeature"
@@ -1059,6 +1077,70 @@
                 "select"
             ],
             "additionalProperties": {}
+        },
+        "DesignFlatFeature": {
+            "description": "Grinds a flat `depth` into a shaft, `length` long, so a set screw has a face to bite on. `angle`\nturns it about the axis as for a keyway. Its faces are named `flat`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "flat"
+                },
+                "length": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "depth": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "angle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "on": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "at": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "flip": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "length",
+                "depth",
+                "body",
+                "on",
+                "id"
+            ],
+            "additionalProperties": false
         },
         "DesignFrame": {
             "description": "A coordinate frame: `origin`, the `normal` it faces along and the in-plane `direction` its x axis\nruns along.",
@@ -1537,6 +1619,135 @@
                 "revolute",
                 "slider"
             ]
+        },
+        "DesignKeywayFeature": {
+            "description": "Cuts a DIN 6885 keyway, sized for the face's diameter, `length` long: into a shaft, or through a\nhub's bore, where it ends where `at` and `length` say. `angle` turns it about the axis, in degrees\nright-handed about the axis's positive direction whichever end `flip` starts from, from the side\nthe world's x axis points to (or y, for an axis along x). Its faces are named `keyway`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "keyway"
+                },
+                "length": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "angle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "on": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "at": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "flip": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "length",
+                "body",
+                "on",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignKnurlFeature": {
+            "description": "Knurls a shaft over `length`, `pitch` apart: `straight` ridges along it (the default), ridges\nleaning `left` or `right`, or a `diamond` crosshatch. Its faces are named `knurl`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "knurl"
+                },
+                "length": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "pitch": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "pattern": {
+                    "type": "string",
+                    "enum": [
+                        "diamond",
+                        "left",
+                        "right",
+                        "straight"
+                    ]
+                },
+                "body": {
+                    "type": "string"
+                },
+                "on": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "at": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "flip": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "length",
+                "body",
+                "on",
+                "id"
+            ],
+            "additionalProperties": false
         },
         "DesignLabel": {
             "description": "Text shown to people: one string, or one per language by locale code, such as\n`{ \"en\": \"Width\", \"de\": \"Breite\" }`.",
@@ -3052,6 +3263,59 @@
             ],
             "additionalProperties": false
         },
+        "DesignRingGrooveFeature": {
+            "description": "Cuts the DIN 471 groove a retaining ring sits in on a shaft, or the DIN 472 groove in a bore, sized\nfor the face's diameter, at `at`. Its faces are named `groove`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "ringGroove"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "on": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "at": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "flip": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "on",
+                "id"
+            ],
+            "additionalProperties": false
+        },
         "DesignScriptFeature": {
             "description": "Runs a script on the document's geometry: the code of the asset `script` names, pinned by its\nSHA-256, takes `params` as an operation does (`{ \"body\": \"<id>\" }` passes a body's shape and\n`{ \"expr\": \"<expression>\" }` a number), and `{ \"faces\": <face reference> }` and\n`{ \"edges\": <edge reference> }` pass the indexes a reference finds on the body it names. It\nreturns a shape and the roles its faces take, such as `{ shape, roles: { tooth: [3, 4] } }`, which\nname those faces as other features' roles do; every other face is named `face`. With `body` the\nresult goes on as that body, otherwise it starts a body named by the feature's id. A kernel runs\nno code: a build lists the feature under `pending`, and the caller that runs the script builds\nagain with its outcome.",
             "type": "object",
@@ -3279,6 +3543,70 @@
                 }
             ]
         },
+        "DesignSplineFeature": {
+            "description": "Cuts DIN 5480 involute spline teeth of `module` into a bore over exactly `length` from `at`, a hub\nthe splined shaft of reference `diameter` and the same module slides into. With `diameter` left\nout the spline is the one whose hub teeth end on the bore; a bore wider than the hub's tips is\nrefused. Its faces are named `spline`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "spline"
+                },
+                "length": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "module": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "diameter": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "on": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "at": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "flip": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "length",
+                "module",
+                "body",
+                "on",
+                "id"
+            ],
+            "additionalProperties": false
+        },
         "DesignSweepFeature": {
             "description": "Sweeps a sketch's outline along the outline of the sketch `path`, which should start where the\nprofile lies and cross it. Bodies and joins as for `extrude`; its faces are named `start`, `end`\nand `side` (from each profile command).",
             "type": "object",
@@ -3342,6 +3670,69 @@
                     "type": "string"
                 }
             ]
+        },
+        "DesignThreadFeature": {
+            "description": "Models a metric thread over `length`: outside on a shaft of the size's diameter, or inside a bore\ndrilled for the size's tap at the pitch. `size`, such as `M8`, is found from the face's diameter\nwhen left out; `pitch` is the size's coarse pitch when left out. A bore at a size's nominal\ndiameter, as a tapped `hole` is drawn, is refused: drill it to the tap drill to model its thread.\nIts faces are named `thread`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "thread"
+                },
+                "length": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "size": {
+                    "$ref": "#/$defs/DesignText"
+                },
+                "pitch": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "on": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "at": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "flip": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "length",
+                "body",
+                "on",
+                "id"
+            ],
+            "additionalProperties": false
         },
         "DesignTransformFeature": {
             "description": "Moves `body` as one rigid piece: it turns `rotate` degrees about X, then Y, then Z, each about an\naxis through `pivot` (the origin when it is left out), and then shifts by `translate`. The body\nkeeps its faces and their names, so references made before the move still find them.",

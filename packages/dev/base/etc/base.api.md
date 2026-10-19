@@ -3427,6 +3427,7 @@ export interface SetScrewSizes {
 
 // @public
 export interface SocketHeadCapScrewSizes {
+    readonly counterboreDepth: number;
     readonly counterboreDiameter: number;
     readonly headDiameter: number;
     readonly headHeight: number;

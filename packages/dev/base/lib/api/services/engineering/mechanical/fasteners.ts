@@ -33,9 +33,10 @@ export class EngineeringFasteners {
 
     /**
      * Gives the head of an ISO 4762 cap screw: its diameter and height, the size and depth of the
-     * hexagon recess in it, the threaded length and the counterbore that sinks the head.
+     * hexagon recess in it, the threaded length and the counterbore that sinks the head, its
+     * diameter and its depth.
      *
-     * Example: M5 -> head 8.5 across, 5 high, a 4 mm recess
+     * Example: M5 -> head 8.5 across, 5 high, a 4 mm recess, sunk in a counterbore 10 across and 5.5 deep
      * @param inputs - The size
      * @returns The head's sizes in millimetres
      * @group screws

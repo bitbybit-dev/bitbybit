@@ -1,5 +1,5 @@
 import { isRecord } from "@bitbybit-dev/base";
-import type * as Inputs from "../../api/inputs";
+import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import type { ExpressionNode } from "./expressions";
 import { namesIn, parseExpression } from "./expressions";
@@ -11,7 +11,8 @@ import type { ParameterChoice } from "./values";
 import { directionOf, hasOnlyKey, isExpressionObject, numberOf, pointOf, templatePieces } from "./values";
 import { FULL_TURN } from "./constants";
 import { holeSizeOf } from "./hole-fastener";
-import { DELETE, FIRST_PRINTABLE, LAST_CONTROL, LINE_SEPARATOR, PARAGRAPH_SEPARATOR } from "./typescript-export.constants";
+import type { MachiningFeature } from "./machining-types";
+import { DELETE, FIRST_PRINTABLE, FROM_FEATURE, LAST_CONTROL, LINE_SEPARATOR, MACHINING_ENUMS, PARAGRAPH_SEPARATOR } from "./typescript-export.constants";
 import type { MathHelper } from "./typescript-math";
 import { IN_DEGREES, MATH_HELPERS, mathHelperDeclarations } from "./typescript-math";
 
@@ -430,6 +431,21 @@ class Exporter {
         this.line(`${body} = await occt.features.${feature.type}({ shape: ${body}, profile: ${this.variable(feature.profile)}, sketchFaceIndex: ${trace.sketchFace}, direction: ${this.numbers(direction)}, ${extent} });`);
     }
 
+    private machined(feature: MachiningFeature, trace: DesignTrace): void {
+        const body = this.variable(feature.body);
+        const cut = trace.machining!;
+        const given = new Map<string, unknown>(Object.entries(feature));
+        const fields = Object.entries(cut.inputs).map(([key, value]) => {
+            const enumName = MACHINING_ENUMS.get(key);
+            const enumKey = enumName === undefined ? undefined : Object.entries(Inputs.Engineering[enumName]).find(([, member]) => member === value)?.[0];
+            const code = key === "frame" ? this.frameCode(trace.frame!)
+                : enumKey !== undefined ? `Bit.Inputs.Engineering.${enumName!}.${enumKey}`
+                    : FROM_FEATURE.includes(key) && given.get(key) !== undefined ? this.code(given.get(key)) : this.code(value);
+            return `${key}: ${code}`;
+        });
+        this.line(`${body} = await occt.parts.mechanical.machining.${cut.operation}({ shape: ${body}, ${fields.join(", ")} });`);
+    }
+
     private imported(feature: Models.OCCT.DesignImportFeature, trace: DesignTrace): void {
         const name = this.fresh(feature.id);
         this.variables.set(feature.id, name);
@@ -540,6 +556,13 @@ class Exporter {
                 return this.prism(feature, trace);
             case "import":
                 return this.imported(feature, trace);
+            case "keyway":
+            case "flat":
+            case "ringGroove":
+            case "knurl":
+            case "spline":
+            case "thread":
+                return this.machined(feature, trace);
             case "operation": {
                 const call = `${feature.operation}(${this.operationValue(feature.params)})`;
                 if (feature.body === undefined) {

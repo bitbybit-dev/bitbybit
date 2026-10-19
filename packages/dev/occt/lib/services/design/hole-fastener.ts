@@ -3,7 +3,7 @@ import { EngineeringFasteners, EngineeringThreads, isRecord } from "@bitbybit-de
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { release } from "../base/release";
-import { HOLE_HEAD_SINK, TAPPED_WALL_SHARE } from "./constants";
+import { TAPPED_WALL_SHARE } from "./constants";
 import { faceSignatures } from "./helpers";
 import { tripleOf } from "./placement";
 import type { DesignRun } from "./state";
@@ -55,7 +55,7 @@ export function holeSizeOf(fastener: Models.OCCT.DesignHoleFastener, parameters:
     const fit = fastener.fit ?? "normal";
     const diameter = fit === "tapped" ? THREADS.metricThread({ size }).diameter : FASTENERS.clearanceHole({ size, fit: Inputs.Engineering.clearanceFitEnum[fit] });
     const head = fastener.head === undefined ? undefined : FASTENERS.socketHeadCapScrewSizes({ size });
-    return { diameter, counterbore: head === undefined ? undefined : { diameter: head.counterboreDiameter, depth: head.headHeight + HOLE_HEAD_SINK }, tapped: fit === "tapped" };
+    return { diameter, counterbore: head === undefined ? undefined : { diameter: head.counterboreDiameter, depth: head.counterboreDepth }, tapped: fit === "tapped" };
 }
 
 export function tappedWallsOf(shape: TopoDS_Shape, faces: readonly number[], frame: Inputs.Base.Frame, radius: number, run: DesignRun): number[] {

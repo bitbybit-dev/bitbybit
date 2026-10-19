@@ -122,6 +122,7 @@ export const SET_SCREWS: Readonly<Partial<Record<MetricSize, SetScrewRow>>> = {
 };
 
 export const SCREW_THREAD_EXTRA = 12;
+export const COUNTERBORE_SINK = 0.5;
 export const BOLT_THREAD_EXTRA_SHORT = 6;
 export const BOLT_THREAD_EXTRA_MEDIUM = 12;
 export const BOLT_THREAD_EXTRA_LONG = 25;

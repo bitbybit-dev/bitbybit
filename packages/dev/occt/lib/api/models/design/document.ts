@@ -559,6 +559,91 @@ export interface DesignPocketFeature extends DesignFeatureBase {
 }
 
 /**
+ * What every machining feature shares: it cuts into `body` at the cylindrical face `on` names, a
+ * shaft's outside or a bore's wall, sized by that face's diameter in millimetres (a document in
+ * another unit is refused, but for a flat), and tells a shaft from a bore by
+ * which way the face looks. Along the face's axis it starts `at` from the face's start end: the axis
+ * points along the world axis it is nearest to, positive, and the start end is the one it points
+ * away from; `flip` starts from the other end and machines the other way. The faces the cut makes are
+ * named by the feature's own role, such as `keyway`.
+ */
+export interface DesignMachiningFeatureBase extends DesignFeatureBase {
+    body: string;
+    on: DesignFaceReference;
+    at?: DesignNumber;
+    flip?: boolean;
+}
+
+/**
+ * Cuts a DIN 6885 keyway, sized for the face's diameter, `length` long: into a shaft, or through a
+ * hub's bore, where it ends where `at` and `length` say. `angle` turns it about the axis, in degrees
+ * right-handed about the axis's positive direction whichever end `flip` starts from, from the side
+ * the world's x axis points to (or y, for an axis along x). Its faces are named `keyway`.
+ */
+export interface DesignKeywayFeature extends DesignMachiningFeatureBase {
+    type: "keyway";
+    length: DesignNumber;
+    angle?: DesignNumber;
+}
+
+/**
+ * Grinds a flat `depth` into a shaft, `length` long, so a set screw has a face to bite on. `angle`
+ * turns it about the axis as for a keyway. Its faces are named `flat`.
+ */
+export interface DesignFlatFeature extends DesignMachiningFeatureBase {
+    type: "flat";
+    length: DesignNumber;
+    depth: DesignNumber;
+    angle?: DesignNumber;
+}
+
+/**
+ * Cuts the DIN 471 groove a retaining ring sits in on a shaft, or the DIN 472 groove in a bore, sized
+ * for the face's diameter, at `at`. Its faces are named `groove`.
+ */
+export interface DesignRingGrooveFeature extends DesignMachiningFeatureBase {
+    type: "ringGroove";
+}
+
+/**
+ * Knurls a shaft over `length`, `pitch` apart: `straight` ridges along it (the default), ridges
+ * leaning `left` or `right`, or a `diamond` crosshatch. Its faces are named `knurl`.
+ */
+export interface DesignKnurlFeature extends DesignMachiningFeatureBase {
+    type: "knurl";
+    length: DesignNumber;
+    pitch?: DesignNumber;
+    pattern?: "straight" | "left" | "right" | "diamond";
+}
+
+/**
+ * Cuts DIN 5480 involute spline teeth of `module` into a bore over exactly `length` from `at`, a hub
+ * the splined shaft of reference `diameter` and the same module slides into. With `diameter` left
+ * out the spline is the one whose hub teeth end on the bore; a bore wider than the hub's tips is
+ * refused. Its faces are named `spline`.
+ */
+export interface DesignSplineFeature extends DesignMachiningFeatureBase {
+    type: "spline";
+    length: DesignNumber;
+    module: DesignNumber;
+    diameter?: DesignNumber;
+}
+
+/**
+ * Models a metric thread over `length`: outside on a shaft of the size's diameter, or inside a bore
+ * drilled for the size's tap at the pitch. `size`, such as `M8`, is found from the face's diameter
+ * when left out; `pitch` is the size's coarse pitch when left out. A bore at a size's nominal
+ * diameter, as a tapped `hole` is drawn, is refused: drill it to the tap drill to model its thread.
+ * Its faces are named `thread`.
+ */
+export interface DesignThreadFeature extends DesignMachiningFeatureBase {
+    type: "thread";
+    length: DesignNumber;
+    size?: DesignText;
+    pitch?: DesignNumber;
+}
+
+/**
  * Starts a body from one of the document's `assets`: BREP as text (`brep`) or binary
  * (`brep-binary`), STEP or IGES, read from the media type or the file extension when `format` is
  * left out. The shape is taken as the file has it, or with `child` only the shape at that position,
@@ -630,6 +715,12 @@ export type DesignFeature =
     | DesignHoleFeature
     | DesignBossFeature
     | DesignPocketFeature
+    | DesignKeywayFeature
+    | DesignFlatFeature
+    | DesignRingGrooveFeature
+    | DesignKnurlFeature
+    | DesignSplineFeature
+    | DesignThreadFeature
     | DesignImportFeature
     | DesignOperationFeature
     | DesignScriptFeature;

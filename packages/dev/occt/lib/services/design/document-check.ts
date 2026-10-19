@@ -85,6 +85,12 @@ export const FEATURE_KEYS: Record<Models.OCCT.DesignFeature["type"], readonly st
     hole: ["body", "on", "origin", "direction", "at", "diameter", "fastener", "depth", "tipAngle", "counterbore", "countersink"],
     boss: ["profile", "body", "distance", "until"],
     pocket: ["profile", "body", "distance", "until", "through"],
+    keyway: ["body", "on", "at", "flip", "length", "angle"],
+    flat: ["body", "on", "at", "flip", "length", "depth", "angle"],
+    ringGroove: ["body", "on", "at", "flip"],
+    knurl: ["body", "on", "at", "flip", "length", "pitch", "pattern"],
+    spline: ["body", "on", "at", "flip", "length", "module", "diameter"],
+    thread: ["body", "on", "at", "flip", "length", "size", "pitch"],
     import: ["asset", "format", "child"],
     operation: ["operation", "params", "body"],
     script: ["script", "params", "body"],
@@ -385,6 +391,18 @@ const checkAsset: Check = (value, path, known) => {
     }
 };
 
+const checkTextValue: Check = (value, path, known) => {
+    if (isExpressionObject(value)) {
+        checkTextExpression(value.expr, pointer(path, "expr"), known);
+    } else if (typeof value !== "string") {
+        throw new DesignProblem(path, "a text or { expr } is expected");
+    }
+};
+
+const TABLE_SIZED: readonly string[] = ["keyway", "ringGroove", "knurl", "spline", "thread"];
+
+const MACHINED: Record<string, Check> = { body: checkBody, on: checkFaces, at: optional(checkNumber), flip: optional(checkBoolean) };
+
 function checkExtent(feature: Record<string, unknown>, path: string, kinds: readonly string[]): void {
     const given = kinds.filter(kind => feature[kind] !== undefined);
     if (given.length !== 1) {
@@ -415,6 +433,12 @@ const FIELDS: Record<Exclude<Models.OCCT.DesignFeature["type"], "sketch">, Recor
     },
     boss: { profile: checkFaceProfile, body: checkBody, distance: optional(checkNumber), until: optional(checkFaces) },
     pocket: { profile: checkFaceProfile, body: checkBody, distance: optional(checkNumber), until: optional(checkFaces), through: optional(checkBoolean) },
+    keyway: { ...MACHINED, length: checkNumber, angle: optional(checkNumber) },
+    flat: { ...MACHINED, length: checkNumber, depth: checkNumber, angle: optional(checkNumber) },
+    ringGroove: MACHINED,
+    knurl: { ...MACHINED, length: checkNumber, pitch: optional(checkNumber), pattern: oneOf(["straight", "left", "right", "diamond"], true) },
+    spline: { ...MACHINED, length: checkNumber, module: checkNumber, diameter: optional(checkNumber) },
+    thread: { ...MACHINED, length: checkNumber, size: optional(checkTextValue), pitch: optional(checkNumber) },
     import: { asset: checkAsset, format: oneOf(["brep", "brep-binary", "step", "iges"], true), child: optional(checkChild) },
     operation: { body: optional(checkBody) },
     script: { script: checkAsset, body: optional(checkBody) },
@@ -470,6 +494,9 @@ function checkFeature(feature: unknown, path: string, known: Known): void {
     }
     if (type === "boss" || type === "pocket") {
         checkExtent(feature, path, type === "boss" ? ["distance", "until"] : ["distance", "until", "through"]);
+    }
+    if (TABLE_SIZED.includes(type) && known.lengthUnit !== "mm") {
+        throw new DesignProblem(pointer(path, "type"), `a ${type} is sized from millimetre tables, and this document is in ${known.lengthUnit}: model the part in millimetres`);
     }
     if (type === "hole") {
         checkHoleSizing(feature, path, known.lengthUnit);

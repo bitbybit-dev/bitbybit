@@ -9,3 +9,7 @@ export const LINE_SEPARATOR = 0x2028;
 export const PARAGRAPH_SEPARATOR = 0x2029;
 
 
+
+export const MACHINING_ENUMS: ReadonlyMap<string, "metricSizeEnum" | "retainingRingKindEnum" | "knurlPatternEnum"> = new Map([["size", "metricSizeEnum"], ["kind", "retainingRingKindEnum"], ["pattern", "knurlPatternEnum"]]);
+
+export const FROM_FEATURE: readonly string[] = ["length", "depth", "pitch", "module"];

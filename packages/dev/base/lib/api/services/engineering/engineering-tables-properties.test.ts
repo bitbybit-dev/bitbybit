@@ -83,7 +83,7 @@ describe("engineering tables against the standards' own rules", () => {
             }), { seed: SEED, numRuns: 300 });
         });
 
-        it("should make each clearance hole wider than the thread and the close one the washer's hole, the head as tall as the thread is wide and the counterbore wider than the head", () => {
+        it("should make each clearance hole wider than the thread and the close one the washer's hole, the head as tall as the thread is wide and the counterbore wider than the head and half a millimetre deeper", () => {
             // Act & Assert
             SIZES.forEach(size => {
                 const thread = metricThread(size);
@@ -92,6 +92,7 @@ describe("engineering tables against the standards' own rules", () => {
                 expect(clearanceHoleDiameter(size, "close")).toBe(washerSizes(size).innerDiameter);
                 expect(head.headHeight).toBe(thread.diameter);
                 expect(head.counterboreDiameter).toBeGreaterThan(head.headDiameter);
+                expect(head.counterboreDepth).toBeCloseTo(head.headHeight + 0.5, 6);
                 expect(hexNutSizes(size).acrossFlats).toBe(hexBoltSizes(size, 50).acrossFlats);
             });
         });

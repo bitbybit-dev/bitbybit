@@ -45,6 +45,12 @@ export interface DesignTrace {
     format?: string;
     join?: string;
     lids?: DesignShellLid[];
+    machining?: DesignMachiningTrace;
+}
+
+export interface DesignMachiningTrace {
+    readonly operation: "keyway" | "flat" | "ringGroove" | "knurl" | "splinedHub" | "thread";
+    readonly inputs: Readonly<Record<string, unknown>>;
 }
 
 /** A lid a shell cut out: the face of the inner copy under an open face, and how far it was swept out. */
