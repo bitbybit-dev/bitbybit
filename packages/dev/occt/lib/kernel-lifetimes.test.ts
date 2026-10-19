@@ -1,13 +1,47 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vitest";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "./occ-helper";
 import { OCCTService } from "./occ-service";
-import * as Inputs from "./api/inputs";
 import { handlesIn, ledgerRun, namesOf } from "./__test__/kernel-ledger";
+import type { KernelHandle } from "../../__test__/embind-ledger-types";
+import { lifetimeCases } from "./__test__/lifetime-cases";
+import { callWatcher } from "./__test__/call-watch";
+import { changedSince, contentsOf } from "./__test__/input-contents";
+import { patternOf, rawKernelExceptionsAlong, refusalOf, trapsAlong } from "./__test__/refusals";
+import * as Inputs from "./api/inputs";
+import type * as Models from "./api/models";
+import type { Act, Arranged, CaseNotes, RefusalKind } from "./__test__/lifetime-cases-types";
 
-type Act = () => unknown;
-type Arranged = [string, () => Act];
+const KERNEL_FUNCTIONS_STUBBED = ["BRepFill_Filling_AddEdge", "BuildShapesFromSegments", "BRepAdaptor_CompCurve_DN", "MakeArcThrough3Points"];
+const REFUSED_FOR_THE_CALLER: readonly RefusalKind[] = ["input", "operation", "kernel"];
+const REFUSED_BY_THE_STUBBED_STEP: readonly RefusalKind[] = ["stubbed", "kernel", "operation"];
+
+const stubbedFailures = new WeakSet<object>();
+
+const stubbedFailure = (): never => {
+    const failure = new Error("the stubbed kernel step failed");
+    stubbedFailures.add(failure);
+    throw failure;
+};
+
+const isStubbedFailure = (thrown: unknown): boolean => typeof thrown === "object" && thrown !== null && stubbedFailures.has(thrown);
+
+const failingOnCall = <A extends unknown[], R>(failing: number, original: (...args: A) => R): ((...args: A) => R) => {
+    let calls = 0;
+    return (...args: A): R => {
+        calls += 1;
+        return calls === failing ? stubbedFailure() : original(...args);
+    };
+};
+
+const failingEverySecondCall = (original: (...args: unknown[]) => unknown): ((this: unknown, ...args: unknown[]) => unknown) => {
+    let calls = 0;
+    return function (this: unknown, ...args: unknown[]): unknown {
+        calls += 1;
+        return calls % 2 === 0 ? stubbedFailure() : Reflect.apply(original, this, args);
+    };
+};
 
 describe("OCCT kernel object lifetimes", () => {
     let kernel: BitbybitOcctModule;
@@ -22,153 +56,188 @@ describe("OCCT kernel object lifetimes", () => {
 
     const box = (size = 10): TopoDS_Shape => occt.shapes.solid.createBox({ width: size, length: size, height: size, center: [0, 0, 0] });
     const ball = (): TopoDS_Shape => occt.shapes.solid.createSphere({ radius: 6, center: [5, 5, 5] });
-    const rectangleWire = (): TopoDS_Wire => occt.shapes.wire.createRectangleWire({ width: 8, length: 4, center: [0, 0, 0], direction: [0, 1, 0] });
-    const rectangleFace = (): TopoDS_Face => occt.shapes.face.createRectangleFace({ width: 8, length: 4, center: [0, 0, 0], direction: [0, 1, 0] });
-    const circleWire = (radius: number, x: number): TopoDS_Wire => occt.shapes.wire.createCircleWire({ radius, center: [x, 0, 0], direction: [0, 1, 0] });
-    const line = (end: Inputs.Base.Point3): TopoDS_Edge => occt.shapes.edge.line({ start: [0, 0, 0], end });
-    const roundedOutline = (): TopoDS_Wire => occt.fillets.fillet3DWire({ shape: occt.shapes.wire.createPolylineWire({ points: [[0, 0, 0], [6, 0, 0], [6, 0, 4], [0, 0, 4]] }), radius: 1, direction: [0, 1, 0] });
+    const watcher = callWatcher();
+    const watchedOcct = (): OCCTService => watcher.watched(occt);
+    const watchedOch = (): OccHelper => watcher.watched(och);
+    const cases = lifetimeCases(watchedOcct, watchedOch);
 
-    const leavesNothingButItsAnswer = (arrange: () => Act): void => {
+    const deletedAmong = (inputs: readonly KernelHandle[]): KernelHandle[] => inputs.filter(input => input.isDeleted());
+
+    const leavesNothingButItsAnswer = (arrange: () => Act, notes: CaseNotes = {}): void => {
         // Arrange
-        const act = arrange();
+        const arranged = ledgerRun(kernel, arrange);
+        const contents = contentsOf(kernel, arranged.leaked);
 
         // Act
-        const run = ledgerRun(kernel, act);
+        const watched = watcher.callsDuring(() => ledgerRun(kernel, () => arranged.result?.()));
 
         // Assert
-        expect(run.thrown).toBeUndefined();
-        expect(namesOf(run.leaked)).toEqual([]);
+        const changed = namesOf(changedSince(kernel, contents));
+        expect(arranged.thrown).toBeUndefined();
+        expect(watched.value.thrown).toBeUndefined();
+        expect(namesOf(watched.value.leaked)).toEqual([]);
+        expect(namesOf(deletedAmong(arranged.leaked))).toEqual([]);
+        expect(changed.length > 0, `the kernel objects it was given and changed: ${changed.join(", ")}`).toBe(notes.changesItsInput !== undefined);
+        expect(watched.calls.map(call => call.path)).toHaveLength(1);
+        expect(watched.calls.map(call => call.after)).toEqual(watched.calls.map(call => call.before));
     };
 
-    const leavesNothingWhenItFails = (arrange: () => Act): void => {
+    const leavesNothingWhenItFails = (arrange: () => Act, notes: CaseNotes = {}, accepted: readonly RefusalKind[] = REFUSED_FOR_THE_CALLER): void => {
         // Arrange
-        const act = arrange();
+        const arranged = ledgerRun(kernel, arrange);
+        const contents = contentsOf(kernel, arranged.leaked);
 
         // Act
-        const run = ledgerRun(kernel, act);
+        const watched = watcher.callsDuring(() => ledgerRun(kernel, () => arranged.result?.()));
 
         // Assert
-        expect(run.thrown).toBeDefined();
-        expect(namesOf(run.leaked)).toEqual([]);
+        const refusal = refusalOf(watched.value.thrown, isStubbedFailure);
+        const changed = namesOf(changedSince(kernel, contents));
+        expect(arranged.thrown).toBeUndefined();
+        expect(watched.value.thrown).toBeDefined();
+        expect(trapsAlong(watched.value.thrown)).toEqual([]);
+        expect(rawKernelExceptionsAlong(watched.value.thrown)).toEqual([]);
+        expect(accepted, `refused by ${refusal.kind}: ${refusal.message}`).toContain(refusal.kind);
+        expect(refusal).toMatchObject(patternOf(notes.refusedBy));
+        expect(namesOf(watched.value.leaked)).toEqual([]);
+        expect(namesOf(deletedAmong(arranged.leaked))).toEqual([]);
+        expect(changed.length > 0, `the kernel objects it was given and changed: ${changed.join(", ")}`).toBe(notes.changesItsInput !== undefined);
+        expect(watched.calls.map(call => call.path)).toHaveLength(1);
+        expect(watched.calls.map(call => call.after)).toEqual(watched.calls.map(call => call.before));
     };
 
     describe("a call that succeeds keeps only what it hands back", () => {
-        const leaking: Arranged[] = [
-            ["intersecting a box with a ball", () => { const shapes = [box(), ball()]; return () => occt.booleans.intersection({ shapes, keepEdges: false }); }],
-            ["measuring the closest points between a box and a ball apart from it", () => { const shape1 = box(); const shape2 = occt.shapes.solid.createSphere({ radius: 1, center: [20, 0, 0] }); return () => occt.operations.closestPointsBetweenTwoShapes({ shape1, shape2 }); }],
-            ["writing a filleted box to STEP", () => { const shape = occt.fillets.filletEdges({ shape: box(), radius: 1 }); return () => occt.io.saveShapeSTEP({ shape, fileName: "part.step", adjustYtoZ: false }); }],
-            ["writing a box to STEP turned to Z up", () => { const shape = box(); return () => occt.io.saveShapeSTEP({ shape, fileName: "part.step", adjustYtoZ: true }); }],
-            ["rounding the corners of a rectangle wire", () => { const shape = rectangleWire(); return () => occt.fillets.fillet2d({ shape, radius: 0.5 }); }],
-            ["rounding the corners of a rectangle face", () => { const shape = rectangleFace(); return () => occt.fillets.fillet2d({ shape, radius: 0.5 }); }],
-            ["rounding two corners of a rectangle wire by index", () => { const shape = rectangleWire(); return () => occt.fillets.fillet2d({ shape, radiusList: [0.5, 1], indexes: [1, 3] }); }],
-            ["rounding the corners of two outlines", () => { const shapes = [rectangleWire(), rectangleWire()]; return () => occt.fillets.fillet2dShapes({ shapes, radius: 0.5 }); }],
-            ["bevelling the corners of a rectangle wire", () => { const shape = rectangleWire(); return () => occt.fillets.chamfer2dVertices({ shape, distance: 0.5 }); }],
-            ["bevelling the corners of a rectangle face", () => { const shape = rectangleFace(); return () => occt.fillets.chamfer2dVertices({ shape, distance: 0.5 }); }],
-            ["dimensioning the length between two points", () => { const inputs = { ...new Inputs.OCCT.SimpleLinearLengthDimensionDto(), start: [0, 0, 0] as Inputs.Base.Point3, end: [10, 0, 0] as Inputs.Base.Point3, direction: [0, 0, 2] as Inputs.Base.Vector3 }; return () => occt.dimensions.simpleLinearLengthDimension(inputs); }],
-            ["dimensioning an angle", () => { const inputs = { ...new Inputs.OCCT.SimpleAngularDimensionDto(), direction1: [1, 0, 0] as Inputs.Base.Vector3, direction2: [0, 0, 1] as Inputs.Base.Vector3 }; return () => occt.dimensions.simpleAngularDimension(inputs); }],
-            ["pinning a label to a point", () => { const inputs = new Inputs.OCCT.PinWithLabelDto(); return () => occt.dimensions.pinWithLabel(inputs); }],
-            ["reading the start point of an edge", () => { const shape = line([4, 0, 0]); return () => occt.shapes.edge.startPointOnEdge({ shape }); }],
-            ["reading the end point of an edge", () => { const shape = line([4, 0, 0]); return () => occt.shapes.edge.endPointOnEdge({ shape }); }],
-            ["reading the start points of two edges", () => { const shapes = [line([4, 0, 0]), line([0, 4, 0])]; return () => occt.shapes.edge.startPointsOnEdges({ shapes }); }],
-            ["reading the end points of two edges", () => { const shapes = [line([4, 0, 0]), line([0, 4, 0])]; return () => occt.shapes.edge.endPointsOnEdges({ shapes }); }],
-            ["tracing every edge of a box as points", () => { const shape = box(); return () => occt.shapes.edge.edgesToPoints({ shape, angularDeflection: 0.1, curvatureDeflection: 0.1, minimumOfPoints: 2, uTolerance: 1e-7, minimumLength: 1e-7 }); }],
-            ["picking the arcs out of a rounded outline", () => { const shape = roundedOutline(); return () => occt.shapes.edge.getCircularEdgesAlongWire({ shape }); }],
-            ["picking the straight edges out of a rounded outline", () => { const shape = roundedOutline(); return () => occt.shapes.edge.getLinearEdgesAlongWire({ shape }); }],
-            ["reading the corner points of a box's edges", () => { const shape = box(); return () => occt.shapes.edge.getCornerPointsOfEdgesForShape({ shape }); }],
-            ["reading the corners of a box as points", () => { const shape = box(); return () => occt.shapes.vertex.getVerticesAsPoints({ shape }); }],
-            ["describing a box for debugging", () => { const shape = occt.shapes.solid.getSolids({ shape: box() })[0]!; return () => occt.shapes.solid.debugInfo({ shape }); }],
-            ["describing a sewn shell for debugging", () => { const shape = occt.shapes.shell.sewFaces({ shapes: occt.shapes.face.getFaces({ shape: box() }), tolerance: 1e-7 }); return () => occt.shapes.shell.debugInfo({ shape }); }],
-            ["describing a wire for debugging", () => { const shape = rectangleWire(); return () => occt.shapes.wire.debugInfo({ shape }); }],
-            ["drawing a star face", () => { const inputs = new Inputs.OCCT.StarDto(); return () => occt.shapes.face.createStarFace(inputs); }],
-            ["drawing a heart face", () => { const inputs = new Inputs.OCCT.Heart2DDto(); return () => occt.shapes.face.createHeartFace(inputs); }],
-            ["drawing an L-shaped face", () => { const inputs = new Inputs.OCCT.LPolygonDto(); return () => occt.shapes.face.createLPolygonFace(inputs); }],
-            ["drawing an I-beam profile face", () => { const inputs = new Inputs.OCCT.IBeamProfileDto(); return () => occt.shapes.face.createIBeamProfileFace(inputs); }],
-            ["drawing a hexagon face", () => { const inputs = new Inputs.OCCT.NGonWireDto(); return () => occt.shapes.face.createNGonFace(inputs); }],
-            ["drawing a grid of hexagon faces", () => { const inputs = new Inputs.OCCT.HexagonsInGridDto(); return () => occt.shapes.face.hexagonsInGrid(inputs); }],
-            ["building a star solid", () => { const inputs = new Inputs.OCCT.StarSolidDto(); return () => occt.shapes.solid.createStarSolid(inputs); }],
-            ["building a hexagonal prism", () => { const inputs = new Inputs.OCCT.NGonSolidDto(); return () => occt.shapes.solid.createNGonSolid(inputs); }],
-            ["building an I-beam", () => { const inputs = new Inputs.OCCT.IBeamProfileSolidDto(); return () => occt.shapes.solid.createIBeamProfileSolid(inputs); }],
-            ["drawing a christmas tree outline", () => { const inputs = new Inputs.OCCT.ChristmasTreeDto(); return () => occt.shapes.wire.createChristmasTreeWire(inputs); }],
-            ["writing a word as wires with their data", () => { const inputs = { ...new Inputs.OCCT.TextWiresDto(), text: "Bit" }; return () => occt.shapes.wire.textWiresWithData(inputs); }],
-            ["joining two circles by their tangent lines", () => { const circle1 = circleWire(2, 0); const circle2 = circleWire(1, 6); return () => occt.shapes.wire.createWireFromTwoCirclesTan({ circle1, circle2, keepLines: Inputs.OCCT.twoSidesStrictEnum.outside, circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside, tolerance: 1e-7 }); }],
-            ["zig-zagging between two outlines", () => { const wire1 = rectangleWire(); const wire2 = occt.shapes.wire.createRectangleWire({ width: 8, length: 4, center: [0, 3, 0], direction: [0, 1, 0] }); return () => occt.shapes.wire.createZigZagBetweenTwoWires({ wire1, wire2, nrZigZags: 4 }); }],
-            ["moving the seam of a wire by a length", () => { const shape = rectangleWire(); return () => occt.shapes.wire.moveWireSeamByLength({ shape, length: 1 }); }],
-            ["moving the seam of a wire by a parameter", () => { const shape = rectangleWire(); return () => occt.shapes.wire.moveWireSeamByParameter({ shape, parameter: 0.3 }); }],
-            ["rebuilding the degree of a wire", () => { const shape = rectangleWire(); return () => occt.shapes.wire.rebuildWireDegree({ shape, degree: 3, tolerance: 1e-4 }); }],
-            ["reversing a wire edge by edge", () => { const shape = rectangleWire(); return () => occt.shapes.wire.reversedWireFromReversedEdges({ shape }); }],
-            ["tracing the wires of a box as points", () => { const shape = box(); return () => occt.shapes.wire.wiresToPoints({ shape, angularDeflection: 0.1, curvatureDeflection: 0.1, minimumOfPoints: 2, uTolerance: 1e-7, minimumLength: 1e-7 }); }],
-            ["subdividing a face into wires", () => { const shape = rectangleFace(); return () => occt.shapes.face.subdivideToWires({ shape, nrDivisions: 3, isU: true, shiftHalfStep: false, removeStart: false, removeEnd: false }); }],
-            ["taking the wire along a face's parameter", () => { const shape = rectangleFace(); return () => occt.shapes.face.wireAlongParam({ shape, isU: true, param: 0.5 }); }],
-            ["placing a wire on a face", () => { const face = rectangleFace(); const wire = occt.shapes.wire.createCircleWire({ radius: 0.2, center: [0.5, 0.5, 0], direction: [0, 0, 1] }); return () => occt.shapes.wire.placeWireOnFace({ wire, face }); }],
-        ];
+        const leaking = cases.succeeding;
 
-        const keeping: Arranged[] = [
-            ["uniting a box and a ball", () => { const shapes = [box(), ball()]; return () => occt.booleans.union({ shapes, keepEdges: false }); }],
-            ["cutting a ball out of a box, with history", () => { const shape = box(); const shapes = [ball()]; return () => occt.booleans.differenceWithHistory({ shape, shapes, keepEdges: false }); }],
-            ["intersecting a box with a ball, with history", () => { const shapes = [box(), ball()]; return () => occt.booleans.intersectionWithHistory({ shapes, keepEdges: false }); }],
-            ["rounding two edges of a box by index", () => { const shape = box(); return () => occt.fillets.filletEdges({ shape, radius: 1, indexes: [0, 3] }); }],
-            ["bevelling two edges of a box by index, with history", () => { const shape = box(); return () => occt.fillets.chamferEdgesWithHistory({ shape, distance: 1, indexes: [0, 3] }); }],
-            ["twisting a square face up", () => { const shape = occt.shapes.face.createSquareFace({ size: 5, center: [0, 0, 0], direction: [0, 1, 0] }); return () => occt.operations.rotatedExtrudeWithHistory({ shape, height: 20, angle: 90, makeSolid: true }); }],
-            ["lofting through circle edges", () => { const shapes = [occt.shapes.edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] }), occt.shapes.edge.createCircleEdge({ radius: 1, center: [0, 5, 0], direction: [0, 1, 0] })]; return () => occt.operations.loftWithHistory({ shapes, makeSolid: true }); }],
-            ["splitting a box in two, with history", () => { const shape = box(); const shapes = [occt.shapes.face.createRectangleFace({ width: 20, length: 20, center: [0, 0, 0], direction: [1, 0, 0] })]; return () => occt.operations.splitShapeWithShapesWithHistory({ shape, shapes, localFuzzyTolerance: 1e-7, nonDestructive: false }); }],
-            ["sewing the faces of a box into a solid, with history", () => { const shapes = occt.shapes.face.getFaces({ shape: box() }); return () => occt.shapes.solid.fromFacesWithHistory({ shapes, tolerance: 1e-7 }); }],
-            ["meshing a box into buffers with metadata, iso curves and an analysis", () => { const shape = box(); return () => occt.shapeToMesh({ shape, precision: 0.1, computeMetadata: true, isoCurvesU: 2, isoCurvesV: 2, surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.gaussian }); }],
-            ["drawing a rectangle face", () => () => occt.shapes.face.createRectangleFace({ width: 8, length: 4, center: [0, 0, 0], direction: [0, 1, 0] })],
-        ];
+        const keeping = cases.succeedingAsToday;
 
-        it.each(leaking)("should keep nothing but its answer after %s", (_name, arrange) => leavesNothingButItsAnswer(arrange));
+        it.each(leaking)("should keep nothing but its answer, and leave what it was given as it was, after %s", (_name, arrange, notes) => leavesNothingButItsAnswer(arrange, notes));
 
-        it.each(keeping)("should keep nothing but its answer after %s, as it does today", (_name, arrange) => leavesNothingButItsAnswer(arrange));
+        it.each(keeping)("should keep nothing but its answer, and leave what it was given as it was, after %s, as it does today", (_name, arrange, notes) => leavesNothingButItsAnswer(arrange, notes));
     });
 
     describe("a call the kernel refuses keeps nothing it made", () => {
-        const leaking: Arranged[] = [
-            ["offsetting a small box by its default distance at its default tolerance", () => { const shape = box(4); return () => occt.operations.offset({ shape, distance: 0.2, tolerance: 0.1 }); }],
-            ["revolving an edge that lies on the axis", () => { const shape = line([0, 4, 0]); return () => occt.operations.revolve({ shape, angle: 360, direction: [0, 1, 0], copy: false }); }],
-            ["revolving a face about an axis with no length", () => { const shape = occt.shapes.face.createSquareFace({ size: 2, center: [5, 0, 0], direction: [0, 0, 1] }); return () => occt.operations.revolve({ shape, angle: 90, direction: [0, 0, 0], copy: false }); }],
-            ["rounding the edges of a lone face", () => { const shape = rectangleFace(); return () => occt.fillets.filletEdges({ shape, radius: 0.1 }); }],
-            ["bevelling the edges of a lone face", () => { const shape = rectangleFace(); return () => occt.fillets.chamferEdges({ shape, distance: 0.1 }); }],
-            ["rounding two edges by index with one radius listed", () => { const shape = box(); return () => occt.fillets.filletEdges({ shape, indexes: [0, 1], radiusList: [0.5] }); }],
-            ["bevelling two edges by index with one distance listed", () => { const shape = box(); return () => occt.fillets.chamferEdges({ shape, indexes: [0, 1], distanceList: [0.5] }); }],
-            ["bevelling an edge by distance and angle without its face", () => { const shape = box(); const edge = occt.shapes.edge.getEdge({ shape, index: 0 }); const inputs = { shape, edge, distance: 0.5, angle: 45 } as Inputs.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>; return () => occt.fillets.chamferEdgeDistAngle(inputs); }],
-            ["rounding two edges in a plane with a radius too big for them", () => { const edge1 = line([4, 0, 0]); const edge2 = occt.shapes.edge.line({ start: [4, 0, 0], end: [4, 0, 4] }); return () => occt.fillets.filletTwoEdgesInPlaneIntoAWire({ edge1, edge2, planeOrigin: [0, 0, 0], planeDirection: [0, 1, 0], radius: 50, solution: -1 }); }],
-            ["thickening a box by removing a solid instead of a face", () => { const shape = box(); const shapes = [box()]; return () => occt.operations.makeThickSolidByJoin({ shape, shapes, offset: 1 }); }],
-            ["sweeping a point along a line", () => { const shape = occt.shapes.wire.createLineWire({ start: [0, 0, 0], end: [0, 10, 0] }); const shapes = [occt.shapes.vertex.vertexFromXYZ({ x: 0, y: 0, z: 0 })]; return () => occt.operations.pipe({ shape, shapes }); }],
-            ["turning a box about an axis with no length", () => { const shape = box(); return () => occt.transforms.rotate({ shape, axis: [0, 0, 0], angle: 30 }); }],
-            ["mirroring a box across a direction with no length", () => { const shape = box(); return () => occt.transforms.mirror({ shape, origin: [0, 0, 0], direction: [0, 0, 0] }); }],
-            ["mirroring a box across a plane whose normal has no length", () => { const shape = box(); return () => occt.transforms.mirrorAlongNormal({ shape, origin: [0, 0, 0], normal: [0, 0, 0] }); }],
-            ["aligning a box from a direction with no length", () => { const shape = box(); return () => occt.transforms.align({ shape, fromOrigin: [0, 0, 0], fromDirection: [0, 0, 0], toOrigin: [1, 1, 1], toDirection: [1, 0, 0] }); }],
-            ["inverting a transform that has no inverse", () => () => occt.transforms.invertTransform({ transformation: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1] })],
-            ["rebuilding a face of a single face's graph that has no solid", () => { const shape = rectangleFace(); return () => occt.brepGraph.reconstruct({ shape, kind: Inputs.OCCT.brepGraphNodeKindEnum.solid, index: 0 }); }],
-            ["drawing a spline through a single point", () => () => occt.shapes.wire.createBSpline({ points: [[0, 0, 0]], closed: false })],
-            ["cutting an arc from a circle between two equal points", () => { const circle = occt.shapes.edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] }); return () => occt.shapes.edge.arcFromCircleAndTwoPoints({ circle, start: [2, 0, 0], end: [2, 0, 0], sense: true }); }],
-            ["joining a circle to the circle inside it by tangent lines", () => { const circle1 = circleWire(2, 0); const circle2 = circleWire(1, 0); return () => occt.shapes.wire.createWireFromTwoCirclesTan({ circle1, circle2, keepLines: Inputs.OCCT.twoSidesStrictEnum.outside, circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside, tolerance: 1e-7 }); }],
-            ["building a cylinder along a direction with no length", () => () => occt.shapes.solid.createCylinder({ radius: 1, height: 2, center: [0, 0, 0], direction: [0, 0, 0] })],
-            ["building a ball of radius 0", () => () => occt.shapes.solid.createSphere({ radius: 0, center: [0, 0, 0] })],
-            ["building a box of width 0", () => () => occt.shapes.solid.createBox({ width: 0, length: 1, height: 1, center: [0, 0, 0] })],
-            ["drawing a square face facing a direction with no length", () => () => occt.shapes.face.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 0, 0] })],
-            ["making an axis of a direction with no length", () => () => och.entitiesService.gpAx1([1, 2, 3], [0, 0, 0])],
-            ["making a frame of a direction with no length", () => () => och.entitiesService.gpAx2([1, 2, 3], [0, 0, 0])],
-            ["making a placement of a direction with no length", () => () => och.entitiesService.gpAx3_4([1, 2, 3], [0, 0, 0])],
-            ["making a placement of a second direction with no length", () => () => och.entitiesService.gpAx3_3([1, 2, 3], [0, 0, 1], [0, 0, 0])],
-            ["making a frame of two directions, the second with no length", () => () => och.entitiesService.gpAx2FromTwoVectors([1, 2, 3], [0, 0, 1], [0, 0, 0])],
-            ["making a flat axis of a direction with no length", () => () => och.entitiesService.gpAx2d([1, 2], [0, 0])],
+        const leaking = cases.refused;
+
+        const keeping = cases.refusedAsToday;
+
+        it.each(leaking)("should keep nothing it made, leave what it was given as it was and refuse the caller for the reason it states, when %s fails", (_name, arrange, notes) => leavesNothingWhenItFails(arrange, notes));
+
+        it.each(keeping)("should keep nothing it made, leave what it was given as it was and refuse the caller for the reason it states, when %s fails, as it does today", (_name, arrange, notes) => leavesNothingWhenItFails(arrange, notes));
+    });
+
+    describe("a call whose step fails partway keeps nothing it made", () => {
+        let originals: Map<string, unknown>;
+
+        beforeEach(() => {
+            originals = new Map(KERNEL_FUNCTIONS_STUBBED.map(name => [name, Reflect.get(kernel, name)]));
+        });
+
+        afterEach(() => {
+            vi.restoreAllMocks();
+            originals.forEach((original, name) => Reflect.set(kernel, name, original));
+        });
+
+        const closedCircle = (): TopoDS_Shape => occt.shapes.wire.createCircleWire({ radius: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+        const flatCircle = (): TopoDS_Edge => occt.shapes.edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 0, 1] });
+        const clockwiseSquare: Models.OCCT.SketchCommand[] = [{ type: "vLine", length: 10 }, { type: "hLine", length: 10 }, { type: "vLine", length: -10 }, { type: "close" }];
+        const edgeBetweenEqualPoints = (): never => {
+            const point = new kernel.gp_Pnt(1, 2, 3);
+            const maker = new kernel.BRepBuilderAPI_MakeEdge(point, point);
+            try {
+                maker.Edge();
+            } finally {
+                maker.delete();
+                point.delete();
+            }
+            throw new Error("the kernel made an edge between two equal points");
+        };
+
+        const stubbed: Arranged[] = [
+            ["stroking a closed wire into a ring whose inner face cannot be made", () => { const shape = closedCircle(); const original = occt.shapes.face.createFaceFromWire.bind(occt.shapes.face); vi.spyOn(occt.shapes.face, "createFaceFromWire").mockImplementation(failingOnCall(2, original)); return () => watchedOcct().sketch.stroke({ shape, width: 2 }); }],
+            ["stroking a closed wire into a ring whose cut cannot be read for faces", () => { const shape = closedCircle(); vi.spyOn(occt.shapes.face, "getFaces").mockImplementation(stubbedFailure); return () => watchedOcct().sketch.stroke({ shape, width: 2 }); }],
+            ["stroking a closed wire into a ring whose face cannot be turned to the frame", () => { const shape = closedCircle(); vi.spyOn(occt.shapes.face, "normalOnUV").mockImplementation(stubbedFailure); return () => watchedOcct().sketch.stroke({ shape, width: 2 }); }],
+            ["stroking an open wire into a band whose face cannot be turned to the frame", () => { const shape = occt.shapes.wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }); vi.spyOn(occt.shapes.face, "normalOnUV").mockImplementation(stubbedFailure); return () => watchedOcct().sketch.stroke({ shape, width: 2 }); }],
+            ["stroking an edge when the plane of the frame cannot be made", () => { const shape = occt.shapes.edge.line({ start: [0, 0, 0], end: [10, 0, 0] }); vi.spyOn(och.facesService, "createFaceFromWire").mockImplementation(stubbedFailure); return () => watchedOcct().sketch.stroke({ shape, width: 2 }); }],
+            ["drawing a face of a clockwise outline when the face cannot be made", () => { vi.spyOn(och.facesService, "createFaceFromWire").mockImplementation(stubbedFailure); return () => watchedOcct().sketch.pen({ commands: clockwiseSquare, makeFace: true }); }],
+            ["filling a wire with a face that is not planar when an edge cannot be added", () => { const shape = occt.shapes.wire.createRectangleWire({ width: 8, length: 4, center: [0, 0, 0], direction: [0, 1, 0] }); Reflect.set(kernel, "BRepFill_Filling_AddEdge", stubbedFailure); return () => watchedOcct().shapes.face.createFaceFromWire({ shape, planar: false }); }],
+            ["reading the flat circle of an edge when its axis cannot be made", () => { const shape = flatCircle(); vi.spyOn(och.entitiesService, "gpAx2d").mockImplementation(stubbedFailure); return () => watchedOch().edgesService.getGpCircle2dFromEdge({ shape }); }],
+            ["drawing the circles tangent to a circle through a point when the second cannot be turned back", () => { const circle = occt.shapes.edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] }); const original = och.transformsService.align.bind(och.transformsService); vi.spyOn(och.transformsService, "align").mockImplementation(failingOnCall(4, original)); return () => watchedOcct().shapes.edge.constraintTanCirclesOnCircleAndPnt({ circle, point: [3, 0, -3], radius: 4, tolerance: 1e-7 }); }],
+            ["drawing the circles tangent to two circles when the second cannot be turned back", () => { const circle1 = flatCircle(); const circle2 = occt.shapes.edge.createCircleEdge({ radius: 1, center: [5, 0, 0], direction: [0, 0, 1] }); const original = och.transformsService.align.bind(och.transformsService); vi.spyOn(och.transformsService, "align").mockImplementation(failingOnCall(4, original)); return () => watchedOcct().shapes.edge.constraintTanCirclesOnTwoCircles({ circle1, circle2, radius: 3, tolerance: 1e-7 }); }],
+            ["joining two points to a circle by tangent lines when the third cannot be turned back", () => { const circle = flatCircle(); const original = och.transformsService.align.bind(och.transformsService); vi.spyOn(och.transformsService, "align").mockImplementation(failingOnCall(6, original)); return () => watchedOcct().shapes.edge.constraintTanLinesFromTwoPtsToCircle({ circle, point1: [3, 0, 0], point2: [0, 2, 0], positionResult: Inputs.OCCT.positionResultEnum.all, circleRemainder: Inputs.OCCT.circleInclusionEnum.none, tolerance: 1e-7 }); }],
+            ["reading a box from STEP turned to Y up when it cannot be rotated", () => { const filetext = occt.io.saveShapeSTEP({ shape: box(), fileName: "box.step", adjustYtoZ: false }); vi.spyOn(och.transformsService, "rotate").mockImplementation(stubbedFailure); return () => watchedOcct().io.loadSTEPorIGES({ filetext, fileName: "box.step", adjustZtoY: true }); }],
+            ["stroking an open wire into a band whose round end cap cannot be drawn", () => { const shape = occt.shapes.wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }); vi.spyOn(occt.shapes.edge, "arcThroughThreePoints").mockImplementation(stubbedFailure); return () => watchedOcct().sketch.stroke({ shape, width: 2, cap: Inputs.OCCT.strokeCapEnum.round }); }],
+            ["stroking an open wire into a band whose round start cap cannot be drawn", () => { const shape = occt.shapes.wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }); const original = occt.shapes.edge.arcThroughThreePoints.bind(occt.shapes.edge); vi.spyOn(occt.shapes.edge, "arcThroughThreePoints").mockImplementation(failingOnCall(2, original)); return () => watchedOcct().sketch.stroke({ shape, width: 2, cap: Inputs.OCCT.strokeCapEnum.round }); }],
+            ["stroking an open wire into a band when the start of an offset edge cannot be read", () => { const shape = occt.shapes.wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }); vi.spyOn(occt.shapes.edge, "startPointOnEdge").mockImplementation(stubbedFailure); return () => watchedOcct().sketch.stroke({ shape, width: 2 }); }],
+            ["moving two boxes when the second cannot be moved", () => { const shapes = [box(), box()]; const original = och.transformsService.translate.bind(och.transformsService); vi.spyOn(och.transformsService, "translate").mockImplementation(failingOnCall(2, original)); return () => watchedOcct().transforms.translateShapes({ shapes, translations: [[1, 0, 0], [2, 0, 0]] }); }],
+            ["scaling two boxes when the second cannot be scaled", () => { const shapes = [box(), box()]; const original = och.transformsService.scaleFromCenter.bind(och.transformsService); vi.spyOn(och.transformsService, "scaleFromCenter").mockImplementation(failingOnCall(2, original)); return () => watchedOcct().transforms.scaleShapes({ shapes, factors: [2, 3] }); }],
+            ["scaling two boxes unevenly when the second cannot be scaled", () => { const shapes = [box(), box()]; const original = och.transformsService.scale3d.bind(och.transformsService); vi.spyOn(och.transformsService, "scale3d").mockImplementation(failingOnCall(2, original)); return () => watchedOcct().transforms.scale3dShapes({ shapes, scales: [[1, 2, 3], [3, 2, 1]], centers: [[0, 0, 0], [0, 0, 0]] }); }],
+            ["drawing an arc through three points when the kernel cannot trim its circle", () => { Reflect.set(kernel, "MakeArcThrough3Points", edgeBetweenEqualPoints); return () => watchedOcct().shapes.edge.arcThroughThreePoints({ start: [0, 0, 1], middle: [1, 0, 0], end: [0, 0, -1] }); }],
+            ["offsetting an open wire when the kernel cannot perform the offset", () => { const shape = occt.shapes.wire.createPolylineWire({ points: [[0, 0, 0], [10, 0, 0], [10, 0, 5]] }); vi.spyOn(kernel.BRepOffsetAPI_MakeOffset.prototype, "Perform").mockImplementation(edgeBetweenEqualPoints); return () => watchedOcct().shapes.wire.offsetOpen({ shape, distance: 1, joinType: Inputs.OCCT.joinTypeEnum.arc }); }, { refusedBy: { kind: "operation", code: "occt.offset.failed" } }],
+            ["offsetting an open wire on a face when the kernel cannot perform the offset", () => { const shape = occt.shapes.wire.createPolylineWire({ points: [[0, 0, 0], [10, 0, 0], [10, 0, 5]] }); const face = occt.shapes.face.createRectangleFace({ width: 40, length: 40, center: [0, 0, 0], direction: [0, 1, 0] }); vi.spyOn(kernel.BRepOffsetAPI_MakeOffset.prototype, "Perform").mockImplementation(edgeBetweenEqualPoints); return () => watchedOcct().shapes.wire.offsetOpen({ shape, face, distance: 1, joinType: Inputs.OCCT.joinTypeEnum.arc }); }, { refusedBy: { kind: "operation", code: "occt.offset.failed" } }],
+            ["reading the tangent at a length along a wire when the derivative cannot be read", () => { const shape = occt.shapes.wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }); Reflect.set(kernel, "BRepAdaptor_CompCurve_DN", stubbedFailure); return () => watchedOcct().shapes.wire.tangentOnWireAtLength({ shape, length: 4 }); }],
+            ["subdividing a face into rounded rectangles when the length of a line placed on it cannot be read", () => { const shape = occt.shapes.face.createRectangleFace({ width: 8, length: 4, center: [0, 0, 0], direction: [0, 1, 0] }); vi.spyOn(och.wiresService, "getWireLength").mockImplementation(stubbedFailure); return () => watchedOcct().shapes.face.subdivideToRectangleWires({ ...new Inputs.OCCT.FaceSubdivideToRectangleWiresDto(), shape, filletPattern: [0.5] }); }],
         ];
 
-        const keeping: Arranged[] = [
-            ["making a plane whose normal has no length", () => () => och.entitiesService.gpPln([1, 2, 3], [0, 0, 0])],
-            ["drafting a side of a box along a direction with no length", () => { const shape = box(); const faces = [occt.shapes.face.getFace({ shape, index: 0 })]; return () => occt.draft.draftAngle({ shape, faces, direction: [0, 0, 0], angle: 5, neutralPlaneOrigin: [0, 0, -5], neutralPlaneDirection: [0, 0, 1], flag: true }); }],
-            ["twisting an upright square the kernel cannot sweep", () => { const shape = occt.shapes.face.createSquareFace({ size: 5, center: [0, 0, 0], direction: [1, 0, 0] }); return () => occt.operations.rotatedExtrude({ shape, height: 5, angle: 90, makeSolid: true }); }],
-            ["twisting a square by a height of 0", () => { const shape = rectangleWire(); return () => occt.operations.rotatedExtrudeWithHistory({ shape, height: 0, angle: 90, makeSolid: true }); }],
-            ["splitting a box with a face beside it, with history", () => { const shape = box(); const shapes = [occt.shapes.face.createRectangleFace({ width: 20, length: 20, center: [50, 0, 0], direction: [1, 0, 0] })]; return () => occt.operations.splitShapeWithShapesWithHistory({ shape, shapes, localFuzzyTolerance: 1e-7, nonDestructive: false }); }],
-            ["sewing five faces of a box into a solid", () => { const shapes = occt.shapes.face.getFaces({ shape: box() }).slice(1); return () => occt.shapes.solid.fromFaces({ shapes, tolerance: 1e-7 }); }],
-            ["offsetting a box by 0, with history", () => { const shape = box(); return () => occt.operations.offsetWithHistory({ shape, distance: 0, tolerance: 1e-7 }); }],
-            ["extruding a face along a direction with no length", () => { const shape = rectangleFace(); return () => occt.operations.extrude({ shape, direction: [0, 0, 0] }); }],
-        ];
+        it.each(stubbed)("should keep nothing it made, leave what it was given as it was and surface the failed step, when %s", (_name, arrange, notes) => leavesNothingWhenItFails(arrange, notes, REFUSED_BY_THE_STUBBED_STEP));
 
-        it.each(leaking)("should keep nothing it made when %s fails", (_name, arrange) => leavesNothingWhenItFails(arrange));
+        it.each(["ReadFile", "TransferRoots"] as const)("should read the C++ exception and keep nothing it made when the STEP reader's %s throws on STEP text", method => {
+            // Arrange
+            const filetext = occt.io.saveShapeSTEP({ shape: box(), fileName: "box.step", adjustYtoZ: false });
+            vi.spyOn(kernel.STEPControl_Reader.prototype, method).mockImplementation(edgeBetweenEqualPoints);
 
-        it.each(keeping)("should keep nothing it made when %s fails, as it does today", (_name, arrange) => leavesNothingWhenItFails(arrange));
+            // Act
+            const run = ledgerRun(kernel, () => occt.io.loadSTEPorIGES({ filetext, fileName: "box.step", adjustZtoY: false }));
+
+            // Assert
+            expect(run.thrown).toEqual(new Error("StdFail_NotDone: BRep_API: command not done"));
+            expect(namesOf(run.leaked)).toEqual([]);
+        });
+
+        it("should let a failure to make the axis of the flat circle of an edge surface as itself", () => {
+            // Arrange
+            const shape = flatCircle();
+            vi.spyOn(och.entitiesService, "gpAx2d").mockImplementation(stubbedFailure);
+
+            // Act
+            const run = ledgerRun(kernel, () => och.edgesService.getGpCircle2dFromEdge({ shape }));
+
+            // Assert
+            expect(run.thrown).toEqual(new Error("the stubbed kernel step failed"));
+            expect(namesOf(run.leaked)).toEqual([]);
+        });
+
+        it("should free the null compound the path kernel hands back for a path it could not build", () => {
+            // Arrange
+            const subpaths: Inputs.OCCT.PathSubpath[] = [{ start: [0, 0], segments: [{ type: "line", to: [10, 0] }], closed: false }];
+            const nullCompound = (): TopoDS_Shape => new kernel.TopoDS_Compound();
+            Reflect.set(kernel, "BuildShapesFromSegments", nullCompound);
+
+            // Act
+            const run = ledgerRun(kernel, () => occt.path.shapeFromPath({ subpaths, makeFaces: false, joinSegments: true, tolerance: 1e-7, scale: 1, flipY: false, origin: [0, 0, 0] }));
+
+            // Assert
+            expect(run.thrown).toBeUndefined();
+            expect(run.result).toBeUndefined();
+            expect(namesOf(run.leaked)).toEqual([]);
+        });
+
+        it("should free the first corner point of every edge whose last one cannot be read", () => {
+            // Arrange
+            const shape = box();
+            const curveValue: unknown = Reflect.get(kernel.Handle_Geom_Curve.prototype, "Value");
+            vi.spyOn(kernel.Handle_Geom_Curve.prototype, "Value").mockImplementation(failingEverySecondCall(curveValue as (...args: unknown[]) => unknown));
+            vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+            // Act
+            const run = ledgerRun(kernel, () => och.edgesService.getCornerPointsOfEdgesForShape({ shape }));
+
+            // Assert
+            expect(run.thrown).toBeUndefined();
+            expect(run.result).toEqual([]);
+            expect(namesOf(run.leaked)).toEqual([]);
+            expect(shape.isDeleted()).toBe(false);
+        });
     });
 
     describe("a part redrawn again and again", () => {
@@ -229,6 +298,7 @@ describe("OCCT kernel object lifetimes", () => {
             // Assert
             expect([...handlesIn(run.result)].map(handle => handle.isDeleted())).toEqual([false]);
             expect(namesOf(run.leaked)).toEqual([]);
+            expect(shapes.map(shape => shape.isDeleted())).toEqual([false, false]);
         });
     });
 });

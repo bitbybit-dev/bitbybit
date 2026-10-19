@@ -51,10 +51,11 @@
         "copy-readme-license": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist && shx cp -R ./NOTICE ./dist && shx cp -R ./licenses ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "delete-bak": "find ./dist -name '*.bak' -delete || true",
-        "test": "NODE_OPTIONS=--max-old-space-size=8192 vitest run",
-        "test:coverage": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --coverage",
+        "test": "shx rm -rf test-results/kernel-ledger && NODE_OPTIONS=--max-old-space-size=8192 vitest run",
+        "test:coverage": "shx rm -rf test-results/kernel-ledger && NODE_OPTIONS=--max-old-space-size=8192 vitest run --coverage",
         "test:watch": "NODE_OPTIONS=--max-old-space-size=8192 vitest",
         "bench": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --config bench/vitest.config.ts",
+        "heap": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --config heap/vitest.config.ts",
         "fetch-kernels": "node ../../../scripts/fetch-kernels.mjs",
         "api:check": "api-extractor run",
         "api:update": "api-extractor run --local"

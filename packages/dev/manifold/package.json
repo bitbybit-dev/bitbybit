@@ -54,8 +54,8 @@
         "copy-package": "node ../../../scripts/dist-manifest.mjs",
         "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
-        "test": "vitest run",
-        "test:coverage": "vitest run --coverage",
+        "test": "shx rm -rf test-results/kernel-ledger && vitest run",
+        "test:coverage": "shx rm -rf test-results/kernel-ledger && vitest run --coverage",
         "test:watch": "vitest",
         "api:check": "api-extractor run",
         "api:update": "api-extractor run --local"

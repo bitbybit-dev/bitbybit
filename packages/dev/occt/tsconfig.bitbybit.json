@@ -10,7 +10,8 @@
         "**/__test__/**",
         "./**/*.test.ts",
         "vitest.config.ts",
-        "bench"
+        "bench",
+        "heap"
     ],
     "compilerOptions": {
         "composite": true,

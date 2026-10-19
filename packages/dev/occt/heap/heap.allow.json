@@ -1,0 +1,8 @@
+{
+    "//": "Lifetime cases that grow the kernel's heap because of a leak inside OCCT, each with its reason and the most bytes a call it may grow by. The probe fails on a case that grows the heap and is not listed here, on a listed case that grows past its bound, and on a listed case that no longer grows it or that no case is named after, so the list only shrinks.",
+    "allow": {
+        "reading nothing from bytes that are not STEP": { "reason": "OCCT's STEP parser keeps the text of each syntax error it reports (StepFile_ReadData::AddError)", "mostBytesPerCall": 128 },
+        "reading a text that is not STEP into an assembly document": { "reason": "OCCT's STEP parser keeps the text of each syntax error it reports (StepFile_ReadData::AddError)", "mostBytesPerCall": 128 },
+        "making design documents of a text that is not STEP": { "reason": "OCCT's STEP parser keeps the text of each syntax error it reports (StepFile_ReadData::AddError)", "mostBytesPerCall": 128 }
+    }
+}

@@ -4,6 +4,7 @@ export default packageSuite({
     pool: "forks",
     testTimeout: 30_000,
     hookTimeout: 60_000,
+    setupFiles: ["lib/__test__/kernel-ledger.setup.ts"],
     coverage: [
         "lib/services/**/*.ts",
         "lib/occ-helper.ts",

@@ -222,6 +222,91 @@ property, silently, and the tests usually spell every property out, so they do n
   or pass their options on to a helper that resolves them, each with the reason. An entry that matches
   no method, or whose method now passes, fails.
 
+## kernel-ledger.mjs
+
+`npm run check:kernel-ledger` (part of `npm test`, right after the kernel suites) fails when a call
+through a kernel package's public API leaves a kernel object alive that it neither hands back nor
+keeps on purpose, and when a path of the API is called by no test at all.
+
+Every object an embind kernel makes - a shape, a builder, a point - owns memory in the wasm heap until
+its `delete()` is called, and JavaScript's garbage collector never frees it. A call that forgets one
+leaks it for as long as the kernel lives, and nothing fails. So the occt and manifold suites run with a
+ledger.
+
+- The ledger is `packages/dev/__test__/embind-ledger.ts`, beside the shared test configuration, so any
+  package's suite can import it. Each kernel package's adapter (`lib/__test__/kernel-ledger.ts` in occt,
+  `lib/api/__test__/kernel-ledger.ts` in manifold) is installed by the suite's setup file each time a
+  test creates a kernel; manifold's after the module's own `setup()`, which replaces its classes. It
+  wraps, once per kernel, every module function, constructor, static, prototype method and property
+  getter, `clone()` included, and every method of the service tree that a dotted path of the kernel
+  reaches. Wrappers are proxies, so embind's overload tables still resolve through them. A class is
+  recorded when it is called without `new` too, for the kernel object it returns: manifold-3d's
+  `setup()` turns `CrossSection` and `Manifold` into plain functions, and its own code calls them that
+  way. Only what a handle's `get()` returns is not recorded: a raw pointer the handle still owns (the
+  borrowing rule in `kernel-ledger-options.ts`).
+- Each outermost public call opens a frame, and every kernel object a function returns while it runs
+  is recorded with the innermost public path then running. When the frame closes, an object is left
+  alive when it is not deleted, not in the answer and not held by a cache that keeps objects on
+  purpose. Only the design builder's own caches count as such (the occt setup notes each one as an
+  `OCCTDesign` registers it); a cache a call makes for itself and drops is judged like anything else.
+  A call that ends in a wasm trap, or that returns a promise or an iterator, is counted and not judged.
+  A success and a refusal of the same path are judged apart, because they free on different paths.
+  Each tally keeps, beside its totals, the most of each class one call left (`leakedMost`).
+- An adapter may name the kernel library's own JavaScript (`libraryScript` in
+  `kernel-ledger-options.ts`: manifold-3d's `manifold.js`, whose `setup()` wraps the embind classes).
+  The ledger then reads, inside the proxy's trap, the script of the frame that called the wrapper
+  (`Error.captureStackTrace` cut at the trap, one frame deep), so every kernel object is known by who
+  made it: an object the library's code made, and that no call from our code ever returned, is the
+  library's. Left alive, it is counted apart (`foreign`, `foreignCalls`, `foreignMost`) and judged
+  against its bound, not charged to the call; a kernel object our own code makes and drops is judged
+  like any other, whatever its class. Today that is manifold-3d's vectors: `CrossSection.prototype.extrude`
+  and `revolve` hand `this._ToPolygons()` straight to the kernel, `toPolygons` never deletes what
+  `get()` hands back, the `CrossSection` constructor never deletes the vector it builds for each
+  polygon, and `triangulate` never deletes `_Triangulate`'s result. A spy set between the library's
+  code and a kernel function it calls stands in the caller's frame, so what that function returns is
+  taken for ours and judged: a false leak that fails, never a real one that hides. occt names no
+  library script, and reads no stack.
+- Each test file writes `test-results/kernel-ledger/<file>.json` (never a file directly in
+  `test-results/`, where `test-report.mjs` and `coverage-baseline.mjs` read) when it loads, marked
+  partial, and again after its last test, marked complete only when the run picked none of the file's
+  tests and the file focuses none. The setup file reads what vitest's worker holds
+  (`globalThis.__vitest_worker__`): the configuration's `testNamePattern` and `tagsFilter`, and the
+  file's own specification's `testNamePattern`, `testLocations`, `testIds` and `testTagsFilter`, which
+  `-t`, `file.test.ts:<line>` and the tag and id filters set; and it reads the file's source, its quoted
+  text aside, for an `.only`. vitest 4.1 keeps that state there; an upgrade that moves it leaves every
+  report partial ("names no specification"), which fails the gate rather than passing a filtered run.
+  A partial report says why (`partial`). A file that stops before its last
+  test, or whose every test is skipped, keeps the partial report it wrote on load. The package's
+  `test` and `test:coverage` empty the folder first.
+- The check merges the files per kernel and compares them with `kernel-ledger.allow.json`. `allow`
+  holds the `<kernel>:<path>#<ok|threw>` keys that leak today and `foreign` the keys on which the
+  library's own code leaves objects alive, each as `{ reason, mostPerCall }`: `mostPerCall` is the most
+  of each class one call may leave, and a `foreign` reason names the library function that leaks.
+  The bound is per call because the library's leaks follow the input - one vector a polygon - so a
+  change that multiplies them per call fails, and a test that feeds a larger input raises its bound
+  on purpose; it is per class so that a new kind of leak on a listed path fails rather than hiding
+  under a total, and a class fixed upstream has to come out. `unreached` holds the `<kernel>:<path>`
+  keys no test calls, each with its reason.
+- It fails on a leak not allowed (naming what was left, in how many calls, the inner path that made
+  it and the first test that saw it); on a library leak `foreign` does not bound (naming the classes,
+  the calls and the most one call left); on one call of a listed key that leaves more of a class than
+  its bound, or a class its entry does not name; on a listed class no call leaves any more; on an
+  entry that is not `{ reason, mostPerCall }` with whole counts above zero; on a path of the kernel no
+  test calls as an outermost call and `unreached` does not list, or that only calls ending in a trap
+  reach; on a listed key that no longer leaks, that a test now calls, that names no path or that
+  names no kernel the gate checks; on a test file that left no report, a report of a file that is
+  gone, and a partial report, naming the file and why; on a call it could not judge; and on an error
+  inside the ledger itself. Every list only shrinks.
+- `talliesDuring(act)` in the ledger hands a test the judgements of the calls `act` makes and leaves
+  the file's report as it was - its tallies, its nested calls and its ledger errors - so the ledger's
+  own tests (`occt/lib/kernel-ledger.test.ts`, the last block of `manifold/lib/api/kernel-lifetimes.test.ts`)
+  can make a call leak on purpose, or the ledger fail, without failing the gate.
+- What it cannot see: a call a test makes straight on the kernel, an internal helper called without
+  a public frame, a call whose implementation a spy replaced, and an object the library makes through a
+  class it captured before the ledger wrapped it (manifold-3d's `cross()` builds through its own
+  reference to the embind `CrossSection`). Memory the C++ side keeps after every wrapper is deleted is
+  the heap's to measure, not the ledger's (`npm run heap` in occt).
+
 ## worker-parity.mjs
 
 `npm run check:worker-parity` (part of `npm test`); `node scripts/worker-parity.mjs --update` rewrites

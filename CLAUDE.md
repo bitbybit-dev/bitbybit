@@ -163,13 +163,13 @@ fragments beside it, each a slice of the namespace body written as an ordinary m
 declarations - and fails on a fragment nothing names. Edit a fragment and run `npm run gen:inputs`;
 `check:inputs` fails on a stale assembled file, which being generated is not linted.
 
-`npm test` at the root runs every package suite, after the `check:*` gates and `test:scripts` (the
-generators' and checkers' own `node --test` suites, `scripts/**/*.test.mjs`). Each worker package
-mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends a path the kernel lacks, when a kernel method
-has no mirror outside the allow-list, when signatures disagree, when the JSDoc on a mirrored method
-or class reads differently on the two sides, or when the worker's path set differs from the committed
-snapshot (those paths are persisted in users' scripts). A deliberate surface change is accepted
-with `--update`; a doc change is made on the kernel and regenerated into the worker.
+`npm test` at the root runs every package suite, after the `check:*` gates and `test:scripts` (the generators' and checkers'
+own `node --test` suites, `scripts/**/*.test.mjs`). The occt and manifold suites run a kernel ledger, and `check:kernel-ledger`
+fails a call that leaves a kernel object alive (`scripts/README.md`). Each worker package mirrors its kernel by dotted path,
+and `scripts/worker-parity.mjs` fails when a worker sends a path the kernel lacks, when a kernel method has no mirror
+outside the allow-list, when signatures disagree, when the JSDoc on a mirrored method or class reads differently on the two
+sides, or when the worker's path set differs from the committed snapshot (those paths are persisted in users' scripts). A
+deliberate surface change is accepted with `--update`; a doc change is made on the kernel and regenerated into the worker.
 
 Every runner writes its results as JSON into `test-results/` next to the code it tested
 (`test:coverage` in every package), and coverage leaves `coverage/coverage-summary.json` beside it.

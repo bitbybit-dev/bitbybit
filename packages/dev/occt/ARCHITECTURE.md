@@ -375,3 +375,43 @@ for its distance from the origin, would otherwise loop for a very long time.
 `vitest.config.ts` runs a process per file because the kernel holds global state, and raises the
 timeouts (30 s a test, 60 s a hook) because building through the real kernel is slower than a unit
 test, and the first load of the wasm slower still.
+
+Every test runs with the kernel ledger (`lib/__test__/kernel-ledger.setup.ts`): each kernel a test
+creates is watched, and every outermost call through the service tree is checked for kernel objects
+it made and left alive, outside its answer and the design builder's own caches. The root
+`check:kernel-ledger` reads what the run recorded (`scripts/README.md`), and only a report a file's
+whole run wrote: a run filtered by `-t`, by line or by `.only`, and a file that stopped before its last
+test, leave a partial report that fails the gate. Measured over the whole suite,
+it adds no time a run can tell apart from noise. `kernel-lifetimes.test.ts` names the cases one at a time, a success and a
+refusal for each leak found, through `ledgerRun`, which nests under the suite-wide ledger.
+
+The same harness holds every case to "nothing consumes what it was given". Every kernel object the
+arrangement left alive is read before and after the call (`lib/__test__/input-contents.ts`): a shape by
+its BREP text without triangulations, so curves, pcurves, tolerances, sub-shapes, placement and the
+orientable, closed, infinite and convex flags all count, while the free, modified and checked flags,
+which OCCT sets on any shape another one is built from, do not, and neither does a mesh, which meshing
+stores on the faces by design and replaces rather than grows; a curve or surface by its values at fixed
+parameters, a point or frame by its coordinates. The call itself goes through a watching proxy
+(`call-watch.ts`) that snapshots its arguments, plain arrays, objects and bytes included, before and
+after. A case that changes its input on purpose says so and why in its own `changesItsInput`, and still
+has to change it. A refusal counts only as an `InputError`, a `KernelOperationError` or an Error read
+from a C++ exception (`readKernelException` marks those, `kernel-exception-reads.ts`, without changing
+them); a `TypeError`, a `BindingError` or an unmarked Error fails, and so does a trap anywhere along the
+cause chain. A case whose name says why it is refused states the refusal it expects in `refusedBy`, by
+property, code or message part, so one refused for another reason fails. The checks found that joining
+edges into a wire gave a caller's edge drawn from a 2D curve on a surface a 3D curve it did not have;
+`combineEdgesAndWiresIntoAWire` now builds the missing 3D curves on a BREP copy of the wire, only when an
+edge lacks one, which leaves every other wire sharing the caller's edges as before.
+
+The ledger sees kernel objects, not the C++ memory behind them; `kernel-heap.test.ts`,
+`kernel-exceptions.test.ts` and `npm run heap` (`CLAUDE.md`) read the heap itself, the probe calling a
+case a leak when its heap grows by more than 8 bytes a call on average over three windows. They found
+that OCCT's sweeps put the result's pcurves on the edges of the profile they were given, so a profile lofted,
+revolved or extruded again and again kept every earlier result's surfaces alive. `operationsService.loft`,
+`loftAdvanced`, `revolve` and `extrude` therefore build on a structural copy (`BRepBuilderAPI_Copy_Shape`
+without geometry) and hand that copy to the history readers, whose index lists come out the same; a
+result no longer shares edges with the caller's profile. The sections of a loft are copied together in
+one compound, so a section given twice, or two sections sharing an edge, stay shared in the copy as they
+were. A copy stores the plane pcurves OCCT otherwise computes on the fly, so the rim of an extruded face
+now carries a pcurve on its own cap: `shapes.face.fillPatch` takes that cap as the support of a tangent
+rim edge given none, where it refused an edge on no face before.

@@ -50,7 +50,7 @@ const GENERATED = [
 ];
 const TESTS = ["**/*.test.ts", "**/*.test.mjs"];
 const STAND_INS = ["**/__mocks__/**", "**/__test__/**"];
-const OUTSIDE_CHECKS = ["packages/dev/*/validation/**", "packages/dev/*/bench/**"];
+const OUTSIDE_CHECKS = ["packages/dev/*/validation/**", "packages/dev/*/bench/**", "packages/dev/*/heap/**"];
 const VITEST_CONFIGS = ["**/vitest.config.ts", "packages/dev/vitest.shared.ts"];
 const MATHS_HOME = ["packages/dev/base/lib/api/services/helpers/**"];
 
@@ -101,6 +101,7 @@ export default defineConfig([
                 projectService: {
                     allowDefaultProject: [
                         "packages/dev/vitest.shared.ts",
+                        "packages/dev/__test__/*.ts",
                         "packages/dev/cad-cloud-sdk/vitest.config.ts",
                         "packages/dev/create-app/vitest.config.ts",
                         "packages/dev/mcp/vitest.config.ts",

@@ -47,6 +47,30 @@ repeats (5), `BENCH_PARALLEL=off` runs the multithreaded kernel on one thread (t
 it ran) and `BENCH_OUT` writes the report as JSON. Compare two kernels on a quiet machine, one
 after the other: a compile in the background moves the numbers more than most changes do.
 
+## Measuring memory
+
+`npm run heap` runs every case of `lib/__test__/lifetime-cases.ts` 5 times to warm up, then three
+equal windows of a third of `HEAP_CALLS` each (66 calls of the default 200), reading the kernel's
+`HeapBytesInUse()` after each window. After every call it frees the C++ exception the call threw,
+releases the design caches (`releaseDesignCaches`) and deletes every kernel object the call made, its
+answer included, so each call starts from the same heap. A case must succeed or refuse on every call as
+its list says, or the probe fails: a case that starts failing early would otherwise be measured on
+another path. A case leaks when its heap grows by more than 8 bytes a call on average over the three
+windows - one rule, which a steady leak meets in every window and a leak that grows in steps meets in
+one - and the failure names each such case with its mean and its three windows. A leaking case fails
+the probe unless `heap/heap.allow.json` names it with its reason (a leak inside OCCT) and the most
+bytes a call it may grow by in any window, and a listed case whose worst window grows past its bound,
+that no longer grows, or that no case is named after fails it too. `heap/heap-verdict.ts` holds the
+rule and its message, and `heap/heap-verdict.test.ts`, which `npm run heap` runs first, pins both. A
+kernel without that counter (the multithreaded one answers -1) is measured by its heap size, which
+only a large leak moves, so it never calls a listed case stale. Two design sessions build a
+document with edits and free only what each build returns, as a caller does: 50 edits that reuse the
+design cache, and 120 that each make new outcomes, more than the cache holds, so its trimming runs; both
+must come back to their starting heap once the caches are released. It runs outside `npm test`
+(`heap/vitest.config.ts`). `HEAP_KERNEL=<folder>`, `HEAP_CALLS`, `HEAP_THRESHOLD`, `HEAP_CASES=<part of a
+name>`, `HEAP_OUT` and `HEAP_REPORT_ONLY=1` work as the bench's variables do. `kernel-heap.test.ts` and
+`kernel-exceptions.test.ts` pin the leaks it found, each in a few lines.
+
 ## Services are built in a ring
 
 Wires and operations need each other: operations builds on wires and faces, and wires asks

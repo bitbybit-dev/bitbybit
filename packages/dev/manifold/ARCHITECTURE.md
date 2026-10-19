@@ -111,3 +111,14 @@ round.
 
 `lib/api/__test__/kernel.ts` sets Manifold's WASM up once per process and every suite in a file
 shares it; the service holds no state of its own beyond the kernel it wraps.
+
+Every test runs with the kernel ledger (`lib/api/__test__/kernel-ledger.setup.ts`, the root
+`scripts/README.md`): each outermost call through the service tree is checked for kernel objects it
+made and left alive outside its answer. manifold-3d's own JavaScript leaks some of the vectors it
+converts arrays through (`toPolygons` never deletes each polygon's vector, `extrude` and `revolve`
+never delete the polygons they read, `triangulate` never deletes its result). The ledger tells those
+apart by where they were made, not by their class: an object manifold-3d's own script made and no
+call from our code returned is the library's, counted apart and bounded per call and per class in
+`scripts/kernel-ledger.allow.json` (`foreign`), and anything else left alive is the call's. `extrude` translates
+a centred solid itself, because the library's centring leaves the uncentred solid behind.
+`kernel-lifetimes.test.ts` names the cases one at a time through `ledgerRun`.
