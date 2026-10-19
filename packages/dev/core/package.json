@@ -147,7 +147,7 @@
         "rxjs": "7.8.2"
     },
     "devDependencies": {
-        "@microsoft/api-extractor": "7.59.1",
+        "@microsoft/api-extractor": "7.59.4",
         "@vitest/coverage-v8": "4.1.11",
         "jsdom": "29.0.1",
         "manifold-3d": "3.5.3",
