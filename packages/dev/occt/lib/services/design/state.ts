@@ -49,7 +49,7 @@ export interface DesignTrace {
 }
 
 export interface DesignMachiningTrace {
-    readonly operation: "keyway" | "flat" | "ringGroove" | "knurl" | "splinedHub" | "thread";
+    readonly operation: "din.keyway" | "ansi.keyway" | "flat" | "din.ringGroove" | "ansi.ringGroove" | "din.knurl" | "ansi.knurl" | "din.splinedHub" | "ansi.splinedHub" | "iso.thread" | "ansi.thread";
     readonly inputs: Readonly<Record<string, unknown>>;
 }
 
@@ -68,6 +68,7 @@ export interface DesignRun {
     occ: BitbybitOcctModule;
     base: BaseBitByBit;
     cache: DesignCache;
+    unit: Inputs.Base.unitOfLengthEnum;
     parameters: DesignValues;
     derived: ReadonlyMap<string, readonly string[]>;
     bodies: Map<string, BodyState>;

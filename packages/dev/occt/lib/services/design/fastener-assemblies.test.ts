@@ -14,7 +14,7 @@ const SCREW_ID = "0b6c2f9e-1a2b-4c3d-8e4f-5a6b7c8d9e02";
 const BASE_ID = "0b6c2f9e-1a2b-4c3d-8e4f-5a6b7c8d9e03";
 const SLIDE_ID = "0b6c2f9e-1a2b-4c3d-8e4f-5a6b7c8d9e04";
 const SEED = 20261018;
-const METRIC_SIZES = Object.values(BaseInputs.Engineering.metricSizeEnum);
+const METRIC_SIZES = Object.values(BaseInputs.Engineering.isoThreadSizeEnum);
 
 const diameterOf = (size: string): number => Number(size.slice(1));
 
@@ -37,7 +37,7 @@ const capScrew = (size: string): Part => ({
     schemaVersion: 1,
     id: SCREW_ID,
     parameters: { length: diameterOf(size) },
-    features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.fasteners.socketHeadCapScrew", params: { size, length: { expr: "length" } } }],
+    features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.fasteners.iso.socketHeadCapScrew", params: { size, length: { expr: "length" } } }],
     parts: [{ id: "screw", body: "part", connectors: [{ id: "seat", on: { of: "part", role: "seat" }, axis: { of: "part", role: "thread" } }] }],
 });
 
@@ -146,7 +146,7 @@ describe("OCCT design: fastener assemblies and joints at their limits", () => {
             schemaVersion: 1,
             id: SCREW_ID,
             parameters: { full: { type: "boolean", value: full }, length: 30 },
-            features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.fasteners.hexBolt", params: { size: "M8", length: { expr: "length" }, fullyThreaded: { expr: "full" } } }],
+            features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.fasteners.iso.hexBolt", params: { size: "M8", length: { expr: "length" }, fullyThreaded: { expr: "full" } } }],
             parts: [{ id: "bolt", body: "part" }],
         });
 

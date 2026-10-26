@@ -188,6 +188,21 @@ for its distance from the origin, would otherwise loop for a very long time.
   mirrored placement to keep them facing out, and a placement moves a face that carries only a mesh
   too. STL data swapped after the fact (`stlWithYAndZSwapped`) likewise swaps y and z in every normal
   and corner and reverses each triangle's winding, binary or ASCII.
+- **Units.** Every unit an export or an import takes is optional, and leaving it out writes and reads
+  exactly what the call did before it had one.
+  - STEP: the shape writer cannot declare a unit, so a shape modelled in another unit is scaled into
+    millimetres and written by the same plain writer; the file states millimetres and its sizes are
+    true. A document's export (`exportDocumentToStep`) states the document's own `lengthUnit`.
+  - STEP and IGES loading: OCCT's reader brings every file in as millimetres, whatever it states,
+    and `unit` scales the shape from there. `fileLengthUnit` tells what a file states: the `LENGTH_UNIT`
+    of a STEP file's global context (an SI prefix, or INCH as a conversion-based unit) or the unit flag
+    of an IGES file's global section, after unzipping a compressed one, and undefined when it cannot
+    tell.
+  - glTF is in metres by its specification: with a `unit`, a document's GLB gets one root node, "unit
+    scale", that scales the scene's old roots, and no mesh is rewritten (`glbWithRootScale` in base,
+    which Babylon's GLB export uses too).
+  - An SVG with a `unit` states its `width` and `height` in it, margins included; metres are written as
+    centimetres, which SVG has and metres it has not.
 
 ## Documents, PMI and validity
 
@@ -308,7 +323,19 @@ for its distance from the origin, would otherwise loop for a very long time.
   balls, raceways and cage follow typical proportions of the bearing's section, sized so nothing in
   it overlaps; only the boundary sizes come from the designation. Each ring's flat sides are named
   apart from the rest of it (`innerStart`, `outerEnd`), so a design document's connector can stand
-  on one.
+  on one. A ball is no larger than the section leaves room for with its cage pocket
+  (`CAGE_POCKET_ROOM`) and the shield gap: the inch R-series sections are narrower than the ISO
+  ones, and an open one once had its cage cut through its balls.
+- **Standards and units.** Each standard is its own class (`fasteners.iso` and `fasteners.ansi`,
+  `machining.iso`, `machining.din` and `machining.ansi`, and so on): it looks its sizes up in base, in
+  the `unit` the call names, and hands the numbers to geometry shared by every standard
+  (`fastener-shapes.ts`, `machining-shapes.ts`, `parallel-key-shapes.ts`, `retaining-ring-shapes.ts`,
+  `ball-bearing-shapes.ts`), so an ANSI screw and an ISO one are the same code on different numbers,
+  with the same roles and connectors. Gears, springs, dowel pins and flats take model units and no
+  `unit`. A thread is cut in millimetres and then scaled into the unit (`thread-cutter.ts`), because
+  its play and its helix accuracy are absolute millimetre values chosen for the kernel's tolerance; a
+  spline takes its pressure angle and root round from the sizes, 30 degrees and DIN's root for
+  DIN 5480, the flat root of B92.1 for ANSI.
 
 ## Recipes
 

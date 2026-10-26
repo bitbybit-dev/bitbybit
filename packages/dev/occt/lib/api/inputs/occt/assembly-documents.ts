@@ -617,6 +617,13 @@ export class ExportDocumentToGltfDto<T> {
      */
     up?: upAxisEnum | undefined = upAxisEnum.z;
     /**
+     * The unit the document is modelled in. Given, the file is in metres, glTF's unit, through one
+     * scaled root node; left out, the numbers are written as they are.
+     * @default undefined
+     * @optional true
+     */
+    unit?: Base.unitOfLengthEnum | undefined;
+    /**
      * The name the downloaded file gets; it should end in `.glb`.
      * @default assembly.glb
      */

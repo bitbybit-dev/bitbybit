@@ -9,9 +9,9 @@ import type * as Models from "../../../api/models";
 const base = new BaseBitByBit();
 const fasteners = base.engineering.mechanical.fasteners;
 const threads = base.engineering.mechanical.threads;
-const SIZES = Object.values(BaseInputs.Engineering.metricSizeEnum);
-const POINTS = Object.values(BaseInputs.Engineering.setScrewPointEnum);
-const BEARINGS = Object.values(BaseInputs.Engineering.ballBearingEnum);
+const SIZES = Object.values(BaseInputs.Engineering.isoThreadSizeEnum);
+const POINTS = Object.values(BaseInputs.Engineering.isoSetScrewPointEnum);
+const BEARINGS = Object.values(BaseInputs.Engineering.isoBallBearingEnum);
 const HEX_AREA_PER_FLAT_SQUARED = Math.sqrt(3) / 2;
 const CHAMFER_START = 0.95;
 const DOWEL_CHAMFER_SHARE = 0.1;
@@ -27,9 +27,9 @@ const endsAndSample = <T>(all: readonly T[], sampled = SAMPLED): T[] => {
     return [all[0]!, ...inner.filter(each => picked.includes(each)), all[all.length - 1]!];
 };
 
-const listsSetScrew = (size: BaseInputs.Engineering.metricSizeEnum): boolean => {
+const listsSetScrew = (size: BaseInputs.Engineering.isoThreadSizeEnum): boolean => {
     try {
-        fasteners.setScrewSizes({ size, point: BaseInputs.Engineering.setScrewPointEnum.flat, length: 3 * diameterOf(size) });
+        fasteners.iso.setScrewSizes({ size, point: BaseInputs.Engineering.isoSetScrewPointEnum.flat, length: 3 * diameterOf(size) });
         return true;
     } catch {
         return false;
@@ -63,11 +63,11 @@ describe("OCCT parts: standard sizes", () => {
     describe("washers and dowel pins of every size, nuts, screws and bolts from M1.6 to M24 and a sample between", () => {
         it.each(SIZES)("should turn an %s ISO 7089 washer into a valid ring of exactly the table's volume, every face named once", size => {
             // Arrange
-            const sizes = fasteners.washerSizes({ size });
+            const sizes = fasteners.iso.washerSizes({ size });
             const expected = Math.PI * ((sizes.outerDiameter / 2) ** 2 - (sizes.innerDiameter / 2) ** 2) * sizes.thickness;
 
             // Act
-            const made = checked(occt.parts.mechanical.fasteners.washerWithRoles({ size }), volumeOf);
+            const made = checked(occt.parts.mechanical.fasteners.iso.washerWithRoles({ size }), volumeOf);
 
             // Assert
             expect([made.valid, made.named]).toEqual([true, true]);
@@ -76,13 +76,13 @@ describe("OCCT parts: standard sizes", () => {
 
         it.each(endsAndSample(SIZES))("should make an %s ISO 4032 nut valid, its volume between the cylinder its chamfers leave whole and the sharp hexagon, less its hole", size => {
             // Arrange
-            const sizes = fasteners.hexNutSizes({ size });
+            const sizes = fasteners.iso.hexNutSizes({ size });
             const hole = Math.PI * (diameterOf(size) / 2) ** 2 * sizes.height;
             const whole = Math.PI * (CHAMFER_START * sizes.acrossFlats / 2) ** 2 * sizes.height - hole;
             const sharp = HEX_AREA_PER_FLAT_SQUARED * sizes.acrossFlats ** 2 * sizes.height - hole;
 
             // Act
-            const made = checked(occt.parts.mechanical.fasteners.hexNutWithRoles({ size }), volumeOf);
+            const made = checked(occt.parts.mechanical.fasteners.iso.hexNutWithRoles({ size }), volumeOf);
 
             // Assert
             expect([made.valid, made.named]).toEqual([true, true]);
@@ -94,12 +94,12 @@ describe("OCCT parts: standard sizes", () => {
             // Arrange
             const nominal = diameterOf(size);
             const length = 2 * nominal;
-            const head = fasteners.socketHeadCapScrewSizes({ size });
+            const head = fasteners.iso.socketHeadCapScrewSizes({ size });
             const cylinders = Math.PI * (head.headDiameter / 2) ** 2 * head.headHeight + Math.PI * (nominal / 2) ** 2 * length;
 
             // Act
-            const made = checked(occt.parts.mechanical.fasteners.socketHeadCapScrewWithRoles({ size, length }), shape => volumeOf(shape) / cylinders);
-            const extent = extentOf(occt.parts.mechanical.fasteners.socketHeadCapScrew({ size, length }));
+            const made = checked(occt.parts.mechanical.fasteners.iso.socketHeadCapScrewWithRoles({ size, length }), shape => volumeOf(shape) / cylinders);
+            const extent = extentOf(occt.parts.mechanical.fasteners.iso.socketHeadCapScrew({ size, length }));
 
             // Assert
             expect([made.valid, made.named]).toEqual([true, true]);
@@ -113,12 +113,12 @@ describe("OCCT parts: standard sizes", () => {
             // Arrange
             const nominal = diameterOf(size);
             const length = 3 * nominal;
-            const sizes = fasteners.hexBoltSizes({ size, length });
+            const sizes = fasteners.iso.hexBoltSizes({ size, length });
             const sharp = HEX_AREA_PER_FLAT_SQUARED * sizes.acrossFlats ** 2 * sizes.headHeight + Math.PI * (nominal / 2) ** 2 * length;
-            const minor = Math.PI * (threads.metricThread({ size }).minorDiameter / 2) ** 2 * length;
+            const minor = Math.PI * (threads.iso.thread({ size }).minorDiameter / 2) ** 2 * length;
 
             // Act
-            const made = checked(occt.parts.mechanical.fasteners.hexBoltWithRoles({ size, length }), volumeOf);
+            const made = checked(occt.parts.mechanical.fasteners.iso.hexBoltWithRoles({ size, length }), volumeOf);
 
             // Assert
             expect([made.valid, made.named]).toEqual([true, true]);
@@ -131,7 +131,7 @@ describe("OCCT parts: standard sizes", () => {
             const length = 3 * diameterOf(size);
 
             // Act
-            const made = checked(occt.parts.mechanical.fasteners.setScrewWithRoles({ size, point, length }), shape => extentOf(shape)[1] ?? Number.NaN);
+            const made = checked(occt.parts.mechanical.fasteners.iso.setScrewWithRoles({ size, point, length }), shape => extentOf(shape)[1] ?? Number.NaN);
 
             // Assert
             expect([made.valid, made.named]).toEqual([true, true]);
@@ -157,10 +157,10 @@ describe("OCCT parts: standard sizes", () => {
     describe("ball bearings, the smallest, the largest and a sample between", () => {
         it.each(endsAndSample(BEARINGS, 2))("should make a %s of valid separate solids as wide and as large across as its table says, every face named once", designation => {
             // Arrange
-            const sizes = base.engineering.mechanical.bearings.ballBearingSizes({ designation });
+            const sizes = base.engineering.mechanical.bearings.iso.ballBearingSizes({ designation });
 
             // Act
-            const made = occt.parts.mechanical.bearings.ballBearingWithRoles({ designation, shields: true });
+            const made = occt.parts.mechanical.bearings.iso.ballBearingWithRoles({ designation, shields: true });
             const solids = occt.shapes.solid.getSolids({ shape: made.shape });
             const extent = extentOf(made.shape);
 
@@ -194,11 +194,11 @@ describe("OCCT parts: standard sizes", () => {
 
         it("should model a thread of exactly the most turns as one valid solid", () => {
             // Arrange
-            const size = BaseInputs.Engineering.metricSizeEnum.m3;
-            const pitch = threads.metricThread({ size }).pitch;
+            const size = BaseInputs.Engineering.isoThreadSizeEnum.m3;
+            const pitch = threads.iso.thread({ size }).pitch;
 
             // Act
-            const tool = occt.parts.mechanical.machining.threadTool({ size, length: 400 * pitch });
+            const tool = occt.parts.mechanical.machining.iso.threadTool({ size, length: 400 * pitch });
             const solids = occt.shapes.solid.getSolids({ shape: tool });
             const valid = occt.shapeFix.isValid({ shape: tool });
             solids.forEach(solid => solid.delete());

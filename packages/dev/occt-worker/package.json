@@ -109,6 +109,31 @@
             "types": "./dist/lib/api/occt/parts/mechanical/index.d.ts",
             "default": "./dist/lib/api/occt/parts/mechanical/index.js"
         },
+        "./lib/api/occt/parts/mechanical/bearings": {
+            "@bitbybit-dev/source": "./lib/api/occt/parts/mechanical/bearings/index.ts",
+            "types": "./dist/lib/api/occt/parts/mechanical/bearings/index.d.ts",
+            "default": "./dist/lib/api/occt/parts/mechanical/bearings/index.js"
+        },
+        "./lib/api/occt/parts/mechanical/fasteners": {
+            "@bitbybit-dev/source": "./lib/api/occt/parts/mechanical/fasteners/index.ts",
+            "types": "./dist/lib/api/occt/parts/mechanical/fasteners/index.d.ts",
+            "default": "./dist/lib/api/occt/parts/mechanical/fasteners/index.js"
+        },
+        "./lib/api/occt/parts/mechanical/keys": {
+            "@bitbybit-dev/source": "./lib/api/occt/parts/mechanical/keys/index.ts",
+            "types": "./dist/lib/api/occt/parts/mechanical/keys/index.d.ts",
+            "default": "./dist/lib/api/occt/parts/mechanical/keys/index.js"
+        },
+        "./lib/api/occt/parts/mechanical/machining": {
+            "@bitbybit-dev/source": "./lib/api/occt/parts/mechanical/machining/index.ts",
+            "types": "./dist/lib/api/occt/parts/mechanical/machining/index.d.ts",
+            "default": "./dist/lib/api/occt/parts/mechanical/machining/index.js"
+        },
+        "./lib/api/occt/parts/mechanical/retaining-rings": {
+            "@bitbybit-dev/source": "./lib/api/occt/parts/mechanical/retaining-rings/index.ts",
+            "types": "./dist/lib/api/occt/parts/mechanical/retaining-rings/index.d.ts",
+            "default": "./dist/lib/api/occt/parts/mechanical/retaining-rings/index.js"
+        },
         "./lib/api/occt/select": {
             "@bitbybit-dev/source": "./lib/api/occt/select/index.ts",
             "types": "./dist/lib/api/occt/select/index.d.ts",

@@ -294,9 +294,9 @@ export class OCCTDesign {
      * places its parts and sub-assemblies `at` the frames the file gives them, so a part placed forty
      * times stays one document placed forty times. A placement that mirrors or scales its part is
      * built into a part of its own and a hidden one is suppressed; `report.notes` says so. A file that
-     * places more parts than a design builds is refused. Lengths are in millimetres and Z is up. Store
-     * the asset's `data` at its `uri` before the documents are saved.
-     * @param inputs - The STEP file, its name, the seed of the documents' ids and the folder of the shapes file
+     * places more parts than a design builds is refused. Lengths are in `unit`, scaled from the file's
+     * own, and Z is up. Store the asset's `data` at its `uri` before the documents are saved.
+     * @param inputs - The STEP file, its name, the seed of the documents' ids, the folder of the shapes file and the unit
      * @returns The documents, the id of the one that places everything, the shapes file and a report
      * @group document
      * @shortname design from step

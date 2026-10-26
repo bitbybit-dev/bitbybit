@@ -9,6 +9,9 @@ import { checkedFrame, checkedNumber, checkedShape } from "./base/input-checks";
 import { withKernelRefusals } from "./base/kernel-refusals";
 import { numbersOfFrames } from "./base/frames";
 import { SMALLEST_MESH_DEFLECTION, bytesOfFile, objNameOf, textOfFile } from "./base/file-data";
+import { igesLengthUnit, stepLengthUnit, stepOrIgesKindOf } from "./base/file-units";
+import { gunzipped, isGzip } from "@bitbybit-dev/base/lib/api/services/helpers/files/gzip";
+import { checkedUnitOfLength } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/lengths";
 import type { DrawingLine } from "./base/svg-drawing";
 import { svgOfDrawing } from "./base/svg-drawing";
 import { stlWithYAndZSwapped } from "./base/stl-data";
@@ -37,13 +40,12 @@ export class OCCTIO {
     }
 
     /**
-     * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and returns the
-     * file's text.
+     * Writes a shape as STEP, the exchange format for exact CAD geometry, and returns its text.
      *
-     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape;
-     * turn it 90 degrees about X with `transforms.rotate` first to keep it as built. `fileName` and
-     * `tryDownload` matter only where a browser download can be started.
-     * @param inputs - The shape, the file name, the axis adjustment and the download options
+     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, mirroring the shape; turn it
+     * 90 degrees about X with `transforms.rotate` first to keep it as built. The file is in
+     * millimetres, a shape in another `unit` scaled to them.
+     * @param inputs - The shape, the file name, the axis adjustment, the unit and the download options
      * @returns The STEP file as text
      * @group io
      * @shortname save step and return
@@ -55,12 +57,14 @@ export class OCCTIO {
      */
     saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<TopoDS_Shape>): string {
         const resolved = resolveDto(Inputs.OCCT.SaveStepDto, inputs) as Resolved.OCCT.SaveStepDto<TopoDS_Shape>;
+        const millimetres = this.och.base.math.millimetresPerUnit({ unit: resolved.unit });
         const adjustedShape = resolved.adjustYtoZ ? this.zUpOf(resolved.shape, resolved.fromRightHanded) : undefined;
+        const scaledShape = millimetres === 1 ? undefined : released(adjustedShape === undefined ? [] : [adjustedShape], () => this.och.transformsService.scaleFromCenter({ shape: adjustedShape ?? resolved.shape, factor: millimetres, center: [0, 0, 0] }));
         const writer = new this.occ.STEPControl_Writer();
         try {
             let transferResult;
             try {
-                transferResult = withKernelErrorsRead(this.occ, () => writer.Transfer(adjustedShape ?? resolved.shape, this.occ.STEPControl_StepModelType.AsIs));
+                transferResult = withKernelErrorsRead(this.occ, () => writer.Transfer(scaledShape ?? adjustedShape ?? resolved.shape, this.occ.STEPControl_StepModelType.AsIs));
             } catch (ex) {
                 throw trapOr(ex, () => new Error("Failed when calling writer.Transfer.", { cause: ex }));
             }
@@ -76,7 +80,7 @@ export class OCCTIO {
             return stepFileText;
         } finally {
             writer.delete();
-            adjustedShape?.delete();
+            (scaledShape === undefined ? adjustedShape : scaledShape)?.delete();
         }
     }
 
@@ -231,12 +235,13 @@ export class OCCTIO {
     }
 
     /**
-     * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
-     * asked, and returns the file's text.
+     * Draws the edges a view of a shape sees as SVG, hidden ones dashed when asked, and returns the
+     * file's text.
      *
-     * It shows the view from the frame's normal side in model units, x running right along the
-     * frame's direction and y up, so the file holds each point as x and minus y.
-     * @param inputs - The shape, the view, whether to draw hidden edges, the precision and the download options
+     * The view looks from the frame's normal side, x along the frame's direction and y up, so each
+     * point is written as x and minus y. With the shape's `unit`, it states its true width and
+     * height.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit and the download options
      * @returns The SVG file as text
      * @group io
      * @shortname save svg and return
@@ -255,9 +260,10 @@ export class OCCTIO {
         if (precision === 0) {
             throw new InputError("`precision` must be above 0; it is 0.", "precision");
         }
+        const unit = resolved.unit === undefined ? undefined : checkedUnitOfLength(resolved.unit, "unit");
         const lines = this.occ.HiddenLines(shape, numbersOfFrames([frame]), true, false, resolved.drawHidden, 0, precision);
         try {
-            return svgOfDrawing(this.drawingLinesOf(lines.visible, precision), this.drawingLinesOf(lines.hidden, precision));
+            return svgOfDrawing(this.drawingLinesOf(lines.visible, precision), this.drawingLinesOf(lines.hidden, precision), unit);
         } finally {
             lines.visible.delete();
             lines.hidden.delete();
@@ -268,32 +274,18 @@ export class OCCTIO {
      * Reads a STEP or IGES file into one shape.
      *
      * The extension of `fileName` decides the kind: `.step`, `.stp`, `.stpz` are STEP, `.iges`,
-     * `.igs`, `.igz` are IGES. `filetext` is the file's text, or an ArrayBuffer for compressed and
-     * binary forms; `adjustZtoY` turns the file's Z-up into Y-up. An unreadable file gives
+     * `.igs`, `.igz` are IGES. `filetext` is text, or an ArrayBuffer for compressed and binary forms;
+     * `adjustZtoY` turns Z-up into Y-up. The shape comes back in `unit`. An unreadable file gives
      * undefined.
-     * @param inputs - The file content, its name with extension and the axis adjustment
+     * @param inputs - The file content, its name with extension, the axis adjustment and the unit
      * @returns The shape, or undefined when the file could not be read
      */
     loadSTEPorIGES(inputs: Inputs.OCCT.LoadStepOrIgesDto): TopoDS_Shape | undefined {
         const resolved = resolveDto(Inputs.OCCT.LoadStepOrIgesDto, inputs) as Resolved.OCCT.LoadStepOrIgesDto;
         const fileName = resolved.fileName;
         const fileText = resolved.filetext;
-        const extension = fileName.toLowerCase().split(".").pop();
-        
-        const fileType = (() => {
-            switch (extension) {
-                case "step":
-                case "stp":
-                case "stpz":
-                    return "step";
-                case "iges":
-                case "igs":
-                case "igz":
-                    return "iges";
-                default:
-                    return undefined;
-            }
-        })();
+        const millimetres = this.och.base.math.millimetresPerUnit({ unit: resolved.unit });
+        const fileType = stepOrIgesKindOf(fileName);
         
         if (!fileType) {
             console.error("opencascade can't parse this extension!");
@@ -343,13 +335,42 @@ export class OCCTIO {
         }
         
         const loaded = stepShape;
-        if (!resolved.adjustZtoY) {
-            return loaded;
-        }
-        return released([loaded], () => {
+        const turned = !resolved.adjustZtoY ? loaded : released([loaded], () => {
             const mirroredShape = this.och.transformsService.mirrorAlongNormal({ shape: loaded, origin: [0, 0, 0], normal: [0, 0, 1] });
             return released([mirroredShape], () => this.och.transformsService.rotate({ shape: mirroredShape, axis: [1, 0, 0], angle: 90 }));
         });
+        if (millimetres === 1) {
+            return turned;
+        }
+        return released([turned], () => this.och.transformsService.scaleFromCenter({ shape: turned, factor: 1 / millimetres, center: [0, 0, 0] }));
+    }
+
+    /**
+     * Reads the unit a STEP or IGES file writes its lengths in, without building its geometry.
+     *
+     * Millimetres, centimetres, metres and inches are told; a file in another unit, one whose parts
+     * disagree, or one that states none gives undefined. `io.loadSTEPorIGES` reads any of them into
+     * the `unit` it is asked for.
+     * @param inputs - The file content and its name with extension
+     * @returns The file's unit, or undefined when it is none of these or cannot be told
+     * @group io
+     * @shortname file length unit
+     * @drawable false
+     * @example
+     * ```typescript
+     * const unit = await bitbybit.occt.io.fileLengthUnit({ filetext: stepText, fileName: "bracket.step" });
+     * const shape = await bitbybit.occt.io.loadSTEPorIGES({ filetext: stepText, fileName: "bracket.step", unit: unit ?? Bit.Inputs.Base.unitOfLengthEnum.millimetre });
+     * ```
+     */
+    fileLengthUnit(inputs: Inputs.OCCT.FileLengthUnitDto): Inputs.Base.unitOfLengthEnum | undefined {
+        const resolved = resolveDto(Inputs.OCCT.FileLengthUnitDto, inputs) as Resolved.OCCT.FileLengthUnitDto;
+        const fileType = stepOrIgesKindOf(resolved.fileName);
+        if (fileType === undefined) {
+            throw new InputError(`\`fileName\` is ${JSON.stringify(resolved.fileName)}, which ends in none of a STEP or IGES file's extensions.`, "fileName");
+        }
+        const bytes = typeof resolved.filetext === "string" ? undefined : bytesOfFile(resolved.filetext, "filetext");
+        const text = bytes === undefined ? textOfFile(resolved.filetext, "filetext") : new TextDecoder().decode(isGzip(bytes) ? gunzipped(bytes) : bytes);
+        return fileType === "step" ? stepLengthUnit(text) : igesLengthUnit(text);
     }
 
     /**
@@ -491,9 +512,9 @@ export class OCCTIO {
      * Writes DXF parts into one DXF file and returns its text.
      *
      * `colorFormat` chooses AutoCAD's indexed colors or true color, `acadVersion` the DXF version:
-     * AC1009 is R12, the most widely readable, AC1015 is 2000. `fileName` and `tryDownload` matter
-     * only where a browser download can be started.
-     * @param inputs - The layered parts, the color format, the DXF version and the download options
+     * AC1009 is R12, the most widely readable, AC1015 is 2000, which can also state the drawing's
+     * `unit`. `fileName` and `tryDownload` matter only where a browser download can be started.
+     * @param inputs - The layered parts, the color format, the DXF version, the unit and the download options
      * @returns The DXF file as text
      * @group dxf
      * @shortname dxf create

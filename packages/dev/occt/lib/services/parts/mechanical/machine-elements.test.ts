@@ -7,7 +7,7 @@ import { Inputs as BaseInputs } from "@bitbybit-dev/base";
 import type * as Models from "../../../api/models";
 import { CAGE_POCKET_SHARE, CAGE_THICKNESS_SHARE } from "../parts.constants";
 
-const B = BaseInputs.Engineering.ballBearingEnum;
+const B = BaseInputs.Engineering.isoBallBearingEnum;
 
 describe("OCCT parts: springs, bearings and keys", () => {
     let occt: OCCTService;
@@ -75,7 +75,7 @@ describe("OCCT parts: springs, bearings and keys", () => {
     describe("ball bearings", () => {
         it("should make a 608 22 across and 7 wide of two rings, seven balls and a cage that do not overlap", () => {
             // Act
-            const made = occt.parts.mechanical.bearings.ballBearingWithRoles({ designation: B.b608 });
+            const made = occt.parts.mechanical.bearings.iso.ballBearingWithRoles({ designation: B.b608 });
 
             // Assert
             const solids = occt.shapes.solid.getSolids({ shape: made.shape });
@@ -108,8 +108,8 @@ describe("OCCT parts: springs, bearings and keys", () => {
 
         it("should make the same solids without roles as with them", () => {
             // Act
-            const plain = occt.parts.mechanical.bearings.ballBearing({ designation: B.b6204, shields: true });
-            const named = occt.parts.mechanical.bearings.ballBearingWithRoles({ designation: B.b6204, shields: true });
+            const plain = occt.parts.mechanical.bearings.iso.ballBearing({ designation: B.b6204, shields: true });
+            const named = occt.parts.mechanical.bearings.iso.ballBearingWithRoles({ designation: B.b6204, shields: true });
 
             // Assert
             const volumes = (shape: TopoDS_Shape): number[] => occt.shapes.solid.getSolids({ shape }).map(solid => occt.shapes.solid.getSolidVolume({ shape: solid }));
@@ -118,7 +118,7 @@ describe("OCCT parts: springs, bearings and keys", () => {
 
         it("should seat a 6204 on its bore and in its outside, with eight balls and shields on both sides when asked", () => {
             // Act
-            const made = occt.parts.mechanical.bearings.ballBearingWithRoles({ designation: B.b6204, shields: true });
+            const made = occt.parts.mechanical.bearings.iso.ballBearingWithRoles({ designation: B.b6204, shields: true });
 
             // Assert
             const area = (role: string): number => (made.roles[role] ?? []).reduce((sum, index) => sum + occt.shapes.face.getFaceArea({ shape: occt.shapes.face.getFace({ shape: made.shape, index }) }), 0);
@@ -136,7 +136,7 @@ describe("OCCT parts: springs, bearings and keys", () => {
     describe("ball bearings with shields", () => {
         it.each([B.b625, B.b626, B.b609, B.b6200, B.b6207, B.b6208, B.b608, B.b6204])("should keep the cage and the balls of a %s clear of its shields", designation => {
             // Act
-            const made = occt.parts.mechanical.bearings.ballBearingWithRoles({ designation, shields: true });
+            const made = occt.parts.mechanical.bearings.iso.ballBearingWithRoles({ designation, shields: true });
 
             // Assert
             const solids = occt.shapes.solid.getSolids({ shape: made.shape });
@@ -150,7 +150,7 @@ describe("OCCT parts: springs, bearings and keys", () => {
     describe("parallel keys", () => {
         it("should make the 8 by 7 key DIN 6885 gives a 25 shaft, with round ends and every face named", () => {
             // Act
-            const made = occt.parts.mechanical.keys.parallelKeyWithRoles({ shaftDiameter: 25, length: 28 });
+            const made = occt.parts.mechanical.keys.din.parallelKeyWithRoles({ shaftDiameter: 25, length: 28 });
 
             // Assert
             expect(extent(made.shape)).toEqual([expect.closeTo(28, 4), expect.closeTo(8, 4), expect.closeTo(7, 4)]);
@@ -161,8 +161,8 @@ describe("OCCT parts: springs, bearings and keys", () => {
 
         it("should refuse a key no longer than it is wide and a shaft outside the standard", () => {
             // Act & Assert
-            expect(() => occt.parts.mechanical.keys.parallelKey({ shaftDiameter: 25, length: 8 })).toThrow("`length`");
-            expect(() => occt.parts.mechanical.keys.parallelKey({ shaftDiameter: 70, length: 30 })).toThrow("`shaftDiameter`");
+            expect(() => occt.parts.mechanical.keys.din.parallelKey({ shaftDiameter: 25, length: 8 })).toThrow("`length`");
+            expect(() => occt.parts.mechanical.keys.din.parallelKey({ shaftDiameter: 70, length: 30 })).toThrow("`shaftDiameter`");
         });
     });
 
@@ -176,7 +176,7 @@ describe("OCCT parts: springs, bearings and keys", () => {
             const grooved = occt.booleans.difference({ shape: shaft, shapes: [groove], keepEdges: false });
 
             // Act
-            const made = occt.parts.mechanical.retainingRings.retainingRingWithRoles({ kind: R.shaft, diameter: 20 });
+            const made = occt.parts.mechanical.retainingRings.din.retainingRingWithRoles({ kind: R.shaft, diameter: 20 });
             const clashes = occt.analysis.clashes.betweenShapes({ shapes: [grooved, made.shape] });
 
             // Assert
@@ -189,7 +189,7 @@ describe("OCCT parts: springs, bearings and keys", () => {
 
         it("should point a ring's lugs along its frame's direction", () => {
             // Act
-            const made = occt.parts.mechanical.retainingRings.retainingRingWithRoles({ kind: R.shaft, diameter: 20, frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] } });
+            const made = occt.parts.mechanical.retainingRings.din.retainingRingWithRoles({ kind: R.shaft, diameter: 20, frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] } });
 
             // Assert
             const lugs = (made.roles["lug"] ?? []).map(index => {
@@ -206,7 +206,7 @@ describe("OCCT parts: springs, bearings and keys", () => {
             const housing = occt.booleans.difference({ shape: occt.shapes.solid.createCylinder({ radius: 35, height: 10, center: [0, -5, 0], direction: [0, 1, 0] }), shapes: [occt.shapes.solid.createCylinder({ radius: 23.5, height: 12, center: [0, -6, 0], direction: [0, 1, 0] }), occt.shapes.solid.createCylinder({ radius: 24.75, height: 1.85, center: [0, -0.05, 0], direction: [0, 1, 0] })], keepEdges: false });
 
             // Act
-            const ring = occt.parts.mechanical.retainingRings.retainingRing({ kind: R.bore, diameter: 47 });
+            const ring = occt.parts.mechanical.retainingRings.din.retainingRing({ kind: R.bore, diameter: 47 });
             const clashes = occt.analysis.clashes.betweenShapes({ shapes: [housing, ring] });
 
             // Assert
@@ -217,7 +217,7 @@ describe("OCCT parts: springs, bearings and keys", () => {
 
         it.each([[R.shaft, 3], [R.shaft, 100], [R.bore, 8], [R.bore, 100]])("should make a valid %s ring at the end of its range, %i", (kind, diameter) => {
             // Act
-            const ring = occt.parts.mechanical.retainingRings.retainingRing({ kind, diameter });
+            const ring = occt.parts.mechanical.retainingRings.din.retainingRing({ kind, diameter });
 
             // Assert
             expect(occt.shapeFix.isValid({ shape: ring })).toBe(true);
@@ -225,7 +225,7 @@ describe("OCCT parts: springs, bearings and keys", () => {
 
         it("should refuse a diameter the standard lists no ring for", () => {
             // Act & Assert
-            expect(() => occt.parts.mechanical.retainingRings.retainingRing({ kind: R.shaft, diameter: 21.5 })).toThrow("the nearest is 21");
+            expect(() => occt.parts.mechanical.retainingRings.din.retainingRing({ kind: R.shaft, diameter: 21.5 })).toThrow("the nearest is 21");
         });
     });
 
@@ -252,7 +252,7 @@ describe("OCCT parts: springs, bearings and keys", () => {
             });
 
             // Act
-            const failed = (): unknown => occt.parts.mechanical.bearings.ballBearing({ designation: B.b608, shields: false });
+            const failed = (): unknown => occt.parts.mechanical.bearings.iso.ballBearing({ designation: B.b608, shields: false });
 
             // Assert
             expect(failed).toThrow("no sphere this time");
@@ -280,6 +280,26 @@ describe("OCCT parts: springs, bearings and keys", () => {
             expect(failed).toThrow("no grinder this time");
             expect(coils).toHaveLength(1);
             expect(coils.filter(shape => !shape.isDeleted())).toEqual([]);
+        });
+    });
+
+    describe("units", () => {
+        const inch = BaseInputs.Base.unitOfLengthEnum.inch;
+
+        it("should make a bearing, a key and a ring in inches as their millimetre twins scaled down by 25.4", () => {
+            // Arrange
+            const pairs: [TopoDS_Shape, TopoDS_Shape][] = [
+                [occt.parts.mechanical.bearings.iso.ballBearing({ designation: B.b608 }), occt.parts.mechanical.bearings.iso.ballBearing({ designation: B.b608, unit: inch })],
+                [occt.parts.mechanical.keys.din.parallelKey({ shaftDiameter: 25, length: 28 }), occt.parts.mechanical.keys.din.parallelKey({ shaftDiameter: 25 / 25.4, length: 28 / 25.4, unit: inch })],
+                [occt.parts.mechanical.retainingRings.din.retainingRing({ diameter: 20 }), occt.parts.mechanical.retainingRings.din.retainingRing({ diameter: 20 / 25.4, unit: inch })],
+            ];
+
+            // Act
+            const ratios = pairs.map(([millimetres, inches]) => extent(inches).map((side, axis) => side * 25.4 / extent(millimetres)[axis]!));
+
+            // Assert
+            ratios.flat().forEach(ratio => expect(ratio).toBeCloseTo(1, 6));
+            pairs.flat().forEach(shape => shape.delete());
         });
     });
 });

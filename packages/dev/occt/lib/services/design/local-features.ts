@@ -193,7 +193,7 @@ function drilled(feature: Models.OCCT.DesignHoleFeature, path: string, run: Desi
         const y = Array.isArray(position) ? numberOf(position[1], run.parameters, pointer(path, "at", index, 1)) : numberOf(position.y, run.parameters, pointer(path, "at", index, "y"));
         return { origin: run.base.frame.pointToWorld({ frame, point: [x, y, 0] }), normal: frame.normal, direction: frame.direction };
     });
-    const sized = feature.fastener === undefined ? undefined : holeSizeOf(feature.fastener, run.parameters, pointer(path, "fastener"));
+    const sized = feature.fastener === undefined ? undefined : holeSizeOf(feature.fastener, run.parameters, pointer(path, "fastener"), run.unit);
     const common = {
         shape: body.shape,
         frames,
@@ -360,7 +360,7 @@ function loaded(format: ImportFormat, asset: Models.OCCT.DesignAsset, data: stri
     } else if (format === "brep") {
         shape = run.occt.io.loadBrep({ brepData: typeof data === "string" ? data : new TextDecoder().decode(data) });
     } else {
-        shape = run.occt.io.loadSTEPorIGES({ filetext: typeof data === "string" ? data : new Uint8Array(data).buffer, fileName: `asset.${format}`, adjustZtoY: false });
+        shape = run.occt.io.loadSTEPorIGES({ filetext: typeof data === "string" ? data : new Uint8Array(data).buffer, fileName: `asset.${format}`, adjustZtoY: false, unit: run.unit });
     }
     if (shape === undefined) {
         throw new DesignProblem(pointer(path, "asset"), `"${asset.uri}" holds no shape`);
@@ -369,7 +369,7 @@ function loaded(format: ImportFormat, asset: Models.OCCT.DesignAsset, data: stri
 }
 
 function fileReadOncePerBuild(key: string, format: ImportFormat, asset: Models.OCCT.DesignAsset, data: string | Uint8Array, path: string, run: DesignRun): TopoDS_Shape {
-    const hash = `file ${format} ${key}`;
+    const hash = `file ${format} ${run.unit} ${key}`;
     run.used.add(hash);
     const kept = run.cache.take(hash);
     if (kept !== undefined) {

@@ -103,7 +103,7 @@ describe("OCCT design features beyond the first slice", () => {
         const screwDocument: Document = {
             schemaVersion: 1,
             parameters: { size: { type: "choice", value: "M3", options: [{ value: "M3" }, { value: "M4" }] }, length: { value: 10, min: 4 } },
-            features: [{ id: "screw", type: "operation", operation: "occt.parts.mechanical.fasteners.socketHeadCapScrew", params: { size: { expr: "size" }, length: { expr: "length" } } }],
+            features: [{ id: "screw", type: "operation", operation: "occt.parts.mechanical.fasteners.iso.socketHeadCapScrew", params: { size: { expr: "size" }, length: { expr: "length" } } }],
             parts: [{ id: "screw", body: "screw", connectors: [{ id: "seat", on: { of: "screw", role: "seat" }, axis: { of: "screw", role: "thread" } }] }],
         };
 
@@ -127,7 +127,7 @@ describe("OCCT design features beyond the first slice", () => {
             const bearing: Document = {
                 schemaVersion: 1,
                 parameters: { designation: { type: "choice", value: "608", options: [{ value: "608" }, { value: "6204" }] } },
-                features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.bearings.ballBearing", params: { designation: { expr: "designation" }, shields: false } }],
+                features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.bearings.iso.ballBearing", params: { designation: { expr: "designation" }, shields: false } }],
                 parts: [{ id: "bearing", body: "part", connectors: [{ id: "inner", on: { of: "part", role: "innerStart" }, axis: { of: "part", role: "bore" } }, { id: "outer", on: { of: "part", role: "outerEnd" }, axis: { of: "part", role: "outside" } }] }],
             };
             const spring: Document = {
@@ -151,7 +151,7 @@ describe("OCCT design features beyond the first slice", () => {
 
         it("should refuse text where the operation takes a number, at the parameter that takes it", () => {
             // Arrange
-            const document: Document = { ...screwDocument, features: [{ id: "screw", type: "operation", operation: "occt.parts.mechanical.fasteners.socketHeadCapScrew", params: { size: { expr: "size" }, length: { expr: "size" } } }] };
+            const document: Document = { ...screwDocument, features: [{ id: "screw", type: "operation", operation: "occt.parts.mechanical.fasteners.iso.socketHeadCapScrew", params: { size: { expr: "size" }, length: { expr: "size" } } }] };
 
             // Act
             const result = occt.design.build({ document });
@@ -293,9 +293,12 @@ describe("OCCT design features beyond the first slice", () => {
             ["occt.shapes.face.reversedFace", rectangleFace("block", 20, 10, [0, 0, 0], [0, 0, 1]), {}, 1],
             ["occt.shapes.face.getFace", rectangleFace("block", 20, 10, [0, 0, 0], [0, 0, 1]), { index: 0 }, 1],
             ["occt.parts.mechanical.machining.flat", block, { frame: farFrame }, 6],
-            ["occt.parts.mechanical.machining.keyway", block, { frame: farFrame }, 6],
-            ["occt.parts.mechanical.machining.knurl", block, { frame: farFrame }, 6],
-            ["occt.parts.mechanical.machining.ringGroove", block, { frame: farFrame }, 6],
+            ["occt.parts.mechanical.machining.din.keyway", block, { frame: farFrame }, 6],
+            ["occt.parts.mechanical.machining.din.knurl", block, { frame: farFrame }, 6],
+            ["occt.parts.mechanical.machining.din.ringGroove", block, { frame: farFrame }, 6],
+            ["occt.parts.mechanical.machining.ansi.keyway", block, { frame: farFrame, diameter: 25.4, length: 25.4 }, 6],
+            ["occt.parts.mechanical.machining.ansi.knurl", block, { frame: farFrame, diameter: 25.4 }, 6],
+            ["occt.parts.mechanical.machining.ansi.ringGroove", block, { frame: farFrame, diameter: 25.4 }, 6],
         ];
 
         it.each(answeringWithTheBody)("should keep the body's names through %s, which answers with the body's own shape in a handle of its own where it changes nothing", (operation, made, params, faces) => {

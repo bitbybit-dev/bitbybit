@@ -39,7 +39,7 @@ export class OCCTGears {
 
     /**
      * Makes an involute spur gear as a solid: its outline swept `width` along the frame's normal, with
-     * a `bore`, a hub standing out from its end face and a DIN 6885 keyway.
+     * a `bore`, a hub standing out from its end face and a keyway.
      *
      * The first face lies in the frame's plane. A `bore` of 0 leaves the gear whole; one that
      * reaches the root circle is refused.
@@ -81,7 +81,7 @@ export class OCCTGears {
 
     /**
      * Makes an involute helical gear as a solid: its section square to the axis turned steadily along
-     * `width`, with a `bore`, a hub and a DIN 6885 keyway as `spurGear` has them.
+     * `width`, with a `bore`, a hub and a keyway as `spurGear` has them.
      *
      * Two external helical gears of one module and angle in opposite hands mesh, the sum of their
      * pitch radii apart; `herringbone` makes two opposite halves.

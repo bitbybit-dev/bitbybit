@@ -256,13 +256,14 @@ export class SavePlyDto<T> {
  * SVG drawing, and the edges other faces cover dashed when asked.
  */
 export class SaveSvgDto<T> {
-    constructor(shape?: T, frame?: Base.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean) {
+    constructor(shape?: T, frame?: Base.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean, unit?: Base.unitOfLengthEnum) {
         if (shape !== undefined) { this.shape = shape; }
         if (frame !== undefined) { this.frame = frame; }
         if (drawHidden !== undefined) { this.drawHidden = drawHidden; }
         if (precision !== undefined) { this.precision = precision; }
         if (fileName !== undefined) { this.fileName = fileName; }
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        if (unit !== undefined) { this.unit = unit; }
     }
     /**
      * The shape to draw.
@@ -290,6 +291,13 @@ export class SaveSvgDto<T> {
      * @step 0.001
      */
     precision?: number | undefined = 0.01;
+    /**
+     * The unit the shape is modelled in. Given, the drawing states its true width and height; left
+     * out, it has only a view box.
+     * @default undefined
+     * @optional true
+     */
+    unit?: Base.unitOfLengthEnum | undefined;
     /**
      * The name the downloaded file gets.
      * @default shape.svg

@@ -266,6 +266,14 @@ describe("design values", () => {
             expect(values).toEqual(["BRK-40x20-raw", "{literal} 1 0.3", 12.5, false, 80, ""]);
         });
 
+        it("should write an inch part number with fractions", () => {
+            // Act
+            const value = propertyValue("SHCS {fraction(size, 64)}-20 x {fraction(length, 8)}", new Map([["size", 0.25], ["length", 1.25]]), "/p");
+
+            // Assert
+            expect(value).toBe("SHCS 1/4-20 x 1-1/4");
+        });
+
         it("should refuse templates with unmatched braces and values that are not properties", () => {
             // Act
             const problems = [

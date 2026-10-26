@@ -29,8 +29,8 @@ describe("OCCT parts: machining", () => {
             const frame: BaseInputs.Base.Frame = { origin: [0, 5, 0], normal: [0, 1, 0], direction: [1, 0, 0] };
 
             // Act
-            const keyed = occt.parts.mechanical.machining.keyway({ shape: shaft, diameter: 20, length: 25, frame });
-            const key = occt.parts.mechanical.keys.parallelKey({ shaftDiameter: 20, length: 25, frame: { origin: [10 - 3.5, 0, 17.5], normal: [1, 0, 0], direction: [0, 1, 0] } });
+            const keyed = occt.parts.mechanical.machining.din.keyway({ shape: shaft, diameter: 20, length: 25, frame });
+            const key = occt.parts.mechanical.keys.din.parallelKey({ shaftDiameter: 20, length: 25, frame: { origin: [10 - 3.5, 0, 17.5], normal: [1, 0, 0], direction: [0, 1, 0] } });
 
             // Assert
             expect(valid(keyed)).toBe(true);
@@ -45,7 +45,7 @@ describe("OCCT parts: machining", () => {
             const hub = occt.booleans.difference({ shape: rod(20, 15), shapes: [occt.shapes.solid.createCylinder({ radius: 10, height: 17, center: [0, -1, 0], direction: [0, 1, 0] })], keepEdges: false });
 
             // Act
-            const keyed = occt.parts.mechanical.machining.keyway({ shape: hub, diameter: 20, length: 15, inHub: true });
+            const keyed = occt.parts.mechanical.machining.din.keyway({ shape: hub, diameter: 20, length: 15, inHub: true });
 
             // Assert
             expect(valid(keyed)).toBe(true);
@@ -55,8 +55,8 @@ describe("OCCT parts: machining", () => {
 
         it("should refuse a pocket no longer than the key's width and a shaft outside DIN 6885's range", () => {
             // Act & Assert
-            expect(() => occt.parts.mechanical.machining.keywayTool({ diameter: 20, length: 6 })).toThrow("`length` is not more than the keyway's width");
-            expect(() => occt.parts.mechanical.machining.keywayTool({ diameter: 80, length: 30 })).toThrow();
+            expect(() => occt.parts.mechanical.machining.din.keywayTool({ diameter: 20, length: 6 })).toThrow("`length` is not more than the keyway's width");
+            expect(() => occt.parts.mechanical.machining.din.keywayTool({ diameter: 80, length: 30 })).toThrow();
         });
     });
 
@@ -80,8 +80,8 @@ describe("OCCT parts: machining", () => {
             const frame: BaseInputs.Base.Frame = { origin: [0, 30, 0], normal: [0, 1, 0], direction: [1, 0, 0] };
 
             // Act
-            const grooved = occt.parts.mechanical.machining.ringGroove({ shape: shaft, diameter: 20, frame });
-            const ring = occt.parts.mechanical.retainingRings.retainingRing({ diameter: 20, frame });
+            const grooved = occt.parts.mechanical.machining.din.ringGroove({ shape: shaft, diameter: 20, frame });
+            const ring = occt.parts.mechanical.retainingRings.din.retainingRing({ diameter: 20, frame });
 
             // Assert
             expect(valid(grooved)).toBe(true);
@@ -95,8 +95,8 @@ describe("OCCT parts: machining", () => {
             const frame: BaseInputs.Base.Frame = { origin: [0, 5, 0], normal: [0, 1, 0], direction: [1, 0, 0] };
 
             // Act
-            const grooved = occt.parts.mechanical.machining.ringGroove({ shape: housing, kind: BaseInputs.Engineering.retainingRingKindEnum.bore, diameter: 47, frame });
-            const ring = occt.parts.mechanical.retainingRings.retainingRing({ kind: BaseInputs.Engineering.retainingRingKindEnum.bore, diameter: 47, frame });
+            const grooved = occt.parts.mechanical.machining.din.ringGroove({ shape: housing, kind: BaseInputs.Engineering.retainingRingKindEnum.bore, diameter: 47, frame });
+            const ring = occt.parts.mechanical.retainingRings.din.retainingRing({ kind: BaseInputs.Engineering.retainingRingKindEnum.bore, diameter: 47, frame });
 
             // Assert
             expect(valid(grooved)).toBe(true);
@@ -111,7 +111,7 @@ describe("OCCT parts: machining", () => {
             const patterns = ["straight", "left", "right", "diamond"] as const;
 
             // Act
-            const knurled = patterns.map(pattern => occt.parts.mechanical.machining.knurl({ shape: knob, diameter: 6, length: 5, pitch: 1, pattern: BaseInputs.Engineering.knurlPatternEnum[pattern] }));
+            const knurled = patterns.map(pattern => occt.parts.mechanical.machining.din.knurl({ shape: knob, diameter: 6, length: 5, pitch: 1, pattern: BaseInputs.Engineering.knurlPatternEnum[pattern] }));
 
             // Assert
             expect(knurled.map(valid)).toEqual([true, true, true, true]);
@@ -123,11 +123,11 @@ describe("OCCT parts: machining", () => {
     });
 
     describe("threads", () => {
-        const M6 = BaseInputs.Engineering.metricSizeEnum.m6;
+        const M6 = BaseInputs.Engineering.isoThreadSizeEnum.m6;
         const nutAt = (turn: number): TopoDS_Shape => {
             const blank = occt.booleans.difference({ shape: occt.shapes.solid.createCylinder({ radius: 6, height: 6, center: [0, -9, 0], direction: [0, 1, 0] }), shapes: [occt.shapes.solid.createCylinder({ radius: 4.917 / 2, height: 8, center: [0, -10, 0], direction: [0, 1, 0] })], keepEdges: false });
             const direction: BaseInputs.Base.Vector3 = [Math.cos(turn * Math.PI / 180), 0, Math.sin(turn * Math.PI / 180)];
-            return occt.parts.mechanical.machining.thread({ shape: blank, size: M6, length: 6, internal: true, frame: { origin: [0, -3, 0], normal: [0, 1, 0], direction } });
+            return occt.parts.mechanical.machining.iso.thread({ shape: blank, size: M6, length: 6, internal: true, frame: { origin: [0, -3, 0], normal: [0, 1, 0], direction } });
         };
 
         it("should model an M6 thread on a rod and in a nut that mate a whole number of pitches apart, and clash half a pitch out", () => {
@@ -135,7 +135,7 @@ describe("OCCT parts: machining", () => {
             const rod = occt.shapes.solid.createCylinder({ radius: 3, height: 12, center: [0, -12, 0], direction: [0, 1, 0] });
 
             // Act
-            const bolt = occt.parts.mechanical.machining.thread({ shape: rod, size: M6, length: 12 });
+            const bolt = occt.parts.mechanical.machining.iso.thread({ shape: rod, size: M6, length: 12 });
             const meshing = nutAt(0);
             const turned = nutAt(180);
 
@@ -160,9 +160,9 @@ describe("OCCT parts: machining", () => {
         };
 
             // Act
-            const thread = thrownBy(() => occt.parts.mechanical.machining.threadTool({ size: BaseInputs.Engineering.metricSizeEnum.m3, length: 201 }));
-            const right = thrownBy(() => occt.parts.mechanical.machining.knurlTool({ diameter: 10, length: 160, pattern: BaseInputs.Engineering.knurlPatternEnum.right }));
-            const diamond = thrownBy(() => occt.parts.mechanical.machining.knurlTool({ diameter: 10, length: 160, pattern: BaseInputs.Engineering.knurlPatternEnum.diamond }));
+            const thread = thrownBy(() => occt.parts.mechanical.machining.iso.threadTool({ size: BaseInputs.Engineering.isoThreadSizeEnum.m3, length: 201 }));
+            const right = thrownBy(() => occt.parts.mechanical.machining.din.knurlTool({ diameter: 10, length: 160, pattern: BaseInputs.Engineering.knurlPatternEnum.right }));
+            const diamond = thrownBy(() => occt.parts.mechanical.machining.din.knurlTool({ diameter: 10, length: 160, pattern: BaseInputs.Engineering.knurlPatternEnum.diamond }));
 
             // Assert
             expect([thread.property, thread.message]).toEqual(["length", "`length` is 201, 402 turns of a 0.5 pitch, and a thread is modelled over at most 400 turns: make it shorter or its pitch coarser."]);
@@ -173,13 +173,13 @@ describe("OCCT parts: machining", () => {
 
         it("should run an M3 thread down from the ground by default, stopping at its plane, so it threads a default bolt to the head and no further", () => {
             // Arrange
-            const bolt = occt.parts.mechanical.fasteners.hexBolt({});
+            const bolt = occt.parts.mechanical.fasteners.iso.hexBolt({});
             const above = occt.shapes.solid.createBox({ width: 20, length: 20, height: 10, center: [0, 5, 0], originOnCenter: true });
             const headOf = (shape: TopoDS_Shape): number => volume(occt.booleans.intersection({ shapes: [shape, above], keepEdges: false }));
 
             // Act
-            const tool = occt.parts.mechanical.machining.threadTool({});
-            const threaded = occt.parts.mechanical.machining.thread({ shape: bolt });
+            const tool = occt.parts.mechanical.machining.iso.threadTool({});
+            const threaded = occt.parts.mechanical.machining.iso.thread({ shape: bolt });
 
             // Assert
             const box = occt.analysis.measure.tightBoundingBox({ shape: tool });
@@ -198,8 +198,8 @@ describe("OCCT parts: machining", () => {
             const blank = rod(25, 15);
 
             // Act
-            const shaft = occt.parts.mechanical.machining.splinedShaft({ referenceDiameter: 25, module: 1.25, length: 30, frame: { origin: [0, -5, 0], normal: [0, 1, 0], direction: [1, 0, 0] } });
-            const hub = occt.parts.mechanical.machining.splinedHub({ shape: blank, referenceDiameter: 25, module: 1.25, length: 15 });
+            const shaft = occt.parts.mechanical.machining.din.splinedShaft({ referenceDiameter: 25, module: 1.25, length: 30, frame: { origin: [0, -5, 0], normal: [0, 1, 0], direction: [1, 0, 0] } });
+            const hub = occt.parts.mechanical.machining.din.splinedHub({ shape: blank, referenceDiameter: 25, module: 1.25, length: 15 });
 
             // Assert
             expect(valid(shaft)).toBe(true);
@@ -223,15 +223,15 @@ describe("OCCT parts: machining", () => {
             const blank = rod(25, 15);
             const threaded = occt.shapes.solid.createCylinder({ radius: 3, height: 12, center: [0, -12, 0], direction: [0, 1, 0] });
             const groove: BaseInputs.Base.Frame = { origin: [0, 30, 0], normal: [0, 1, 0], direction: [1, 0, 0] };
-            const M6 = BaseInputs.Engineering.metricSizeEnum.m6;
+            const M6 = BaseInputs.Engineering.isoThreadSizeEnum.m6;
 
             // Act
             const cuts = [
                 [shaft, occt.parts.mechanical.machining.flat({ shape: shaft, diameter: 8, depth: 0.5, length: 12 }), occt.parts.mechanical.machining.flatTool({ diameter: 8, depth: 0.5, length: 12 })],
-                [ringed, occt.parts.mechanical.machining.ringGroove({ shape: ringed, diameter: 20, frame: groove }), occt.parts.mechanical.machining.ringGrooveTool({ diameter: 20, frame: groove })],
-                [knob, occt.parts.mechanical.machining.knurl({ shape: knob, diameter: 6, length: 5, pitch: 1 }), occt.parts.mechanical.machining.knurlTool({ diameter: 6, length: 5, pitch: 1 })],
-                [blank, occt.parts.mechanical.machining.splinedHub({ shape: blank, referenceDiameter: 25, module: 1.25, length: 15 }), occt.parts.mechanical.machining.splinedHubTool({ referenceDiameter: 25, module: 1.25, length: 15 })],
-                [threaded, occt.parts.mechanical.machining.thread({ shape: threaded, size: M6, length: 12 }), occt.parts.mechanical.machining.threadTool({ size: M6, length: 12 })],
+                [ringed, occt.parts.mechanical.machining.din.ringGroove({ shape: ringed, diameter: 20, frame: groove }), occt.parts.mechanical.machining.din.ringGrooveTool({ diameter: 20, frame: groove })],
+                [knob, occt.parts.mechanical.machining.din.knurl({ shape: knob, diameter: 6, length: 5, pitch: 1 }), occt.parts.mechanical.machining.din.knurlTool({ diameter: 6, length: 5, pitch: 1 })],
+                [blank, occt.parts.mechanical.machining.din.splinedHub({ shape: blank, referenceDiameter: 25, module: 1.25, length: 15 }), occt.parts.mechanical.machining.din.splinedHubTool({ referenceDiameter: 25, module: 1.25, length: 15 })],
+                [threaded, occt.parts.mechanical.machining.iso.thread({ shape: threaded, size: M6, length: 12 }), occt.parts.mechanical.machining.iso.threadTool({ size: M6, length: 12 })],
             ] as const;
 
             // Assert
@@ -260,7 +260,7 @@ describe("OCCT parts: machining", () => {
 
             // Act
             const flatted = occt.parts.mechanical.machining.flat({ shape: upright, diameter: 8, depth: 0.5, length: 12 });
-            const swallowed = thrownBy(() => occt.parts.mechanical.machining.splinedHub({ shape: tiny }));
+            const swallowed = thrownBy(() => occt.parts.mechanical.machining.din.splinedHub({ shape: tiny }));
             const missed = occt.parts.mechanical.machining.flat({ shape: tiny });
 
             // Assert
@@ -302,14 +302,37 @@ describe("OCCT parts: machining", () => {
             });
 
             // Act
-            const withoutHelix = (): unknown => service.parts.mechanical.machining.threadTool({});
-            const withoutBox = (): unknown => service.parts.mechanical.machining.threadTool({});
+            const withoutHelix = (): unknown => service.parts.mechanical.machining.iso.threadTool({});
+            const withoutBox = (): unknown => service.parts.mechanical.machining.iso.threadTool({});
 
             // Assert
             expect(withoutHelix).toThrow("no helix this time");
             expect(withoutBox).toThrow("no box this time");
             expect(made).toHaveLength(3);
             expect(made.filter(shape => !shape.isDeleted())).toEqual([]);
+        });
+    });
+
+    describe("units", () => {
+        const inch = BaseInputs.Base.unitOfLengthEnum.inch;
+
+        it("should cut each ISO and DIN tool in inches as its millimetre twin scaled down by 25.4", () => {
+            // Arrange
+            const machining = occt.parts.mechanical.machining;
+            const pairs: [TopoDS_Shape, TopoDS_Shape][] = [
+                [machining.iso.threadTool({ size: BaseInputs.Engineering.isoThreadSizeEnum.m6, length: 8 }), machining.iso.threadTool({ size: BaseInputs.Engineering.isoThreadSizeEnum.m6, length: 8 / 25.4, unit: inch })],
+                [machining.din.keywayTool({ diameter: 20, length: 25 }), machining.din.keywayTool({ diameter: 20 / 25.4, length: 25 / 25.4, unit: inch })],
+                [machining.din.ringGrooveTool({ diameter: 20 }), machining.din.ringGrooveTool({ diameter: 20 / 25.4, unit: inch })],
+                [machining.din.knurlTool({ diameter: 10, length: 5, pitch: 1 }), machining.din.knurlTool({ diameter: 10 / 25.4, length: 5 / 25.4, pitch: 1, unit: inch })],
+                [machining.din.splinedHubTool({ referenceDiameter: 25, module: 1.25, length: 10 }), machining.din.splinedHubTool({ referenceDiameter: 25, module: 1.25, length: 10 / 25.4, unit: inch })],
+            ];
+
+            // Act
+            const ratios = pairs.map(([millimetres, inches]) => volume(inches) * 25.4 ** 3 / volume(millimetres));
+
+            // Assert
+            ratios.forEach(ratio => expect(ratio).toBeCloseTo(1, 4));
+            pairs.flat().forEach(shape => shape.delete());
         });
     });
 });

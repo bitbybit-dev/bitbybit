@@ -397,9 +397,9 @@ export class OCCTDesign {
      * places its parts and sub-assemblies `at` the frames the file gives them, so a part placed forty
      * times stays one document placed forty times. A placement that mirrors or scales its part is
      * built into a part of its own and a hidden one is suppressed; `report.notes` says so. A file that
-     * places more parts than a design builds is refused. Lengths are in millimetres and Z is up. Store
-     * the asset's `data` at its `uri` before the documents are saved.
-     * @param inputs - The STEP file, its name, the seed of the documents' ids and the folder of the shapes file
+     * places more parts than a design builds is refused. Lengths are in `unit`, scaled from the file's
+     * own, and Z is up. Store the asset's `data` at its `uri` before the documents are saved.
+     * @param inputs - The STEP file, its name, the seed of the documents' ids, the folder of the shapes file and the unit
      * @returns The documents, the id of the one that places everything, the shapes file and a report
      * @group document
      * @shortname design from step
@@ -422,7 +422,8 @@ export class OCCTDesign {
         if (typeof resolved.step !== "string" && !(resolved.step instanceof Uint8Array) && !(resolved.step instanceof ArrayBuffer)) {
             throw new InputError("The STEP file is text or bytes.", "step");
         }
-        return this.inputProblems(() => documentsFromStep(resolved.step, { name: resolved.name, seed: resolved.seed, folder: resolved.folder }, { occt: this.service(), occ: this.occ }));
+        const scale = 1 / this.base.math.millimetresPerUnit({ unit: resolved.unit });
+        return this.inputProblems(() => documentsFromStep(resolved.step, { name: resolved.name, seed: resolved.seed, folder: resolved.folder, unit: resolved.unit, scale }, { occt: this.service(), occ: this.occ }));
     }
 
     /**

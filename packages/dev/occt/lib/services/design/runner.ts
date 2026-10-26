@@ -1,6 +1,8 @@
 import { messageOf } from "@bitbybit-dev/base";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
+import { unitOfDocument } from "./helpers";
 import type { DesignOutcome } from "./cache";
 import { hashText, stableJson } from "./cache";
 import type { RebindEntry } from "./hints";
@@ -104,7 +106,8 @@ function readsOf(feature: Feature, plan: DesignPlan, run: DesignRun): Set<string
 
 function hashOf(feature: Feature, plan: DesignPlan, run: DesignRun): string {
     const inputs = plan.reads.map(key => stateOf(key, run).hash);
-    return hashText([stableJson(feature), parametersUsed(feature, run.parameters), plan.salt ?? "", `rebind:${run.rebinding.mode}`, ...inputs].join("\n"));
+    const unit = run.unit === Inputs.Base.unitOfLengthEnum.millimetre ? [] : [`unit:${run.unit}`];
+    return hashText([stableJson(feature), parametersUsed(feature, run.parameters), plan.salt ?? "", `rebind:${run.rebinding.mode}`, ...unit, ...inputs].join("\n"));
 }
 
 function reportMessageOf(error: unknown): string {
@@ -326,6 +329,7 @@ function newRun(document: Models.OCCT.DesignPartDocument, choice: ParameterChoic
     const derived = new Map<string, readonly string[]>();
     return {
         ...context,
+        unit: unitOfDocument(document),
         parameters: parameterValues(document.parameters, document.configurations, choice, derived),
         derived,
         bodies: new Map(),

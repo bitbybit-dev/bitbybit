@@ -13,7 +13,7 @@ import { bodyKey } from "./state";
 import { operationPathOf } from "./format";
 import { DesignProblem, pointer, problemsAt } from "./problems";
 import { hasOnlyKey, valueOf } from "./values";
-import { bodyOf, faceCount } from "./helpers";
+import { bodyOf, faceCount, takesLengthUnit } from "./helpers";
 import type { BodyValue, UncheckedExpression } from "./steps-types";
 
 function isBodyValue(value: unknown): value is BodyValue {
@@ -91,7 +91,8 @@ const ANSWERS_WITH_ITS_INPUT: ReadonlySet<string> = new Set([
     "shapeFix.basicShapeRepair", "shapeFix.orientClosedSolid",
     "shapes.shape.purgeInternalEdges", "shapes.edge.removeInternalEdges",
     "shapes.face.reversedFace", "shapes.face.getFace",
-    "parts.mechanical.machining.flat", "parts.mechanical.machining.keyway", "parts.mechanical.machining.knurl", "parts.mechanical.machining.ringGroove",
+    "parts.mechanical.machining.flat", "parts.mechanical.machining.din.keyway", "parts.mechanical.machining.din.knurl", "parts.mechanical.machining.din.ringGroove",
+    "parts.mechanical.machining.ansi.keyway", "parts.mechanical.machining.ansi.knurl", "parts.mechanical.machining.ansi.ringGroove",
 ]);
 
 const FACE_KEEPING: ReadonlySet<string> = new Set([
@@ -201,11 +202,24 @@ function withBooleanInputs(params: Readonly<Record<string, unknown>>, inputs: un
     return Object.fromEntries(Object.entries(inputs).map(([key, value]) => [key, constraints[key]?.kind === "boolean" && isExpressionValue(params[key]) && typeof value === "number" ? value !== 0 : value]));
 }
 
+function inDocumentUnit(inputs: unknown, operation: string, path: string, run: DesignRun): unknown {
+    if (!isRecord(inputs) || !takesLengthUnit(occtDtoRegistry, operation)) {
+        return inputs;
+    }
+    if (inputs["unit"] === undefined) {
+        return { ...inputs, unit: run.unit };
+    }
+    if (inputs["unit"] !== run.unit) {
+        throw new DesignProblem(pointer(path, "unit"), `the unit is ${JSON.stringify(inputs["unit"])}, and this document is in ${run.unit}: an operation builds in its document's unit, so leave unit out`);
+    }
+    return inputs;
+}
+
 function operated(feature: Models.OCCT.DesignOperationFeature, path: string, run: DesignRun): DesignOutcome {
     const shapes: TopoDS_Shape[] = [];
     const at = pointer(path, "params");
     const operation = operationPathOf(feature.operation)!;
-    const inputs = withBooleanInputs(feature.params, substituted(feature.params, at, run, shapes), operation);
+    const inputs = withBooleanInputs(feature.params, inDocumentUnit(substituted(feature.params, at, run, shapes), operation, at, run), operation);
     const issue = validateInputs(occtDtoRegistry, operation, resolveInputs(occtDtoRegistry, operation, inputs), occtDtoRules)[0];
     if (issue !== undefined) {
         throw new DesignProblem(pointer(at, issue.property), issue.message);

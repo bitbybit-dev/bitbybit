@@ -495,14 +495,19 @@ export interface DesignHolePosition {
 }
 
 /**
- * A hole sized by the metric screw it takes: `size` from `"M1.6"` to `"M24"` (text, or `{ "expr" }`
- * so a parameter can choose it); `fit` `close`, `normal` (the default) or `loose` for a clearance
- * hole after ISO 273, or `tapped` for a threaded hole at the thread's nominal diameter, whose walls
- * are also named `thread`; and `head` `socket` for the counterbore DIN 974-1 gives a socket head cap
- * screw, as deep as its head plus half a millimetre.
+ * A hole sized by the screw it takes, by `standard`: `iso` (the default), whose `size` is a metric
+ * thread from `"M1.6"` to `"M24"`, or `ansi`, whose `size` is a Unified inch thread from `"#0"` to
+ * `"1"`, coarse or `series` `"UNF"` fine (text, or `{ "expr" }` so a parameter can choose it). `fit`
+ * is `close`, `normal` (the default) or `loose` for a clearance hole after ISO 273 or ASME B18.2.8,
+ * or `tapped` for a threaded hole at the thread's nominal diameter, whose walls are also named
+ * `thread`; and `head` `socket` for the counterbore a socket head cap screw takes: DIN 974-1's, its
+ * head height plus half a millimetre deep, or the inch one, as deep as its head. The hole is sized in
+ * the document's unit.
  */
 export interface DesignHoleFastener {
+    standard?: "iso" | "ansi";
     size: DesignText;
+    series?: "UNC" | "UNF";
     fit?: "close" | "normal" | "loose" | "tapped";
     head?: "socket";
 }
@@ -560,9 +565,8 @@ export interface DesignPocketFeature extends DesignFeatureBase {
 
 /**
  * What every machining feature shares: it cuts into `body` at the cylindrical face `on` names, a
- * shaft's outside or a bore's wall, sized by that face's diameter in millimetres (a document in
- * another unit is refused, but for a flat), and tells a shaft from a bore by
- * which way the face looks. Along the face's axis it starts `at` from the face's start end: the axis
+ * shaft's outside or a bore's wall, sized by that face's diameter in the document's unit, and tells
+ * a shaft from a bore by which way the face looks. Along the face's axis it starts `at` from the face's start end: the axis
  * points along the world axis it is nearest to, positive, and the start end is the one it points
  * away from; `flip` starts from the other end and machines the other way. The faces the cut makes are
  * named by the feature's own role, such as `keyway`.
@@ -575,13 +579,15 @@ export interface DesignMachiningFeatureBase extends DesignFeatureBase {
 }
 
 /**
- * Cuts a DIN 6885 keyway, sized for the face's diameter, `length` long: into a shaft, or through a
- * hub's bore, where it ends where `at` and `length` say. `angle` turns it about the axis, in degrees
+ * Cuts a keyway sized for the face's diameter by `standard`, DIN 6885 (`din`, the default) or the
+ * inch ANSI B17.1 (`ansi`), `length` long: into a shaft, or through a hub's bore, where it ends where
+ * `at` and `length` say. `angle` turns it about the axis, in degrees
  * right-handed about the axis's positive direction whichever end `flip` starts from, from the side
  * the world's x axis points to (or y, for an axis along x). Its faces are named `keyway`.
  */
 export interface DesignKeywayFeature extends DesignMachiningFeatureBase {
     type: "keyway";
+    standard?: "din" | "ansi";
     length: DesignNumber;
     angle?: DesignNumber;
 }
@@ -598,49 +604,64 @@ export interface DesignFlatFeature extends DesignMachiningFeatureBase {
 }
 
 /**
- * Cuts the DIN 471 groove a retaining ring sits in on a shaft, or the DIN 472 groove in a bore, sized
- * for the face's diameter, at `at`. Its faces are named `groove`.
+ * Cuts the groove a retaining ring sits in, sized for the face's diameter, at `at`, by `standard`:
+ * the DIN 471 groove on a shaft or the DIN 472 groove in a bore (`din`, the default), or the groove
+ * of an inch tapered ring (`ansi`). Its faces are named `groove`.
  */
 export interface DesignRingGrooveFeature extends DesignMachiningFeatureBase {
     type: "ringGroove";
+    standard?: "din" | "ansi";
 }
 
 /**
- * Knurls a shaft over `length`, `pitch` apart: `straight` ridges along it (the default), ridges
- * leaning `left` or `right`, or a `diamond` crosshatch. Its faces are named `knurl`.
+ * Knurls a shaft over `length`: `straight` ridges along it (the default), ridges leaning `left` or
+ * `right`, or a `diamond` crosshatch. By `standard`, the ridges are DIN 82's, `pitch` apart in
+ * millimetres as the standard names it (`din`, the default), or ASME B94.6's, `diametralPitch` to
+ * the inch of diameter (`ansi`). Its faces are named `knurl`.
  */
 export interface DesignKnurlFeature extends DesignMachiningFeatureBase {
     type: "knurl";
+    standard?: "din" | "ansi";
     length: DesignNumber;
     pitch?: DesignNumber;
+    diametralPitch?: DesignNumber;
     pattern?: "straight" | "left" | "right" | "diamond";
 }
 
 /**
- * Cuts DIN 5480 involute spline teeth of `module` into a bore over exactly `length` from `at`, a hub
- * the splined shaft of reference `diameter` and the same module slides into. With `diameter` left
- * out the spline is the one whose hub teeth end on the bore; a bore wider than the hub's tips is
- * refused. Its faces are named `spline`.
+ * Cuts involute spline teeth into a bore over exactly `length` from `at`, a hub a splined shaft
+ * slides into, by `standard`. DIN 5480 (`din`, the default) takes the teeth's `module` and the
+ * shaft's reference `diameter`, both in millimetres as the standard names them (25 and 1.25 in
+ * W 25 x 1.25) whatever the document's unit; ANSI B92.1 (`ansi`) takes the `pitch`, such as `"16/32"`, and the
+ * number of `teeth`. With `diameter` or `teeth` left out the spline is the one whose hub teeth end on
+ * the bore; a bore wider than the hub's tips is refused. Its faces are named `spline`.
  */
 export interface DesignSplineFeature extends DesignMachiningFeatureBase {
     type: "spline";
+    standard?: "din" | "ansi";
     length: DesignNumber;
-    module: DesignNumber;
+    module?: DesignNumber;
     diameter?: DesignNumber;
+    pitch?: DesignText;
+    teeth?: DesignNumber;
 }
 
 /**
- * Models a metric thread over `length`: outside on a shaft of the size's diameter, or inside a bore
- * drilled for the size's tap at the pitch. `size`, such as `M8`, is found from the face's diameter
- * when left out; `pitch` is the size's coarse pitch when left out. A bore at a size's nominal
- * diameter, as a tapped `hole` is drawn, is refused: drill it to the tap drill to model its thread.
- * Its faces are named `thread`.
+ * Models a thread over `length`: outside on a shaft of the size's diameter, or inside a bore drilled
+ * for the size's tap. By `standard`, it is an ISO metric thread (`iso`, the default) of `size` such
+ * as `M8`, at `pitch` or the size's coarse pitch; or a Unified inch thread (`ansi`) of `size` such as
+ * `1/4`, in `series` `UNC` (the default) or `UNF`, or at `threadsPerInch`. `size` is found from the
+ * face's diameter when left out. A bore at a size's nominal diameter, as a tapped `hole` is drawn, is
+ * refused: drill it to the tap drill to model its thread. Its faces are named `thread`.
  */
 export interface DesignThreadFeature extends DesignMachiningFeatureBase {
     type: "thread";
+    standard?: "iso" | "ansi";
     length: DesignNumber;
     size?: DesignText;
     pitch?: DesignNumber;
+    series?: "UNC" | "UNF";
+    threadsPerInch?: DesignNumber;
 }
 
 /**
@@ -648,7 +669,8 @@ export interface DesignThreadFeature extends DesignMachiningFeatureBase {
  * (`brep-binary`), STEP or IGES, read from the media type or the file extension when `format` is
  * left out. The shape is taken as the file has it, or with `child` only the shape at that position,
  * from 0, of the compound the file holds, such as one part of the shapes file `design.fromStep`
- * writes; a build reads such a file once for all the features that take a child of it. Its faces
+ * writes; a build reads such a file once for all the features that take a child of it. STEP and
+ * IGES are scaled from the file's own unit into the document's; BREP keeps its numbers. Its faces
  * are named `face`, and `face` with their index from 0.
  */
 export interface DesignImportFeature extends DesignFeatureBase {
@@ -666,7 +688,9 @@ export interface DesignImportFeature extends DesignFeatureBase {
  * named by the feature's id. An operation with a roles twin (`...WithRoles`) names its faces by
  * those roles. One with a history twin (`...WithHistory`) given bodies keeps the names of the faces
  * it carries through, names faces made of edges `round`, `bevel` or `side`, and its first and last
- * `start` and `end`; every other face is `face`. A list of shapes makes their compound.
+ * `start` and `end`; every other face is `face`. A list of shapes makes their compound. An operation
+ * whose inputs take a `unit` of length, such as a standard part, takes the document's when `params`
+ * leave it out, and refuses another.
  */
 export interface DesignOperationFeature extends DesignFeatureBase {
     type: "operation";

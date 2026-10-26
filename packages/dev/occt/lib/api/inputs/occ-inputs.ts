@@ -8789,11 +8789,12 @@ export namespace OCCT {
      * file.
      */
     export class SaveStepDto<T> {
-        constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean) {
+        constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean, unit?: Base.unitOfLengthEnum) {
             if (shape !== undefined) { this.shape = shape; }
             if (fileName !== undefined) { this.fileName = fileName; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+            if (unit !== undefined) { this.unit = unit; }
         }
         /**
          * The shape written to the file.
@@ -8823,6 +8824,12 @@ export namespace OCCT {
          * @default true
          */
         tryDownload?: boolean | undefined = true;
+        /**
+         * The unit the shape's numbers are in. The file is written in millimetres, the shape scaled
+         * from this unit, so any CAD tool opens it at its true size.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
     }
     /**
      * A shape, a file name and meshing options for `io.saveShapeStl`, which triangulates the shape and
@@ -8966,11 +8973,12 @@ export namespace OCCT {
      * Layered DXF parts and file options for `io.dxfCreate`, which writes them into one DXF file.
      */
     export class DxfPathsPartsListDto {
-        constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean) {
+        constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean, unit?: Base.unitOfLengthEnum) {
             if (pathsParts !== undefined) { this.pathsParts = pathsParts; }
             if (colorFormat !== undefined) { this.colorFormat = colorFormat; }
             if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+            if (unit !== undefined) { this.unit = unit; }
         }
         /**
          * The parts from `io.dxfPathsWithLayer`, each with its own layer and color.
@@ -8988,6 +8996,13 @@ export namespace OCCT {
          */
         acadVersion?: dxfAcadVersionEnum | undefined = dxfAcadVersionEnum.AC1009;
         /**
+         * The unit the drawing is in, written into its header so CAD programs open it at true size;
+         * `AC1015` only. Left out, no unit is stated.
+         * @default undefined
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
+        /**
          * The name the downloaded file gets.
          * @default bitbybit-dev.dxf
          */
@@ -9004,10 +9019,11 @@ export namespace OCCT {
      * a shape.
      */
     export class ImportStepIgesFromTextDto {
-        constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean) {
+        constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
             if (text !== undefined) { this.text = text; }
             if (fileType !== undefined) { this.fileType = fileType; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+            if (unit !== undefined) { this.unit = unit; }
         }
         /**
          * The full text of the STEP or IGES file.
@@ -9024,14 +9040,20 @@ export namespace OCCT {
          * @default true
          */
         adjustZtoY?: boolean | undefined = true;
+        /**
+         * The unit the shape comes back in, scaled from whatever unit the file is written in.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
     }
     /**
      * A STEP or IGES file for the core `occt.io.loadSTEPorIGES`, which reads it into a shape.
      */
     export class ImportStepIgesDto {
-        constructor(assetFile?: File, adjustZtoY?: boolean) {
+        constructor(assetFile?: File, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
             if (assetFile !== undefined) { this.assetFile = assetFile; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+            if (unit !== undefined) { this.unit = unit; }
         }
         /**
          * The file to read; its extension decides whether it is STEP or IGES.
@@ -9043,6 +9065,11 @@ export namespace OCCT {
          * @default true
          */
         adjustZtoY?: boolean | undefined = true;
+        /**
+         * The unit the shape comes back in, scaled from whatever unit the file is written in.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
     }
 
     /**
@@ -9050,10 +9077,11 @@ export namespace OCCT {
      * into a shape.
      */
     export class LoadStepOrIgesDto {
-        constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean) {
+        constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
             if (filetext !== undefined) { this.filetext = filetext; }
             if (fileName !== undefined) { this.fileName = fileName; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+            if (unit !== undefined) { this.unit = unit; }
         }
         /**
          * The file's text for `.step`, `.stp`, `.iges` and `.igs`, or an ArrayBuffer for the compressed
@@ -9072,6 +9100,32 @@ export namespace OCCT {
          * @default true
          */
         adjustZtoY?: boolean | undefined = true;
+        /**
+         * The unit the shape comes back in, scaled from whatever unit the file is written in.
+         * `io.fileLengthUnit` tells which that is.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+    }
+    /**
+     * A STEP or IGES file for `io.fileLengthUnit`, which reads the unit its lengths are written in.
+     */
+    export class FileLengthUnitDto {
+        constructor(filetext?: string | ArrayBuffer, fileName?: string) {
+            if (filetext !== undefined) { this.filetext = filetext; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+        }
+        /**
+         * The file's text, or an ArrayBuffer of its bytes, the compressed `.stpz` and `.igz` forms
+         * included.
+         * @default undefined
+         */
+        filetext!: string | ArrayBuffer;
+        /**
+         * The file name; its extension decides whether it is read as STEP or IGES.
+         * @default shape.step
+         */
+        fileName?: string | undefined = "shape.step";
     }
 
     /**
@@ -10100,6 +10154,13 @@ export namespace OCCT {
          * @default z
          */
         up?: upAxisEnum | undefined = upAxisEnum.z;
+        /**
+         * The unit the document is modelled in. Given, the file is in metres, glTF's unit, through one
+         * scaled root node; left out, the numbers are written as they are.
+         * @default undefined
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
         /**
          * The name the downloaded file gets; it should end in `.glb`.
          * @default assembly.glb
@@ -15563,13 +15624,14 @@ export namespace OCCT {
      * SVG drawing, and the edges other faces cover dashed when asked.
      */
     export class SaveSvgDto<T> {
-        constructor(shape?: T, frame?: Base.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean) {
+        constructor(shape?: T, frame?: Base.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean, unit?: Base.unitOfLengthEnum) {
             if (shape !== undefined) { this.shape = shape; }
             if (frame !== undefined) { this.frame = frame; }
             if (drawHidden !== undefined) { this.drawHidden = drawHidden; }
             if (precision !== undefined) { this.precision = precision; }
             if (fileName !== undefined) { this.fileName = fileName; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+            if (unit !== undefined) { this.unit = unit; }
         }
         /**
          * The shape to draw.
@@ -15597,6 +15659,13 @@ export namespace OCCT {
          * @step 0.001
          */
         precision?: number | undefined = 0.01;
+        /**
+         * The unit the shape is modelled in. Given, the drawing states its true width and height; left
+         * out, it has only a view box.
+         * @default undefined
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
         /**
          * The name the downloaded file gets.
          * @default shape.svg
@@ -16001,11 +16070,12 @@ export namespace OCCT {
      * `design.fromStep`, which turns the file into design documents.
      */
     export class DesignFromStepDto {
-        constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string) {
+        constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string, unit?: Base.unitOfLengthEnum) {
             if (step !== undefined) { this.step = step; }
             if (name !== undefined) { this.name = name; }
             if (seed !== undefined) { this.seed = seed; }
             if (folder !== undefined) { this.folder = folder; }
+            if (unit !== undefined) { this.unit = unit; }
         }
         /**
          * The STEP file, as text or bytes.
@@ -16030,6 +16100,12 @@ export namespace OCCT {
          * @default
          */
         folder?: string | undefined = "";
+        /**
+         * The unit the documents are in: the shapes and the placements are scaled from the file's own
+         * unit into it.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
     }
 
     /**
@@ -16333,7 +16409,7 @@ export namespace OCCT {
      * with how thick the gear is and the hole through its middle.
      */
     export class SpurGearDto extends SpurGearSharedDto {
-        constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base.Frame) {
+        constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base.Frame, unit?: Base.unitOfLengthEnum, keyStandard?: Engineering.keyStandardEnum) {
             super();
             if (width !== undefined) { this.width = width; }
             if (bore !== undefined) { this.bore = bore; }
@@ -16350,6 +16426,8 @@ export namespace OCCT {
             if (rootFillet !== undefined) { this.rootFillet = rootFillet; }
             if (rotation !== undefined) { this.rotation = rotation; }
             if (frame !== undefined) { this.frame = frame; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (keyStandard !== undefined) { this.keyStandard = keyStandard; }
         }
         /**
          * How thick the gear is along the frame's normal, in model units.
@@ -16387,11 +16465,22 @@ export namespace OCCT {
          */
         hubLength?: number | undefined = 0;
         /**
-         * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
-         * in millimetres, toward the tooth at rotation 0.
+         * When true, a keyway is cut along the bore, sized by `keyStandard` for a shaft of the bore's
+         * diameter in `unit`, toward the tooth at rotation 0.
          * @default false
          */
         keyway?: boolean | undefined = false;
+        /**
+         * The unit the gear's numbers are in, which sizes its keyway from the key standard's table; the
+         * teeth themselves take any unit.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+        /**
+         * The standard the keyway is sized by: DIN 6885 or the inch ANSI B17.1.
+         * @default din
+         */
+        keyStandard?: Engineering.keyStandardEnum | undefined = Engineering.keyStandardEnum.din;
     }
     /**
      * The teeth of an involute rack, shared by `parts.mechanical.gears.rackProfile` and `parts.mechanical.gears.rack`: their
@@ -16688,7 +16777,7 @@ export namespace OCCT {
      * their lean, measured square to the teeth, how thick it is, its bore and hub, and where it lies.
      */
     export class HelicalGearDto {
-        constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, helixAngle?: number, herringbone?: boolean, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base.Frame) {
+        constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, helixAngle?: number, herringbone?: boolean, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base.Frame, unit?: Base.unitOfLengthEnum, keyStandard?: Engineering.keyStandardEnum) {
             if (width !== undefined) { this.width = width; }
             if (bore !== undefined) { this.bore = bore; }
             if (hub !== undefined) { this.hub = hub; }
@@ -16706,6 +16795,8 @@ export namespace OCCT {
             if (rootFillet !== undefined) { this.rootFillet = rootFillet; }
             if (rotation !== undefined) { this.rotation = rotation; }
             if (frame !== undefined) { this.frame = frame; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (keyStandard !== undefined) { this.keyStandard = keyStandard; }
         }
         /**
          * The normal module: the tooth size measured square to the teeth, in model units, as the
@@ -16852,11 +16943,22 @@ export namespace OCCT {
          */
         hubLength?: number | undefined = 0;
         /**
-         * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
-         * in millimetres, toward the tooth at rotation 0.
+         * When true, a keyway is cut along the bore, sized by `keyStandard` for a shaft of the bore's
+         * diameter in `unit`, toward the tooth at rotation 0.
          * @default false
          */
         keyway?: boolean | undefined = false;
+        /**
+         * The unit the gear's numbers are in, which sizes its keyway from the key standard's table; the
+         * teeth themselves take any unit.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+        /**
+         * The standard the keyway is sized by: DIN 6885 or the inch ANSI B17.1.
+         * @default din
+         */
+        keyStandard?: Engineering.keyStandardEnum | undefined = Engineering.keyStandardEnum.din;
     }
     /**
      * A straight bevel gear for `parts.mechanical.gears.bevelGear` and its twin with face roles: its teeth at the
@@ -16999,16 +17101,21 @@ export namespace OCCT {
         frame?: Base.Frame | undefined;
     }
     /**
-     * The size of a metric fastener and where it sits, shared by the screws, nuts and washers of
-     * `parts.mechanical.fasteners`. Its sizes come from the ISO standards in millimetres, so model units are
-     * millimetres.
+     * The size of an ISO metric fastener, the unit it is made in and where it sits, shared by the screws,
+     * nuts and washers of `parts.mechanical.fasteners.iso`.
      */
-    export abstract class MetricFastenerSharedDto {
+    export abstract class IsoFastenerSharedDto {
         /**
          * The thread size, such as M8.
          * @default m3
          */
-        size?: Engineering.metricSizeEnum | undefined = Engineering.metricSizeEnum.m3;
+        size?: Engineering.isoThreadSizeEnum | undefined = Engineering.isoThreadSizeEnum.m3;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -17018,12 +17125,12 @@ export namespace OCCT {
         frame?: Base.Frame | undefined;
     }
     /**
-     * A screw's thread size, its length under the head and where its head sits, for
-     * `parts.mechanical.fasteners.socketHeadCapScrew` and `parts.mechanical.fasteners.hexBolt`.
+     * An ISO screw's thread size, its length under the head, the unit and where its head sits, for
+     * `parts.mechanical.fasteners.iso.socketHeadCapScrew` and `parts.mechanical.fasteners.iso.hexBolt`.
      */
-    export abstract class MetricScrewSharedDto extends MetricFastenerSharedDto {
+    export abstract class IsoScrewSharedDto extends IsoFastenerSharedDto {
         /**
-         * The length of the screw from under its head to its tip, in millimetres.
+         * The length of the screw from under its head to its tip, in `unit`.
          * @default 10
          * @minimum 0
          * @exclusiveMinimum true
@@ -17032,37 +17139,39 @@ export namespace OCCT {
          */
         length?: number | undefined = 10;
         /**
-         * When true the threaded length is modelled, as `parts.mechanical.machining.thread` cuts it, its faces all
-         * named `thread`; when false the thread is a light cosmetic face.
+         * When true the threaded length is modelled, as `parts.mechanical.machining.iso.thread` cuts it, its
+         * faces all named `thread`; when false the thread is a light cosmetic face.
          * @default false
          */
         modelledThread?: boolean | undefined = false;
     }
     /**
      * An ISO 4762 cap screw with a hexagon recess in its round head, for
-     * `parts.mechanical.fasteners.socketHeadCapScrew` and its twin with face roles: its size, its length and where
-     * its head sits.
+     * `parts.mechanical.fasteners.iso.socketHeadCapScrew` and its twin with face roles: its size, its length,
+     * the unit and where its head sits.
      */
-    export class SocketHeadCapScrewDto extends MetricScrewSharedDto {
-        constructor(size?: Engineering.metricSizeEnum, length?: number, modelledThread?: boolean, frame?: Base.Frame) {
+    export class IsoSocketHeadCapScrewDto extends IsoScrewSharedDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, length?: number, modelledThread?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (size !== undefined) { this.size = size; }
             if (length !== undefined) { this.length = length; }
             if (modelledThread !== undefined) { this.modelledThread = modelledThread; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
     }
     /**
-     * A hexagon head bolt for `parts.mechanical.fasteners.hexBolt` and its twin with face roles: threaded to the
-     * head after ISO 4017, or only part of its length after ISO 4014.
+     * An ISO hexagon head bolt for `parts.mechanical.fasteners.iso.hexBolt` and its twin with face roles:
+     * threaded to the head after ISO 4017, or only part of its length after ISO 4014.
      */
-    export class HexBoltDto extends MetricScrewSharedDto {
-        constructor(size?: Engineering.metricSizeEnum, length?: number, fullyThreaded?: boolean, modelledThread?: boolean, frame?: Base.Frame) {
+    export class IsoHexBoltDto extends IsoScrewSharedDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, length?: number, fullyThreaded?: boolean, modelledThread?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (size !== undefined) { this.size = size; }
             if (length !== undefined) { this.length = length; }
             if (fullyThreaded !== undefined) { this.fullyThreaded = fullyThreaded; }
             if (modelledThread !== undefined) { this.modelledThread = modelledThread; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
@@ -17073,25 +17182,28 @@ export namespace OCCT {
         fullyThreaded?: boolean | undefined = true;
     }
     /**
-     * An ISO 4032 hexagon nut for `parts.mechanical.fasteners.hexNut` and its twin with face roles: its size and
-     * where it bears.
+     * An ISO 4032 hexagon nut for `parts.mechanical.fasteners.iso.hexNut` and its twin with face roles: its size,
+     * the unit and where it bears.
      */
-    export class MetricFastenerDto extends MetricFastenerSharedDto {
-        constructor(size?: Engineering.metricSizeEnum, frame?: Base.Frame) {
+    export class IsoHexNutDto extends IsoFastenerSharedDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (size !== undefined) { this.size = size; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
     }
     /**
-     * A plain washer for `parts.mechanical.fasteners.washer` and its twin with face roles: its size, whether it is
-     * the ISO 7090 washer chamfered on one face or the flat ISO 7089 one, and where it bears.
+     * An ISO plain washer for `parts.mechanical.fasteners.iso.washer` and its twin with face roles: its size,
+     * whether it is the ISO 7090 washer chamfered on one face or the flat ISO 7089 one, the unit and where
+     * it bears.
      */
-    export class WasherDto extends MetricFastenerSharedDto {
-        constructor(size?: Engineering.metricSizeEnum, chamfered?: boolean, frame?: Base.Frame) {
+    export class IsoWasherDto extends IsoFastenerSharedDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, chamfered?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (size !== undefined) { this.size = size; }
             if (chamfered !== undefined) { this.chamfered = chamfered; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
@@ -17102,15 +17214,16 @@ export namespace OCCT {
         chamfered?: boolean | undefined = false;
     }
     /**
-     * A set screw with a hexagon recess for `parts.mechanical.fasteners.setScrew` and its twin with face roles:
-     * its size, its length, its point and where its recessed end sits.
+     * An ISO set screw with a hexagon recess for `parts.mechanical.fasteners.iso.setScrew` and its twin with
+     * face roles: its size, its length, its point, the unit and where its recessed end sits.
      */
-    export class SetScrewDto extends MetricFastenerSharedDto {
-        constructor(size?: Engineering.metricSizeEnum, length?: number, point?: Engineering.setScrewPointEnum, frame?: Base.Frame) {
+    export class IsoSetScrewDto extends IsoFastenerSharedDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, length?: number, point?: Engineering.isoSetScrewPointEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (size !== undefined) { this.size = size; }
             if (length !== undefined) { this.length = length; }
             if (point !== undefined) { this.point = point; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
@@ -17118,9 +17231,9 @@ export namespace OCCT {
          * or cup (ISO 4029).
          * @default flat
          */
-        point?: Engineering.setScrewPointEnum | undefined = Engineering.setScrewPointEnum.flat;
+        point?: Engineering.isoSetScrewPointEnum | undefined = Engineering.isoSetScrewPointEnum.flat;
         /**
-         * The length of the set screw, in millimetres.
+         * The length of the set screw, in `unit`.
          * @default 5
          * @minimum 0
          * @exclusiveMinimum true
@@ -17223,25 +17336,31 @@ export namespace OCCT {
         frame?: Base.Frame | undefined;
     }
     /**
-     * A deep groove ball bearing for `parts.mechanical.bearings.ballBearing` and its twin with face roles: which
-     * bearing, whether shields close its sides and where it sits.
+     * A metric deep groove ball bearing for `parts.mechanical.bearings.iso.ballBearing` and its twin with
+     * face roles: which bearing, whether shields close its sides, the unit and where it sits.
      */
-    export class BallBearingDto {
-        constructor(designation?: Engineering.ballBearingEnum, shields?: boolean, frame?: Base.Frame) {
+    export class IsoBallBearingDto {
+        constructor(designation?: Engineering.isoBallBearingEnum, shields?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             if (designation !== undefined) { this.designation = designation; }
             if (shields !== undefined) { this.shields = shields; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
-         * The bearing, such as 6204 or 608; its sizes are in millimetres.
+         * The bearing, such as 6204 or 608.
          * @default b608
          */
-        designation?: Engineering.ballBearingEnum | undefined = Engineering.ballBearingEnum.b608;
+        designation?: Engineering.isoBallBearingEnum | undefined = Engineering.isoBallBearingEnum.b608;
         /**
          * When true, a shield closes each side between the rings, as on a 2Z bearing.
          * @default false
          */
         shields?: boolean | undefined = false;
+        /**
+         * The unit the bearing is made in.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
         /**
          * Where the bearing sits: the centre of one side on the origin and its axis along the normal.
          * Left out, the ground, facing +Y.
@@ -17251,26 +17370,28 @@ export namespace OCCT {
         frame?: Base.Frame | undefined;
     }
     /**
-     * A DIN 6885 form A parallel key with round ends for `parts.mechanical.keys.parallelKey` and its twin with face
-     * roles: sized for its shaft, its length and where it lies.
+     * A DIN 6885 form A parallel key with round ends for `parts.mechanical.keys.din.parallelKey` and its twin
+     * with face roles: sized for its shaft, its length, the unit and where it lies.
      */
-    export class ParallelKeyDto {
-        constructor(shaftDiameter?: number, length?: number, frame?: Base.Frame) {
+    export class DinParallelKeyDto {
+        constructor(shaftDiameter?: number, length?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             if (shaftDiameter !== undefined) { this.shaftDiameter = shaftDiameter; }
             if (length !== undefined) { this.length = length; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
-         * The diameter of the shaft the key sits in, in millimetres, which sets its width and height.
+         * The diameter of the shaft the key sits in, in `unit`, which sets its width and height; DIN 6885
+         * keys shafts over 6 and up to 65 millimetres.
          * @default 20
-         * @minimum 6
+         * @minimum 0
          * @exclusiveMinimum true
-         * @maximum 65
+         * @maximum Infinity
          * @step 1
          */
         shaftDiameter?: number | undefined = 20;
         /**
-         * The key's length from one round end to the other, in millimetres; at least its width.
+         * The key's length from one round end to the other, in `unit`; at least its width.
          * @default 20
          * @minimum 0
          * @exclusiveMinimum true
@@ -17278,6 +17399,11 @@ export namespace OCCT {
          * @step 1
          */
         length?: number | undefined = 20;
+        /**
+         * The unit the key is made in and its lengths are read in.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
         /**
          * Where the key lies: its bottom face's centre on the origin, its height along the normal, its
          * length along the direction. Left out, the ground, facing +Y.
@@ -17288,12 +17414,14 @@ export namespace OCCT {
     }
     /**
      * A DIN 471 retaining ring for a shaft or a DIN 472 ring for a bore, for
-     * `parts.mechanical.retainingRings.retainingRing` and its twin with face roles: which ring and where it sits.
+     * `parts.mechanical.retainingRings.din.retainingRing` and its twin with face roles: which ring, the unit
+     * and where it sits.
      */
-    export class RetainingRingDto {
-        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, frame?: Base.Frame) {
+    export class DinRetainingRingDto {
+        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             if (kind !== undefined) { this.kind = kind; }
             if (diameter !== undefined) { this.diameter = diameter; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
@@ -17302,14 +17430,288 @@ export namespace OCCT {
          */
         kind?: Engineering.retainingRingKindEnum | undefined = Engineering.retainingRingKindEnum.shaft;
         /**
-         * The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists: from 3 to 100
-         * for shafts, from 8 to 100 for bores.
+         * The shaft's or the bore's diameter in `unit`, one DIN 471 or DIN 472 lists: from 3 to 100
+         * millimetres for shafts, from 8 to 100 for bores.
          * @default 20
-         * @minimum 3
-         * @maximum 100
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
          * @step 1
          */
         diameter?: number | undefined = 20;
+        /**
+         * The unit the ring is made in and its diameter is read in.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+        /**
+         * Where the ring sits: its centre on the origin, one side on the frame's plane, its lugs toward
+         * the direction. Left out, the ground, facing +Y.
+         * @default undefined
+         * @optional true
+         */
+        frame?: Base.Frame | undefined;
+    }
+    /**
+     * The size of an ASME inch fastener, the unit it is made in and where it sits, shared by the screws,
+     * nuts and washers of `parts.mechanical.fasteners.ansi`.
+     */
+    export abstract class AnsiFastenerSharedDto {
+        /**
+         * The thread size, such as 1/4 or #10.
+         * @default in1_4
+         */
+        size?: Engineering.ansiThreadSizeEnum | undefined = Engineering.ansiThreadSizeEnum.in1_4;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         * @default inch
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.inch;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         * @default undefined
+         * @optional true
+         */
+        frame?: Base.Frame | undefined;
+    }
+    /**
+     * An ASME screw's thread size and series, its length under the head, the unit and where its head
+     * sits, for `parts.mechanical.fasteners.ansi.socketHeadCapScrew` and `parts.mechanical.fasteners.ansi.hexBolt`.
+     */
+    export abstract class AnsiScrewSharedDto extends AnsiFastenerSharedDto {
+        /**
+         * Whether the thread is coarse (UNC) or fine (UNF), which sets the pitch a modelled thread is cut
+         * at and the tip's chamfer.
+         * @default unc
+         */
+        series?: Engineering.ansiThreadSeriesEnum | undefined = Engineering.ansiThreadSeriesEnum.unc;
+        /**
+         * The length of the screw from under its head to its tip, in `unit`.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        length?: number | undefined = 1;
+        /**
+         * When true the threaded length is modelled, as `parts.mechanical.machining.ansi.thread` cuts it, its
+         * faces all named `thread`; when false the thread is a light cosmetic face.
+         * @default false
+         */
+        modelledThread?: boolean | undefined = false;
+    }
+    /**
+     * An ASME B18.3 cap screw, for `parts.mechanical.fasteners.ansi.socketHeadCapScrew` and its
+     * twin with face roles: its size and series, its length, the unit and where its head sits.
+     */
+    export class AnsiSocketHeadCapScrewDto extends AnsiScrewSharedDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiThreadSeriesEnum, length?: number, modelledThread?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (size !== undefined) { this.size = size; }
+            if (series !== undefined) { this.series = series; }
+            if (length !== undefined) { this.length = length; }
+            if (modelledThread !== undefined) { this.modelledThread = modelledThread; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+    }
+    /**
+     * An ASME B18.2.1 hex cap screw for `parts.mechanical.fasteners.ansi.hexBolt` and its twin with face roles:
+     * threaded to the head, or only for the length the standard gives.
+     */
+    export class AnsiHexBoltDto extends AnsiScrewSharedDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiThreadSeriesEnum, length?: number, fullyThreaded?: boolean, modelledThread?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (size !== undefined) { this.size = size; }
+            if (series !== undefined) { this.series = series; }
+            if (length !== undefined) { this.length = length; }
+            if (fullyThreaded !== undefined) { this.fullyThreaded = fullyThreaded; }
+            if (modelledThread !== undefined) { this.modelledThread = modelledThread; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * When true the screw is threaded to its head; when false only for the length ASME B18.2.1 gives,
+         * leaving a plain shank a modelled thread shows.
+         * @default false
+         */
+        fullyThreaded?: boolean | undefined = false;
+    }
+    /**
+     * An ASME hex nut for `parts.mechanical.fasteners.ansi.hexNut` and its twin with face roles: a machine
+     * screw nut to #12, a hex nut from 1/4, the unit and where it bears.
+     */
+    export class AnsiHexNutDto extends AnsiFastenerSharedDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (size !== undefined) { this.size = size; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+    }
+    /**
+     * An ASME B18.22.1 type A plain washer for `parts.mechanical.fasteners.ansi.washer` and its twin with face
+     * roles: its size, narrow or wide, the unit and where it bears.
+     */
+    export class AnsiWasherDto extends AnsiFastenerSharedDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiWasherSeriesEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (size !== undefined) { this.size = size; }
+            if (series !== undefined) { this.series = series; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * Whether the washer is narrow or wide around its hole.
+         * @default narrow
+         */
+        series?: Engineering.ansiWasherSeriesEnum | undefined = Engineering.ansiWasherSeriesEnum.narrow;
+    }
+    /**
+     * An ASME B18.3 set screw with a hexagon recess for `parts.mechanical.fasteners.ansi.setScrew` and its twin with face roles:
+     * its size and series, its length, its point, the unit and where its recess end sits.
+     */
+    export class AnsiSetScrewDto extends AnsiFastenerSharedDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiThreadSeriesEnum, length?: number, point?: Engineering.ansiSetScrewPointEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (size !== undefined) { this.size = size; }
+            if (series !== undefined) { this.series = series; }
+            if (length !== undefined) { this.length = length; }
+            if (point !== undefined) { this.point = point; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * Whether the thread is coarse (UNC) or fine (UNF), which sets the root the point starts from.
+         * @default unc
+         */
+        series?: Engineering.ansiThreadSeriesEnum | undefined = Engineering.ansiThreadSeriesEnum.unc;
+        /**
+         * The shape of the end that bears on the part: cup, flat, cone, oval or half dog.
+         * @default cup
+         */
+        point?: Engineering.ansiSetScrewPointEnum | undefined = Engineering.ansiSetScrewPointEnum.cup;
+        /**
+         * The length of the set screw, in `unit`.
+         * @default 0.25
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.0625
+         */
+        length?: number | undefined = 0.25;
+    }
+    /**
+     * An inch R-series deep groove ball bearing for `parts.mechanical.bearings.ansi.ballBearing` and its twin
+     * with face roles: which bearing, whether shields close its sides, the unit and where it sits.
+     */
+    export class AnsiBallBearingDto {
+        constructor(designation?: Engineering.ansiBallBearingEnum, shields?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            if (designation !== undefined) { this.designation = designation; }
+            if (shields !== undefined) { this.shields = shields; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The bearing, such as R8 or R188.
+         * @default r8
+         */
+        designation?: Engineering.ansiBallBearingEnum | undefined = Engineering.ansiBallBearingEnum.r8;
+        /**
+         * When true, a shield closes each side between the rings, at the shielded bearing's width.
+         * @default false
+         */
+        shields?: boolean | undefined = false;
+        /**
+         * The unit the bearing is made in.
+         * @default inch
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.inch;
+        /**
+         * Where the bearing sits: the centre of one side on the origin and its axis along the normal.
+         * Left out, the ground, facing +Y.
+         * @default undefined
+         * @optional true
+         */
+        frame?: Base.Frame | undefined;
+    }
+    /**
+     * An ANSI B17.1 square parallel key with round ends for `parts.mechanical.keys.ansi.parallelKey` and its
+     * twin with face roles: sized for its shaft, its length, the unit and where it lies.
+     */
+    export class AnsiParallelKeyDto {
+        constructor(shaftDiameter?: number, length?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            if (shaftDiameter !== undefined) { this.shaftDiameter = shaftDiameter; }
+            if (length !== undefined) { this.length = length; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The diameter of the shaft the key sits in, in `unit`, which sets its size; ANSI B17.1's square
+         * keys cover shafts over 5/16 and up to 6-1/2 inches.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        shaftDiameter?: number | undefined = 1;
+        /**
+         * The key's length from one round end to the other, in `unit`; at least its width.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        length?: number | undefined = 1;
+        /**
+         * The unit the key is made in and its lengths are read in.
+         * @default inch
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.inch;
+        /**
+         * Where the key lies: its bottom face's centre on the origin, its height along the normal, its
+         * length along the direction. Left out, the ground, facing +Y.
+         * @default undefined
+         * @optional true
+         */
+        frame?: Base.Frame | undefined;
+    }
+    /**
+     * An inch tapered retaining ring for a shaft or a bore, for `parts.mechanical.retainingRings.ansi.retainingRing`
+     * and its twin with face roles: which ring, the unit and where it sits.
+     */
+    export class AnsiRetainingRingDto {
+        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            if (kind !== undefined) { this.kind = kind; }
+            if (diameter !== undefined) { this.diameter = diameter; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * Whether the ring sits on a shaft or in a bore.
+         * @default shaft
+         */
+        kind?: Engineering.retainingRingKindEnum | undefined = Engineering.retainingRingKindEnum.shaft;
+        /**
+         * The shaft's or the bore's diameter in `unit`, one the inch rings list: from 1/8 to 2 inches for
+         * shafts, from 1/4 to 2 for bores.
+         * @default 0.75
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        diameter?: number | undefined = 0.75;
+        /**
+         * The unit the ring is made in and its diameter is read in.
+         * @default inch
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.inch;
         /**
          * Where the ring sits: its centre on the origin, one side on the frame's plane, its lugs toward
          * the direction. Left out, the ground, facing +Y.
@@ -17332,28 +17734,41 @@ export namespace OCCT {
         frame?: Base.Frame | undefined;
     }
     /**
-     * A DIN 6885 keyway for `parts.mechanical.machining.keywayTool`: the shaft or bore it is sized for, its length
-     * and whether it is milled into the shaft or cut through the hub.
+     * The unit a DIN feature is cut in and where it sits, shared by the tools of
+     * `parts.mechanical.machining.din`, which size it from the metric DIN tables.
      */
-    export class KeywayToolDto extends MachiningFrameSharedDto {
-        constructor(diameter?: number, length?: number, inHub?: boolean, frame?: Base.Frame) {
+    export abstract class DinMachiningSharedDto extends MachiningFrameSharedDto {
+        /**
+         * The unit the feature is cut in and its lengths and diameter are read in.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+    }
+    /**
+     * A DIN 6885 keyway for `parts.mechanical.machining.din.keywayTool`: the shaft or bore it is sized for, its
+     * length and whether it is milled into the shaft or cut through the hub.
+     */
+    export class DinKeywayToolDto extends DinMachiningSharedDto {
+        constructor(diameter?: number, length?: number, inHub?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (diameter !== undefined) { this.diameter = diameter; }
             if (length !== undefined) { this.length = length; }
             if (inHub !== undefined) { this.inHub = inHub; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
-         * The shaft's or the bore's diameter in millimetres, which sets the keyway's width and depth.
+         * The shaft's or the bore's diameter in `unit`, which sets the keyway's width and depth; DIN 6885
+         * keys shafts over 6 and up to 65 millimetres.
          * @default 20
-         * @minimum 6
+         * @minimum 0
          * @exclusiveMinimum true
-         * @maximum 65
+         * @maximum Infinity
          * @step 1
          */
         diameter?: number | undefined = 20;
         /**
-         * The keyway's length along the axis, in millimetres; in a shaft, end to end of its round ends.
+         * The keyway's length along the axis, in `unit`; in a shaft, end to end of its round ends.
          * @default 20
          * @minimum 0
          * @exclusiveMinimum true
@@ -17369,15 +17784,16 @@ export namespace OCCT {
         inHub?: boolean | undefined = false;
     }
     /**
-     * A body and a DIN 6885 keyway to cut into it, for `parts.mechanical.machining.keyway`.
+     * A body and a DIN 6885 keyway to cut into it, for `parts.mechanical.machining.din.keyway`.
      */
-    export class KeywayDto<T> extends KeywayToolDto {
-        constructor(shape?: T, diameter?: number, length?: number, inHub?: boolean, frame?: Base.Frame) {
+    export class DinKeywayDto<T> extends DinKeywayToolDto {
+        constructor(shape?: T, diameter?: number, length?: number, inHub?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (shape !== undefined) { this.shape = shape; }
             if (diameter !== undefined) { this.diameter = diameter; }
             if (length !== undefined) { this.length = length; }
             if (inHub !== undefined) { this.inHub = inHub; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
@@ -17445,13 +17861,15 @@ export namespace OCCT {
         shape!: T;
     }
     /**
-     * The groove a DIN 471 or DIN 472 retaining ring sits in, for `parts.mechanical.machining.ringGrooveTool`.
+     * The groove a DIN 471 or DIN 472 retaining ring sits in, for
+     * `parts.mechanical.machining.din.ringGrooveTool`.
      */
-    export class RingGrooveToolDto extends MachiningFrameSharedDto {
-        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, frame?: Base.Frame) {
+    export class DinRingGrooveToolDto extends DinMachiningSharedDto {
+        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (kind !== undefined) { this.kind = kind; }
             if (diameter !== undefined) { this.diameter = diameter; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
@@ -17460,23 +17878,25 @@ export namespace OCCT {
          */
         kind?: Engineering.retainingRingKindEnum | undefined = Engineering.retainingRingKindEnum.shaft;
         /**
-         * The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists.
+         * The shaft's or the bore's diameter in `unit`, one DIN 471 or DIN 472 lists.
          * @default 20
-         * @minimum 3
-         * @maximum 100
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
          * @step 1
          */
         diameter?: number | undefined = 20;
     }
     /**
-     * A body and a retaining ring's groove to cut into it, for `parts.mechanical.machining.ringGroove`.
+     * A body and a DIN retaining ring's groove to cut into it, for `parts.mechanical.machining.din.ringGroove`.
      */
-    export class RingGrooveDto<T> extends RingGrooveToolDto {
-        constructor(shape?: T, kind?: Engineering.retainingRingKindEnum, diameter?: number, frame?: Base.Frame) {
+    export class DinRingGrooveDto<T> extends DinRingGrooveToolDto {
+        constructor(shape?: T, kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (shape !== undefined) { this.shape = shape; }
             if (kind !== undefined) { this.kind = kind; }
             if (diameter !== undefined) { this.diameter = diameter; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
@@ -17486,20 +17906,21 @@ export namespace OCCT {
         shape!: T;
     }
     /**
-     * A DIN 82 knurl on a round shaft, for `parts.mechanical.machining.knurlTool`: the shaft's diameter, the knurl's
-     * length, its pitch and its pattern.
+     * A DIN 82 knurl on a round shaft, for `parts.mechanical.machining.din.knurlTool`: the shaft's diameter, the
+     * knurl's length, its pitch and its pattern.
      */
-    export class KnurlToolDto extends MachiningFrameSharedDto {
-        constructor(diameter?: number, length?: number, pitch?: number, pattern?: Engineering.knurlPatternEnum, frame?: Base.Frame) {
+    export class DinKnurlToolDto extends DinMachiningSharedDto {
+        constructor(diameter?: number, length?: number, pitch?: number, pattern?: Engineering.knurlPatternEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (diameter !== undefined) { this.diameter = diameter; }
             if (length !== undefined) { this.length = length; }
             if (pitch !== undefined) { this.pitch = pitch; }
             if (pattern !== undefined) { this.pattern = pattern; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
-         * The shaft's diameter in millimetres; the knurl's crests sit on the nearest diameter its pitch
+         * The shaft's diameter in `unit`; the knurl's crests sit on the nearest diameter its pitch
          * divides evenly.
          * @default 10
          * @minimum 0
@@ -17509,8 +17930,8 @@ export namespace OCCT {
          */
         diameter?: number | undefined = 10;
         /**
-         * The knurl's length along the axis, in millimetres. A left, right or diamond knurl's grooves
-         * twist through at most 1000 degrees along it.
+         * The knurl's length along the axis, in `unit`. A left, right or diamond knurl's grooves twist
+         * through at most 1000 degrees along it.
          * @default 10
          * @minimum 0
          * @exclusiveMinimum true
@@ -17519,8 +17940,8 @@ export namespace OCCT {
          */
         length?: number | undefined = 10;
         /**
-         * The distance between grooves round the circumference, one of DIN 82's: 0.5, 0.6, 0.8, 1, 1.2
-         * or 1.6 mm.
+         * The distance between grooves round the circumference, in millimetres as DIN 82 names it, one of
+         * 0.5, 0.6, 0.8, 1, 1.2 or 1.6.
          * @default 1
          * @minimum 0.5
          * @maximum 1.6
@@ -17534,16 +17955,17 @@ export namespace OCCT {
         pattern?: Engineering.knurlPatternEnum | undefined = Engineering.knurlPatternEnum.straight;
     }
     /**
-     * A body and a knurl to cut into it, for `parts.mechanical.machining.knurl`.
+     * A body and a DIN 82 knurl to cut into it, for `parts.mechanical.machining.din.knurl`.
      */
-    export class KnurlDto<T> extends KnurlToolDto {
-        constructor(shape?: T, diameter?: number, length?: number, pitch?: number, pattern?: Engineering.knurlPatternEnum, frame?: Base.Frame) {
+    export class DinKnurlDto<T> extends DinKnurlToolDto {
+        constructor(shape?: T, diameter?: number, length?: number, pitch?: number, pattern?: Engineering.knurlPatternEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (shape !== undefined) { this.shape = shape; }
             if (diameter !== undefined) { this.diameter = diameter; }
             if (length !== undefined) { this.length = length; }
             if (pitch !== undefined) { this.pitch = pitch; }
             if (pattern !== undefined) { this.pattern = pattern; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
@@ -17553,19 +17975,21 @@ export namespace OCCT {
         shape!: T;
     }
     /**
-     * A DIN 5480 involute spline, for `parts.mechanical.machining.splinedShaft` and
-     * `parts.mechanical.machining.splinedHubTool`: its reference diameter, module and length.
+     * A DIN 5480 involute spline, for `parts.mechanical.machining.din.splinedShaft` and
+     * `parts.mechanical.machining.din.splinedHubTool`: its reference diameter, module and length.
      */
-    export class SplineDto extends MachiningFrameSharedDto {
-        constructor(referenceDiameter?: number, module?: number, length?: number, frame?: Base.Frame) {
+    export class DinSplineDto extends DinMachiningSharedDto {
+        constructor(referenceDiameter?: number, module?: number, length?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (referenceDiameter !== undefined) { this.referenceDiameter = referenceDiameter; }
             if (module !== undefined) { this.module = module; }
             if (length !== undefined) { this.length = length; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
-         * The diameter the spline is named by, in millimetres, such as 25 in W 25x1.25x18.
+         * The diameter the spline is named by, in millimetres as DIN 5480 names it, such as 25 in
+         * W 25x1.25x18.
          * @default 25
          * @minimum 0
          * @exclusiveMinimum true
@@ -17574,7 +17998,7 @@ export namespace OCCT {
          */
         referenceDiameter?: number | undefined = 25;
         /**
-         * The module of its teeth, one of DIN 5480's from 0.5 to 10.
+         * The module of its teeth in millimetres, one of DIN 5480's from 0.5 to 10.
          * @default 1.25
          * @minimum 0.5
          * @maximum 10
@@ -17582,7 +18006,7 @@ export namespace OCCT {
          */
         module?: number | undefined = 1.25;
         /**
-         * The spline's length along the axis, in millimetres.
+         * The spline's length along the axis, in `unit`.
          * @default 20
          * @minimum 0
          * @exclusiveMinimum true
@@ -17592,15 +18016,16 @@ export namespace OCCT {
         length?: number | undefined = 20;
     }
     /**
-     * A body and a DIN 5480 hub spline to cut through it, for `parts.mechanical.machining.splinedHub`.
+     * A body and a DIN 5480 hub spline to cut through it, for `parts.mechanical.machining.din.splinedHub`.
      */
-    export class SplinedHubDto<T> extends SplineDto {
-        constructor(shape?: T, referenceDiameter?: number, module?: number, length?: number, frame?: Base.Frame) {
+    export class DinSplinedHubDto<T> extends DinSplineDto {
+        constructor(shape?: T, referenceDiameter?: number, module?: number, length?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (shape !== undefined) { this.shape = shape; }
             if (referenceDiameter !== undefined) { this.referenceDiameter = referenceDiameter; }
             if (module !== undefined) { this.module = module; }
             if (length !== undefined) { this.length = length; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
@@ -17610,34 +18035,36 @@ export namespace OCCT {
         shape!: T;
     }
     /**
-     * An ISO metric thread modelled on a shank or in a hole, for `parts.mechanical.machining.threadTool`: its size,
-     * a fine pitch if wanted, its length and whether it is cut inside a hole.
+     * An ISO metric thread modelled on a shank or in a hole, for `parts.mechanical.machining.iso.threadTool`: its
+     * size, a fine pitch if wanted, its length, whether it is cut inside a hole and the unit.
      */
-    export class ThreadToolDto {
-        constructor(size?: Engineering.metricSizeEnum, pitch?: number, length?: number, internal?: boolean, frame?: Base.Frame) {
+    export class IsoThreadToolDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, pitch?: number, length?: number, internal?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             if (size !== undefined) { this.size = size; }
             if (pitch !== undefined) { this.pitch = pitch; }
             if (length !== undefined) { this.length = length; }
             if (internal !== undefined) { this.internal = internal; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
          * The thread size, such as M8; the default is the default screw's and bolt's.
          * @default m3
          */
-        size?: Engineering.metricSizeEnum | undefined = Engineering.metricSizeEnum.m3;
+        size?: Engineering.isoThreadSizeEnum | undefined = Engineering.isoThreadSizeEnum.m3;
         /**
-         * The distance from one crest to the next, in millimetres. Left out, the size's coarse pitch.
+         * The distance from one crest to the next, in millimetres as ISO names it. Left out, the size's
+         * coarse pitch.
          * @default undefined
          * @optional true
          * @minimum 0
          * @exclusiveMinimum true
-         * @maximum Infinity
+         * @maximum 3
          * @step 0.05
          */
         pitch?: number | undefined;
         /**
-         * The threaded length along the axis, in millimetres: at most 400 turns of the pitch.
+         * The threaded length along the axis, in `unit`: at most 400 turns of the pitch.
          * @default 10
          * @minimum 0
          * @exclusiveMinimum true
@@ -17652,6 +18079,11 @@ export namespace OCCT {
          */
         internal?: boolean | undefined = false;
         /**
+         * The unit the thread is cut in and its length is read in.
+         * @default millimetre
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+        /**
          * Where the thread starts, at a hole's mouth or under a head, its normal out of the part: the
          * thread runs against it. Left out, the ground, facing +Y.
          * @default undefined
@@ -17660,16 +18092,337 @@ export namespace OCCT {
         frame?: Base.Frame | undefined;
     }
     /**
-     * A body and an ISO metric thread to cut into it, for `parts.mechanical.machining.thread`.
+     * A body and an ISO metric thread to cut into it, for `parts.mechanical.machining.iso.thread`.
      */
-    export class ThreadDto<T> extends ThreadToolDto {
-        constructor(shape?: T, size?: Engineering.metricSizeEnum, pitch?: number, length?: number, internal?: boolean, frame?: Base.Frame) {
+    export class IsoThreadCutDto<T> extends IsoThreadToolDto {
+        constructor(shape?: T, size?: Engineering.isoThreadSizeEnum, pitch?: number, length?: number, internal?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
             super();
             if (shape !== undefined) { this.shape = shape; }
             if (size !== undefined) { this.size = size; }
             if (pitch !== undefined) { this.pitch = pitch; }
             if (length !== undefined) { this.length = length; }
             if (internal !== undefined) { this.internal = internal; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The shank or the body with the hole to cut.
+         * @default undefined
+         */
+        shape!: T;
+    }
+    /**
+     * The unit an ANSI feature is cut in and where it sits, shared by the tools of
+     * `parts.mechanical.machining.ansi`, which size it from the inch tables.
+     */
+    export abstract class AnsiMachiningSharedDto extends MachiningFrameSharedDto {
+        /**
+         * The unit the feature is cut in and its lengths and diameter are read in.
+         * @default inch
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.inch;
+    }
+    /**
+     * An ANSI B17.1 keyseat for `parts.mechanical.machining.ansi.keywayTool`: the shaft or bore it is sized for,
+     * its length and whether it is milled into the shaft or cut through the hub.
+     */
+    export class AnsiKeywayToolDto extends AnsiMachiningSharedDto {
+        constructor(diameter?: number, length?: number, inHub?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (diameter !== undefined) { this.diameter = diameter; }
+            if (length !== undefined) { this.length = length; }
+            if (inHub !== undefined) { this.inHub = inHub; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The shaft's or the bore's diameter in `unit`, which sets the keyseat's width and depth; ANSI
+         * B17.1's square keys cover shafts over 5/16 and up to 6-1/2 inches.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        diameter?: number | undefined = 1;
+        /**
+         * The keyseat's length along the axis, in `unit`; in a shaft, end to end of its round ends.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        length?: number | undefined = 1;
+        /**
+         * When true, the straight keyseat cut through a hub's bore; when false, the round-ended pocket
+         * milled into a shaft.
+         * @default false
+         */
+        inHub?: boolean | undefined = false;
+    }
+    /**
+     * A body and an ANSI B17.1 keyseat to cut into it, for `parts.mechanical.machining.ansi.keyway`.
+     */
+    export class AnsiKeywayDto<T> extends AnsiKeywayToolDto {
+        constructor(shape?: T, diameter?: number, length?: number, inHub?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (shape !== undefined) { this.shape = shape; }
+            if (diameter !== undefined) { this.diameter = diameter; }
+            if (length !== undefined) { this.length = length; }
+            if (inHub !== undefined) { this.inHub = inHub; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The shaft or the hub to cut.
+         * @default undefined
+         */
+        shape!: T;
+    }
+    /**
+     * The groove an inch tapered retaining ring sits in, for `parts.mechanical.machining.ansi.ringGrooveTool`.
+     */
+    export class AnsiRingGrooveToolDto extends AnsiMachiningSharedDto {
+        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (kind !== undefined) { this.kind = kind; }
+            if (diameter !== undefined) { this.diameter = diameter; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * Whether the groove is in a shaft or in a bore.
+         * @default shaft
+         */
+        kind?: Engineering.retainingRingKindEnum | undefined = Engineering.retainingRingKindEnum.shaft;
+        /**
+         * The shaft's or the bore's diameter in `unit`, one the inch rings list.
+         * @default 0.75
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        diameter?: number | undefined = 0.75;
+    }
+    /**
+     * A body and an inch retaining ring's groove to cut into it, for `parts.mechanical.machining.ansi.ringGroove`.
+     */
+    export class AnsiRingGrooveDto<T> extends AnsiRingGrooveToolDto {
+        constructor(shape?: T, kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (shape !== undefined) { this.shape = shape; }
+            if (kind !== undefined) { this.kind = kind; }
+            if (diameter !== undefined) { this.diameter = diameter; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The shaft or the bored body to cut.
+         * @default undefined
+         */
+        shape!: T;
+    }
+    /**
+     * An ASME B94.6 diametral pitch knurl on a round shaft, for `parts.mechanical.machining.ansi.knurlTool`: the
+     * shaft's diameter, the knurl's length, its pitch and its pattern.
+     */
+    export class AnsiKnurlToolDto extends AnsiMachiningSharedDto {
+        constructor(diameter?: number, length?: number, diametralPitch?: number, pattern?: Engineering.knurlPatternEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (diameter !== undefined) { this.diameter = diameter; }
+            if (length !== undefined) { this.length = length; }
+            if (diametralPitch !== undefined) { this.diametralPitch = diametralPitch; }
+            if (pattern !== undefined) { this.pattern = pattern; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The shaft's diameter in `unit`; the knurl's crests sit on the nearest diameter its teeth track
+         * on.
+         * @default 0.5
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        diameter?: number | undefined = 0.5;
+        /**
+         * The knurl's length along the axis, in `unit`. A left, right or diamond knurl's grooves twist
+         * through at most 1000 degrees along it.
+         * @default 0.5
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        length?: number | undefined = 0.5;
+        /**
+         * Teeth to an inch of diameter, one of ASME B94.6's: 64, 96, 128 or 160.
+         * @default 96
+         * @minimum 64
+         * @maximum 160
+         * @step 32
+         */
+        diametralPitch?: number | undefined = 96;
+        /**
+         * The grooves' pattern; left and right are B94.6's diagonal knurls.
+         * @default straight
+         */
+        pattern?: Engineering.knurlPatternEnum | undefined = Engineering.knurlPatternEnum.straight;
+    }
+    /**
+     * A body and an ASME B94.6 knurl to cut into it, for `parts.mechanical.machining.ansi.knurl`.
+     */
+    export class AnsiKnurlDto<T> extends AnsiKnurlToolDto {
+        constructor(shape?: T, diameter?: number, length?: number, diametralPitch?: number, pattern?: Engineering.knurlPatternEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (shape !== undefined) { this.shape = shape; }
+            if (diameter !== undefined) { this.diameter = diameter; }
+            if (length !== undefined) { this.length = length; }
+            if (diametralPitch !== undefined) { this.diametralPitch = diametralPitch; }
+            if (pattern !== undefined) { this.pattern = pattern; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The shaft to knurl.
+         * @default undefined
+         */
+        shape!: T;
+    }
+    /**
+     * An ANSI B92.1 involute spline, for `parts.mechanical.machining.ansi.splinedShaft` and
+     * `parts.mechanical.machining.ansi.splinedHubTool`: its teeth, pitch and length.
+     */
+    export class AnsiSplineDto extends AnsiMachiningSharedDto {
+        constructor(teeth?: number, pitch?: Engineering.ansiSplinePitchEnum, length?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (teeth !== undefined) { this.teeth = teeth; }
+            if (pitch !== undefined) { this.pitch = pitch; }
+            if (length !== undefined) { this.length = length; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * How many teeth the spline has, a whole number from 6 to 60.
+         * @default 24
+         * @minimum 6
+         * @maximum 60
+         * @step 1
+         */
+        teeth?: number | undefined = 24;
+        /**
+         * The pitch over the stub pitch, such as 16/32.
+         * @default p16_32
+         */
+        pitch?: Engineering.ansiSplinePitchEnum | undefined = Engineering.ansiSplinePitchEnum.p16_32;
+        /**
+         * The spline's length along the axis, in `unit`.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        length?: number | undefined = 1;
+    }
+    /**
+     * A body and an ANSI B92.1 hub spline to cut through it, for `parts.mechanical.machining.ansi.splinedHub`.
+     */
+    export class AnsiSplinedHubDto<T> extends AnsiSplineDto {
+        constructor(shape?: T, teeth?: number, pitch?: Engineering.ansiSplinePitchEnum, length?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (shape !== undefined) { this.shape = shape; }
+            if (teeth !== undefined) { this.teeth = teeth; }
+            if (pitch !== undefined) { this.pitch = pitch; }
+            if (length !== undefined) { this.length = length; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The hub to cut.
+         * @default undefined
+         */
+        shape!: T;
+    }
+    /**
+     * A Unified inch thread modelled on a shank or in a hole, for `parts.mechanical.machining.ansi.threadTool`: its
+     * size and series or pitch, its length, whether it is cut inside a hole and the unit.
+     */
+    export class AnsiThreadToolDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiThreadSeriesEnum, threadsPerInch?: number, length?: number, internal?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            if (size !== undefined) { this.size = size; }
+            if (series !== undefined) { this.series = series; }
+            if (threadsPerInch !== undefined) { this.threadsPerInch = threadsPerInch; }
+            if (length !== undefined) { this.length = length; }
+            if (internal !== undefined) { this.internal = internal; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The thread size, such as 1/4 or #10.
+         * @default in1_4
+         */
+        size?: Engineering.ansiThreadSizeEnum | undefined = Engineering.ansiThreadSizeEnum.in1_4;
+        /**
+         * Whether the thread is coarse (UNC) or fine (UNF).
+         * @default unc
+         */
+        series?: Engineering.ansiThreadSeriesEnum | undefined = Engineering.ansiThreadSeriesEnum.unc;
+        /**
+         * A pitch of the thread's own, as threads to the inch, at least the size's coarsest; it overrides
+         * `series`. Left out, the series' pitch.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 1
+         */
+        threadsPerInch?: number | undefined;
+        /**
+         * The threaded length along the axis, in `unit`: at most 400 turns of the pitch.
+         * @default 0.5
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.125
+         */
+        length?: number | undefined = 0.5;
+        /**
+         * When true, the thread is cut in a hole drilled to the minor diameter, as in a nut; when false,
+         * on a shank turned to the nominal.
+         * @default false
+         */
+        internal?: boolean | undefined = false;
+        /**
+         * The unit the thread is cut in and its length is read in.
+         * @default inch
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.inch;
+        /**
+         * Where the thread starts, at a hole's mouth or under a head, its normal out of the part: the
+         * thread runs against it. Left out, the ground, facing +Y.
+         * @default undefined
+         * @optional true
+         */
+        frame?: Base.Frame | undefined;
+    }
+    /**
+     * A body and a Unified inch thread to cut into it, for `parts.mechanical.machining.ansi.thread`.
+     */
+    export class AnsiThreadCutDto<T> extends AnsiThreadToolDto {
+        constructor(shape?: T, size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiThreadSeriesEnum, threadsPerInch?: number, length?: number, internal?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
+            super();
+            if (shape !== undefined) { this.shape = shape; }
+            if (size !== undefined) { this.size = size; }
+            if (series !== undefined) { this.series = series; }
+            if (threadsPerInch !== undefined) { this.threadsPerInch = threadsPerInch; }
+            if (length !== undefined) { this.length = length; }
+            if (internal !== undefined) { this.internal = internal; }
+            if (unit !== undefined) { this.unit = unit; }
             if (frame !== undefined) { this.frame = frame; }
         }
         /**

@@ -44,7 +44,7 @@ export type GearBody = (frame: Base.Frame, rotation: number, width: number) => G
 
 export type PlainGearBody = (frame: Base.Frame, rotation: number, width: number) => ExtrudedGear;
 
-export type ToothedGearInputs = Pick<Resolved.OCCT.SpurGearDto, "width" | "bore" | "hub" | "hubLength" | "keyway" | "rotation" | "frame" | "module">;
+export type ToothedGearInputs = Pick<Resolved.OCCT.SpurGearDto, "width" | "bore" | "hub" | "hubLength" | "keyway" | "rotation" | "frame" | "module" | "unit" | "keyStandard">;
 
 export interface RingFace {
     readonly face: TopoDS_Face;
@@ -106,4 +106,13 @@ export interface CageWall {
     readonly low: TopoDS_Shape;
     readonly high: TopoDS_Shape;
     readonly loops: TopoDS_Shape[];
+}
+
+export type SetScrewPointShape = "flat" | "cone" | "dog" | "cup" | "oval";
+
+export interface ThreadCut {
+    readonly length: number;
+    readonly internal: boolean;
+    readonly unit: Inputs.Base.unitOfLengthEnum;
+    readonly frame?: Inputs.Base.Frame | undefined;
 }

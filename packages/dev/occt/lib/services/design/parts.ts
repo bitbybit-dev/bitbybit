@@ -1,7 +1,7 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Models from "../../api/models";
 import { cleanedUpOnError, DesignProblem, pointer } from "./problems";
-import { connectorFrame, contextOf } from "./helpers";
+import { connectorFrame, contextOf, unitOfDocument } from "./helpers";
 import { connectorMembers } from "./connectors";
 import { resolveEdges, resolveFaces } from "./references";
 import * as Inputs from "../../api/inputs";
@@ -13,8 +13,6 @@ import { buildKeyOf, itemKeyOf, versionOf } from "./identity";
 import { DIMENSIONS } from "./constants";
 
 const COLOR = /^#[0-9a-fA-F]{6}$/;
-
-const METRES_PER_UNIT: Record<NonNullable<Models.OCCT.DesignUnits["length"]>, number> = { mm: 0.001, cm: 0.01, m: 1, in: 0.0254 };
 
 type Look = Pick<Models.OCCT.DesignAppearance, "color" | "metallic" | "roughness" | "opacity" | "emissive" | "emissiveStrength" | "edgeColor">;
 type BuiltLook = Pick<Models.OCCT.DesignBuiltAppearance, "color" | "metallic" | "roughness" | "opacity" | "emissive" | "emissiveStrength" | "edgeColor">;
@@ -145,7 +143,7 @@ function declaredParts(document: Models.OCCT.DesignPartDocument, run: DesignRun)
 export function buildParts(document: Models.OCCT.DesignPartDocument, run: DesignRun, issues: Models.OCCT.DesignIssue[]): Models.OCCT.DesignBuiltPart<TopoDS_Shape>[] {
     const materials = document.materials ?? [];
     const builtMaterials = new Map<string, Models.OCCT.DesignBuiltMaterial | undefined>();
-    const metres = METRES_PER_UNIT[document.units?.length ?? "mm"];
+    const metres = run.base.math.convertLength({ value: 1, from: unitOfDocument(document), to: Inputs.Base.unitOfLengthEnum.metre });
     const version = versionOf(document);
     const builtPart = (part: Models.OCCT.DesignPart, index: number): Models.OCCT.DesignBuiltPart<TopoDS_Shape> | undefined => {
         const path = pointer("/parts", index);

@@ -298,12 +298,22 @@ The migrations described below are not built yet.
   assembly refuses a document in another, rather than scale it. A number parameter's `unit` is the
   document's length unit, `deg`, or `none` for a count or a ratio, so an editor can show it and a
   tool convert it.
+- **Whatever a standard sizes is sized in the document's unit.** A hole sized by a `fastener`, a
+  `thread`, a `keyway`, a `ringGroove`, a `knurl` and a `spline` look their standard up in that unit,
+  so an inch part can hold an M8 tapped hole and a metric one a 1/4-20 one; the standard's own
+  designations (the size, a pitch, a module, threads per inch, a diametral pitch) are written as the
+  standard writes them and never converted. An `operation` whose method takes a `unit` builds in the
+  document's: leave `unit` out of its `params`, as an explicit one that differs is refused, written or
+  computed. An `import` reads its STEP or IGES file into the document's unit, whatever unit the file
+  states, and `design.fromStep` takes the `unit` of the documents it makes, scaling their shapes and
+  placements together.
 - **`up` is a hint for what reads the build, not a transform.** It says which axis the numbers have
   pointing up, `y` when left out; the build never turns geometry by it, and only the document built
   reports it (`up` on the result, beside `units`): a document an assembly places is placed by its
   joints, whatever its own `up` says. The STEP export writes the numbers as they are with the length
   unit (`structure.lengthUnit`), and the glTF export takes the `up` so a y-up document is not turned
-  as a z-up one would be. glTF is written in the document's unit, as every glTF export here is.
+  as a z-up one would be. glTF is written in the document's unit unless the export is given that
+  `unit`, when it is written in metres, the unit glTF readers assume, by one scaled root node.
 
 ## The expression language
 
@@ -330,7 +340,10 @@ primary     = number | 'text' | name | name "(" [ expression { "," expression } 
   `e`, `true` (1) and `false` (0). `inf` and `nan` are reserved and have no value. None of these can
   name a parameter.
 - **Functions**: `if(test, then, otherwise)`, `min` and `max` (one value or more), `abs`, `sqrt`,
-  `floor`, `ceil`, `round` (halves away from zero: 2.5 to 3, -2.5 to -3), and trigonometry in degrees:
+  `floor`, `ceil`, `round` (halves away from zero: 2.5 to 3, -2.5 to -3), `fraction(value,
+  denominator)`, which gives text, the value rounded to a whole number of `1/denominator` and written
+  as inch sizes are (`fraction(1.25, 64)` is `'1-1/4'`, `fraction(0.375, 64)` is `'3/8'`) for part
+  numbers and names, and trigonometry in degrees:
   `sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `atan2(y, x)`. An angle is folded into one turn first,
   and multiples of 30 and 45 degrees give their exact values, so `cos(90)` is 0 and `tan(45)` is 1,
   and `asin`/`acos` of those values give whole angles.

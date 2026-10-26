@@ -1,4 +1,4 @@
-import type { Base } from "@bitbybit-dev/base";
+import { Base } from "@bitbybit-dev/base";
 import { Engineering } from "@bitbybit-dev/base/lib/api/inputs/engineering-inputs";
 
 /**
@@ -129,7 +129,7 @@ export class SpurGearProfileDto extends SpurGearSharedDto {
  * with how thick the gear is and the hole through its middle.
  */
 export class SpurGearDto extends SpurGearSharedDto {
-    constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base.Frame) {
+    constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base.Frame, unit?: Base.unitOfLengthEnum, keyStandard?: Engineering.keyStandardEnum) {
         super();
         if (width !== undefined) { this.width = width; }
         if (bore !== undefined) { this.bore = bore; }
@@ -146,6 +146,8 @@ export class SpurGearDto extends SpurGearSharedDto {
         if (rootFillet !== undefined) { this.rootFillet = rootFillet; }
         if (rotation !== undefined) { this.rotation = rotation; }
         if (frame !== undefined) { this.frame = frame; }
+        if (unit !== undefined) { this.unit = unit; }
+        if (keyStandard !== undefined) { this.keyStandard = keyStandard; }
     }
     /**
      * How thick the gear is along the frame's normal, in model units.
@@ -183,11 +185,22 @@ export class SpurGearDto extends SpurGearSharedDto {
      */
     hubLength?: number | undefined = 0;
     /**
-     * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
-     * in millimetres, toward the tooth at rotation 0.
+     * When true, a keyway is cut along the bore, sized by `keyStandard` for a shaft of the bore's
+     * diameter in `unit`, toward the tooth at rotation 0.
      * @default false
      */
     keyway?: boolean | undefined = false;
+    /**
+     * The unit the gear's numbers are in, which sizes its keyway from the key standard's table; the
+     * teeth themselves take any unit.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+    /**
+     * The standard the keyway is sized by: DIN 6885 or the inch ANSI B17.1.
+     * @default din
+     */
+    keyStandard?: Engineering.keyStandardEnum | undefined = Engineering.keyStandardEnum.din;
 }
 /**
  * The teeth of an involute rack, shared by `parts.mechanical.gears.rackProfile` and `parts.mechanical.gears.rack`: their
@@ -484,7 +497,7 @@ export class RingGearDto extends RingGearSharedDto {
  * their lean, measured square to the teeth, how thick it is, its bore and hub, and where it lies.
  */
 export class HelicalGearDto {
-    constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, helixAngle?: number, herringbone?: boolean, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base.Frame) {
+    constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, helixAngle?: number, herringbone?: boolean, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base.Frame, unit?: Base.unitOfLengthEnum, keyStandard?: Engineering.keyStandardEnum) {
         if (width !== undefined) { this.width = width; }
         if (bore !== undefined) { this.bore = bore; }
         if (hub !== undefined) { this.hub = hub; }
@@ -502,6 +515,8 @@ export class HelicalGearDto {
         if (rootFillet !== undefined) { this.rootFillet = rootFillet; }
         if (rotation !== undefined) { this.rotation = rotation; }
         if (frame !== undefined) { this.frame = frame; }
+        if (unit !== undefined) { this.unit = unit; }
+        if (keyStandard !== undefined) { this.keyStandard = keyStandard; }
     }
     /**
      * The normal module: the tooth size measured square to the teeth, in model units, as the
@@ -648,11 +663,22 @@ export class HelicalGearDto {
      */
     hubLength?: number | undefined = 0;
     /**
-     * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
-     * in millimetres, toward the tooth at rotation 0.
+     * When true, a keyway is cut along the bore, sized by `keyStandard` for a shaft of the bore's
+     * diameter in `unit`, toward the tooth at rotation 0.
      * @default false
      */
     keyway?: boolean | undefined = false;
+    /**
+     * The unit the gear's numbers are in, which sizes its keyway from the key standard's table; the
+     * teeth themselves take any unit.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+    /**
+     * The standard the keyway is sized by: DIN 6885 or the inch ANSI B17.1.
+     * @default din
+     */
+    keyStandard?: Engineering.keyStandardEnum | undefined = Engineering.keyStandardEnum.din;
 }
 /**
  * A straight bevel gear for `parts.mechanical.gears.bevelGear` and its twin with face roles: its teeth at the
@@ -795,16 +821,21 @@ export class BevelGearDto {
     frame?: Base.Frame | undefined;
 }
 /**
- * The size of a metric fastener and where it sits, shared by the screws, nuts and washers of
- * `parts.mechanical.fasteners`. Its sizes come from the ISO standards in millimetres, so model units are
- * millimetres.
+ * The size of an ISO metric fastener, the unit it is made in and where it sits, shared by the screws,
+ * nuts and washers of `parts.mechanical.fasteners.iso`.
  */
-export abstract class MetricFastenerSharedDto {
+export abstract class IsoFastenerSharedDto {
     /**
      * The thread size, such as M8.
      * @default m3
      */
-    size?: Engineering.metricSizeEnum | undefined = Engineering.metricSizeEnum.m3;
+    size?: Engineering.isoThreadSizeEnum | undefined = Engineering.isoThreadSizeEnum.m3;
+    /**
+     * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+     * whatever it is.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
     /**
      * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
      * the part. Left out, the ground, facing +Y.
@@ -814,12 +845,12 @@ export abstract class MetricFastenerSharedDto {
     frame?: Base.Frame | undefined;
 }
 /**
- * A screw's thread size, its length under the head and where its head sits, for
- * `parts.mechanical.fasteners.socketHeadCapScrew` and `parts.mechanical.fasteners.hexBolt`.
+ * An ISO screw's thread size, its length under the head, the unit and where its head sits, for
+ * `parts.mechanical.fasteners.iso.socketHeadCapScrew` and `parts.mechanical.fasteners.iso.hexBolt`.
  */
-export abstract class MetricScrewSharedDto extends MetricFastenerSharedDto {
+export abstract class IsoScrewSharedDto extends IsoFastenerSharedDto {
     /**
-     * The length of the screw from under its head to its tip, in millimetres.
+     * The length of the screw from under its head to its tip, in `unit`.
      * @default 10
      * @minimum 0
      * @exclusiveMinimum true
@@ -828,37 +859,39 @@ export abstract class MetricScrewSharedDto extends MetricFastenerSharedDto {
      */
     length?: number | undefined = 10;
     /**
-     * When true the threaded length is modelled, as `parts.mechanical.machining.thread` cuts it, its faces all
-     * named `thread`; when false the thread is a light cosmetic face.
+     * When true the threaded length is modelled, as `parts.mechanical.machining.iso.thread` cuts it, its
+     * faces all named `thread`; when false the thread is a light cosmetic face.
      * @default false
      */
     modelledThread?: boolean | undefined = false;
 }
 /**
  * An ISO 4762 cap screw with a hexagon recess in its round head, for
- * `parts.mechanical.fasteners.socketHeadCapScrew` and its twin with face roles: its size, its length and where
- * its head sits.
+ * `parts.mechanical.fasteners.iso.socketHeadCapScrew` and its twin with face roles: its size, its length,
+ * the unit and where its head sits.
  */
-export class SocketHeadCapScrewDto extends MetricScrewSharedDto {
-    constructor(size?: Engineering.metricSizeEnum, length?: number, modelledThread?: boolean, frame?: Base.Frame) {
+export class IsoSocketHeadCapScrewDto extends IsoScrewSharedDto {
+    constructor(size?: Engineering.isoThreadSizeEnum, length?: number, modelledThread?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
         super();
         if (size !== undefined) { this.size = size; }
         if (length !== undefined) { this.length = length; }
         if (modelledThread !== undefined) { this.modelledThread = modelledThread; }
+        if (unit !== undefined) { this.unit = unit; }
         if (frame !== undefined) { this.frame = frame; }
     }
 }
 /**
- * A hexagon head bolt for `parts.mechanical.fasteners.hexBolt` and its twin with face roles: threaded to the
- * head after ISO 4017, or only part of its length after ISO 4014.
+ * An ISO hexagon head bolt for `parts.mechanical.fasteners.iso.hexBolt` and its twin with face roles:
+ * threaded to the head after ISO 4017, or only part of its length after ISO 4014.
  */
-export class HexBoltDto extends MetricScrewSharedDto {
-    constructor(size?: Engineering.metricSizeEnum, length?: number, fullyThreaded?: boolean, modelledThread?: boolean, frame?: Base.Frame) {
+export class IsoHexBoltDto extends IsoScrewSharedDto {
+    constructor(size?: Engineering.isoThreadSizeEnum, length?: number, fullyThreaded?: boolean, modelledThread?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
         super();
         if (size !== undefined) { this.size = size; }
         if (length !== undefined) { this.length = length; }
         if (fullyThreaded !== undefined) { this.fullyThreaded = fullyThreaded; }
         if (modelledThread !== undefined) { this.modelledThread = modelledThread; }
+        if (unit !== undefined) { this.unit = unit; }
         if (frame !== undefined) { this.frame = frame; }
     }
     /**
@@ -869,25 +902,28 @@ export class HexBoltDto extends MetricScrewSharedDto {
     fullyThreaded?: boolean | undefined = true;
 }
 /**
- * An ISO 4032 hexagon nut for `parts.mechanical.fasteners.hexNut` and its twin with face roles: its size and
- * where it bears.
+ * An ISO 4032 hexagon nut for `parts.mechanical.fasteners.iso.hexNut` and its twin with face roles: its size,
+ * the unit and where it bears.
  */
-export class MetricFastenerDto extends MetricFastenerSharedDto {
-    constructor(size?: Engineering.metricSizeEnum, frame?: Base.Frame) {
+export class IsoHexNutDto extends IsoFastenerSharedDto {
+    constructor(size?: Engineering.isoThreadSizeEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
         super();
         if (size !== undefined) { this.size = size; }
+        if (unit !== undefined) { this.unit = unit; }
         if (frame !== undefined) { this.frame = frame; }
     }
 }
 /**
- * A plain washer for `parts.mechanical.fasteners.washer` and its twin with face roles: its size, whether it is
- * the ISO 7090 washer chamfered on one face or the flat ISO 7089 one, and where it bears.
+ * An ISO plain washer for `parts.mechanical.fasteners.iso.washer` and its twin with face roles: its size,
+ * whether it is the ISO 7090 washer chamfered on one face or the flat ISO 7089 one, the unit and where
+ * it bears.
  */
-export class WasherDto extends MetricFastenerSharedDto {
-    constructor(size?: Engineering.metricSizeEnum, chamfered?: boolean, frame?: Base.Frame) {
+export class IsoWasherDto extends IsoFastenerSharedDto {
+    constructor(size?: Engineering.isoThreadSizeEnum, chamfered?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
         super();
         if (size !== undefined) { this.size = size; }
         if (chamfered !== undefined) { this.chamfered = chamfered; }
+        if (unit !== undefined) { this.unit = unit; }
         if (frame !== undefined) { this.frame = frame; }
     }
     /**
@@ -898,15 +934,16 @@ export class WasherDto extends MetricFastenerSharedDto {
     chamfered?: boolean | undefined = false;
 }
 /**
- * A set screw with a hexagon recess for `parts.mechanical.fasteners.setScrew` and its twin with face roles:
- * its size, its length, its point and where its recessed end sits.
+ * An ISO set screw with a hexagon recess for `parts.mechanical.fasteners.iso.setScrew` and its twin with
+ * face roles: its size, its length, its point, the unit and where its recessed end sits.
  */
-export class SetScrewDto extends MetricFastenerSharedDto {
-    constructor(size?: Engineering.metricSizeEnum, length?: number, point?: Engineering.setScrewPointEnum, frame?: Base.Frame) {
+export class IsoSetScrewDto extends IsoFastenerSharedDto {
+    constructor(size?: Engineering.isoThreadSizeEnum, length?: number, point?: Engineering.isoSetScrewPointEnum, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
         super();
         if (size !== undefined) { this.size = size; }
         if (length !== undefined) { this.length = length; }
         if (point !== undefined) { this.point = point; }
+        if (unit !== undefined) { this.unit = unit; }
         if (frame !== undefined) { this.frame = frame; }
     }
     /**
@@ -914,9 +951,9 @@ export class SetScrewDto extends MetricFastenerSharedDto {
      * or cup (ISO 4029).
      * @default flat
      */
-    point?: Engineering.setScrewPointEnum | undefined = Engineering.setScrewPointEnum.flat;
+    point?: Engineering.isoSetScrewPointEnum | undefined = Engineering.isoSetScrewPointEnum.flat;
     /**
-     * The length of the set screw, in millimetres.
+     * The length of the set screw, in `unit`.
      * @default 5
      * @minimum 0
      * @exclusiveMinimum true
@@ -1019,25 +1056,31 @@ export class CompressionSpringDto {
     frame?: Base.Frame | undefined;
 }
 /**
- * A deep groove ball bearing for `parts.mechanical.bearings.ballBearing` and its twin with face roles: which
- * bearing, whether shields close its sides and where it sits.
+ * A metric deep groove ball bearing for `parts.mechanical.bearings.iso.ballBearing` and its twin with
+ * face roles: which bearing, whether shields close its sides, the unit and where it sits.
  */
-export class BallBearingDto {
-    constructor(designation?: Engineering.ballBearingEnum, shields?: boolean, frame?: Base.Frame) {
+export class IsoBallBearingDto {
+    constructor(designation?: Engineering.isoBallBearingEnum, shields?: boolean, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
         if (designation !== undefined) { this.designation = designation; }
         if (shields !== undefined) { this.shields = shields; }
+        if (unit !== undefined) { this.unit = unit; }
         if (frame !== undefined) { this.frame = frame; }
     }
     /**
-     * The bearing, such as 6204 or 608; its sizes are in millimetres.
+     * The bearing, such as 6204 or 608.
      * @default b608
      */
-    designation?: Engineering.ballBearingEnum | undefined = Engineering.ballBearingEnum.b608;
+    designation?: Engineering.isoBallBearingEnum | undefined = Engineering.isoBallBearingEnum.b608;
     /**
      * When true, a shield closes each side between the rings, as on a 2Z bearing.
      * @default false
      */
     shields?: boolean | undefined = false;
+    /**
+     * The unit the bearing is made in.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
     /**
      * Where the bearing sits: the centre of one side on the origin and its axis along the normal.
      * Left out, the ground, facing +Y.
@@ -1047,26 +1090,28 @@ export class BallBearingDto {
     frame?: Base.Frame | undefined;
 }
 /**
- * A DIN 6885 form A parallel key with round ends for `parts.mechanical.keys.parallelKey` and its twin with face
- * roles: sized for its shaft, its length and where it lies.
+ * A DIN 6885 form A parallel key with round ends for `parts.mechanical.keys.din.parallelKey` and its twin
+ * with face roles: sized for its shaft, its length, the unit and where it lies.
  */
-export class ParallelKeyDto {
-    constructor(shaftDiameter?: number, length?: number, frame?: Base.Frame) {
+export class DinParallelKeyDto {
+    constructor(shaftDiameter?: number, length?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
         if (shaftDiameter !== undefined) { this.shaftDiameter = shaftDiameter; }
         if (length !== undefined) { this.length = length; }
+        if (unit !== undefined) { this.unit = unit; }
         if (frame !== undefined) { this.frame = frame; }
     }
     /**
-     * The diameter of the shaft the key sits in, in millimetres, which sets its width and height.
+     * The diameter of the shaft the key sits in, in `unit`, which sets its width and height; DIN 6885
+     * keys shafts over 6 and up to 65 millimetres.
      * @default 20
-     * @minimum 6
+     * @minimum 0
      * @exclusiveMinimum true
-     * @maximum 65
+     * @maximum Infinity
      * @step 1
      */
     shaftDiameter?: number | undefined = 20;
     /**
-     * The key's length from one round end to the other, in millimetres; at least its width.
+     * The key's length from one round end to the other, in `unit`; at least its width.
      * @default 20
      * @minimum 0
      * @exclusiveMinimum true
@@ -1074,6 +1119,11 @@ export class ParallelKeyDto {
      * @step 1
      */
     length?: number | undefined = 20;
+    /**
+     * The unit the key is made in and its lengths are read in.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
     /**
      * Where the key lies: its bottom face's centre on the origin, its height along the normal, its
      * length along the direction. Left out, the ground, facing +Y.
@@ -1084,12 +1134,14 @@ export class ParallelKeyDto {
 }
 /**
  * A DIN 471 retaining ring for a shaft or a DIN 472 ring for a bore, for
- * `parts.mechanical.retainingRings.retainingRing` and its twin with face roles: which ring and where it sits.
+ * `parts.mechanical.retainingRings.din.retainingRing` and its twin with face roles: which ring, the unit
+ * and where it sits.
  */
-export class RetainingRingDto {
-    constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, frame?: Base.Frame) {
+export class DinRetainingRingDto {
+    constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base.unitOfLengthEnum, frame?: Base.Frame) {
         if (kind !== undefined) { this.kind = kind; }
         if (diameter !== undefined) { this.diameter = diameter; }
+        if (unit !== undefined) { this.unit = unit; }
         if (frame !== undefined) { this.frame = frame; }
     }
     /**
@@ -1098,14 +1150,20 @@ export class RetainingRingDto {
      */
     kind?: Engineering.retainingRingKindEnum | undefined = Engineering.retainingRingKindEnum.shaft;
     /**
-     * The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists: from 3 to 100
-     * for shafts, from 8 to 100 for bores.
+     * The shaft's or the bore's diameter in `unit`, one DIN 471 or DIN 472 lists: from 3 to 100
+     * millimetres for shafts, from 8 to 100 for bores.
      * @default 20
-     * @minimum 3
-     * @maximum 100
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
      * @step 1
      */
     diameter?: number | undefined = 20;
+    /**
+     * The unit the ring is made in and its diameter is read in.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
     /**
      * Where the ring sits: its centre on the origin, one side on the frame's plane, its lugs toward
      * the direction. Left out, the ground, facing +Y.

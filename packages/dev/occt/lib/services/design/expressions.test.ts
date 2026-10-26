@@ -321,4 +321,27 @@ describe("design expressions", () => {
             expect(values).toEqual([1, 4, 9]);
         });
     });
+
+    describe("fraction", () => {
+        it("should write a number as a whole and a reduced fraction of the denominator, as inch sizes are written", () => {
+            // Act
+            const written = [valueOf("fraction(1.25, 64)"), valueOf("fraction(length / 25.4, 16)", { length: 31.75 }), valueOf("fraction(0.3, 2)"), valueOf("fraction(-0.5, 8)")];
+
+            // Assert
+            expect(written).toEqual(["1-1/4", "1-1/4", "1/2", "-1/2"]);
+        });
+
+        it("should compare its text and choose by it, but refuse it in arithmetic and a denominator that is not whole", () => {
+            // Act
+            const compared = valueOf("if(fraction(size, 64) == '1/4', 20, 28)", { size: 0.25 });
+            const arithmetic = (): unknown => valueOf("fraction(1, 2) + 1");
+            const notWhole = (): unknown => valueOf("fraction(1, 2.5)");
+
+            // Assert
+            expect(compared).toBe(20);
+            expect(arithmetic).toThrow("text cannot be used in arithmetic");
+            expect(notWhole).toThrow(ExpressionError);
+            expect(notWhole).toThrow("fraction() rounds to a whole denominator of at least 1, such as 64, not 2.5");
+        });
+    });
 });

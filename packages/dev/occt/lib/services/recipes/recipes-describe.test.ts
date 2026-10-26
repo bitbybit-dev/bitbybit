@@ -203,10 +203,10 @@ describe("OCCTRecipes.describe and the exact brep step", () => {
             ["a ring gear", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.gears.ringGear({ module: 1, teeth: 40, width: 3 })],
             ["a helical gear", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.gears.helicalGear({ module: 1, teeth: 15, helixAngle: 20, width: 6 })],
             ["a rack", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.gears.rack({ module: 1, teeth: 6, height: 3, width: 2 })],
-            ["an M5 cap screw", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.fasteners.socketHeadCapScrew({ size: BaseInputs.Engineering.metricSizeEnum.m5, length: 12 })],
-            ["an M8 nut", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.fasteners.hexNut({ size: BaseInputs.Engineering.metricSizeEnum.m8 })],
+            ["an M5 cap screw", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.fasteners.iso.socketHeadCapScrew({ size: BaseInputs.Engineering.isoThreadSizeEnum.m5, length: 12 })],
+            ["an M8 nut", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.fasteners.iso.hexNut({ size: BaseInputs.Engineering.isoThreadSizeEnum.m8 })],
             ["a compression spring", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.springs.compressionSpring({ wireDiameter: 1, diameter: 8, activeCoils: 4, length: 12 })],
-            ["a 608 bearing of separate solids", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.bearings.ballBearing({ designation: BaseInputs.Engineering.ballBearingEnum.b608 })],
+            ["a 608 bearing of separate solids", (s: OCCTService): TopoDS_Shape => s.parts.mechanical.bearings.iso.ballBearing({ designation: BaseInputs.Engineering.isoBallBearingEnum.b608 })],
         ])("should build %s back from its description with its volume, faces and validity, and describe the rebuilt part alike", (_name, make) => {
             // Arrange
             const part = kept(make(occt));

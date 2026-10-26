@@ -1270,11 +1270,25 @@
             "additionalProperties": false
         },
         "DesignHoleFastener": {
-            "description": "A hole sized by the metric screw it takes: `size` from `\"M1.6\"` to `\"M24\"` (text, or `{ \"expr\" }`\nso a parameter can choose it); `fit` `close`, `normal` (the default) or `loose` for a clearance\nhole after ISO 273, or `tapped` for a threaded hole at the thread's nominal diameter, whose walls\nare also named `thread`; and `head` `socket` for the counterbore DIN 974-1 gives a socket head cap\nscrew, as deep as its head plus half a millimetre.",
+            "description": "A hole sized by the screw it takes, by `standard`: `iso` (the default), whose `size` is a metric\nthread from `\"M1.6\"` to `\"M24\"`, or `ansi`, whose `size` is a Unified inch thread from `\"#0\"` to\n`\"1\"`, coarse or `series` `\"UNF\"` fine (text, or `{ \"expr\" }` so a parameter can choose it). `fit`\nis `close`, `normal` (the default) or `loose` for a clearance hole after ISO 273 or ASME B18.2.8,\nor `tapped` for a threaded hole at the thread's nominal diameter, whose walls are also named\n`thread`; and `head` `socket` for the counterbore a socket head cap screw takes: DIN 974-1's, its\nhead height plus half a millimetre deep, or the inch one, as deep as its head. The hole is sized in\nthe document's unit.",
             "type": "object",
             "properties": {
+                "standard": {
+                    "type": "string",
+                    "enum": [
+                        "ansi",
+                        "iso"
+                    ]
+                },
                 "size": {
                     "$ref": "#/$defs/DesignText"
+                },
+                "series": {
+                    "type": "string",
+                    "enum": [
+                        "UNC",
+                        "UNF"
+                    ]
                 },
                 "fit": {
                     "type": "string",
@@ -1438,7 +1452,7 @@
             "additionalProperties": false
         },
         "DesignImportFeature": {
-            "description": "Starts a body from one of the document's `assets`: BREP as text (`brep`) or binary\n(`brep-binary`), STEP or IGES, read from the media type or the file extension when `format` is\nleft out. The shape is taken as the file has it, or with `child` only the shape at that position,\nfrom 0, of the compound the file holds, such as one part of the shapes file `design.fromStep`\nwrites; a build reads such a file once for all the features that take a child of it. Its faces\nare named `face`, and `face` with their index from 0.",
+            "description": "Starts a body from one of the document's `assets`: BREP as text (`brep`) or binary\n(`brep-binary`), STEP or IGES, read from the media type or the file extension when `format` is\nleft out. The shape is taken as the file has it, or with `child` only the shape at that position,\nfrom 0, of the compound the file holds, such as one part of the shapes file `design.fromStep`\nwrites; a build reads such a file once for all the features that take a child of it. STEP and\nIGES are scaled from the file's own unit into the document's; BREP keeps its numbers. Its faces\nare named `face`, and `face` with their index from 0.",
             "type": "object",
             "properties": {
                 "type": {
@@ -1621,11 +1635,18 @@
             ]
         },
         "DesignKeywayFeature": {
-            "description": "Cuts a DIN 6885 keyway, sized for the face's diameter, `length` long: into a shaft, or through a\nhub's bore, where it ends where `at` and `length` say. `angle` turns it about the axis, in degrees\nright-handed about the axis's positive direction whichever end `flip` starts from, from the side\nthe world's x axis points to (or y, for an axis along x). Its faces are named `keyway`.",
+            "description": "Cuts a keyway sized for the face's diameter by `standard`, DIN 6885 (`din`, the default) or the\ninch ANSI B17.1 (`ansi`), `length` long: into a shaft, or through a hub's bore, where it ends where\n`at` and `length` say. `angle` turns it about the axis, in degrees\nright-handed about the axis's positive direction whichever end `flip` starts from, from the side\nthe world's x axis points to (or y, for an axis along x). Its faces are named `keyway`.",
             "type": "object",
             "properties": {
                 "type": {
                     "const": "keyway"
+                },
+                "standard": {
+                    "type": "string",
+                    "enum": [
+                        "ansi",
+                        "din"
+                    ]
                 },
                 "length": {
                     "$ref": "#/$defs/DesignNumber"
@@ -1681,16 +1702,26 @@
             "additionalProperties": false
         },
         "DesignKnurlFeature": {
-            "description": "Knurls a shaft over `length`, `pitch` apart: `straight` ridges along it (the default), ridges\nleaning `left` or `right`, or a `diamond` crosshatch. Its faces are named `knurl`.",
+            "description": "Knurls a shaft over `length`: `straight` ridges along it (the default), ridges leaning `left` or\n`right`, or a `diamond` crosshatch. By `standard`, the ridges are DIN 82's, `pitch` apart in\nmillimetres as the standard names it (`din`, the default), or ASME B94.6's, `diametralPitch` to\nthe inch of diameter (`ansi`). Its faces are named `knurl`.",
             "type": "object",
             "properties": {
                 "type": {
                     "const": "knurl"
                 },
+                "standard": {
+                    "type": "string",
+                    "enum": [
+                        "ansi",
+                        "din"
+                    ]
+                },
                 "length": {
                     "$ref": "#/$defs/DesignNumber"
                 },
                 "pitch": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "diametralPitch": {
                     "$ref": "#/$defs/DesignNumber"
                 },
                 "pattern": {
@@ -2060,7 +2091,7 @@
             ]
         },
         "DesignOperationFeature": {
-            "description": "Runs any operation of this package by its dotted path with the kernel first, such as\n`\"occt.operations.offset\"`, with `params` as its inputs. In `params`, `{ \"body\": \"<id>\" }` passes a\nbody's shape and `{ \"expr\": \"<expression>\" }` what its expression gives, a number or text such as a\nchoice parameter's `\"M8\"`. With `body` the result goes on as that body, otherwise it starts a body\nnamed by the feature's id. An operation with a roles twin (`...WithRoles`) names its faces by\nthose roles. One with a history twin (`...WithHistory`) given bodies keeps the names of the faces\nit carries through, names faces made of edges `round`, `bevel` or `side`, and its first and last\n`start` and `end`; every other face is `face`. A list of shapes makes their compound.",
+            "description": "Runs any operation of this package by its dotted path with the kernel first, such as\n`\"occt.operations.offset\"`, with `params` as its inputs. In `params`, `{ \"body\": \"<id>\" }` passes a\nbody's shape and `{ \"expr\": \"<expression>\" }` what its expression gives, a number or text such as a\nchoice parameter's `\"M8\"`. With `body` the result goes on as that body, otherwise it starts a body\nnamed by the feature's id. An operation with a roles twin (`...WithRoles`) names its faces by\nthose roles. One with a history twin (`...WithHistory`) given bodies keeps the names of the faces\nit carries through, names faces made of edges `round`, `bevel` or `side`, and its first and last\n`start` and `end`; every other face is `face`. A list of shapes makes their compound. An operation\nwhose inputs take a `unit` of length, such as a standard part, takes the document's when `params`\nleave it out, and refuses another.",
             "type": "object",
             "properties": {
                 "type": {
@@ -3264,11 +3295,18 @@
             "additionalProperties": false
         },
         "DesignRingGrooveFeature": {
-            "description": "Cuts the DIN 471 groove a retaining ring sits in on a shaft, or the DIN 472 groove in a bore, sized\nfor the face's diameter, at `at`. Its faces are named `groove`.",
+            "description": "Cuts the groove a retaining ring sits in, sized for the face's diameter, at `at`, by `standard`:\nthe DIN 471 groove on a shaft or the DIN 472 groove in a bore (`din`, the default), or the groove\nof an inch tapered ring (`ansi`). Its faces are named `groove`.",
             "type": "object",
             "properties": {
                 "type": {
                     "const": "ringGroove"
+                },
+                "standard": {
+                    "type": "string",
+                    "enum": [
+                        "ansi",
+                        "din"
+                    ]
                 },
                 "body": {
                     "type": "string"
@@ -3544,11 +3582,18 @@
             ]
         },
         "DesignSplineFeature": {
-            "description": "Cuts DIN 5480 involute spline teeth of `module` into a bore over exactly `length` from `at`, a hub\nthe splined shaft of reference `diameter` and the same module slides into. With `diameter` left\nout the spline is the one whose hub teeth end on the bore; a bore wider than the hub's tips is\nrefused. Its faces are named `spline`.",
+            "description": "Cuts involute spline teeth into a bore over exactly `length` from `at`, a hub a splined shaft\nslides into, by `standard`. DIN 5480 (`din`, the default) takes the teeth's `module` and the\nshaft's reference `diameter`, both in millimetres as the standard names them (25 and 1.25 in\nW 25 x 1.25) whatever the document's unit; ANSI B92.1 (`ansi`) takes the `pitch`, such as `\"16/32\"`, and the\nnumber of `teeth`. With `diameter` or `teeth` left out the spline is the one whose hub teeth end on\nthe bore; a bore wider than the hub's tips is refused. Its faces are named `spline`.",
             "type": "object",
             "properties": {
                 "type": {
                     "const": "spline"
+                },
+                "standard": {
+                    "type": "string",
+                    "enum": [
+                        "ansi",
+                        "din"
+                    ]
                 },
                 "length": {
                     "$ref": "#/$defs/DesignNumber"
@@ -3557,6 +3602,12 @@
                     "$ref": "#/$defs/DesignNumber"
                 },
                 "diameter": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "pitch": {
+                    "$ref": "#/$defs/DesignText"
+                },
+                "teeth": {
                     "$ref": "#/$defs/DesignNumber"
                 },
                 "body": {
@@ -3600,7 +3651,6 @@
             "required": [
                 "type",
                 "length",
-                "module",
                 "body",
                 "on",
                 "id"
@@ -3672,11 +3722,18 @@
             ]
         },
         "DesignThreadFeature": {
-            "description": "Models a metric thread over `length`: outside on a shaft of the size's diameter, or inside a bore\ndrilled for the size's tap at the pitch. `size`, such as `M8`, is found from the face's diameter\nwhen left out; `pitch` is the size's coarse pitch when left out. A bore at a size's nominal\ndiameter, as a tapped `hole` is drawn, is refused: drill it to the tap drill to model its thread.\nIts faces are named `thread`.",
+            "description": "Models a thread over `length`: outside on a shaft of the size's diameter, or inside a bore drilled\nfor the size's tap. By `standard`, it is an ISO metric thread (`iso`, the default) of `size` such\nas `M8`, at `pitch` or the size's coarse pitch; or a Unified inch thread (`ansi`) of `size` such as\n`1/4`, in `series` `UNC` (the default) or `UNF`, or at `threadsPerInch`. `size` is found from the\nface's diameter when left out. A bore at a size's nominal diameter, as a tapped `hole` is drawn, is\nrefused: drill it to the tap drill to model its thread. Its faces are named `thread`.",
             "type": "object",
             "properties": {
                 "type": {
                     "const": "thread"
+                },
+                "standard": {
+                    "type": "string",
+                    "enum": [
+                        "ansi",
+                        "iso"
+                    ]
                 },
                 "length": {
                     "$ref": "#/$defs/DesignNumber"
@@ -3685,6 +3742,16 @@
                     "$ref": "#/$defs/DesignText"
                 },
                 "pitch": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "series": {
+                    "type": "string",
+                    "enum": [
+                        "UNC",
+                        "UNF"
+                    ]
+                },
+                "threadsPerInch": {
                     "$ref": "#/$defs/DesignNumber"
                 },
                 "body": {

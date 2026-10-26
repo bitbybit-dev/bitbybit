@@ -9,7 +9,7 @@ import type { GearOutline, HelicalGearSpec, RackOutline } from "@bitbybit-dev/ba
 import * as Inputs from "../../../api/inputs";
 import type * as Models from "../../../api/models";
 import type * as Resolved from "../../../api/resolved-inputs";
-import { checkedFlag, checkedWithin } from "../../base/input-checks";
+import { checkedChoice, checkedFlag, checkedWithin } from "../../base/input-checks";
 import { kernelObjects, release, releasedOnError } from "../../base/release";
 import type { OCCTOperations } from "../../operations";
 import type { OCCTShapes } from "../../shapes/shapes";
@@ -77,7 +77,7 @@ export class OCCTGears {
 
     /**
      * Makes an involute spur gear as a solid: its outline swept `width` along the frame's normal, with
-     * a `bore`, a hub standing out from its end face and a DIN 6885 keyway.
+     * a `bore`, a hub standing out from its end face and a keyway.
      *
      * The first face lies in the frame's plane. A `bore` of 0 leaves the gear whole; one that
      * reaches the root circle is refused.
@@ -121,7 +121,7 @@ export class OCCTGears {
 
     /**
      * Makes an involute helical gear as a solid: its section square to the axis turned steadily along
-     * `width`, with a `bore`, a hub and a DIN 6885 keyway as `spurGear` has them.
+     * `width`, with a `bore`, a hub and a keyway as `spurGear` has them.
      *
      * Two external helical gears of one module and angle in opposite hands mesh, the sum of their
      * pitch radii apart; `herringbone` makes two opposite halves.
@@ -518,7 +518,7 @@ export class OCCTGears {
         if (hub > 0 && !(hub > bore && hub / 2 < root && hubLength > 0)) {
             throw new InputError("A hub's diameter lies between the bore and the root diameter, and it stands out by a `hubLength` above 0.", hub / 2 >= root || hub <= bore ? "hub" : "hubLength");
         }
-        const key = keyway ? this.keyFor(bore) : undefined;
+        const key = keyway ? this.keyFor(bore, resolved.unit, resolved.keyStandard) : undefined;
         if (key !== undefined && !(bore / 2 + key.hubDepth < (hub > 0 ? Math.min(root, hub / 2) : root))) {
             throw new InputError(`The keyway reaches ${String(bore / 2 + key.hubDepth)} from the axis, out to the ${hub > 0 ? "hub's outside" : "root circle"}: give the gear a larger ${hub > 0 ? "`hub`" : "root"} or a smaller \`bore\`.`, "keyway");
         }
@@ -661,12 +661,14 @@ export class OCCTGears {
         return this.shapes.wire.interpolatePoints({ points: gearMovePoints([from[0], from[1], 0], move, BEVEL_CURVE_SAMPLES).map(point => lift([point[0], point[1]])), periodic: false });
     }
 
-    private keyFor(bore: number): ParallelKeySizes {
+    private keyFor(bore: number, unit: Inputs.Base.unitOfLengthEnum, keyStandard: Inputs.Engineering.keyStandardEnum): ParallelKeySizes {
         if (!(bore > 0)) {
             throw new InputError("A keyway runs along the bore: give the gear a `bore` first.", "keyway");
         }
+        const standard = checkedChoice(keyStandard, Object.values(Inputs.Engineering.keyStandardEnum), "keyStandard");
         try {
-            return this.build.base.engineering.mechanical.keys.parallelKeySizes({ shaftDiameter: bore });
+            const keys = this.build.base.engineering.mechanical.keys;
+            return standard === Inputs.Engineering.keyStandardEnum.ansi ? keys.ansi.parallelKeySizes({ shaftDiameter: bore, unit }) : keys.din.parallelKeySizes({ shaftDiameter: bore, unit });
         } catch (error) {
             if (error instanceof InputError) {
                 throw new InputError(`A keyway sized for the bore: ${error.message}`, "bore");

@@ -7,7 +7,7 @@ import { MAX_OCCURRENCES } from "./assembly";
 import { release } from "../base/release";
 import { followedBy, isRigidMatrix } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
 import { sha256 } from "./digest";
-import { isKernelTrap } from "./problems";
+import { cleanedUp, isKernelTrap } from "./problems";
 import { IDENTITY_MATRIX } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices.constants";
 import { readKernelException } from "../../kernel-exception";
 
@@ -89,6 +89,8 @@ export interface StepImportOptions {
     name: string;
     seed: string;
     folder: string;
+    unit?: Inputs.Base.unitOfLengthEnum;
+    scale?: number;
     maxOccurrences?: number;
 }
 
@@ -198,7 +200,11 @@ function given(name: string | undefined): string {
     return TRANSLATOR_NAME.test(trimmed) ? "" : trimmed;
 }
 
-function structureOf(nodes: readonly Node[]): StepStructure {
+function scaledMatrix(matrix: Matrix | undefined, scale: number): Matrix | undefined {
+    return matrix === undefined || scale === 1 ? matrix : matrix.map((value, index) => Math.floor(index / SIDE) === TRANSLATION_COLUMN && index % SIDE < SIDE - 1 ? value * scale : value) as Matrix;
+}
+
+function structureOf(nodes: readonly Node[], scale: number): StepStructure {
     const byId = new Map<string, Node>();
     nodes.forEach(node => {
         if (!byId.has(node.id)) {
@@ -239,7 +245,7 @@ function structureOf(nodes: readonly Node[]): StepStructure {
         }
         if (node.parentId === undefined) {
             define(node.id, given(node.name), node.isAssembly);
-            roots.push({ label: node.id, name: given(node.name), definition: node.id, matrix: node.transform, visible: node.visible });
+            roots.push({ label: node.id, name: given(node.name), definition: node.id, matrix: scaledMatrix(node.transform, scale), visible: node.visible });
             return;
         }
         const parent = byId.get(node.parentId);
@@ -249,7 +255,7 @@ function structureOf(nodes: readonly Node[]): StepStructure {
         }
         placed.add(`${container} ${node.id}`);
         define(node.definitionId, given(node.definitionName ?? node.name), node.refersToAssembly === true);
-        definitions.get(container)?.placements.push({ label: node.id, name: given(node.name), definition: node.definitionId, matrix: node.transform, visible: node.visible });
+        definitions.get(container)?.placements.push({ label: node.id, name: given(node.name), definition: node.definitionId, matrix: scaledMatrix(node.transform, scale), visible: node.visible });
     });
     return { definitions, roots, subShapes, shownColours };
 }
@@ -275,6 +281,8 @@ class StepImport {
         private readonly shownColours: ReadonlyMap<string, Rgba>,
         private readonly context: StepImportContext,
         private readonly idSeed: string,
+        private readonly unit: Inputs.Base.unitOfLengthEnum | undefined,
+        private readonly scale: number,
     ) {}
 
     rootOf(roots: Placement[], fileName: string): string {
@@ -311,7 +319,7 @@ class StepImport {
             };
             const part: Models.OCCT.DesignPart = { id: PART, name: plan.name, body: IMPORT_FEATURE, ...Object.keys(appearance).length === 0 ? {} : { appearance } };
             return {
-                schemaVersion: 1, kind: "part", id: plan.id, units: { length: "mm" }, up: "z", meta: { name: plan.name },
+                schemaVersion: 1, kind: "part", id: plan.id, units: { length: this.unit ?? "mm" }, up: "z", meta: { name: plan.name },
                 features: [{ id: IMPORT_FEATURE, type: "import", asset: asset.id, format: "brep-binary", child: plan.child }],
                 parts: [part],
                 assets: [asset],
@@ -370,7 +378,7 @@ class StepImport {
             return undefined;
         }
         const document: Models.OCCT.DesignAssemblyDocument = {
-            schemaVersion: 1, kind: "assembly", id: uuidOf(`${this.idSeed} assembly ${definition.label}`), units: { length: "mm" }, up: "z",
+            schemaVersion: 1, kind: "assembly", id: uuidOf(`${this.idSeed} assembly ${definition.label}`), units: { length: this.unit ?? "mm" }, up: "z",
             meta: { name: definition.name === "" ? "Assembly" : definition.name }, components,
         };
         this.assemblies.set(definition.label, document);
@@ -465,7 +473,8 @@ class StepImport {
             if (!holdsGeometry) {
                 release(shape);
             }
-            this.shapes.set(definition.label, holdsGeometry ? shape : null);
+            const scaled = holdsGeometry && this.scale !== 1 ? cleanedUp(() => this.context.occt.transforms.scale({ shape, factor: this.scale }), () => release(shape)) : shape;
+            this.shapes.set(definition.label, holdsGeometry ? scaled : null);
         }
         return this.shapes.get(definition.label)!;
     }
@@ -609,11 +618,12 @@ export function documentsFromStep(step: string | Uint8Array | ArrayBuffer, optio
         if (placementsIn(document, context, limit) > limit) {
             throw new InputError(`The STEP file places more than ${limit.toLocaleString("en")} parts, more than a design builds; split it into smaller files.`, "step");
         }
-        const { definitions, roots, subShapes, shownColours } = structureOf(context.occt.assembly.query.getAssemblyHierarchy({ document }).nodes);
+        const scale = options.scale ?? 1;
+        const { definitions, roots, subShapes, shownColours } = structureOf(context.occt.assembly.query.getAssemblyHierarchy({ document }).nodes, scale);
         if (roots.length === 0) {
             throw new InputError("The STEP file holds no shape to make a design document of.", "step");
         }
-        made = new StepImport(document, definitions, subShapes, shownColours, context, `${digest} ${options.seed}`);
+        made = new StepImport(document, definitions, subShapes, shownColours, context, `${options.unit === undefined || scale === 1 ? "" : `${options.unit} `}${digest} ${options.seed}`, options.unit, scale);
         const fileBase = fileBaseOf(options.name);
         const root = made.rootOf(roots, shownNameOf(options.name) || fileBase);
         const data = made.shapesFile();

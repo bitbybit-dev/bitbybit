@@ -4,6 +4,7 @@ import * as ts from "typescript";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService } from "../../occ-service";
+import { BaseBitByBit } from "@bitbybit-dev/base";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { handlesIn } from "../../../../__test__/embind-ledger";
@@ -200,7 +201,7 @@ describe("OCCT design: machining a shaft or a bore", () => {
             const wide = built(hub(24, { id: "teeth", type: "spline", body: "hub", on: BORE_WALL, length: 20, module: 1.25, diameter: 25 }));
 
             // Assert
-            expect(problemsOf(onShaft.built)).toEqual(["/features/2/on: spline teeth are cut into a bore; a splined shaft is made whole by parts.mechanical.machining.splinedShaft"]);
+            expect(problemsOf(onShaft.built)).toEqual(["/features/2/on: spline teeth are cut into a bore; a splined shaft is made whole by parts.mechanical.machining.din.splinedShaft"]);
             expect(problemsOf(wide.built)).toEqual(["/features/2/on: the bore is 24 across, wider than the 22.5 the hub's teeth end on, so they would be lost: drill the bore to 22.5"]);
         });
     });
@@ -231,8 +232,8 @@ describe("OCCT design: machining a shaft or a bore", () => {
             const unknown = built(shaft(9, { id: "screw", type: "thread", body: "shaft", on: SHAFT_SIDE, length: 10, size: "M9" }));
 
             // Assert
-            expect(problemsOf(odd.built)).toEqual(["/features/2/on: a shaft 9 across is no metric size; the nearest are M8, M10, M6: name a size, or size the shaft to one"]);
-            expect(problemsOf(unknown.built)[0]).toMatch(/^\/features\/2\/size: "M9" is not a metric size: M1\.6, /);
+            expect(problemsOf(odd.built)).toEqual(["/features/2/on: a shaft 9 across is no ISO metric size; the nearest are M8, M10, M6: name a size, or size the shaft to one"]);
+            expect(problemsOf(unknown.built)[0]).toMatch(/^\/features\/2\/size: "M9" is not an ISO metric size: M1\.6, /);
         });
     });
 
@@ -331,12 +332,132 @@ describe("OCCT design: machining a shaft or a bore", () => {
             const parts = await execute(code);
 
             // Assert
-            expect(code).toContain("shaft = await occt.parts.mechanical.machining.keyway({ shape: shaft, diameter: 20, length: diameter, inHub: false, frame: { origin: [0, 0, 5], normal: [0, 0, 1], direction: [1, 0, 0] } });");
+            expect(code).toContain("shaft = await occt.parts.mechanical.machining.din.keyway({ shape: shaft, diameter: 20, length: diameter, inHub: false, unit: Bit.Inputs.Base.unitOfLengthEnum.millimetre, frame: { origin: [0, 0, 5], normal: [0, 0, 1], direction: [1, 0, 0] } });");
             expect(code).toContain("kind: Bit.Inputs.Engineering.retainingRingKindEnum.shaft");
             expect(occt.shapes.solid.getSolidVolume({ shape: parts[0]!.shape })).toBeCloseTo(expected, 6);
             expect(named(built(document).part, "key:keyway").length).toBeGreaterThan(2);
             parts.forEach(part => { part.shape.delete(); });
         });
+    });
+
+    describe("ANSI standards in an inch document", () => {
+        const inchShaft = (diameter: number, ...machining: Feature[]): Part => ({ ...shaft(diameter, ...machining), units: { length: "in" }, features: [shaft(diameter).features[0]!, { id: "shaft", type: "extrude", profile: "base", distance: 2 }, ...machining] });
+        const inchHub = (bore: number, ...machining: Feature[]): Part => ({
+            schemaVersion: 1,
+            units: { length: "in" },
+            features: [
+                {
+                    id: "base", type: "sketch", on: { plane: "XY" },
+                    loops: [
+                        { start: [-1, -1], pen: [{ type: "hLine", length: 2 }, { type: "vLine", length: 2 }, { type: "hLine", length: -2 }, { type: "close" }] },
+                        { pen: [{ type: "circle", id: "bore", centre: [0, 0], radius: bore / 2 }] },
+                    ],
+                },
+                { id: "hub", type: "extrude", profile: "base", distance: 1 },
+                ...machining,
+            ],
+        });
+        const ALONG_Z = { normal: [0, 0, 1] as Inputs.Base.Vector3, direction: [1, 0, 0] as Inputs.Base.Vector3 };
+        const cutVolume = (cut: (shape: TopoDS_Shape) => TopoDS_Shape, radius: number): number => {
+            const blank = occt.shapes.solid.createCylinder({ radius, height: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const made = cut(blank);
+            try {
+                return occt.shapes.solid.getSolidVolume({ shape: made });
+            } finally {
+                [blank, made].forEach(shape => { shape.delete(); });
+            }
+        };
+
+        it("should mill an ANSI B17.1 keyseat, groove for an inch ring and knurl to ASME B94.6 just as the public machining calls do", () => {
+            // Arrange
+            const machining = occt.parts.mechanical.machining.ansi;
+            const unit = Inputs.Base.unitOfLengthEnum.inch;
+
+            // Act
+            const keyed = built(inchShaft(1, { id: "key", type: "keyway", standard: "ansi", body: "shaft", on: SHAFT_SIDE, at: 0.25, length: 1 }));
+            const grooved = built(inchShaft(0.75, { id: "ring", type: "ringGroove", standard: "ansi", body: "shaft", on: SHAFT_SIDE, at: 1.5 }));
+            const knurled = built(inchShaft(0.5, { id: "grip", type: "knurl", standard: "ansi", body: "shaft", on: SHAFT_SIDE, length: 0.5, diametralPitch: 96 }));
+
+            // Assert
+            [keyed, grooved, knurled].forEach(each => expect(problemsOf(each.built)).toEqual([]));
+            expect(keyed.volume).toBeCloseTo(cutVolume(shape => machining.keyway({ shape, diameter: 1, length: 1, unit, frame: { origin: [0, 0, 0.25], ...ALONG_Z } }), 0.5), 9);
+            expect(grooved.volume).toBeCloseTo(cutVolume(shape => machining.ringGroove({ shape, diameter: 0.75, unit, frame: { origin: [0, 0, 1.5], ...ALONG_Z } }), 0.375), 9);
+            expect(knurled.volume).toBeCloseTo(cutVolume(shape => machining.knurl({ shape, diameter: 0.5, length: 0.5, diametralPitch: 96, unit, frame: { origin: [0, 0, 0], ...ALONG_Z } }), 0.25), 9);
+            expect([named(keyed.part, "key:keyway").length, named(grooved.part, "ring:groove").length, named(knurled.part, "grip:knurl").length].every(count => count > 0)).toBe(true);
+        });
+
+        it("should cut the ANSI spline whose hub teeth end on the bore, finding its teeth when they are left out", () => {
+            // Arrange
+            const bore = (24 - 1) / 16;
+
+            // Act
+            const found = built(inchHub(bore, { id: "teeth", type: "spline", standard: "ansi", body: "hub", on: BORE_WALL, length: 1, pitch: "16/32" }));
+            const named24 = built(inchHub(bore, { id: "teeth", type: "spline", standard: "ansi", body: "hub", on: BORE_WALL, length: 1, pitch: "16/32", teeth: 24 }));
+
+            // Assert
+            expect(problemsOf(found.built)).toEqual([]);
+            expect(found.volume).toBeCloseTo(named24.volume, 9);
+            expect(found.volume).toBeLessThan(4 - Math.PI * bore * bore / 4);
+            expect(named(found.part, "teeth:spline").length).toBeGreaterThan(0);
+        });
+
+        it("should thread a 1/4 shaft and a bore drilled for 1/4-20, finding the Unified size from the diameter", () => {
+            // Arrange
+            const drill = new BaseBitByBit().engineering.mechanical.threads.ansi.thread({ size: Inputs.Engineering.ansiThreadSizeEnum.in1_4 }).tapDrill;
+
+            // Act
+            const outside = built(inchShaft(0.25, { id: "screw", type: "thread", standard: "ansi", body: "shaft", on: SHAFT_SIDE, length: 0.5 }));
+            const inside = built(inchHub(drill, { id: "nut", type: "thread", standard: "ansi", body: "hub", on: BORE_WALL, length: 0.5 }));
+
+            // Assert
+            expect(problemsOf(outside.built)).toEqual([]);
+            expect(problemsOf(inside.built)).toEqual([]);
+            expect(named(outside.part, "screw:thread").length).toBeGreaterThan(0);
+            expect(named(inside.part, "nut:thread").length).toBeGreaterThan(0);
+        }, 120_000);
+
+        it("should refuse a metric property under the ANSI standard and an ANSI one under the metric", () => {
+            // Act
+            const problems = [
+                inchShaft(0.5, { id: "grip", type: "knurl", standard: "ansi", body: "shaft", on: SHAFT_SIDE, length: 0.5, pitch: 1 }),
+                inchHub(1, { id: "teeth", type: "spline", standard: "ansi", body: "hub", on: BORE_WALL, length: 1 }),
+                inchShaft(0.25, { id: "screw", type: "thread", body: "shaft", on: SHAFT_SIDE, length: 0.5, series: "UNC" }),
+                inchShaft(0.25, { id: "screw", type: "thread", standard: "ansi", body: "shaft", on: SHAFT_SIDE, length: 0.5, series: "UNF", threadsPerInch: 28 }),
+            ].map(document => occt.design.validate({ document }).map(issue => `${issue.path}: ${issue.message}`)[0]);
+
+            // Assert
+            expect(problems).toEqual([
+                "/features/2/pitch: an ANSI knurl is sized by its diametralPitch, not a pitch",
+                "/features/2: an ANSI spline needs its pitch, one of 2.5/5, 3/6, 4/8, 5/10, 6/12, 8/16, 10/20, 12/24, 16/32, 20/40, 24/48, 32/64",
+                "/features/2/series: a series names an ANSI thread's pitch; an ISO thread takes a pitch",
+                "/features/2/threadsPerInch: give a thread's series or its threadsPerInch, not both",
+            ]);
+        });
+
+        it("should write an ANSI thread as the public machining call the build made, with its enums named", async () => {
+            // Arrange
+            const document: Part = {
+                schemaVersion: 1,
+                units: { length: "in" },
+                features: [
+                    { id: "stock", type: "sketch", on: { plane: "XY" }, pen: [] },
+                    { id: "shaft", type: "operation", operation: "occt.shapes.solid.createCylinder", params: { radius: 0.125, height: 2, center: [0, 0, 0], direction: [0, 0, 1] } },
+                    { id: "screw", type: "thread", standard: "ansi", body: "shaft", on: { of: "shaft", role: "face" }, length: 0.5, series: "UNF" },
+                ],
+            };
+            const expected = built(document).volume;
+
+            // Act
+            const code = occt.design.toTypeScript({ document });
+            const program = ts.transpileModule(code, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText.replace(/for \(const part of parts\) \{[\s\S]*?\}\n/, "");
+            const parts = await (runInNewContext(`(async () => {\n${program}\nreturn parts;\n})()`, { bitbybit: { occt }, Bit: { Inputs } }) as Promise<{ shape: TopoDS_Shape }[]>);
+
+            // Assert
+            expect(code).toContain("occt.parts.mechanical.machining.ansi.thread({ shape: shaft, size: Bit.Inputs.Engineering.ansiThreadSizeEnum.in1_4, series: Bit.Inputs.Engineering.ansiThreadSeriesEnum.unf,");
+            expect(code).toContain("unit: Bit.Inputs.Base.unitOfLengthEnum.inch");
+            expect(occt.shapes.solid.getSolidVolume({ shape: parts[0]!.shape })).toBeCloseTo(expected, 9);
+            parts.forEach(part => { part.shape.delete(); });
+        }, 120_000);
     });
 
     describe("the kernel heap", () => {

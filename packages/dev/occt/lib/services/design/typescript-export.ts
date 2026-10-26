@@ -11,6 +11,9 @@ import type { ParameterChoice } from "./values";
 import { directionOf, hasOnlyKey, isExpressionObject, numberOf, pointOf, templatePieces } from "./values";
 import { FULL_TURN } from "./constants";
 import { holeSizeOf } from "./hole-fastener";
+import { takesLengthUnit } from "./helpers";
+import { operationPathOf } from "./format";
+import { occtDtoRegistry } from "../../api/dto-registry";
 import type { MachiningFeature } from "./machining-types";
 import { DELETE, FIRST_PRINTABLE, FROM_FEATURE, LAST_CONTROL, LINE_SEPARATOR, MACHINING_ENUMS, PARAGRAPH_SEPARATOR } from "./typescript-export.constants";
 import type { MathHelper } from "./typescript-math";
@@ -116,6 +119,8 @@ export function expressionCode(node: ExpressionNode, names: ReadonlyMap<string, 
                 case "atan":
                 case "atan2":
                     return { text: `Math.${node.name}(${args.map(arg => arg.text).join(", ")})${IN_DEGREES}`, level: LEVEL.product };
+                case "fraction":
+                    return { text: `bitbybit.math.toFractionText({ number: ${args[0]!.text}, denominator: ${args[1]!.text} })`, level: LEVEL.atom };
                 default:
                     return { text: `Math.${node.name}(${args.map(arg => arg.text).join(", ")})`, level: LEVEL.atom };
             }
@@ -407,7 +412,7 @@ class Exporter {
             const origin = [0, 1, 2].map(axis => `${frame.origin[axis]}${term(frame.direction[axis]!, x)}${term(across[axis]!, y)}`);
             return `{ origin: [${origin.join(", ")}], normal: ${this.numbers(frame.normal)}, direction: ${this.numbers(frame.direction)} }`;
         });
-        const sized = feature.fastener === undefined ? undefined : holeSizeOf(feature.fastener, this.run.parameters, "");
+        const sized = feature.fastener === undefined ? undefined : holeSizeOf(feature.fastener, this.run.parameters, "", this.run.unit);
         const diameter = sized === undefined ? this.code(feature.diameter) : String(sized.diameter);
         const common = `shape: ${body}, frames: [${frames.join(", ")}], diameter: ${diameter}, depth: ${feature.depth === undefined ? "0" : this.code(feature.depth)}, tipAngle: ${feature.tipAngle === undefined ? "0" : this.code(feature.tipAngle)}`;
         if (sized?.counterbore !== undefined) {
@@ -436,10 +441,9 @@ class Exporter {
         const cut = trace.machining!;
         const given = new Map<string, unknown>(Object.entries(feature));
         const fields = Object.entries(cut.inputs).map(([key, value]) => {
-            const enumName = MACHINING_ENUMS.get(key);
-            const enumKey = enumName === undefined ? undefined : Object.entries(Inputs.Engineering[enumName]).find(([, member]) => member === value)?.[0];
+            const named = (MACHINING_ENUMS.get(key) ?? []).flatMap(known => Object.entries(known.members).filter(([, member]) => member === value).map(([enumKey]) => `Bit.Inputs.${known.namespace}.${known.name}.${enumKey}`))[0];
             const code = key === "frame" ? this.frameCode(trace.frame!)
-                : enumKey !== undefined ? `Bit.Inputs.Engineering.${enumName!}.${enumKey}`
+                : named !== undefined ? named
                     : FROM_FEATURE.includes(key) && given.get(key) !== undefined ? this.code(given.get(key)) : this.code(value);
             return `${key}: ${code}`;
         });
@@ -452,7 +456,7 @@ class Exporter {
         const data = `assets[${JSON.stringify(feature.asset)}]`;
         const call = trace.format === "brep" ? `occt.io.loadBrep({ brepData: ${data} as string })`
             : trace.format === "brep-binary" ? `occt.io.loadBrepBinary({ brepData: ${data} as Uint8Array })`
-                : `occt.io.loadSTEPorIGES({ filetext: ${data} as string | ArrayBuffer, fileName: "asset.${trace.format}", adjustZtoY: false })`;
+                : `occt.io.loadSTEPorIGES({ filetext: ${data} as string | ArrayBuffer, fileName: "asset.${trace.format}", adjustZtoY: false${this.run.unit === Inputs.Base.unitOfLengthEnum.millimetre ? "" : `, unit: ${JSON.stringify(this.run.unit)}`} })`;
         if (feature.child === undefined) {
             this.line(`let ${name} = await ${call};`);
             return;
@@ -564,7 +568,9 @@ class Exporter {
             case "thread":
                 return this.machined(feature, trace);
             case "operation": {
-                const call = `${feature.operation}(${this.operationValue(feature.params)})`;
+                const operation = operationPathOf(feature.operation);
+                const unitless = operation !== undefined && feature.params["unit"] === undefined && takesLengthUnit(occtDtoRegistry, operation);
+                const call = `${feature.operation}(${this.operationValue(unitless ? { ...feature.params, unit: this.run.unit } : feature.params)})`;
                 if (feature.body === undefined) {
                     const name = this.fresh(feature.id);
                     this.variables.set(feature.id, name);

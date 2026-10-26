@@ -1,4 +1,4 @@
-import type { Base } from "@bitbybit-dev/base";
+import { Base } from "@bitbybit-dev/base";
 import type * as Models from "../../models";
 import type { designRebindEnum } from "./enums";
 
@@ -287,11 +287,12 @@ export class DesignClashesDto {
  * `design.fromStep`, which turns the file into design documents.
  */
 export class DesignFromStepDto {
-    constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string) {
+    constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string, unit?: Base.unitOfLengthEnum) {
         if (step !== undefined) { this.step = step; }
         if (name !== undefined) { this.name = name; }
         if (seed !== undefined) { this.seed = seed; }
         if (folder !== undefined) { this.folder = folder; }
+        if (unit !== undefined) { this.unit = unit; }
     }
     /**
      * The STEP file, as text or bytes.
@@ -316,6 +317,12 @@ export class DesignFromStepDto {
      * @default
      */
     folder?: string | undefined = "";
+    /**
+     * The unit the documents are in: the shapes and the placements are scaled from the file's own
+     * unit into it.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
 }
 
 /**

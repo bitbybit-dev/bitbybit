@@ -6,13 +6,14 @@ import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { checkedNumber } from "../base/input-checks";
 import { SMALLEST_MESH_DEFLECTION, bytesOfFile, checkedDocument, objNameOf } from "../base/file-data";
+import { glbWithRootScale } from "@bitbybit-dev/base/lib/api/services/helpers/files/glb";
 
 type GltfExportCall = (...args: unknown[]) => Uint8Array | undefined;
 
 export type { Handle_TDocStd_Document };
 
 const GLB_MAGIC: readonly number[] = [0x67, 0x6c, 0x54, 0x46];
-const LENGTH_UNITS: readonly unknown[] = ["mm", "cm", "m", "in"];
+const LENGTH_UNITS: readonly unknown[] = Object.values(Inputs.Base.unitOfLengthEnum);
 
 /**
  * Building and changing assembly documents: describe parts, assembly nodes and instance nodes one
@@ -488,8 +489,9 @@ export class OCCTAssemblyManager {
      * names and colors kept as glTF nodes and materials.
      *
      * `meshDeflection` and `meshAngle` set how finely curved surfaces are triangulated;
-     * `mergeFaces` joins the faces of a part into one mesh. Failure throws an error.
-     * @param inputs - The document, the meshing settings, the export flags, the file name and the download option
+     * `mergeFaces` joins the faces of a part into one mesh. With the document's `unit`, the file is
+     * in metres, glTF's own unit.
+     * @param inputs - The document, the meshing settings, the export flags, the unit, the file name and the download option
      * @returns The GLB file as bytes
      * @group export
      * @shortname export document glTF
@@ -516,7 +518,7 @@ export class OCCTAssemblyManager {
         if (!result) {
             throw new Error("Failed to export document to glTF");
         }
-        return result;
+        return this.inMetres(result, resolved.unit);
     }
 
     /**
@@ -565,7 +567,12 @@ export class OCCTAssemblyManager {
         if (!result) {
             throw new Error("Failed to export document to glTF");
         }
-        return result;
+        return this.inMetres(result, resolved.unit);
+    }
+
+    private inMetres(glb: Uint8Array, unit: Inputs.Base.unitOfLengthEnum | undefined): Uint8Array {
+        const math = this.och.base.math;
+        return unit === undefined ? glb : glbWithRootScale(glb, math.millimetresPerUnit({ unit }) / math.millimetresPerUnit({ unit: Inputs.Base.unitOfLengthEnum.metre }));
     }
 
     /**

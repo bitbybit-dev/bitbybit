@@ -73,12 +73,12 @@ describe("design document check", () => {
         expect(issues.slice(1).map(issue => issue.message)).toEqual(["one of straight, left, right, diamond is expected", "a text or { expr } is expected"]);
     });
 
-    it("should refuse the machining features sized from millimetre tables in a document of another unit, but a flat", () => {
+    it("should take the machining features sized from tables in a document of any unit, since the tables are read in its unit", () => {
         // Act
         const issues = documentIssues({ schemaVersion: 1, units: { length: "cm" }, features: [sketch, block, { id: "key", type: "keyway", body: "block", on: sideOfBlock, length: 1 }, { id: "flat", type: "flat", body: "block", on: sideOfBlock, length: 1, depth: 0.1 }] }, OPERATIONS);
 
         // Assert
-        expect(issues).toEqual([{ path: "/features/2/type", message: "a keyway is sized from millimetre tables, and this document is in cm: model the part in millimetres" }]);
+        expect(issues).toEqual([]);
     });
 
     it("should refuse numbers and points that cannot be read", () => {

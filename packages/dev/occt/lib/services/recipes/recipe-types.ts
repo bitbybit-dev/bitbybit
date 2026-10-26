@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
 
-export type StepLengthUnit = "mm" | "cm" | "m" | "in";
+export type StepLengthUnit = `${Base.unitOfLengthEnum}`;
 
 export interface StepFailure {
     readonly node: number;

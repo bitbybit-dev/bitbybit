@@ -7,12 +7,29 @@ const OCCT_AlignAndTranslateShapesDto: DtoConstraints = { shapes: k.required(k.l
 const OCCT_AlignDto: DtoConstraints = { shape: k.required(k.opaque), fromOrigin: k.point3, fromDirection: k.vector3, toOrigin: k.point3, toDirection: k.vector3 };
 const OCCT_AlignNormAndAxisDto: DtoConstraints = { shape: k.required(k.opaque), fromOrigin: k.point3, fromNorm: k.vector3, fromAx: k.vector3, toOrigin: k.point3, toNorm: k.vector3, toAx: k.vector3 };
 const OCCT_AlignShapesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), fromOrigins: k.list(k.point3), fromDirections: k.list(k.vector3), toOrigins: k.list(k.point3), toDirections: k.list(k.vector3) };
+const OCCT_AnsiBallBearingDto: DtoConstraints = { designation: k.oneOf(["R1-4", "R1-5", "R133", "R144", "R155", "R156", "R166", "R168", "R188", "R1810", "R2", "R2-5", "R2-6", "R3", "R4", "R4A", "R6", "R8", "R10", "R12", "R14", "R16", "R18", "R20"]), shields: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiHexBoltDto: DtoConstraints = { fullyThreaded: k.boolean, series: k.oneOf(["UNC", "UNF"]), length: k.between(k.number, { min: 0, exclusiveMin: true }), modelledThread: k.boolean, size: k.oneOf(["#0", "#1", "#2", "#3", "#4", "#5", "#6", "#8", "#10", "#12", "1/4", "5/16", "3/8", "7/16", "1/2", "9/16", "5/8", "3/4", "7/8", "1"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiHexNutDto: DtoConstraints = { size: k.oneOf(["#0", "#1", "#2", "#3", "#4", "#5", "#6", "#8", "#10", "#12", "1/4", "5/16", "3/8", "7/16", "1/2", "9/16", "5/8", "3/4", "7/8", "1"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiKeywayDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), inHub: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque, shape: k.required(k.opaque) };
+const OCCT_AnsiKeywayToolDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), inHub: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiKnurlDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), diametralPitch: k.between(k.number, { min: 64, max: 160 }), pattern: k.oneOf(["straight", "left", "right", "diamond"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque, shape: k.required(k.opaque) };
+const OCCT_AnsiKnurlToolDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), diametralPitch: k.between(k.number, { min: 64, max: 160 }), pattern: k.oneOf(["straight", "left", "right", "diamond"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiParallelKeyDto: DtoConstraints = { shaftDiameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiRetainingRingDto: DtoConstraints = { kind: k.oneOf(["shaft", "bore"]), diameter: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiRingGrooveDto: DtoConstraints = { kind: k.oneOf(["shaft", "bore"]), diameter: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque, shape: k.required(k.opaque) };
+const OCCT_AnsiRingGrooveToolDto: DtoConstraints = { kind: k.oneOf(["shaft", "bore"]), diameter: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiSetScrewDto: DtoConstraints = { series: k.oneOf(["UNC", "UNF"]), point: k.oneOf(["cup", "flat", "cone", "oval", "halfDog"]), length: k.between(k.number, { min: 0, exclusiveMin: true }), size: k.oneOf(["#0", "#1", "#2", "#3", "#4", "#5", "#6", "#8", "#10", "#12", "1/4", "5/16", "3/8", "7/16", "1/2", "9/16", "5/8", "3/4", "7/8", "1"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiSocketHeadCapScrewDto: DtoConstraints = { series: k.oneOf(["UNC", "UNF"]), length: k.between(k.number, { min: 0, exclusiveMin: true }), modelledThread: k.boolean, size: k.oneOf(["#0", "#1", "#2", "#3", "#4", "#5", "#6", "#8", "#10", "#12", "1/4", "5/16", "3/8", "7/16", "1/2", "9/16", "5/8", "3/4", "7/8", "1"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiSplinedHubDto: DtoConstraints = { teeth: k.between(k.number, { min: 6, max: 60 }), pitch: k.oneOf(["2.5/5", "3/6", "4/8", "5/10", "6/12", "8/16", "10/20", "12/24", "16/32", "20/40", "24/48", "32/64"]), length: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque, shape: k.required(k.opaque) };
+const OCCT_AnsiSplineDto: DtoConstraints = { teeth: k.between(k.number, { min: 6, max: 60 }), pitch: k.oneOf(["2.5/5", "3/6", "4/8", "5/10", "6/12", "8/16", "10/20", "12/24", "16/32", "20/40", "24/48", "32/64"]), length: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiThreadCutDto: DtoConstraints = { size: k.oneOf(["#0", "#1", "#2", "#3", "#4", "#5", "#6", "#8", "#10", "#12", "1/4", "5/16", "3/8", "7/16", "1/2", "9/16", "5/8", "3/4", "7/8", "1"]), series: k.oneOf(["UNC", "UNF"]), threadsPerInch: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), internal: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque, shape: k.required(k.opaque) };
+const OCCT_AnsiThreadToolDto: DtoConstraints = { size: k.oneOf(["#0", "#1", "#2", "#3", "#4", "#5", "#6", "#8", "#10", "#12", "1/4", "5/16", "3/8", "7/16", "1/2", "9/16", "5/8", "3/4", "7/8", "1"]), series: k.oneOf(["UNC", "UNF"]), threadsPerInch: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), internal: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_AnsiWasherDto: DtoConstraints = { series: k.oneOf(["narrow", "wide"]), size: k.oneOf(["#0", "#1", "#2", "#3", "#4", "#5", "#6", "#8", "#10", "#12", "1/4", "5/16", "3/8", "7/16", "1/2", "9/16", "5/8", "3/4", "7/8", "1"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
 const OCCT_ArcEdgeCirclePointAngleDto: DtoConstraints = { circle: k.required(k.opaque), point: k.required(k.point3), alphaAngle: k.number, sense: k.boolean };
 const OCCT_ArcEdgeCircleTwoAnglesDto: DtoConstraints = { circle: k.required(k.opaque), alphaAngle1: k.number, alphaAngle2: k.number, sense: k.boolean };
 const OCCT_ArcEdgeCircleTwoPointsDto: DtoConstraints = { circle: k.required(k.opaque), start: k.point3, end: k.point3, sense: k.boolean };
 const OCCT_ArcEdgeThreePointsDto: DtoConstraints = { start: k.point3, middle: k.point3, end: k.point3 };
 const OCCT_ArcEdgeTwoPointsTangentDto: DtoConstraints = { start: k.point3, tangentVec: k.vector3, end: k.point3 };
-const OCCT_BallBearingDto: DtoConstraints = { designation: k.oneOf(["623", "624", "625", "626", "608", "609", "6000", "6001", "6002", "6003", "6004", "6005", "6006", "6007", "6008", "6009", "6010", "6200", "6201", "6202", "6203", "6204", "6205", "6206", "6207", "6208", "6209", "6210"]), shields: k.boolean, frame: k.opaque };
 const OCCT_BasicShapeRepairDto: DtoConstraints = { shape: k.required(k.opaque), precision: k.between(k.number, { min: 0 }), maxTolerance: k.between(k.number, { min: 0 }), minTolerance: k.between(k.number, { min: 0 }) };
 const OCCT_BevelGearDto: DtoConstraints = { module: k.between(k.number, { min: 0, exclusiveMin: true }), teeth: k.between(k.number, { min: 3, max: 1000 }), mateTeeth: k.between(k.number, { min: 3 }), shaftAngle: k.between(k.number, { min: 0, max: 180, exclusiveMin: true, exclusiveMax: true }), pressureAngle: k.between(k.number, { min: 0, max: 45, exclusiveMin: true, exclusiveMax: true }), backlash: k.between(k.number, { min: 0 }), addendum: k.between(k.number, { min: 0, exclusiveMin: true }), dedendum: k.between(k.number, { min: 0, exclusiveMin: true }), rootFillet: k.between(k.number, { min: 0 }), faceWidth: k.between(k.number, { min: 0, exclusiveMin: true }), bore: k.between(k.number, { min: 0 }), rotation: k.number, frame: k.opaque };
 const OCCT_BezierDto: DtoConstraints = { points: k.required(k.list(k.point3)), closed: k.boolean, degree: k.between(k.number, { min: 1 }), periodic: k.boolean };
@@ -95,12 +112,22 @@ const OCCT_DescribeRecipeDto: DtoConstraints = { shape: k.required(k.opaque), mi
 const OCCT_DesignBuildDto: DtoConstraints = { document: k.required(k.opaque), configuration: k.string, parameters: k.opaque, assets: k.opaque, documents: k.list(k.opaque), rebind: k.oneOf(["never", "report"]), outcomes: k.list(k.opaque), sketches: k.boolean };
 const OCCT_DesignClashesDto: DtoConstraints = { document: k.required(k.opaque), documents: k.list(k.opaque), configuration: k.string, parameters: k.opaque, assets: k.opaque, clearance: k.between(k.number, { min: 0 }) };
 const OCCT_DesignDocumentDto: DtoConstraints = { document: k.required(k.opaque), documents: k.list(k.opaque) };
-const OCCT_DesignFromStepDto: DtoConstraints = { step: k.required(k.opaque), name: k.string, seed: k.string, folder: k.string };
+const OCCT_DesignFromStepDto: DtoConstraints = { step: k.required(k.opaque), name: k.string, seed: k.string, folder: k.string, unit: k.oneOf(["mm", "cm", "m", "in"]) };
 const OCCT_DesignProbeFilletDto: DtoConstraints = { document: k.required(k.opaque), feature: k.required(k.string), configuration: k.string, parameters: k.opaque, assets: k.opaque, maxAttempts: k.between(k.number, { min: 1, max: 64 }) };
 const OCCT_DesignReferenceForDto: DtoConstraints = { document: k.required(k.opaque), body: k.required(k.string), faces: k.list(k.number), edges: k.list(k.number), configuration: k.string, parameters: k.opaque, assets: k.opaque, nudge: k.boolean };
 const OCCT_DesignSectionDto: DtoConstraints = { build: k.required(k.opaque), frame: k.required(k.opaque), cut: k.boolean, tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_DifferenceDto: DtoConstraints = { shape: k.required(k.opaque), shapes: k.required(k.list(k.opaque)), keepEdges: k.boolean, strategy: k.oneOf(["oneAfterAnother", "inGroups", "allAtOnce"]) };
 const OCCT_DihedralAngleDto: DtoConstraints = { shape: k.required(k.opaque), index: k.between(k.number, { min: 0 }), param: k.between(k.number, { min: 0, max: 1 }) };
+const OCCT_DinKeywayDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), inHub: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque, shape: k.required(k.opaque) };
+const OCCT_DinKeywayToolDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), inHub: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_DinKnurlDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), pitch: k.between(k.number, { min: 0.5, max: 1.6 }), pattern: k.oneOf(["straight", "left", "right", "diamond"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque, shape: k.required(k.opaque) };
+const OCCT_DinKnurlToolDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), pitch: k.between(k.number, { min: 0.5, max: 1.6 }), pattern: k.oneOf(["straight", "left", "right", "diamond"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_DinParallelKeyDto: DtoConstraints = { shaftDiameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_DinRetainingRingDto: DtoConstraints = { kind: k.oneOf(["shaft", "bore"]), diameter: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_DinRingGrooveDto: DtoConstraints = { kind: k.oneOf(["shaft", "bore"]), diameter: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque, shape: k.required(k.opaque) };
+const OCCT_DinRingGrooveToolDto: DtoConstraints = { kind: k.oneOf(["shaft", "bore"]), diameter: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_DinSplinedHubDto: DtoConstraints = { referenceDiameter: k.between(k.number, { min: 0, exclusiveMin: true }), module: k.between(k.number, { min: 0.5, max: 10 }), length: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque, shape: k.required(k.opaque) };
+const OCCT_DinSplineDto: DtoConstraints = { referenceDiameter: k.between(k.number, { min: 0, exclusiveMin: true }), module: k.between(k.number, { min: 0.5, max: 10 }), length: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
 const OCCT_DivideDto: DtoConstraints = { shape: k.required(k.opaque), nrOfDivisions: k.between(k.number, { min: 1 }), removeStartPoint: k.boolean, removeEndPoint: k.boolean };
 const OCCT_DivideShapesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), nrOfDivisions: k.between(k.number, { min: 1 }), removeStartPoint: k.boolean, removeEndPoint: k.boolean };
 const OCCT_DocToMeshDto: DtoConstraints = { document: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }), angularDeflection: k.between(k.number, { min: 0.001, max: 3.14159 }), relativeDeflection: k.boolean, adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean };
@@ -109,13 +136,13 @@ const OCCT_DocumentLabelQueryDto: DtoConstraints = { document: k.required(k.opaq
 const OCCT_DocumentQueryDto: DtoConstraints = { document: k.required(k.opaque) };
 const OCCT_DowelPinDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), frame: k.opaque };
 const OCCT_DraftAngleDto: DtoConstraints = { shape: k.required(k.opaque), faces: k.required(k.list(k.opaque)), direction: k.vector3, angle: k.number, neutralPlaneOrigin: k.point3, neutralPlaneDirection: k.vector3, flag: k.boolean };
-const OCCT_DxfPathsPartsListDto: DtoConstraints = { pathsParts: k.required(k.list(k.opaque)), colorFormat: k.oneOf(["aci", "truecolor"]), acadVersion: k.oneOf(["AC1009", "AC1015"]), fileName: k.string, tryDownload: k.boolean };
+const OCCT_DxfPathsPartsListDto: DtoConstraints = { pathsParts: k.required(k.list(k.opaque)), colorFormat: k.oneOf(["aci", "truecolor"]), acadVersion: k.oneOf(["AC1009", "AC1015"]), unit: k.oneOf(["mm", "cm", "m", "in"]), fileName: k.string, tryDownload: k.boolean };
 const OCCT_DxfPathsWithLayerDto: DtoConstraints = { paths: k.required(k.list(k.opaque)), layer: k.string, color: k.color };
 const OCCT_EdgeIndexDto: DtoConstraints = { shape: k.required(k.opaque), index: k.between(k.number, { min: 0 }) };
 const OCCT_EdgesToPointsDto: DtoConstraints = { shape: k.required(k.opaque), angularDeflection: k.between(k.number, { min: 0 }), curvatureDeflection: k.between(k.number, { min: 0 }), minimumOfPoints: k.between(k.number, { min: 0 }), uTolerance: k.between(k.number, { min: 0 }), minimumLength: k.between(k.number, { min: 0 }) };
 const OCCT_EllipseDto: DtoConstraints = { center: k.point3, direction: k.vector3, radiusMinor: k.between(k.number, { min: 0, exclusiveMin: true }), radiusMajor: k.between(k.number, { min: 0, exclusiveMin: true }) };
-const OCCT_ExportDocumentToGltfDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.number, meshAngle: k.number, internalVerticesMode: k.boolean, controlSurfaceDeflection: k.boolean, mergeFaces: k.boolean, forceUVExport: k.boolean, up: k.oneOf(["y", "z"]), fileName: k.string, tryDownload: k.boolean };
-const OCCT_ExportDocumentToGltfWithDracoDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.number, meshAngle: k.number, internalVerticesMode: k.boolean, controlSurfaceDeflection: k.boolean, mergeFaces: k.boolean, forceUVExport: k.boolean, up: k.oneOf(["y", "z"]), fileName: k.string, tryDownload: k.boolean, useDraco: k.boolean, dracoCompressionLevel: k.between(k.number, { min: 0, max: 10 }), dracoQuantizePositionBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeNormalBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeTexcoordBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeColorBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeGenericBits: k.between(k.number, { min: 0, max: 31 }), dracoUnifiedQuantization: k.boolean };
+const OCCT_ExportDocumentToGltfDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.number, meshAngle: k.number, internalVerticesMode: k.boolean, controlSurfaceDeflection: k.boolean, mergeFaces: k.boolean, forceUVExport: k.boolean, up: k.oneOf(["y", "z"]), unit: k.oneOf(["mm", "cm", "m", "in"]), fileName: k.string, tryDownload: k.boolean };
+const OCCT_ExportDocumentToGltfWithDracoDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.number, meshAngle: k.number, internalVerticesMode: k.boolean, controlSurfaceDeflection: k.boolean, mergeFaces: k.boolean, forceUVExport: k.boolean, up: k.oneOf(["y", "z"]), unit: k.oneOf(["mm", "cm", "m", "in"]), fileName: k.string, tryDownload: k.boolean, useDraco: k.boolean, dracoCompressionLevel: k.between(k.number, { min: 0, max: 10 }), dracoQuantizePositionBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeNormalBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeTexcoordBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeColorBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeGenericBits: k.between(k.number, { min: 0, max: 31 }), dracoUnifiedQuantization: k.boolean };
 const OCCT_ExportDocumentToObjDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.between(k.number, { min: 1e-7 }), fileName: k.string, tryDownload: k.boolean };
 const OCCT_ExportDocumentToPlyDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.between(k.number, { min: 1e-7 }), fileName: k.string, tryDownload: k.boolean };
 const OCCT_ExportDocumentToStepDto: DtoConstraints = { document: k.required(k.opaque), fileName: k.string, author: k.string, organization: k.string, compress: k.boolean, tryDownload: k.boolean };
@@ -142,6 +169,7 @@ const OCCT_FaceSubdivisionControlledDto: DtoConstraints = { shape: k.required(k.
 const OCCT_FaceSubdivisionDto: DtoConstraints = { shape: k.required(k.opaque), nrDivisionsU: k.between(k.number, { min: 1 }), nrDivisionsV: k.between(k.number, { min: 1 }), shiftHalfStepU: k.boolean, removeStartEdgeU: k.boolean, removeEndEdgeU: k.boolean, shiftHalfStepV: k.boolean, removeStartEdgeV: k.boolean, removeEndEdgeV: k.boolean };
 const OCCT_FaceSubdivisionToWiresDto: DtoConstraints = { shape: k.required(k.opaque), nrDivisions: k.between(k.number, { min: 1 }), isU: k.boolean, shiftHalfStep: k.boolean, removeStart: k.boolean, removeEnd: k.boolean };
 const OCCT_FacesWithinDto: DtoConstraints = { shapeA: k.required(k.opaque), shapeB: k.required(k.opaque), clearance: k.between(k.number, { min: 0 }), precision: k.between(k.number, { min: 0, exclusiveMin: true }) };
+const OCCT_FileLengthUnitDto: DtoConstraints = { filetext: k.required(k.opaque), fileName: k.string };
 const OCCT_Fillet3DWireDto: DtoConstraints = { shape: k.required(k.opaque), radius: k.between(k.number, { min: 0, exclusiveMin: true }), radiusList: k.list(k.number), indexes: k.list(k.number), direction: k.vector3 };
 const OCCT_Fillet3DWiresDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), radius: k.between(k.number, { min: 0, exclusiveMin: true }), radiusList: k.list(k.number), indexes: k.list(k.number), direction: k.vector3 };
 const OCCT_FilletCornerByPointDto: DtoConstraints = { shape: k.required(k.opaque), points: k.list(k.point3), radius: k.number, taperFactor: k.between(k.number, { min: 0, max: 1 }), snapTolerance: k.number, mode: k.oneOf(["auto", "planarOnly"]) };
@@ -178,11 +206,10 @@ const OCCT_HBeamProfileDto: DtoConstraints = { width: k.between(k.number, { min:
 const OCCT_HBeamProfileSolidDto: DtoConstraints = { width: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0, exclusiveMin: true }), webThickness: k.between(k.number, { min: 0 }), flangeThickness: k.between(k.number, { min: 0, exclusiveMin: true }), alignment: k.oneOf(["topLeft", "topMid", "topRight", "midLeft", "midMid", "midRight", "bottomLeft", "bottomMid", "bottomRight"]), rotation: k.number, center: k.point3, direction: k.vector3, extrusionLengthFront: k.between(k.number, { min: 0 }), extrusionLengthBack: k.between(k.number, { min: 0 }) };
 const OCCT_Heart2DDto: DtoConstraints = { center: k.point3, direction: k.vector3, rotation: k.number, sizeApprox: k.between(k.number, { min: 0, exclusiveMin: true }) };
 const OCCT_HeartSolidDto: DtoConstraints = { center: k.point3, direction: k.vector3, rotation: k.number, sizeApprox: k.between(k.number, { min: 0, exclusiveMin: true }), extrusionLengthFront: k.between(k.number, { min: 0 }), extrusionLengthBack: k.between(k.number, { min: 0 }) };
-const OCCT_HelicalGearDto: DtoConstraints = { module: k.between(k.number, { min: 0, exclusiveMin: true }), teeth: k.between(k.number, { min: 3, max: 1000 }), helixAngle: k.between(k.number, { min: -45, max: 45, exclusiveMin: true, exclusiveMax: true }), herringbone: k.boolean, pressureAngle: k.between(k.number, { min: 0, max: 45, exclusiveMin: true, exclusiveMax: true }), profileShift: k.number, backlash: k.between(k.number, { min: 0 }), addendum: k.between(k.number, { min: 0, exclusiveMin: true }), dedendum: k.between(k.number, { min: 0, exclusiveMin: true }), rootFillet: k.between(k.number, { min: 0 }), rotation: k.number, frame: k.opaque, width: k.between(k.number, { min: 0, exclusiveMin: true }), bore: k.between(k.number, { min: 0 }), hub: k.between(k.number, { min: 0 }), hubLength: k.between(k.number, { min: 0 }), keyway: k.boolean };
+const OCCT_HelicalGearDto: DtoConstraints = { module: k.between(k.number, { min: 0, exclusiveMin: true }), teeth: k.between(k.number, { min: 3, max: 1000 }), helixAngle: k.between(k.number, { min: -45, max: 45, exclusiveMin: true, exclusiveMax: true }), herringbone: k.boolean, pressureAngle: k.between(k.number, { min: 0, max: 45, exclusiveMin: true, exclusiveMax: true }), profileShift: k.number, backlash: k.between(k.number, { min: 0 }), addendum: k.between(k.number, { min: 0, exclusiveMin: true }), dedendum: k.between(k.number, { min: 0, exclusiveMin: true }), rootFillet: k.between(k.number, { min: 0 }), rotation: k.number, frame: k.opaque, width: k.between(k.number, { min: 0, exclusiveMin: true }), bore: k.between(k.number, { min: 0 }), hub: k.between(k.number, { min: 0 }), hubLength: k.between(k.number, { min: 0 }), keyway: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), keyStandard: k.oneOf(["din", "ansi"]) };
 const OCCT_HelixWireByTurnsDto: DtoConstraints = { radius: k.between(k.number, { min: 0, exclusiveMin: true }), pitch: k.between(k.number, { min: 0, exclusiveMin: true }), numTurns: k.between(k.number, { min: 0, exclusiveMin: true }), center: k.point3, direction: k.vector3, clockwise: k.boolean, tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_HelixWireDto: DtoConstraints = { radius: k.between(k.number, { min: 0, exclusiveMin: true }), pitch: k.between(k.number, { min: 0, exclusiveMin: true }), height: k.between(k.number, { min: 0, exclusiveMin: true }), center: k.point3, direction: k.vector3, clockwise: k.boolean, tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_HexagonsInGridDto: DtoConstraints = { width: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), nrHexagonsInWidth: k.between(k.number, { min: 0 }), nrHexagonsInHeight: k.between(k.number, { min: 0 }), flatTop: k.boolean, extendTop: k.boolean, extendBottom: k.boolean, extendLeft: k.boolean, extendRight: k.boolean, scalePatternWidth: k.list(k.number), scalePatternHeight: k.list(k.number), filletPattern: k.list(k.number), inclusionPattern: k.list(k.boolean) };
-const OCCT_HexBoltDto: DtoConstraints = { fullyThreaded: k.boolean, length: k.between(k.number, { min: 0, exclusiveMin: true }), modelledThread: k.boolean, size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), frame: k.opaque };
 const OCCT_HiddenLinesDto: DtoConstraints = { shape: k.required(k.opaque), frame: k.required(k.opaque), exact: k.boolean, smoothEdges: k.boolean, hiddenEdges: k.boolean, focus: k.between(k.number, { min: 0 }), precision: k.between(k.number, { min: 0, exclusiveMin: true }) };
 const OCCT_HolesDto: DtoConstraints = { shape: k.required(k.opaque), frames: k.required(k.list(k.opaque)), diameter: k.between(k.number, { min: 0, exclusiveMin: true }), depth: k.between(k.number, { min: 0 }), tipAngle: k.between(k.number, { min: 0, max: 180, exclusiveMax: true }) };
 const OCCT_IBeamProfileDto: DtoConstraints = { width: k.between(k.number, { min: 0, exclusiveMin: true }), height: k.between(k.number, { min: 0 }), webThickness: k.between(k.number, { min: 0 }), flangeThickness: k.between(k.number, { min: 0, exclusiveMin: true }), alignment: k.oneOf(["topLeft", "topMid", "topRight", "midLeft", "midMid", "midRight", "bottomLeft", "bottomMid", "bottomRight"]), rotation: k.number, center: k.point3, direction: k.vector3 };
@@ -194,10 +221,14 @@ const OCCT_IntersectCurvesDto: DtoConstraints = { shapeA: k.required(k.opaque), 
 const OCCT_IntersectCurveWithFaceDto: DtoConstraints = { shape: k.required(k.opaque), face: k.required(k.opaque), tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_IntersectionDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), keepEdges: k.boolean };
 const OCCT_InvertTransformDto: DtoConstraints = { transformation: k.required(k.opaque) };
-const OCCT_KeywayDto: DtoConstraints = { diameter: k.between(k.number, { min: 6, max: 65, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), inHub: k.boolean, frame: k.opaque, shape: k.required(k.opaque) };
-const OCCT_KeywayToolDto: DtoConstraints = { diameter: k.between(k.number, { min: 6, max: 65, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), inHub: k.boolean, frame: k.opaque };
-const OCCT_KnurlDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), pitch: k.between(k.number, { min: 0.5, max: 1.6 }), pattern: k.oneOf(["straight", "left", "right", "diamond"]), frame: k.opaque, shape: k.required(k.opaque) };
-const OCCT_KnurlToolDto: DtoConstraints = { diameter: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), pitch: k.between(k.number, { min: 0.5, max: 1.6 }), pattern: k.oneOf(["straight", "left", "right", "diamond"]), frame: k.opaque };
+const OCCT_IsoBallBearingDto: DtoConstraints = { designation: k.oneOf(["623", "624", "625", "626", "608", "609", "6000", "6001", "6002", "6003", "6004", "6005", "6006", "6007", "6008", "6009", "6010", "6200", "6201", "6202", "6203", "6204", "6205", "6206", "6207", "6208", "6209", "6210"]), shields: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_IsoHexBoltDto: DtoConstraints = { fullyThreaded: k.boolean, length: k.between(k.number, { min: 0, exclusiveMin: true }), modelledThread: k.boolean, size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_IsoHexNutDto: DtoConstraints = { size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_IsoSetScrewDto: DtoConstraints = { point: k.oneOf(["flat", "cone", "dog", "cup"]), length: k.between(k.number, { min: 0, exclusiveMin: true }), size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_IsoSocketHeadCapScrewDto: DtoConstraints = { length: k.between(k.number, { min: 0, exclusiveMin: true }), modelledThread: k.boolean, size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_IsoThreadCutDto: DtoConstraints = { size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), pitch: k.between(k.number, { min: 0, max: 3, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), internal: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque, shape: k.required(k.opaque) };
+const OCCT_IsoThreadToolDto: DtoConstraints = { size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), pitch: k.between(k.number, { min: 0, max: 3, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), internal: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
+const OCCT_IsoWasherDto: DtoConstraints = { chamfered: k.boolean, size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), unit: k.oneOf(["mm", "cm", "m", "in"]), frame: k.opaque };
 const OCCT_LineBaseDto: DtoConstraints = { line: k.required(k.opaque) };
 const OCCT_LineDto: DtoConstraints = { start: k.point3, end: k.point3 };
 const OCCT_LinesBaseDto: DtoConstraints = { lines: k.required(k.list(k.opaque)) };
@@ -209,7 +240,7 @@ const OCCT_LoadBrepBinaryDto: DtoConstraints = { brepData: k.required(k.opaque) 
 const OCCT_LoadBrepDto: DtoConstraints = { brepData: k.required(k.opaque) };
 const OCCT_LoadGltfToDocDto: DtoConstraints = { gltfData: k.required(k.opaque) };
 const OCCT_LoadObjToDocDto: DtoConstraints = { objData: k.required(k.opaque) };
-const OCCT_LoadStepOrIgesDto: DtoConstraints = { filetext: k.required(k.opaque), fileName: k.string, adjustZtoY: k.boolean };
+const OCCT_LoadStepOrIgesDto: DtoConstraints = { filetext: k.required(k.opaque), fileName: k.string, adjustZtoY: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]) };
 const OCCT_LoadStepToDocDto: DtoConstraints = { stepData: k.required(k.opaque) };
 const OCCT_LoadStlDto: DtoConstraints = { stlData: k.required(k.opaque), asFaces: k.boolean, adjustZtoY: k.boolean };
 const OCCT_LoadSVGDto: DtoConstraints = { svg: k.string, faceStrategy: k.oneOf(["none", "auto", "nonzero", "evenOdd", "perSubpath"]), makeRibbons: k.boolean, includeInvisible: k.boolean, joinSegments: k.boolean, tolerance: k.number, scale: k.number, flipY: k.boolean, alignment: k.oneOf(["topLeft", "topMid", "topRight", "midLeft", "midMid", "midRight", "bottomLeft", "bottomMid", "bottomRight"]), direction: k.vector3, center: k.point3 };
@@ -222,7 +253,6 @@ const OCCT_MakeDraftToShapeDto: DtoConstraints = { shape: k.required(k.opaque), 
 const OCCT_MeshBaseDto: DtoConstraints = { mesh: k.required(k.opaque) };
 const OCCT_MeshMeshesIntersectionOfShapesDto: DtoConstraints = { shape: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }), shapes: k.required(k.list(k.opaque)), precisionShapes: k.list(k.number) };
 const OCCT_MeshMeshIntersectionTwoShapesDto: DtoConstraints = { shape1: k.required(k.opaque), precision1: k.between(k.number, { min: 0, exclusiveMin: true }), shape2: k.required(k.opaque), precision2: k.between(k.number, { min: 0, exclusiveMin: true }) };
-const OCCT_MetricFastenerDto: DtoConstraints = { size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), frame: k.opaque };
 const OCCT_MinCurvatureRadiusDto: DtoConstraints = { shape: k.required(k.opaque), samples: k.between(k.number, { min: 1 }), concaveOnly: k.boolean };
 const OCCT_MirrorAboutPointDto: DtoConstraints = { shape: k.required(k.opaque), point: k.point3 };
 const OCCT_MirrorAlongNormalDto: DtoConstraints = { shape: k.required(k.opaque), origin: k.point3, normal: k.vector3 };
@@ -241,7 +271,6 @@ const OCCT_OffsetAdvancedDto: DtoConstraints = { shape: k.required(k.opaque), fa
 const OCCT_OffsetDto: DtoConstraints = { shape: k.required(k.opaque), face: k.opaque, distance: k.number, tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_OffsetOpenDto: DtoConstraints = { shape: k.required(k.opaque), face: k.opaque, distance: k.number, joinType: k.oneOf(["arc", "intersection", "tangent"]) };
 const OCCT_OrientDto: DtoConstraints = { shape: k.required(k.opaque), to: k.required(k.opaque), from: k.opaque };
-const OCCT_ParallelKeyDto: DtoConstraints = { shaftDiameter: k.between(k.number, { min: 6, max: 65, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), frame: k.opaque };
 const OCCT_ParallelogramDto: DtoConstraints = { center: k.point3, direction: k.vector3, aroundCenter: k.boolean, width: k.between(k.number, { min: 0, exclusiveMin: true }), height: k.between(k.number, { min: 0, exclusiveMin: true }), angle: k.number };
 const OCCT_ParallelogramSolidDto: DtoConstraints = { center: k.point3, direction: k.vector3, aroundCenter: k.boolean, width: k.between(k.number, { min: 0, exclusiveMin: true }), height: k.between(k.number, { min: 0, exclusiveMin: true }), angle: k.number, extrusionLengthFront: k.between(k.number, { min: 0 }), extrusionLengthBack: k.between(k.number, { min: 0 }) };
 const OCCT_ParseStepAssemblyToJsonDto: DtoConstraints = { stepData: k.required(k.opaque) };
@@ -275,14 +304,11 @@ const OCCT_RebuildCurveDegreeDto: DtoConstraints = { shape: k.required(k.opaque)
 const OCCT_RebuildFaceDegreeDto: DtoConstraints = { shape: k.required(k.opaque), uDegree: k.between(k.number, { min: 1 }), vDegree: k.between(k.number, { min: 1 }), tolerance: k.between(k.number, { min: 0 }), keepTrim: k.boolean };
 const OCCT_RectangleDto: DtoConstraints = { width: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), center: k.point3, direction: k.vector3 };
 const OCCT_RemoveFacesDto: DtoConstraints = { shape: k.required(k.opaque), indexes: k.required(k.list(k.number)) };
-const OCCT_RetainingRingDto: DtoConstraints = { kind: k.oneOf(["shaft", "bore"]), diameter: k.between(k.number, { min: 3, max: 100 }), frame: k.opaque };
 const OCCT_RevolvedFeatureDto: DtoConstraints = { shape: k.required(k.opaque), profile: k.required(k.opaque), sketchFaceIndex: k.between(k.number, { min: 0 }), axisOrigin: k.point3, axisDirection: k.vector3, angle: k.between(k.number, { min: 0, max: 360, exclusiveMin: true }) };
 const OCCT_RevolveDto: DtoConstraints = { shape: k.required(k.opaque), angle: k.number, direction: k.vector3, copy: k.boolean };
 const OCCT_RibFeatureDto: DtoConstraints = { shape: k.required(k.opaque), wire: k.required(k.opaque), frame: k.required(k.opaque), thickness: k.between(k.number, { min: 0 }), otherSideThickness: k.between(k.number, { min: 0 }) };
 const OCCT_RingGearDto: DtoConstraints = { width: k.between(k.number, { min: 0, exclusiveMin: true }), module: k.between(k.number, { min: 0, exclusiveMin: true }), teeth: k.between(k.number, { min: 3, max: 1000 }), pressureAngle: k.between(k.number, { min: 0, max: 45, exclusiveMin: true, exclusiveMax: true }), backlash: k.between(k.number, { min: 0 }), addendum: k.between(k.number, { min: 0, exclusiveMin: true }), dedendum: k.between(k.number, { min: 0, exclusiveMin: true }), rootFillet: k.between(k.number, { min: 0 }), rim: k.between(k.number, { min: 0, exclusiveMin: true }), rotation: k.number, frame: k.opaque };
 const OCCT_RingGearProfileDto: DtoConstraints = { makeFace: k.boolean, module: k.between(k.number, { min: 0, exclusiveMin: true }), teeth: k.between(k.number, { min: 3, max: 1000 }), pressureAngle: k.between(k.number, { min: 0, max: 45, exclusiveMin: true, exclusiveMax: true }), backlash: k.between(k.number, { min: 0 }), addendum: k.between(k.number, { min: 0, exclusiveMin: true }), dedendum: k.between(k.number, { min: 0, exclusiveMin: true }), rootFillet: k.between(k.number, { min: 0 }), rim: k.between(k.number, { min: 0, exclusiveMin: true }), rotation: k.number, frame: k.opaque };
-const OCCT_RingGrooveDto: DtoConstraints = { kind: k.oneOf(["shaft", "bore"]), diameter: k.between(k.number, { min: 3, max: 100 }), frame: k.opaque, shape: k.required(k.opaque) };
-const OCCT_RingGrooveToolDto: DtoConstraints = { kind: k.oneOf(["shaft", "bore"]), diameter: k.between(k.number, { min: 3, max: 100 }), frame: k.opaque };
 const OCCT_RotateAroundCenterDto: DtoConstraints = { shape: k.required(k.opaque), angle: k.number, center: k.point3, axis: k.vector3 };
 const OCCT_RotateAroundCenterShapesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), angles: k.list(k.number), centers: k.list(k.point3), axes: k.list(k.vector3) };
 const OCCT_RotateByQuaternionDto: DtoConstraints = { shape: k.required(k.opaque), quaternion: k.opaque };
@@ -294,9 +320,9 @@ const OCCT_SaveBrepBinaryDto: DtoConstraints = { shape: k.required(k.opaque), fi
 const OCCT_SaveBrepDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, tryDownload: k.boolean, withTriangulation: k.boolean };
 const OCCT_SaveObjDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, precision: k.between(k.number, { min: 1e-7 }), adjustYtoZ: k.boolean, tryDownload: k.boolean };
 const OCCT_SavePlyDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, precision: k.between(k.number, { min: 1e-7 }), adjustYtoZ: k.boolean, tryDownload: k.boolean };
-const OCCT_SaveStepDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, adjustYtoZ: k.boolean, fromRightHanded: k.boolean, tryDownload: k.boolean };
+const OCCT_SaveStepDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, adjustYtoZ: k.boolean, fromRightHanded: k.boolean, tryDownload: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]) };
 const OCCT_SaveStlDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, precision: k.number, adjustYtoZ: k.boolean, tryDownload: k.boolean, binary: k.boolean };
-const OCCT_SaveSvgDto: DtoConstraints = { shape: k.required(k.opaque), frame: k.required(k.opaque), drawHidden: k.boolean, precision: k.between(k.number, { min: 0, exclusiveMin: true }), fileName: k.string, tryDownload: k.boolean };
+const OCCT_SaveSvgDto: DtoConstraints = { shape: k.required(k.opaque), frame: k.required(k.opaque), drawHidden: k.boolean, precision: k.between(k.number, { min: 0, exclusiveMin: true }), unit: k.oneOf(["mm", "cm", "m", "in"]), fileName: k.string, tryDownload: k.boolean };
 const OCCT_Scale3DDto: DtoConstraints = { shape: k.required(k.opaque), scale: k.vector3, center: k.point3 };
 const OCCT_Scale3DShapesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), scales: k.list(k.vector3), centers: k.list(k.point3) };
 const OCCT_ScaleDto: DtoConstraints = { shape: k.required(k.opaque), factor: k.number };
@@ -325,7 +351,6 @@ const OCCT_SelectTangentChainDto: DtoConstraints = { shape: k.required(k.opaque)
 const OCCT_SelfIntersectionsDto: DtoConstraints = { shape: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }) };
 const OCCT_SetDocLabelColorDto: DtoConstraints = { document: k.required(k.opaque), label: k.required(k.string), r: k.between(k.number, { min: 0, max: 1 }), g: k.between(k.number, { min: 0, max: 1 }), b: k.between(k.number, { min: 0, max: 1 }), a: k.between(k.number, { min: 0, max: 1 }) };
 const OCCT_SetDocLabelNameDto: DtoConstraints = { document: k.required(k.opaque), label: k.required(k.string), name: k.string };
-const OCCT_SetScrewDto: DtoConstraints = { point: k.oneOf(["flat", "cone", "dog", "cup"]), length: k.between(k.number, { min: 0, exclusiveMin: true }), size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), frame: k.opaque };
 const OCCT_SewDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_SewWithReportDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), tolerance: k.between(k.number, { min: 0, exclusiveMin: true }), nonManifold: k.boolean };
 const OCCT_ShapeDto: DtoConstraints = { shape: k.required(k.opaque) };
@@ -362,15 +387,12 @@ const OCCT_SketchVLineDto: DtoConstraints = { length: k.number, id: k.string };
 const OCCT_SliceByFramesDto: DtoConstraints = { shape: k.required(k.opaque), frames: k.required(k.list(k.opaque)), makeFaces: k.boolean, tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_SliceDto: DtoConstraints = { shape: k.required(k.opaque), step: k.between(k.number, { min: 0 }), direction: k.vector3 };
 const OCCT_SliceInStepPatternDto: DtoConstraints = { shape: k.required(k.opaque), steps: k.list(k.number), direction: k.vector3 };
-const OCCT_SocketHeadCapScrewDto: DtoConstraints = { length: k.between(k.number, { min: 0, exclusiveMin: true }), modelledThread: k.boolean, size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), frame: k.opaque };
 const OCCT_SphereDto: DtoConstraints = { radius: k.between(k.number, { min: 0, exclusiveMin: true }), center: k.point3 };
-const OCCT_SplinedHubDto: DtoConstraints = { referenceDiameter: k.between(k.number, { min: 0, exclusiveMin: true }), module: k.between(k.number, { min: 0.5, max: 10 }), length: k.between(k.number, { min: 0, exclusiveMin: true }), frame: k.opaque, shape: k.required(k.opaque) };
-const OCCT_SplineDto: DtoConstraints = { referenceDiameter: k.between(k.number, { min: 0, exclusiveMin: true }), module: k.between(k.number, { min: 0.5, max: 10 }), length: k.between(k.number, { min: 0, exclusiveMin: true }), frame: k.opaque };
 const OCCT_SplitByFrameDto: DtoConstraints = { shape: k.required(k.opaque), frame: k.required(k.opaque) };
 const OCCT_SplitDto: DtoConstraints = { shape: k.required(k.opaque), shapes: k.required(k.list(k.opaque)), localFuzzyTolerance: k.between(k.number, { min: 0 }), nonDestructive: k.boolean };
 const OCCT_SplitFaceByWiresDto: DtoConstraints = { shape: k.required(k.opaque), wires: k.required(k.list(k.opaque)) };
 const OCCT_SplitWireOnPointsDto: DtoConstraints = { shape: k.required(k.opaque), points: k.required(k.list(k.point3)) };
-const OCCT_SpurGearDto: DtoConstraints = { width: k.between(k.number, { min: 0, exclusiveMin: true }), bore: k.between(k.number, { min: 0 }), hub: k.between(k.number, { min: 0 }), hubLength: k.between(k.number, { min: 0 }), keyway: k.boolean, module: k.between(k.number, { min: 0, exclusiveMin: true }), teeth: k.between(k.number, { min: 3, max: 1000 }), pressureAngle: k.between(k.number, { min: 0, max: 45, exclusiveMin: true, exclusiveMax: true }), profileShift: k.number, backlash: k.between(k.number, { min: 0 }), addendum: k.between(k.number, { min: 0, exclusiveMin: true }), dedendum: k.between(k.number, { min: 0, exclusiveMin: true }), rootFillet: k.between(k.number, { min: 0 }), rotation: k.number, frame: k.opaque };
+const OCCT_SpurGearDto: DtoConstraints = { width: k.between(k.number, { min: 0, exclusiveMin: true }), bore: k.between(k.number, { min: 0 }), hub: k.between(k.number, { min: 0 }), hubLength: k.between(k.number, { min: 0 }), keyway: k.boolean, unit: k.oneOf(["mm", "cm", "m", "in"]), keyStandard: k.oneOf(["din", "ansi"]), module: k.between(k.number, { min: 0, exclusiveMin: true }), teeth: k.between(k.number, { min: 3, max: 1000 }), pressureAngle: k.between(k.number, { min: 0, max: 45, exclusiveMin: true, exclusiveMax: true }), profileShift: k.number, backlash: k.between(k.number, { min: 0 }), addendum: k.between(k.number, { min: 0, exclusiveMin: true }), dedendum: k.between(k.number, { min: 0, exclusiveMin: true }), rootFillet: k.between(k.number, { min: 0 }), rotation: k.number, frame: k.opaque };
 const OCCT_SpurGearProfileDto: DtoConstraints = { makeFace: k.boolean, module: k.between(k.number, { min: 0, exclusiveMin: true }), teeth: k.between(k.number, { min: 3, max: 1000 }), pressureAngle: k.between(k.number, { min: 0, max: 45, exclusiveMin: true, exclusiveMax: true }), profileShift: k.number, backlash: k.between(k.number, { min: 0 }), addendum: k.between(k.number, { min: 0, exclusiveMin: true }), dedendum: k.between(k.number, { min: 0, exclusiveMin: true }), rootFillet: k.between(k.number, { min: 0 }), rotation: k.number, frame: k.opaque };
 const OCCT_SquareDto: DtoConstraints = { size: k.between(k.number, { min: 0, exclusiveMin: true }), center: k.point3, direction: k.vector3 };
 const OCCT_StarDto: DtoConstraints = { center: k.point3, direction: k.vector3, numRays: k.between(k.number, { min: 3 }), outerRadius: k.between(k.number, { min: 0 }), innerRadius: k.between(k.number, { min: 0 }), offsetOuterEdges: k.number, half: k.boolean };
@@ -383,8 +405,6 @@ const OCCT_TBeamProfileSolidDto: DtoConstraints = { width: k.between(k.number, {
 const OCCT_TextWiresDto: DtoConstraints = { text: k.string, xOffset: k.number, yOffset: k.number, height: k.between(k.number, { min: 0, exclusiveMin: true }), lineSpacing: k.number, letterSpacing: k.number, align: k.oneOf(["left", "center", "right"]), extrudeOffset: k.number, centerOnOrigin: k.boolean };
 const OCCT_ThickSolidByJoinDto: DtoConstraints = { shape: k.required(k.opaque), shapes: k.required(k.list(k.opaque)), offset: k.number, tolerance: k.between(k.number, { min: 0 }), intersection: k.boolean, selfIntersection: k.boolean, joinType: k.oneOf(["arc", "intersection", "tangent"]), removeIntEdges: k.boolean };
 const OCCT_ThisckSolidSimpleDto: DtoConstraints = { shape: k.required(k.opaque), offset: k.number };
-const OCCT_ThreadDto: DtoConstraints = { size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), pitch: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), internal: k.boolean, frame: k.opaque, shape: k.required(k.opaque) };
-const OCCT_ThreadToolDto: DtoConstraints = { size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), pitch: k.between(k.number, { min: 0, exclusiveMin: true }), length: k.between(k.number, { min: 0, exclusiveMin: true }), internal: k.boolean, frame: k.opaque };
 const OCCT_TorusDto: DtoConstraints = { majorRadius: k.between(k.number, { min: 0, exclusiveMin: true }), minorRadius: k.between(k.number, { min: 0, exclusiveMin: true }), center: k.point3, direction: k.vector3, angle: k.between(k.number, { min: 0, max: 360, exclusiveMin: true }) };
 const OCCT_TransformByMatrixDto: DtoConstraints = { shape: k.required(k.opaque), transformation: k.required(k.opaque) };
 const OCCT_TransformDto: DtoConstraints = { shape: k.required(k.opaque), translation: k.vector3, rotationAxis: k.vector3, rotationAngle: k.number, scaleFactor: k.number };
@@ -400,7 +420,6 @@ const OCCT_UBeamProfileSolidDto: DtoConstraints = { width: k.between(k.number, {
 const OCCT_UnifySameDomainDto: DtoConstraints = { shape: k.required(k.opaque), unifyEdges: k.boolean, unifyFaces: k.boolean, concatBSplines: k.boolean };
 const OCCT_UnionDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), keepEdges: k.boolean, strategy: k.oneOf(["oneAfterAnother", "inGroups", "allAtOnce"]) };
 const OCCT_UnrollFaceDto: DtoConstraints = { shape: k.required(k.opaque), tolerance: k.between(k.number, { min: 0, exclusiveMin: true }) };
-const OCCT_WasherDto: DtoConstraints = { chamfered: k.boolean, size: k.oneOf(["M1.6", "M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M14", "M16", "M20", "M24"]), frame: k.opaque };
 const OCCT_WireAlongParamDto: DtoConstraints = { shape: k.required(k.opaque), isU: k.boolean, param: k.between(k.number, { min: 0, max: 1 }) };
 const OCCT_WireFromTwoCirclesTanDto: DtoConstraints = { circle1: k.required(k.opaque), circle2: k.required(k.opaque), keepLines: k.oneOf(["outside", "inside"]), circleRemainders: k.oneOf(["outside", "inside", "outsideInside", "insideOutside"]), tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_WireOnFaceDto: DtoConstraints = { wire: k.required(k.opaque), face: k.required(k.opaque) };
@@ -591,6 +610,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "io.convertStepToGltfWithDraco": { dto: Inputs.OCCT.ConvertStepToGltfWithDracoDto, constraints: OCCT_ConvertStepToGltfWithDracoDto },
     "io.dxfCreate": { dto: Inputs.OCCT.DxfPathsPartsListDto, constraints: OCCT_DxfPathsPartsListDto },
     "io.dxfPathsWithLayer": { dto: Inputs.OCCT.DxfPathsWithLayerDto, constraints: OCCT_DxfPathsWithLayerDto },
+    "io.fileLengthUnit": { dto: Inputs.OCCT.FileLengthUnitDto, constraints: OCCT_FileLengthUnitDto },
     "io.loadBrep": { dto: Inputs.OCCT.LoadBrepDto, constraints: OCCT_LoadBrepDto },
     "io.loadBrepBinary": { dto: Inputs.OCCT.LoadBrepBinaryDto, constraints: OCCT_LoadBrepBinaryDto },
     "io.loadSTEPorIGES": { dto: Inputs.OCCT.LoadStepOrIgesDto, constraints: OCCT_LoadStepOrIgesDto },
@@ -658,20 +678,32 @@ export const occtDtoRegistry: DtoRegistry = {
     "operations.splitShapeWithShapes": { dto: Inputs.OCCT.SplitDto, constraints: OCCT_SplitDto },
     "operations.splitShapeWithShapesWithHistory": { dto: Inputs.OCCT.SplitDto, constraints: OCCT_SplitDto },
     "operations.sweepEvolved": { dto: Inputs.OCCT.SweepEvolvedDto, constraints: OCCT_SweepEvolvedDto },
-    "parts.mechanical.bearings.ballBearing": { dto: Inputs.OCCT.BallBearingDto, constraints: OCCT_BallBearingDto },
-    "parts.mechanical.bearings.ballBearingWithRoles": { dto: Inputs.OCCT.BallBearingDto, constraints: OCCT_BallBearingDto },
+    "parts.mechanical.bearings.ansi.ballBearing": { dto: Inputs.OCCT.AnsiBallBearingDto, constraints: OCCT_AnsiBallBearingDto },
+    "parts.mechanical.bearings.ansi.ballBearingWithRoles": { dto: Inputs.OCCT.AnsiBallBearingDto, constraints: OCCT_AnsiBallBearingDto },
+    "parts.mechanical.bearings.iso.ballBearing": { dto: Inputs.OCCT.IsoBallBearingDto, constraints: OCCT_IsoBallBearingDto },
+    "parts.mechanical.bearings.iso.ballBearingWithRoles": { dto: Inputs.OCCT.IsoBallBearingDto, constraints: OCCT_IsoBallBearingDto },
+    "parts.mechanical.fasteners.ansi.hexBolt": { dto: Inputs.OCCT.AnsiHexBoltDto, constraints: OCCT_AnsiHexBoltDto },
+    "parts.mechanical.fasteners.ansi.hexBoltWithRoles": { dto: Inputs.OCCT.AnsiHexBoltDto, constraints: OCCT_AnsiHexBoltDto },
+    "parts.mechanical.fasteners.ansi.hexNut": { dto: Inputs.OCCT.AnsiHexNutDto, constraints: OCCT_AnsiHexNutDto },
+    "parts.mechanical.fasteners.ansi.hexNutWithRoles": { dto: Inputs.OCCT.AnsiHexNutDto, constraints: OCCT_AnsiHexNutDto },
+    "parts.mechanical.fasteners.ansi.setScrew": { dto: Inputs.OCCT.AnsiSetScrewDto, constraints: OCCT_AnsiSetScrewDto },
+    "parts.mechanical.fasteners.ansi.setScrewWithRoles": { dto: Inputs.OCCT.AnsiSetScrewDto, constraints: OCCT_AnsiSetScrewDto },
+    "parts.mechanical.fasteners.ansi.socketHeadCapScrew": { dto: Inputs.OCCT.AnsiSocketHeadCapScrewDto, constraints: OCCT_AnsiSocketHeadCapScrewDto },
+    "parts.mechanical.fasteners.ansi.socketHeadCapScrewWithRoles": { dto: Inputs.OCCT.AnsiSocketHeadCapScrewDto, constraints: OCCT_AnsiSocketHeadCapScrewDto },
+    "parts.mechanical.fasteners.ansi.washer": { dto: Inputs.OCCT.AnsiWasherDto, constraints: OCCT_AnsiWasherDto },
+    "parts.mechanical.fasteners.ansi.washerWithRoles": { dto: Inputs.OCCT.AnsiWasherDto, constraints: OCCT_AnsiWasherDto },
     "parts.mechanical.fasteners.dowelPin": { dto: Inputs.OCCT.DowelPinDto, constraints: OCCT_DowelPinDto },
     "parts.mechanical.fasteners.dowelPinWithRoles": { dto: Inputs.OCCT.DowelPinDto, constraints: OCCT_DowelPinDto },
-    "parts.mechanical.fasteners.hexBolt": { dto: Inputs.OCCT.HexBoltDto, constraints: OCCT_HexBoltDto },
-    "parts.mechanical.fasteners.hexBoltWithRoles": { dto: Inputs.OCCT.HexBoltDto, constraints: OCCT_HexBoltDto },
-    "parts.mechanical.fasteners.hexNut": { dto: Inputs.OCCT.MetricFastenerDto, constraints: OCCT_MetricFastenerDto },
-    "parts.mechanical.fasteners.hexNutWithRoles": { dto: Inputs.OCCT.MetricFastenerDto, constraints: OCCT_MetricFastenerDto },
-    "parts.mechanical.fasteners.setScrew": { dto: Inputs.OCCT.SetScrewDto, constraints: OCCT_SetScrewDto },
-    "parts.mechanical.fasteners.setScrewWithRoles": { dto: Inputs.OCCT.SetScrewDto, constraints: OCCT_SetScrewDto },
-    "parts.mechanical.fasteners.socketHeadCapScrew": { dto: Inputs.OCCT.SocketHeadCapScrewDto, constraints: OCCT_SocketHeadCapScrewDto },
-    "parts.mechanical.fasteners.socketHeadCapScrewWithRoles": { dto: Inputs.OCCT.SocketHeadCapScrewDto, constraints: OCCT_SocketHeadCapScrewDto },
-    "parts.mechanical.fasteners.washer": { dto: Inputs.OCCT.WasherDto, constraints: OCCT_WasherDto },
-    "parts.mechanical.fasteners.washerWithRoles": { dto: Inputs.OCCT.WasherDto, constraints: OCCT_WasherDto },
+    "parts.mechanical.fasteners.iso.hexBolt": { dto: Inputs.OCCT.IsoHexBoltDto, constraints: OCCT_IsoHexBoltDto },
+    "parts.mechanical.fasteners.iso.hexBoltWithRoles": { dto: Inputs.OCCT.IsoHexBoltDto, constraints: OCCT_IsoHexBoltDto },
+    "parts.mechanical.fasteners.iso.hexNut": { dto: Inputs.OCCT.IsoHexNutDto, constraints: OCCT_IsoHexNutDto },
+    "parts.mechanical.fasteners.iso.hexNutWithRoles": { dto: Inputs.OCCT.IsoHexNutDto, constraints: OCCT_IsoHexNutDto },
+    "parts.mechanical.fasteners.iso.setScrew": { dto: Inputs.OCCT.IsoSetScrewDto, constraints: OCCT_IsoSetScrewDto },
+    "parts.mechanical.fasteners.iso.setScrewWithRoles": { dto: Inputs.OCCT.IsoSetScrewDto, constraints: OCCT_IsoSetScrewDto },
+    "parts.mechanical.fasteners.iso.socketHeadCapScrew": { dto: Inputs.OCCT.IsoSocketHeadCapScrewDto, constraints: OCCT_IsoSocketHeadCapScrewDto },
+    "parts.mechanical.fasteners.iso.socketHeadCapScrewWithRoles": { dto: Inputs.OCCT.IsoSocketHeadCapScrewDto, constraints: OCCT_IsoSocketHeadCapScrewDto },
+    "parts.mechanical.fasteners.iso.washer": { dto: Inputs.OCCT.IsoWasherDto, constraints: OCCT_IsoWasherDto },
+    "parts.mechanical.fasteners.iso.washerWithRoles": { dto: Inputs.OCCT.IsoWasherDto, constraints: OCCT_IsoWasherDto },
     "parts.mechanical.gears.bevelGear": { dto: Inputs.OCCT.BevelGearDto, constraints: OCCT_BevelGearDto },
     "parts.mechanical.gears.bevelGearWithRoles": { dto: Inputs.OCCT.BevelGearDto, constraints: OCCT_BevelGearDto },
     "parts.mechanical.gears.helicalGear": { dto: Inputs.OCCT.HelicalGearDto, constraints: OCCT_HelicalGearDto },
@@ -685,23 +717,38 @@ export const occtDtoRegistry: DtoRegistry = {
     "parts.mechanical.gears.spurGear": { dto: Inputs.OCCT.SpurGearDto, constraints: OCCT_SpurGearDto },
     "parts.mechanical.gears.spurGearProfile": { dto: Inputs.OCCT.SpurGearProfileDto, constraints: OCCT_SpurGearProfileDto },
     "parts.mechanical.gears.spurGearWithRoles": { dto: Inputs.OCCT.SpurGearDto, constraints: OCCT_SpurGearDto },
-    "parts.mechanical.keys.parallelKey": { dto: Inputs.OCCT.ParallelKeyDto, constraints: OCCT_ParallelKeyDto },
-    "parts.mechanical.keys.parallelKeyWithRoles": { dto: Inputs.OCCT.ParallelKeyDto, constraints: OCCT_ParallelKeyDto },
+    "parts.mechanical.keys.ansi.parallelKey": { dto: Inputs.OCCT.AnsiParallelKeyDto, constraints: OCCT_AnsiParallelKeyDto },
+    "parts.mechanical.keys.ansi.parallelKeyWithRoles": { dto: Inputs.OCCT.AnsiParallelKeyDto, constraints: OCCT_AnsiParallelKeyDto },
+    "parts.mechanical.keys.din.parallelKey": { dto: Inputs.OCCT.DinParallelKeyDto, constraints: OCCT_DinParallelKeyDto },
+    "parts.mechanical.keys.din.parallelKeyWithRoles": { dto: Inputs.OCCT.DinParallelKeyDto, constraints: OCCT_DinParallelKeyDto },
+    "parts.mechanical.machining.ansi.keyway": { dto: Inputs.OCCT.AnsiKeywayDto, constraints: OCCT_AnsiKeywayDto },
+    "parts.mechanical.machining.ansi.keywayTool": { dto: Inputs.OCCT.AnsiKeywayToolDto, constraints: OCCT_AnsiKeywayToolDto },
+    "parts.mechanical.machining.ansi.knurl": { dto: Inputs.OCCT.AnsiKnurlDto, constraints: OCCT_AnsiKnurlDto },
+    "parts.mechanical.machining.ansi.knurlTool": { dto: Inputs.OCCT.AnsiKnurlToolDto, constraints: OCCT_AnsiKnurlToolDto },
+    "parts.mechanical.machining.ansi.ringGroove": { dto: Inputs.OCCT.AnsiRingGrooveDto, constraints: OCCT_AnsiRingGrooveDto },
+    "parts.mechanical.machining.ansi.ringGrooveTool": { dto: Inputs.OCCT.AnsiRingGrooveToolDto, constraints: OCCT_AnsiRingGrooveToolDto },
+    "parts.mechanical.machining.ansi.splinedHub": { dto: Inputs.OCCT.AnsiSplinedHubDto, constraints: OCCT_AnsiSplinedHubDto },
+    "parts.mechanical.machining.ansi.splinedHubTool": { dto: Inputs.OCCT.AnsiSplineDto, constraints: OCCT_AnsiSplineDto },
+    "parts.mechanical.machining.ansi.splinedShaft": { dto: Inputs.OCCT.AnsiSplineDto, constraints: OCCT_AnsiSplineDto },
+    "parts.mechanical.machining.ansi.thread": { dto: Inputs.OCCT.AnsiThreadCutDto, constraints: OCCT_AnsiThreadCutDto },
+    "parts.mechanical.machining.ansi.threadTool": { dto: Inputs.OCCT.AnsiThreadToolDto, constraints: OCCT_AnsiThreadToolDto },
+    "parts.mechanical.machining.din.keyway": { dto: Inputs.OCCT.DinKeywayDto, constraints: OCCT_DinKeywayDto },
+    "parts.mechanical.machining.din.keywayTool": { dto: Inputs.OCCT.DinKeywayToolDto, constraints: OCCT_DinKeywayToolDto },
+    "parts.mechanical.machining.din.knurl": { dto: Inputs.OCCT.DinKnurlDto, constraints: OCCT_DinKnurlDto },
+    "parts.mechanical.machining.din.knurlTool": { dto: Inputs.OCCT.DinKnurlToolDto, constraints: OCCT_DinKnurlToolDto },
+    "parts.mechanical.machining.din.ringGroove": { dto: Inputs.OCCT.DinRingGrooveDto, constraints: OCCT_DinRingGrooveDto },
+    "parts.mechanical.machining.din.ringGrooveTool": { dto: Inputs.OCCT.DinRingGrooveToolDto, constraints: OCCT_DinRingGrooveToolDto },
+    "parts.mechanical.machining.din.splinedHub": { dto: Inputs.OCCT.DinSplinedHubDto, constraints: OCCT_DinSplinedHubDto },
+    "parts.mechanical.machining.din.splinedHubTool": { dto: Inputs.OCCT.DinSplineDto, constraints: OCCT_DinSplineDto },
+    "parts.mechanical.machining.din.splinedShaft": { dto: Inputs.OCCT.DinSplineDto, constraints: OCCT_DinSplineDto },
     "parts.mechanical.machining.flat": { dto: Inputs.OCCT.FlatDto, constraints: OCCT_FlatDto },
     "parts.mechanical.machining.flatTool": { dto: Inputs.OCCT.FlatToolDto, constraints: OCCT_FlatToolDto },
-    "parts.mechanical.machining.keyway": { dto: Inputs.OCCT.KeywayDto, constraints: OCCT_KeywayDto },
-    "parts.mechanical.machining.keywayTool": { dto: Inputs.OCCT.KeywayToolDto, constraints: OCCT_KeywayToolDto },
-    "parts.mechanical.machining.knurl": { dto: Inputs.OCCT.KnurlDto, constraints: OCCT_KnurlDto },
-    "parts.mechanical.machining.knurlTool": { dto: Inputs.OCCT.KnurlToolDto, constraints: OCCT_KnurlToolDto },
-    "parts.mechanical.machining.ringGroove": { dto: Inputs.OCCT.RingGrooveDto, constraints: OCCT_RingGrooveDto },
-    "parts.mechanical.machining.ringGrooveTool": { dto: Inputs.OCCT.RingGrooveToolDto, constraints: OCCT_RingGrooveToolDto },
-    "parts.mechanical.machining.splinedHub": { dto: Inputs.OCCT.SplinedHubDto, constraints: OCCT_SplinedHubDto },
-    "parts.mechanical.machining.splinedHubTool": { dto: Inputs.OCCT.SplineDto, constraints: OCCT_SplineDto },
-    "parts.mechanical.machining.splinedShaft": { dto: Inputs.OCCT.SplineDto, constraints: OCCT_SplineDto },
-    "parts.mechanical.machining.thread": { dto: Inputs.OCCT.ThreadDto, constraints: OCCT_ThreadDto },
-    "parts.mechanical.machining.threadTool": { dto: Inputs.OCCT.ThreadToolDto, constraints: OCCT_ThreadToolDto },
-    "parts.mechanical.retainingRings.retainingRing": { dto: Inputs.OCCT.RetainingRingDto, constraints: OCCT_RetainingRingDto },
-    "parts.mechanical.retainingRings.retainingRingWithRoles": { dto: Inputs.OCCT.RetainingRingDto, constraints: OCCT_RetainingRingDto },
+    "parts.mechanical.machining.iso.thread": { dto: Inputs.OCCT.IsoThreadCutDto, constraints: OCCT_IsoThreadCutDto },
+    "parts.mechanical.machining.iso.threadTool": { dto: Inputs.OCCT.IsoThreadToolDto, constraints: OCCT_IsoThreadToolDto },
+    "parts.mechanical.retainingRings.ansi.retainingRing": { dto: Inputs.OCCT.AnsiRetainingRingDto, constraints: OCCT_AnsiRetainingRingDto },
+    "parts.mechanical.retainingRings.ansi.retainingRingWithRoles": { dto: Inputs.OCCT.AnsiRetainingRingDto, constraints: OCCT_AnsiRetainingRingDto },
+    "parts.mechanical.retainingRings.din.retainingRing": { dto: Inputs.OCCT.DinRetainingRingDto, constraints: OCCT_DinRetainingRingDto },
+    "parts.mechanical.retainingRings.din.retainingRingWithRoles": { dto: Inputs.OCCT.DinRetainingRingDto, constraints: OCCT_DinRetainingRingDto },
     "parts.mechanical.springs.compressionSpring": { dto: Inputs.OCCT.CompressionSpringDto, constraints: OCCT_CompressionSpringDto },
     "parts.mechanical.springs.compressionSpringPath": { dto: Inputs.OCCT.CompressionSpringDto, constraints: OCCT_CompressionSpringDto },
     "parts.mechanical.springs.compressionSpringWithRoles": { dto: Inputs.OCCT.CompressionSpringDto, constraints: OCCT_CompressionSpringDto },

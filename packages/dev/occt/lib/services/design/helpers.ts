@@ -1,4 +1,5 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { DtoRegistry } from "@bitbybit-dev/base";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { give, nameOf } from "./names";
@@ -9,6 +10,19 @@ import { resolveEdges, resolveFaces } from "./references";
 import type { BodyState, DesignRun } from "./state";
 import { directionOf, pointOf } from "./values";
 import { squaredFrame, tripleOf, unitVector } from "./placement";
+
+const UNITS_OF_LENGTH: readonly Inputs.Base.unitOfLengthEnum[] = Object.values(Inputs.Base.unitOfLengthEnum);
+
+export function unitOfDocument(document: Pick<Models.OCCT.DesignPartDocument, "units">): Inputs.Base.unitOfLengthEnum {
+    const stated = document.units?.length;
+    return UNITS_OF_LENGTH.find(unit => unit.valueOf() === stated) ?? Inputs.Base.unitOfLengthEnum.millimetre;
+}
+
+/** True when the operation's inputs take a `unit` of length, which a design fills with its document's unit. */
+export function takesLengthUnit(registry: DtoRegistry, operation: string): boolean {
+    const values = registry[operation]?.constraints?.["unit"]?.values ?? [];
+    return values.length === UNITS_OF_LENGTH.length && UNITS_OF_LENGTH.every(each => values.includes(each));
+}
 
 export function faceCount(shape: TopoDS_Shape, run: DesignRun): number {
     return run.occ.CountSubShapes(shape, run.occ.TopAbs_ShapeEnum.FACE, false);

@@ -1,3 +1,4 @@
+import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import type { DtoRegistry } from "@bitbybit-dev/base";
 import { isRecord, unknownProperties } from "@bitbybit-dev/base";
@@ -6,6 +7,8 @@ import { holePositionIds, setHoleOf } from "./connectors";
 import { DesignProblem, pointer } from "./problems";
 import { checkIdList, checkKeys, checkLabel, checkObject, checkText } from "./structure";
 import { checkHoleFastener, checkHoleSizing } from "./hole-fastener";
+import { checkMachiningStandard } from "./standard-checks";
+import { takesLengthUnit } from "./helpers";
 import type { Check, Known } from "./document-check-types";
 import { NAME_ID, checkNames, checkNumber, checkNumbersIn, inputsOf } from "./value-checks";
 import { checkLoops, checkPen, commandNames } from "./pen-check";
@@ -85,12 +88,12 @@ export const FEATURE_KEYS: Record<Models.OCCT.DesignFeature["type"], readonly st
     hole: ["body", "on", "origin", "direction", "at", "diameter", "fastener", "depth", "tipAngle", "counterbore", "countersink"],
     boss: ["profile", "body", "distance", "until"],
     pocket: ["profile", "body", "distance", "until", "through"],
-    keyway: ["body", "on", "at", "flip", "length", "angle"],
+    keyway: ["body", "on", "at", "flip", "standard", "length", "angle"],
     flat: ["body", "on", "at", "flip", "length", "depth", "angle"],
-    ringGroove: ["body", "on", "at", "flip"],
-    knurl: ["body", "on", "at", "flip", "length", "pitch", "pattern"],
-    spline: ["body", "on", "at", "flip", "length", "module", "diameter"],
-    thread: ["body", "on", "at", "flip", "length", "size", "pitch"],
+    ringGroove: ["body", "on", "at", "flip", "standard"],
+    knurl: ["body", "on", "at", "flip", "standard", "length", "pitch", "diametralPitch", "pattern"],
+    spline: ["body", "on", "at", "flip", "standard", "length", "module", "diameter", "pitch", "teeth"],
+    thread: ["body", "on", "at", "flip", "standard", "length", "size", "pitch", "series", "threadsPerInch"],
     import: ["asset", "format", "child"],
     operation: ["operation", "params", "body"],
     script: ["script", "params", "body"],
@@ -399,9 +402,8 @@ const checkTextValue: Check = (value, path, known) => {
     }
 };
 
-const TABLE_SIZED: readonly string[] = ["keyway", "ringGroove", "knurl", "spline", "thread"];
-
 const MACHINED: Record<string, Check> = { body: checkBody, on: checkFaces, at: optional(checkNumber), flip: optional(checkBoolean) };
+const SHAFT_STANDARD = oneOf(["din", "ansi"], true);
 
 function checkExtent(feature: Record<string, unknown>, path: string, kinds: readonly string[]): void {
     const given = kinds.filter(kind => feature[kind] !== undefined);
@@ -433,12 +435,15 @@ const FIELDS: Record<Exclude<Models.OCCT.DesignFeature["type"], "sketch">, Recor
     },
     boss: { profile: checkFaceProfile, body: checkBody, distance: optional(checkNumber), until: optional(checkFaces) },
     pocket: { profile: checkFaceProfile, body: checkBody, distance: optional(checkNumber), until: optional(checkFaces), through: optional(checkBoolean) },
-    keyway: { ...MACHINED, length: checkNumber, angle: optional(checkNumber) },
+    keyway: { ...MACHINED, standard: SHAFT_STANDARD, length: checkNumber, angle: optional(checkNumber) },
     flat: { ...MACHINED, length: checkNumber, depth: checkNumber, angle: optional(checkNumber) },
-    ringGroove: MACHINED,
-    knurl: { ...MACHINED, length: checkNumber, pitch: optional(checkNumber), pattern: oneOf(["straight", "left", "right", "diamond"], true) },
-    spline: { ...MACHINED, length: checkNumber, module: checkNumber, diameter: optional(checkNumber) },
-    thread: { ...MACHINED, length: checkNumber, size: optional(checkTextValue), pitch: optional(checkNumber) },
+    ringGroove: { ...MACHINED, standard: SHAFT_STANDARD },
+    knurl: { ...MACHINED, standard: SHAFT_STANDARD, length: checkNumber, pitch: optional(checkNumber), diametralPitch: optional(checkNumber), pattern: oneOf(["straight", "left", "right", "diamond"], true) },
+    spline: { ...MACHINED, standard: SHAFT_STANDARD, length: checkNumber, module: optional(checkNumber), diameter: optional(checkNumber), pitch: optional(checkTextValue), teeth: optional(checkNumber) },
+    thread: {
+        ...MACHINED, standard: oneOf(["iso", "ansi"], true), length: checkNumber, size: optional(checkTextValue), pitch: optional(checkNumber),
+        series: oneOf(Object.values(Inputs.Engineering.ansiThreadSeriesEnum), true), threadsPerInch: optional(checkNumber),
+    },
     import: { asset: checkAsset, format: oneOf(["brep", "brep-binary", "step", "iges"], true), child: optional(checkChild) },
     operation: { body: optional(checkBody) },
     script: { script: checkAsset, body: optional(checkBody) },
@@ -495,11 +500,9 @@ function checkFeature(feature: unknown, path: string, known: Known): void {
     if (type === "boss" || type === "pocket") {
         checkExtent(feature, path, type === "boss" ? ["distance", "until"] : ["distance", "until", "through"]);
     }
-    if (TABLE_SIZED.includes(type) && known.lengthUnit !== "mm") {
-        throw new DesignProblem(pointer(path, "type"), `a ${type} is sized from millimetre tables, and this document is in ${known.lengthUnit}: model the part in millimetres`);
-    }
+    checkMachiningStandard(type, feature, path);
     if (type === "hole") {
-        checkHoleSizing(feature, path, known.lengthUnit);
+        checkHoleSizing(feature, path);
         known.holePositions.set(id, positionIds(feature["at"]));
     }
     if (type === "import" && typeof feature["asset"] === "string" && known.assets.has(feature["asset"]) && !known.pinnedAssets.has(feature["asset"])) {
@@ -554,6 +557,9 @@ function checkOperation(feature: Record<string, unknown>, path: string, known: K
     const unknown = unknownProperties(known.registry, operationPath, params)[0];
     if (unknown !== undefined) {
         throw new DesignProblem(pointer(path, "params", unknown), `"${unknown}" is not an input of ${String(operation)}`);
+    }
+    if (typeof params["unit"] === "string" && params["unit"] !== known.lengthUnit && takesLengthUnit(known.registry, operationPath)) {
+        throw new DesignProblem(pointer(path, "params", "unit"), `the unit is ${params["unit"]}, and this document is in ${known.lengthUnit}: an operation builds in its document's unit, so leave unit out`);
     }
     checkOperationParams(params, pointer(path, "params"), known);
 }
@@ -645,7 +651,7 @@ export function checkHeader(document: Record<string, unknown>, record: (run: () 
     record(() => {
         if (document["units"] !== undefined) {
             const units = checkObject(document["units"], DOCUMENT_KEYS.units, "/units", false, "units");
-            oneOf(["mm", "cm", "m", "in"], true)(units["length"], "/units/length");
+            oneOf(Object.values(Inputs.Base.unitOfLengthEnum), true)(units["length"], "/units/length");
             oneOf(["deg"], true)(units["angle"], "/units/angle");
         }
     });

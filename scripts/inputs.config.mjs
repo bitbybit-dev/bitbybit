@@ -43,7 +43,25 @@ export const targets = [
             "design-documents",
             "recipes",
             "parts",
+            "parts-ansi",
             "machining",
+            "machining-ansi",
+        ],
+    },
+    {
+        namespace: "Engineering",
+        dir: "packages/dev/base/lib/api/inputs/engineering",
+        out: "packages/dev/base/lib/api/inputs/engineering-inputs.ts",
+        header: [
+            "/* eslint-disable @typescript-eslint/no-namespace */",
+            "import { Base } from \"./base-inputs\";",
+        ],
+        order: [
+            "enums",
+            "gears",
+            "fasteners",
+            "machine-elements",
+            "springs",
         ],
     },
     {

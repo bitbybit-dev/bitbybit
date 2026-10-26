@@ -208,7 +208,7 @@ describe("clashes in a design build", () => {
         const screw = (id: string, size: string, length = 8): Models.OCCT.DesignPartDocument => ({
             schemaVersion: 1,
             id,
-            features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.fasteners.socketHeadCapScrew", params: { size, length } }],
+            features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.fasteners.iso.socketHeadCapScrew", params: { size, length } }],
             parts: [{ id: "screw", body: "part" }],
         });
         const documents = [holed(TAPPED_ID, { fastener: { size: "M6", fit: "tapped" } }), holed(PLAIN_ID, { diameter: 6 }), screw(SCREW_ID, "M6"), screw(LARGE_ID, "M8")];
@@ -237,7 +237,7 @@ describe("clashes in a design build", () => {
             // Arrange
             const THROUGH_ID = "88888888-8888-4888-8888-888888888888";
             const LONG_ID = "99999999-9999-4999-8999-999999999999";
-            const long: Models.OCCT.DesignPartDocument = { ...screw(LONG_ID, "M6"), features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.fasteners.socketHeadCapScrew", params: { size: "M6", length: 12 } }] };
+            const long: Models.OCCT.DesignPartDocument = { ...screw(LONG_ID, "M6"), features: [{ id: "part", type: "operation", operation: "occt.parts.mechanical.fasteners.iso.socketHeadCapScrew", params: { size: "M6", length: 12 } }] };
             const through: Models.OCCT.DesignPartDocument = {
                 schemaVersion: 1,
                 id: THROUGH_ID,

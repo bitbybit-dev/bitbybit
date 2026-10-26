@@ -323,8 +323,9 @@ export class OCCTAssemblyManager {
      * names and colors kept as glTF nodes and materials.
      *
      * `meshDeflection` and `meshAngle` set how finely curved surfaces are triangulated;
-     * `mergeFaces` joins the faces of a part into one mesh. Failure throws an error.
-     * @param inputs - The document, the meshing settings, the export flags, the file name and the download option
+     * `mergeFaces` joins the faces of a part into one mesh. With the document's `unit`, the file is
+     * in metres, glTF's own unit.
+     * @param inputs - The document, the meshing settings, the export flags, the unit, the file name and the download option
      * @returns The GLB file as bytes
      * @group export
      * @shortname export document glTF

@@ -40,7 +40,14 @@ interface LeastArity {
 
 interface ExpressionFunction {
     arity: number | LeastArity;
-    apply: (...values: number[]) => number;
+    apply: (...values: number[]) => number | string;
+}
+
+function fraction(value: number, denominator: number): string {
+    if (!Number.isInteger(denominator) || denominator < 1) {
+        throw new ExpressionError(`fraction() rounds to a whole denominator of at least 1, such as 64, not ${String(denominator)}`, 0);
+    }
+    return math.toFractionText({ number: value, denominator });
 }
 
 const FUNCTIONS = new Map<string, ExpressionFunction>(Object.entries({
@@ -58,6 +65,7 @@ const FUNCTIONS = new Map<string, ExpressionFunction>(Object.entries({
     round: { arity: 1, apply: rounded },
     floor: { arity: 1, apply: Math.floor },
     ceil: { arity: 1, apply: Math.ceil },
+    fraction: { arity: 2, apply: fraction },
 }));
 
 const CONSTANTS = new Map<string, number>([["pi", Math.PI], ["tau", 2 * Math.PI], ["e", Math.E], ["true", 1], ["false", 0]]);
@@ -381,7 +389,8 @@ function evaluate(node: ExpressionNode, values: ReadonlyMap<string, ExpressionVa
                 const condition = numeric(evaluate(node.args[0]!, values), "a condition");
                 return evaluate(node.args[condition === 0 ? 2 : 1]!, values);
             }
-            return finite(FUNCTIONS.get(node.name)!.apply(...node.args.map(arg => numeric(evaluate(arg, values), "arithmetic"))), `${node.name}()`);
+            const result = FUNCTIONS.get(node.name)!.apply(...node.args.map(arg => numeric(evaluate(arg, values), "arithmetic")));
+            return typeof result === "number" ? finite(result, `${node.name}()`) : result;
         }
     }
 }

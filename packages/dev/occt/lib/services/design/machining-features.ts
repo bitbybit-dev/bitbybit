@@ -1,5 +1,5 @@
 import { InputError } from "@bitbybit-dev/base";
-import type { MetricThread } from "@bitbybit-dev/base";
+import type { ThreadSizes } from "@bitbybit-dev/base";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
@@ -10,7 +10,7 @@ import { tripleOf, unitVector } from "./placement";
 import { carryNames, give, nameOf } from "./names";
 import { cleanedUp, cleanedUpOnError, DesignProblem, pointer } from "./problems";
 import { resolveFaces } from "./references";
-import type { FittingThread, MachiningCut, MachiningCylinder, MachiningFeature } from "./machining-types";
+import type { FittingThread, MachiningCut, MachiningCylinder, MachiningFeature, ThreadStandard } from "./machining-types";
 import type { BodyState, DesignPlan, DesignRun } from "./state";
 import { bodyKey } from "./state";
 import { numberOf, textOf } from "./values";
@@ -29,6 +29,7 @@ const NEAREST_SIZES = 3;
 const SPLINE_FIT = 0.05;
 const NOMINAL_FIT = 0.01;
 const AT_THE_END = 1e-6;
+const MOST_SPLINE_TEETH_TRIED = 100;
 
 function toolProblemsAt<T>(path: string, fields: Readonly<Record<string, string>>, make: () => T): T {
     try {
@@ -42,8 +43,19 @@ function toolProblemsAt<T>(path: string, fields: Readonly<Record<string, string>
     }
 }
 
+const MILLIMETRE = Inputs.Base.unitOfLengthEnum.millimetre;
+const MILLIMETRE_PLACES = 6;
+
+function fitIn(millimetres: number, run: DesignRun): number {
+    return run.base.math.convertLength({ value: millimetres, from: MILLIMETRE, to: run.unit });
+}
+
+function inMillimetres(value: number, run: DesignRun): number {
+    return run.base.math.roundToDecimals({ number: run.base.math.convertLength({ value, from: run.unit, to: MILLIMETRE }), decimalPlaces: MILLIMETRE_PLACES });
+}
+
 function referenceOnBore(bore: number, module: number, path: string, run: DesignRun): number {
-    const tips = toolProblemsAt(path, { module: "module" }, () => run.base.engineering.mechanical.splines.involuteSplineSizes({ referenceDiameter: bore, module })).hubTipDiameter;
+    const tips = toolProblemsAt(path, { module: "module" }, () => run.base.engineering.mechanical.splines.din.involuteSplineSizes({ referenceDiameter: bore, module })).hubTipDiameter;
     return bore + (bore - tips);
 }
 
@@ -100,53 +112,113 @@ function shaftOnly(cylinder: MachiningCylinder, what: string, path: string): voi
     }
 }
 
-function threadOf(size: Inputs.Engineering.metricSizeEnum, pitch: number | undefined, path: string, run: DesignRun): MetricThread {
-    return toolProblemsAt(path, { pitch: "pitch", size: "size" }, () => run.base.engineering.mechanical.threads.metricThread({ size, ...(pitch === undefined ? {} : { pitch }) }));
+function threadStandardOf(feature: Models.OCCT.DesignThreadFeature, path: string, run: DesignRun): ThreadStandard {
+    const threads = run.base.engineering.mechanical.threads;
+    if (feature.standard === "ansi") {
+        const threadsPerInch = feature.threadsPerInch === undefined ? undefined : numberOf(feature.threadsPerInch, run.parameters, pointer(path, "threadsPerInch"));
+        const series = feature.series === undefined ? Inputs.Engineering.ansiThreadSeriesEnum.unc : feature.series as Inputs.Engineering.ansiThreadSeriesEnum;
+        const pitch = threadsPerInch === undefined ? { series } : { threadsPerInch };
+        return {
+            name: "Unified inch",
+            sizes: Object.values(Inputs.Engineering.ansiThreadSizeEnum),
+            fields: { size: "size", series: "series", threadsPerInch: "threadsPerInch" },
+            pitch,
+            pitchName: threadsPerInch !== undefined ? `of ${threadsPerInch} threads per inch` : series === Inputs.Engineering.ansiThreadSeriesEnum.unf ? "in the UNF series" : undefined,
+            thread: (size, unit) => threads.ansi.thread({ size: size as Inputs.Engineering.ansiThreadSizeEnum, ...pitch, unit }),
+        };
+    }
+    const fine = feature.pitch === undefined ? undefined : numberOf(feature.pitch, run.parameters, pointer(path, "pitch"));
+    const pitch = fine === undefined ? {} : { pitch: fine };
+    return {
+        name: "ISO metric",
+        sizes: Object.values(Inputs.Engineering.isoThreadSizeEnum),
+        fields: { size: "size", pitch: "pitch" },
+        pitch,
+        pitchName: fine === undefined ? undefined : `of pitch ${fine}`,
+        thread: (size, unit) => threads.iso.thread({ size: size as Inputs.Engineering.isoThreadSizeEnum, ...pitch, unit }),
+    };
 }
 
-function threadsFitting(pitch: number | undefined, run: DesignRun): FittingThread[] {
-    const threads = run.base.engineering.mechanical.threads;
-    return Object.values(Inputs.Engineering.metricSizeEnum).flatMap(size => {
-        const coarse = threads.metricThread({ size });
-        return pitch === undefined || pitch <= coarse.pitch ? [{ size, thread: pitch === undefined ? coarse : threads.metricThread({ size, pitch }) }] : [];
+function threadOf(standard: ThreadStandard, size: string, path: string, run: DesignRun): ThreadSizes {
+    return toolProblemsAt(path, standard.fields, () => standard.thread(size, run.unit));
+}
+
+function threadsFitting(standard: ThreadStandard, run: DesignRun): FittingThread[] {
+    return standard.sizes.flatMap(size => {
+        try {
+            return [{ size, thread: standard.thread(size, run.unit) }];
+        } catch (error) {
+            if (error instanceof InputError) {
+                return [];
+            }
+            throw error;
+        }
     });
 }
 
-function namedThread(size: Models.OCCT.DesignText, cylinder: MachiningCylinder, pitch: number | undefined, path: string, run: DesignRun): Inputs.Engineering.metricSizeEnum {
-    const sizes = Object.values(Inputs.Engineering.metricSizeEnum);
+function namedThread(size: Models.OCCT.DesignText, cylinder: MachiningCylinder, standard: ThreadStandard, path: string, run: DesignRun): string {
     const given = textOf(size, run.parameters, pointer(path, "size"));
-    const named = sizes.find(each => String(each) === given);
+    const named = standard.sizes.find(each => each === given);
     if (named === undefined) {
-        throw new DesignProblem(pointer(path, "size"), `${JSON.stringify(given)} is not a metric size: ${sizes.join(", ")}`);
+        throw new DesignProblem(pointer(path, "size"), `${JSON.stringify(given)} is not a${standard.name.startsWith("I") ? "n" : ""} ${standard.name} size: ${standard.sizes.join(", ")}`);
     }
-    const thread = threadOf(named, pitch, path, run);
-    if (cylinder.bore && cylinder.diameter > thread.tapDrill + BORE_FIT) {
+    const thread = threadOf(standard, named, path, run);
+    if (cylinder.bore && cylinder.diameter > thread.tapDrill + fitIn(BORE_FIT, run)) {
         throw new DesignProblem(pointer(path, "on"), `the bore is ${cylinder.diameter} across, wider than ${named}'s tap drill, ${thread.tapDrill}, so the thread would have little or nothing to cut: drill it to ${thread.tapDrill}`);
     }
-    if (!cylinder.bore && (cylinder.diameter > thread.diameter + SHAFT_FIT || cylinder.diameter < thread.minorDiameter)) {
-        throw new DesignProblem(pointer(path, "on"), `the shaft is ${cylinder.diameter} across, and an ${named} thread is cut on a shaft ${thread.diameter} across: turn it to ${thread.diameter}`);
+    if (!cylinder.bore && (cylinder.diameter > thread.diameter + fitIn(SHAFT_FIT, run) || cylinder.diameter < thread.minorDiameter)) {
+        throw new DesignProblem(pointer(path, "on"), `the shaft is ${cylinder.diameter} across, and ${named} threads are cut on a shaft ${thread.diameter} across: turn it to ${thread.diameter}`);
     }
     return named;
 }
 
-function threadSizeOf(feature: Models.OCCT.DesignThreadFeature, cylinder: MachiningCylinder, pitch: number | undefined, path: string, run: DesignRun): Inputs.Engineering.metricSizeEnum {
+function threadSizeOf(feature: Models.OCCT.DesignThreadFeature, cylinder: MachiningCylinder, standard: ThreadStandard, path: string, run: DesignRun): string {
     if (feature.size !== undefined) {
-        return namedThread(feature.size, cylinder, pitch, path, run);
+        return namedThread(feature.size, cylinder, standard, path, run);
     }
-    const fitting = threadsFitting(pitch, run);
-    const nominal = fitting.find(each => Math.abs(each.thread.diameter - cylinder.diameter) <= NOMINAL_FIT);
+    const fitting = threadsFitting(standard, run);
+    const nominal = fitting.find(each => Math.abs(each.thread.diameter - cylinder.diameter) <= fitIn(NOMINAL_FIT, run));
     if (cylinder.bore && nominal !== undefined) {
         throw new DesignProblem(pointer(path, "on"), `a bore ${cylinder.diameter} across is ${nominal.size}'s nominal diameter, the size a tapped hole is drawn at, which leaves a modelled thread nothing to cut: drill it to ${nominal.size}'s tap drill, ${nominal.thread.tapDrill}, or name the size the bore is drilled for`);
     }
     const measured = fitting.map(each => ({ size: each.size, gap: Math.abs((cylinder.bore ? each.thread.tapDrill : each.thread.diameter) - cylinder.diameter) })).sort((a, b) => a.gap - b.gap);
     const best = measured[0];
-    if (best === undefined || best.gap > (cylinder.bore ? BORE_FIT : SHAFT_FIT)) {
+    if (best === undefined || best.gap > fitIn(cylinder.bore ? BORE_FIT : SHAFT_FIT, run)) {
         const nearest = measured.slice(0, NEAREST_SIZES).map(each => each.size).join(", ");
         throw new DesignProblem(pointer(path, "on"), cylinder.bore
-            ? `a bore ${cylinder.diameter} across is drilled for no metric tap${pitch === undefined ? "" : ` of pitch ${pitch}`}; the nearest are ${nearest}: name a size, or drill the bore for one`
-            : `a shaft ${cylinder.diameter} across is no metric size; the nearest are ${nearest}: name a size, or size the shaft to one`);
+            ? `a bore ${cylinder.diameter} across is drilled for no ${standard.name} tap${standard.pitchName === undefined ? "" : ` ${standard.pitchName}`}; the nearest are ${nearest}: name a size, or drill the bore for one`
+            : `a shaft ${cylinder.diameter} across is no ${standard.name} size; the nearest are ${nearest}: name a size, or size the shaft to one`);
     }
     return best.size;
+}
+
+function ansiSplineTeethOnBore(bore: number, pitch: Inputs.Engineering.ansiSplinePitchEnum, path: string, run: DesignRun): number {
+    const splines = run.base.engineering.mechanical.splines.ansi;
+    const tried = Array.from({ length: MOST_SPLINE_TEETH_TRIED }, (_, index) => index + 1).flatMap(teeth => {
+        try {
+            return [{ teeth, gap: Math.abs(splines.involuteSplineSizes({ teeth, pitch, unit: run.unit }).hubTipDiameter - bore) }];
+        } catch (error) {
+            if (error instanceof InputError) {
+                return [];
+            }
+            throw error;
+        }
+    }).sort((a, b) => a.gap - b.gap);
+    const best = tried[0];
+    if (best === undefined) {
+        throw new DesignProblem(pointer(path, "pitch"), `no ${pitch} spline is listed`);
+    }
+    return best.teeth;
+}
+
+function ansiSplinePitchOf(feature: Models.OCCT.DesignSplineFeature, path: string, run: DesignRun): Inputs.Engineering.ansiSplinePitchEnum {
+    const pitches = Object.values(Inputs.Engineering.ansiSplinePitchEnum);
+    const given = feature.pitch === undefined ? "" : textOf(feature.pitch, run.parameters, pointer(path, "pitch"));
+    const pitch = pitches.find(each => each.valueOf() === given);
+    if (pitch === undefined) {
+        throw new DesignProblem(pointer(path, "pitch"), `${JSON.stringify(given)} is not an ANSI B92.1 pitch: ${pitches.join(", ")}`);
+    }
+    return pitch;
 }
 
 function trimmedToSpan(tool: TopoDS_Shape, cylinder: MachiningCylinder, frame: Inputs.Base.Frame, at: number, length: number, run: DesignRun): TopoDS_Shape {
@@ -172,9 +244,10 @@ function machinedOf(feature: MachiningFeature, cylinder: MachiningCylinder, fram
     const fields = (...own: string[]): Readonly<Record<string, string>> => Object.fromEntries(own.map(field => [field, field]));
     switch (feature.type) {
         case "keyway": {
-            const inputs = { diameter: cylinder.diameter, length: length(feature.length), inHub: cylinder.bore, frame };
-            const cut = (): TopoDS_Shape => toolProblemsAt(path, fields("length"), () => machining.keywayTool(inputs));
-            return { operation: "keyway", inputs, frame, tool: () => cylinder.bore ? trimmedToSpan(cut(), cylinder, frame, at, inputs.length, run) : cut() };
+            const standard = feature.standard ?? "din";
+            const inputs = { diameter: cylinder.diameter, length: length(feature.length), inHub: cylinder.bore, unit: run.unit, frame };
+            const cut = (): TopoDS_Shape => toolProblemsAt(path, fields("length"), () => machining[standard].keywayTool(inputs));
+            return { operation: `${standard}.keyway`, inputs, frame, tool: () => cylinder.bore ? trimmedToSpan(cut(), cylinder, frame, at, inputs.length, run) : cut() };
         }
         case "flat": {
             shaftOnly(cylinder, "a flat", path);
@@ -182,38 +255,64 @@ function machinedOf(feature: MachiningFeature, cylinder: MachiningCylinder, fram
             return { operation: "flat", inputs, frame, tool: () => toolProblemsAt(path, fields("length", "depth"), () => machining.flatTool(inputs)) };
         }
         case "ringGroove": {
-            const inputs = { kind: cylinder.bore ? Inputs.Engineering.retainingRingKindEnum.bore : Inputs.Engineering.retainingRingKindEnum.shaft, diameter: cylinder.diameter, frame };
-            return { operation: "ringGroove", inputs, frame, tool: () => toolProblemsAt(path, {}, () => machining.ringGrooveTool(inputs)) };
+            const standard = feature.standard ?? "din";
+            const inputs = { kind: cylinder.bore ? Inputs.Engineering.retainingRingKindEnum.bore : Inputs.Engineering.retainingRingKindEnum.shaft, diameter: cylinder.diameter, unit: run.unit, frame };
+            return { operation: `${standard}.ringGroove`, inputs, frame, tool: () => toolProblemsAt(path, {}, () => machining[standard].ringGrooveTool(inputs)) };
         }
         case "knurl": {
             shaftOnly(cylinder, "a knurl", path);
-            const pattern = feature.pattern ?? Inputs.Engineering.knurlPatternEnum.straight;
-            const inputs = { diameter: cylinder.diameter, length: length(feature.length), ...(feature.pitch === undefined ? {} : { pitch: numberOf(feature.pitch, run.parameters, pointer(path, "pitch")) }), pattern: pattern as Inputs.Engineering.knurlPatternEnum, frame };
-            return { operation: "knurl", inputs, frame, tool: () => toolProblemsAt(path, fields("length", "pitch", "pattern"), () => machining.knurlTool(inputs)) };
+            const pattern = (feature.pattern ?? Inputs.Engineering.knurlPatternEnum.straight) as Inputs.Engineering.knurlPatternEnum;
+            const shared = { diameter: cylinder.diameter, length: length(feature.length) };
+            if (feature.standard === "ansi") {
+                const inputs = { ...shared, ...(feature.diametralPitch === undefined ? {} : { diametralPitch: numberOf(feature.diametralPitch, run.parameters, pointer(path, "diametralPitch")) }), pattern, unit: run.unit, frame };
+                return { operation: "ansi.knurl", inputs, frame, tool: () => toolProblemsAt(path, fields("length", "diametralPitch", "pattern"), () => machining.ansi.knurlTool(inputs)) };
+            }
+            const inputs = { ...shared, ...(feature.pitch === undefined ? {} : { pitch: numberOf(feature.pitch, run.parameters, pointer(path, "pitch")) }), pattern, unit: run.unit, frame };
+            return { operation: "din.knurl", inputs, frame, tool: () => toolProblemsAt(path, fields("length", "pitch", "pattern"), () => machining.din.knurlTool(inputs)) };
         }
         case "spline": {
             if (!cylinder.bore) {
-                throw new DesignProblem(pointer(path, "on"), "spline teeth are cut into a bore; a splined shaft is made whole by parts.mechanical.machining.splinedShaft");
+                throw new DesignProblem(pointer(path, "on"), `spline teeth are cut into a bore; a splined shaft is made whole by parts.mechanical.machining.${feature.standard ?? "din"}.splinedShaft`);
             }
-            const module = numberOf(feature.module, run.parameters, pointer(path, "module"));
-            const referenceDiameter = feature.diameter === undefined ? referenceOnBore(cylinder.diameter, module, path, run) : numberOf(feature.diameter, run.parameters, pointer(path, "diameter"));
-            const given = feature.diameter === undefined ? {} : { referenceDiameter: "diameter" };
-            const tips = toolProblemsAt(path, { module: "module", ...given }, () => run.base.engineering.mechanical.splines.involuteSplineSizes({ referenceDiameter, module })).hubTipDiameter;
-            if (cylinder.diameter > tips + SPLINE_FIT) {
-                throw new DesignProblem(pointer(path, "on"), `the bore is ${cylinder.diameter} across, wider than the ${tips} the hub's teeth end on, so they would be lost: drill the bore to ${tips}`);
-            }
-            const inputs = { referenceDiameter, module, length: length(feature.length), frame };
-            return { operation: "splinedHub", inputs, frame, tool: () => trimmedToSpan(toolProblemsAt(path, { module: "module", length: "length", ...given }, () => machining.splinedHubTool(inputs)), cylinder, frame, at, inputs.length, run) };
+            return feature.standard === "ansi" ? ansiSplineCut(feature, cylinder, frame, at, path, run) : dinSplineCut(feature, cylinder, frame, at, path, run);
         }
         case "thread": {
-            const pitch = feature.pitch === undefined ? undefined : numberOf(feature.pitch, run.parameters, pointer(path, "pitch"));
-            const size = threadSizeOf(feature, cylinder, pitch, path, run);
+            const standard = threadStandardOf(feature, path, run);
+            const size = threadSizeOf(feature, cylinder, standard, path, run);
             const along = length(feature.length);
             const end = { ...frame, origin: tripleOf(run.base.vector.add({ first: frame.origin, second: run.base.vector.mul({ vector: frame.normal, scalar: along }) })) };
-            const inputs = { size, ...(pitch === undefined ? {} : { pitch }), length: along, internal: cylinder.bore, frame: end };
-            return { operation: "thread", inputs, frame: end, tool: () => toolProblemsAt(path, fields("length", "pitch", "size"), () => machining.threadTool(inputs)) };
+            const shared = { length: along, internal: cylinder.bore, unit: run.unit, frame: end };
+            if (feature.standard === "ansi") {
+                const inputs = { size: size as Inputs.Engineering.ansiThreadSizeEnum, ...standard.pitch, ...shared };
+                return { operation: "ansi.thread", inputs, frame: end, tool: () => toolProblemsAt(path, { ...standard.fields, length: "length" }, () => machining.ansi.threadTool(inputs)) };
+            }
+            const inputs = { size: size as Inputs.Engineering.isoThreadSizeEnum, ...standard.pitch, ...shared };
+            return { operation: "iso.thread", inputs, frame: end, tool: () => toolProblemsAt(path, { ...standard.fields, length: "length" }, () => machining.iso.threadTool(inputs)) };
         }
     }
+}
+
+function splineFits(tips: number, cylinder: MachiningCylinder, path: string, run: DesignRun): void {
+    if (cylinder.diameter > tips + fitIn(SPLINE_FIT, run)) {
+        throw new DesignProblem(pointer(path, "on"), `the bore is ${cylinder.diameter} across, wider than the ${tips} the hub's teeth end on, so they would be lost: drill the bore to ${tips}`);
+    }
+}
+
+function dinSplineCut(feature: Models.OCCT.DesignSplineFeature, cylinder: MachiningCylinder, frame: Inputs.Base.Frame, at: number, path: string, run: DesignRun): MachiningCut {
+    const module = numberOf(feature.module!, run.parameters, pointer(path, "module"));
+    const referenceDiameter = feature.diameter === undefined ? referenceOnBore(inMillimetres(cylinder.diameter, run), module, path, run) : numberOf(feature.diameter, run.parameters, pointer(path, "diameter"));
+    const given = feature.diameter === undefined ? {} : { referenceDiameter: "diameter" };
+    splineFits(toolProblemsAt(path, { module: "module", ...given }, () => run.base.engineering.mechanical.splines.din.involuteSplineSizes({ referenceDiameter, module, unit: run.unit })).hubTipDiameter, cylinder, path, run);
+    const inputs = { referenceDiameter, module, length: numberOf(feature.length, run.parameters, pointer(path, "length")), unit: run.unit, frame };
+    return { operation: "din.splinedHub", inputs, frame, tool: () => trimmedToSpan(toolProblemsAt(path, { module: "module", length: "length", ...given }, () => run.occt.parts.mechanical.machining.din.splinedHubTool(inputs)), cylinder, frame, at, inputs.length, run) };
+}
+
+function ansiSplineCut(feature: Models.OCCT.DesignSplineFeature, cylinder: MachiningCylinder, frame: Inputs.Base.Frame, at: number, path: string, run: DesignRun): MachiningCut {
+    const pitch = ansiSplinePitchOf(feature, path, run);
+    const teeth = feature.teeth === undefined ? ansiSplineTeethOnBore(cylinder.diameter, pitch, path, run) : numberOf(feature.teeth, run.parameters, pointer(path, "teeth"));
+    splineFits(toolProblemsAt(path, { pitch: "pitch", teeth: "teeth" }, () => run.base.engineering.mechanical.splines.ansi.involuteSplineSizes({ teeth, pitch, unit: run.unit })).hubTipDiameter, cylinder, path, run);
+    const inputs = { teeth, pitch, length: numberOf(feature.length, run.parameters, pointer(path, "length")), unit: run.unit, frame };
+    return { operation: "ansi.splinedHub", inputs, frame, tool: () => trimmedToSpan(toolProblemsAt(path, { pitch: "pitch", teeth: "teeth", length: "length" }, () => run.occt.parts.mechanical.machining.ansi.splinedHubTool(inputs)), cylinder, frame, at, inputs.length, run) };
 }
 
 function machined(feature: MachiningFeature, path: string, run: DesignRun): DesignOutcome {

@@ -1,4 +1,4 @@
-import type { MetricThread } from "@bitbybit-dev/base";
+import type { ThreadSizes } from "@bitbybit-dev/base";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
@@ -21,6 +21,21 @@ export interface MachiningCut extends DesignMachiningTrace {
 }
 
 export interface FittingThread {
-    readonly size: Inputs.Engineering.metricSizeEnum;
-    readonly thread: MetricThread;
+    readonly size: string;
+    readonly thread: ThreadSizes;
+}
+
+export interface ThreadStandard {
+    readonly name: string;
+    readonly sizes: readonly string[];
+    readonly fields: Readonly<Record<string, string>>;
+    readonly pitch: Readonly<Record<string, unknown>>;
+    readonly pitchName: string | undefined;
+    readonly thread: (size: string, unit: Inputs.Base.unitOfLengthEnum) => ThreadSizes;
+}
+
+export interface MachiningEnum {
+    readonly namespace: "Engineering" | "Base";
+    readonly name: string;
+    readonly members: Readonly<Record<string, string>>;
 }

@@ -6,7 +6,7 @@ import type * as Inputs from "../../../api/inputs";
 import { InputError, Inputs as BaseInputs } from "@bitbybit-dev/base";
 import type * as Models from "../../../api/models";
 
-const M = BaseInputs.Engineering.metricSizeEnum;
+const M = BaseInputs.Engineering.isoThreadSizeEnum;
 
 describe("OCCT parts: fasteners", () => {
     let occt: OCCTService;
@@ -35,7 +35,7 @@ describe("OCCT parts: fasteners", () => {
     describe("socket head cap screws", () => {
         it("should make an ISO 4762 M5 screw 40 long: an 8.5 head 5 high above its frame and the shank below", () => {
             // Act
-            const screw = occt.parts.mechanical.fasteners.socketHeadCapScrew({ size: M.m5, length: 40 });
+            const screw = occt.parts.mechanical.fasteners.iso.socketHeadCapScrew({ size: M.m5, length: 40 });
 
             // Assert
             const [width, depth, height] = box(screw);
@@ -47,7 +47,7 @@ describe("OCCT parts: fasteners", () => {
 
         it("should name every face once, threading the last 22 from the tip and leaving the shank above it plain", () => {
             // Act
-            const made = occt.parts.mechanical.fasteners.socketHeadCapScrewWithRoles({ size: M.m5, length: 40 });
+            const made = occt.parts.mechanical.fasteners.iso.socketHeadCapScrewWithRoles({ size: M.m5, length: 40 });
 
             // Assert
             expect(namesEveryFaceOnce(made)).toBe(true);
@@ -60,7 +60,7 @@ describe("OCCT parts: fasteners", () => {
 
         it("should thread a short screw to its head, leaving no shank", () => {
             // Act
-            const made = occt.parts.mechanical.fasteners.socketHeadCapScrewWithRoles({ size: M.m5, length: 16 });
+            const made = occt.parts.mechanical.fasteners.iso.socketHeadCapScrewWithRoles({ size: M.m5, length: 16 });
 
             // Assert
             expect(made.roles["shank"]).toBeUndefined();
@@ -69,10 +69,10 @@ describe("OCCT parts: fasteners", () => {
 
         it("should model a cap screw's thread when asked, keeping its head and its recess", () => {
             // Arrange
-            const cosmetic = occt.parts.mechanical.fasteners.socketHeadCapScrewWithRoles({ size: M.m4, length: 12 });
+            const cosmetic = occt.parts.mechanical.fasteners.iso.socketHeadCapScrewWithRoles({ size: M.m4, length: 12 });
 
             // Act
-            const modelled = occt.parts.mechanical.fasteners.socketHeadCapScrewWithRoles({ size: M.m4, length: 12, modelledThread: true });
+            const modelled = occt.parts.mechanical.fasteners.iso.socketHeadCapScrewWithRoles({ size: M.m4, length: 12, modelledThread: true });
 
             // Assert
             expect(occt.shapeFix.isValid({ shape: modelled.shape })).toBe(true);
@@ -87,7 +87,7 @@ describe("OCCT parts: fasteners", () => {
             const frame: Inputs.Base.Frame = { origin: [1, 2, 3], normal: [0, 1, 0], direction: [1, 0, 0] };
 
             // Act
-            const made = occt.parts.mechanical.fasteners.socketHeadCapScrewWithRoles({ size: M.m3, length: 10, frame });
+            const made = occt.parts.mechanical.fasteners.iso.socketHeadCapScrewWithRoles({ size: M.m3, length: 10, frame });
 
             // Assert
             const measured = occt.analysis.measure.tightBoundingBox({ shape: made.shape });
@@ -100,8 +100,8 @@ describe("OCCT parts: fasteners", () => {
     describe("hexagon bolts, nuts and washers", () => {
         it("should make an M8 bolt's head 13 across its flats with a flat facing the frame's direction, threaded to the head unless asked otherwise", () => {
             // Act
-            const full = occt.parts.mechanical.fasteners.hexBoltWithRoles({ size: M.m8, length: 40 });
-            const part = occt.parts.mechanical.fasteners.hexBoltWithRoles({ size: M.m8, length: 40, fullyThreaded: false });
+            const full = occt.parts.mechanical.fasteners.iso.hexBoltWithRoles({ size: M.m8, length: 40 });
+            const part = occt.parts.mechanical.fasteners.iso.hexBoltWithRoles({ size: M.m8, length: 40, fullyThreaded: false });
 
             // Assert
             const [width, depth, height] = box(full.shape);
@@ -117,11 +117,11 @@ describe("OCCT parts: fasteners", () => {
             // Arrange
             const slab = (from: number, to: number): TopoDS_Shape => occt.shapes.solid.createBox({ width: 20, length: 20, height: to - from, center: [0, (from + to) / 2, 0], originOnCenter: true });
             const within = (shape: TopoDS_Shape, from: number, to: number): number => occt.shapes.solid.getSolidVolume({ shape: occt.booleans.intersection({ shapes: [shape, slab(from, to)], keepEdges: false }) });
-            const cosmetic = occt.parts.mechanical.fasteners.hexBolt({ size: M.m5, length: 30, fullyThreaded: false });
+            const cosmetic = occt.parts.mechanical.fasteners.iso.hexBolt({ size: M.m5, length: 30, fullyThreaded: false });
 
             // Act
-            const full = occt.parts.mechanical.fasteners.hexBoltWithRoles({ size: M.m5, length: 30, modelledThread: true });
-            const part = occt.parts.mechanical.fasteners.hexBoltWithRoles({ size: M.m5, length: 30, fullyThreaded: false, modelledThread: true });
+            const full = occt.parts.mechanical.fasteners.iso.hexBoltWithRoles({ size: M.m5, length: 30, modelledThread: true });
+            const part = occt.parts.mechanical.fasteners.iso.hexBoltWithRoles({ size: M.m5, length: 30, fullyThreaded: false, modelledThread: true });
 
             // Assert
             expect(occt.shapeFix.isValid({ shape: full.shape }) && occt.shapeFix.isValid({ shape: part.shape })).toBe(true);
@@ -142,10 +142,10 @@ describe("OCCT parts: fasteners", () => {
 
         it("should make an M8 nut 6.8 high with its hole at the nominal diameter, so the bolt of its size runs through it without a clash", () => {
             // Arrange
-            const bolt = occt.parts.mechanical.fasteners.hexBolt({ size: M.m8, length: 40 });
+            const bolt = occt.parts.mechanical.fasteners.iso.hexBolt({ size: M.m8, length: 40 });
 
             // Act
-            const made = occt.parts.mechanical.fasteners.hexNutWithRoles({ size: M.m8, frame: { origin: [0, -30, 0], normal: [0, 1, 0], direction: [1, 0, 0] } });
+            const made = occt.parts.mechanical.fasteners.iso.hexNutWithRoles({ size: M.m8, frame: { origin: [0, -30, 0], normal: [0, 1, 0], direction: [1, 0, 0] } });
 
             // Assert
             expect(namesEveryFaceOnce(made)).toBe(true);
@@ -158,7 +158,7 @@ describe("OCCT parts: fasteners", () => {
 
         it("should make an M8 washer of the size ISO 7089 gives it", () => {
             // Act
-            const made = occt.parts.mechanical.fasteners.washerWithRoles({ size: M.m8 });
+            const made = occt.parts.mechanical.fasteners.iso.washerWithRoles({ size: M.m8 });
 
             // Assert
             expect(namesEveryFaceOnce(made)).toBe(true);
@@ -170,18 +170,18 @@ describe("OCCT parts: fasteners", () => {
     describe("set screws and dowel pins", () => {
         it("should make an M4 set screw threaded its whole length with a recess in its top end, and refuse one too short for them", () => {
             // Act
-            const made = occt.parts.mechanical.fasteners.setScrewWithRoles({ size: M.m4, length: 6 });
+            const made = occt.parts.mechanical.fasteners.iso.setScrewWithRoles({ size: M.m4, length: 6 });
 
             // Assert
             expect(namesEveryFaceOnce(made)).toBe(true);
             expect(Object.keys(made.roles).sort()).toEqual(["end", "recess", "thread", "top"]);
             expect(box(made.shape)[2]).toBeCloseTo(6, 3);
-            expect(() => occt.parts.mechanical.fasteners.setScrew({ size: M.m4, length: 2 })).toThrow("`length`");
+            expect(() => occt.parts.mechanical.fasteners.iso.setScrew({ size: M.m4, length: 2 })).toThrow("`length`");
         });
 
         it.each(["flat", "cone", "dog", "cup"] as const)("should make an M5 set screw 10 long with a %s point, valid, its point the bottom of the screw", point => {
             // Act
-            const made = occt.parts.mechanical.fasteners.setScrewWithRoles({ size: M.m5, length: 10, point: BaseInputs.Engineering.setScrewPointEnum[point] });
+            const made = occt.parts.mechanical.fasteners.iso.setScrewWithRoles({ size: M.m5, length: 10, point: BaseInputs.Engineering.isoSetScrewPointEnum[point] });
 
             // Assert
             expect(occt.shapeFix.isValid({ shape: made.shape })).toBe(true);
@@ -192,8 +192,8 @@ describe("OCCT parts: fasteners", () => {
 
         it("should give a dog point its dog, a cup its recess and a cone its taper, each taking a different share of the screw", () => {
             // Act
-            const volumes = (["flat", "cone", "dog", "cup"] as const).map(point => occt.shapes.solid.getSolidVolume({ shape: occt.parts.mechanical.fasteners.setScrew({ size: M.m5, length: 10, point: BaseInputs.Engineering.setScrewPointEnum[point] }) }));
-            const dog = occt.parts.mechanical.fasteners.setScrewWithRoles({ size: M.m5, length: 10, point: BaseInputs.Engineering.setScrewPointEnum.dog });
+            const volumes = (["flat", "cone", "dog", "cup"] as const).map(point => occt.shapes.solid.getSolidVolume({ shape: occt.parts.mechanical.fasteners.iso.setScrew({ size: M.m5, length: 10, point: BaseInputs.Engineering.isoSetScrewPointEnum[point] }) }));
+            const dog = occt.parts.mechanical.fasteners.iso.setScrewWithRoles({ size: M.m5, length: 10, point: BaseInputs.Engineering.isoSetScrewPointEnum.dog });
 
             // Assert
             expect(new Set(volumes.map(volume => volume.toFixed(3))).size).toBe(4);
@@ -203,9 +203,9 @@ describe("OCCT parts: fasteners", () => {
 
         it("should make the M8 ISO 7090 washer chamfered on the face away from its seat, and refuse a chamfered M4", () => {
             // Act
-            const plain = occt.parts.mechanical.fasteners.washer({ size: M.m8 });
-            const made = occt.parts.mechanical.fasteners.washerWithRoles({ size: M.m8, chamfered: true });
-            const small = (): unknown => occt.parts.mechanical.fasteners.washer({ size: M.m4, chamfered: true });
+            const plain = occt.parts.mechanical.fasteners.iso.washer({ size: M.m8 });
+            const made = occt.parts.mechanical.fasteners.iso.washerWithRoles({ size: M.m8, chamfered: true });
+            const small = (): unknown => occt.parts.mechanical.fasteners.iso.washer({ size: M.m4, chamfered: true });
 
             // Assert
             expect(occt.shapeFix.isValid({ shape: made.shape })).toBe(true);
@@ -230,8 +230,8 @@ describe("OCCT parts: fasteners", () => {
     describe("refusals", () => {
         it("should refuse a size it does not know and a length of 0", () => {
             // Act & Assert
-            expect(() => occt.parts.mechanical.fasteners.hexNut({ size: "M7" as BaseInputs.Engineering.metricSizeEnum })).toThrow("`size`");
-            expect(() => occt.parts.mechanical.fasteners.socketHeadCapScrew({ size: M.m3, length: 0 })).toThrow("`length`");
+            expect(() => occt.parts.mechanical.fasteners.iso.hexNut({ size: "M7" as BaseInputs.Engineering.isoThreadSizeEnum })).toThrow("`size`");
+            expect(() => occt.parts.mechanical.fasteners.iso.socketHeadCapScrew({ size: M.m3, length: 0 })).toThrow("`length`");
             expect(() => occt.parts.mechanical.fasteners.dowelPin({ diameter: 4, length: 0.5 })).toThrow("`length`");
         });
     });
@@ -253,7 +253,7 @@ describe("OCCT parts: fasteners", () => {
             const notAFlag: unknown = "yes";
 
             // Act
-            const refused = (): unknown => occt.parts.mechanical.fasteners.socketHeadCapScrew({ size: M.m3, length: 10, modelledThread: notAFlag as boolean });
+            const refused = (): unknown => occt.parts.mechanical.fasteners.iso.socketHeadCapScrew({ size: M.m3, length: 10, modelledThread: notAFlag as boolean });
 
             // Assert
             expect(refused).toThrow(InputError);
@@ -275,7 +275,7 @@ describe("OCCT parts: fasteners", () => {
             });
 
             // Act
-            const failed = (): unknown => occt.parts.mechanical.fasteners.hexNut({ size: M.m8 });
+            const failed = (): unknown => occt.parts.mechanical.fasteners.iso.hexNut({ size: M.m8 });
 
             // Assert
             expect(failed).toThrow("no prism this time");
@@ -297,7 +297,7 @@ describe("OCCT parts: fasteners", () => {
             });
 
             // Act
-            const failed = (): unknown => occt.parts.mechanical.fasteners.socketHeadCapScrew({ size: M.m3, length: 10 });
+            const failed = (): unknown => occt.parts.mechanical.fasteners.iso.socketHeadCapScrew({ size: M.m3, length: 10 });
 
             // Assert
             expect(failed).toThrow("no hexagon this time");
@@ -319,12 +319,36 @@ describe("OCCT parts: fasteners", () => {
             });
 
             // Act
-            const failed = (): unknown => occt.parts.mechanical.fasteners.washer({ size: M.m8 });
+            const failed = (): unknown => occt.parts.mechanical.fasteners.iso.washer({ size: M.m8 });
 
             // Assert
             expect(failed).toThrow("no surface this time");
             expect(listed.length).toBeGreaterThan(1);
             expect(listed.filter(face => !face.isDeleted())).toEqual([]);
+        });
+    });
+
+    describe("units", () => {
+        const inch = BaseInputs.Base.unitOfLengthEnum.inch;
+        const volume = (shape: TopoDS_Shape): number => occt.shapes.solid.getSolidVolume({ shape });
+
+        it("should make each ISO fastener in inches as its millimetre twin scaled down by 25.4, a modelled thread included", () => {
+            // Arrange
+            const fasteners = occt.parts.mechanical.fasteners.iso;
+            const pairs: [TopoDS_Shape, TopoDS_Shape][] = [
+                [fasteners.socketHeadCapScrew({ size: M.m5, length: 20 }), fasteners.socketHeadCapScrew({ size: M.m5, length: 20 / 25.4, unit: inch })],
+                [fasteners.hexBolt({ size: M.m8, length: 30, modelledThread: true }), fasteners.hexBolt({ size: M.m8, length: 30 / 25.4, modelledThread: true, unit: inch })],
+                [fasteners.hexNut({ size: M.m8 }), fasteners.hexNut({ size: M.m8, unit: inch })],
+                [fasteners.washer({ size: M.m8, chamfered: true }), fasteners.washer({ size: M.m8, chamfered: true, unit: inch })],
+                [fasteners.setScrew({ size: M.m5, length: 10, point: BaseInputs.Engineering.isoSetScrewPointEnum.cone }), fasteners.setScrew({ size: M.m5, length: 10 / 25.4, point: BaseInputs.Engineering.isoSetScrewPointEnum.cone, unit: inch })],
+            ];
+
+            // Act
+            const ratios = pairs.map(([millimetres, inches]) => [...box(inches).map((side, axis) => side * 25.4 / box(millimetres)[axis]!), volume(inches) * 25.4 ** 3 / volume(millimetres)]);
+
+            // Assert
+            ratios.flat().forEach(ratio => expect(ratio).toBeCloseTo(1, 4));
+            pairs.flat().forEach(shape => shape.delete());
         });
     });
 });
