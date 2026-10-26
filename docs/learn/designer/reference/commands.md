@@ -1203,7 +1203,7 @@ Drills holes through a flat face at positions on it.
   - `on`: The flat face the holes start from.
   - `at`: Where the holes go, as x and y on the face; give a position an id to name its walls.
   - `diameter`: The hole's diameter.
-  - `fastener`: Sizes the holes for a screw instead of a diameter, such as \{ "size": "M8", "fit": "normal" \}, or an inch one with \{ "standard": "ansi", "size": "1/4" \}: a close, normal or loose clearance, or tapped for its thread.
+  - `fastener`: Sizes the holes for a screw instead of a diameter: its standard, ISO metric or ANSI inch, its size, an inch thread's series, a close, normal or loose clearance or tapped for its thread, and a socket head's counterbore.
   - `depth`: How deep; 0 drills through.
   - `tipAngle`: A drill point at the bottom of a blind hole.
   - `counterbore`: Widen each mouth to a diameter and depth.

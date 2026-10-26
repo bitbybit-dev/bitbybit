@@ -31,7 +31,7 @@ Gears from the library take a <Ui>Diametral pitch</Ui> in an inch design instead
 
 ## Holes, threads and machining
 
-A hole's <Ui>Fastener</Ui> takes a standard, so a hole sized for an inch screw is `{ "standard": "ansi", "size": "1/4", "series": "UNC", "fit": "tapped" }`, and one for a metric screw is `{ "size": "M6", "fit": "normal" }` in any design. The [machining features](./features.md) have a <Ui>Standard</Ui> too: a keyway, a ring groove, a knurl and a spline are DIN or ANSI, and a thread is ISO or ANSI. In an inch design the ANSI one is chosen first; an ANSI knurl is sized by its diametral pitch, an ANSI spline by its pitch, such as 16/32, and its number of teeth, and an ANSI thread by its series or its threads per inch.
+A hole's <Ui>Fastener</Ui> takes a <Ui>Standard</Ui>: pick ANSI inch, then the <Ui>Size</Ui>, such as 1/4, and its <Ui>Series</Ui>, UNC or UNF, for an inch screw, or ISO metric and a size such as M6 for a metric one, in any design. A size its standard gives no clearance hole for, such as #12, is marked in the list, and can still be tapped. The [machining features](./features.md) have a <Ui>Standard</Ui> too: a keyway, a ring groove, a knurl and a spline are DIN or ANSI, and a thread is ISO or ANSI. In an inch design the ANSI one is chosen first; an ANSI knurl is sized by its diametral pitch, an ANSI spline by its pitch, such as 16/32, and its number of teeth, and an ANSI thread by its series or its threads per inch.
 
 ## Files in and out
 

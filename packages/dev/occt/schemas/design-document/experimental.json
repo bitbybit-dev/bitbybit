@@ -1270,7 +1270,7 @@
             "additionalProperties": false
         },
         "DesignHoleFastener": {
-            "description": "A hole sized by the screw it takes, by `standard`: `iso` (the default), whose `size` is a metric\nthread from `\"M1.6\"` to `\"M24\"`, or `ansi`, whose `size` is a Unified inch thread from `\"#0\"` to\n`\"1\"`, coarse or `series` `\"UNF\"` fine (text, or `{ \"expr\" }` so a parameter can choose it). `fit`\nis `close`, `normal` (the default) or `loose` for a clearance hole after ISO 273 or ASME B18.2.8,\nor `tapped` for a threaded hole at the thread's nominal diameter, whose walls are also named\n`thread`; and `head` `socket` for the counterbore a socket head cap screw takes: DIN 974-1's, its\nhead height plus half a millimetre deep, or the inch one, as deep as its head. The hole is sized in\nthe document's unit.",
+            "description": "A hole sized by the screw it takes, by `standard`: `iso` (the default), whose `size` is a metric\nthread from `\"M1.6\"` to `\"M24\"`, or `ansi`, whose `size` is a Unified inch thread from `\"#0\"` to\n`\"1\"`, coarse or `series` `\"UNF\"` fine (text, or `{ \"expr\" }` so a parameter can choose it). `fit`\nis `close`, `normal` (the default) or `loose` for a clearance hole after ISO 273 or ASME B18.2.8,\nor `tapped` for a threaded hole at the thread's nominal diameter, whose walls are also named\n`thread`; and `head` `socket` for the counterbore a socket head cap screw takes: DIN 974-1's, its\nhead height plus half a millimetre deep, or the inch one, its head height plus 0.02 inch deep. The\nhole is sized in the document's unit.",
             "type": "object",
             "properties": {
                 "standard": {

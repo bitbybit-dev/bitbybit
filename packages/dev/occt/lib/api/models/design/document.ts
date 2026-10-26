@@ -501,8 +501,8 @@ export interface DesignHolePosition {
  * is `close`, `normal` (the default) or `loose` for a clearance hole after ISO 273 or ASME B18.2.8,
  * or `tapped` for a threaded hole at the thread's nominal diameter, whose walls are also named
  * `thread`; and `head` `socket` for the counterbore a socket head cap screw takes: DIN 974-1's, its
- * head height plus half a millimetre deep, or the inch one, as deep as its head. The hole is sized in
- * the document's unit.
+ * head height plus half a millimetre deep, or the inch one, its head height plus 0.02 inch deep. The
+ * hole is sized in the document's unit.
  */
 export interface DesignHoleFastener {
     standard?: "iso" | "ansi";
