@@ -9647,6 +9647,8 @@ export interface OperationParams {
         fileName?: string | PipelineRef;
         /** Adjusts models that use Z coordinate as up to Y up system. */
         adjustZtoY?: boolean | PipelineRef;
+        /** The unit the shape comes back in. The file is read at its true size, whatever unit it states, and scaled into this one. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
     };
     /**
      * Reads an STL file, ASCII or binary, into a shape: one planar face per triangle, or one face

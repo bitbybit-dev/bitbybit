@@ -2060,6 +2060,8 @@ export interface components {
             adjustYtoZ?: boolean;
             /** @description Include the full pipeline definition in metadata.json. Defaults to true. Set to false to exclude it for smaller metadata. */
             includePipelineInMetadata?: boolean;
+            /** @description The unit the pipeline's shapes are modelled in. Given, a STEP output states it, so CAD tools open the shapes at their true size, and a glTF output is written in metres, the unit glTF viewers assume. Left out, the numbers are written as they are: STEP states millimetres and glTF holds them unscaled. A design build's documents state their own unit, and a unit given here must be the same. */
+            unit?: components["schemas"]["LengthUnit"];
         };
         /**
          * @description Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only), 'brep' (OpenCascade BREP as text, which OCCT-based tools such as FreeCAD read) and 'brep-binary' (OpenCascade binary BREP, the smallest and fastest exact form, which keeps the numbering of faces and edges; read back with occt.io.loadBrepBinary) - both OCCT only, without triangulation.
@@ -2071,6 +2073,11 @@ export interface components {
          * @example 0.1
          */
         MeshPrecision: number;
+        /**
+         * @description A unit of length: 'mm' (millimetres), 'cm' (centimetres), 'm' (metres) or 'in' (inches).
+         * @enum {string}
+         */
+        LengthUnit: "mm" | "cm" | "m" | "in";
         /** @description Execute multiple independent Bitbybit CAD operations in parallel. Each item runs as a separate sub-task and can be polled individually. */
         CompoundExecuteBody: {
             /**

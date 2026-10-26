@@ -2026,6 +2026,10 @@
           "includePipelineInMetadata": {
             "description": "Include the full pipeline definition in metadata.json. Defaults to true. Set to false to exclude it for smaller metadata.",
             "type": "boolean"
+          },
+          "unit": {
+            "description": "The unit the pipeline's shapes are modelled in. Given, a STEP output states it, so CAD tools open the shapes at their true size, and a glTF output is written in metres, the unit glTF viewers assume. Left out, the numbers are written as they are: STEP states millimetres and glTF holds them unscaled. A design build's documents state their own unit, and a unit given here must be the same.",
+            "$ref": "#/components/schemas/LengthUnit"
           }
         },
         "required": [
@@ -2056,6 +2060,16 @@
         "maximum": 10,
         "description": "Mesh tessellation precision (lower = finer). Range: [0.0001, 10]",
         "example": 0.1
+      },
+      "LengthUnit": {
+        "type": "string",
+        "enum": [
+          "mm",
+          "cm",
+          "m",
+          "in"
+        ],
+        "description": "A unit of length: 'mm' (millimetres), 'cm' (centimetres), 'm' (metres) or 'in' (inches)."
       },
       "CompoundExecuteBody": {
         "type": "object",
