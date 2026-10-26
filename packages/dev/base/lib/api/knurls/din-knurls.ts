@@ -3,8 +3,9 @@ import { roundedToMillionths } from "../services/helpers/geometry/scalars";
 import { lengthsConverted, snappedLength, tableLength } from "../services/helpers/geometry/lengths";
 import type { Base } from "../inputs/base-inputs";
 import type { KnurlPattern, KnurlSizes } from "./knurl-types";
-import { KNURL_HELIX_ANGLE, KNURL_LENGTHS, KNURL_PITCHES } from "./din-knurls.constants";
+import { KNURL_HELIX_ANGLE, KNURL_PITCHES } from "./din-knurls.constants";
 import { checkedKnurlPattern } from "./knurls";
+import { KNURL_LENGTHS } from "./knurls.constants";
 
 export function dinKnurlSizes(diameter: number, pitch: number, pattern: KnurlPattern, unit: `${Base.unitOfLengthEnum}`): KnurlSizes {
     checkedKnurlPattern(pattern);

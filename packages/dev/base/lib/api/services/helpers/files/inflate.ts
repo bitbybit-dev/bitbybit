@@ -22,6 +22,7 @@ import {
     HLIT_BASE,
     HLIT_BITS,
     INITIAL_OUTPUT,
+    MOST_DEFLATE_RATIO,
     LENGTH_BASE,
     LENGTH_EXTRA,
     LENGTH_MASK,
@@ -106,7 +107,7 @@ class Inflater {
     private size = 0;
 
     constructor(private readonly data: Uint8Array, private readonly expected: number | undefined) {
-        this.output = new Uint8Array(expected ?? Math.max(INITIAL_OUTPUT, data.length * 2));
+        this.output = new Uint8Array(Math.min(expected ?? Math.max(INITIAL_OUTPUT, data.length * 2), data.length * MOST_DEFLATE_RATIO + INITIAL_OUTPUT));
     }
 
     run(): Uint8Array {
@@ -172,10 +173,11 @@ class Inflater {
         if (this.size + count <= this.output.length) {
             return;
         }
-        if (this.expected !== undefined) {
+        if (this.expected !== undefined && this.size + count > this.expected) {
             throw new Error(`The deflate stream holds more than the ${this.expected} bytes expected`);
         }
-        const grown = new Uint8Array(Math.max(this.output.length * 2, this.size + count));
+        const wanted = Math.max(this.output.length * 2, this.size + count);
+        const grown = new Uint8Array(this.expected === undefined ? wanted : Math.min(wanted, this.expected));
         grown.set(this.output.subarray(0, this.size));
         this.output = grown;
     }

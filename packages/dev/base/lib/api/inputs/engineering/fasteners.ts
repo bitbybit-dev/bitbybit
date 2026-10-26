@@ -169,7 +169,7 @@ export class AnsiThreadDto extends AnsiSizeSharedDto {
         if (unit !== undefined) { this.unit = unit; }
     }
     /**
-     * Whether the thread is coarse (UNC) or fine (UNF).
+     * Whether the thread is coarse (UNC) or fine (UNF); #0, which has no coarse thread, is cut fine.
      * @default unc
      */
     series?: ansiThreadSeriesEnum | undefined = ansiThreadSeriesEnum.unc;
@@ -265,7 +265,7 @@ export class AnsiSetScrewSizesDto extends AnsiSizeSharedDto {
     point?: ansiSetScrewPointEnum | undefined = ansiSetScrewPointEnum.cup;
     /**
      * Whether the screw's thread is coarse (UNC) or fine (UNF), which sets the root its point
-     * starts from.
+     * starts from; #0, which has no coarse thread, is cut fine.
      * @default unc
      */
     series?: ansiThreadSeriesEnum | undefined = ansiThreadSeriesEnum.unc;

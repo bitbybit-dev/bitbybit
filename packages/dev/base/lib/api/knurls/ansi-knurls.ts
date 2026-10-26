@@ -4,8 +4,8 @@ import { lengthsConverted, snappedLength, tableLength } from "../services/helper
 import type { Base } from "../inputs/base-inputs";
 import type { KnurlPattern, KnurlSizes } from "./knurl-types";
 import { ANSI_KNURL_HELIX_ANGLE, ANSI_KNURL_PITCHES, ANSI_KNURLS } from "./ansi-knurls.constants";
-import { KNURL_LENGTHS } from "./din-knurls.constants";
 import { checkedKnurlPattern } from "./knurls";
+import { KNURL_LENGTHS } from "./knurls.constants";
 
 export function ansiKnurlSizes(diameter: number, diametralPitch: number, pattern: KnurlPattern, unit: `${Base.unitOfLengthEnum}`): KnurlSizes {
     checkedKnurlPattern(pattern);

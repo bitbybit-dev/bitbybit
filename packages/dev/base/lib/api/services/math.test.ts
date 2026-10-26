@@ -348,6 +348,13 @@ describe("Math unit tests", () => {
         expect(() => math.toFractionText({ number: Number.NaN, denominator: 64 })).toThrow("`number`");
     });
 
+    it("should refuse a number too large to write in parts of the denominator, rather than run without end", () => {
+        // Act & Assert
+        expect(() => math.toFractionText({ number: 1e307, denominator: 64 })).toThrow("`number` is 1e+307, too large to write in parts of 64.");
+        expect(() => math.toFractionText({ number: 2, denominator: Number.MAX_SAFE_INTEGER })).toThrow("`number`");
+        expect(math.toFractionText({ number: 1e12, denominator: 64 })).toBe("1000000000000");
+    });
+
     it("should compute remap", () => {
         const result = math.remap({ number: 0.5, fromLow: 0, fromHigh: 1, toLow: 0, toHigh: 10 });
         expect(result).toEqual(5);

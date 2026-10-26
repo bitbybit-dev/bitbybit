@@ -105,3 +105,5 @@ export interface GltfJson {
     readonly scenes?: readonly GltfScene[];
     readonly nodes?: readonly GltfNode[];
 }
+
+export type UnitOfLength = `${Inputs.Base.unitOfLengthEnum}`;

@@ -17,8 +17,8 @@ export class EngineeringKeysAnsi {
      * Gives the ANSI B17.1 square key for a shaft: the key's width and height, and how deep its
      * keyseat goes into the shaft and into the hub.
      *
-     * Each keyseat holds half the key, the hub's five thousandths deeper for clearance. Example: a 1
-     * inch shaft -> a 1/4 square key, 1/8 deep in the shaft
+     * Depths are from the top of the round, half the key standing at each keyseat's side. Example: a 1
+     * inch shaft -> a 1/4 square key, 0.141 deep in the shaft
      * @param inputs - The shaft's diameter and the unit
      * @returns The key's and keyseat's sizes in `unit`
      * @group parallel keys

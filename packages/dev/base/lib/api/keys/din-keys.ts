@@ -2,7 +2,8 @@ import { InputError } from "../kernel-calls/errors";
 import { lengthsConverted, snappedLength, tableLength } from "../services/helpers/geometry/lengths";
 import type { Base } from "../inputs/base-inputs";
 import type { ParallelKeySizes } from "./key-types";
-import { KEY_LENGTHS, PARALLEL_KEYS, SMALLEST_KEYED_SHAFT } from "./din-keys.constants";
+import { PARALLEL_KEYS, SMALLEST_KEYED_SHAFT } from "./din-keys.constants";
+import { KEY_LENGTHS } from "./keys.constants";
 
 export function dinParallelKeySizes(shaftDiameter: number, unit: `${Base.unitOfLengthEnum}`): ParallelKeySizes {
     const diameter = tableLength(shaftDiameter, unit, "mm");

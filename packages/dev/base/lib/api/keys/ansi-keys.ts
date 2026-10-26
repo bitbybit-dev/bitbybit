@@ -3,7 +3,7 @@ import { lengthsConverted, snappedLength, tableLength } from "../services/helper
 import type { Base } from "../inputs/base-inputs";
 import type { ParallelKeySizes } from "./key-types";
 import { ANSI_PARALLEL_KEYS, ANSI_SMALLEST_KEYED_SHAFT } from "./ansi-keys.constants";
-import { KEY_LENGTHS } from "./din-keys.constants";
+import { KEY_LENGTHS } from "./keys.constants";
 
 export function ansiParallelKeySizes(shaftDiameter: number, unit: `${Base.unitOfLengthEnum}`): ParallelKeySizes {
     const diameter = tableLength(shaftDiameter, unit, "in");

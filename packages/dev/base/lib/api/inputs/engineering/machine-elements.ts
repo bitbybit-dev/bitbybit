@@ -326,7 +326,7 @@ export class DinKnurlSizesDto {
         if (unit !== undefined) { this.unit = unit; }
     }
     /**
-     * The cylinder's diameter in `unit`, more than twice `pitch`.
+     * The cylinder's diameter in `unit`, more than twice `pitch` (which is in millimetres).
      * @default 20
      * @minimum 0
      * @exclusiveMinimum true

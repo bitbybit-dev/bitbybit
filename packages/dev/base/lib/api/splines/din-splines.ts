@@ -4,9 +4,9 @@ import { lengthsConverted } from "../services/helpers/geometry/lengths";
 import type { Base } from "../inputs/base-inputs";
 import type { InvoluteSplineSizes } from "./spline-types";
 import {
-    SHIFT_TOLERANCE, SPLINE_BASE_SHARE, SPLINE_DEDENDUM_SHARE, SPLINE_HUB_TIP_SHARE, SPLINE_LEAST_SHIFT, SPLINE_LEAST_TEETH, SPLINE_LENGTHS, SPLINE_MODULES, SPLINE_MOST_SHIFT,
-    SPLINE_MOST_TEETH, SPLINE_PRESSURE_ANGLE, SPLINE_ROOT_FILLET, SPLINE_TIP_SHARE,
+    SHIFT_TOLERANCE, SPLINE_BASE_SHARE, SPLINE_DEDENDUM_SHARE, SPLINE_HUB_TIP_SHARE, SPLINE_LEAST_SHIFT, SPLINE_LEAST_TEETH, SPLINE_MODULES, SPLINE_MOST_SHIFT, SPLINE_MOST_TEETH, SPLINE_PRESSURE_ANGLE, SPLINE_ROOT_FILLET, SPLINE_TIP_SHARE,
 } from "./din-splines.constants";
+import { SPLINE_LENGTHS } from "./splines.constants";
 
 const shiftOf = (diameter: number, module: number, teeth: number): number => (diameter - module * teeth - SPLINE_BASE_SHARE * module) / (2 * module);
 

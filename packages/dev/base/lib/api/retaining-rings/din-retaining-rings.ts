@@ -2,8 +2,9 @@ import { InputError } from "../kernel-calls/errors";
 import { lengthsConverted, snappedLength, tableLength } from "../services/helpers/geometry/lengths";
 import type { Base } from "../inputs/base-inputs";
 import type { RetainingRingKind, RetainingRingSizes } from "./retaining-ring-types";
-import { BORE_RINGS, RING_LENGTHS, SHAFT_RINGS } from "./din-retaining-rings.constants";
+import { BORE_RINGS, SHAFT_RINGS } from "./din-retaining-rings.constants";
 import { checkedRingKind } from "./retaining-rings";
+import { RING_LENGTHS } from "./retaining-rings.constants";
 
 const ringsOf = (kind: RetainingRingKind): readonly RetainingRingSizes[] => checkedRingKind(kind) === "shaft" ? SHAFT_RINGS : BORE_RINGS;
 

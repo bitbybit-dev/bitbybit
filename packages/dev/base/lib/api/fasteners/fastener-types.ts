@@ -90,7 +90,7 @@ export interface SetScrewSizes {
     readonly pointAngle: number;
     /** The radius of an oval point's dome; 0 for every other point. */
     readonly pointRadius: number;
-    /** The length that divides short screws, with a shallower socket and a blunter cone, from long ones. */
+    /** Where short screws end: ISO counts a screw this long as short, ASME B18.3 only a shorter one. A short screw has a shallower socket, and under ISO a blunter cone. */
     readonly shortUpTo: number;
 }
 

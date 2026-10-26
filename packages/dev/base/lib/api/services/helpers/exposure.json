@@ -125,9 +125,6 @@
         "checkedUnitOfLength": {
             "internal": "the input guard every unit-aware method runs on its `unit`, before `math.millimetresPerUnit` would see a value outside the enum"
         },
-        "isUnitOfLength": {
-            "internal": "the test behind that guard, for readers that decide between a unit and a missing one"
-        },
         "lengthConverted": {
             "exposedAs": "math.convertLength"
         },

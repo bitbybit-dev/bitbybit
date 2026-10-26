@@ -156,4 +156,18 @@ describe("huffmanTable", () => {
         // Act & Assert
         expect(() => huffmanTable([1, 1, 1])).toThrow("The deflate stream is corrupt: a Huffman code is over-subscribed");
     });
+
+    it("should set aside no more than the data can inflate to, and still grow to the size expected", () => {
+        // Arrange
+        const zeros = new Uint8Array(3_000_000);
+        const packed = new Uint8Array(deflateRawSync(zeros, { level: constants.Z_BEST_COMPRESSION }));
+
+        // Act
+        const inflated = inflateRaw(packed, zeros.length);
+        const refused = (): Uint8Array => inflateRaw(packed, 4_000_000_000);
+
+        // Assert
+        expect(inflated).toEqual(zeros);
+        expect(refused).toThrow("The deflate stream holds 3000000 bytes, not the 4000000000 expected");
+    });
 });

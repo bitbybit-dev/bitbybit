@@ -55,4 +55,13 @@ describe("gzip", () => {
         expect(() => gunzipped(stored)).toThrow("method 0");
         expect(() => gunzipped(new Uint8Array([...endless, ...new Uint8Array(8).fill(1)]))).toThrow("never ends");
     });
+
+    it("should refuse a trailer that claims more than the data can inflate to, without setting that much aside first", () => {
+        // Arrange
+        const lying = new Uint8Array(gzipSync(new TextEncoder().encode("abc")));
+        lying.set([0xff, 0xff, 0xff, 0xff], lying.length - 4);
+
+        // Act & Assert
+        expect(() => gunzipped(lying)).toThrow("The deflate stream holds 3 bytes, not the 4294967295");
+    });
 });

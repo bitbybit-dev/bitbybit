@@ -2,7 +2,8 @@ import { InputError } from "../kernel-calls/errors";
 import { lengthsConverted } from "../services/helpers/geometry/lengths";
 import type { Base } from "../inputs/base-inputs";
 import type { BallBearingSizes, IsoBallBearingDesignation } from "./bearing-types";
-import { BALL_BEARINGS, BEARING_LENGTHS } from "./iso-bearings.constants";
+import { BALL_BEARINGS } from "./iso-bearings.constants";
+import { BEARING_LENGTHS } from "./bearings.constants";
 
 export function isoBallBearingDesignations(): IsoBallBearingDesignation[] {
     return Object.keys(BALL_BEARINGS) as IsoBallBearingDesignation[];

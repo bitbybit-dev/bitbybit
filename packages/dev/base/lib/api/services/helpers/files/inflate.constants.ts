@@ -33,6 +33,7 @@ export const REPEAT_ZERO_SHORT_BASE = 3;
 export const REPEAT_ZERO_LONG_BITS = 7;
 export const REPEAT_ZERO_LONG_BASE = 11;
 export const INITIAL_OUTPUT = 1 << 16;
+export const MOST_DEFLATE_RATIO = 1032;
 export const CODE_LENGTH_ORDER = Uint8Array.of(16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15);
 export const LENGTH_BASE = Uint16Array.of(3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258);
 export const LENGTH_EXTRA = Uint8Array.of(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0);

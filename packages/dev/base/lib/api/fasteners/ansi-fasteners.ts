@@ -9,7 +9,7 @@ import {
     ANSI_CLEARANCE_HOLES, ANSI_CONE_LONG_ANGLE, ANSI_CONE_SHORT_ANGLE, ANSI_COUNTERBORE_SINK, ANSI_CUP_ANGLE, ANSI_FLAT_ANGLE, ANSI_HEX_CAP_SCREWS, ANSI_HEX_NUTS, ANSI_PLAIN_WASHERS,
     ANSI_SET_SCREWS, ANSI_SOCKET_HEAD_CAP_SCREWS, HEX_CAP_LENGTH_BREAK, HEX_CAP_THREAD_EXTRA_LONG, HEX_CAP_THREAD_EXTRA_SHORT,
 } from "./ansi-fasteners.constants";
-import { checkedFit } from "./iso-fasteners";
+import { checkedFit } from "./fasteners";
 
 const POINTS: readonly AnsiSetScrewPoint[] = Object.values(Inputs.Engineering.ansiSetScrewPointEnum);
 const WASHER_SERIES: readonly AnsiWasherSeries[] = Object.values(Inputs.Engineering.ansiWasherSeriesEnum);

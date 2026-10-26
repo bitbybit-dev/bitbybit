@@ -24,12 +24,10 @@ export function ansiThread(size: AnsiThreadSize, series: "UNC" | "UNF", threadsP
     }
     const coarsest = (row.unc ?? row.unf).threadsPerInch;
     let pitchRow: UnifiedPitchRow | undefined;
-    let named: "UNC" | "UNF" | "UN" = series;
+    let named: "UNC" | "UNF" | "UN";
     if (threadsPerInch === undefined) {
-        pitchRow = series === "UNC" ? row.unc : row.unf;
-        if (pitchRow === undefined) {
-            throw new InputError(`\`series\` is UNC, and ${size} has no coarse thread; it is cut UNF.`, "series");
-        }
+        pitchRow = series === "UNC" ? row.unc ?? row.unf : row.unf;
+        named = pitchRow === row.unc ? "UNC" : "UNF";
     } else {
         if (!(threadsPerInch >= coarsest) || !Number.isFinite(threadsPerInch)) {
             throw new InputError(`\`threadsPerInch\` is not a finite number of at least ${String(coarsest)}, the coarsest ${size} thread.`, "threadsPerInch");

@@ -84,4 +84,19 @@ describe("glb", () => {
         expect(() => glbWithRootScale(shared, 0.001)).toThrow("share root nodes");
         expect(() => glbWithRootScale(broken, 0.001)).toThrow("not glTF");
     });
+
+    it("should leave a glb with no nodes as it is, and a scene with none empty, as glTF allows no empty list of children", () => {
+        // Arrange
+        const empty = glbOf({ asset: { version: "2.0" }, scenes: [{ nodes: [] }] });
+        const mixed = glbOf({ asset: { version: "2.0" }, scenes: [{ nodes: [0] }, { nodes: [] }], nodes: [{ name: "part" }] });
+
+        // Act
+        const scaledEmpty = jsonOf(glbWithRootScale(empty, 0.0254));
+        const scaledMixed = jsonOf(glbWithRootScale(mixed, 0.0254));
+
+        // Assert
+        expect(scaledEmpty).toEqual({ asset: { version: "2.0" }, scenes: [{ nodes: [] }] });
+        expect(scaledMixed.scenes).toEqual([{ nodes: [1] }, { nodes: [] }]);
+        expect(scaledMixed.nodes[1]).toEqual({ name: "unit scale", scale: [0.0254, 0.0254, 0.0254], children: [0] });
+    });
 });

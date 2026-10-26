@@ -33,10 +33,10 @@ describe("ansi threads", () => {
         expect([thread.threadsPerInch, thread.diameter, thread.tapDrill]).toEqual([perInch, diameter, drill]);
     });
 
-    it("should refuse a coarse #0, which is cut fine only, and a series or size it does not know", () => {
+    it("should cut #0, which has no coarse thread, fine even when the coarse is asked for, and refuse a series or size it does not know", () => {
         // Act & Assert
         expect(ansiThread("#0", "UNF").designation).toBe("#0-80 UNF");
-        expect(() => ansiThread("#0", "UNC")).toThrow("`series` is UNC, and #0 has no coarse thread; it is cut UNF.");
+        expect(ansiThread("#0", "UNC").designation).toBe("#0-80 UNF");
         expect(() => ansiThread("1/4", "UNEF" as "UNC")).toThrow("`series`");
         expect(() => ansiThread("11/16" as AnsiThreadSize, "UNC")).toThrow("`size`");
     });

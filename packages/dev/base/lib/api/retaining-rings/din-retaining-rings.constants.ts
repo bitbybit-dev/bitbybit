@@ -117,4 +117,3 @@ export const BORE_RINGS: readonly RetainingRingSizes[] = [
     { nominal: 100, thickness: 3, freeDiameter: 105.5, lugWidth: 9.2, sectionWidth: 8.4, lugHoleDiameter: 3.5, grooveDiameter: 103.5, grooveWidth: 3.15, edgeDistance: 5.3 },
 ];
 
-export const RING_LENGTHS = ["nominal", "thickness", "freeDiameter", "lugWidth", "sectionWidth", "lugHoleDiameter", "grooveDiameter", "grooveWidth", "edgeDistance"] as const;

@@ -31,4 +31,3 @@ export const BALL_BEARINGS: Readonly<Record<IsoBallBearingDesignation, BallBeari
     "6210": { bore: 50, outside: 90, width: 20 },
 };
 
-export const BEARING_LENGTHS = ["bore", "outside", "width"] as const;

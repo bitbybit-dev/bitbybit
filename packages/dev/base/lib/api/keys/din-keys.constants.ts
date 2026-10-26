@@ -15,4 +15,3 @@ export const PARALLEL_KEYS: readonly KeyRow[] = [
 ];
 
 export const SMALLEST_KEYED_SHAFT = 6;
-export const KEY_LENGTHS = ["width", "height", "shaftDepth", "hubDepth"] as const;

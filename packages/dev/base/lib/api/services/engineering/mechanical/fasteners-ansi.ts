@@ -2,9 +2,9 @@ import * as Inputs from "../../../inputs";
 import type * as Resolved from "../../../resolved-inputs";
 import { resolveDto } from "../../../kernel-calls";
 import { ansiClearanceHoleDiameter, ansiHexBoltSizes, ansiHexNutSizes, ansiSetScrewSizes, ansiSocketHeadCapScrewSizes, ansiWasherSizes } from "../../../fasteners/ansi-fasteners";
-import { HEX_BOLT_LENGTHS, HEX_NUT_LENGTHS, SCREW_HEAD_LENGTHS, SET_SCREW_LENGTHS, WASHER_LENGTHS } from "../../../fasteners/iso-fasteners.constants";
 import type { HexBoltSizes, HexNutSizes, SetScrewSizes, SocketHeadCapScrewSizes, WasherSizes } from "../../../fasteners/fastener-types";
 import { checkedUnitOfLength, lengthsConverted, snappedLength, tableLength } from "../../helpers/geometry/lengths";
+import { HEX_BOLT_LENGTHS, HEX_NUT_LENGTHS, SCREW_HEAD_LENGTHS, SET_SCREW_LENGTHS, WASHER_LENGTHS } from "../../../fasteners/fasteners.constants";
 
 /**
  * The sizes of ASME inch fasteners from #0 to 1 inch, with no CAD kernel needed: clearance holes
@@ -38,8 +38,8 @@ export class EngineeringFastenersAnsi {
      * Gives the head of an ASME B18.3 cap screw: its diameter and height, its hexagon recess, the
      * threaded length and the counterbore that sinks it.
      *
-     * The counterbore is as deep as the head is high, so the head sits flush. Example: 1/4 -> head
-     * 0.375 across and 0.25 high, a 3/16 recess, counterbore 7/16 across
+     * The counterbore is 0.02 deeper than the head, so the head sits below the face. Example: 1/4 ->
+     * head 0.375 by 0.25, a 3/16 recess, counterbore 7/16 by 0.27
      * @param inputs - The size and the unit
      * @returns The head's sizes in `unit`
      * @group screws

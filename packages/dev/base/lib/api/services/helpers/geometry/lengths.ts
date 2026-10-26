@@ -1,16 +1,11 @@
-import type { Base } from "../../../inputs/base-inputs";
 import { InputError } from "../../../kernel-calls/errors";
+import type { UnitOfLength } from "../helper-types";
 import { roundedTo } from "./scalars";
-
-type UnitOfLength = `${Base.unitOfLengthEnum}`;
-
-const MILLIMETRES_PER_UNIT: Readonly<Record<UnitOfLength, number>> = { mm: 1, cm: 10, m: 1000, in: 25.4 };
-const CONVERTED_PLACES = 9;
-const TABLE_PLACES: Readonly<Record<UnitOfLength, number>> = { mm: 4, cm: 5, m: 7, in: 6 };
+import { CONVERTED_PLACES, MILLIMETRES_PER_UNIT, TABLE_PLACES } from "./lengths.constants";
 
 const UNITS: readonly string[] = Object.keys(MILLIMETRES_PER_UNIT);
 
-export const isUnitOfLength = (unit: unknown): unit is UnitOfLength => typeof unit === "string" && UNITS.includes(unit);
+const isUnitOfLength = (unit: unknown): unit is UnitOfLength => typeof unit === "string" && UNITS.includes(unit);
 
 export const checkedUnitOfLength = (unit: unknown, property: string): UnitOfLength => {
     if (!isUnitOfLength(unit)) {

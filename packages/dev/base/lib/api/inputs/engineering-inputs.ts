@@ -1320,7 +1320,7 @@ export namespace Engineering {
             if (unit !== undefined) { this.unit = unit; }
         }
         /**
-         * Whether the thread is coarse (UNC) or fine (UNF).
+         * Whether the thread is coarse (UNC) or fine (UNF); #0, which has no coarse thread, is cut fine.
          * @default unc
          */
         series?: ansiThreadSeriesEnum | undefined = ansiThreadSeriesEnum.unc;
@@ -1416,7 +1416,7 @@ export namespace Engineering {
         point?: ansiSetScrewPointEnum | undefined = ansiSetScrewPointEnum.cup;
         /**
          * Whether the screw's thread is coarse (UNC) or fine (UNF), which sets the root its point
-         * starts from.
+         * starts from; #0, which has no coarse thread, is cut fine.
          * @default unc
          */
         series?: ansiThreadSeriesEnum | undefined = ansiThreadSeriesEnum.unc;
@@ -1757,7 +1757,7 @@ export namespace Engineering {
             if (unit !== undefined) { this.unit = unit; }
         }
         /**
-         * The cylinder's diameter in `unit`, more than twice `pitch`.
+         * The cylinder's diameter in `unit`, more than twice `pitch` (which is in millimetres).
          * @default 20
          * @minimum 0
          * @exclusiveMinimum true

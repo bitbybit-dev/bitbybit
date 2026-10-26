@@ -4,6 +4,7 @@ import { InputError } from "../kernel-calls/errors";
 import { checkedIsoSize, isoThread } from "../threads/iso-threads";
 import { COARSE_THREADS } from "../threads/iso-threads.constants";
 import type { IsoThreadSize } from "../threads/thread-types";
+import { checkedFit } from "./fasteners";
 import type { ChamferedWasherSizes, ClearanceFit, HexBoltSizes, HexNutSizes, IsoSetScrewPoint, SetScrewSizes, SocketHeadCapScrewSizes, WasherSizes } from "./fastener-types";
 import {
     BOLT_LENGTH_MEDIUM,
@@ -28,15 +29,8 @@ import {
     WASHER_CHAMFER_SHARE,
 } from "./iso-fasteners.constants";
 
-const FITS: readonly ClearanceFit[] = Object.values(Inputs.Engineering.clearanceFitEnum);
 const POINTS: readonly IsoSetScrewPoint[] = Object.values(Inputs.Engineering.isoSetScrewPointEnum);
 
-export function checkedFit(fit: ClearanceFit): ClearanceFit {
-    if (!FITS.includes(fit)) {
-        throw new InputError(`\`fit\` is not one of ${FITS.join(", ")}.`, "fit");
-    }
-    return fit;
-}
 
 export function isoClearanceHoleDiameter(size: IsoThreadSize, fit: ClearanceFit): number {
     return CLEARANCE_HOLES[checkedIsoSize(size)][checkedFit(fit)];

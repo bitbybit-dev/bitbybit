@@ -17,8 +17,8 @@ export class EngineeringRetainingRingsAnsi {
      * Gives the inch ring for a shaft or a bore, with its groove: the ring's thickness, free diameter,
      * lugs and lug holes, and the groove's diameter, width and least distance from the end.
      *
-     * A diameter within half a thousandth of a listed one takes it. Example: a 3/4 shaft -> a groove
-     * 0.704 across
+     * A diameter within a thousandth of an inch of a listed one takes it. Example: a 3/4 shaft -> a
+     * groove 0.704 across
      * @param inputs - Shaft or bore, its diameter and the unit
      * @returns The ring's and the groove's sizes in `unit`
      * @group circlips

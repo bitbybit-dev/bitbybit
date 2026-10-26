@@ -7,7 +7,7 @@ import {
     ANSI_SPLINE_FLAT_ROOT_SHARE, ANSI_SPLINE_LEAST_TEETH, ANSI_SPLINE_MAJOR_SHARE, ANSI_SPLINE_MINOR_SHARE, ANSI_SPLINE_MOST_TEETH, ANSI_SPLINE_PITCHES,
     ANSI_SPLINE_PRESSURE_ANGLE, ANSI_SPLINE_ROOT_FILLET,
 } from "./ansi-splines.constants";
-import { SPLINE_LENGTHS } from "./din-splines.constants";
+import { SPLINE_LENGTHS } from "./splines.constants";
 
 export function ansiInvoluteSplineSizes(teeth: number, pitch: AnsiSplinePitch, unit: `${Base.unitOfLengthEnum}`): InvoluteSplineSizes {
     if (!ANSI_SPLINE_PITCHES.includes(pitch)) {

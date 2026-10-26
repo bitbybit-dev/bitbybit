@@ -3,8 +3,8 @@ import { lengthsConverted, snappedLength, tableLength } from "../services/helper
 import type { Base } from "../inputs/base-inputs";
 import type { RetainingRingKind, RetainingRingSizes } from "./retaining-ring-types";
 import { ANSI_BORE_RINGS, ANSI_RING_MATCH, ANSI_SHAFT_RINGS } from "./ansi-retaining-rings.constants";
-import { RING_LENGTHS } from "./din-retaining-rings.constants";
 import { checkedRingKind } from "./retaining-rings";
+import { RING_LENGTHS } from "./retaining-rings.constants";
 
 const ringsOf = (kind: RetainingRingKind): readonly RetainingRingSizes[] => checkedRingKind(kind) === "shaft" ? ANSI_SHAFT_RINGS : ANSI_BORE_RINGS;
 

@@ -4,11 +4,20 @@
 
 ```ts
 
+// Warning: (ae-forgotten-export) The symbol "Inputs_2" needs to be exported by the entry point index.d.ts
+//
+// @public
+export type AnsiBallBearingDesignation = `${Inputs_2.Engineering.ansiBallBearingEnum}`;
+
+// @public
+export type AnsiSetScrewPoint = `${Inputs_2.Engineering.ansiSetScrewPointEnum}`;
+
+// @public
+export type AnsiSplinePitch = `${Inputs_2.Engineering.ansiSplinePitchEnum}`;
+
 // @public
 export type AnsiThreadSeries = "UNC" | "UNF" | "UN";
 
-// Warning: (ae-forgotten-export) The symbol "Inputs_2" needs to be exported by the entry point index.d.ts
-//
 // @public
 export type AnsiThreadSize = `${Inputs_2.Engineering.ansiThreadSizeEnum}`;
 
@@ -18,6 +27,9 @@ export interface AnsiThreadSizes extends ThreadSizes {
     readonly size: AnsiThreadSize;
     readonly threadsPerInch: number;
 }
+
+// @public
+export type AnsiWasherSeries = `${Inputs_2.Engineering.ansiWasherSeriesEnum}`;
 
 // Warning: (ae-forgotten-export) The symbol "Key" needs to be exported by the entry point index.d.ts
 //
@@ -473,6 +485,9 @@ export interface ChamferedWasherSizes extends WasherSizes {
 
 // @public
 export function checkStructure(constraints: DtoConstraints, inputs: unknown): InputIssue[];
+
+// @public
+export type ClearanceFit = `${Inputs_2.Engineering.clearanceFitEnum}`;
 
 // @public
 export class Color {
@@ -1456,14 +1471,12 @@ export class EngineeringBearings {
 // @beta
 export class EngineeringBearingsAnsi {
     ballBearingSizes(inputs: Inputs_2.Engineering.AnsiBallBearingSizesDto): BallBearingSizes;
-    // Warning: (ae-forgotten-export) The symbol "AnsiBallBearingDesignation" needs to be exported by the entry point index.d.ts
     designations(): AnsiBallBearingDesignation[];
 }
 
 // @beta
 export class EngineeringBearingsIso {
     ballBearingSizes(inputs: Inputs_2.Engineering.IsoBallBearingSizesDto): BallBearingSizes;
-    // Warning: (ae-forgotten-export) The symbol "IsoBallBearingDesignation" needs to be exported by the entry point index.d.ts
     designations(): IsoBallBearingDesignation[];
 }
 
@@ -2126,6 +2139,12 @@ export class IoBitByBit {
 }
 
 // @public
+export type IsoBallBearingDesignation = `${Inputs_2.Engineering.isoBallBearingEnum}`;
+
+// @public
+export type IsoSetScrewPoint = `${Inputs_2.Engineering.isoSetScrewPointEnum}`;
+
+// @public
 export type IsoThreadSize = `${Inputs_2.Engineering.isoThreadSizeEnum}`;
 
 // @public
@@ -2181,6 +2200,9 @@ export interface KernelSteps {
     // (undocumented)
     total: number;
 }
+
+// @public
+export type KnurlPattern = `${Inputs_2.Engineering.knurlPatternEnum}`;
 
 // @public
 export interface KnurlSizes {
@@ -3798,6 +3820,9 @@ export function resolveDto<T extends object>(Dto: DtoConstructor<T>, inputs: unk
 
 // @public
 export function resolveInputs(registry: DtoRegistry, path: string, inputs: unknown): unknown;
+
+// @public
+export type RetainingRingKind = `${Inputs_2.Engineering.retainingRingKindEnum}`;
 
 // @public
 export interface RetainingRingSizes {

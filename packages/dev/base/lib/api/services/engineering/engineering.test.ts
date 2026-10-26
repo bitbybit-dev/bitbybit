@@ -258,13 +258,13 @@ describe("engineering", () => {
                 fasteners.hexBoltSizes({ size: E.ansiThreadSizeEnum.in1_4, length: 1 }).threadLength,
                 fasteners.hexNutSizes({ size: E.ansiThreadSizeEnum.in1_4 }).acrossFlats,
                 fasteners.washerSizes({ size: E.ansiThreadSizeEnum.in1_4, series: E.ansiWasherSeriesEnum.narrow }).outerDiameter,
-                fasteners.setScrewSizes({ size: E.ansiThreadSizeEnum.in1_4, point: E.ansiSetScrewPointEnum.cup, length: 0.25 }).pointDiameter > 0,
+                fasteners.setScrewSizes({ size: E.ansiThreadSizeEnum.in1_4, point: E.ansiSetScrewPointEnum.cup, length: 0.25 }).pointDiameter,
             ];
 
             // Assert
             expect([thread.designation, thread.threadsPerInch, fine.designation]).toEqual(["1/4-20 UNC", 20, "1/4-28 UNF"]);
             expect(ansi.threads.ansi.sizes()).toContain(E.ansiThreadSizeEnum.n10);
-            expect(sizes).toEqual([0.281, 0.4375, 0.75, 0.4375, 0.625, true]);
+            expect(sizes).toEqual([0.281, 0.4375, 0.75, 0.4375, 0.625, 0.132]);
         });
 
         it("should give the inch machine elements in the unit asked for, as the inches they are", () => {
@@ -280,7 +280,7 @@ describe("engineering", () => {
             expect(bearing.bore).toBeCloseTo(12.7, 9);
             expect(elements.bearings.ansi.designations()).toContain("R8");
             expect(key.width).toBeCloseTo(0.25, 9);
-            expect(ring.grooveDiameter).toBeLessThan(0.75);
+            expect(ring.grooveDiameter).toBe(0.704);
             expect(elements.retainingRings.ansi.diameters({ kind: E.retainingRingKindEnum.bore })).toContain(1);
             expect(spline.referenceDiameter).toBe(1.5);
             expect(knurl.grooves).toBe(48);
@@ -300,6 +300,18 @@ describe("engineering", () => {
             expect([thread.designation, thread.diameter, thread.pitch, thread.tapDrill]).toEqual(["M8", 0.31496063, 0.049212598, 0.267716535]);
             expect(hole).toBe(0.259842520);
             expect(bearing.bore).toBe(0.31496063);
+        });
+
+        it("should size in centimetres and metres as in millimetres: a DIN key for a 2.5 cm shaft, an M8 bolt 3 cm long, an inch ring for a 0.01905 m shaft", () => {
+            // Act
+            const key = engineering.mechanical.keys.din.parallelKeySizes({ shaftDiameter: 2.5, unit: Inputs.Base.unitOfLengthEnum.centimetre });
+            const bolt = engineering.mechanical.fasteners.iso.hexBoltSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m8, length: 3, unit: Inputs.Base.unitOfLengthEnum.centimetre });
+            const ring = engineering.mechanical.retainingRings.ansi.retainingRingSizes({ kind: Inputs.Engineering.retainingRingKindEnum.shaft, diameter: 0.01905, unit: Inputs.Base.unitOfLengthEnum.metre });
+
+            // Assert
+            expect([key.width, key.height, key.shaftDepth, key.hubDepth]).toEqual([0.8, 0.7, 0.4, 0.33]);
+            expect(bolt.threadLength).toBe(2.2);
+            expect([ring.nominal, ring.grooveDiameter]).toEqual([0.01905, 0.0178816]);
         });
 
         it("should read a bolt's and a set screw's length in the unit asked for, so 4 inches of M8 bolt are threaded as 101.6 mm of it", () => {

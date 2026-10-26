@@ -755,6 +755,9 @@ export class MathBitByBit {
         if (!Number.isInteger(resolved.denominator) || resolved.denominator < 1) {
             throw new InputError(`\`denominator\` is ${String(resolved.denominator)}, and has to be a whole number of at least 1.`, "denominator");
         }
+        if (!(Math.abs(resolved.number) * resolved.denominator <= Number.MAX_SAFE_INTEGER)) {
+            throw new InputError(`\`number\` is ${String(resolved.number)}, too large to write in parts of ${String(resolved.denominator)}.`, "number");
+        }
         return fractionText(resolved.number, resolved.denominator);
     }
 

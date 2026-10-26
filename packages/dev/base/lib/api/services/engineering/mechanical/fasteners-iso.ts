@@ -2,9 +2,10 @@ import * as Inputs from "../../../inputs";
 import type * as Resolved from "../../../resolved-inputs";
 import { resolveDto } from "../../../kernel-calls";
 import { isoChamferedWasherSizes, isoClearanceHoleDiameter, isoHexBoltSizes, isoHexNutSizes, isoSetScrewSizes, isoSocketHeadCapScrewSizes, isoWasherSizes } from "../../../fasteners/iso-fasteners";
-import { CHAMFERED_WASHER_LENGTHS, HEX_BOLT_LENGTHS, HEX_NUT_LENGTHS, SCREW_HEAD_LENGTHS, SET_SCREW_LENGTHS, WASHER_LENGTHS } from "../../../fasteners/iso-fasteners.constants";
+import { CHAMFERED_WASHER_LENGTHS } from "../../../fasteners/iso-fasteners.constants";
 import type { ChamferedWasherSizes, HexBoltSizes, HexNutSizes, SetScrewSizes, SocketHeadCapScrewSizes, WasherSizes } from "../../../fasteners/fastener-types";
 import { checkedUnitOfLength, lengthsConverted, snappedLength, tableLength } from "../../helpers/geometry/lengths";
+import { HEX_BOLT_LENGTHS, HEX_NUT_LENGTHS, SCREW_HEAD_LENGTHS, SET_SCREW_LENGTHS, WASHER_LENGTHS } from "../../../fasteners/fasteners.constants";
 
 /**
  * The sizes of ISO metric fasteners from M1.6 to M24, with no CAD kernel needed: clearance holes,

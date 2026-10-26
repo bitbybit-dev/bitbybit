@@ -22,12 +22,18 @@ function checkedJson(parsed: unknown): GltfJson {
 
 function scaledJson(json: GltfJson, scale: number): GltfJson {
     const nodes: GltfNode[] = [...(json.nodes ?? [])];
+    if (nodes.length === 0) {
+        return json;
+    }
     const scenes = json.scenes !== undefined && json.scenes.length > 0 ? json.scenes : [{ nodes: rootsOf(nodes) }];
     const placed = scenes.flatMap(scene => scene.nodes ?? []);
     if (new Set(placed).size !== placed.length) {
         throw new Error("The glb's scenes share root nodes, so no one node can scale each scene alone");
     }
     const wrapped = scenes.map(scene => {
+        if ((scene.nodes ?? []).length === 0) {
+            return scene;
+        }
         nodes.push({ name: GLB_SCALE_NODE_NAME, scale: [scale, scale, scale], children: [...(scene.nodes ?? [])] });
         return { ...scene, nodes: [nodes.length - 1] };
     });

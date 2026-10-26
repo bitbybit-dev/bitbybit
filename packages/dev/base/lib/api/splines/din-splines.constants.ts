@@ -10,4 +10,3 @@ export const SPLINE_MODULES: readonly number[] = [0.5, 0.6, 0.75, 0.8, 1, 1.25, 
 export const SPLINE_LEAST_TEETH = 6;
 export const SPLINE_MOST_TEETH = 82;
 export const SHIFT_TOLERANCE = 1e-9;
-export const SPLINE_LENGTHS = ["referenceDiameter", "module", "shaftTipDiameter", "shaftRootDiameter", "hubTipDiameter", "hubRootDiameter"] as const;
