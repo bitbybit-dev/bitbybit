@@ -64,16 +64,16 @@ npm run lint
   re-hydration, reserved commands) go into `lib/api-hand/<same path>.ts` with a marker line each; a
   `// replaces <path>` member without a JSDoc receives the kernel's. Every public kernel API method
   needs an explicit return type - the generator refuses an inferred one.
-- **The five assembled inputs namespaces are generated; do not edit them.** `occt/.../occ-inputs.ts`,
-  `jscad/.../jscad-inputs.ts`, `manifold/.../manifold-inputs.ts`, `ifc/.../ifc-inputs.ts` and
-  `core/.../verb-inputs.ts` are each written from the fragments in the sibling directory beside them.
-  Add or change a DTO in the fragment whose name fits (they are slices of the namespace in a fixed
-  order, so a new DTO lands where its fragment sits), import a sibling fragment's DTO when a property
-  refers to it, and run `npm run gen:inputs` at the repository root; `check:inputs` in `npm test`
-  fails on a stale file. A new fragment is added to its namespace's `order` in
-  `scripts/inputs.config.mjs` - the generator fails on a fragment nothing names rather than dropping
-  it. The fragments are excluded from the build - the assembled namespace is what compiles - and they
-  are what lint sees, the assembled file being ignored.
+- **The six assembled inputs namespaces are generated; do not edit them.** `occt/.../occ-inputs.ts`,
+  `jscad/.../jscad-inputs.ts`, `manifold/.../manifold-inputs.ts`, `ifc/.../ifc-inputs.ts`,
+  `core/.../verb-inputs.ts` and `base/.../engineering-inputs.ts` are each written from the fragments in
+  the sibling directory beside them. Add or change a DTO in the fragment whose name fits (they are
+  slices of the namespace in a fixed order, so a new DTO lands where its fragment sits), import a
+  sibling fragment's DTO when a property refers to it, and run `npm run gen:inputs` at the repository
+  root; `check:inputs` in `npm test` fails on a stale file. A new fragment is added to its namespace's
+  `order` in `scripts/inputs.config.mjs` - the generator fails on a fragment nothing names rather than
+  dropping it. The fragments are excluded from the build - the assembled namespace is what compiles -
+  and they are what lint sees, the assembled file being ignored.
 - **Method and class JSDoc is authored on the kernel and describes the API as users reach it** - the
   asynchronous, worker-backed one (`await` in examples, File/Blob accepted where the worker converts
   them, `deleteDocument()` for document lifetime) - with the generator tags (`@group`, `@shortname`,

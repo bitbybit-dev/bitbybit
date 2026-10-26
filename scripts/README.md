@@ -13,8 +13,9 @@ that reads an allow-list fails on an entry that no longer matches anything, so t
 
 ## gen-inputs.mjs and inputs.config.mjs
 
-`npm run gen:inputs` writes each kernel's inputs namespace (`occ-inputs.ts`, `jscad-inputs.ts`,
-`manifold-inputs.ts`, `ifc-inputs.ts`, `verb-inputs.ts`) from the fragments in the directory beside it;
+`npm run gen:inputs` writes each assembled inputs namespace (`occ-inputs.ts`, `jscad-inputs.ts`,
+`manifold-inputs.ts`, `ifc-inputs.ts`, `verb-inputs.ts`, base's `engineering-inputs.ts`) from the
+fragments in the directory beside it;
 `npm run check:inputs` (part of `npm test`) writes nothing and fails when a committed file is not what
 its fragments assemble to, naming the first differing line.
 
@@ -31,7 +32,7 @@ its fragments assemble to, naming the first differing line.
   fragment written either way assembles the same. A `//` line after the separator is body and survives.
 - `namespace.ts` in each directory holds only the namespace's JSDoc block (with or without a header),
   which is placed directly above `export namespace`.
-- `inputs.config.mjs` names the four targets and their fragment `order`. The order is explicit on
+- `inputs.config.mjs` names the six targets and their fragment `order`. The order is explicit on
   purpose: the emitted `.d.ts` follows it, so it is part of what consumers read, and leaving it to the
   file system would let a rename reorder a published declaration file. A fragment named there must
   exist and a fragment in the directory must be named there; the generator fails on either, so a new

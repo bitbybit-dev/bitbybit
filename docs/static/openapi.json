@@ -2028,7 +2028,7 @@
             "type": "boolean"
           },
           "unit": {
-            "description": "The unit the pipeline's shapes are modelled in. Given, a STEP output states it, so CAD tools open the shapes at their true size, and a glTF output is written in metres, the unit glTF viewers assume. Left out, the numbers are written as they are: STEP states millimetres and glTF holds them unscaled. A design build's documents state their own unit, and a unit given here must be the same.",
+            "description": "The unit the pipeline's shapes are modelled in. Given, a STEP output is written at its true size in millimetres, so CAD tools open the shapes at the right size, and a glTF output is written in metres, the unit glTF viewers assume. Left out, the numbers are written as they are: STEP takes them as millimetres and glTF holds them unscaled. The other formats carry no unit and always hold the numbers as they are. A design build's documents state their own unit, and a unit given here must be the same.",
             "$ref": "#/components/schemas/LengthUnit"
           }
         },

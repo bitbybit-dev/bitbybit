@@ -154,12 +154,12 @@ deliberately declares a type other than the mechanical mapping, `scripts/worker-
 holds the type and the reason; kernel methods the worker does not expose are the `kernelOnly` entries
 of `scripts/worker-parity.allow.json`, one list for the generator and the parity check.
 
-The four inputs namespaces - `occ-inputs.ts` (some 300 DTOs), `jscad-inputs.ts`,
-`manifold-inputs.ts`, `verb-inputs.ts` - are assembled the same way. Each has to stay one compilation
+The six inputs namespaces - `occ-inputs.ts` (some 300 DTOs), `jscad-inputs.ts`,
+`manifold-inputs.ts`, `ifc-inputs.ts`, `verb-inputs.ts` and base's `engineering-inputs.ts` - are assembled the same way. Each has to stay one compilation
 unit, because TypeScript does not merge a namespace across modules and tools that read the published
 declarations read each as a whole, so `scripts/gen-inputs.mjs` writes it from the
 fragments beside it, each a slice of the namespace body written as an ordinary module.
-`scripts/inputs.config.mjs` names the four and their fragment order - the order of the emitted
+`scripts/inputs.config.mjs` names the six and their fragment order - the order of the emitted
 declarations - and fails on a fragment nothing names. Edit a fragment and run `npm run gen:inputs`;
 `check:inputs` fails on a stale assembled file, which being generated is not linted.
 

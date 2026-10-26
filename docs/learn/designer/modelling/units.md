@@ -11,11 +11,13 @@ tags: [designer]
 
 # Units and working in inches
 
-A design has one unit of length, millimetres until you change it: centimetres, metres or inches. Every length a feature, a sketch, a joint or a parameter holds is in that unit, and every document of the design is in it, so an assembly places each part at the size it was drawn. Angles are always degrees.
+A design has one unit of length, millimetres until you change it: centimetres, metres or inches. Every length a feature, a sketch, a joint or a parameter holds is in that unit, and every document of the design is in it, so an assembly places each part at the size it was drawn. Angles are always degrees. The design's unit is the one its documents share, so a design written in inches elsewhere opens in inches.
 
 ## Set the design's units
 
-Choose <Ui>File</Ui> > <Ui>Units</Ui>, pick the unit and choose <Ui>Set units</Ui>. The numbers stay as they are and their unit changes, so a block 10 millimetres wide becomes a block 10 inches wide: set the unit when you start a design, before its sizes are typed. Every document changes in the one step, and so does every length parameter, while angles and counts keep theirs. Undo in a document puts that document back.
+Choose <Ui>File</Ui> > <Ui>Units</Ui>, pick the unit and choose <Ui>Set units</Ui>. The numbers stay as they are and their unit changes, so a block 10 millimetres wide becomes a block 10 inches wide: set the unit when you start a design, before its sizes are typed. Every document changes in the one step, and so does every length parameter, while angles and counts keep theirs. A parameter's unit is the design's, degrees or none.
+
+Standard sizes keep their real size: an M8 screw, a 1/4-20 thread or a 608 bearing stays what it is, each standard part's number is rewritten to name its real length, and a fastened screw stays sunk in its counterbore. An imported IGES file keeps its real size too, while a STEP or BREP file imported into the design became shapes in its unit, so those change with the numbers. Undo works in each document on its own; once every document is back in the old unit, so is the design. The tutorials are written in millimetres and start only in a millimetre design.
 
 New documents, solids, sketches and features start at sizes that suit the unit, and in inches they start at binary fractions such as 3/8 or 1/4. The ground grid steps through 1/64, 1/32 and on up to 1 inch, then whole inches, with a heavier line every fourth step.
 
@@ -27,7 +29,7 @@ The [standard parts library](../assemblies/components.md#standard-parts) has fas
 
 Part numbers follow the standard. An ANSI screw's length is written as a fraction of an inch, `SHCS 1/4 UNC x 1-1/4`, and an ISO screw in an inch design keeps its millimetres, `ISO 4762 M8x25`. [Fasten](../assemblies/replicate.md#fasten-a-screw-in-every-hole-at-once) puts the screw of each hole's standard in it.
 
-Gears from the library take a <Ui>Diametral pitch</Ui> in an inch design instead of a module: the number of teeth to an inch of pitch diameter, 12 to start. Two gears of the same diametral pitch mesh, and <Ui>Mesh gears</Ui> sets them the right distance apart.
+Gears from the library, the gear solids and the pen's gear and rack take a <Ui>Diametral pitch</Ui> in an inch design instead of a module: the number of teeth to an inch of pitch diameter, 12 to start. Two gears of the same diametral pitch mesh, and <Ui>Mesh gears</Ui> sets them the right distance apart.
 
 ## Holes, threads and machining
 
@@ -35,6 +37,6 @@ A hole's <Ui>Fastener</Ui> takes a <Ui>Standard</Ui>: pick ANSI inch, then the <
 
 ## Files in and out
 
-- STEP files say their unit. An export writes the design's, and an imported STEP or IGES file comes in at its true size, converted into the design's unit; the import's summary says when the file was in another.
+- STEP and IGES files say their unit. An export is written at its true size in millimetres, which every CAD program reads at the right size, and an imported STEP or IGES file comes in at its true size, converted into the design's unit; the summary of a STEP import says when the file was in another.
 - GLB files are written in metres, the unit every glTF viewer expects, so a part in inches opens at its true size.
 - STL files carry no unit, so they hold the design's numbers as they are: tell whoever prints the part which unit it is in.

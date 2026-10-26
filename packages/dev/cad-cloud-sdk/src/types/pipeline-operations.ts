@@ -9902,12 +9902,12 @@ export interface OperationParams {
         tryDownload?: boolean | PipelineRef;
     };
     /**
-     * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and starts a
-     * browser download of the file.
+     * Writes a shape as STEP, the exchange format for exact CAD geometry, and starts a browser
+     * download of the file.
      *
-     * With `adjustYtoZ` true, Y and Z swap, which mirrors the shape; to keep it as built, turn it 90
-     * degrees about X with `transforms.rotate` first. `fileName` names the download, `tryDownload`
-     * false skips it, and `saveShapeSTEPAndReturn` gives the text instead.
+     * With `adjustYtoZ` true, Y and Z swap, mirroring the shape; turn it 90 degrees about X with
+     * `transforms.rotate` first to keep it as built. The file is in millimetres, another `unit`
+     * scaled to them; `saveShapeSTEPAndReturn` returns the text.
      */
     "occt.io.saveShapeSTEP": {
         /** The shape written to the file. */
@@ -10040,8 +10040,8 @@ export interface OperationParams {
      * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
      * asked, and starts a browser download of the file.
      *
-     * The drawing shows the view from the frame's normal side, x running right along its direction.
-     * `tryDownload` false skips the download; `saveShapeSvgAndReturn` gives the text instead.
+     * The drawing shows the view from the frame's normal side, x along its direction; with the shape's
+     * `unit`, it states its true width and height. `saveShapeSvgAndReturn` gives the text instead.
      */
     "occt.io.saveShapeSvg": {
         /** The shape to draw. */
@@ -11270,8 +11270,8 @@ export interface OperationParams {
          */
         fullyThreaded?: boolean | PipelineRef;
         /**
-         * Whether the thread is coarse (UNC) or fine (UNF), which sets the pitch a modelled thread is cut
-         * at and the tip's chamfer.
+         * Whether the thread is coarse (UNC) or fine (UNF), setting a modelled thread's pitch and the
+         * tip's chamfer; #0, which has no coarse thread, is cut fine.
          */
         series?: "UNC" | "UNF" | PipelineRef;
         /** The length of the screw from under its head to its tip, in `unit`. */
@@ -11308,8 +11308,8 @@ export interface OperationParams {
          */
         fullyThreaded?: boolean | PipelineRef;
         /**
-         * Whether the thread is coarse (UNC) or fine (UNF), which sets the pitch a modelled thread is cut
-         * at and the tip's chamfer.
+         * Whether the thread is coarse (UNC) or fine (UNF), setting a modelled thread's pitch and the
+         * tip's chamfer; #0, which has no coarse thread, is cut fine.
          */
         series?: "UNC" | "UNF" | PipelineRef;
         /** The length of the screw from under its head to its tip, in `unit`. */
@@ -11380,7 +11380,10 @@ export interface OperationParams {
      * Its recessed end lies on the frame's origin and it runs against the normal.
      */
     "occt.parts.mechanical.fasteners.ansi.setScrew": {
-        /** Whether the thread is coarse (UNC) or fine (UNF), which sets the root the point starts from. */
+        /**
+         * Whether the thread is coarse (UNC) or fine (UNF), which sets the root the point starts from;
+         * #0, which has no coarse thread, is cut fine.
+         */
         series?: "UNC" | "UNF" | PipelineRef;
         /** The shape of the end that bears on the part: cup, flat, cone, oval or half dog. */
         point?: "cup" | "flat" | "cone" | "oval" | "halfDog" | PipelineRef;
@@ -11406,7 +11409,10 @@ export interface OperationParams {
      * `shapes.face.getFaces` numbers them. The `top` frame is the input frame.
      */
     "occt.parts.mechanical.fasteners.ansi.setScrewWithRoles": {
-        /** Whether the thread is coarse (UNC) or fine (UNF), which sets the root the point starts from. */
+        /**
+         * Whether the thread is coarse (UNC) or fine (UNF), which sets the root the point starts from;
+         * #0, which has no coarse thread, is cut fine.
+         */
         series?: "UNC" | "UNF" | PipelineRef;
         /** The shape of the end that bears on the part: cup, flat, cone, oval or half dog. */
         point?: "cup" | "flat" | "cone" | "oval" | "halfDog" | PipelineRef;
@@ -11434,8 +11440,8 @@ export interface OperationParams {
      */
     "occt.parts.mechanical.fasteners.ansi.socketHeadCapScrew": {
         /**
-         * Whether the thread is coarse (UNC) or fine (UNF), which sets the pitch a modelled thread is cut
-         * at and the tip's chamfer.
+         * Whether the thread is coarse (UNC) or fine (UNF), setting a modelled thread's pitch and the
+         * tip's chamfer; #0, which has no coarse thread, is cut fine.
          */
         series?: "UNC" | "UNF" | PipelineRef;
         /** The length of the screw from under its head to its tip, in `unit`. */
@@ -11467,8 +11473,8 @@ export interface OperationParams {
      */
     "occt.parts.mechanical.fasteners.ansi.socketHeadCapScrewWithRoles": {
         /**
-         * Whether the thread is coarse (UNC) or fine (UNF), which sets the pitch a modelled thread is cut
-         * at and the tip's chamfer.
+         * Whether the thread is coarse (UNC) or fine (UNF), setting a modelled thread's pitch and the
+         * tip's chamfer; #0, which has no coarse thread, is cut fine.
          */
         series?: "UNC" | "UNF" | PipelineRef;
         /** The length of the screw from under its head to its tip, in `unit`. */
@@ -12947,7 +12953,7 @@ export interface OperationParams {
         shape: unknown | PipelineRef;
         /** The thread size, such as 1/4 or #10. */
         size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
-        /** Whether the thread is coarse (UNC) or fine (UNF). */
+        /** Whether the thread is coarse (UNC) or fine (UNF); #0, which has no coarse thread, is cut fine. */
         series?: "UNC" | "UNF" | PipelineRef;
         /**
          * A pitch of the thread's own, as threads to the inch, at least the size's coarsest; it overrides
@@ -12980,7 +12986,7 @@ export interface OperationParams {
     "occt.parts.mechanical.machining.ansi.threadTool": {
         /** The thread size, such as 1/4 or #10. */
         size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
-        /** Whether the thread is coarse (UNC) or fine (UNF). */
+        /** Whether the thread is coarse (UNC) or fine (UNF); #0, which has no coarse thread, is cut fine. */
         series?: "UNC" | "UNF" | PipelineRef;
         /**
          * A pitch of the thread's own, as threads to the inch, at least the size's coarsest; it overrides

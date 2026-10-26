@@ -254,7 +254,7 @@ Adds a standard part from the library, a screw, bolt, nut, washer, set screw, do
 - **Values:**
   - `kind` (one of `"screw"`, `"bolt"`, `"nut"`, `"washer"`, `"setScrew"`, `"dowel"`, `"gear"`, `"helicalGear"`, `"bevelGear"`, `"ringGear"`, `"rack"`, `"bearing"`, `"spring"`, `"key"`, `"retainingRing"`): Which part, one of screw, bolt, nut, washer, setScrew, dowel, gear, helicalGear, bevelGear, ringGear, rack, bearing, spring, key, retainingRing; a person's run with none opens the library.
   - `standard` (one of `"iso"`, `"din"`, `"ansi"`): The standard a fastener, bearing, key or ring is made to: iso or din, or ansi for inch parts; ansi in an inch design and iso or din otherwise when left out. Gears, springs and dowel pins have none.
-  - `values` (object): Its sizes by parameter name, each left out taking its starting value: screw (iso): size, length, modelledThread; screw (ansi): size, series, length, modelledThread; bolt (iso): size, length, fullyThreaded, modelledThread; bolt (ansi): size, series, length, fullyThreaded, modelledThread; nut (iso): size; nut (ansi): size; washer (iso): size, chamfered; washer (ansi): size, series; setScrew (iso): size, length, point; setScrew (ansi): size, series, length, point; dowel: diameter, length; gear: module, teeth, width, bore, keyway, keyStandard, hub, hubLength, pressureAngle, profileShift, backlash; helicalGear: module, teeth, helixAngle, herringbone, width, bore, keyway, keyStandard, hub, hubLength, pressureAngle, profileShift, backlash; bevelGear: module, teeth, mateTeeth, shaftAngle, faceWidth, bore, pressureAngle, backlash; ringGear: module, teeth, width, rim, pressureAngle, backlash; rack: module, teeth, width, height, pressureAngle, backlash; bearing (iso): designation, shields; bearing (ansi): designation, shields; spring: wireDiameter, diameter, activeCoils, length; key (din): shaftDiameter, length; key (ansi): shaftDiameter, length; retainingRing (din): kind, diameter; retainingRing (ansi): kind, diameter.
+  - `values` (object): Its sizes by parameter name, each left out taking its starting value: screw (iso): size, length, modelledThread; screw (ansi): size, series, length, modelledThread; bolt (iso): size, length, fullyThreaded, modelledThread; bolt (ansi): size, series, length, fullyThreaded, modelledThread; nut (iso): size; nut (ansi): size; washer (iso): size, chamfered; washer (ansi): size, series; setScrew (iso): size, length, point; setScrew (ansi): size, series, length, point; dowel: diameter, length; gear: module, teeth, width, bore, keyway, keyStandard, hub, hubLength, pressureAngle, profileShift, backlash (diametralPitch in place of module in an inch design); helicalGear: module, teeth, helixAngle, herringbone, width, bore, keyway, keyStandard, hub, hubLength, pressureAngle, profileShift, backlash (diametralPitch in place of module in an inch design); bevelGear: module, teeth, mateTeeth, shaftAngle, faceWidth, bore, pressureAngle, backlash (diametralPitch in place of module in an inch design); ringGear: module, teeth, width, rim, pressureAngle, backlash (diametralPitch in place of module in an inch design); rack: module, teeth, width, height, pressureAngle, backlash (diametralPitch in place of module in an inch design); bearing (iso): designation, shields; bearing (ansi): designation, shields; spring: wireDiameter, diameter, activeCoils, length; key (din): shaftDiameter, length; key (ansi): shaftDiameter, length; retainingRing (din): kind, diameter; retainingRing (ansi): kind, diameter.
   - `name` (string): The new part document's name; the part's own when left out.
   - `id` (string): The component's id in an assembly; the kind and the next free number when left out.
 
@@ -282,7 +282,7 @@ Adds one of the showcase designs learn.bitbybit.dev publishes, such as the robot
 
 ### Units {#designer-file-set-units}
 
-Sets the design's unit of length for every document: millimetres, centimetres, metres or inches. The numbers stay as they are, so the model's size changes with the unit; new documents, the standard parts library and the defaults follow it.
+Sets the design's unit of length for every document: millimetres, centimetres, metres or inches. The numbers stay as they are, so the model's size changes with the unit, while standard sizes (M8, 1/4-20, 608), imported IGES files and a fastened screw's sink into its counterbore keep their real size, and each standard part's number keeps naming its real length; new documents, the standard parts library and the defaults follow it.
 
 - **Where:** <Ui>File</Ui> > <Ui>Units</Ui>; the dock; the units dialog
 - **Works in:** part documents and assembly documents
@@ -1500,7 +1500,7 @@ Adds a named value that expressions in any field can use.
 - **Values:**
   - `name` (string): Its name; the next free paramN when left out.
   - `value`: A number or an expression.
-  - `unit` (string): mm, cm, m, in, deg or none.
+  - `unit` (string): The document's length unit (mm, cm, m or in), deg or none.
 
 ### Change parameter {#designer-parameter-set}
 
@@ -1513,7 +1513,7 @@ Sets a parameter's value, unit, limits or description, or renames it while nothi
   - `name` (string, required): The parameter.
   - `rename` (string): A new name.
   - `value`: A number or an expression.
-  - `unit` (string): mm, cm, m, in, deg or none; null drops it.
+  - `unit` (string): The document's length unit (mm, cm, m or in), deg or none; null drops it.
   - `min` (number)
   - `max` (number)
   - `step` (number)
@@ -1829,7 +1829,7 @@ Runs a script the document carries as an asset on the document's geometry.
 
 ### Tutorials {#designer-help-tutorials}
 
-Lists the tutorials, or starts the one named: each shows the way step by step while you do the work, and can do a step for you.
+Lists the tutorials, or starts the one named: each shows the way step by step while you do the work, and can do a step for you. A tutorial is written in millimetres, so it starts only in a design in millimetres.
 
 - **Where:** <Ui>Help</Ui> > <Ui>Tutorials</Ui>; the start view, in the middle of an empty design, part or assembly
 - **Works in:** part documents and assembly documents
