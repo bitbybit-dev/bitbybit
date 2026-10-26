@@ -17482,8 +17482,8 @@ export namespace OCCT {
      */
     export abstract class AnsiScrewSharedDto extends AnsiFastenerSharedDto {
         /**
-         * Whether the thread is coarse (UNC) or fine (UNF), which sets the pitch a modelled thread is cut
-         * at and the tip's chamfer.
+         * Whether the thread is coarse (UNC) or fine (UNF), setting a modelled thread's pitch and the
+         * tip's chamfer; #0, which has no coarse thread, is cut fine.
          * @default unc
          */
         series?: Engineering.ansiThreadSeriesEnum | undefined = Engineering.ansiThreadSeriesEnum.unc;
@@ -17585,7 +17585,8 @@ export namespace OCCT {
             if (frame !== undefined) { this.frame = frame; }
         }
         /**
-         * Whether the thread is coarse (UNC) or fine (UNF), which sets the root the point starts from.
+         * Whether the thread is coarse (UNC) or fine (UNF), which sets the root the point starts from;
+         * #0, which has no coarse thread, is cut fine.
          * @default unc
          */
         series?: Engineering.ansiThreadSeriesEnum | undefined = Engineering.ansiThreadSeriesEnum.unc;
@@ -18367,7 +18368,7 @@ export namespace OCCT {
          */
         size?: Engineering.ansiThreadSizeEnum | undefined = Engineering.ansiThreadSizeEnum.in1_4;
         /**
-         * Whether the thread is coarse (UNC) or fine (UNF).
+         * Whether the thread is coarse (UNC) or fine (UNF); #0, which has no coarse thread, is cut fine.
          * @default unc
          */
         series?: Engineering.ansiThreadSeriesEnum | undefined = Engineering.ansiThreadSeriesEnum.unc;

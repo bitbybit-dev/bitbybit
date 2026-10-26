@@ -15,21 +15,10 @@ import { takesLengthUnit } from "./helpers";
 import { operationPathOf } from "./format";
 import { occtDtoRegistry } from "../../api/dto-registry";
 import type { MachiningFeature } from "./machining-types";
-import { DELETE, FIRST_PRINTABLE, FROM_FEATURE, LAST_CONTROL, LINE_SEPARATOR, MACHINING_ENUMS, PARAGRAPH_SEPARATOR } from "./typescript-export.constants";
+import { CONSTANT_CODE, DELETE, FIRST_PRINTABLE, FROM_FEATURE, IN_GROUPS, LAST_CONTROL, LINE_SEPARATOR, MACHINING_ENUMS, PARAGRAPH_SEPARATOR, RESERVED } from "./typescript-export.constants";
 import type { MathHelper } from "./typescript-math";
 import { IN_DEGREES, MATH_HELPERS, mathHelperDeclarations } from "./typescript-math";
 
-const RESERVED = new Set([
-    "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally",
-    "for", "function", "if", "import", "in", "instanceof", "new", "null", "return", "super", "switch", "this", "throw", "true", "try", "typeof", "var",
-    "void", "while", "with", "yield", "let", "static", "implements", "interface", "package", "private", "protected", "public", "await", "async",
-    "occt", "bitbybit", "Bit", "Math", "Promise", "assets", "parts", "part", "configuration", "copy", "undefined", "NaN", "Infinity",
-    "eval", "arguments", "String", "Number",
-]);
-
-const IN_GROUPS = ", strategy: Bit.Inputs.OCCT.booleanStrategyEnum.inGroups";
-
-const CONSTANT_CODE = new Map<string, string>([["pi", "Math.PI"], ["tau", "(2 * Math.PI)"], ["e", "Math.E"], ["true", "1"], ["false", "0"]]);
 
 /** TypeScript text and how tightly it binds, so it is wrapped in parentheses only where needed. */
 export type Code = { text: string; level: number };
@@ -456,7 +445,7 @@ class Exporter {
         const data = `assets[${JSON.stringify(feature.asset)}]`;
         const call = trace.format === "brep" ? `occt.io.loadBrep({ brepData: ${data} as string })`
             : trace.format === "brep-binary" ? `occt.io.loadBrepBinary({ brepData: ${data} as Uint8Array })`
-                : `occt.io.loadSTEPorIGES({ filetext: ${data} as string | ArrayBuffer, fileName: "asset.${trace.format}", adjustZtoY: false${this.run.unit === Inputs.Base.unitOfLengthEnum.millimetre ? "" : `, unit: ${JSON.stringify(this.run.unit)}`} })`;
+                : `occt.io.loadSTEPorIGES({ filetext: ${data} as string | ArrayBuffer, fileName: "asset.${trace.format}", adjustZtoY: false${this.run.unit === Inputs.Base.unitOfLengthEnum.millimetre ? "" : `, unit: ${this.unitCode()}`} })`;
         if (feature.child === undefined) {
             this.line(`let ${name} = await ${call};`);
             return;
@@ -475,9 +464,18 @@ class Exporter {
             if (hasOnlyKey(value, "expr")) {
                 return this.code(value["expr"]);
             }
-            return `{ ${Object.entries(value).map(([key, inner]) => `${/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) ? key : JSON.stringify(key)}: ${this.operationValue(inner)}`).join(", ")} }`;
+            return `{ ${Object.entries(value).map(([key, inner]) => `${this.propertyKey(key)}: ${this.operationValue(inner)}`).join(", ")} }`;
         }
         return JSON.stringify(value);
+    }
+
+    private propertyKey(key: string): string {
+        return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) ? key : JSON.stringify(key);
+    }
+
+    private unitCode(): string {
+        const key = Object.entries(Inputs.Base.unitOfLengthEnum).find(([, member]) => member === this.run.unit)?.[0] ?? "millimetre";
+        return `Bit.Inputs.Base.unitOfLengthEnum.${key}`;
     }
 
     private feature(feature: Models.OCCT.DesignFeature, path: string): void {
@@ -569,8 +567,10 @@ class Exporter {
                 return this.machined(feature, trace);
             case "operation": {
                 const operation = operationPathOf(feature.operation);
-                const unitless = operation !== undefined && feature.params["unit"] === undefined && takesLengthUnit(occtDtoRegistry, operation);
-                const call = `${feature.operation}(${this.operationValue(unitless ? { ...feature.params, unit: this.run.unit } : feature.params)})`;
+                const unitOfDocument = operation !== undefined && (feature.params["unit"] === undefined || feature.params["unit"] === this.run.unit) && takesLengthUnit(occtDtoRegistry, operation);
+                const call = unitOfDocument
+                    ? `${feature.operation}({ ${[...Object.entries(feature.params).filter(([key]) => key !== "unit").map(([key, inner]) => `${this.propertyKey(key)}: ${this.operationValue(inner)}`), `unit: ${this.unitCode()}`].join(", ")} })`
+                    : `${feature.operation}(${this.operationValue(feature.params)})`;
                 if (feature.body === undefined) {
                     const name = this.fresh(feature.id);
                     this.variables.set(feature.id, name);

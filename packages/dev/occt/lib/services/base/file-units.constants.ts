@@ -37,6 +37,7 @@ export const IGES_UNIT_NAMES: Readonly<Record<string, UnitOfLength>> = {
 };
 
 export const IGES_NAMED_UNITS_FLAG = "3";
+export const IGES_DEFAULT_UNIT_FLAG = "1";
 export const IGES_UNIT_FLAG_FIELD = 14;
 export const IGES_UNIT_NAME_FIELD = 15;
 export const IGES_RECORD_LENGTH = 80;

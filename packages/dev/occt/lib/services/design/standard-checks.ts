@@ -47,7 +47,6 @@ const RULES: Readonly<Record<string, StandardRule>> = {
     },
 };
 
-/** Checks the properties a machining feature takes under its standard, the ANSI ones apart from the metric ones. */
 export function checkMachiningStandard(type: string, feature: Readonly<Record<string, unknown>>, path: string): void {
     RULES[type]?.(feature, path, feature["standard"] === "ansi");
 }

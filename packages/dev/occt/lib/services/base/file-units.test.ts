@@ -75,6 +75,18 @@ describe("file units", () => {
         expect(units).toEqual(["mm", "in", "cm"]);
     });
 
+    it("should read an IGES unit flag left empty or past the end of its global section as inches, the flag's default", () => {
+        // Arrange
+        const empty = igesOf(globalWith("", "4HINCH"));
+        const short = igesOf(globalWith("2", "2HMM").slice(0, 12));
+
+        // Act
+        const units = [empty, short].map(igesLengthUnit);
+
+        // Assert
+        expect(units).toEqual(["in", "in"]);
+    });
+
     it("should give undefined for feet, microns and a file with no global section", () => {
         // Act
         const units = [igesOf(globalWith("4", "2HFT")), igesOf(globalWith("9", "6HMICRON")), igesOf(globalWith("3", "2HFT")), "not an IGES file"].map(igesLengthUnit);

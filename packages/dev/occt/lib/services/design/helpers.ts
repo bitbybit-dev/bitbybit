@@ -18,7 +18,6 @@ export function unitOfDocument(document: Pick<Models.OCCT.DesignPartDocument, "u
     return UNITS_OF_LENGTH.find(unit => unit.valueOf() === stated) ?? Inputs.Base.unitOfLengthEnum.millimetre;
 }
 
-/** True when the operation's inputs take a `unit` of length, which a design fills with its document's unit. */
 export function takesLengthUnit(registry: DtoRegistry, operation: string): boolean {
     const values = registry[operation]?.constraints?.["unit"]?.values ?? [];
     return values.length === UNITS_OF_LENGTH.length && UNITS_OF_LENGTH.every(each => values.includes(each));

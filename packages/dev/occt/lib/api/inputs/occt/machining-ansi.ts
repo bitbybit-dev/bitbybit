@@ -258,7 +258,7 @@ export class AnsiThreadToolDto {
      */
     size?: Engineering.ansiThreadSizeEnum | undefined = Engineering.ansiThreadSizeEnum.in1_4;
     /**
-     * Whether the thread is coarse (UNC) or fine (UNF).
+     * Whether the thread is coarse (UNC) or fine (UNF); #0, which has no coarse thread, is cut fine.
      * @default unc
      */
     series?: Engineering.ansiThreadSeriesEnum | undefined = Engineering.ansiThreadSeriesEnum.unc;

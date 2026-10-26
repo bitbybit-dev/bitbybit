@@ -12,7 +12,7 @@ import { SMALLEST_MESH_DEFLECTION, bytesOfFile, objNameOf, textOfFile } from "./
 import { igesLengthUnit, stepLengthUnit, stepOrIgesKindOf } from "./base/file-units";
 import { gunzipped, isGzip } from "@bitbybit-dev/base/lib/api/services/helpers/files/gzip";
 import { checkedUnitOfLength } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/lengths";
-import type { DrawingLine } from "./base/svg-drawing";
+import type { DrawingLine } from "./base/svg-drawing-types";
 import { svgOfDrawing } from "./base/svg-drawing";
 import { stlWithYAndZSwapped } from "./base/stl-data";
 import { readKernelException } from "../kernel-exception";

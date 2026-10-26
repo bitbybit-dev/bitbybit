@@ -175,6 +175,12 @@ namespace Base_3 {
     // (undocumented)
     basicAlignmentEnum: typeof import("@bitbybit-dev/base").Base.basicAlignmentEnum;
     // (undocumented)
+    type unitOfLengthEnum = Base_2.unitOfLengthEnum;
+    const // Warning: (ae-forgotten-export) The symbol "Base" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    unitOfLengthEnum: typeof import("@bitbybit-dev/base").Base.unitOfLengthEnum;
+    // (undocumented)
     type Vector2 = Base_2.Vector2;
     const // (undocumented)
     colorMapStrategyEnum: typeof Base_2.colorMapStrategyEnum;

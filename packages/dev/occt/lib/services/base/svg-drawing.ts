@@ -1,23 +1,6 @@
 import type * as Inputs from "../../api/inputs";
-
-/** A line of a flat drawing, as the x and y of its points in the drawing's plane. */
-export type DrawingLine = readonly (readonly [number, number])[];
-
-const STROKE_SHARE = 1 / 400;
-const MARGIN_SHARE = 1 / 40;
-const DASH_STROKES = 6;
-const GAP_STROKES = 3;
-const SIGNIFICANT_DIGITS = 9;
-type SvgLength = { readonly unit: string; readonly factor: number };
-
-const SVG_LENGTHS: Readonly<Record<`${Inputs.Base.unitOfLengthEnum}`, SvgLength>> = {
-    mm: { unit: "mm", factor: 1 },
-    cm: { unit: "cm", factor: 1 },
-    m: { unit: "cm", factor: 100 },
-    in: { unit: "in", factor: 1 },
-};
-
-type Bounds = { minX: number; minY: number; maxX: number; maxY: number };
+import type { Bounds, DrawingLine } from "./svg-drawing-types";
+import { DASH_STROKES, GAP_STROKES, MARGIN_SHARE, SIGNIFICANT_DIGITS, STROKE_SHARE, SVG_LENGTHS } from "./svg-drawing.constants";
 
 function boundsOf(lines: readonly DrawingLine[]): Bounds {
     const bounds: Bounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };

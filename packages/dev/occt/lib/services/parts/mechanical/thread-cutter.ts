@@ -24,6 +24,8 @@ export class ThreadCutter {
         if (turns > MOST_THREAD_TURNS) {
             throw new InputError(`\`length\` is ${String(length)}, ${String(turns)} turns of a ${String(thread.pitch)} pitch, and a thread is modelled over at most ${String(MOST_THREAD_TURNS)} turns: make it shorter or its pitch coarser.`, "length");
         }
+        const frame = this.build.frameOf(cut.frame);
+        const inward: Inputs.Base.Frame = { origin: frame.origin, normal: scale3(frame.normal, -1), direction: cut.internal ? frame.direction : scale3(frame.direction, -1) };
         const perUnit = this.build.base.math.millimetresPerUnit({ unit: cut.unit });
         const millimetres = (value: number): number => perUnit === 1 ? value : this.build.base.math.roundToDecimals({ number: value * perUnit, decimalPlaces: MILLIMETRE_PLACES });
         const local = this.inMillimetres(millimetres(thread.diameter), millimetres(thread.minorDiameter), millimetres(thread.internalMinorDiameter), millimetres(thread.pitch), millimetres(length), cut.internal);
@@ -31,8 +33,6 @@ export class ThreadCutter {
         if (sized !== local) {
             local.delete();
         }
-        const frame = this.build.frameOf(cut.frame);
-        const inward: Inputs.Base.Frame = { origin: frame.origin, normal: scale3(frame.normal, -1), direction: cut.internal ? frame.direction : scale3(frame.direction, -1) };
         return this.build.oriented(sized, inward);
     }
 

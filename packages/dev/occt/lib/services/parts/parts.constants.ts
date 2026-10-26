@@ -21,7 +21,6 @@ export const SHIELD_GAP_SHARE = 0.02;
 export const RING_CHAMFER_SHARE = 0.02;
 export const LUG_HOLE_MARGIN = 0.3;
 export const TWIST_STEP = 10;
-export const SPLINE_ROOT_FILLET = 0.16;
 export const THREAD_OVERSHOOT = 0.05;
 export const THREAD_FLANK_TAN = Math.tan(Math.PI / 6);
 export const THREAD_CREST_SHARE = 7 / 16;

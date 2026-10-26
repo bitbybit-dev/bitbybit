@@ -1,6 +1,6 @@
 import type * as Inputs from "../../api/inputs";
 import {
-    IGES_DATA_COLUMNS, IGES_DEFAULT_PARAMETER_DELIMITER, IGES_DEFAULT_RECORD_DELIMITER, IGES_EXTENSIONS, IGES_GLOBAL_SECTION, IGES_HOLLERITH, IGES_NAMED_UNITS_FLAG,
+    IGES_DATA_COLUMNS, IGES_DEFAULT_PARAMETER_DELIMITER, IGES_DEFAULT_UNIT_FLAG, IGES_DEFAULT_RECORD_DELIMITER, IGES_EXTENSIONS, IGES_GLOBAL_SECTION, IGES_HOLLERITH, IGES_NAMED_UNITS_FLAG,
     IGES_RECORD_LENGTH, IGES_UNIT_FLAGS, IGES_UNIT_FLAG_FIELD, IGES_UNIT_NAMES, IGES_UNIT_NAME_FIELD, STEP_CONVERSION_NAMES, STEP_CONVERSION_UNIT, STEP_EXTENSIONS,
     STEP_INSTANCE, STEP_LENGTH_UNIT, STEP_REFERENCE, STEP_SI_LENGTH, STEP_SI_PREFIXES, STEP_UNIT_CONTEXT, STEP_UNIT_WORD,
 } from "./file-units.constants";
@@ -117,8 +117,11 @@ function igesGlobalFields(global: string): string[] {
 
 export function igesLengthUnit(text: string): UnitOfLength | undefined {
     const global = igesRecords(text).filter(line => line[IGES_DATA_COLUMNS] === IGES_GLOBAL_SECTION).map(line => line.slice(0, IGES_DATA_COLUMNS)).join("");
+    if (global === "") {
+        return undefined;
+    }
     const fields = igesGlobalFields(global);
-    const flag = fields[IGES_UNIT_FLAG_FIELD - 1]?.trim() ?? "";
+    const flag = fields[IGES_UNIT_FLAG_FIELD - 1]?.trim() || IGES_DEFAULT_UNIT_FLAG;
     if (flag === IGES_NAMED_UNITS_FLAG) {
         return IGES_UNIT_NAMES[(fields[IGES_UNIT_NAME_FIELD - 1] ?? "").trim().toUpperCase()];
     }

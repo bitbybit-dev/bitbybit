@@ -954,7 +954,7 @@
   },
   "packages/dev/occt/lib/services/base/svg-drawing.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 3
+      "count": 1
     }
   },
   "packages/dev/occt/lib/services/base/transforms.service.ts": {

@@ -331,17 +331,20 @@ describe("design expressions", () => {
             expect(written).toEqual(["1-1/4", "1-1/4", "1/2", "-1/2"]);
         });
 
-        it("should compare its text and choose by it, but refuse it in arithmetic and a denominator that is not whole", () => {
+        it("should compare its text and choose by it, but refuse it in arithmetic, a denominator that is not whole and a number too large to write", () => {
             // Act
             const compared = valueOf("if(fraction(size, 64) == '1/4', 20, 28)", { size: 0.25 });
             const arithmetic = (): unknown => valueOf("fraction(1, 2) + 1");
             const notWhole = (): unknown => valueOf("fraction(1, 2.5)");
+            const tooLarge = (): unknown => valueOf("fraction(10 ^ 307, 64)");
 
             // Assert
             expect(compared).toBe(20);
             expect(arithmetic).toThrow("text cannot be used in arithmetic");
             expect(notWhole).toThrow(ExpressionError);
             expect(notWhole).toThrow("fraction() rounds to a whole denominator of at least 1, such as 64, not 2.5");
+            expect(tooLarge).toThrow(ExpressionError);
+            expect(tooLarge).toThrow("fraction() cannot write 1e+307 in parts of 64: it is too large");
         });
     });
 });

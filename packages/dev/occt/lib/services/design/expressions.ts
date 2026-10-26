@@ -47,6 +47,9 @@ function fraction(value: number, denominator: number): string {
     if (!Number.isInteger(denominator) || denominator < 1) {
         throw new ExpressionError(`fraction() rounds to a whole denominator of at least 1, such as 64, not ${String(denominator)}`, 0);
     }
+    if (!(Math.abs(value) * denominator <= Number.MAX_SAFE_INTEGER)) {
+        throw new ExpressionError(`fraction() cannot write ${String(value)} in parts of ${String(denominator)}: it is too large`, 0);
+    }
     return math.toFractionText({ number: value, denominator });
 }
 

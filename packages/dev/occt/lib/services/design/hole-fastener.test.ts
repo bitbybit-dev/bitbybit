@@ -150,17 +150,14 @@ describe("OCCT design: holes sized by their fastener", () => {
             expect(volume).toBeCloseTo(PLATE - hole(0.206 * 25.4, 10), 6);
         });
 
-        it("should tap a #0 hole only in the fine series, its only one, naming the series when asked for the coarse", () => {
-            // Arrange
-            const coarse = inchPlate({ fastener: { standard: "ansi", size: "#0", fit: "tapped" } });
-
+        it("should tap a #0 hole in the fine series, its only one, whether or not the series is named", () => {
             // Act
             const fine = volumeOf(inchPlate({ fastener: { standard: "ansi", size: "#0", series: "UNF", fit: "tapped" } }));
-            const refused = occt.design.build({ document: coarse }).report.flatMap(entry => entry.messages);
+            const unnamed = volumeOf(inchPlate({ fastener: { standard: "ansi", size: "#0", fit: "tapped" } }));
 
             // Assert
             expect(fine).toBeCloseTo(INCH_PLATE - hole(0.06, 0.5), 9);
-            expect(refused.join(" ")).toMatch(/#0 has no coarse thread/);
+            expect(unnamed).toBeCloseTo(fine, 9);
         });
 
         it("should refuse an ISO size under the ANSI standard, a series on an ISO fastener and a standard it does not know", () => {

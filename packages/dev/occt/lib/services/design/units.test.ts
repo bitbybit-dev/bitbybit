@@ -122,7 +122,7 @@ describe("OCCT design: a document's unit reaches operations, imports and STEP fi
         const parts = await (runInNewContext(`(async () => {\n${program}\nreturn parts;\n})()`, { bitbybit: { occt, math: new BaseBitByBit().math }, Bit: { Inputs } }) as Promise<{ shape: TopoDS_Shape }[]>);
 
         // Assert
-        expect(code).toContain("occt.parts.mechanical.fasteners.iso.hexNut({ size: \"M8\", unit: \"in\" })");
+        expect(code).toContain("occt.parts.mechanical.fasteners.iso.hexNut({ size: \"M8\", unit: Bit.Inputs.Base.unitOfLengthEnum.inch })");
         expect(sizeOf(parts[0]!.shape)).toEqual(expected.map(side => expect.closeTo(side, 9)));
         parts.forEach(each => { each.shape.delete(); });
     });

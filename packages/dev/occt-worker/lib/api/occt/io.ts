@@ -19,13 +19,13 @@ export class OCCTIO {
     }
 
     /**
-     * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and starts a
-     * browser download of the file.
+     * Writes a shape as STEP, the exchange format for exact CAD geometry, and starts a browser
+     * download of the file.
      *
-     * With `adjustYtoZ` true, Y and Z swap, which mirrors the shape; to keep it as built, turn it 90
-     * degrees about X with `transforms.rotate` first. `fileName` names the download, `tryDownload`
-     * false skips it, and `saveShapeSTEPAndReturn` gives the text instead.
-     * @param inputs - The shape, the file name, the axis adjustment and the download options
+     * With `adjustYtoZ` true, Y and Z swap, mirroring the shape; turn it 90 degrees about X with
+     * `transforms.rotate` first to keep it as built. The file is in millimetres, another `unit`
+     * scaled to them; `saveShapeSTEPAndReturn` returns the text.
+     * @param inputs - The shape, the file name, the axis adjustment, the unit and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
      * @shortname save step
@@ -329,9 +329,9 @@ export class OCCTIO {
      * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
      * asked, and starts a browser download of the file.
      *
-     * The drawing shows the view from the frame's normal side, x running right along its direction.
-     * `tryDownload` false skips the download; `saveShapeSvgAndReturn` gives the text instead.
-     * @param inputs - The shape, the view, whether to draw hidden edges, the precision and the download options
+     * The drawing shows the view from the frame's normal side, x along its direction; with the shape's
+     * `unit`, it states its true width and height. `saveShapeSvgAndReturn` gives the text instead.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
      * @shortname save svg

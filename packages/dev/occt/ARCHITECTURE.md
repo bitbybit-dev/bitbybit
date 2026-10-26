@@ -192,7 +192,8 @@ for its distance from the origin, would otherwise loop for a very long time.
   exactly what the call did before it had one.
   - STEP: the shape writer cannot declare a unit, so a shape modelled in another unit is scaled into
     millimetres and written by the same plain writer; the file states millimetres and its sizes are
-    true. A document's export (`exportDocumentToStep`) states the document's own `lengthUnit`.
+    true. A document's export (`exportDocumentToStep`) is likewise written at its true size in
+    millimetres, its `lengthUnit` scaling the numbers into them.
   - STEP and IGES loading: OCCT's reader brings every file in as millimetres, whatever it states,
     and `unit` scales the shape from there. `fileLengthUnit` tells what a file states: the `LENGTH_UNIT`
     of a STEP file's global context (an SI prefix, or INCH as a conversion-based unit) or the unit flag
@@ -331,8 +332,9 @@ for its distance from the origin, would otherwise loop for a very long time.
   the `unit` the call names, and hands the numbers to geometry shared by every standard
   (`fastener-shapes.ts`, `machining-shapes.ts`, `parallel-key-shapes.ts`, `retaining-ring-shapes.ts`,
   `ball-bearing-shapes.ts`), so an ANSI screw and an ISO one are the same code on different numbers,
-  with the same roles and connectors. Gears, springs, dowel pins and flats take model units and no
-  `unit`. A thread is cut in millimetres and then scaled into the unit (`thread-cutter.ts`), because
+  with the same roles and connectors. Springs, dowel pins and flats take model units and no `unit`;
+  a gear's sizes are in model units too, and its `unit` and `keyStandard` only size the keyway in
+  its bore. A thread is cut in millimetres and then scaled into the unit (`thread-cutter.ts`), because
   its play and its helix accuracy are absolute millimetre values chosen for the kernel's tolerance; a
   spline takes its pressure angle and root round from the sizes, 30 degrees and DIN's root for
   DIN 5480, the flat root of B92.1 for ANSI.

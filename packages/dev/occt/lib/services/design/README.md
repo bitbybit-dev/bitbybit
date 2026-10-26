@@ -310,8 +310,8 @@ The migrations described below are not built yet.
 - **`up` is a hint for what reads the build, not a transform.** It says which axis the numbers have
   pointing up, `y` when left out; the build never turns geometry by it, and only the document built
   reports it (`up` on the result, beside `units`): a document an assembly places is placed by its
-  joints, whatever its own `up` says. The STEP export writes the numbers as they are with the length
-  unit (`structure.lengthUnit`), and the glTF export takes the `up` so a y-up document is not turned
+  joints, whatever its own `up` says. The STEP export writes the numbers at their true size in
+  millimetres, scaled by the length unit (`structure.lengthUnit`), and the glTF export takes the `up` so a y-up document is not turned
   as a z-up one would be. glTF is written in the document's unit unless the export is given that
   `unit`, when it is written in metres, the unit glTF readers assume, by one scaled root node.
 
