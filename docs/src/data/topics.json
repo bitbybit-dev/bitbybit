@@ -1359,7 +1359,7 @@
     "type": "how-to",
     "url": "/learn/designer/assemblies/replicate",
     "path": "learn/designer/assemblies/replicate.md",
-    "verified": "2026-10-15"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.concepts",
@@ -1455,7 +1455,7 @@
     "type": "how-to",
     "url": "/learn/designer/modelling/problems",
     "path": "learn/designer/modelling/problems.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.modelling.references",
@@ -1472,6 +1472,14 @@
     "url": "/learn/designer/modelling/sketches",
     "path": "learn/designer/modelling/sketches.md",
     "verified": "2026-10-15"
+  },
+  {
+    "id": "designer.modelling.units",
+    "title": "Units and working in inches",
+    "type": "how-to",
+    "url": "/learn/designer/modelling/units",
+    "path": "learn/designer/modelling/units.md",
+    "verified": "2026-10-26"
   },
   {
     "id": "designer.modelling.views",
@@ -1516,7 +1524,7 @@
     "type": "landing",
     "url": "/learn/designer/intro",
     "path": "learn/designer/intro.md",
-    "verified": "2026-10-09"
+    "verified": "2026-10-19"
   },
   {
     "id": "designer.tour",

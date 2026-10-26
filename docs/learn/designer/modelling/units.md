@@ -1,0 +1,40 @@
+---
+sidebar_position: 9
+title: "Units and working in inches"
+sidebar_label: Units and inches
+description: Set a design's unit of length, model in inches with ANSI standard parts, holes and machining, and bring files in and out of the Designer at their true size.
+topic: designer.modelling.units
+type: how-to
+verified: 2026-10-26
+tags: [designer]
+---
+
+# Units and working in inches
+
+A design has one unit of length, millimetres until you change it: centimetres, metres or inches. Every length a feature, a sketch, a joint or a parameter holds is in that unit, and every document of the design is in it, so an assembly places each part at the size it was drawn. Angles are always degrees.
+
+## Set the design's units
+
+Choose <Ui>File</Ui> > <Ui>Units</Ui>, pick the unit and choose <Ui>Set units</Ui>. The numbers stay as they are and their unit changes, so a block 10 millimetres wide becomes a block 10 inches wide: set the unit when you start a design, before its sizes are typed. Every document changes in the one step, and so does every length parameter, while angles and counts keep theirs. Undo in a document puts that document back.
+
+New documents, solids, sketches and features start at sizes that suit the unit, and in inches they start at binary fractions such as 3/8 or 1/4. The ground grid steps through 1/64, 1/32 and on up to 1 inch, then whole inches, with a heavier line every fourth step.
+
+A document that arrives in another unit, from a file or another design, is listed in the <Ui>Problems</Ui> tab, with a button that gives it the design's unit. Until then an assembly in the design's unit cannot place it.
+
+## Standard parts in inches
+
+The [standard parts library](../assemblies/components.md#standard-parts) has fasteners and ball bearings to ISO and to the ANSI inch standards, and keys and retaining rings to DIN and to ANSI. Pick one with <Ui>Standard</Ui>; in an inch design the library starts on ANSI. Either standard works in any design: lengths you type, such as a screw's length, are in the design's unit, and the size stays as its standard writes it, M8, or 1/4 with a UNC or UNF thread, or R8.
+
+Part numbers follow the standard. An ANSI screw's length is written as a fraction of an inch, `SHCS 1/4 UNC x 1-1/4`, and an ISO screw in an inch design keeps its millimetres, `ISO 4762 M8x25`. [Fasten](../assemblies/replicate.md#fasten-a-screw-in-every-hole-at-once) puts the screw of each hole's standard in it.
+
+Gears from the library take a <Ui>Diametral pitch</Ui> in an inch design instead of a module: the number of teeth to an inch of pitch diameter, 12 to start. Two gears of the same diametral pitch mesh, and <Ui>Mesh gears</Ui> sets them the right distance apart.
+
+## Holes, threads and machining
+
+A hole's <Ui>Fastener</Ui> takes a standard, so a hole sized for an inch screw is `{ "standard": "ansi", "size": "1/4", "series": "UNC", "fit": "tapped" }`, and one for a metric screw is `{ "size": "M6", "fit": "normal" }` in any design. The [machining features](./features.md) have a <Ui>Standard</Ui> too: a keyway, a ring groove, a knurl and a spline are DIN or ANSI, and a thread is ISO or ANSI. In an inch design the ANSI one is chosen first; an ANSI knurl is sized by its diametral pitch, an ANSI spline by its pitch, such as 16/32, and its number of teeth, and an ANSI thread by its series or its threads per inch.
+
+## Files in and out
+
+- STEP files say their unit. An export writes the design's, and an imported STEP or IGES file comes in at its true size, converted into the design's unit; the import's summary says when the file was in another.
+- GLB files are written in metres, the unit every glTF viewer expects, so a part in inches opens at its true size.
+- STL files carry no unit, so they hold the design's numbers as they are: tell whoever prints the part which unit it is in.

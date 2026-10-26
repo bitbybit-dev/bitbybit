@@ -48,6 +48,7 @@ An expression is arithmetic over the parameters' names:
 - `min`, `max`, `abs`, `sqrt`, `round`, `floor` and `ceil`;
 - `sin`, `cos` and `tan`, with angles in degrees, and `asin`, `acos`, `atan` and `atan2`, which give degrees;
 - comparisons and `if(condition, then, otherwise)`, such as `if(length > 200, 3, 2)`;
+- `fraction(value, denominator)`, which writes a number as inch sizes are written, rounded to a `1/denominator`: `fraction(1.25, 64)` is `1-1/4`. It gives text, for a part number or a name, such as `"Pin {fraction(length, 64)}"`;
 - `pi`, `tau` and `e`.
 
 A field shows the expression as you wrote it. A name that is not a parameter is reported in the <Ui>Problems</Ui> tab with the field it is in.

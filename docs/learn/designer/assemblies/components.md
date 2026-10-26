@@ -39,7 +39,7 @@ Choose part documents in the documents list with <kbd>Ctrl</kbd> or <kbd>Shift</
 
 {/* shot: designer.assemblies.components/library */}
 
-[<Ui>Insert</Ui> > <Ui>Standard part</Ui>](../reference/commands.md#designer-file-standard-part), or <Ui>Standard part</Ui> in the start view, opens the library in <Ui>Properties</Ui>: <Ui>Fasteners</Ui>, <Ui>Gears</Ui>, <Ui>Bearings and springs</Ui> and <Ui>Keys and rings</Ui>. Choose a part and set its sizes. The view shows it as it will be made, and every size is checked the way the kernel checks it, so one it would refuse is named before anything is added. In a part document, <Ui>Add as a part document</Ui> makes a new part document of it and opens it; in an assembly, the button inserts it beside what is already there.
+[<Ui>Insert</Ui> > <Ui>Standard part</Ui>](../reference/commands.md#designer-file-standard-part), or <Ui>Standard part</Ui> in the start view, opens the library in <Ui>Properties</Ui>: <Ui>Fasteners</Ui>, <Ui>Gears</Ui>, <Ui>Bearings and springs</Ui> and <Ui>Keys and rings</Ui>. Choose a part, then its <Ui>Standard</Ui> where it has more than one: fasteners and ball bearings are ISO or ANSI, keys and retaining rings DIN or ANSI, and an inch design starts on ANSI ([Units and inches](../modelling/units.md#standard-parts-in-inches)). Set its sizes, every length in the design's unit. The view shows it as it will be made, and every size is checked the way the kernel checks it, so one it would refuse is named before anything is added. In a part document, <Ui>Add as a part document</Ui> makes a new part document of it and opens it; in an assembly, the button inserts it beside what is already there.
 
 Each part is one feature that the kernel's standard parts build, sized by its parameters, with its connectors on the faces that part names:
 
@@ -51,6 +51,11 @@ Each part is one feature that the kernel's standard parts build, sized by its pa
 | ISO 7089 plain washer, or ISO 7090 chamfered | `size`, `chamfered` | `seat`, `top` |
 | Set screw with a hex socket | `size`, `length`, `point` (flat, cone, dog or cup) | `top`, on the socket end |
 | ISO 8734 dowel pin | `diameter`, `length` | `end` |
+| ASME B18.3 socket head cap screw | `size` (#0 to 1), `series` (UNC or UNF), `length`, `modelledThread` | `seat` |
+| ASME B18.2.1 hex cap screw | `size` (1/4 to 1), `series`, `length`, `fullyThreaded`, `modelledThread` | `seat` |
+| ASME B18.2.2 hex nut | `size` | `seat`, `top` |
+| ASME B18.22.1 plain washer | `size`, `series` (narrow or wide) | `seat`, `top` |
+| ASME B18.3 set screw | `size`, `series`, `length`, `point` (cup, flat, cone, oval or half dog) | `top` |
 | Spur gear | `module`, `teeth`, `width`, `bore`, `keyway`, `hub`, `hubLength`, `pressureAngle`, `profileShift`, `backlash` | `axis`, on the face it stands on |
 | Helical gear | as the spur gear, and `helixAngle` and `herringbone` | `axis` |
 | Straight bevel gear | `module`, `teeth`, `mateTeeth`, `shaftAngle`, `faceWidth`, `bore`, `pressureAngle`, `backlash` | `back`, on its axis |
@@ -60,8 +65,11 @@ Each part is one feature that the kernel's standard parts build, sized by its pa
 | Compression spring, ends closed and ground | `wireDiameter`, `diameter`, `activeCoils`, `length` | `bottom`, `top` |
 | DIN 6885 parallel key | `shaftDiameter`, `length` | `bottom` |
 | DIN 471 or 472 retaining ring | `kind` (shaft or bore), `diameter` | `side` |
+| R-series inch ball bearing | `designation` (R1-4 to R20), `shields` | `inner` and `outer` |
+| ANSI B17.1 square key | `shaftDiameter`, `length` | `bottom` |
+| Inch retaining ring | `kind` (shaft or bore), `diameter` (1/8 to 2 inches on a shaft, 1/4 to 2 in a bore) | `side` |
 
-The yes-or-no options are boxes in the library: `modelledThread` models the thread's helix instead of drawing it, which is slower to build; `fullyThreaded`, `chamfered` and `shields` choose the standard's other form; `keyway` cuts a keyway into the bore, which needs a bore over 6. An assembly keeps one document for each kind: every component of it sets its own sizes and options, and the part number, such as `ISO 4762 M8x25` or `ISO 4017 M8x30`, follows them into the bill of materials. Threads are drawn at the screw's full diameter and named, not cut, so a screw in its tapped hole or nut touches it without overlapping; the clash check leaves out a thread resting on a thread, whether or not a joint holds the two. A spring's `length` set by an expression of the assembly's parameters compresses it as the parameter that drives its joints changes. [Fasten](./replicate.md#fasten-a-screw-in-every-hole-at-once) puts screws in a hole set in one step.
+The yes-or-no options are boxes in the library: `modelledThread` models the thread's helix instead of drawing it, which is slower to build; `fullyThreaded`, `chamfered` and `shields` choose the standard's other form; `keyway` cuts a keyway into the bore, which needs a bore over 6. An assembly keeps one document for each kind and standard: every component of it sets its own sizes and options, and the part number, such as `ISO 4762 M8x25`, `ISO 4017 M8x30` or `SHCS 1/4 UNC x 1-1/4`, follows them into the bill of materials. Threads are drawn at the screw's full diameter and named, not cut, so a screw in its tapped hole or nut touches it without overlapping; the clash check leaves out a thread resting on a thread, whether or not a joint holds the two. A spring's `length` set by an expression of the assembly's parameters compresses it as the parameter that drives its joints changes. [Fasten](./replicate.md#fasten-a-screw-in-every-hole-at-once) puts screws in a hole set in one step.
 
 Two spur gears of the same module mesh when their centres are half the module times their teeth added together apart. Join each by its `axis` to the part it turns on with a revolute joint, and give the joints' angles from one parameter, such as `turn`: the first `turn`, the second the other way by the ratio of their teeth, with 180 divided by its own teeth added so the teeth fall into each other's gaps. For 20 and 30 teeth that is `turn` and `180 / 30 - turn * 20 / 30`.
 

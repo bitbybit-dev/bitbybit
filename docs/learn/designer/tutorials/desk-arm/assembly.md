@@ -180,7 +180,7 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
      <Shot id="designer.tutorials.desk-arm/step-122" />
 
-123. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind bolt, id shoulderBolt.
+123. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind bolt, standard iso, id shoulderBolt.
 
      Insert a hex bolt from the standard parts library as the shoulder bolt, M8 and 55 mm long. The library adds a Hex bolt part document, which the other bolts reuse at their own lengths.
 
@@ -196,7 +196,7 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
      <Shot id="designer.tutorials.desk-arm/step-124" />
 
-125. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind nut, id shoulderNut.
+125. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind nut, standard iso, id shoulderNut.
 
      Insert an M8 hex nut from the library for the shoulder bolt.
 
@@ -208,7 +208,7 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
      <Shot id="designer.tutorials.desk-arm/step-126" />
 
-127. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind bolt, id elbowBolt.
+127. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind bolt, standard iso, id elbowBolt.
 
      Insert an M8 hex bolt as the elbow bolt, 35 mm long.
 
@@ -220,7 +220,7 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
      <Shot id="designer.tutorials.desk-arm/step-128" />
 
-129. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind nut, id elbowNut.
+129. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind nut, standard iso, id elbowNut.
 
      Insert an M8 nut for the elbow.
 
@@ -232,7 +232,7 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
      <Shot id="designer.tutorials.desk-arm/step-130" />
 
-131. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind bolt, id wristBolt.
+131. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind bolt, standard iso, id wristBolt.
 
      Insert an M8 hex bolt as the wrist bolt, 30 mm long.
 
@@ -244,7 +244,7 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
      <Shot id="designer.tutorials.desk-arm/step-132" />
 
-133. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind nut, id wristNut.
+133. **[Standard part](../../reference/commands.md#designer-file-standard-part)**, from <Ui>Insert</Ui> > <Ui>Standard part</Ui>: kind nut, standard iso, id wristNut.
 
      Insert an M8 nut for the wrist.
 

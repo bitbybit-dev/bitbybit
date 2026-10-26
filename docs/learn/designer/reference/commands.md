@@ -12,7 +12,7 @@ tags: [designer]
 
 # Designer commands
 
-Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 169 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
+Everything the Designer does is a command. The menus, the toolbar, the right-click menus, the keys, <Ui>Help</Ui> > <Ui>Find a command</Ui> and agents all run the same 170 commands, so a command behaves the same wherever it is started. A command that cannot run yet says why: hover over it in a menu, or read the reason an agent gets back.
 
 Each entry's anchor is the command's help topic, such as `#designer-part-fillet`, so a link to it keeps working when the title changes.
 
@@ -253,7 +253,8 @@ Adds a standard part from the library, a screw, bolt, nut, washer, set screw, do
 - **For agents:** `file.standardPart`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
   - `kind` (one of `"screw"`, `"bolt"`, `"nut"`, `"washer"`, `"setScrew"`, `"dowel"`, `"gear"`, `"helicalGear"`, `"bevelGear"`, `"ringGear"`, `"rack"`, `"bearing"`, `"spring"`, `"key"`, `"retainingRing"`): Which part, one of screw, bolt, nut, washer, setScrew, dowel, gear, helicalGear, bevelGear, ringGear, rack, bearing, spring, key, retainingRing; a person's run with none opens the library.
-  - `values` (object): Its sizes by parameter name, each left out taking its starting value: screw: size, length, modelledThread; bolt: size, length, fullyThreaded, modelledThread; nut: size; washer: size, chamfered; setScrew: size, length, point; dowel: diameter, length; gear: module, teeth, width, bore, keyway, hub, hubLength, pressureAngle, profileShift, backlash; helicalGear: module, teeth, helixAngle, herringbone, width, bore, keyway, hub, hubLength, pressureAngle, profileShift, backlash; bevelGear: module, teeth, mateTeeth, shaftAngle, faceWidth, bore, pressureAngle, backlash; ringGear: module, teeth, width, rim, pressureAngle, backlash; rack: module, teeth, width, height, pressureAngle, backlash; bearing: designation, shields; spring: wireDiameter, diameter, activeCoils, length; key: shaftDiameter, length; retainingRing: kind, diameter.
+  - `standard` (one of `"iso"`, `"din"`, `"ansi"`): The standard a fastener, bearing, key or ring is made to: iso or din, or ansi for inch parts; ansi in an inch design and iso or din otherwise when left out. Gears, springs and dowel pins have none.
+  - `values` (object): Its sizes by parameter name, each left out taking its starting value: screw (iso): size, length, modelledThread; screw (ansi): size, series, length, modelledThread; bolt (iso): size, length, fullyThreaded, modelledThread; bolt (ansi): size, series, length, fullyThreaded, modelledThread; nut (iso): size; nut (ansi): size; washer (iso): size, chamfered; washer (ansi): size, series; setScrew (iso): size, length, point; setScrew (ansi): size, series, length, point; dowel: diameter, length; gear: module, teeth, width, bore, keyway, keyStandard, hub, hubLength, pressureAngle, profileShift, backlash; helicalGear: module, teeth, helixAngle, herringbone, width, bore, keyway, keyStandard, hub, hubLength, pressureAngle, profileShift, backlash; bevelGear: module, teeth, mateTeeth, shaftAngle, faceWidth, bore, pressureAngle, backlash; ringGear: module, teeth, width, rim, pressureAngle, backlash; rack: module, teeth, width, height, pressureAngle, backlash; bearing (iso): designation, shields; bearing (ansi): designation, shields; spring: wireDiameter, diameter, activeCoils, length; key (din): shaftDiameter, length; key (ansi): shaftDiameter, length; retainingRing (din): kind, diameter; retainingRing (ansi): kind, diameter.
   - `name` (string): The new part document's name; the part's own when left out.
   - `id` (string): The component's id in an assembly; the kind and the next free number when left out.
 
@@ -278,6 +279,16 @@ Adds one of the showcase designs learn.bitbybit.dev publishes, such as the robot
 - **For agents:** `file.openExample`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
   - `example` (one of `"desk-arm"`, `"jet-engine"`, `"robot-arm"`): Which example: desk-arm (Desk arm), jet-engine (Jet engine), robot-arm (Robot arm).
+
+### Units {#designer-file-set-units}
+
+Sets the design's unit of length for every document: millimetres, centimetres, metres or inches. The numbers stay as they are, so the model's size changes with the unit; new documents, the standard parts library and the defaults follow it.
+
+- **Where:** <Ui>File</Ui> > <Ui>Units</Ui>; the dock; the units dialog
+- **Works in:** part documents and assembly documents
+- **For agents:** `file.setUnits`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
+- **Values:**
+  - `unit` (one of `"mm"`, `"cm"`, `"m"`, `"in"`): The unit: mm, cm, m or in; a person's run without one asks for it.
 
 ## Editing
 
@@ -921,7 +932,7 @@ An involute spur gear standing on a plane or a face: a sketch of its teeth and i
 - **Works in:** part documents
 - **For agents:** `part.gear`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
-  - `module`: The size of the teeth: the pitch circle's diameter divided by the number of teeth; gears mesh only with gears of the same module.
+  - `module`: The size of the teeth: the pitch circle's diameter divided by the number of teeth; gears mesh only with gears of the same module. In inches it is 1 over the diametral pitch, such as 1/12.
   - `teeth`: How many teeth it has, at least 3.
   - `height`: How thick the gear is.
   - `bore`: The diameter of the hole through its middle; 0 leaves it whole.
@@ -937,7 +948,7 @@ An involute ring gear standing on a plane or a face, its teeth pointing in: a sk
 - **Works in:** part documents
 - **For agents:** `part.ringGear`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
-  - `module`: The size of the teeth: the pitch circle's diameter divided by the number of teeth; a gear meshes inside only with the same module.
+  - `module`: The size of the teeth: the pitch circle's diameter divided by the number of teeth; a gear meshes inside only with the same module. In inches it is 1 over the diametral pitch, such as 1/12.
   - `teeth`: How many teeth it has, at least 34 so their tips stay outside the base circle.
   - `height`: How thick the ring is.
   - `rim`: How thick the ring is outside the bottoms of its gaps.
@@ -1192,7 +1203,7 @@ Drills holes through a flat face at positions on it.
   - `on`: The flat face the holes start from.
   - `at`: Where the holes go, as x and y on the face; give a position an id to name its walls.
   - `diameter`: The hole's diameter.
-  - `fastener`: Sizes the holes for a metric screw instead of a diameter, such as \{ "size": "M8", "fit": "normal" \}: a close, normal or loose clearance, or tapped for its thread.
+  - `fastener`: Sizes the holes for a screw instead of a diameter, such as \{ "size": "M8", "fit": "normal" \}, or an inch one with \{ "standard": "ansi", "size": "1/4" \}: a close, normal or loose clearance, or tapped for its thread.
   - `depth`: How deep; 0 drills through.
   - `tipAngle`: A drill point at the bottom of a blind hole.
   - `counterbore`: Widen each mouth to a diameter and depth.
@@ -1322,7 +1333,7 @@ Mirrors a body across a plane and fuses the image with it.
 
 ### Keyway {#designer-part-keyway}
 
-Mills a DIN 6885 keyway into a shaft, or cuts one through a hub's bore, sized for its diameter.
+Mills a keyway into a shaft, or cuts one through a hub's bore, sized for its diameter by DIN 6885 or the inch ANSI B17.1.
 
 - **Where:** <Ui>Insert</Ui> > <Ui>Keyway</Ui>; the toolbar
 - **Works in:** part documents
@@ -1330,6 +1341,7 @@ Mills a DIN 6885 keyway into a shaft, or cuts one through a hub's bore, sized fo
 - **Values:**
   - `body`: The body this feature changes.
   - `on`: The round face to machine: a shaft's side or a bore's wall.
+  - `standard`: DIN 6885 keys, or the inch ANSI B17.1 square keys; the inch one by default in an inch design.
   - `at`: How far along the axis the cut starts, from the end the axis points away from.
   - `length`: How long the keyway runs along the axis; through a bore, its length.
   - `angle`: Turns the keyway about the axis, from facing world X (world Y on an axis along X).
@@ -1353,7 +1365,7 @@ Takes a flat off a shaft, such as the one a set screw bears on.
 
 ### Ring groove {#designer-part-ring-groove}
 
-Cuts the groove a DIN 471 retaining ring sits in on a shaft, or a DIN 472 ring in a bore.
+Cuts the groove a retaining ring sits in on a shaft or in a bore: DIN 471 and DIN 472, or the inch tapered rings.
 
 - **Where:** <Ui>Insert</Ui> > <Ui>Ring groove</Ui>; the toolbar
 - **Works in:** part documents
@@ -1361,12 +1373,13 @@ Cuts the groove a DIN 471 retaining ring sits in on a shaft, or a DIN 472 ring i
 - **Values:**
   - `body`: The body this feature changes.
   - `on`: The round face to machine: a shaft's side or a bore's wall.
+  - `standard`: DIN 471 and DIN 472 rings, or the inch tapered rings; the inch one by default in an inch design.
   - `at`: How far along the axis the cut starts, from the end the axis points away from.
   - `flip`: Measure from the other end of the face.
 
 ### Knurl {#designer-part-knurl}
 
-Knurls a shaft for grip, with DIN 82 grooves.
+Knurls a shaft for grip, with DIN 82 grooves or ASME B94.6 teeth.
 
 - **Where:** <Ui>Insert</Ui> > <Ui>Knurl</Ui>; the toolbar
 - **Works in:** part documents
@@ -1374,15 +1387,17 @@ Knurls a shaft for grip, with DIN 82 grooves.
 - **Values:**
   - `body`: The body this feature changes.
   - `on`: The shaft's round side.
+  - `standard`: DIN 82 grooves a pitch apart, or ASME B94.6 teeth of a diametral pitch; the inch one by default in an inch design.
   - `at`: How far along the axis the cut starts, from the end the axis points away from.
   - `length`: How long the knurl runs along the axis.
   - `pattern`: Straight ridges along the shaft, ridges leaning left or right, or a raised diamond.
-  - `pitch`: How far apart the ridges are.
+  - `pitch`: How far apart a DIN knurl's ridges are, in millimetres as DIN 82 names them.
+  - `diametralPitch`: An ANSI knurl's teeth to an inch of diameter: 64, 96, 128 or 160.
   - `flip`: Measure from the other end of the face.
 
 ### Spline {#designer-part-spline}
 
-Cuts DIN 5480 involute spline teeth into a bore, for the splined shaft that slides into it.
+Cuts involute spline teeth into a bore, DIN 5480 or ANSI B92.1, for the splined shaft that slides into it.
 
 - **Where:** <Ui>Insert</Ui> > <Ui>Spline</Ui>; the toolbar
 - **Works in:** part documents
@@ -1390,15 +1405,18 @@ Cuts DIN 5480 involute spline teeth into a bore, for the splined shaft that slid
 - **Values:**
   - `body`: The body this feature changes.
   - `on`: The bore's wall.
+  - `standard`: DIN 5480, sized by its module, or the inch ANSI B92.1, sized by its pitch; the inch one by default in an inch design.
   - `at`: How far along the axis the cut starts, from the end the axis points away from.
   - `length`: How long the teeth run along the axis.
-  - `module`: The teeth's size, one of DIN 5480's modules.
-  - `diameter`: The spline's reference diameter; left empty, the spline whose hub teeth end on the bore.
+  - `module`: A DIN spline's teeth size, one of DIN 5480's modules.
+  - `pitch`: An ANSI spline's pitch over its stub pitch: 2.5/5, 3/6, 4/8, 5/10, 6/12, 8/16, 10/20, 12/24, 16/32, 20/40, 24/48, 32/64.
+  - `diameter`: A DIN spline's reference diameter in millimetres, as DIN 5480 names it in any design; left empty, the spline whose hub teeth end on the bore.
+  - `teeth`: An ANSI spline's number of teeth; left empty, the spline whose hub teeth end on the bore.
   - `flip`: Measure from the other end of the face.
 
 ### Thread {#designer-part-thread}
 
-Models an ISO metric thread on a shaft of its size, or in a bore drilled for its tap.
+Models an ISO metric or Unified inch thread on a shaft of its size, or in a bore drilled for its tap.
 
 - **Where:** <Ui>Insert</Ui> > <Ui>Thread</Ui>; the toolbar
 - **Works in:** part documents
@@ -1406,10 +1424,13 @@ Models an ISO metric thread on a shaft of its size, or in a bore drilled for its
 - **Values:**
   - `body`: The body this feature changes.
   - `on`: The round face to machine: a shaft's side or a bore's wall.
+  - `standard`: ISO metric threads, or Unified inch ones; the inch ones by default in an inch design.
   - `at`: How far along the axis the cut starts, from the end the axis points away from.
   - `length`: How long the thread runs along the axis.
-  - `size`: The metric size, such as M8; left empty, it is found from the face's diameter, a shaft's nominal or a bore's tap drill.
-  - `pitch`: The pitch; the size's coarse pitch when left empty.
+  - `size`: The size, such as M8 or 1/4; left empty, it is found from the face's diameter, a shaft's nominal or a bore's tap drill.
+  - `pitch`: An ISO thread's pitch in millimetres; the size's coarse pitch when left empty.
+  - `series`: A Unified thread's series, coarse or fine; coarse when left empty.
+  - `threadsPerInch`: A Unified thread's own pitch, in place of its series.
   - `flip`: Measure from the other end of the face.
 
 ## Parts, parameters and connectors
@@ -1681,8 +1702,8 @@ Puts a screw or a bolt in every hole of a connector set, sized by the holes' fas
 - **For agents:** `assembly.fasten`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
   - `to` (object): \{ component, connector \}: the component whose holes take the fasteners, and its connector set on their axes; the selected component's one hole set when left out.
-  - `kind` (one of `"screw"`, `"bolt"`): Which fastener, a socket head cap screw or a hex bolt; screw when left out.
-  - `size` (string): The metric size, such as M8; the holes' fastener size when left out.
+  - `kind` (one of `"screw"`, `"bolt"`): Which fastener, a socket head cap screw or a hex bolt, made to the standard of the holes' fastener; screw when left out.
+  - `size` (string): The size, such as M8 or 1/4 by the holes' standard; the holes' fastener size when left out.
   - `length` (number): How long under the head; the part's default when left out.
   - `id` (string): The component's id; the fastener's kind and the next free number when left out.
 
@@ -1697,6 +1718,7 @@ Places a part, a sub-assembly or a standard part where it was dropped in the vie
   - `document` (string): The id of the part document, or of an assembly to place as a sub-assembly.
   - `part` (string): The part of that document; left out for a sub-assembly.
   - `kind` (string): A standard part's kind, instead of a document.
+  - `standard` (one of `"iso"`, `"din"`, `"ansi"`): The standard part's standard; ANSI in an inch design and ISO or DIN otherwise, when the kind has both and none is named.
   - `values` (object): The standard part's sizes, by parameter name.
   - `at` (object, required): Where it goes, as a frame \{ origin, normal, direction \}.
   - `join` (object): \{ component, connector, own, type \}: joins its own connector to a placed component's, fastened or revolute; its frame then comes from the joint.
