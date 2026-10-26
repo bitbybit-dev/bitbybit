@@ -310,6 +310,44 @@ describe("Math unit tests", () => {
         expect(result).toEqual(179.90874767107852);
     });
 
+    it("should convert a length between units, an inch being 25.4 millimetres", () => {
+        // Act
+        const millimetres = math.convertLength({ value: 0.25, from: Inputs.Base.unitOfLengthEnum.inch, to: Inputs.Base.unitOfLengthEnum.millimetre });
+        const metres = math.convertLength({ value: 250, from: Inputs.Base.unitOfLengthEnum.millimetre, to: Inputs.Base.unitOfLengthEnum.metre });
+        const defaulted = math.convertLength({});
+
+        // Assert
+        expect([millimetres, metres, defaulted]).toEqual([6.35, 0.25, 25.4]);
+    });
+
+    it("should give the millimetres in one of a unit and refuse a unit outside the four", () => {
+        // Act
+        const perUnit = Object.values(Inputs.Base.unitOfLengthEnum).map(unit => math.millimetresPerUnit({ unit }));
+
+        // Assert
+        expect(perUnit).toEqual([1, 10, 1000, 25.4]);
+        expect(() => math.millimetresPerUnit({ unit: "ft" as Inputs.Base.unitOfLengthEnum })).toThrow("`unit` is ft, which is none of mm, cm, m, in.");
+    });
+
+    it("should write numbers as a whole and a reduced fraction, rounded to the denominator", () => {
+        // Act
+        const written = [1.25, 0.375, 2, -0.5, 0, 0.001, 0.4375, -2.75, 1.999].map(number => math.toFractionText({ number, denominator: 64 }));
+        const halves = math.toFractionText({ number: 0.3, denominator: 2 });
+        const defaulted = math.toFractionText({});
+
+        // Assert
+        expect(written).toEqual(["1-1/4", "3/8", "2", "-1/2", "0", "0", "7/16", "-2-3/4", "2"]);
+        expect(halves).toBe("1/2");
+        expect(defaulted).toBe("1-1/4");
+    });
+
+    it("should refuse a denominator that is not a whole number of at least 1, and a number that is not finite", () => {
+        // Act & Assert
+        expect(() => math.toFractionText({ number: 1, denominator: 0 })).toThrow("`denominator`");
+        expect(() => math.toFractionText({ number: 1, denominator: 2.5 })).toThrow("`denominator`");
+        expect(() => math.toFractionText({ number: Number.NaN, denominator: 64 })).toThrow("`number`");
+    });
+
     it("should compute remap", () => {
         const result = math.remap({ number: 0.5, fromLow: 0, fromHigh: 1, toLow: 0, toHigh: 10 });
         expect(result).toEqual(5);

@@ -1,7 +1,9 @@
 import * as Inputs from "../inputs";
 import { resolveDto } from "../kernel-calls";
 import type * as Resolved from "../resolved-inputs";
-import { degreesOf, fractionOf, interpolated, radiansOf, roundedTo, smoothstep } from "./helpers/geometry/scalars";
+import { degreesOf, fractionOf, fractionText, interpolated, radiansOf, roundedTo, smoothstep } from "./helpers/geometry/scalars";
+import { InputError } from "../kernel-calls/errors";
+import { checkedUnitOfLength, lengthConverted, millimetresPerUnitOf } from "./helpers/geometry/lengths";
 
 /**
  * Arithmetic, rounding, ranges, random numbers and the trigonometric functions on plain numbers.
@@ -689,6 +691,71 @@ export class MathBitByBit {
     radToDeg(inputs: Inputs.Math.NumberDto): number {
         const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
         return degreesOf(resolved.number);
+    }
+
+    /**
+     * Converts a length from one unit to another.
+     *
+     * The factors are exact: an inch is 25.4 millimetres. A length in its own unit comes back
+     * unchanged. Example: 1 inch -> 25.4 millimetres, 250 millimetres -> 0.25 metres.
+     * @param inputs - The length and the units it is converted from and to
+     * @returns The length in `to`
+     * @group basics
+     * @shortname convert length
+     * @drawable false
+     * @example
+     * ```typescript
+     * const millimetres = bitbybit.math.convertLength({ value: 0.25, from: Bit.Inputs.Base.unitOfLengthEnum.inch, to: Bit.Inputs.Base.unitOfLengthEnum.millimetre });
+     * ```
+     */
+    convertLength(inputs: Inputs.Math.ConvertLengthDto): number {
+        const resolved = resolveDto(Inputs.Math.ConvertLengthDto, inputs) as Resolved.Math.ConvertLengthDto;
+        return lengthConverted(resolved.value, checkedUnitOfLength(resolved.from, "from"), checkedUnitOfLength(resolved.to, "to"));
+    }
+
+    /**
+     * Gives how many millimetres one of a unit of length holds.
+     *
+     * Example: inch -> 25.4, centimetre -> 10, metre -> 1000.
+     * @param inputs - The unit
+     * @returns Millimetres in one of the unit
+     * @group basics
+     * @shortname millimetres per unit
+     * @drawable false
+     * @example
+     * ```typescript
+     * const perInch = bitbybit.math.millimetresPerUnit({ unit: Bit.Inputs.Base.unitOfLengthEnum.inch });
+     * ```
+     */
+    millimetresPerUnit(inputs: Inputs.Math.UnitOfLengthDto): number {
+        const resolved = resolveDto(Inputs.Math.UnitOfLengthDto, inputs) as Resolved.Math.UnitOfLengthDto;
+        return millimetresPerUnitOf(checkedUnitOfLength(resolved.unit, "unit"));
+    }
+
+    /**
+     * Writes a number as a whole number and a reduced fraction, rounded to the nearest
+     * `1/denominator`, as inch sizes are written.
+     *
+     * Example: 1.25 with denominator 64 -> "1-1/4", 0.375 -> "3/8", 2 -> "2", -0.5 -> "-1/2".
+     * @param inputs - The number and the finest fraction to round to
+     * @returns The number as text
+     * @group basics
+     * @shortname to fraction text
+     * @drawable false
+     * @example
+     * ```typescript
+     * const size = bitbybit.math.toFractionText({ number: 0.4375, denominator: 64 });
+     * ```
+     */
+    toFractionText(inputs: Inputs.Math.FractionTextDto): string {
+        const resolved = resolveDto(Inputs.Math.FractionTextDto, inputs) as Resolved.Math.FractionTextDto;
+        if (!Number.isFinite(resolved.number)) {
+            throw new InputError(`\`number\` is ${String(resolved.number)}, not a finite number.`, "number");
+        }
+        if (!Number.isInteger(resolved.denominator) || resolved.denominator < 1) {
+            throw new InputError(`\`denominator\` is ${String(resolved.denominator)}, and has to be a whole number of at least 1.`, "denominator");
+        }
+        return fractionText(resolved.number, resolved.denominator);
     }
 
     /**

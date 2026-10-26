@@ -1,11 +1,13 @@
 import * as Inputs from "../../../../inputs";
 import type * as Resolved from "../../../../resolved-inputs";
-import { resolveDto } from "../../../../kernel-calls";
+import { InputError, resolveDto } from "../../../../kernel-calls";
+import { checkedUnitOfLength } from "../../geometry/lengths";
+import { DXF_FIRST_ENTITY_HANDLE, DXF_IMPERIAL_MEASUREMENT, DXF_INSUNITS, DXF_METRIC_MEASUREMENT } from "./dxf.constants";
 
 const CLOSED_POLYLINE_TOLERANCE = 1e-10;
 
 export class DxfGenerator {
-    private entityHandle = 256;
+    private entityHandle = DXF_FIRST_ENTITY_HANDLE;
     private colorFormat: "aci" | "truecolor" = "aci";
     private acadVersion: "AC1009" | "AC1015" = "AC1009";
 
@@ -16,10 +18,11 @@ export class DxfGenerator {
         const resolved = resolveDto(Inputs.IO.DxfModelDto, dxfInputs) as Resolved.IO.DxfModelDto;
         this.colorFormat = resolved.colorFormat || "aci";
         this.acadVersion = resolved.acadVersion || "AC1009";
+        this.entityHandle = DXF_FIRST_ENTITY_HANDLE;
         
         const dxfContent: string[] = [];
 
-        dxfContent.push(...this.generateHeader());
+        dxfContent.push(...this.generateHeader(resolved.unit));
 
         dxfContent.push(...this.generateTables(resolved));
 
@@ -32,7 +35,7 @@ export class DxfGenerator {
         return dxfContent.join("\n");
     }
 
-    private generateHeader(): string[] {
+    private generateHeader(unit: Inputs.Base.unitOfLengthEnum | undefined): string[] {
         const header = [
             "0",
             "SECTION",
@@ -72,8 +75,20 @@ export class DxfGenerator {
             );
         }
 
+        header.push(...this.unitHeader(unit));
         header.push("0", "ENDSEC");
         return header;
+    }
+
+    private unitHeader(unit: Inputs.Base.unitOfLengthEnum | undefined): string[] {
+        if (unit === undefined) {
+            return [];
+        }
+        const checked = checkedUnitOfLength(unit, "unit");
+        if (this.acadVersion === "AC1009") {
+            throw new InputError("`unit` is given, but an AC1009 (R12) file has no place for a drawing's unit: write AC1015 to state it.", "unit");
+        }
+        return ["9", "$INSUNITS", "70", DXF_INSUNITS[checked]!, "9", "$MEASUREMENT", "70", checked === "in" ? DXF_IMPERIAL_MEASUREMENT : DXF_METRIC_MEASUREMENT];
     }
 
     private generateTables(dxfInputs: Resolved.IO.DxfModelDto): string[] {

@@ -31,6 +31,19 @@
             "internal": "file-format plumbing behind io's readers, not geometry"
         }
     },
+    "files/glb.ts": {
+        "glbWithRootScale": {
+            "internal": "file-format plumbing behind the glb writers' unit, not geometry"
+        }
+    },
+    "files/gzip.ts": {
+        "gunzipped": {
+            "internal": "file-format plumbing behind io's readers, not geometry"
+        },
+        "isGzip": {
+            "internal": "file-format plumbing behind io's readers, not geometry"
+        }
+    },
     "files/inflate.ts": {
         "huffmanTable": {
             "internal": "file-format plumbing behind io's readers, not geometry"
@@ -106,6 +119,29 @@
         },
         "vectorToWorld": {
             "exposedAs": "frame.vectorToWorld"
+        }
+    },
+    "geometry/lengths.ts": {
+        "checkedUnitOfLength": {
+            "internal": "the input guard every unit-aware method runs on its `unit`, before `math.millimetresPerUnit` would see a value outside the enum"
+        },
+        "isUnitOfLength": {
+            "internal": "the test behind that guard, for readers that decide between a unit and a missing one"
+        },
+        "lengthConverted": {
+            "exposedAs": "math.convertLength"
+        },
+        "lengthsConverted": {
+            "internal": "the per-field form of `math.convertLength` the engineering tables convert their results with"
+        },
+        "millimetresPerUnitOf": {
+            "exposedAs": "math.millimetresPerUnit"
+        },
+        "snappedLength": {
+            "internal": "a table's length converted into the caller's unit, rounded so the conversion leaves no float noise"
+        },
+        "tableLength": {
+            "internal": "a caller's length converted into a table's own unit and rounded to the table's resolution, so a size rounded in another unit still matches its row"
         }
     },
     "geometry/matrices.ts": {
@@ -186,6 +222,9 @@
         },
         "fractionOf": {
             "exposedAs": "math.fract"
+        },
+        "fractionText": {
+            "exposedAs": "math.toFractionText"
         },
         "interpolated": {
             "exposedAs": "math.lerp"

@@ -426,6 +426,49 @@ describe("DxfGenerator unit tests", () => {
         });
     });
 
+    describe("Units", () => {
+        const U = Inputs.Base.unitOfLengthEnum;
+        const square = (): Inputs.IO.DxfPathsPartDto => new Inputs.IO.DxfPathsPartDto("0", "#000000", [new Inputs.IO.DxfPathDto([new Inputs.IO.DxfLineSegmentDto([0, 0], [1, 0])])]);
+        const headerOf = (dxf: string): string => dxf.slice(0, dxf.indexOf("0\nENDSEC"));
+
+        it("should state each unit in an AC1015 header, with inches imperial and the rest metric", () => {
+            // Act
+            const headers = [U.inch, U.millimetre, U.centimetre, U.metre].map(unit => headerOf(generator.generateDxf(new Inputs.IO.DxfModelDto([square()], "aci", "AC1015", unit))));
+
+            // Assert
+            expect(headers.map(header => /\$INSUNITS\n70\n(\d+)\n9\n\$MEASUREMENT\n70\n(\d)\n/.exec(header)?.slice(1))).toEqual([["1", "0"], ["4", "1"], ["5", "1"], ["6", "1"]]);
+        });
+
+        it("should add only the two unit variables to the header, the file being the same without them", () => {
+            // Act
+            const plain = generator.generateDxf(new Inputs.IO.DxfModelDto([square()], "aci", "AC1015"));
+            const inches = generator.generateDxf(new Inputs.IO.DxfModelDto([square()], "aci", "AC1015", U.inch));
+
+            // Assert
+            expect(plain).not.toContain("$INSUNITS");
+            expect(inches.replace("9\n$INSUNITS\n70\n1\n9\n$MEASUREMENT\n70\n0\n", "")).toBe(plain);
+        });
+
+        it("should refuse a unit in an AC1009 file and a unit it does not know, naming the unit", () => {
+            // Act & Assert
+            expect(() => generator.generateDxf(new Inputs.IO.DxfModelDto([square()], "aci", "AC1009", U.inch))).toThrow(/AC1015/);
+            expect(() => generator.generateDxf(new Inputs.IO.DxfModelDto([square()], "aci", "AC1015", "ft" as Inputs.Base.unitOfLengthEnum))).toThrow("`unit`");
+        });
+    });
+
+    describe("Repeated calls", () => {
+        it("should write the same file every time it is asked for the same drawing", () => {
+            // Arrange
+            const model = new Inputs.IO.DxfModelDto([new Inputs.IO.DxfPathsPartDto("0", "#000000", [new Inputs.IO.DxfPathDto([new Inputs.IO.DxfLineSegmentDto([0, 0], [1, 0])])])], "aci", "AC1015");
+
+            // Act
+            const files = [generator.generateDxf(model), generator.generateDxf(model)];
+
+            // Assert
+            expect(files[1]).toBe(files[0]);
+        });
+    });
+
     describe("Format Version Control", () => {
         
         it("should default to AC1009 for maximum compatibility", () => {

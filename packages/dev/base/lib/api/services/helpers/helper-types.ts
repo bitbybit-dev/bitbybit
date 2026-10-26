@@ -89,3 +89,19 @@ export interface RoundedCorner {
     readonly half: number;
     readonly reach: number;
 }
+
+export interface GltfNode {
+    readonly name?: string;
+    readonly scale?: readonly number[];
+    readonly children?: readonly number[];
+}
+
+export interface GltfScene {
+    readonly nodes?: readonly number[];
+}
+
+export interface GltfJson {
+    readonly scene?: number;
+    readonly scenes?: readonly GltfScene[];
+    readonly nodes?: readonly GltfNode[];
+}

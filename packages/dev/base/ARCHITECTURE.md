@@ -137,8 +137,9 @@ is a new dependency for those few packages and a re-export, never a change to wh
   whole (curves and surfaces as values, evaluation, derivatives, meshing), not one method per helper,
   and the deprecated verb API shows what a half-kept one costs. When that API is wanted, or a second
   package needs the code, it becomes `@bitbybit-dev/curves` on base, and `ifc` depends on it.
-- **The engineering tables** (`gears/`, `fasteners/`, `machine-elements/`, `shafts/` and
-  `services/engineering/`): sizes from standards, public as `bitbybit.engineering`, which the OCCT
+- **The engineering tables** (`threads/`, `fasteners/`, `bearings/`, `keys/`, `retaining-rings/`,
+  `splines/`, `knurls/`, `gears/`, `springs/` and `services/engineering/`): sizes from standards,
+  public as `bitbybit.engineering`, which the OCCT
   parts build from. They grow by family and by discipline ("How engineering grows"), and once a
   second discipline arrives they are a package of their own, `@bitbybit-dev/engineering`, with the
   same dotted paths.
@@ -162,6 +163,79 @@ under `engineering` is numbers from standards and needs no CAD kernel; its solid
 judges a design rather than sizing its parts, such as stress, strength or finite elements, is not a
 family of parts and gets a top-level name of its own (`simulation`), never a place under `engineering`.
 A thread is a family of its own because both fasteners and machining use it.
+
+Below a family sits the standard whose tables size it, so a path reads discipline, family, standard:
+`engineering.mechanical.fasteners.iso` and `fasteners.ansi`, built by `occt.parts.mechanical.fasteners.iso`
+and `fasteners.ansi`. A standard is named by the body that publishes its tables, as CAD part libraries
+label them: `iso` for the metric threads, fasteners and bearings, `din` for the metric keys, retaining
+rings, splines and knurls, and `ansi` for the inch ones (ASME B1.1 threads, the B18 fasteners, the
+R-series bearings, B17.1 keys, B18.27 rings, B92.1 splines and B94.6 knurls). A family no standard sizes
+has no such tier: gears, springs, dowel pins and machined flats take plain lengths in model units. A new
+standard is one more member beside the others (JIS fasteners, the DIN forms of the ISO ones), with
+its own DTOs and enums named for it (`IsoHexBoltSizesDto`, `ansiThreadSizeEnum`), because the component
+generator finds a DTO by its class name and an enum by its bare name, so no name may repeat across
+standards. An enum that means the same in every standard is shared (`clearanceFitEnum`,
+`knurlPatternEnum`, `retainingRingKindEnum`), and so is a family's result type (`ThreadSizes`,
+`InvoluteSplineSizes`): the OCCT builders take the numbers and never ask which standard gave them. Each
+standard's roles and connectors are the same as the others' of its kind, so a design that fastens with
+one fastens with any.
+
+## Units
+
+Each standard's tables are stored, and its rules worked, in its own unit: millimetres for ISO and DIN,
+inches for ANSI. Every lookup and builder of a standard takes `unit` (`Base.unitOfLengthEnum`, by
+default the standard's own) and converts at the edges, through `lib/api/services/helpers/geometry/lengths.ts`:
+
+- **Free lengths are in `unit`**: a screw's length, the shaft or bore a key, ring, spline or knurl is
+  sized for, and every length a lookup returns. One going in is converted into the table's unit and
+  rounded to the table's resolution (`tableLength`: 0.1 micrometre in millimetres, a millionth of
+  an inch) before it is compared, because a size rounded in another unit, as a field shows it to
+  six places, would otherwise miss an exact match such as a table's `nominal === diameter` or land
+  on the wrong side of a row's `upTo`. Lengths going out are rounded to 9 places (`snappedLength`).
+- **Designations stay in the standard's own terms** and are never converted: the size ("M8", "1/4"),
+  ISO's fine pitch ("M8x1"), DIN's module and knurl pitch, threads per inch and diametral pitch.
+- **Counts, angles and shares are never scaled.**
+- A value outside the table is refused with its bounds in the caller's unit.
+
+`math.convertLength` and `math.millimetresPerUnit` are the one conversion every package calls; 25.4 is
+exact. The unit codes are the ones design documents and assembly structures write (`mm`, `cm`, `m`,
+`in`), and feet are left out because the OCCT document has no unit for them.
+
+## Where the inch sizes come from
+
+The ASME standards are sold, not published, so the ANSI tables were built from public reproductions
+of them, every value read from at least two that agree, and only numbers were taken:
+
+- **Unified threads**: Machinery's Handbook as AmesWeb reproduces it, Wikipedia's Unified Thread
+  Standard table, and the Little Machine Shop, Tameson and University of Pennsylvania tap drill
+  charts, which settle the few tap drills the charts disagree on by majority.
+- **Socket head cap screws and set screws**: AFT Fasteners, American Fastener, fasten.it, torqbolt,
+  Global Fastener and the Unbrako catalogue. A cap screw's thread length is tabulated below 1/4
+  and is 2D + 1/2 inch from there; counterbores come from AmesWeb and Engineers Edge.
+- **Hex cap screws, hex nuts and plain washers**: AFT Fasteners, American Fastener and fasten.it
+  for B18.2.1 and B18.2.2, the SparkFun-hosted B18.6.3 datasheet for machine screw nuts, Engineers
+  Edge and Global Fastener for B18.22.1 type A washers.
+- **Clearance holes** (B18.2.8): AmesWeb, Omni, isocnc and PI Fabricators.
+- **R-series bearings**: the NSK and NHBB catalogues, which agree on every size, and Applied, Bailey
+  and Zoro from R8 up. Catalogue decimals are truncated fractions, so the tables hold the fractions.
+- **Keys** (B17.1): Engineers Edge, AmesWeb and the TTE/MPTA handout; the keyseat depth formulas
+  reproduce 523 of the 524 published depths. B17.1 measures half the key's height at the keyseat's
+  side, where DIN 6885 measures from the top of the shaft's round, so the ANSI depths add the
+  chordal height of the shaft they are asked for.
+- **Set screws**: the standard writes its lengths to two decimals, so a threshold such as 0.13 is
+  held as the fraction it stands for, 1/8, and a screw exactly that long is past it. The short
+  screws' socket depths are a maker's (Unbrako), as ASME gives none, and never exceed the long ones'.
+- **Retaining rings**: B18.27's own tables are not reproduced anywhere public, so the tables hold the
+  series interchangeable with it (Truarc 5100 and N5000, MS16624 and MS16625), from Rotor Clip,
+  MS16624D and Engineers Edge. A tapered section ring is widest opposite its gap, so that is where
+  the tables' largest section goes.
+- **Splines** (B92.1) and **knurls** (B94.6): Machinery's Handbook as reproduced online and Engineers
+  Edge, with the Dorian Tool catalogue for knurling tools; a spline's root fillet uses the published
+  data points, as the standard's own minimum is not public. Splines are the 30 degree flat root side
+  fit, which B92.1 gives from 2.5/5 to 32/64 only. A knurl takes the tooth depth the charts give per
+  pitch and refuses a blank with fewer teeth round it than they ask for.
+
+The metric tables hold the ISO and DIN values they always did; their tests pin them.
 
 ## Gear pairs
 

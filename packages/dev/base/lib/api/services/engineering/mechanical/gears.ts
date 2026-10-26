@@ -1,6 +1,7 @@
 import * as Inputs from "../../../inputs";
 import type * as Resolved from "../../../resolved-inputs";
-import { resolveDto } from "../../../kernel-calls";
+import { InputError, resolveDto } from "../../../kernel-calls";
+import { checkedUnitOfLength, snappedLength } from "../../helpers/geometry/lengths";
 import { gearOutlinePoints, ringGearOutline, ringGearSizes, spurGearOutline, spurGearSizes } from "../../../gears/gears";
 import { gearPair, internalGearPair, planetarySet } from "../../../gears/gear-pairs";
 import { rackOutline, rackSizes } from "../../../gears/racks";
@@ -305,5 +306,30 @@ export class EngineeringGears {
     rackOutline(inputs: Inputs.Engineering.RackOutlineDto): Inputs.Base.Point3[] {
         const resolved = resolveDto(Inputs.Engineering.RackOutlineDto, inputs) as Resolved.Engineering.RackOutlineDto;
         return gearOutlinePoints(rackOutline(resolved), resolved.segments);
+    }
+
+    /**
+     * Gives the module of an inch gear from its diametral pitch, in the model's unit, so the gear
+     * methods can size it.
+     *
+     * The module is the pitch diameter over the teeth, the inverse of the diametral pitch: 1 / DP
+     * inches, or 25.4 / DP millimetres. Example: 10 DP -> 0.1 inches, or 2.54 millimetres
+     * @param inputs - The diametral pitch and the unit
+     * @returns The module in `unit`
+     * @group spur
+     * @shortname module from diametral pitch
+     * @drawable false
+     * @example
+     * ```typescript
+     * const gearModule = bitbybit.engineering.mechanical.gears.moduleFromDiametralPitch({ diametralPitch: 12, unit: Bit.Inputs.Base.unitOfLengthEnum.inch });
+     * const pinion = bitbybit.engineering.mechanical.gears.spurGearSizes({ module: gearModule, teeth: 24 });
+     * ```
+     */
+    moduleFromDiametralPitch(inputs: Inputs.Engineering.ModuleFromDiametralPitchDto): number {
+        const resolved = resolveDto(Inputs.Engineering.ModuleFromDiametralPitchDto, inputs) as Resolved.Engineering.ModuleFromDiametralPitchDto;
+        if (!(resolved.diametralPitch > 0) || !Number.isFinite(resolved.diametralPitch)) {
+            throw new InputError("`diametralPitch` is not a finite number more than 0.", "diametralPitch");
+        }
+        return snappedLength(1 / resolved.diametralPitch, "in", checkedUnitOfLength(resolved.unit, "unit"));
     }
 }

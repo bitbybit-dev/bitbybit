@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import * as Inputs from "../../inputs";
 import { Engineering } from "./engineering";
-import { metricSizes } from "../../fasteners/fasteners";
-import { ballBearingDesignations } from "../../machine-elements/machine-elements";
+import { isoThreadSizes } from "../../threads/iso-threads";
+import { isoBallBearingDesignations } from "../../bearings/iso-bearings";
 
 describe("engineering", () => {
     const engineering = new Engineering();
@@ -174,16 +174,16 @@ describe("engineering", () => {
     describe("fasteners, bearings, keys and springs", () => {
         it("should give the ISO sizes the base tables hold, by default an M3", () => {
             // Act
-            const thread = engineering.mechanical.threads.metricThread({ size: Inputs.Engineering.metricSizeEnum.m8 });
-            const fine = engineering.mechanical.threads.metricThread({ size: Inputs.Engineering.metricSizeEnum.m8, pitch: 1 });
-            const hole = engineering.mechanical.fasteners.clearanceHole({ size: Inputs.Engineering.metricSizeEnum.m6 });
-            const loose = engineering.mechanical.fasteners.clearanceHole({ size: Inputs.Engineering.metricSizeEnum.m6, fit: Inputs.Engineering.clearanceFitEnum.loose });
-            const head = engineering.mechanical.fasteners.socketHeadCapScrewSizes({ size: Inputs.Engineering.metricSizeEnum.m5 });
-            const bolt = engineering.mechanical.fasteners.hexBoltSizes({ size: Inputs.Engineering.metricSizeEnum.m8, length: 40 });
-            const nut = engineering.mechanical.fasteners.hexNutSizes({ size: Inputs.Engineering.metricSizeEnum.m8 });
-            const washer = engineering.mechanical.fasteners.washerSizes({ size: Inputs.Engineering.metricSizeEnum.m8 });
-            const socket = engineering.mechanical.fasteners.setScrewSizes({ size: Inputs.Engineering.metricSizeEnum.m5 });
-            const byDefault = engineering.mechanical.threads.metricThread({});
+            const thread = engineering.mechanical.threads.iso.thread({ size: Inputs.Engineering.isoThreadSizeEnum.m8 });
+            const fine = engineering.mechanical.threads.iso.thread({ size: Inputs.Engineering.isoThreadSizeEnum.m8, pitch: 1 });
+            const hole = engineering.mechanical.fasteners.iso.clearanceHole({ size: Inputs.Engineering.isoThreadSizeEnum.m6 });
+            const loose = engineering.mechanical.fasteners.iso.clearanceHole({ size: Inputs.Engineering.isoThreadSizeEnum.m6, fit: Inputs.Engineering.clearanceFitEnum.loose });
+            const head = engineering.mechanical.fasteners.iso.socketHeadCapScrewSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m5 });
+            const bolt = engineering.mechanical.fasteners.iso.hexBoltSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m8, length: 40 });
+            const nut = engineering.mechanical.fasteners.iso.hexNutSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m8 });
+            const washer = engineering.mechanical.fasteners.iso.washerSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m8 });
+            const socket = engineering.mechanical.fasteners.iso.setScrewSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m5 });
+            const byDefault = engineering.mechanical.threads.iso.thread({});
 
             // Assert
             expect([thread.pitch, thread.tapDrill, fine.pitch]).toEqual([1.25, 6.8, 1]);
@@ -198,8 +198,8 @@ describe("engineering", () => {
 
         it("should give a bearing by its designation, a key for its shaft and a spring's path", () => {
             // Act
-            const bearing = engineering.mechanical.bearings.ballBearingSizes({ designation: Inputs.Engineering.ballBearingEnum.b6204 });
-            const key = engineering.mechanical.keys.parallelKeySizes({ shaftDiameter: 20 });
+            const bearing = engineering.mechanical.bearings.iso.ballBearingSizes({ designation: Inputs.Engineering.isoBallBearingEnum.b6204 });
+            const key = engineering.mechanical.keys.din.parallelKeySizes({ shaftDiameter: 20 });
             const spring = engineering.mechanical.springs.compressionSpringPath({ wireDiameter: 0.2, diameter: 2, activeCoils: 6, length: 4 });
 
             // Assert
@@ -212,11 +212,11 @@ describe("engineering", () => {
 
         it("should give a set screw's point, a chamfered washer and a retaining ring with its groove", () => {
             // Act
-            const dog = engineering.mechanical.fasteners.setScrewSizes({ size: Inputs.Engineering.metricSizeEnum.m5, point: Inputs.Engineering.setScrewPointEnum.dog, length: 10 });
-            const flat = engineering.mechanical.fasteners.setScrewSizes({ size: Inputs.Engineering.metricSizeEnum.m5 });
-            const washer = engineering.mechanical.fasteners.chamferedWasherSizes({ size: Inputs.Engineering.metricSizeEnum.m8 });
-            const shaft = engineering.mechanical.retainingRings.retainingRingSizes({});
-            const bore = engineering.mechanical.retainingRings.retainingRingSizes({ kind: Inputs.Engineering.retainingRingKindEnum.bore, diameter: 47 });
+            const dog = engineering.mechanical.fasteners.iso.setScrewSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m5, point: Inputs.Engineering.isoSetScrewPointEnum.dog, length: 10 });
+            const flat = engineering.mechanical.fasteners.iso.setScrewSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m5 });
+            const washer = engineering.mechanical.fasteners.iso.chamferedWasherSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m8 });
+            const shaft = engineering.mechanical.retainingRings.din.retainingRingSizes({});
+            const bore = engineering.mechanical.retainingRings.din.retainingRingSizes({ kind: Inputs.Engineering.retainingRingKindEnum.bore, diameter: 47 });
 
             // Assert
             expect([dog.socketSize, dog.pointDiameter, flat.pointDiameter, flat.socketDepth]).toEqual([2.5, 3.5, 3.5, 3]);
@@ -227,8 +227,8 @@ describe("engineering", () => {
 
         it("should size a spline and a knurl", () => {
             // Act
-            const spline = engineering.mechanical.splines.involuteSplineSizes({});
-            const knurl = engineering.mechanical.knurls.knurlSizes({ diameter: 19.6, pitch: 0.8, pattern: Inputs.Engineering.knurlPatternEnum.diamond });
+            const spline = engineering.mechanical.splines.din.involuteSplineSizes({});
+            const knurl = engineering.mechanical.knurls.din.knurlSizes({ diameter: 19.6, pitch: 0.8, pattern: Inputs.Engineering.knurlPatternEnum.diamond });
 
             // Assert
             expect([spline.teeth, spline.shaftTipDiameter]).toEqual([18, 24.75]);
@@ -237,8 +237,115 @@ describe("engineering", () => {
 
         it("should list in its enums exactly the sizes and bearings the tables hold", () => {
             // Assert
-            expect(Object.values(Inputs.Engineering.metricSizeEnum)).toEqual(metricSizes());
-            expect(Object.values(Inputs.Engineering.ballBearingEnum).sort()).toEqual([...ballBearingDesignations()].sort());
+            expect(Object.values(Inputs.Engineering.isoThreadSizeEnum)).toEqual(isoThreadSizes());
+            expect(Object.values(Inputs.Engineering.isoBallBearingEnum).sort()).toEqual([...isoBallBearingDesignations()].sort());
+        });
+    });
+
+    describe("ANSI standards", () => {
+        const mm = Inputs.Base.unitOfLengthEnum.millimetre;
+        const E = Inputs.Engineering;
+
+        it("should give the Unified threads and the inch fasteners from their tables, in inches by default", () => {
+            // Act
+            const ansi = engineering.mechanical;
+            const thread = ansi.threads.ansi.thread({ size: E.ansiThreadSizeEnum.in1_4, series: E.ansiThreadSeriesEnum.unc });
+            const fine = ansi.threads.ansi.thread({ size: E.ansiThreadSizeEnum.in1_4, series: E.ansiThreadSeriesEnum.unf });
+            const fasteners = ansi.fasteners.ansi;
+            const sizes = [
+                fasteners.clearanceHole({ size: E.ansiThreadSizeEnum.in1_4, fit: E.clearanceFitEnum.normal }),
+                fasteners.socketHeadCapScrewSizes({ size: E.ansiThreadSizeEnum.in1_4 }).counterboreDiameter,
+                fasteners.hexBoltSizes({ size: E.ansiThreadSizeEnum.in1_4, length: 1 }).threadLength,
+                fasteners.hexNutSizes({ size: E.ansiThreadSizeEnum.in1_4 }).acrossFlats,
+                fasteners.washerSizes({ size: E.ansiThreadSizeEnum.in1_4, series: E.ansiWasherSeriesEnum.narrow }).outerDiameter,
+                fasteners.setScrewSizes({ size: E.ansiThreadSizeEnum.in1_4, point: E.ansiSetScrewPointEnum.cup, length: 0.25 }).pointDiameter > 0,
+            ];
+
+            // Assert
+            expect([thread.designation, thread.threadsPerInch, fine.designation]).toEqual(["1/4-20 UNC", 20, "1/4-28 UNF"]);
+            expect(ansi.threads.ansi.sizes()).toContain(E.ansiThreadSizeEnum.n10);
+            expect(sizes).toEqual([0.281, 0.4375, 0.75, 0.4375, 0.625, true]);
+        });
+
+        it("should give the inch machine elements in the unit asked for, as the inches they are", () => {
+            // Act
+            const elements = engineering.mechanical;
+            const bearing = elements.bearings.ansi.ballBearingSizes({ designation: E.ansiBallBearingEnum.r8, unit: mm });
+            const key = elements.keys.ansi.parallelKeySizes({ shaftDiameter: 1 });
+            const ring = elements.retainingRings.ansi.retainingRingSizes({ kind: E.retainingRingKindEnum.shaft, diameter: 0.75 });
+            const spline = elements.splines.ansi.involuteSplineSizes({ teeth: 24, pitch: E.ansiSplinePitchEnum.p16_32 });
+            const knurl = elements.knurls.ansi.knurlSizes({ diameter: 0.5, diametralPitch: 96 });
+
+            // Assert
+            expect(bearing.bore).toBeCloseTo(12.7, 9);
+            expect(elements.bearings.ansi.designations()).toContain("R8");
+            expect(key.width).toBeCloseTo(0.25, 9);
+            expect(ring.grooveDiameter).toBeLessThan(0.75);
+            expect(elements.retainingRings.ansi.diameters({ kind: E.retainingRingKindEnum.bore })).toContain(1);
+            expect(spline.referenceDiameter).toBe(1.5);
+            expect(knurl.grooves).toBe(48);
+        });
+    });
+
+    describe("units", () => {
+        const inch = Inputs.Base.unitOfLengthEnum.inch;
+
+        it("should give a standard's sizes in the unit asked for, an M8 thread's 8 mm being 0.31496063 inches, and keep the size's name", () => {
+            // Act
+            const thread = engineering.mechanical.threads.iso.thread({ size: Inputs.Engineering.isoThreadSizeEnum.m8, unit: inch });
+            const hole = engineering.mechanical.fasteners.iso.clearanceHole({ size: Inputs.Engineering.isoThreadSizeEnum.m6, unit: inch });
+            const bearing = engineering.mechanical.bearings.iso.ballBearingSizes({ designation: Inputs.Engineering.isoBallBearingEnum.b608, unit: inch });
+
+            // Assert
+            expect([thread.designation, thread.diameter, thread.pitch, thread.tapDrill]).toEqual(["M8", 0.31496063, 0.049212598, 0.267716535]);
+            expect(hole).toBe(0.259842520);
+            expect(bearing.bore).toBe(0.31496063);
+        });
+
+        it("should read a bolt's and a set screw's length in the unit asked for, so 4 inches of M8 bolt are threaded as 101.6 mm of it", () => {
+            // Act
+            const bolt = engineering.mechanical.fasteners.iso.hexBoltSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m8, length: 4, unit: inch });
+            const millimetres = engineering.mechanical.fasteners.iso.hexBoltSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m8, length: 101.6 });
+            const short = engineering.mechanical.fasteners.iso.setScrewSizes({ size: Inputs.Engineering.isoThreadSizeEnum.m6, length: 6 / 25.4, unit: inch });
+
+            // Assert
+            expect(bolt.threadLength).toBeCloseTo(millimetres.threadLength / 25.4, 9);
+            expect(short.socketDepth).toBeCloseTo(2 / 25.4, 9);
+        });
+
+        it("should find a ring, a key, a spline and a knurl from inch inputs as from the millimetres they stand for", () => {
+            // Act
+            const ring = engineering.mechanical.retainingRings.din.retainingRingSizes({ diameter: 20 / 25.4, unit: inch });
+            const key = engineering.mechanical.keys.din.parallelKeySizes({ shaftDiameter: 1, unit: inch });
+            const spline = engineering.mechanical.splines.din.involuteSplineSizes({ unit: inch });
+            const knurl = engineering.mechanical.knurls.din.knurlSizes({ diameter: 19.6 / 25.4, pitch: 0.8, unit: inch });
+            const diameters = engineering.mechanical.retainingRings.din.diameters({ unit: inch });
+
+            // Assert
+            expect(ring.grooveDiameter).toBe(0.748031496);
+            expect(key.width).toBe(0.31496063);
+            expect(spline.teeth).toBe(18);
+            expect(knurl.grooves).toBe(77);
+            expect(diameters[0]).toBe(0.118110236);
+        });
+
+        it("should refuse a unit outside the four, naming the property", () => {
+            // Act & Assert
+            expect(() => engineering.mechanical.threads.iso.thread({ unit: "ft" as Inputs.Base.unitOfLengthEnum })).toThrow("`unit` is ft, which is none of mm, cm, m, in.");
+        });
+
+        it("should list the ISO thread sizes and bearing designations, and give a diametral pitch's module in any unit", () => {
+            // Act
+            const sizes = engineering.mechanical.threads.iso.sizes();
+            const designations = engineering.mechanical.bearings.iso.designations();
+            const inInches = engineering.mechanical.gears.moduleFromDiametralPitch({ diametralPitch: 10 });
+            const inMillimetres = engineering.mechanical.gears.moduleFromDiametralPitch({ diametralPitch: 10, unit: Inputs.Base.unitOfLengthEnum.millimetre });
+
+            // Assert
+            expect([sizes[0], sizes.length]).toEqual(["M1.6", 14]);
+            expect(designations).toHaveLength(28);
+            expect([inInches, inMillimetres]).toEqual([0.1, 2.54]);
+            expect(() => engineering.mechanical.gears.moduleFromDiametralPitch({ diametralPitch: 0 })).toThrow("`diametralPitch`");
         });
     });
 });

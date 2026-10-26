@@ -1,8 +1,8 @@
 import * as Inputs from "../../../inputs";
 import type * as Resolved from "../../../resolved-inputs";
 import { resolveDto } from "../../../kernel-calls";
-import { compressionSpringPath } from "../../../machine-elements/machine-elements";
-import type { CompressionSpringPath } from "../../../machine-elements/machine-element-types";
+import { compressionSpringPath } from "../../../springs/springs";
+import type { CompressionSpringPath } from "../../../springs/spring-types";
 
 /**
  * Compression springs with closed and ground ends, with no CAD kernel needed: the path of the wire's

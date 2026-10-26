@@ -1,0 +1,11 @@
+export const GLB_MAGIC = 0x46546c67;
+export const GLB_VERSION = 2;
+export const GLB_HEADER_SIZE = 12;
+export const GLB_VERSION_AT = 4;
+export const GLB_LENGTH_AT = 8;
+export const GLB_CHUNK_TYPE_AT = 4;
+export const GLB_CHUNK_HEADER_SIZE = 8;
+export const GLB_JSON_CHUNK = 0x4e4f534a;
+export const GLB_ALIGNMENT = 4;
+export const GLB_JSON_PADDING = 0x20;
+export const GLB_SCALE_NODE_NAME = "unit scale";

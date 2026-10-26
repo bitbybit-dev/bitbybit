@@ -2,6 +2,7 @@
     "extends": "../../../tsconfig.base.cad.json",
     "compileOnSave": false,
     "exclude": [
+        "lib/api/inputs/engineering/**/*",
         "coverage",
         "dist",
         "**/__mocks__/**",

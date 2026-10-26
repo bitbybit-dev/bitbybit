@@ -9,10 +9,11 @@ import { EngineeringSprings } from "./springs";
 import { EngineeringThreads } from "./threads";
 
 /**
- * Mechanical engineering by its numbers: the sizes and outlines of involute gears and racks, ISO
- * metric threads and fasteners, deep groove ball bearings, parallel keys, retaining rings, splines,
- * knurls and compression springs, for any kernel to build from. `occt.parts.mechanical` builds the
- * same parts as solids with named faces. Standard parts are in millimetres, gears in model units.
+ * Mechanical engineering by its numbers: the sizes and outlines of involute gears and racks, and
+ * the threads, fasteners, ball bearings, parallel keys, retaining rings, splines and knurls of each
+ * standard, with compression springs, for any kernel to build from. Each family holds one member per
+ * standard, such as `iso` or `din`, whose sizes come in the `unit` asked for; gears and springs are
+ * in model units. `occt.parts.mechanical` builds the same parts as solids with named faces.
  * @beta
  */
 export class EngineeringMechanical {

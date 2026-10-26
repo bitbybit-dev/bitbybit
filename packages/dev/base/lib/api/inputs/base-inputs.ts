@@ -983,4 +983,15 @@ export namespace Base {
         bottomMid = "bottomMid",
         bottomRight = "bottomRight"
     }
+    /**
+     * A unit of length: millimetres, centimetres, metres or inches. Model units carry no unit of
+     * their own; this names the one they are in where a file, a standard's sizes or a conversion
+     * needs to know it. The values are the short codes design documents and assembly structures use.
+     */
+    export enum unitOfLengthEnum {
+        millimetre = "mm",
+        centimetre = "cm",
+        metre = "m",
+        inch = "in",
+    }
 }

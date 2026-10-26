@@ -22,3 +22,24 @@ export const degreesOf = (radians: number): number => radians * HALF_TURN_DEGREE
 export const angleOfCosine = (cosine: number): number => Math.acos(Math.min(1, Math.max(-1, cosine)));
 
 export const interpolated = (start: number, end: number, share: number): number => start + (end - start) * share;
+
+function greatestCommonDivisor(first: number, second: number): number {
+    let [a, b] = [first, second];
+    while (b !== 0) {
+        [a, b] = [b, a % b];
+    }
+    return a;
+}
+
+export function fractionText(value: number, denominator: number): string {
+    const units = Math.round(Math.abs(value) * denominator);
+    const whole = Math.floor(units / denominator);
+    const rest = units - whole * denominator;
+    const common = greatestCommonDivisor(rest, denominator);
+    const sign = value < 0 && units > 0 ? "-" : "";
+    if (rest === 0) {
+        return `${sign}${String(whole)}`;
+    }
+    const part = `${String(rest / common)}/${String(denominator / common)}`;
+    return whole === 0 ? `${sign}${part}` : `${sign}${String(whole)}-${part}`;
+}

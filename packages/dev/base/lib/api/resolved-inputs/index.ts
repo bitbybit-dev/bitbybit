@@ -49,33 +49,48 @@ export namespace Dates {
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace Engineering {
-    export type BallBearingSizesDto = WithDefaults<Inputs.Engineering.BallBearingSizesDto, "designation">;
+    export type AnsiBallBearingSizesDto = WithDefaults<Inputs.Engineering.AnsiBallBearingSizesDto, "designation" | "shields" | "unit">;
+    export type AnsiClearanceHoleDto = WithDefaults<Inputs.Engineering.AnsiClearanceHoleDto, "fit" | "size" | "unit">;
+    export type AnsiHexBoltSizesDto = WithDefaults<Inputs.Engineering.AnsiHexBoltSizesDto, "length" | "size" | "unit">;
+    export type AnsiInvoluteSplineSizesDto = WithDefaults<Inputs.Engineering.AnsiInvoluteSplineSizesDto, "teeth" | "pitch" | "unit">;
+    export type AnsiKnurlSizesDto = WithDefaults<Inputs.Engineering.AnsiKnurlSizesDto, "diameter" | "diametralPitch" | "pattern" | "unit">;
+    export type AnsiParallelKeySizesDto = WithDefaults<Inputs.Engineering.AnsiParallelKeySizesDto, "shaftDiameter" | "unit">;
+    export type AnsiRetainingRingDiametersDto = WithDefaults<Inputs.Engineering.AnsiRetainingRingDiametersDto, "kind" | "unit">;
+    export type AnsiRetainingRingSizesDto = WithDefaults<Inputs.Engineering.AnsiRetainingRingSizesDto, "kind" | "diameter" | "unit">;
+    export type AnsiSetScrewSizesDto = WithDefaults<Inputs.Engineering.AnsiSetScrewSizesDto, "point" | "series" | "size" | "unit">;
+    export type AnsiSizeDto = WithDefaults<Inputs.Engineering.AnsiSizeDto, "size" | "unit">;
+    export type AnsiSizeSharedDto = WithDefaults<Inputs.Engineering.AnsiSizeSharedDto, "size" | "unit">;
+    export type AnsiThreadDto = WithDefaults<Inputs.Engineering.AnsiThreadDto, "series" | "size" | "unit">;
+    export type AnsiWasherSizesDto = WithDefaults<Inputs.Engineering.AnsiWasherSizesDto, "series" | "size" | "unit">;
     export type BevelGearOutlineDto = WithDefaults<Inputs.Engineering.BevelGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     export type BevelGearSharedDto = WithDefaults<Inputs.Engineering.BevelGearSharedDto, "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     export type BevelGearSizesDto = WithDefaults<Inputs.Engineering.BevelGearSizesDto, "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
-    export type ClearanceHoleDto = WithDefaults<Inputs.Engineering.ClearanceHoleDto, "fit" | "size">;
     export type CompressionSpringPathDto = WithDefaults<Inputs.Engineering.CompressionSpringPathDto, "wireDiameter" | "diameter" | "activeCoils" | "length">;
+    export type DinInvoluteSplineSizesDto = WithDefaults<Inputs.Engineering.DinInvoluteSplineSizesDto, "referenceDiameter" | "module" | "unit">;
+    export type DinKnurlSizesDto = WithDefaults<Inputs.Engineering.DinKnurlSizesDto, "diameter" | "pitch" | "pattern" | "unit">;
+    export type DinParallelKeySizesDto = WithDefaults<Inputs.Engineering.DinParallelKeySizesDto, "shaftDiameter" | "unit">;
+    export type DinRetainingRingDiametersDto = WithDefaults<Inputs.Engineering.DinRetainingRingDiametersDto, "kind" | "unit">;
+    export type DinRetainingRingSizesDto = WithDefaults<Inputs.Engineering.DinRetainingRingSizesDto, "kind" | "diameter" | "unit">;
     export type GearPairDto = WithDefaults<Inputs.Engineering.GearPairDto, "module" | "teethA" | "teethB" | "pressureAngle" | "profileShiftA" | "profileShiftB" | "addendum" | "dedendum">;
     export type HelicalGearOutlineDto = WithDefaults<Inputs.Engineering.HelicalGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "helixAngle" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     export type HelicalGearSharedDto = WithDefaults<Inputs.Engineering.HelicalGearSharedDto, "module" | "teeth" | "helixAngle" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     export type HelicalGearSizesDto = WithDefaults<Inputs.Engineering.HelicalGearSizesDto, "module" | "teeth" | "helixAngle" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
-    export type HexBoltSizesDto = WithDefaults<Inputs.Engineering.HexBoltSizesDto, "length" | "size">;
     export type InternalGearPairDto = WithDefaults<Inputs.Engineering.InternalGearPairDto, "module" | "pinionTeeth" | "ringTeeth" | "pressureAngle" | "addendum">;
-    export type InvoluteSplineSizesDto = WithDefaults<Inputs.Engineering.InvoluteSplineSizesDto, "referenceDiameter" | "module">;
-    export type KnurlSizesDto = WithDefaults<Inputs.Engineering.KnurlSizesDto, "diameter" | "pitch" | "pattern">;
-    export type MetricSizeDto = WithDefaults<Inputs.Engineering.MetricSizeDto, "size">;
-    export type MetricSizeSharedDto = WithDefaults<Inputs.Engineering.MetricSizeSharedDto, "size">;
-    export type MetricThreadDto = WithDefaults<Inputs.Engineering.MetricThreadDto, "size">;
-    export type ParallelKeySizesDto = WithDefaults<Inputs.Engineering.ParallelKeySizesDto, "shaftDiameter">;
+    export type IsoBallBearingSizesDto = WithDefaults<Inputs.Engineering.IsoBallBearingSizesDto, "designation" | "unit">;
+    export type IsoClearanceHoleDto = WithDefaults<Inputs.Engineering.IsoClearanceHoleDto, "fit" | "size" | "unit">;
+    export type IsoHexBoltSizesDto = WithDefaults<Inputs.Engineering.IsoHexBoltSizesDto, "length" | "size" | "unit">;
+    export type IsoSetScrewSizesDto = WithDefaults<Inputs.Engineering.IsoSetScrewSizesDto, "point" | "size" | "unit">;
+    export type IsoSizeDto = WithDefaults<Inputs.Engineering.IsoSizeDto, "size" | "unit">;
+    export type IsoSizeSharedDto = WithDefaults<Inputs.Engineering.IsoSizeSharedDto, "size" | "unit">;
+    export type IsoThreadDto = WithDefaults<Inputs.Engineering.IsoThreadDto, "size" | "unit">;
+    export type ModuleFromDiametralPitchDto = WithDefaults<Inputs.Engineering.ModuleFromDiametralPitchDto, "diametralPitch" | "unit">;
     export type PlanetarySetDto = WithDefaults<Inputs.Engineering.PlanetarySetDto, "module" | "sunTeeth" | "planetTeeth" | "planets" | "pressureAngle" | "addendum">;
     export type RackOutlineDto = WithDefaults<Inputs.Engineering.RackOutlineDto, "segments" | "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "height">;
     export type RackSharedDto = WithDefaults<Inputs.Engineering.RackSharedDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "height">;
     export type RackSizesDto = WithDefaults<Inputs.Engineering.RackSizesDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "height">;
-    export type RetainingRingSizesDto = WithDefaults<Inputs.Engineering.RetainingRingSizesDto, "kind" | "diameter">;
     export type RingGearOutlineDto = WithDefaults<Inputs.Engineering.RingGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     export type RingGearSharedDto = WithDefaults<Inputs.Engineering.RingGearSharedDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     export type RingGearSizesDto = WithDefaults<Inputs.Engineering.RingGearSizesDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
-    export type SetScrewSizesDto = WithDefaults<Inputs.Engineering.SetScrewSizesDto, "point" | "size">;
     export type SpurGearOutlineDto = WithDefaults<Inputs.Engineering.SpurGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     export type SpurGearSharedDto = WithDefaults<Inputs.Engineering.SpurGearSharedDto, "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     export type SpurGearSizesDto = WithDefaults<Inputs.Engineering.SpurGearSizesDto, "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
@@ -209,8 +224,10 @@ export namespace Math {
     export type ActionOnOneNumberDto = WithDefaults<Inputs.Math.ActionOnOneNumberDto, "number" | "operation">;
     export type ActionOnTwoNumbersDto = WithDefaults<Inputs.Math.ActionOnTwoNumbersDto, "first" | "second" | "operation">;
     export type ClampDto = WithDefaults<Inputs.Math.ClampDto, "number" | "min" | "max">;
+    export type ConvertLengthDto = WithDefaults<Inputs.Math.ConvertLengthDto, "value" | "from" | "to">;
     export type EaseDto = WithDefaults<Inputs.Math.EaseDto, "x" | "min" | "max" | "ease">;
     export type EvalArithmeticDto = WithDefaults<Inputs.Math.EvalArithmeticDto, "expression">;
+    export type FractionTextDto = WithDefaults<Inputs.Math.FractionTextDto, "number" | "denominator">;
     export type InverseLerpDto = WithDefaults<Inputs.Math.InverseLerpDto, "start" | "end" | "value">;
     export type LerpDto = WithDefaults<Inputs.Math.LerpDto, "start" | "end" | "t">;
     export type ModulusDto = WithDefaults<Inputs.Math.ModulusDto, "number" | "modulus">;
@@ -223,6 +240,7 @@ export namespace Math {
     export type RoundToDecimalsDto = WithDefaults<Inputs.Math.RoundToDecimalsDto, "number" | "decimalPlaces">;
     export type ToFixedDto = WithDefaults<Inputs.Math.ToFixedDto, "decimalPlaces">;
     export type TwoNumbersDto = WithDefaults<Inputs.Math.TwoNumbersDto, "first" | "second">;
+    export type UnitOfLengthDto = WithDefaults<Inputs.Math.UnitOfLengthDto, "unit">;
     export type WrapDto = WithDefaults<Inputs.Math.WrapDto, "number" | "min" | "max">;
 }
 

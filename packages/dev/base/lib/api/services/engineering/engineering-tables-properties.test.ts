@@ -1,15 +1,21 @@
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
 import { InputError } from "../../kernel-calls/errors";
-import type { MetricSize, SetScrewPoint } from "../../fasteners/fastener-types";
-import { chamferedWasherSizes, clearanceHoleDiameter, hexBoltSizes, hexNutSizes, metricSizes, metricThread, setScrewSizes, socketHeadCapScrewSizes, washerSizes } from "../../fasteners/fasteners";
-import { ballBearingDesignations, ballBearingSizes, compressionSpringPath, parallelKeySizes, retainingRingDiameters, retainingRingSizes } from "../../machine-elements/machine-elements";
-import { involuteSplineSizes, knurlSizes } from "../../shafts/shafts";
-import type { BallBearingDesignation } from "../../machine-elements/machine-element-types";
+import type { IsoSetScrewPoint } from "../../fasteners/fastener-types";
+import type { IsoThreadSize } from "../../threads/thread-types";
+import { isoChamferedWasherSizes, isoClearanceHoleDiameter, isoHexBoltSizes, isoHexNutSizes, isoSetScrewSizes, isoSocketHeadCapScrewSizes, isoWasherSizes } from "../../fasteners/iso-fasteners";
+import { isoThread, isoThreadSizes } from "../../threads/iso-threads";
+import { isoBallBearingDesignations, isoBallBearingSizes } from "../../bearings/iso-bearings";
+import { dinParallelKeySizes } from "../../keys/din-keys";
+import { dinRetainingRingDiameters, dinRetainingRingSizes } from "../../retaining-rings/din-retaining-rings";
+import { compressionSpringPath } from "../../springs/springs";
+import { dinInvoluteSplineSizes } from "../../splines/din-splines";
+import { dinKnurlSizes } from "../../knurls/din-knurls";
+import type { IsoBallBearingDesignation } from "../../bearings/bearing-types";
 
 const SEED = 20261018;
-const SIZES = metricSizes();
-const POINTS: SetScrewPoint[] = ["flat", "cone", "dog", "cup"];
+const SIZES = isoThreadSizes();
+const POINTS: IsoSetScrewPoint[] = ["flat", "cone", "dog", "cup"];
 const SPLINE_MODULES = [0.5, 0.6, 0.75, 0.8, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5, 6, 8, 10];
 const KNURL_PITCHES = [0.5, 0.6, 0.8, 1, 1.2, 1.6];
 
@@ -25,9 +31,9 @@ const refusedWith = (make: () => unknown): unknown => {
     }
 };
 
-const setScrewSizesOf = (size: MetricSize): boolean => refusedWith(() => setScrewSizes(size)) === undefined;
+const setScrewSizesOf = (size: IsoThreadSize): boolean => refusedWith(() => isoSetScrewSizes(size, "flat")) === undefined;
 
-const boreOfDesignation = (designation: BallBearingDesignation): number => {
+const boreOfDesignation = (designation: IsoBallBearingDesignation): number => {
     const code = designation.slice(-2);
     const small: Record<string, number> = { "00": 10, "01": 12, "02": 15, "03": 17 };
     return designation.length === 3 ? Number(designation.slice(-1)) : small[code] ?? 5 * Number(code);
@@ -37,16 +43,16 @@ describe("engineering tables against the standards' own rules", () => {
     describe("metric threads and fasteners", () => {
         it("should grow every coarse thread, clearance hole, head, nut and washer with the size, as ISO lists them", () => {
             // Act
-            const threads = SIZES.map(size => metricThread(size));
-            const heads = SIZES.map(size => socketHeadCapScrewSizes(size));
-            const nuts = SIZES.map(size => hexNutSizes(size));
-            const washers = SIZES.map(size => washerSizes(size));
+            const threads = SIZES.map(size => isoThread(size));
+            const heads = SIZES.map(size => isoSocketHeadCapScrewSizes(size));
+            const nuts = SIZES.map(size => isoHexNutSizes(size));
+            const washers = SIZES.map(size => isoWasherSizes(size));
 
             // Assert
             expect(increasing(threads.map(thread => thread.diameter))).toBe(true);
             expect(nonDecreasing(threads.map(thread => thread.pitch))).toBe(true);
             expect(increasing(threads.map(thread => thread.tapDrill))).toBe(true);
-            (["close", "normal", "loose"] as const).forEach(fit => expect(increasing(SIZES.map(size => clearanceHoleDiameter(size, fit)))).toBe(true));
+            (["close", "normal", "loose"] as const).forEach(fit => expect(increasing(SIZES.map(size => isoClearanceHoleDiameter(size, fit)))).toBe(true));
             expect(increasing(heads.map(head => head.headDiameter))).toBe(true);
             expect(nonDecreasing(heads.map(head => head.socketSize))).toBe(true);
             expect(increasing(nuts.map(nut => nut.height))).toBe(true);
@@ -57,7 +63,7 @@ describe("engineering tables against the standards' own rules", () => {
         it("should drill a coarse thread's tap hole at its diameter less its pitch, to a drill size, and give it a minor diameter under its pitch diameter", () => {
             // Act & Assert
             SIZES.forEach(size => {
-                const thread = metricThread(size);
+                const thread = isoThread(size);
                 expect(Math.abs(thread.tapDrill - (thread.diameter - thread.pitch))).toBeLessThanOrEqual(0.05 + 1e-12);
                 expect(thread.minorDiameter).toBeLessThan(thread.internalMinorDiameter);
                 expect(thread.internalMinorDiameter).toBeLessThan(thread.pitchDiameter);
@@ -69,13 +75,13 @@ describe("engineering tables against the standards' own rules", () => {
         it("should take any fine pitch up to the coarse one, its tap drill and diameters growing as the pitch shrinks, and refuse any other as an InputError", () => {
             // Act & Assert
             fc.assert(fc.property(fc.constantFrom(...SIZES), fc.double({ min: -1, max: 4, noNaN: false }), (size, pitch) => {
-                const coarse = metricThread(size);
-                const refusal = refusedWith(() => metricThread(size, pitch));
+                const coarse = isoThread(size);
+                const refusal = refusedWith(() => isoThread(size, pitch));
                 if (!(pitch > 0 && pitch <= coarse.pitch)) {
                     expect(refusal).toBeInstanceOf(InputError);
                     return;
                 }
-                const fine = metricThread(size, pitch);
+                const fine = isoThread(size, pitch);
                 expect(fine.tapDrill).toBeGreaterThanOrEqual(coarse.tapDrill - 0.05);
                 expect(fine.minorDiameter).toBeGreaterThanOrEqual(coarse.minorDiameter);
                 expect(fine.pitchDiameter).toBeGreaterThanOrEqual(coarse.pitchDiameter);
@@ -86,14 +92,14 @@ describe("engineering tables against the standards' own rules", () => {
         it("should make each clearance hole wider than the thread and the close one the washer's hole, the head as tall as the thread is wide and the counterbore wider than the head and half a millimetre deeper", () => {
             // Act & Assert
             SIZES.forEach(size => {
-                const thread = metricThread(size);
-                const head = socketHeadCapScrewSizes(size);
-                expect(clearanceHoleDiameter(size, "close")).toBeGreaterThan(thread.diameter);
-                expect(clearanceHoleDiameter(size, "close")).toBe(washerSizes(size).innerDiameter);
+                const thread = isoThread(size);
+                const head = isoSocketHeadCapScrewSizes(size);
+                expect(isoClearanceHoleDiameter(size, "close")).toBeGreaterThan(thread.diameter);
+                expect(isoClearanceHoleDiameter(size, "close")).toBe(isoWasherSizes(size).innerDiameter);
                 expect(head.headHeight).toBe(thread.diameter);
                 expect(head.counterboreDiameter).toBeGreaterThan(head.headDiameter);
                 expect(head.counterboreDepth).toBeCloseTo(head.headHeight + 0.5, 6);
-                expect(hexNutSizes(size).acrossFlats).toBe(hexBoltSizes(size, 50).acrossFlats);
+                expect(isoHexNutSizes(size).acrossFlats).toBe(isoHexBoltSizes(size, 50).acrossFlats);
             });
         });
 
@@ -101,20 +107,20 @@ describe("engineering tables against the standards' own rules", () => {
             // Act & Assert
             fc.assert(fc.property(fc.constantFrom(...SIZES), fc.double({ min: 1, max: 400, noNaN: true }), fc.double({ min: 1, max: 400, noNaN: true }), (size, first, second) => {
                 const [shorter, longer] = first < second ? [first, second] : [second, first];
-                expect(hexBoltSizes(size, longer).threadLength).toBeGreaterThanOrEqual(hexBoltSizes(size, shorter).threadLength);
-                expect(refusedWith(() => hexBoltSizes(size, -shorter))).toBeInstanceOf(InputError);
-                expect(refusedWith(() => hexBoltSizes(size, Number.NaN))).toBeInstanceOf(InputError);
+                expect(isoHexBoltSizes(size, longer).threadLength).toBeGreaterThanOrEqual(isoHexBoltSizes(size, shorter).threadLength);
+                expect(refusedWith(() => isoHexBoltSizes(size, -shorter))).toBeInstanceOf(InputError);
+                expect(refusedWith(() => isoHexBoltSizes(size, Number.NaN))).toBeInstanceOf(InputError);
             }), { seed: SEED, numRuns: 200 });
         });
 
         it("should give every set screw point a finite length of 0 or more and a diameter under the thread's minor diameter, a longer screw a deeper socket", () => {
             // Act & Assert
             fc.assert(fc.property(fc.constantFrom(...SIZES.filter(setScrewSizesOf)), fc.constantFrom(...POINTS), fc.double({ min: 1, max: 60, noNaN: true }), (size, point, length) => {
-                const sizes = setScrewSizes(size, point, length);
-                const long = setScrewSizes(size, point, Infinity);
+                const sizes = isoSetScrewSizes(size, point, length);
+                const long = isoSetScrewSizes(size, point, Infinity);
                 expect(Number.isFinite(sizes.pointLength)).toBe(true);
                 expect(sizes.pointLength).toBeGreaterThanOrEqual(0);
-                expect(sizes.pointDiameter).toBeLessThan(metricThread(size).minorDiameter);
+                expect(sizes.pointDiameter).toBeLessThan(isoThread(size).minorDiameter);
                 expect(long.socketDepth).toBeGreaterThanOrEqual(sizes.socketDepth);
             }), { seed: SEED, numRuns: 300 });
         });
@@ -122,12 +128,12 @@ describe("engineering tables against the standards' own rules", () => {
         it("should chamfer every washer from M5 up by a quarter of its thickness and refuse every size below", () => {
             // Act & Assert
             SIZES.forEach(size => {
-                const refusal = refusedWith(() => chamferedWasherSizes(size));
-                if (metricThread(size).diameter < 5) {
+                const refusal = refusedWith(() => isoChamferedWasherSizes(size));
+                if (isoThread(size).diameter < 5) {
                     expect(refusal).toBeInstanceOf(InputError);
                     return;
                 }
-                const washer = chamferedWasherSizes(size);
+                const washer = isoChamferedWasherSizes(size);
                 expect(washer.chamferHeight).toBe(washer.thickness / 4);
                 expect(washer.chamferWidth).toBeGreaterThan(0);
             });
@@ -137,25 +143,25 @@ describe("engineering tables against the standards' own rules", () => {
     describe("ball bearings", () => {
         it("should give every designation the bore its last digits stand for, and the 62 series the larger rings of the 60 series", () => {
             // Act
-            const designations = ballBearingDesignations();
+            const designations = isoBallBearingDesignations();
 
             // Assert
-            designations.forEach(designation => expect(ballBearingSizes(designation).bore).toBe(boreOfDesignation(designation)));
+            designations.forEach(designation => expect(isoBallBearingSizes(designation, "mm").bore).toBe(boreOfDesignation(designation)));
             designations.filter(designation => designation.startsWith("60") && designation.length === 4).forEach(designation => {
-                const light = ballBearingSizes(designation);
-                const heavier = ballBearingSizes(`62${designation.slice(2)}` as BallBearingDesignation);
+                const light = isoBallBearingSizes(designation, "mm");
+                const heavier = isoBallBearingSizes(`62${designation.slice(2)}` as IsoBallBearingDesignation, "mm");
                 expect(heavier.outside).toBeGreaterThan(light.outside);
                 expect(heavier.width).toBeGreaterThanOrEqual(light.width);
             });
             designations.forEach(designation => {
-                const sizes = ballBearingSizes(designation);
+                const sizes = isoBallBearingSizes(designation, "mm");
                 expect(sizes.outside).toBeGreaterThan(sizes.bore);
             });
         });
 
         it("should grow the outside and width of each series with its bore", () => {
             // Act
-            const series = ["6", "60", "62"].map(prefix => ballBearingDesignations().filter(designation => (prefix === "6" ? designation.length === 3 : designation.length === 4 && designation.startsWith(prefix))).map(designation => ballBearingSizes(designation)).sort((a, b) => a.bore - b.bore));
+            const series = ["6", "60", "62"].map(prefix => isoBallBearingDesignations().filter(designation => (prefix === "6" ? designation.length === 3 : designation.length === 4 && designation.startsWith(prefix))).map(designation => isoBallBearingSizes(designation, "mm")).sort((a, b) => a.bore - b.bore));
 
             // Assert
             series.forEach(rows => {
@@ -171,8 +177,8 @@ describe("engineering tables against the standards' own rules", () => {
             // Act & Assert
             fc.assert(fc.property(fc.double({ min: 6.000001, max: 65, noNaN: true }), fc.double({ min: 6.000001, max: 65, noNaN: true }), (first, second) => {
                 const [thinner, thicker] = first < second ? [first, second] : [second, first];
-                const small = parallelKeySizes(thinner);
-                const large = parallelKeySizes(thicker);
+                const small = dinParallelKeySizes(thinner, "mm");
+                const large = dinParallelKeySizes(thicker, "mm");
                 expect(large.width).toBeGreaterThanOrEqual(small.width);
                 expect(large.height).toBeGreaterThanOrEqual(small.height);
                 expect(small.shaftDepth + small.hubDepth).toBeGreaterThanOrEqual(small.height);
@@ -182,21 +188,21 @@ describe("engineering tables against the standards' own rules", () => {
 
         it("should refuse shafts outside the table and any value that is not a number as an InputError", () => {
             // Act & Assert
-            [6, 5, 65.0001, 100, -1, Number.NaN, Infinity].forEach(diameter => expect(refusedWith(() => parallelKeySizes(diameter))).toBeInstanceOf(InputError));
+            [6, 5, 65.0001, 100, -1, Number.NaN, Infinity].forEach(diameter => expect(refusedWith(() => dinParallelKeySizes(diameter, "mm"))).toBeInstanceOf(InputError));
         });
     });
 
     describe("retaining rings", () => {
         it("should seat every shaft ring in a groove under the shaft and every bore ring in one beyond the bore, each ring sprung against its groove", () => {
             // Act & Assert
-            retainingRingDiameters("shaft").forEach(diameter => {
-                const ring = retainingRingSizes("shaft", diameter);
+            dinRetainingRingDiameters("shaft", "mm").forEach(diameter => {
+                const ring = dinRetainingRingSizes("shaft", diameter, "mm");
                 expect(ring.grooveDiameter).toBeLessThan(diameter);
                 expect(ring.freeDiameter).toBeLessThan(ring.grooveDiameter);
                 expect(ring.grooveWidth).toBeGreaterThan(ring.thickness);
             });
-            retainingRingDiameters("bore").forEach(diameter => {
-                const ring = retainingRingSizes("bore", diameter);
+            dinRetainingRingDiameters("bore", "mm").forEach(diameter => {
+                const ring = dinRetainingRingSizes("bore", diameter, "mm");
                 expect(ring.grooveDiameter).toBeGreaterThan(diameter);
                 expect(ring.freeDiameter).toBeGreaterThan(ring.grooveDiameter);
                 expect(ring.grooveWidth).toBeGreaterThan(ring.thickness);
@@ -206,10 +212,10 @@ describe("engineering tables against the standards' own rules", () => {
         it("should list the sizes in order and never thin a ring as the diameter grows", () => {
             // Act & Assert
             (["shaft", "bore"] as const).forEach(kind => {
-                const diameters = retainingRingDiameters(kind);
+                const diameters = dinRetainingRingDiameters(kind, "mm");
                 expect(increasing(diameters)).toBe(true);
-                expect(nonDecreasing(diameters.map(diameter => retainingRingSizes(kind, diameter).thickness))).toBe(true);
-                expect(increasing(diameters.map(diameter => retainingRingSizes(kind, diameter).grooveDiameter))).toBe(true);
+                expect(nonDecreasing(diameters.map(diameter => dinRetainingRingSizes(kind, diameter, "mm").thickness))).toBe(true);
+                expect(increasing(diameters.map(diameter => dinRetainingRingSizes(kind, diameter, "mm").grooveDiameter))).toBe(true);
             });
         });
     });
@@ -278,12 +284,12 @@ describe("engineering tables against the standards' own rules", () => {
         it("should give every spline it sizes a whole tooth count DIN 5480 allows and a shift that rebuilds its reference diameter", () => {
             // Act & Assert
             fc.assert(fc.property(fc.constantFrom(...SPLINE_MODULES), fc.double({ min: 4, max: 500, noNaN: true }), (module, referenceDiameter) => {
-                const refusal = refusedWith(() => involuteSplineSizes(referenceDiameter, module));
+                const refusal = refusedWith(() => dinInvoluteSplineSizes(referenceDiameter, module, "mm"));
                 if (refusal !== undefined) {
                     expect(refusal).toBeInstanceOf(InputError);
                     return;
                 }
-                const spline = involuteSplineSizes(referenceDiameter, module);
+                const spline = dinInvoluteSplineSizes(referenceDiameter, module, "mm");
                 expect(Number.isInteger(spline.teeth)).toBe(true);
                 expect(spline.teeth).toBeGreaterThanOrEqual(6);
                 expect(spline.teeth).toBeLessThanOrEqual(82);
@@ -299,7 +305,7 @@ describe("engineering tables against the standards' own rules", () => {
         it("should fit a whole number of knurl grooves round the diameter it nudges by less than half a pitch", () => {
             // Act & Assert
             fc.assert(fc.property(fc.constantFrom(...KNURL_PITCHES), fc.double({ min: 3.3, max: 300, noNaN: true }), fc.constantFrom("straight", "left", "right", "diamond"), (pitch, diameter, pattern) => {
-                const knurl = knurlSizes(diameter, pitch, pattern);
+                const knurl = dinKnurlSizes(diameter, pitch, pattern, "mm");
                 expect(Number.isInteger(knurl.grooves)).toBe(true);
                 expect(knurl.grooves * pitch).toBeCloseTo(Math.PI * knurl.diameter, 5);
                 expect(Math.abs(knurl.diameter - diameter)).toBeLessThanOrEqual(pitch / Math.PI / 2 + 1e-6);

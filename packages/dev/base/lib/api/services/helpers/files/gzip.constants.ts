@@ -1,0 +1,11 @@
+export const GZIP_MAGIC_FIRST = 0x1f;
+export const GZIP_MAGIC_SECOND = 0x8b;
+export const GZIP_DEFLATE_METHOD = 8;
+export const GZIP_HEADER_SIZE = 10;
+export const GZIP_TRAILER_SIZE = 8;
+export const GZIP_FLAGS_AT = 3;
+export const GZIP_METHOD_AT = 2;
+export const GZIP_HEADER_CRC_FLAG = 2;
+export const GZIP_EXTRA_FLAG = 4;
+export const GZIP_NAME_FLAG = 8;
+export const GZIP_COMMENT_FLAG = 16;
