@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import type * as BABYLON from "@babylonjs/core";
+import type { Base } from "./base-inputs";
 
 /**
  * Parameters for engine-level import and export: the objects to write, the target format, and the
@@ -11,9 +12,10 @@ export namespace BabylonIO {
      * ground this library adds.
      */
     export class ExportSceneGlbDto {
-        constructor(fileName?: string, discardSkyboxAndGrid?: boolean) {
+        constructor(fileName?: string, discardSkyboxAndGrid?: boolean, unit?: Base.unitOfLengthEnum) {
             if (fileName !== undefined) { this.fileName = fileName; }
             if (discardSkyboxAndGrid !== undefined) { this.discardSkyboxAndGrid = discardSkyboxAndGrid; }
+            if (unit !== undefined) { this.unit = unit; }
         }
         /**
          * Name of the downloaded glb file, without the extension
@@ -25,16 +27,24 @@ export namespace BabylonIO {
          * @default false
          */
         discardSkyboxAndGrid?: boolean | undefined = false;
+        /**
+         * The unit the scene is modelled in. Given, the file is in metres, glTF's unit, through one
+         * scaled root node; left out, the numbers are written as they are.
+         * @default undefined
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
     }
     /**
      * Feeds `babylon.io.exportGLBBytes` with the nodes to write, whether to leave out the skybox and
      * ground this library adds, and whether to compress the meshes with Draco.
      */
     export class ExportSceneGlbBytesDto {
-        constructor(nodes?: BABYLON.Node[], discardSkyboxAndGrid?: boolean, compressWithDraco?: boolean) {
+        constructor(nodes?: BABYLON.Node[], discardSkyboxAndGrid?: boolean, compressWithDraco?: boolean, unit?: Base.unitOfLengthEnum) {
             if (nodes !== undefined) { this.nodes = nodes; }
             if (discardSkyboxAndGrid !== undefined) { this.discardSkyboxAndGrid = discardSkyboxAndGrid; }
             if (compressWithDraco !== undefined) { this.compressWithDraco = compressWithDraco; }
+            if (unit !== undefined) { this.unit = unit; }
         }
         /**
          * The nodes to write; every ancestor of a chosen node is written too so it keeps its place, and when omitted the whole scene is written
@@ -51,6 +61,13 @@ export namespace BabylonIO {
          * @default false
          */
         compressWithDraco?: boolean | undefined = false;
+        /**
+         * The unit the scene is modelled in. Given, the file is in metres, glTF's unit, through one
+         * scaled root node; left out, the numbers are written as they are.
+         * @default undefined
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
     }
     /**
      * Feeds `babylon.io.exportBabylon` with the name of the downloaded `.babylon` file.

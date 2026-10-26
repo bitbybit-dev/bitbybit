@@ -119,7 +119,7 @@ describe("OCCTW", () => {
     });
 
     describe("io.loadSTEPorIGES", () => {
-        it("should read the file through the context before sending it", async () => {
+        it("should read the file through the context before sending it, with the unit asked for", async () => {
             // Arrange
             const file = new File(["ISO-10303-21;"], "part.step");
             const asked: (File | Blob)[] = [];
@@ -129,14 +129,14 @@ describe("OCCTW", () => {
             };
 
             // Act
-            void occt.io.loadSTEPorIGES(new Inputs.OCCT.ImportStepIgesDto(file, false));
+            void occt.io.loadSTEPorIGES(new Inputs.OCCT.ImportStepIgesDto(file, false, Inputs.Base.unitOfLengthEnum.inch));
             await Promise.resolve();
 
             // Assert
             expect(asked).toEqual([file]);
             expect(worker.posted[0]!.action).toEqual({
                 functionName: "io.loadSTEPorIGES",
-                inputs: { filetext: "ISO-10303-21;", assetFile: undefined, fileName: "part.step", adjustZtoY: false },
+                inputs: { filetext: "ISO-10303-21;", assetFile: undefined, fileName: "part.step", adjustZtoY: false, unit: "in" },
             });
         });
     });
@@ -149,7 +149,7 @@ describe("OCCTW", () => {
             // Assert
             expect(worker.posted[0]!.action).toEqual({
                 functionName: "io.loadSTEPorIGES",
-                inputs: { filetext: "ISO-10303-21;", assetFile: undefined, fileName: "fake.step", adjustZtoY: true },
+                inputs: { filetext: "ISO-10303-21;", assetFile: undefined, fileName: "fake.step", adjustZtoY: true, unit: "mm" },
             });
         });
     });

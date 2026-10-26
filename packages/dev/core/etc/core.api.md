@@ -191,9 +191,13 @@ export namespace Base {
     const // (undocumented)
     topBottomEnum: typeof Base_2.topBottomEnum;
     // (undocumented)
-    export type Vector2 = Base_2.Vector2;
+    export type unitOfLengthEnum = Base_2.unitOfLengthEnum;
     const // (undocumented)
     basicAlignmentEnum: typeof Base_2.basicAlignmentEnum;
+    // (undocumented)
+    export type Vector2 = Base_2.Vector2;
+    const // (undocumented)
+    unitOfLengthEnum: typeof Base_2.unitOfLengthEnum;
     // (undocumented)
     export type Vector3 = Base_2.Vector3;
     export type VerbCurve = {
@@ -1013,7 +1017,315 @@ export interface EdgeSource {
 
 // @public
 namespace Engineering {
-    enum ballBearingEnum {
+    enum ansiBallBearingEnum {
+        // (undocumented)
+        r10 = "R10",
+        // (undocumented)
+        r12 = "R12",
+        // (undocumented)
+        r133 = "R133",
+        // (undocumented)
+        r14 = "R14",
+        // (undocumented)
+        r144 = "R144",
+        // (undocumented)
+        r155 = "R155",
+        // (undocumented)
+        r156 = "R156",
+        // (undocumented)
+        r16 = "R16",
+        // (undocumented)
+        r166 = "R166",
+        // (undocumented)
+        r168 = "R168",
+        // (undocumented)
+        r18 = "R18",
+        // (undocumented)
+        r1810 = "R1810",
+        // (undocumented)
+        r188 = "R188",
+        // (undocumented)
+        r1_4 = "R1-4",
+        // (undocumented)
+        r1_5 = "R1-5",
+        // (undocumented)
+        r2 = "R2",
+        // (undocumented)
+        r20 = "R20",
+        // (undocumented)
+        r2_5 = "R2-5",
+        // (undocumented)
+        r2_6 = "R2-6",
+        // (undocumented)
+        r3 = "R3",
+        // (undocumented)
+        r4 = "R4",
+        // (undocumented)
+        r4a = "R4A",
+        // (undocumented)
+        r6 = "R6",
+        // (undocumented)
+        r8 = "R8"
+    }
+    class AnsiBallBearingSizesDto {
+        constructor(designation?: ansiBallBearingEnum, shields?: boolean, unit?: Base_2.unitOfLengthEnum);
+        designation?: ansiBallBearingEnum | undefined;
+        shields?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class AnsiClearanceHoleDto extends AnsiSizeSharedDto {
+        constructor(size?: ansiThreadSizeEnum, fit?: clearanceFitEnum, unit?: Base_2.unitOfLengthEnum);
+        fit?: clearanceFitEnum | undefined;
+    }
+    class AnsiHexBoltSizesDto extends AnsiSizeSharedDto {
+        constructor(size?: ansiThreadSizeEnum, length?: number, unit?: Base_2.unitOfLengthEnum);
+        length?: number | undefined;
+    }
+    class AnsiInvoluteSplineSizesDto {
+        constructor(teeth?: number, pitch?: ansiSplinePitchEnum, unit?: Base_2.unitOfLengthEnum);
+        pitch?: ansiSplinePitchEnum | undefined;
+        teeth?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class AnsiKnurlSizesDto {
+        constructor(diameter?: number, diametralPitch?: number, pattern?: knurlPatternEnum, unit?: Base_2.unitOfLengthEnum);
+        diameter?: number | undefined;
+        diametralPitch?: number | undefined;
+        pattern?: knurlPatternEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class AnsiParallelKeySizesDto {
+        constructor(shaftDiameter?: number, unit?: Base_2.unitOfLengthEnum);
+        shaftDiameter?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class AnsiRetainingRingDiametersDto {
+        constructor(kind?: retainingRingKindEnum, unit?: Base_2.unitOfLengthEnum);
+        kind?: retainingRingKindEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class AnsiRetainingRingSizesDto {
+        constructor(kind?: retainingRingKindEnum, diameter?: number, unit?: Base_2.unitOfLengthEnum);
+        diameter?: number | undefined;
+        kind?: retainingRingKindEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    enum ansiSetScrewPointEnum {
+        // (undocumented)
+        cone = "cone",
+        // (undocumented)
+        cup = "cup",
+        // (undocumented)
+        flat = "flat",
+        // (undocumented)
+        halfDog = "halfDog",
+        // (undocumented)
+        oval = "oval"
+    }
+    class AnsiSetScrewSizesDto extends AnsiSizeSharedDto {
+        constructor(size?: ansiThreadSizeEnum, point?: ansiSetScrewPointEnum, series?: ansiThreadSeriesEnum, length?: number, unit?: Base_2.unitOfLengthEnum);
+        length?: number | undefined;
+        point?: ansiSetScrewPointEnum | undefined;
+        series?: ansiThreadSeriesEnum | undefined;
+    }
+    class AnsiSizeDto extends AnsiSizeSharedDto {
+        constructor(size?: ansiThreadSizeEnum, unit?: Base_2.unitOfLengthEnum);
+    }
+    abstract class AnsiSizeSharedDto {
+        size?: ansiThreadSizeEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    enum ansiSplinePitchEnum {
+        // (undocumented)
+        p10_20 = "10/20",
+        // (undocumented)
+        p12_24 = "12/24",
+        // (undocumented)
+        p16_32 = "16/32",
+        // (undocumented)
+        p20_40 = "20/40",
+        // (undocumented)
+        p24_48 = "24/48",
+        // (undocumented)
+        p2_5_5 = "2.5/5",
+        // (undocumented)
+        p32_64 = "32/64",
+        // (undocumented)
+        p3_6 = "3/6",
+        // (undocumented)
+        p4_8 = "4/8",
+        // (undocumented)
+        p5_10 = "5/10",
+        // (undocumented)
+        p6_12 = "6/12",
+        // (undocumented)
+        p8_16 = "8/16"
+    }
+    class AnsiThreadDto extends AnsiSizeSharedDto {
+        constructor(size?: ansiThreadSizeEnum, series?: ansiThreadSeriesEnum, threadsPerInch?: number, unit?: Base_2.unitOfLengthEnum);
+        series?: ansiThreadSeriesEnum | undefined;
+        threadsPerInch?: number | undefined;
+    }
+    enum ansiThreadSeriesEnum {
+        // (undocumented)
+        unc = "UNC",
+        // (undocumented)
+        unf = "UNF"
+    }
+    enum ansiThreadSizeEnum {
+        // (undocumented)
+        in1 = "1",
+        // (undocumented)
+        in1_2 = "1/2",
+        // (undocumented)
+        in1_4 = "1/4",
+        // (undocumented)
+        in3_4 = "3/4",
+        // (undocumented)
+        in3_8 = "3/8",
+        // (undocumented)
+        in5_16 = "5/16",
+        // (undocumented)
+        in5_8 = "5/8",
+        // (undocumented)
+        in7_16 = "7/16",
+        // (undocumented)
+        in7_8 = "7/8",
+        // (undocumented)
+        in9_16 = "9/16",
+        // (undocumented)
+        n0 = "#0",
+        // (undocumented)
+        n1 = "#1",
+        // (undocumented)
+        n10 = "#10",
+        // (undocumented)
+        n12 = "#12",
+        // (undocumented)
+        n2 = "#2",
+        // (undocumented)
+        n3 = "#3",
+        // (undocumented)
+        n4 = "#4",
+        // (undocumented)
+        n5 = "#5",
+        // (undocumented)
+        n6 = "#6",
+        // (undocumented)
+        n8 = "#8"
+    }
+    enum ansiWasherSeriesEnum {
+        // (undocumented)
+        narrow = "narrow",
+        // (undocumented)
+        wide = "wide"
+    }
+    class AnsiWasherSizesDto extends AnsiSizeSharedDto {
+        constructor(size?: ansiThreadSizeEnum, series?: ansiWasherSeriesEnum, unit?: Base_2.unitOfLengthEnum);
+        series?: ansiWasherSeriesEnum | undefined;
+    }
+    class BevelGearOutlineDto extends BevelGearSharedDto {
+        constructor(rotation?: number, segments?: number, module?: number, teeth?: number, mateTeeth?: number, shaftAngle?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+        rotation?: number | undefined;
+        segments?: number | undefined;
+    }
+    abstract class BevelGearSharedDto {
+        addendum?: number | undefined;
+        backlash?: number | undefined;
+        dedendum?: number | undefined;
+        mateTeeth?: number | undefined;
+        module?: number | undefined;
+        pressureAngle?: number | undefined;
+        rootFillet?: number | undefined;
+        shaftAngle?: number | undefined;
+        teeth?: number | undefined;
+    }
+    class BevelGearSizesDto extends BevelGearSharedDto {
+        constructor(module?: number, teeth?: number, mateTeeth?: number, shaftAngle?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+    }
+    enum clearanceFitEnum {
+        // (undocumented)
+        close = "close",
+        // (undocumented)
+        loose = "loose",
+        // (undocumented)
+        normal = "normal"
+    }
+    class CompressionSpringPathDto {
+        constructor(wireDiameter?: number, diameter?: number, activeCoils?: number, length?: number);
+        activeCoils?: number | undefined;
+        diameter?: number | undefined;
+        length?: number | undefined;
+        wireDiameter?: number | undefined;
+    }
+    class DinInvoluteSplineSizesDto {
+        constructor(referenceDiameter?: number, module?: number, unit?: Base_2.unitOfLengthEnum);
+        module?: number | undefined;
+        referenceDiameter?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class DinKnurlSizesDto {
+        constructor(diameter?: number, pitch?: number, pattern?: knurlPatternEnum, unit?: Base_2.unitOfLengthEnum);
+        diameter?: number | undefined;
+        pattern?: knurlPatternEnum | undefined;
+        pitch?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class DinParallelKeySizesDto {
+        constructor(shaftDiameter?: number, unit?: Base_2.unitOfLengthEnum);
+        shaftDiameter?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class DinRetainingRingDiametersDto {
+        constructor(kind?: retainingRingKindEnum, unit?: Base_2.unitOfLengthEnum);
+        kind?: retainingRingKindEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class DinRetainingRingSizesDto {
+        constructor(kind?: retainingRingKindEnum, diameter?: number, unit?: Base_2.unitOfLengthEnum);
+        diameter?: number | undefined;
+        kind?: retainingRingKindEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class GearPairDto {
+        constructor(module?: number, teethA?: number, teethB?: number, pressureAngle?: number, profileShiftA?: number, profileShiftB?: number, addendum?: number, dedendum?: number);
+        addendum?: number | undefined;
+        dedendum?: number | undefined;
+        module?: number | undefined;
+        pressureAngle?: number | undefined;
+        profileShiftA?: number | undefined;
+        profileShiftB?: number | undefined;
+        teethA?: number | undefined;
+        teethB?: number | undefined;
+    }
+    class HelicalGearOutlineDto extends HelicalGearSharedDto {
+        constructor(rotation?: number, segments?: number, module?: number, teeth?: number, helixAngle?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+        rotation?: number | undefined;
+        segments?: number | undefined;
+    }
+    abstract class HelicalGearSharedDto {
+        addendum?: number | undefined;
+        backlash?: number | undefined;
+        dedendum?: number | undefined;
+        helixAngle?: number | undefined;
+        module?: number | undefined;
+        pressureAngle?: number | undefined;
+        profileShift?: number | undefined;
+        rootFillet?: number | undefined;
+        teeth?: number | undefined;
+    }
+    class HelicalGearSizesDto extends HelicalGearSharedDto {
+        constructor(module?: number, teeth?: number, helixAngle?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
+    }
+    class InternalGearPairDto {
+        constructor(module?: number, pinionTeeth?: number, ringTeeth?: number, pressureAngle?: number, addendum?: number);
+        addendum?: number | undefined;
+        module?: number | undefined;
+        pinionTeeth?: number | undefined;
+        pressureAngle?: number | undefined;
+        ringTeeth?: number | undefined;
+    }
+    enum isoBallBearingEnum {
         // (undocumented)
         b6000 = "6000",
         // (undocumented)
@@ -1071,115 +1383,46 @@ namespace Engineering {
         // (undocumented)
         b626 = "626"
     }
-    class BallBearingSizesDto {
-        constructor(designation?: ballBearingEnum);
-        designation?: ballBearingEnum | undefined;
+    class IsoBallBearingSizesDto {
+        constructor(designation?: isoBallBearingEnum, unit?: Base_2.unitOfLengthEnum);
+        designation?: isoBallBearingEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
-    class BevelGearOutlineDto extends BevelGearSharedDto {
-        constructor(rotation?: number, segments?: number, module?: number, teeth?: number, mateTeeth?: number, shaftAngle?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
-        rotation?: number | undefined;
-        segments?: number | undefined;
-    }
-    abstract class BevelGearSharedDto {
-        addendum?: number | undefined;
-        backlash?: number | undefined;
-        dedendum?: number | undefined;
-        mateTeeth?: number | undefined;
-        module?: number | undefined;
-        pressureAngle?: number | undefined;
-        rootFillet?: number | undefined;
-        shaftAngle?: number | undefined;
-        teeth?: number | undefined;
-    }
-    class BevelGearSizesDto extends BevelGearSharedDto {
-        constructor(module?: number, teeth?: number, mateTeeth?: number, shaftAngle?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
-    }
-    enum clearanceFitEnum {
-        // (undocumented)
-        close = "close",
-        // (undocumented)
-        loose = "loose",
-        // (undocumented)
-        normal = "normal"
-    }
-    class ClearanceHoleDto extends MetricSizeSharedDto {
-        constructor(size?: metricSizeEnum, fit?: clearanceFitEnum);
+    class IsoClearanceHoleDto extends IsoSizeSharedDto {
+        constructor(size?: isoThreadSizeEnum, fit?: clearanceFitEnum, unit?: Base_2.unitOfLengthEnum);
         fit?: clearanceFitEnum | undefined;
     }
-    class CompressionSpringPathDto {
-        constructor(wireDiameter?: number, diameter?: number, activeCoils?: number, length?: number);
-        activeCoils?: number | undefined;
-        diameter?: number | undefined;
-        length?: number | undefined;
-        wireDiameter?: number | undefined;
-    }
-    class GearPairDto {
-        constructor(module?: number, teethA?: number, teethB?: number, pressureAngle?: number, profileShiftA?: number, profileShiftB?: number, addendum?: number, dedendum?: number);
-        addendum?: number | undefined;
-        dedendum?: number | undefined;
-        module?: number | undefined;
-        pressureAngle?: number | undefined;
-        profileShiftA?: number | undefined;
-        profileShiftB?: number | undefined;
-        teethA?: number | undefined;
-        teethB?: number | undefined;
-    }
-    class HelicalGearOutlineDto extends HelicalGearSharedDto {
-        constructor(rotation?: number, segments?: number, module?: number, teeth?: number, helixAngle?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
-        rotation?: number | undefined;
-        segments?: number | undefined;
-    }
-    abstract class HelicalGearSharedDto {
-        addendum?: number | undefined;
-        backlash?: number | undefined;
-        dedendum?: number | undefined;
-        helixAngle?: number | undefined;
-        module?: number | undefined;
-        pressureAngle?: number | undefined;
-        profileShift?: number | undefined;
-        rootFillet?: number | undefined;
-        teeth?: number | undefined;
-    }
-    class HelicalGearSizesDto extends HelicalGearSharedDto {
-        constructor(module?: number, teeth?: number, helixAngle?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
-    }
-    class HexBoltSizesDto extends MetricSizeSharedDto {
-        constructor(size?: metricSizeEnum, length?: number);
+    class IsoHexBoltSizesDto extends IsoSizeSharedDto {
+        constructor(size?: isoThreadSizeEnum, length?: number, unit?: Base_2.unitOfLengthEnum);
         length?: number | undefined;
     }
-    class InternalGearPairDto {
-        constructor(module?: number, pinionTeeth?: number, ringTeeth?: number, pressureAngle?: number, addendum?: number);
-        addendum?: number | undefined;
-        module?: number | undefined;
-        pinionTeeth?: number | undefined;
-        pressureAngle?: number | undefined;
-        ringTeeth?: number | undefined;
+    enum isoSetScrewPointEnum {
+        // (undocumented)
+        cone = "cone",
+        // (undocumented)
+        cup = "cup",
+        // (undocumented)
+        dog = "dog",
+        // (undocumented)
+        flat = "flat"
     }
-    class InvoluteSplineSizesDto {
-        constructor(referenceDiameter?: number, module?: number);
-        module?: number | undefined;
-        referenceDiameter?: number | undefined;
+    class IsoSetScrewSizesDto extends IsoSizeSharedDto {
+        constructor(size?: isoThreadSizeEnum, point?: isoSetScrewPointEnum, length?: number, unit?: Base_2.unitOfLengthEnum);
+        length?: number | undefined;
+        point?: isoSetScrewPointEnum | undefined;
     }
-    enum knurlPatternEnum {
-        // (undocumented)
-        diamond = "diamond",
-        // (undocumented)
-        left = "left",
-        // (undocumented)
-        right = "right",
-        // (undocumented)
-        straight = "straight"
+    class IsoSizeDto extends IsoSizeSharedDto {
+        constructor(size?: isoThreadSizeEnum, unit?: Base_2.unitOfLengthEnum);
     }
-    class KnurlSizesDto {
-        constructor(diameter?: number, pitch?: number, pattern?: knurlPatternEnum);
-        diameter?: number | undefined;
-        pattern?: knurlPatternEnum | undefined;
+    abstract class IsoSizeSharedDto {
+        size?: isoThreadSizeEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class IsoThreadDto extends IsoSizeSharedDto {
+        constructor(size?: isoThreadSizeEnum, pitch?: number, unit?: Base_2.unitOfLengthEnum);
         pitch?: number | undefined;
     }
-    class MetricSizeDto extends MetricSizeSharedDto {
-        constructor(size?: metricSizeEnum);
-    }
-    enum metricSizeEnum {
+    enum isoThreadSizeEnum {
         // (undocumented)
         m10 = "M10",
         // (undocumented)
@@ -1209,16 +1452,26 @@ namespace Engineering {
         // (undocumented)
         m8 = "M8"
     }
-    abstract class MetricSizeSharedDto {
-        size?: metricSizeEnum | undefined;
+    enum keyStandardEnum {
+        // (undocumented)
+        ansi = "ansi",
+        // (undocumented)
+        din = "din"
     }
-    class MetricThreadDto extends MetricSizeSharedDto {
-        constructor(size?: metricSizeEnum, pitch?: number);
-        pitch?: number | undefined;
+    enum knurlPatternEnum {
+        // (undocumented)
+        diamond = "diamond",
+        // (undocumented)
+        left = "left",
+        // (undocumented)
+        right = "right",
+        // (undocumented)
+        straight = "straight"
     }
-    class ParallelKeySizesDto {
-        constructor(shaftDiameter?: number);
-        shaftDiameter?: number | undefined;
+    class ModuleFromDiametralPitchDto {
+        constructor(diametralPitch?: number, unit?: Base_2.unitOfLengthEnum);
+        diametralPitch?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class PlanetarySetDto {
         constructor(module?: number, sunTeeth?: number, planetTeeth?: number, planets?: number, pressureAngle?: number, addendum?: number);
@@ -1252,11 +1505,6 @@ namespace Engineering {
         // (undocumented)
         shaft = "shaft"
     }
-    class RetainingRingSizesDto {
-        constructor(kind?: retainingRingKindEnum, diameter?: number);
-        diameter?: number | undefined;
-        kind?: retainingRingKindEnum | undefined;
-    }
     class RingGearOutlineDto extends RingGearSharedDto {
         constructor(rotation?: number, segments?: number, module?: number, teeth?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
         rotation?: number | undefined;
@@ -1273,21 +1521,6 @@ namespace Engineering {
     }
     class RingGearSizesDto extends RingGearSharedDto {
         constructor(module?: number, teeth?: number, pressureAngle?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
-    }
-    enum setScrewPointEnum {
-        // (undocumented)
-        cone = "cone",
-        // (undocumented)
-        cup = "cup",
-        // (undocumented)
-        dog = "dog",
-        // (undocumented)
-        flat = "flat"
-    }
-    class SetScrewSizesDto extends MetricSizeSharedDto {
-        constructor(size?: metricSizeEnum, point?: setScrewPointEnum, length?: number);
-        length?: number | undefined;
-        point?: setScrewPointEnum | undefined;
     }
     class SpurGearOutlineDto extends SpurGearSharedDto {
         constructor(rotation?: number, segments?: number, module?: number, teeth?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number);
@@ -1312,7 +1545,31 @@ namespace Engineering {
 // @public
 namespace Engineering_2 {
     // (undocumented)
-    type BallBearingSizesDto = WithDefaults<Inputs_6.Engineering.BallBearingSizesDto, "designation">;
+    type AnsiBallBearingSizesDto = WithDefaults<Inputs_6.Engineering.AnsiBallBearingSizesDto, "designation" | "shields" | "unit">;
+    // (undocumented)
+    type AnsiClearanceHoleDto = WithDefaults<Inputs_6.Engineering.AnsiClearanceHoleDto, "fit" | "size" | "unit">;
+    // (undocumented)
+    type AnsiHexBoltSizesDto = WithDefaults<Inputs_6.Engineering.AnsiHexBoltSizesDto, "length" | "size" | "unit">;
+    // (undocumented)
+    type AnsiInvoluteSplineSizesDto = WithDefaults<Inputs_6.Engineering.AnsiInvoluteSplineSizesDto, "teeth" | "pitch" | "unit">;
+    // (undocumented)
+    type AnsiKnurlSizesDto = WithDefaults<Inputs_6.Engineering.AnsiKnurlSizesDto, "diameter" | "diametralPitch" | "pattern" | "unit">;
+    // (undocumented)
+    type AnsiParallelKeySizesDto = WithDefaults<Inputs_6.Engineering.AnsiParallelKeySizesDto, "shaftDiameter" | "unit">;
+    // (undocumented)
+    type AnsiRetainingRingDiametersDto = WithDefaults<Inputs_6.Engineering.AnsiRetainingRingDiametersDto, "kind" | "unit">;
+    // (undocumented)
+    type AnsiRetainingRingSizesDto = WithDefaults<Inputs_6.Engineering.AnsiRetainingRingSizesDto, "kind" | "diameter" | "unit">;
+    // (undocumented)
+    type AnsiSetScrewSizesDto = WithDefaults<Inputs_6.Engineering.AnsiSetScrewSizesDto, "point" | "series" | "size" | "unit">;
+    // (undocumented)
+    type AnsiSizeDto = WithDefaults<Inputs_6.Engineering.AnsiSizeDto, "size" | "unit">;
+    // (undocumented)
+    type AnsiSizeSharedDto = WithDefaults<Inputs_6.Engineering.AnsiSizeSharedDto, "size" | "unit">;
+    // (undocumented)
+    type AnsiThreadDto = WithDefaults<Inputs_6.Engineering.AnsiThreadDto, "series" | "size" | "unit">;
+    // (undocumented)
+    type AnsiWasherSizesDto = WithDefaults<Inputs_6.Engineering.AnsiWasherSizesDto, "series" | "size" | "unit">;
     // (undocumented)
     type BevelGearOutlineDto = WithDefaults<Inputs_6.Engineering.BevelGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     // (undocumented)
@@ -1320,9 +1577,17 @@ namespace Engineering_2 {
     // (undocumented)
     type BevelGearSizesDto = WithDefaults<Inputs_6.Engineering.BevelGearSizesDto, "module" | "teeth" | "mateTeeth" | "shaftAngle" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     // (undocumented)
-    type ClearanceHoleDto = WithDefaults<Inputs_6.Engineering.ClearanceHoleDto, "fit" | "size">;
-    // (undocumented)
     type CompressionSpringPathDto = WithDefaults<Inputs_6.Engineering.CompressionSpringPathDto, "wireDiameter" | "diameter" | "activeCoils" | "length">;
+    // (undocumented)
+    type DinInvoluteSplineSizesDto = WithDefaults<Inputs_6.Engineering.DinInvoluteSplineSizesDto, "referenceDiameter" | "module" | "unit">;
+    // (undocumented)
+    type DinKnurlSizesDto = WithDefaults<Inputs_6.Engineering.DinKnurlSizesDto, "diameter" | "pitch" | "pattern" | "unit">;
+    // (undocumented)
+    type DinParallelKeySizesDto = WithDefaults<Inputs_6.Engineering.DinParallelKeySizesDto, "shaftDiameter" | "unit">;
+    // (undocumented)
+    type DinRetainingRingDiametersDto = WithDefaults<Inputs_6.Engineering.DinRetainingRingDiametersDto, "kind" | "unit">;
+    // (undocumented)
+    type DinRetainingRingSizesDto = WithDefaults<Inputs_6.Engineering.DinRetainingRingSizesDto, "kind" | "diameter" | "unit">;
     // (undocumented)
     type GearPairDto = WithDefaults<Inputs_6.Engineering.GearPairDto, "module" | "teethA" | "teethB" | "pressureAngle" | "profileShiftA" | "profileShiftB" | "addendum" | "dedendum">;
     // (undocumented)
@@ -1332,21 +1597,23 @@ namespace Engineering_2 {
     // (undocumented)
     type HelicalGearSizesDto = WithDefaults<Inputs_6.Engineering.HelicalGearSizesDto, "module" | "teeth" | "helixAngle" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     // (undocumented)
-    type HexBoltSizesDto = WithDefaults<Inputs_6.Engineering.HexBoltSizesDto, "length" | "size">;
-    // (undocumented)
     type InternalGearPairDto = WithDefaults<Inputs_6.Engineering.InternalGearPairDto, "module" | "pinionTeeth" | "ringTeeth" | "pressureAngle" | "addendum">;
     // (undocumented)
-    type InvoluteSplineSizesDto = WithDefaults<Inputs_6.Engineering.InvoluteSplineSizesDto, "referenceDiameter" | "module">;
+    type IsoBallBearingSizesDto = WithDefaults<Inputs_6.Engineering.IsoBallBearingSizesDto, "designation" | "unit">;
     // (undocumented)
-    type KnurlSizesDto = WithDefaults<Inputs_6.Engineering.KnurlSizesDto, "diameter" | "pitch" | "pattern">;
+    type IsoClearanceHoleDto = WithDefaults<Inputs_6.Engineering.IsoClearanceHoleDto, "fit" | "size" | "unit">;
     // (undocumented)
-    type MetricSizeDto = WithDefaults<Inputs_6.Engineering.MetricSizeDto, "size">;
+    type IsoHexBoltSizesDto = WithDefaults<Inputs_6.Engineering.IsoHexBoltSizesDto, "length" | "size" | "unit">;
     // (undocumented)
-    type MetricSizeSharedDto = WithDefaults<Inputs_6.Engineering.MetricSizeSharedDto, "size">;
+    type IsoSetScrewSizesDto = WithDefaults<Inputs_6.Engineering.IsoSetScrewSizesDto, "point" | "size" | "unit">;
     // (undocumented)
-    type MetricThreadDto = WithDefaults<Inputs_6.Engineering.MetricThreadDto, "size">;
+    type IsoSizeDto = WithDefaults<Inputs_6.Engineering.IsoSizeDto, "size" | "unit">;
     // (undocumented)
-    type ParallelKeySizesDto = WithDefaults<Inputs_6.Engineering.ParallelKeySizesDto, "shaftDiameter">;
+    type IsoSizeSharedDto = WithDefaults<Inputs_6.Engineering.IsoSizeSharedDto, "size" | "unit">;
+    // (undocumented)
+    type IsoThreadDto = WithDefaults<Inputs_6.Engineering.IsoThreadDto, "size" | "unit">;
+    // (undocumented)
+    type ModuleFromDiametralPitchDto = WithDefaults<Inputs_6.Engineering.ModuleFromDiametralPitchDto, "diametralPitch" | "unit">;
     // (undocumented)
     type PlanetarySetDto = WithDefaults<Inputs_6.Engineering.PlanetarySetDto, "module" | "sunTeeth" | "planetTeeth" | "planets" | "pressureAngle" | "addendum">;
     // (undocumented)
@@ -1356,15 +1623,11 @@ namespace Engineering_2 {
     // (undocumented)
     type RackSizesDto = WithDefaults<Inputs_6.Engineering.RackSizesDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "height">;
     // (undocumented)
-    type RetainingRingSizesDto = WithDefaults<Inputs_6.Engineering.RetainingRingSizesDto, "kind" | "diameter">;
-    // (undocumented)
     type RingGearOutlineDto = WithDefaults<Inputs_6.Engineering.RingGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     // (undocumented)
     type RingGearSharedDto = WithDefaults<Inputs_6.Engineering.RingGearSharedDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     // (undocumented)
     type RingGearSizesDto = WithDefaults<Inputs_6.Engineering.RingGearSizesDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
-    // (undocumented)
-    type SetScrewSizesDto = WithDefaults<Inputs_6.Engineering.SetScrewSizesDto, "point" | "size">;
     // (undocumented)
     type SpurGearOutlineDto = WithDefaults<Inputs_6.Engineering.SpurGearOutlineDto, "rotation" | "segments" | "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet">;
     // (undocumented)
@@ -2507,10 +2770,11 @@ namespace IO {
         start: Base_2.Point2;
     }
     class DxfModelDto {
-        constructor(dxfPathsParts?: DxfPathsPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015");
+        constructor(dxfPathsParts?: DxfPathsPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base_2.unitOfLengthEnum);
         acadVersion?: "AC1009" | "AC1015" | undefined;
         colorFormat?: "aci" | "truecolor" | undefined;
         dxfPathsParts: DxfPathsPartDto[];
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class DxfPathDto {
         constructor(segments?: (DxfLineSegmentDto | DxfArcSegmentDto | DxfCircleSegmentDto | DxfPolylineSegmentDto | DxfSplineSegmentDto)[]);
@@ -4545,6 +4809,12 @@ namespace Math_2 {
         min?: number | undefined;
         number?: number | undefined;
     }
+    class ConvertLengthDto {
+        constructor(value?: number, from?: Base_2.unitOfLengthEnum, to?: Base_2.unitOfLengthEnum);
+        from?: Base_2.unitOfLengthEnum | undefined;
+        to?: Base_2.unitOfLengthEnum | undefined;
+        value?: number | undefined;
+    }
     class EaseDto {
         constructor(x?: number);
         ease?: easeEnum | undefined;
@@ -4617,6 +4887,11 @@ namespace Math_2 {
     class EvalArithmeticDto {
         constructor(expression?: string);
         expression?: string | undefined;
+    }
+    class FractionTextDto {
+        constructor(number?: number, denominator?: number);
+        denominator?: number | undefined;
+        number?: number | undefined;
     }
     class InverseLerpDto {
         constructor(start?: number, end?: number, value?: number);
@@ -4738,6 +5013,10 @@ namespace Math_2 {
         first?: number | undefined;
         second?: number | undefined;
     }
+    class UnitOfLengthDto {
+        constructor(unit?: Base_2.unitOfLengthEnum);
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
     class WrapDto {
         constructor(number?: number, min?: number, max?: number);
         max?: number | undefined;
@@ -4755,9 +5034,13 @@ namespace Math_3 {
     // (undocumented)
     type ClampDto = WithDefaults<Inputs_6.Math.ClampDto, "number" | "min" | "max">;
     // (undocumented)
+    type ConvertLengthDto = WithDefaults<Inputs_6.Math.ConvertLengthDto, "value" | "from" | "to">;
+    // (undocumented)
     type EaseDto = WithDefaults<Inputs_6.Math.EaseDto, "x" | "min" | "max" | "ease">;
     // (undocumented)
     type EvalArithmeticDto = WithDefaults<Inputs_6.Math.EvalArithmeticDto, "expression">;
+    // (undocumented)
+    type FractionTextDto = WithDefaults<Inputs_6.Math.FractionTextDto, "number" | "denominator">;
     // (undocumented)
     type InverseLerpDto = WithDefaults<Inputs_6.Math.InverseLerpDto, "start" | "end" | "value">;
     // (undocumented)
@@ -4782,6 +5065,8 @@ namespace Math_3 {
     type ToFixedDto = WithDefaults<Inputs_6.Math.ToFixedDto, "decimalPlaces">;
     // (undocumented)
     type TwoNumbersDto = WithDefaults<Inputs_6.Math.TwoNumbersDto, "first" | "second">;
+    // (undocumented)
+    type UnitOfLengthDto = WithDefaults<Inputs_6.Math.UnitOfLengthDto, "unit">;
     // (undocumented)
     type WrapDto = WithDefaults<Inputs_6.Math.WrapDto, "number" | "min" | "max">;
 }
@@ -4994,6 +5279,114 @@ namespace OCCT {
         toDirections?: Base_2.Vector3[] | undefined;
         toOrigins?: Base_2.Point3[] | undefined;
     }
+    class AnsiBallBearingDto {
+        constructor(designation?: Engineering.ansiBallBearingEnum, shields?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        designation?: Engineering.ansiBallBearingEnum | undefined;
+        frame?: Base_2.Frame | undefined;
+        shields?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    abstract class AnsiFastenerSharedDto {
+        frame?: Base_2.Frame | undefined;
+        size?: Engineering.ansiThreadSizeEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class AnsiHexBoltDto extends AnsiScrewSharedDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiThreadSeriesEnum, length?: number, fullyThreaded?: boolean, modelledThread?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        fullyThreaded?: boolean | undefined;
+    }
+    class AnsiHexNutDto extends AnsiFastenerSharedDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+    }
+    class AnsiKeywayDto<T> extends AnsiKeywayToolDto {
+        constructor(shape?: T, diameter?: number, length?: number, inHub?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        shape: T;
+    }
+    class AnsiKeywayToolDto extends AnsiMachiningSharedDto {
+        constructor(diameter?: number, length?: number, inHub?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        diameter?: number | undefined;
+        inHub?: boolean | undefined;
+        length?: number | undefined;
+    }
+    class AnsiKnurlDto<T> extends AnsiKnurlToolDto {
+        constructor(shape?: T, diameter?: number, length?: number, diametralPitch?: number, pattern?: Engineering.knurlPatternEnum, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        shape: T;
+    }
+    class AnsiKnurlToolDto extends AnsiMachiningSharedDto {
+        constructor(diameter?: number, length?: number, diametralPitch?: number, pattern?: Engineering.knurlPatternEnum, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        diameter?: number | undefined;
+        diametralPitch?: number | undefined;
+        length?: number | undefined;
+        pattern?: Engineering.knurlPatternEnum | undefined;
+    }
+    abstract class AnsiMachiningSharedDto extends MachiningFrameSharedDto {
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class AnsiParallelKeyDto {
+        constructor(shaftDiameter?: number, length?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        frame?: Base_2.Frame | undefined;
+        length?: number | undefined;
+        shaftDiameter?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class AnsiRetainingRingDto {
+        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        diameter?: number | undefined;
+        frame?: Base_2.Frame | undefined;
+        kind?: Engineering.retainingRingKindEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class AnsiRingGrooveDto<T> extends AnsiRingGrooveToolDto {
+        constructor(shape?: T, kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        shape: T;
+    }
+    class AnsiRingGrooveToolDto extends AnsiMachiningSharedDto {
+        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        diameter?: number | undefined;
+        kind?: Engineering.retainingRingKindEnum | undefined;
+    }
+    abstract class AnsiScrewSharedDto extends AnsiFastenerSharedDto {
+        length?: number | undefined;
+        modelledThread?: boolean | undefined;
+        series?: Engineering.ansiThreadSeriesEnum | undefined;
+    }
+    class AnsiSetScrewDto extends AnsiFastenerSharedDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiThreadSeriesEnum, length?: number, point?: Engineering.ansiSetScrewPointEnum, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        length?: number | undefined;
+        point?: Engineering.ansiSetScrewPointEnum | undefined;
+        series?: Engineering.ansiThreadSeriesEnum | undefined;
+    }
+    class AnsiSocketHeadCapScrewDto extends AnsiScrewSharedDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiThreadSeriesEnum, length?: number, modelledThread?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+    }
+    class AnsiSplinedHubDto<T> extends AnsiSplineDto {
+        constructor(shape?: T, teeth?: number, pitch?: Engineering.ansiSplinePitchEnum, length?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        shape: T;
+    }
+    class AnsiSplineDto extends AnsiMachiningSharedDto {
+        constructor(teeth?: number, pitch?: Engineering.ansiSplinePitchEnum, length?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        length?: number | undefined;
+        pitch?: Engineering.ansiSplinePitchEnum | undefined;
+        teeth?: number | undefined;
+    }
+    class AnsiThreadCutDto<T> extends AnsiThreadToolDto {
+        constructor(shape?: T, size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiThreadSeriesEnum, threadsPerInch?: number, length?: number, internal?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        shape: T;
+    }
+    class AnsiThreadToolDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiThreadSeriesEnum, threadsPerInch?: number, length?: number, internal?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        frame?: Base_2.Frame | undefined;
+        internal?: boolean | undefined;
+        length?: number | undefined;
+        series?: Engineering.ansiThreadSeriesEnum | undefined;
+        size?: Engineering.ansiThreadSizeEnum | undefined;
+        threadsPerInch?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class AnsiWasherDto extends AnsiFastenerSharedDto {
+        constructor(size?: Engineering.ansiThreadSizeEnum, series?: Engineering.ansiWasherSeriesEnum, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        series?: Engineering.ansiWasherSeriesEnum | undefined;
+    }
     enum approxParametrizationTypeEnum {
         // (undocumented)
         approxCentripetal = "approxCentripetal",
@@ -5034,12 +5427,6 @@ namespace OCCT {
         end?: Base_2.Point3 | undefined;
         start?: Base_2.Point3 | undefined;
         tangentVec?: Base_2.Vector3 | undefined;
-    }
-    class BallBearingDto {
-        constructor(designation?: Engineering.ballBearingEnum, shields?: boolean, frame?: Base_2.Frame);
-        designation?: Engineering.ballBearingEnum | undefined;
-        frame?: Base_2.Frame | undefined;
-        shields?: boolean | undefined;
     }
     class BasicShapeRepairDto<T> {
         constructor(shape?: T, precision?: number, maxTolerance?: number, minTolerance?: number);
@@ -5814,11 +6201,12 @@ namespace OCCT {
         documents?: Models.OCCT.DesignDocument[] | undefined;
     }
     class DesignFromStepDto {
-        constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string);
+        constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string, unit?: Base_2.unitOfLengthEnum);
         folder?: string | undefined;
         name?: string | undefined;
         seed?: string | undefined;
         step: string | Uint8Array | ArrayBuffer;
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class DesignProbeFilletDto {
         constructor(document?: Models.OCCT.DesignDocument, feature?: string, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, maxAttempts?: number);
@@ -5871,6 +6259,63 @@ namespace OCCT {
         arrow = "arrow",
         // (undocumented)
         none = "none"
+    }
+    class DinKeywayDto<T> extends DinKeywayToolDto {
+        constructor(shape?: T, diameter?: number, length?: number, inHub?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        shape: T;
+    }
+    class DinKeywayToolDto extends DinMachiningSharedDto {
+        constructor(diameter?: number, length?: number, inHub?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        diameter?: number | undefined;
+        inHub?: boolean | undefined;
+        length?: number | undefined;
+    }
+    class DinKnurlDto<T> extends DinKnurlToolDto {
+        constructor(shape?: T, diameter?: number, length?: number, pitch?: number, pattern?: Engineering.knurlPatternEnum, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        shape: T;
+    }
+    class DinKnurlToolDto extends DinMachiningSharedDto {
+        constructor(diameter?: number, length?: number, pitch?: number, pattern?: Engineering.knurlPatternEnum, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        diameter?: number | undefined;
+        length?: number | undefined;
+        pattern?: Engineering.knurlPatternEnum | undefined;
+        pitch?: number | undefined;
+    }
+    abstract class DinMachiningSharedDto extends MachiningFrameSharedDto {
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class DinParallelKeyDto {
+        constructor(shaftDiameter?: number, length?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        frame?: Base_2.Frame | undefined;
+        length?: number | undefined;
+        shaftDiameter?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class DinRetainingRingDto {
+        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        diameter?: number | undefined;
+        frame?: Base_2.Frame | undefined;
+        kind?: Engineering.retainingRingKindEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class DinRingGrooveDto<T> extends DinRingGrooveToolDto {
+        constructor(shape?: T, kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        shape: T;
+    }
+    class DinRingGrooveToolDto extends DinMachiningSharedDto {
+        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        diameter?: number | undefined;
+        kind?: Engineering.retainingRingKindEnum | undefined;
+    }
+    class DinSplinedHubDto<T> extends DinSplineDto {
+        constructor(shape?: T, referenceDiameter?: number, module?: number, length?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        shape: T;
+    }
+    class DinSplineDto extends DinMachiningSharedDto {
+        constructor(referenceDiameter?: number, module?: number, length?: number, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        length?: number | undefined;
+        module?: number | undefined;
+        referenceDiameter?: number | undefined;
     }
     enum directionEnum {
         // (undocumented)
@@ -5999,12 +6444,13 @@ namespace OCCT {
         truecolor = "truecolor"
     }
     class DxfPathsPartsListDto {
-        constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean);
+        constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean, unit?: Base_2.unitOfLengthEnum);
         acadVersion?: dxfAcadVersionEnum | undefined;
         colorFormat?: dxfColorFormatEnum | undefined;
         fileName?: string | undefined;
         pathsParts: IO.DxfPathsPartDto[];
         tryDownload?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class DxfPathsWithLayerDto {
         constructor(paths?: IO.DxfPathDto[], layer?: string, color?: Base_2.Color);
@@ -6044,6 +6490,7 @@ namespace OCCT {
         meshAngle?: number | undefined;
         meshDeflection?: number | undefined;
         tryDownload?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
         up?: upAxisEnum | undefined;
     }
     class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto<T> {
@@ -6293,6 +6740,11 @@ namespace OCCT {
         throughAll = "throughAll",
         // (undocumented)
         untilFace = "untilFace"
+    }
+    class FileLengthUnitDto {
+        constructor(filetext?: string | ArrayBuffer, fileName?: string);
+        fileName?: string | undefined;
+        filetext: string | ArrayBuffer;
     }
     enum fileTypeEnum {
         // (undocumented)
@@ -6640,7 +7092,7 @@ namespace OCCT {
         extrusionLengthFront?: number | undefined;
     }
     class HelicalGearDto {
-        constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, helixAngle?: number, herringbone?: boolean, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base_2.Frame);
+        constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, helixAngle?: number, herringbone?: boolean, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base_2.Frame, unit?: Base_2.unitOfLengthEnum, keyStandard?: Engineering.keyStandardEnum);
         addendum?: number | undefined;
         backlash?: number | undefined;
         bore?: number | undefined;
@@ -6650,6 +7102,7 @@ namespace OCCT {
         herringbone?: boolean | undefined;
         hub?: number | undefined;
         hubLength?: number | undefined;
+        keyStandard?: Engineering.keyStandardEnum | undefined;
         keyway?: boolean | undefined;
         module?: number | undefined;
         pressureAngle?: number | undefined;
@@ -6657,6 +7110,7 @@ namespace OCCT {
         rootFillet?: number | undefined;
         rotation?: number | undefined;
         teeth?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
         width?: number | undefined;
     }
     class HelixWireByTurnsDto {
@@ -6695,10 +7149,6 @@ namespace OCCT {
         scalePatternWidth?: number[] | undefined;
         width?: number | undefined;
     }
-    class HexBoltDto extends MetricScrewSharedDto {
-        constructor(size?: Engineering.metricSizeEnum, length?: number, fullyThreaded?: boolean, modelledThread?: boolean, frame?: Base_2.Frame);
-        fullyThreaded?: boolean | undefined;
-    }
     class HiddenLinesDto<T> {
         constructor(shape?: T, frame?: Base_2.Frame, exact?: boolean, smoothEdges?: boolean, hiddenEdges?: boolean, focus?: number, precision?: number);
         exact?: boolean | undefined;
@@ -6734,15 +7184,17 @@ namespace OCCT {
         extrusionLengthFront?: number | undefined;
     }
     class ImportStepIgesDto {
-        constructor(assetFile?: File, adjustZtoY?: boolean);
+        constructor(assetFile?: File, adjustZtoY?: boolean, unit?: Base_2.unitOfLengthEnum);
         adjustZtoY?: boolean | undefined;
         assetFile: File;
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class ImportStepIgesFromTextDto {
-        constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean);
+        constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean, unit?: Base_2.unitOfLengthEnum);
         adjustZtoY?: boolean | undefined;
         fileType?: fileTypeEnum | undefined;
         text: string;
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class InterpolateSymmetricDto {
         constructor(points?: Base_2.Point3[], tolerance?: number);
@@ -6785,6 +7237,54 @@ namespace OCCT {
         constructor(transformation?: Base_2.TransformMatrix);
         transformation: Base_2.TransformMatrix;
     }
+    class IsoBallBearingDto {
+        constructor(designation?: Engineering.isoBallBearingEnum, shields?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        designation?: Engineering.isoBallBearingEnum | undefined;
+        frame?: Base_2.Frame | undefined;
+        shields?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    abstract class IsoFastenerSharedDto {
+        frame?: Base_2.Frame | undefined;
+        size?: Engineering.isoThreadSizeEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class IsoHexBoltDto extends IsoScrewSharedDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, length?: number, fullyThreaded?: boolean, modelledThread?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        fullyThreaded?: boolean | undefined;
+    }
+    class IsoHexNutDto extends IsoFastenerSharedDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+    }
+    abstract class IsoScrewSharedDto extends IsoFastenerSharedDto {
+        length?: number | undefined;
+        modelledThread?: boolean | undefined;
+    }
+    class IsoSetScrewDto extends IsoFastenerSharedDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, length?: number, point?: Engineering.isoSetScrewPointEnum, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        length?: number | undefined;
+        point?: Engineering.isoSetScrewPointEnum | undefined;
+    }
+    class IsoSocketHeadCapScrewDto extends IsoScrewSharedDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, length?: number, modelledThread?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+    }
+    class IsoThreadCutDto<T> extends IsoThreadToolDto {
+        constructor(shape?: T, size?: Engineering.isoThreadSizeEnum, pitch?: number, length?: number, internal?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        shape: T;
+    }
+    class IsoThreadToolDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, pitch?: number, length?: number, internal?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        frame?: Base_2.Frame | undefined;
+        internal?: boolean | undefined;
+        length?: number | undefined;
+        pitch?: number | undefined;
+        size?: Engineering.isoThreadSizeEnum | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class IsoWasherDto extends IsoFastenerSharedDto {
+        constructor(size?: Engineering.isoThreadSizeEnum, chamfered?: boolean, unit?: Base_2.unitOfLengthEnum, frame?: Base_2.Frame);
+        chamfered?: boolean | undefined;
+    }
     enum joinTypeEnum {
         // (undocumented)
         arc = "arc",
@@ -6792,27 +7292,6 @@ namespace OCCT {
         intersection = "intersection",
         // (undocumented)
         tangent = "tangent"
-    }
-    class KeywayDto<T> extends KeywayToolDto {
-        constructor(shape?: T, diameter?: number, length?: number, inHub?: boolean, frame?: Base_2.Frame);
-        shape: T;
-    }
-    class KeywayToolDto extends MachiningFrameSharedDto {
-        constructor(diameter?: number, length?: number, inHub?: boolean, frame?: Base_2.Frame);
-        diameter?: number | undefined;
-        inHub?: boolean | undefined;
-        length?: number | undefined;
-    }
-    class KnurlDto<T> extends KnurlToolDto {
-        constructor(shape?: T, diameter?: number, length?: number, pitch?: number, pattern?: Engineering.knurlPatternEnum, frame?: Base_2.Frame);
-        shape: T;
-    }
-    class KnurlToolDto extends MachiningFrameSharedDto {
-        constructor(diameter?: number, length?: number, pitch?: number, pattern?: Engineering.knurlPatternEnum, frame?: Base_2.Frame);
-        diameter?: number | undefined;
-        length?: number | undefined;
-        pattern?: Engineering.knurlPatternEnum | undefined;
-        pitch?: number | undefined;
     }
     class LineBaseDto {
         constructor(line?: Base_2.Line3);
@@ -6872,10 +7351,11 @@ namespace OCCT {
         objData: string | ArrayBuffer | Uint8Array | File | Blob;
     }
     class LoadStepOrIgesDto {
-        constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean);
+        constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean, unit?: Base_2.unitOfLengthEnum);
         adjustZtoY?: boolean | undefined;
         fileName?: string | undefined;
         filetext: string | ArrayBuffer;
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class LoadStepToDocDto {
         constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob);
@@ -6974,17 +7454,6 @@ namespace OCCT {
         precision2?: number | undefined;
         shape1: T;
         shape2: T;
-    }
-    class MetricFastenerDto extends MetricFastenerSharedDto {
-        constructor(size?: Engineering.metricSizeEnum, frame?: Base_2.Frame);
-    }
-    abstract class MetricFastenerSharedDto {
-        frame?: Base_2.Frame | undefined;
-        size?: Engineering.metricSizeEnum | undefined;
-    }
-    abstract class MetricScrewSharedDto extends MetricFastenerSharedDto {
-        length?: number | undefined;
-        modelledThread?: boolean | undefined;
     }
     class MinCurvatureRadiusDto<T> {
         constructor(shape?: T, samples?: number, concaveOnly?: boolean);
@@ -7093,12 +7562,6 @@ namespace OCCT {
         from?: Base_2.Frame | undefined;
         shape: T;
         to: Base_2.Frame;
-    }
-    class ParallelKeyDto {
-        constructor(shaftDiameter?: number, length?: number, frame?: Base_2.Frame);
-        frame?: Base_2.Frame | undefined;
-        length?: number | undefined;
-        shaftDiameter?: number | undefined;
     }
     class ParallelogramDto {
         constructor(center?: Base_2.Point3, direction?: Base_2.Vector3, aroundCenter?: boolean, width?: number, height?: number, angle?: number);
@@ -7386,12 +7849,6 @@ namespace OCCT {
         indexes: number[];
         shape: T;
     }
-    class RetainingRingDto {
-        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, frame?: Base_2.Frame);
-        diameter?: number | undefined;
-        frame?: Base_2.Frame | undefined;
-        kind?: Engineering.retainingRingKindEnum | undefined;
-    }
     class RevolvedFeatureDto<T, U> {
         constructor(shape?: T, profile?: U, sketchFaceIndex?: number, axisOrigin?: Base_2.Point3, axisDirection?: Base_2.Vector3, angle?: number);
         angle?: number | undefined;
@@ -7435,15 +7892,6 @@ namespace OCCT {
         rootFillet?: number | undefined;
         rotation?: number | undefined;
         teeth?: number | undefined;
-    }
-    class RingGrooveDto<T> extends RingGrooveToolDto {
-        constructor(shape?: T, kind?: Engineering.retainingRingKindEnum, diameter?: number, frame?: Base_2.Frame);
-        shape: T;
-    }
-    class RingGrooveToolDto extends MachiningFrameSharedDto {
-        constructor(kind?: Engineering.retainingRingKindEnum, diameter?: number, frame?: Base_2.Frame);
-        diameter?: number | undefined;
-        kind?: Engineering.retainingRingKindEnum | undefined;
     }
     class RotateAroundCenterDto<T> {
         constructor(shape?: T, angle?: number, center?: Base_2.Point3, axis?: Base_2.Vector3);
@@ -7520,12 +7968,13 @@ namespace OCCT {
         tryDownload?: boolean | undefined;
     }
     class SaveStepDto<T> {
-        constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean);
+        constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean, unit?: Base_2.unitOfLengthEnum);
         adjustYtoZ?: boolean | undefined;
         fileName?: string | undefined;
         fromRightHanded?: boolean | undefined;
         shape: T;
         tryDownload?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class SaveStlDto<T> {
         constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, binary?: boolean);
@@ -7537,13 +7986,14 @@ namespace OCCT {
         tryDownload?: boolean | undefined;
     }
     class SaveSvgDto<T> {
-        constructor(shape?: T, frame?: Base_2.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean);
+        constructor(shape?: T, frame?: Base_2.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean, unit?: Base_2.unitOfLengthEnum);
         drawHidden?: boolean | undefined;
         fileName?: string | undefined;
         frame: Base_2.Frame;
         precision?: number | undefined;
         shape: T;
         tryDownload?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class Scale3DDto<T> {
         constructor(shape?: T, scale?: Base_2.Vector3, center?: Base_2.Point3);
@@ -7722,11 +8172,6 @@ namespace OCCT {
         document: T;
         label: string;
         name?: string | undefined;
-    }
-    class SetScrewDto extends MetricFastenerSharedDto {
-        constructor(size?: Engineering.metricSizeEnum, length?: number, point?: Engineering.setScrewPointEnum, frame?: Base_2.Frame);
-        length?: number | undefined;
-        point?: Engineering.setScrewPointEnum | undefined;
     }
     class SewDto<T> {
         constructor(shapes?: T[], tolerance?: number);
@@ -8029,23 +8474,10 @@ namespace OCCT {
         shape: T;
         steps?: number[] | undefined;
     }
-    class SocketHeadCapScrewDto extends MetricScrewSharedDto {
-        constructor(size?: Engineering.metricSizeEnum, length?: number, modelledThread?: boolean, frame?: Base_2.Frame);
-    }
     class SphereDto {
         constructor(radius?: number, center?: Base_2.Point3);
         center?: Base_2.Point3 | undefined;
         radius?: number | undefined;
-    }
-    class SplinedHubDto<T> extends SplineDto {
-        constructor(shape?: T, referenceDiameter?: number, module?: number, length?: number, frame?: Base_2.Frame);
-        shape: T;
-    }
-    class SplineDto extends MachiningFrameSharedDto {
-        constructor(referenceDiameter?: number, module?: number, length?: number, frame?: Base_2.Frame);
-        length?: number | undefined;
-        module?: number | undefined;
-        referenceDiameter?: number | undefined;
     }
     class SplitByFrameDto<T> {
         constructor(shape?: T, frame?: Base_2.Frame);
@@ -8070,11 +8502,13 @@ namespace OCCT {
         shape: T;
     }
     class SpurGearDto extends SpurGearSharedDto {
-        constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base_2.Frame);
+        constructor(width?: number, bore?: number, hub?: number, hubLength?: number, keyway?: boolean, module?: number, teeth?: number, pressureAngle?: number, profileShift?: number, backlash?: number, addendum?: number, dedendum?: number, rootFillet?: number, rotation?: number, frame?: Base_2.Frame, unit?: Base_2.unitOfLengthEnum, keyStandard?: Engineering.keyStandardEnum);
         bore?: number | undefined;
         hub?: number | undefined;
         hubLength?: number | undefined;
+        keyStandard?: Engineering.keyStandardEnum | undefined;
         keyway?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
         width?: number | undefined;
     }
     class SpurGearProfileDto extends SpurGearSharedDto {
@@ -8266,18 +8700,6 @@ namespace OCCT {
         offset?: number | undefined;
         shape: T;
     }
-    class ThreadDto<T> extends ThreadToolDto {
-        constructor(shape?: T, size?: Engineering.metricSizeEnum, pitch?: number, length?: number, internal?: boolean, frame?: Base_2.Frame);
-        shape: T;
-    }
-    class ThreadToolDto {
-        constructor(size?: Engineering.metricSizeEnum, pitch?: number, length?: number, internal?: boolean, frame?: Base_2.Frame);
-        frame?: Base_2.Frame | undefined;
-        internal?: boolean | undefined;
-        length?: number | undefined;
-        pitch?: number | undefined;
-        size?: Engineering.metricSizeEnum | undefined;
-    }
     enum topAbsOrientationEnum {
         // (undocumented)
         external = "external",
@@ -8457,10 +8879,6 @@ namespace OCCT {
         // (undocumented)
         z = "z"
     }
-    class WasherDto extends MetricFastenerSharedDto {
-        constructor(size?: Engineering.metricSizeEnum, chamfered?: boolean, frame?: Base_2.Frame);
-        chamfered?: boolean | undefined;
-    }
     class WireAlongParamDto<T> {
         constructor(shape?: T, isU?: boolean, param?: number);
         isU?: boolean | undefined;
@@ -8560,6 +8978,48 @@ namespace OCCT_3 {
     // (undocumented)
     type AlignShapesDto<T> = WithDefaults<Inputs_5.OCCT.AlignShapesDto<T>, "fromOrigins" | "fromDirections" | "toOrigins" | "toDirections">;
     // (undocumented)
+    type AnsiBallBearingDto = WithDefaults<Inputs_5.OCCT.AnsiBallBearingDto, "designation" | "shields" | "unit">;
+    // (undocumented)
+    type AnsiFastenerSharedDto = WithDefaults<Inputs_5.OCCT.AnsiFastenerSharedDto, "size" | "unit">;
+    // (undocumented)
+    type AnsiHexBoltDto = WithDefaults<Inputs_5.OCCT.AnsiHexBoltDto, "fullyThreaded" | "series" | "length" | "modelledThread" | "size" | "unit">;
+    // (undocumented)
+    type AnsiHexNutDto = WithDefaults<Inputs_5.OCCT.AnsiHexNutDto, "size" | "unit">;
+    // (undocumented)
+    type AnsiKeywayDto<T> = WithDefaults<Inputs_5.OCCT.AnsiKeywayDto<T>, "diameter" | "length" | "inHub" | "unit">;
+    // (undocumented)
+    type AnsiKeywayToolDto = WithDefaults<Inputs_5.OCCT.AnsiKeywayToolDto, "diameter" | "length" | "inHub" | "unit">;
+    // (undocumented)
+    type AnsiKnurlDto<T> = WithDefaults<Inputs_5.OCCT.AnsiKnurlDto<T>, "diameter" | "length" | "diametralPitch" | "pattern" | "unit">;
+    // (undocumented)
+    type AnsiKnurlToolDto = WithDefaults<Inputs_5.OCCT.AnsiKnurlToolDto, "diameter" | "length" | "diametralPitch" | "pattern" | "unit">;
+    // (undocumented)
+    type AnsiMachiningSharedDto = WithDefaults<Inputs_5.OCCT.AnsiMachiningSharedDto, "unit">;
+    // (undocumented)
+    type AnsiParallelKeyDto = WithDefaults<Inputs_5.OCCT.AnsiParallelKeyDto, "shaftDiameter" | "length" | "unit">;
+    // (undocumented)
+    type AnsiRetainingRingDto = WithDefaults<Inputs_5.OCCT.AnsiRetainingRingDto, "kind" | "diameter" | "unit">;
+    // (undocumented)
+    type AnsiRingGrooveDto<T> = WithDefaults<Inputs_5.OCCT.AnsiRingGrooveDto<T>, "kind" | "diameter" | "unit">;
+    // (undocumented)
+    type AnsiRingGrooveToolDto = WithDefaults<Inputs_5.OCCT.AnsiRingGrooveToolDto, "kind" | "diameter" | "unit">;
+    // (undocumented)
+    type AnsiScrewSharedDto = WithDefaults<Inputs_5.OCCT.AnsiScrewSharedDto, "series" | "length" | "modelledThread" | "size" | "unit">;
+    // (undocumented)
+    type AnsiSetScrewDto = WithDefaults<Inputs_5.OCCT.AnsiSetScrewDto, "series" | "point" | "length" | "size" | "unit">;
+    // (undocumented)
+    type AnsiSocketHeadCapScrewDto = WithDefaults<Inputs_5.OCCT.AnsiSocketHeadCapScrewDto, "series" | "length" | "modelledThread" | "size" | "unit">;
+    // (undocumented)
+    type AnsiSplinedHubDto<T> = WithDefaults<Inputs_5.OCCT.AnsiSplinedHubDto<T>, "teeth" | "pitch" | "length" | "unit">;
+    // (undocumented)
+    type AnsiSplineDto = WithDefaults<Inputs_5.OCCT.AnsiSplineDto, "teeth" | "pitch" | "length" | "unit">;
+    // (undocumented)
+    type AnsiThreadCutDto<T> = WithDefaults<Inputs_5.OCCT.AnsiThreadCutDto<T>, "size" | "series" | "length" | "internal" | "unit">;
+    // (undocumented)
+    type AnsiThreadToolDto = WithDefaults<Inputs_5.OCCT.AnsiThreadToolDto, "size" | "series" | "length" | "internal" | "unit">;
+    // (undocumented)
+    type AnsiWasherDto = WithDefaults<Inputs_5.OCCT.AnsiWasherDto, "series" | "size" | "unit">;
+    // (undocumented)
     type ArcEdgeCirclePointAngleDto<T> = WithDefaults<Inputs_5.OCCT.ArcEdgeCirclePointAngleDto<T>, "alphaAngle" | "sense">;
     // (undocumented)
     type ArcEdgeCircleTwoAnglesDto<T> = WithDefaults<Inputs_5.OCCT.ArcEdgeCircleTwoAnglesDto<T>, "alphaAngle1" | "alphaAngle2" | "sense">;
@@ -8569,8 +9029,6 @@ namespace OCCT_3 {
     type ArcEdgeThreePointsDto = WithDefaults<Inputs_5.OCCT.ArcEdgeThreePointsDto, "start" | "middle" | "end">;
     // (undocumented)
     type ArcEdgeTwoPointsTangentDto = WithDefaults<Inputs_5.OCCT.ArcEdgeTwoPointsTangentDto, "start" | "tangentVec" | "end">;
-    // (undocumented)
-    type BallBearingDto = WithDefaults<Inputs_5.OCCT.BallBearingDto, "designation" | "shields">;
     // (undocumented)
     type BasicShapeRepairDto<T> = WithDefaults<Inputs_5.OCCT.BasicShapeRepairDto<T>, "precision" | "maxTolerance" | "minTolerance">;
     // (undocumented)
@@ -8754,7 +9212,7 @@ namespace OCCT_3 {
     // (undocumented)
     type DesignDocumentDto = Inputs_5.OCCT.DesignDocumentDto;
     // (undocumented)
-    type DesignFromStepDto = WithDefaults<Inputs_5.OCCT.DesignFromStepDto, "name" | "seed" | "folder">;
+    type DesignFromStepDto = WithDefaults<Inputs_5.OCCT.DesignFromStepDto, "name" | "seed" | "folder" | "unit">;
     // (undocumented)
     type DesignProbeFilletDto = WithDefaults<Inputs_5.OCCT.DesignProbeFilletDto, "maxAttempts">;
     // (undocumented)
@@ -8765,6 +9223,28 @@ namespace OCCT_3 {
     type DifferenceDto<T> = WithDefaults<Inputs_5.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
     // (undocumented)
     type DihedralAngleDto<T> = WithDefaults<Inputs_5.OCCT.DihedralAngleDto<T>, "index" | "param">;
+    // (undocumented)
+    type DinKeywayDto<T> = WithDefaults<Inputs_5.OCCT.DinKeywayDto<T>, "diameter" | "length" | "inHub" | "unit">;
+    // (undocumented)
+    type DinKeywayToolDto = WithDefaults<Inputs_5.OCCT.DinKeywayToolDto, "diameter" | "length" | "inHub" | "unit">;
+    // (undocumented)
+    type DinKnurlDto<T> = WithDefaults<Inputs_5.OCCT.DinKnurlDto<T>, "diameter" | "length" | "pitch" | "pattern" | "unit">;
+    // (undocumented)
+    type DinKnurlToolDto = WithDefaults<Inputs_5.OCCT.DinKnurlToolDto, "diameter" | "length" | "pitch" | "pattern" | "unit">;
+    // (undocumented)
+    type DinMachiningSharedDto = WithDefaults<Inputs_5.OCCT.DinMachiningSharedDto, "unit">;
+    // (undocumented)
+    type DinParallelKeyDto = WithDefaults<Inputs_5.OCCT.DinParallelKeyDto, "shaftDiameter" | "length" | "unit">;
+    // (undocumented)
+    type DinRetainingRingDto = WithDefaults<Inputs_5.OCCT.DinRetainingRingDto, "kind" | "diameter" | "unit">;
+    // (undocumented)
+    type DinRingGrooveDto<T> = WithDefaults<Inputs_5.OCCT.DinRingGrooveDto<T>, "kind" | "diameter" | "unit">;
+    // (undocumented)
+    type DinRingGrooveToolDto = WithDefaults<Inputs_5.OCCT.DinRingGrooveToolDto, "kind" | "diameter" | "unit">;
+    // (undocumented)
+    type DinSplinedHubDto<T> = WithDefaults<Inputs_5.OCCT.DinSplinedHubDto<T>, "referenceDiameter" | "module" | "length" | "unit">;
+    // (undocumented)
+    type DinSplineDto = WithDefaults<Inputs_5.OCCT.DinSplineDto, "referenceDiameter" | "module" | "length" | "unit">;
     // (undocumented)
     type DivideDto<T> = WithDefaults<Inputs_5.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     // (undocumented)
@@ -8858,6 +9338,8 @@ namespace OCCT_3 {
     // (undocumented)
     type FacesWithinDto<T> = WithDefaults<Inputs_5.OCCT.FacesWithinDto<T>, "clearance" | "precision">;
     // (undocumented)
+    type FileLengthUnitDto = WithDefaults<Inputs_5.OCCT.FileLengthUnitDto, "fileName">;
+    // (undocumented)
     type Fillet3DWireDto<T> = WithDefaults<Inputs_5.OCCT.Fillet3DWireDto<T>, "radius" | "direction">;
     // (undocumented)
     type Fillet3DWiresDto<T> = WithDefaults<Inputs_5.OCCT.Fillet3DWiresDto<T>, "radius" | "direction">;
@@ -8934,15 +9416,13 @@ namespace OCCT_3 {
     // (undocumented)
     type HeartSolidDto = WithDefaults<Inputs_5.OCCT.HeartSolidDto, "center" | "direction" | "rotation" | "sizeApprox" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type HelicalGearDto = WithDefaults<Inputs_5.OCCT.HelicalGearDto, "module" | "teeth" | "helixAngle" | "herringbone" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "rotation" | "width" | "bore" | "hub" | "hubLength" | "keyway">;
+    type HelicalGearDto = WithDefaults<Inputs_5.OCCT.HelicalGearDto, "module" | "teeth" | "helixAngle" | "herringbone" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "rotation" | "width" | "bore" | "hub" | "hubLength" | "keyway" | "unit" | "keyStandard">;
     // (undocumented)
     type HelixWireByTurnsDto = WithDefaults<Inputs_5.OCCT.HelixWireByTurnsDto, "radius" | "pitch" | "numTurns" | "center" | "direction" | "clockwise" | "tolerance">;
     // (undocumented)
     type HelixWireDto = WithDefaults<Inputs_5.OCCT.HelixWireDto, "radius" | "pitch" | "height" | "center" | "direction" | "clockwise" | "tolerance">;
     // (undocumented)
     type HexagonsInGridDto = WithDefaults<Inputs_5.OCCT.HexagonsInGridDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight">;
-    // (undocumented)
-    type HexBoltDto = WithDefaults<Inputs_5.OCCT.HexBoltDto, "fullyThreaded" | "length" | "modelledThread" | "size">;
     // (undocumented)
     type HiddenLinesDto<T> = WithDefaults<Inputs_5.OCCT.HiddenLinesDto<T>, "exact" | "smoothEdges" | "hiddenEdges" | "focus" | "precision">;
     // (undocumented)
@@ -8952,9 +9432,9 @@ namespace OCCT_3 {
     // (undocumented)
     type IBeamProfileSolidDto = WithDefaults<Inputs_5.OCCT.IBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type ImportStepIgesDto = WithDefaults<Inputs_5.OCCT.ImportStepIgesDto, "adjustZtoY">;
+    type ImportStepIgesDto = WithDefaults<Inputs_5.OCCT.ImportStepIgesDto, "adjustZtoY" | "unit">;
     // (undocumented)
-    type ImportStepIgesFromTextDto = WithDefaults<Inputs_5.OCCT.ImportStepIgesFromTextDto, "fileType" | "adjustZtoY">;
+    type ImportStepIgesFromTextDto = WithDefaults<Inputs_5.OCCT.ImportStepIgesFromTextDto, "fileType" | "adjustZtoY" | "unit">;
     // (undocumented)
     type InterpolateSymmetricDto = WithDefaults<Inputs_5.OCCT.InterpolateSymmetricDto, "tolerance">;
     // (undocumented)
@@ -8970,13 +9450,25 @@ namespace OCCT_3 {
     // (undocumented)
     type InvertTransformDto = Inputs_5.OCCT.InvertTransformDto;
     // (undocumented)
-    type KeywayDto<T> = WithDefaults<Inputs_5.OCCT.KeywayDto<T>, "diameter" | "length" | "inHub">;
+    type IsoBallBearingDto = WithDefaults<Inputs_5.OCCT.IsoBallBearingDto, "designation" | "shields" | "unit">;
     // (undocumented)
-    type KeywayToolDto = WithDefaults<Inputs_5.OCCT.KeywayToolDto, "diameter" | "length" | "inHub">;
+    type IsoFastenerSharedDto = WithDefaults<Inputs_5.OCCT.IsoFastenerSharedDto, "size" | "unit">;
     // (undocumented)
-    type KnurlDto<T> = WithDefaults<Inputs_5.OCCT.KnurlDto<T>, "diameter" | "length" | "pitch" | "pattern">;
+    type IsoHexBoltDto = WithDefaults<Inputs_5.OCCT.IsoHexBoltDto, "fullyThreaded" | "length" | "modelledThread" | "size" | "unit">;
     // (undocumented)
-    type KnurlToolDto = WithDefaults<Inputs_5.OCCT.KnurlToolDto, "diameter" | "length" | "pitch" | "pattern">;
+    type IsoHexNutDto = WithDefaults<Inputs_5.OCCT.IsoHexNutDto, "size" | "unit">;
+    // (undocumented)
+    type IsoScrewSharedDto = WithDefaults<Inputs_5.OCCT.IsoScrewSharedDto, "length" | "modelledThread" | "size" | "unit">;
+    // (undocumented)
+    type IsoSetScrewDto = WithDefaults<Inputs_5.OCCT.IsoSetScrewDto, "point" | "length" | "size" | "unit">;
+    // (undocumented)
+    type IsoSocketHeadCapScrewDto = WithDefaults<Inputs_5.OCCT.IsoSocketHeadCapScrewDto, "length" | "modelledThread" | "size" | "unit">;
+    // (undocumented)
+    type IsoThreadCutDto<T> = WithDefaults<Inputs_5.OCCT.IsoThreadCutDto<T>, "size" | "length" | "internal" | "unit">;
+    // (undocumented)
+    type IsoThreadToolDto = WithDefaults<Inputs_5.OCCT.IsoThreadToolDto, "size" | "length" | "internal" | "unit">;
+    // (undocumented)
+    type IsoWasherDto = WithDefaults<Inputs_5.OCCT.IsoWasherDto, "chamfered" | "size" | "unit">;
     // (undocumented)
     type LineBaseDto = Inputs_5.OCCT.LineBaseDto;
     // (undocumented)
@@ -9000,7 +9492,7 @@ namespace OCCT_3 {
     // (undocumented)
     type LoadObjToDocDto = Inputs_5.OCCT.LoadObjToDocDto;
     // (undocumented)
-    type LoadStepOrIgesDto = WithDefaults<Inputs_5.OCCT.LoadStepOrIgesDto, "fileName" | "adjustZtoY">;
+    type LoadStepOrIgesDto = WithDefaults<Inputs_5.OCCT.LoadStepOrIgesDto, "fileName" | "adjustZtoY" | "unit">;
     // (undocumented)
     type LoadStepToDocDto = Inputs_5.OCCT.LoadStepToDocDto;
     // (undocumented)
@@ -9027,12 +9519,6 @@ namespace OCCT_3 {
     type MeshMeshesIntersectionOfShapesDto<T> = WithDefaults<Inputs_5.OCCT.MeshMeshesIntersectionOfShapesDto<T>, "precision">;
     // (undocumented)
     type MeshMeshIntersectionTwoShapesDto<T> = WithDefaults<Inputs_5.OCCT.MeshMeshIntersectionTwoShapesDto<T>, "precision1" | "precision2">;
-    // (undocumented)
-    type MetricFastenerDto = WithDefaults<Inputs_5.OCCT.MetricFastenerDto, "size">;
-    // (undocumented)
-    type MetricFastenerSharedDto = WithDefaults<Inputs_5.OCCT.MetricFastenerSharedDto, "size">;
-    // (undocumented)
-    type MetricScrewSharedDto = WithDefaults<Inputs_5.OCCT.MetricScrewSharedDto, "length" | "modelledThread" | "size">;
     // (undocumented)
     type MinCurvatureRadiusDto<T> = WithDefaults<Inputs_5.OCCT.MinCurvatureRadiusDto<T>, "samples" | "concaveOnly">;
     // (undocumented)
@@ -9069,8 +9555,6 @@ namespace OCCT_3 {
     type OffsetOpenDto<T, U> = WithDefaults<Inputs_5.OCCT.OffsetOpenDto<T, U>, "distance" | "joinType">;
     // (undocumented)
     type OrientDto<T> = Inputs_5.OCCT.OrientDto<T>;
-    // (undocumented)
-    type ParallelKeyDto = WithDefaults<Inputs_5.OCCT.ParallelKeyDto, "shaftDiameter" | "length">;
     // (undocumented)
     type ParallelogramDto = WithDefaults<Inputs_5.OCCT.ParallelogramDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle">;
     // (undocumented)
@@ -9158,8 +9642,6 @@ namespace OCCT_3 {
     // (undocumented)
     type RemoveFacesDto<T> = Inputs_5.OCCT.RemoveFacesDto<T>;
     // (undocumented)
-    type RetainingRingDto = WithDefaults<Inputs_5.OCCT.RetainingRingDto, "kind" | "diameter">;
-    // (undocumented)
     type RevolvedFeatureDto<T, U> = WithDefaults<Inputs_5.OCCT.RevolvedFeatureDto<T, U>, "sketchFaceIndex" | "axisOrigin" | "axisDirection" | "angle">;
     // (undocumented)
     type RevolveDto<T> = WithDefaults<Inputs_5.OCCT.RevolveDto<T>, "angle" | "direction" | "copy">;
@@ -9171,10 +9653,6 @@ namespace OCCT_3 {
     type RingGearProfileDto = WithDefaults<Inputs_5.OCCT.RingGearProfileDto, "makeFace" | "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "rim" | "rotation">;
     // (undocumented)
     type RingGearSharedDto = WithDefaults<Inputs_5.OCCT.RingGearSharedDto, "module" | "teeth" | "pressureAngle" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "rim" | "rotation">;
-    // (undocumented)
-    type RingGrooveDto<T> = WithDefaults<Inputs_5.OCCT.RingGrooveDto<T>, "kind" | "diameter">;
-    // (undocumented)
-    type RingGrooveToolDto = WithDefaults<Inputs_5.OCCT.RingGrooveToolDto, "kind" | "diameter">;
     // (undocumented)
     type RotateAroundCenterDto<T> = WithDefaults<Inputs_5.OCCT.RotateAroundCenterDto<T>, "angle" | "center" | "axis">;
     // (undocumented)
@@ -9198,7 +9676,7 @@ namespace OCCT_3 {
     // (undocumented)
     type SavePlyDto<T> = WithDefaults<Inputs_5.OCCT.SavePlyDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
     // (undocumented)
-    type SaveStepDto<T> = WithDefaults<Inputs_5.OCCT.SaveStepDto<T>, "fileName" | "adjustYtoZ" | "fromRightHanded" | "tryDownload">;
+    type SaveStepDto<T> = WithDefaults<Inputs_5.OCCT.SaveStepDto<T>, "fileName" | "adjustYtoZ" | "fromRightHanded" | "tryDownload" | "unit">;
     // (undocumented)
     type SaveStlDto<T> = WithDefaults<Inputs_5.OCCT.SaveStlDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload" | "binary">;
     // (undocumented)
@@ -9259,8 +9737,6 @@ namespace OCCT_3 {
     type SetDocLabelColorDto<T> = WithDefaults<Inputs_5.OCCT.SetDocLabelColorDto<T>, "r" | "g" | "b" | "a">;
     // (undocumented)
     type SetDocLabelNameDto<T> = WithDefaults<Inputs_5.OCCT.SetDocLabelNameDto<T>, "name">;
-    // (undocumented)
-    type SetScrewDto = WithDefaults<Inputs_5.OCCT.SetScrewDto, "point" | "length" | "size">;
     // (undocumented)
     type SewDto<T> = WithDefaults<Inputs_5.OCCT.SewDto<T>, "tolerance">;
     // (undocumented)
@@ -9334,13 +9810,7 @@ namespace OCCT_3 {
     // (undocumented)
     type SliceInStepPatternDto<T> = WithDefaults<Inputs_5.OCCT.SliceInStepPatternDto<T>, "steps" | "direction">;
     // (undocumented)
-    type SocketHeadCapScrewDto = WithDefaults<Inputs_5.OCCT.SocketHeadCapScrewDto, "length" | "modelledThread" | "size">;
-    // (undocumented)
     type SphereDto = WithDefaults<Inputs_5.OCCT.SphereDto, "radius" | "center">;
-    // (undocumented)
-    type SplinedHubDto<T> = WithDefaults<Inputs_5.OCCT.SplinedHubDto<T>, "referenceDiameter" | "module" | "length">;
-    // (undocumented)
-    type SplineDto = WithDefaults<Inputs_5.OCCT.SplineDto, "referenceDiameter" | "module" | "length">;
     // (undocumented)
     type SplitByFrameDto<T> = Inputs_5.OCCT.SplitByFrameDto<T>;
     // (undocumented)
@@ -9350,7 +9820,7 @@ namespace OCCT_3 {
     // (undocumented)
     type SplitWireOnPointsDto<T> = Inputs_5.OCCT.SplitWireOnPointsDto<T>;
     // (undocumented)
-    type SpurGearDto = WithDefaults<Inputs_5.OCCT.SpurGearDto, "width" | "bore" | "hub" | "hubLength" | "keyway" | "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "rotation">;
+    type SpurGearDto = WithDefaults<Inputs_5.OCCT.SpurGearDto, "width" | "bore" | "hub" | "hubLength" | "keyway" | "unit" | "keyStandard" | "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "rotation">;
     // (undocumented)
     type SpurGearProfileDto = WithDefaults<Inputs_5.OCCT.SpurGearProfileDto, "makeFace" | "module" | "teeth" | "pressureAngle" | "profileShift" | "backlash" | "addendum" | "dedendum" | "rootFillet" | "rotation">;
     // (undocumented)
@@ -9382,10 +9852,6 @@ namespace OCCT_3 {
     // (undocumented)
     type ThisckSolidSimpleDto<T> = WithDefaults<Inputs_5.OCCT.ThisckSolidSimpleDto<T>, "offset">;
     // (undocumented)
-    type ThreadDto<T> = WithDefaults<Inputs_5.OCCT.ThreadDto<T>, "size" | "length" | "internal">;
-    // (undocumented)
-    type ThreadToolDto = WithDefaults<Inputs_5.OCCT.ThreadToolDto, "size" | "length" | "internal">;
-    // (undocumented)
     type TorusDto = WithDefaults<Inputs_5.OCCT.TorusDto, "majorRadius" | "minorRadius" | "center" | "direction" | "angle">;
     // (undocumented)
     type TransformByMatrixDto<T> = Inputs_5.OCCT.TransformByMatrixDto<T>;
@@ -9415,8 +9881,6 @@ namespace OCCT_3 {
     type UnionDto<T> = WithDefaults<Inputs_5.OCCT.UnionDto<T>, "keepEdges" | "strategy">;
     // (undocumented)
     type UnrollFaceDto<T> = WithDefaults<Inputs_5.OCCT.UnrollFaceDto<T>, "tolerance">;
-    // (undocumented)
-    type WasherDto = WithDefaults<Inputs_5.OCCT.WasherDto, "chamfered" | "size">;
     // (undocumented)
     type WireAlongParamDto<T> = WithDefaults<Inputs_5.OCCT.WireAlongParamDto<T>, "isU" | "param">;
     // (undocumented)

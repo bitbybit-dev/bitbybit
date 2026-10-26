@@ -24,8 +24,9 @@ export class OCCTWIO extends OCCTIO {
      * Reads a STEP or IGES file, given as a File, into one shape.
      *
      * The file's extension decides the kind: `.step`, `.stp` are STEP, `.iges`, `.igs` are IGES.
-     * `adjustZtoY` turns the file's Z-up into Y-up. A file that cannot be read gives undefined.
-     * @param inputs - The file and the axis adjustment
+     * `adjustZtoY` turns the file's Z-up into Y-up, and the shape comes back in `unit`, scaled from
+     * the file's own. A file that cannot be read gives undefined.
+     * @param inputs - The file, the axis adjustment and the unit
      * @returns The loaded shape
      * @group io
      * @shortname load step | iges
@@ -41,7 +42,7 @@ export class OCCTWIO extends OCCTIO {
         return this.context.getFile(resolved.assetFile).then(s => {
             return this.occWorkerManager.genericCallToWorkerPromise(
                 "io.loadSTEPorIGES",
-                new Inputs.OCCT.LoadStepOrIgesDto(s, resolved.assetFile.name, resolved.adjustZtoY)
+                new Inputs.OCCT.LoadStepOrIgesDto(s, resolved.assetFile.name, resolved.adjustZtoY, resolved.unit)
             );
         });
     }
@@ -50,8 +51,9 @@ export class OCCTWIO extends OCCTIO {
      * Reads a STEP or IGES file, given as its text, into one shape; `fileType` says which of the
      * two formats the text is in.
      *
-     * `adjustZtoY` turns the file's Z-up into Y-up. Text that cannot be read gives undefined.
-     * @param inputs - The file text, its format and the axis adjustment
+     * `adjustZtoY` turns the file's Z-up into Y-up, and the shape comes back in `unit`, scaled from
+     * the file's own. Text that cannot be read gives undefined.
+     * @param inputs - The file text, its format, the axis adjustment and the unit
      * @returns The loaded shape
      * @group io
      * @shortname load text step | iges
@@ -65,7 +67,7 @@ export class OCCTWIO extends OCCTIO {
         const resolved = resolveDto(Inputs.OCCT.ImportStepIgesFromTextDto, inputs) as Resolved.OCCT.ImportStepIgesFromTextDto;
         return this.occWorkerManager.genericCallToWorkerPromise(
             "io.loadSTEPorIGES",
-            new Inputs.OCCT.LoadStepOrIgesDto(resolved.text, `fake.${resolved.fileType}`, resolved.adjustZtoY)
+            new Inputs.OCCT.LoadStepOrIgesDto(resolved.text, `fake.${resolved.fileType}`, resolved.adjustZtoY, resolved.unit)
         );
     }
 

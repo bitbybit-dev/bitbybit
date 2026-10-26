@@ -291,6 +291,68 @@ describe("BabylonIO", () => {
         });
     });
 
+    describe("glb units", () => {
+        const glbOf = (json: object): Uint8Array<ArrayBuffer> => {
+            const text = new TextEncoder().encode(JSON.stringify(json).padEnd(Math.ceil(JSON.stringify(json).length / 4) * 4, " "));
+            const bytes = new Uint8Array(20 + text.length);
+            const view = new DataView(bytes.buffer);
+            [0x46546c67, 2, bytes.length, text.length, 0x4e4f534a].forEach((value, index) => view.setUint32(index * 4, value, true));
+            bytes.set(text, 20);
+            return bytes;
+        };
+        const SCENE = glbOf({ asset: { version: "2.0" }, scene: 0, scenes: [{ nodes: [0] }], nodes: [{ name: "part", mesh: 0 }] });
+        const jsonOf = (glb: Uint8Array): { scenes: { nodes: number[] }[]; nodes: { name?: string; scale?: number[]; children?: number[] }[] } => {
+            const view = new DataView(glb.buffer, glb.byteOffset, glb.byteLength);
+            return JSON.parse(new TextDecoder().decode(glb.subarray(20, 20 + view.getUint32(12, true))));
+        };
+        const serialiserWriting = (written: Blob[]): void => {
+            vi.spyOn(SERIALIZERS.GLTF2Export, "GLBAsync").mockImplementation(((_scene: BABYLON.Scene, fileName: string) => {
+                const files: Record<string, Blob> = { [`${fileName}.glb`]: new Blob([SCENE], { type: "model/gltf-binary" }) };
+                return Promise.resolve({ files, downloadFiles: () => { written.push(files[`${fileName}.glb`]!); } });
+            }) as never);
+        };
+
+        it("should give back a scene modelled in millimetres in metres, under one node scaled by a thousandth", async () => {
+            // Arrange
+            serialiserWriting([]);
+
+            // Act
+            const plain = await io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto());
+            const metres = jsonOf(await io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto(undefined, false, false, Inputs.Base.unitOfLengthEnum.millimetre)));
+
+            // Assert
+            expect(plain).toEqual(SCENE);
+            expect(metres.scenes).toEqual([{ nodes: [1] }]);
+            expect(metres.nodes[1]).toEqual({ name: "unit scale", scale: [0.001, 0.001, 0.001], children: [0] });
+        });
+
+        it("should download a scene modelled in inches in metres, and as it is without a unit", async () => {
+            // Arrange
+            const written: Blob[] = [];
+            serialiserWriting(written);
+
+            // Act
+            io.exportGLB(new Inputs.BabylonIO.ExportSceneGlbDto("workshop", false, Inputs.Base.unitOfLengthEnum.inch));
+            await vi.waitFor(() => expect(written).toHaveLength(1));
+            io.exportGLB(new Inputs.BabylonIO.ExportSceneGlbDto("workshop", false));
+            await vi.waitFor(() => expect(written).toHaveLength(2));
+
+            // Assert
+            const inches = jsonOf(new Uint8Array(await written[0]!.arrayBuffer()));
+            expect(inches.nodes[inches.scenes[0]!.nodes[0]!]!.scale).toEqual([0.0254, 0.0254, 0.0254]);
+            expect(new Uint8Array(await written[1]!.arrayBuffer())).toEqual(SCENE);
+        });
+
+        it("should refuse a unit it does not know before it exports anything", () => {
+            // Arrange
+            const asked = vi.spyOn(SERIALIZERS.GLTF2Export, "GLBAsync");
+
+            // Act & Assert
+            expect(() => io.exportGLB(new Inputs.BabylonIO.ExportSceneGlbDto("workshop", false, "ft" as Inputs.Base.unitOfLengthEnum))).toThrow("`unit`");
+            expect(asked).not.toHaveBeenCalled();
+        });
+    });
+
     describe("exportMeshToStl", () => {
         it("should write the mesh and its children", async () => {
             // Arrange

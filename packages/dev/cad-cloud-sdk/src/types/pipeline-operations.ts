@@ -317,6 +317,7 @@ export type OperationPath =
     | "math.atan"
     | "math.ceil"
     | "math.clamp"
+    | "math.convertLength"
     | "math.cos"
     | "math.degToRad"
     | "math.divide"
@@ -329,6 +330,7 @@ export type OperationPath =
     | "math.lerp"
     | "math.ln"
     | "math.log10"
+    | "math.millimetresPerUnit"
     | "math.modulus"
     | "math.moveTowards"
     | "math.multiply"
@@ -354,6 +356,7 @@ export type OperationPath =
     | "math.tan"
     | "math.tenPow"
     | "math.toFixed"
+    | "math.toFractionText"
     | "math.twoNrOperation"
     | "math.wrap"
     | "occt.analysis.clashes.betweenShapes"
@@ -524,6 +527,7 @@ export type OperationPath =
     | "occt.io.convertStepToGltfWithDraco"
     | "occt.io.dxfCreate"
     | "occt.io.dxfPathsWithLayer"
+    | "occt.io.fileLengthUnit"
     | "occt.io.loadBrep"
     | "occt.io.loadBrepBinary"
     | "occt.io.loadSTEPorIGES"
@@ -598,20 +602,32 @@ export type OperationPath =
     | "occt.operations.splitShapeWithShapes"
     | "occt.operations.splitShapeWithShapesWithHistory"
     | "occt.operations.sweepEvolved"
-    | "occt.parts.mechanical.bearings.ballBearing"
-    | "occt.parts.mechanical.bearings.ballBearingWithRoles"
+    | "occt.parts.mechanical.bearings.ansi.ballBearing"
+    | "occt.parts.mechanical.bearings.ansi.ballBearingWithRoles"
+    | "occt.parts.mechanical.bearings.iso.ballBearing"
+    | "occt.parts.mechanical.bearings.iso.ballBearingWithRoles"
+    | "occt.parts.mechanical.fasteners.ansi.hexBolt"
+    | "occt.parts.mechanical.fasteners.ansi.hexBoltWithRoles"
+    | "occt.parts.mechanical.fasteners.ansi.hexNut"
+    | "occt.parts.mechanical.fasteners.ansi.hexNutWithRoles"
+    | "occt.parts.mechanical.fasteners.ansi.setScrew"
+    | "occt.parts.mechanical.fasteners.ansi.setScrewWithRoles"
+    | "occt.parts.mechanical.fasteners.ansi.socketHeadCapScrew"
+    | "occt.parts.mechanical.fasteners.ansi.socketHeadCapScrewWithRoles"
+    | "occt.parts.mechanical.fasteners.ansi.washer"
+    | "occt.parts.mechanical.fasteners.ansi.washerWithRoles"
     | "occt.parts.mechanical.fasteners.dowelPin"
     | "occt.parts.mechanical.fasteners.dowelPinWithRoles"
-    | "occt.parts.mechanical.fasteners.hexBolt"
-    | "occt.parts.mechanical.fasteners.hexBoltWithRoles"
-    | "occt.parts.mechanical.fasteners.hexNut"
-    | "occt.parts.mechanical.fasteners.hexNutWithRoles"
-    | "occt.parts.mechanical.fasteners.setScrew"
-    | "occt.parts.mechanical.fasteners.setScrewWithRoles"
-    | "occt.parts.mechanical.fasteners.socketHeadCapScrew"
-    | "occt.parts.mechanical.fasteners.socketHeadCapScrewWithRoles"
-    | "occt.parts.mechanical.fasteners.washer"
-    | "occt.parts.mechanical.fasteners.washerWithRoles"
+    | "occt.parts.mechanical.fasteners.iso.hexBolt"
+    | "occt.parts.mechanical.fasteners.iso.hexBoltWithRoles"
+    | "occt.parts.mechanical.fasteners.iso.hexNut"
+    | "occt.parts.mechanical.fasteners.iso.hexNutWithRoles"
+    | "occt.parts.mechanical.fasteners.iso.setScrew"
+    | "occt.parts.mechanical.fasteners.iso.setScrewWithRoles"
+    | "occt.parts.mechanical.fasteners.iso.socketHeadCapScrew"
+    | "occt.parts.mechanical.fasteners.iso.socketHeadCapScrewWithRoles"
+    | "occt.parts.mechanical.fasteners.iso.washer"
+    | "occt.parts.mechanical.fasteners.iso.washerWithRoles"
     | "occt.parts.mechanical.gears.bevelGear"
     | "occt.parts.mechanical.gears.bevelGearWithRoles"
     | "occt.parts.mechanical.gears.helicalGear"
@@ -625,23 +641,38 @@ export type OperationPath =
     | "occt.parts.mechanical.gears.spurGear"
     | "occt.parts.mechanical.gears.spurGearProfile"
     | "occt.parts.mechanical.gears.spurGearWithRoles"
-    | "occt.parts.mechanical.keys.parallelKey"
-    | "occt.parts.mechanical.keys.parallelKeyWithRoles"
+    | "occt.parts.mechanical.keys.ansi.parallelKey"
+    | "occt.parts.mechanical.keys.ansi.parallelKeyWithRoles"
+    | "occt.parts.mechanical.keys.din.parallelKey"
+    | "occt.parts.mechanical.keys.din.parallelKeyWithRoles"
+    | "occt.parts.mechanical.machining.ansi.keyway"
+    | "occt.parts.mechanical.machining.ansi.keywayTool"
+    | "occt.parts.mechanical.machining.ansi.knurl"
+    | "occt.parts.mechanical.machining.ansi.knurlTool"
+    | "occt.parts.mechanical.machining.ansi.ringGroove"
+    | "occt.parts.mechanical.machining.ansi.ringGrooveTool"
+    | "occt.parts.mechanical.machining.ansi.splinedHub"
+    | "occt.parts.mechanical.machining.ansi.splinedHubTool"
+    | "occt.parts.mechanical.machining.ansi.splinedShaft"
+    | "occt.parts.mechanical.machining.ansi.thread"
+    | "occt.parts.mechanical.machining.ansi.threadTool"
+    | "occt.parts.mechanical.machining.din.keyway"
+    | "occt.parts.mechanical.machining.din.keywayTool"
+    | "occt.parts.mechanical.machining.din.knurl"
+    | "occt.parts.mechanical.machining.din.knurlTool"
+    | "occt.parts.mechanical.machining.din.ringGroove"
+    | "occt.parts.mechanical.machining.din.ringGrooveTool"
+    | "occt.parts.mechanical.machining.din.splinedHub"
+    | "occt.parts.mechanical.machining.din.splinedHubTool"
+    | "occt.parts.mechanical.machining.din.splinedShaft"
     | "occt.parts.mechanical.machining.flat"
     | "occt.parts.mechanical.machining.flatTool"
-    | "occt.parts.mechanical.machining.keyway"
-    | "occt.parts.mechanical.machining.keywayTool"
-    | "occt.parts.mechanical.machining.knurl"
-    | "occt.parts.mechanical.machining.knurlTool"
-    | "occt.parts.mechanical.machining.ringGroove"
-    | "occt.parts.mechanical.machining.ringGrooveTool"
-    | "occt.parts.mechanical.machining.splinedHub"
-    | "occt.parts.mechanical.machining.splinedHubTool"
-    | "occt.parts.mechanical.machining.splinedShaft"
-    | "occt.parts.mechanical.machining.thread"
-    | "occt.parts.mechanical.machining.threadTool"
-    | "occt.parts.mechanical.retainingRings.retainingRing"
-    | "occt.parts.mechanical.retainingRings.retainingRingWithRoles"
+    | "occt.parts.mechanical.machining.iso.thread"
+    | "occt.parts.mechanical.machining.iso.threadTool"
+    | "occt.parts.mechanical.retainingRings.ansi.retainingRing"
+    | "occt.parts.mechanical.retainingRings.ansi.retainingRingWithRoles"
+    | "occt.parts.mechanical.retainingRings.din.retainingRing"
+    | "occt.parts.mechanical.retainingRings.din.retainingRingWithRoles"
     | "occt.parts.mechanical.springs.compressionSpring"
     | "occt.parts.mechanical.springs.compressionSpringPath"
     | "occt.parts.mechanical.springs.compressionSpringWithRoles"
@@ -5395,6 +5426,20 @@ export interface OperationParams {
         max?: number | PipelineRef;
     };
     /**
+     * Converts a length from one unit to another.
+     *
+     * The factors are exact: an inch is 25.4 millimetres. A length in its own unit comes back
+     * unchanged. Example: 1 inch -> 25.4 millimetres, 250 millimetres -> 0.25 metres.
+     */
+    "math.convertLength": {
+        /** The length to convert, in `from`. */
+        value?: number | PipelineRef;
+        /** The unit `value` is in. */
+        from?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /** The unit to give the length in. */
+        to?: "mm" | "cm" | "m" | "in" | PipelineRef;
+    };
+    /**
      * Finds the cosine of an angle given in radians.
      *
      * Example: 0 -> 1, pi -> -1
@@ -5534,6 +5579,15 @@ export interface OperationParams {
     "math.log10": {
         /** The number the method works on; for the trigonometric methods an angle in radians. */
         number?: number | PipelineRef;
+    };
+    /**
+     * Gives how many millimetres one of a unit of length holds.
+     *
+     * Example: inch -> 25.4, centimetre -> 10, metre -> 1000.
+     */
+    "math.millimetresPerUnit": {
+        /** The unit to measure in millimetres. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
     };
     /**
      * Finds the remainder after dividing one number by another.
@@ -5801,6 +5855,18 @@ export interface OperationParams {
         number: number | PipelineRef;
         /** How many digits to show after the decimal point, padding with zeros. */
         decimalPlaces?: number | PipelineRef;
+    };
+    /**
+     * Writes a number as a whole number and a reduced fraction, rounded to the nearest
+     * `1/denominator`, as inch sizes are written.
+     *
+     * Example: 1.25 with denominator 64 -> "1-1/4", 0.375 -> "3/8", 2 -> "2", -0.5 -> "-1/2".
+     */
+    "math.toFractionText": {
+        /** The number to write, such as a length in inches. */
+        number?: number | PipelineRef;
+        /** The finest fraction to round to: a whole number such as 64 for sixty-fourths of an inch. */
+        denominator?: number | PipelineRef;
     };
     /**
      * Applies one arithmetic operation to two numbers: add, subtract, multiply, divide, power or
@@ -6397,7 +6463,8 @@ export interface OperationParams {
      * names and colors kept as glTF nodes and materials.
      *
      * `meshDeflection` and `meshAngle` set how finely curved surfaces are triangulated;
-     * `mergeFaces` joins the faces of a part into one mesh. Failure throws an error.
+     * `mergeFaces` joins the faces of a part into one mesh. With the document's `unit`, the file is
+     * in metres, glTF's own unit.
      */
     "occt.assembly.manager.exportDocumentToGltf": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -6431,6 +6498,11 @@ export interface OperationParams {
          * a y-up one is written as it is.
          */
         up?: "y" | "z" | PipelineRef;
+        /**
+         * The unit the document is modelled in. Given, the file is in metres, glTF's unit, through one
+         * scaled root node; left out, the numbers are written as they are.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /** The name the downloaded file gets; it should end in `.glb`. */
         fileName?: string | PipelineRef;
         /**
@@ -6479,6 +6551,11 @@ export interface OperationParams {
          * a y-up one is written as it is.
          */
         up?: "y" | "z" | PipelineRef;
+        /**
+         * The unit the document is modelled in. Given, the file is in metres, glTF's unit, through one
+         * scaled root node; left out, the numbers are written as they are.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /** The name the downloaded file gets; it should end in `.glb`. */
         fileName?: string | PipelineRef;
         /**
@@ -9488,8 +9565,8 @@ export interface OperationParams {
      * Writes DXF parts into one DXF file and returns its text.
      *
      * `colorFormat` chooses AutoCAD's indexed colors or true color, `acadVersion` the DXF version:
-     * AC1009 is R12, the most widely readable, AC1015 is 2000. `fileName` and `tryDownload` matter
-     * only where a browser download can be started.
+     * AC1009 is R12, the most widely readable, AC1015 is 2000, which can also state the drawing's
+     * `unit`. `fileName` and `tryDownload` matter only where a browser download can be started.
      */
     "occt.io.dxfCreate": {
         /** The parts from `io.dxfPathsWithLayer`, each with its own layer and color. */
@@ -9498,6 +9575,11 @@ export interface OperationParams {
         colorFormat?: "aci" | "truecolor" | PipelineRef;
         /** The DXF version to write: `AC1009` is R12, the most widely readable, `AC1015` is 2000. */
         acadVersion?: "AC1009" | "AC1015" | PipelineRef;
+        /**
+         * The unit the drawing is in, written into its header so CAD programs open it at true size;
+         * `AC1015` only. Left out, no unit is stated.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /** The name the downloaded file gets. */
         fileName?: string | PipelineRef;
         /**
@@ -9519,6 +9601,22 @@ export interface OperationParams {
         layer?: string | PipelineRef;
         /** The color of the paths as a hex string such as `#000000`. */
         color?: unknown | PipelineRef;
+    };
+    /**
+     * Reads the unit a STEP or IGES file writes its lengths in, without building its geometry.
+     *
+     * Millimetres, centimetres, metres and inches are told; a file in another unit, one whose parts
+     * disagree, or one that states none gives undefined. `io.loadSTEPorIGES` reads any of them into
+     * the `unit` it is asked for.
+     */
+    "occt.io.fileLengthUnit": {
+        /**
+         * The file's text, or an ArrayBuffer of its bytes, the compressed `.stpz` and `.igz` forms
+         * included.
+         */
+        filetext: string | PipelineRef;
+        /** The file name; its extension decides whether it is read as STEP or IGES. */
+        fileName?: string | PipelineRef;
     };
     /**
      * Reads a BREP file, the text format that keeps a shape's exact geometry and topology, back into
@@ -9829,14 +9927,18 @@ export interface OperationParams {
          * itself only returns the text.
          */
         tryDownload?: boolean | PipelineRef;
+        /**
+         * The unit the shape's numbers are in. The file is written in millimetres, the shape scaled
+         * from this unit, so any CAD tool opens it at its true size.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
     };
     /**
-     * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and returns the
-     * file's text.
+     * Writes a shape as STEP, the exchange format for exact CAD geometry, and returns its text.
      *
-     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape;
-     * turn it 90 degrees about X with `transforms.rotate` first to keep it as built. `fileName` and
-     * `tryDownload` matter only where a browser download can be started.
+     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, mirroring the shape; turn it
+     * 90 degrees about X with `transforms.rotate` first to keep it as built. The file is in
+     * millimetres, a shape in another `unit` scaled to them.
      */
     "occt.io.saveShapeSTEPAndReturn": {
         /** The shape written to the file. */
@@ -9858,6 +9960,11 @@ export interface OperationParams {
          * itself only returns the text.
          */
         tryDownload?: boolean | PipelineRef;
+        /**
+         * The unit the shape's numbers are in. The file is written in millimetres, the shape scaled
+         * from this unit, so any CAD tool opens it at its true size.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
     };
     /**
      * Triangulates a shape, writes it as STL, the mesh format 3D printers read, and starts a browser
@@ -9949,6 +10056,11 @@ export interface OperationParams {
          * a smaller value follows curves more closely and makes a bigger file.
          */
         precision?: number | PipelineRef;
+        /**
+         * The unit the shape is modelled in. Given, the drawing states its true width and height; left
+         * out, it has only a view box.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /** The name the downloaded file gets. */
         fileName?: string | PipelineRef;
         /**
@@ -9958,11 +10070,12 @@ export interface OperationParams {
         tryDownload?: boolean | PipelineRef;
     };
     /**
-     * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
-     * asked, and returns the file's text.
+     * Draws the edges a view of a shape sees as SVG, hidden ones dashed when asked, and returns the
+     * file's text.
      *
-     * It shows the view from the frame's normal side in model units, x running right along the
-     * frame's direction and y up, so the file holds each point as x and minus y.
+     * The view looks from the frame's normal side, x along the frame's direction and y up, so each
+     * point is written as x and minus y. With the shape's `unit`, it states its true width and
+     * height.
      */
     "occt.io.saveShapeSvgAndReturn": {
         /** The shape to draw. */
@@ -9979,6 +10092,11 @@ export interface OperationParams {
          * a smaller value follows curves more closely and makes a bigger file.
          */
         precision?: number | PipelineRef;
+        /**
+         * The unit the shape is modelled in. Given, the drawing states its true width and height; left
+         * out, it has only a view box.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /** The name the downloaded file gets. */
         fileName?: string | PipelineRef;
         /**
@@ -11064,11 +11182,13 @@ export interface OperationParams {
      *
      * One side lies on the frame's origin and the axis runs along the normal.
      */
-    "occt.parts.mechanical.bearings.ballBearing": {
-        /** The bearing, such as 6204 or 608; its sizes are in millimetres. */
-        designation?: "623" | "624" | "625" | "626" | "608" | "609" | "6000" | "6001" | "6002" | "6003" | "6004" | "6005" | "6006" | "6007" | "6008" | "6009" | "6010" | "6200" | "6201" | "6202" | "6203" | "6204" | "6205" | "6206" | "6207" | "6208" | "6209" | "6210" | PipelineRef;
-        /** When true, a shield closes each side between the rings, as on a 2Z bearing. */
+    "occt.parts.mechanical.bearings.ansi.ballBearing": {
+        /** The bearing, such as R8 or R188. */
+        designation?: "R1-4" | "R1-5" | "R133" | "R144" | "R155" | "R156" | "R166" | "R168" | "R188" | "R1810" | "R2" | "R2-5" | "R2-6" | "R3" | "R4" | "R4A" | "R6" | "R8" | "R10" | "R12" | "R14" | "R16" | "R18" | "R20" | PipelineRef;
+        /** When true, a shield closes each side between the rings, at the shielded bearing's width. */
         shields?: boolean | PipelineRef;
+        /** The unit the bearing is made in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where the bearing sits: the centre of one side on the origin and its axis along the normal.
          * Left out, the ground, facing +Y.
@@ -11082,14 +11202,334 @@ export interface OperationParams {
      * `outerEnd`, `innerRing`, `outerRing`, `race`, `ball`, `cage` and `shield` list face indexes as
      * `shapes.face.getFaces` numbers them across the compound. The `axis` frame is the input frame.
      */
-    "occt.parts.mechanical.bearings.ballBearingWithRoles": {
-        /** The bearing, such as 6204 or 608; its sizes are in millimetres. */
-        designation?: "623" | "624" | "625" | "626" | "608" | "609" | "6000" | "6001" | "6002" | "6003" | "6004" | "6005" | "6006" | "6007" | "6008" | "6009" | "6010" | "6200" | "6201" | "6202" | "6203" | "6204" | "6205" | "6206" | "6207" | "6208" | "6209" | "6210" | PipelineRef;
-        /** When true, a shield closes each side between the rings, as on a 2Z bearing. */
+    "occt.parts.mechanical.bearings.ansi.ballBearingWithRoles": {
+        /** The bearing, such as R8 or R188. */
+        designation?: "R1-4" | "R1-5" | "R133" | "R144" | "R155" | "R156" | "R166" | "R168" | "R188" | "R1810" | "R2" | "R2-5" | "R2-6" | "R3" | "R4" | "R4A" | "R6" | "R8" | "R10" | "R12" | "R14" | "R16" | "R18" | "R20" | PipelineRef;
+        /** When true, a shield closes each side between the rings, at the shielded bearing's width. */
         shields?: boolean | PipelineRef;
+        /** The unit the bearing is made in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where the bearing sits: the centre of one side on the origin and its axis along the normal.
          * Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a deep groove ball bearing as a compound of its inner and outer rings with their
+     * raceways, its balls, its cage and, when `shields` is true, a shield on each side.
+     *
+     * One side lies on the frame's origin and the axis runs along the normal.
+     */
+    "occt.parts.mechanical.bearings.iso.ballBearing": {
+        /** The bearing, such as 6204 or 608. */
+        designation?: "623" | "624" | "625" | "626" | "608" | "609" | "6000" | "6001" | "6002" | "6003" | "6004" | "6005" | "6006" | "6007" | "6008" | "6009" | "6010" | "6200" | "6201" | "6202" | "6203" | "6204" | "6205" | "6206" | "6207" | "6208" | "6209" | "6210" | PipelineRef;
+        /** When true, a shield closes each side between the rings, as on a 2Z bearing. */
+        shields?: boolean | PipelineRef;
+        /** The unit the bearing is made in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the bearing sits: the centre of one side on the origin and its axis along the normal.
+         * Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a ball bearing as `ballBearing` does and names the role each face plays.
+     *
+     * The roles `bore`, `outside`, the rings' sides `innerStart`, `innerEnd`, `outerStart` and
+     * `outerEnd`, `innerRing`, `outerRing`, `race`, `ball`, `cage` and `shield` list face indexes as
+     * `shapes.face.getFaces` numbers them across the compound. The `axis` frame is the input frame.
+     */
+    "occt.parts.mechanical.bearings.iso.ballBearingWithRoles": {
+        /** The bearing, such as 6204 or 608. */
+        designation?: "623" | "624" | "625" | "626" | "608" | "609" | "6000" | "6001" | "6002" | "6003" | "6004" | "6005" | "6006" | "6007" | "6008" | "6009" | "6010" | "6200" | "6201" | "6202" | "6203" | "6204" | "6205" | "6206" | "6207" | "6208" | "6209" | "6210" | PipelineRef;
+        /** When true, a shield closes each side between the rings, as on a 2Z bearing. */
+        shields?: boolean | PipelineRef;
+        /** The unit the bearing is made in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the bearing sits: the centre of one side on the origin and its axis along the normal.
+         * Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an ASME B18.2.1 hex cap screw with chamfered top corners, threaded for the length the
+     * standard gives, or to the head when `fullyThreaded` is true.
+     *
+     * The head sits on the frame's origin and rises along its normal, a flat facing the frame's
+     * direction; the shank runs the other way. `modelledThread` cuts the thread.
+     */
+    "occt.parts.mechanical.fasteners.ansi.hexBolt": {
+        /**
+         * When true the screw is threaded to its head; when false only for the length ASME B18.2.1 gives,
+         * leaving a plain shank a modelled thread shows.
+         */
+        fullyThreaded?: boolean | PipelineRef;
+        /**
+         * Whether the thread is coarse (UNC) or fine (UNF), which sets the pitch a modelled thread is cut
+         * at and the tip's chamfer.
+         */
+        series?: "UNC" | "UNF" | PipelineRef;
+        /** The length of the screw from under its head to its tip, in `unit`. */
+        length?: number | PipelineRef;
+        /**
+         * When true the threaded length is modelled, as `parts.mechanical.machining.ansi.thread` cuts it, its
+         * faces all named `thread`; when false the thread is a light cosmetic face.
+         */
+        modelledThread?: boolean | PipelineRef;
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a hex cap screw as `hexBolt` does and names the role each face plays.
+     *
+     * The roles `head`, `seat` (under the head), `shank`, `thread` and `end` (the tip) list face
+     * indexes as `shapes.face.getFaces` numbers them; a screw threaded to its head has no `shank`. The
+     * `seat` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.ansi.hexBoltWithRoles": {
+        /**
+         * When true the screw is threaded to its head; when false only for the length ASME B18.2.1 gives,
+         * leaving a plain shank a modelled thread shows.
+         */
+        fullyThreaded?: boolean | PipelineRef;
+        /**
+         * Whether the thread is coarse (UNC) or fine (UNF), which sets the pitch a modelled thread is cut
+         * at and the tip's chamfer.
+         */
+        series?: "UNC" | "UNF" | PipelineRef;
+        /** The length of the screw from under its head to its tip, in `unit`. */
+        length?: number | PipelineRef;
+        /**
+         * When true the threaded length is modelled, as `parts.mechanical.machining.ansi.thread` cuts it, its
+         * faces all named `thread`; when false the thread is a light cosmetic face.
+         */
+        modelledThread?: boolean | PipelineRef;
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an ASME hex nut, a machine screw nut to #12 and a hex nut from 1/4, its corners chamfered
+     * on both sides and its hole at the thread's nominal diameter.
+     *
+     * Its bearing face lies on the frame's origin and it rises along the normal, a flat facing the
+     * frame's direction.
+     */
+    "occt.parts.mechanical.fasteners.ansi.hexNut": {
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a hex nut as `hexNut` does and names the role each face plays.
+     *
+     * The roles `seat` (the bearing face), `top`, `side` and `thread` (the hole) list face indexes as
+     * `shapes.face.getFaces` numbers them. The `seat` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.ansi.hexNutWithRoles": {
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an ASME B18.3 set screw with a hexagon recess, threaded its whole length, its point a
+     * cup, flat, cone, oval or half dog, the recess as deep as the standard asks of its length.
+     *
+     * Its recessed end lies on the frame's origin and it runs against the normal.
+     */
+    "occt.parts.mechanical.fasteners.ansi.setScrew": {
+        /** Whether the thread is coarse (UNC) or fine (UNF), which sets the root the point starts from. */
+        series?: "UNC" | "UNF" | PipelineRef;
+        /** The shape of the end that bears on the part: cup, flat, cone, oval or half dog. */
+        point?: "cup" | "flat" | "cone" | "oval" | "halfDog" | PipelineRef;
+        /** The length of the set screw, in `unit`. */
+        length?: number | PipelineRef;
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a set screw as `setScrew` does and names the role each face plays.
+     *
+     * The roles `top` (the recessed end), `recess`, `thread` and `end` (the point) list face indexes as
+     * `shapes.face.getFaces` numbers them. The `top` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.ansi.setScrewWithRoles": {
+        /** Whether the thread is coarse (UNC) or fine (UNF), which sets the root the point starts from. */
+        series?: "UNC" | "UNF" | PipelineRef;
+        /** The shape of the end that bears on the part: cup, flat, cone, oval or half dog. */
+        point?: "cup" | "flat" | "cone" | "oval" | "halfDog" | PipelineRef;
+        /** The length of the set screw, in `unit`. */
+        length?: number | PipelineRef;
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an ASME B18.3 cap screw: a round head with a hexagon recess for a key, and a shank
+     * threaded from the tip for the length the standard gives, or to the head on a shorter screw.
+     *
+     * The head sits on the frame's origin and rises along its normal; the shank runs the other way.
+     * `modelledThread` models the thread.
+     */
+    "occt.parts.mechanical.fasteners.ansi.socketHeadCapScrew": {
+        /**
+         * Whether the thread is coarse (UNC) or fine (UNF), which sets the pitch a modelled thread is cut
+         * at and the tip's chamfer.
+         */
+        series?: "UNC" | "UNF" | PipelineRef;
+        /** The length of the screw from under its head to its tip, in `unit`. */
+        length?: number | PipelineRef;
+        /**
+         * When true the threaded length is modelled, as `parts.mechanical.machining.ansi.thread` cuts it, its
+         * faces all named `thread`; when false the thread is a light cosmetic face.
+         */
+        modelledThread?: boolean | PipelineRef;
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a cap screw as `socketHeadCapScrew` does and names the role each face plays.
+     *
+     * The roles `head`, `recess`, `seat` (under the head), `shank`, `thread` and `end` (the tip) list
+     * face indexes as `shapes.face.getFaces` numbers them; a screw threaded to its head has no
+     * `shank`. The `seat` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.ansi.socketHeadCapScrewWithRoles": {
+        /**
+         * Whether the thread is coarse (UNC) or fine (UNF), which sets the pitch a modelled thread is cut
+         * at and the tip's chamfer.
+         */
+        series?: "UNC" | "UNF" | PipelineRef;
+        /** The length of the screw from under its head to its tip, in `unit`. */
+        length?: number | PipelineRef;
+        /**
+         * When true the threaded length is modelled, as `parts.mechanical.machining.ansi.thread` cuts it, its
+         * faces all named `thread`; when false the thread is a light cosmetic face.
+         */
+        modelledThread?: boolean | PipelineRef;
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an ASME B18.22.1 type A plain washer, narrow or wide.
+     *
+     * Its bearing face lies on the frame's origin and it rises along the normal. The table starts at
+     * #6.
+     */
+    "occt.parts.mechanical.fasteners.ansi.washer": {
+        /** Whether the washer is narrow or wide around its hole. */
+        series?: "narrow" | "wide" | PipelineRef;
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a plain washer as `washer` does and names the role each face plays.
+     *
+     * The roles `seat` (the bearing face), `top`, `bore` and `rim` list face indexes as
+     * `shapes.face.getFaces` numbers them. The `seat` frame is the input frame.
+     */
+    "occt.parts.mechanical.fasteners.ansi.washerWithRoles": {
+        /** Whether the washer is narrow or wide around its hole. */
+        series?: "narrow" | "wide" | PipelineRef;
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names an inch thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
+         * the part. Left out, the ground, facing +Y.
          */
         frame?: unknown | PipelineRef;
     };
@@ -11134,21 +11574,26 @@ export interface OperationParams {
      * The head sits on the frame's origin and rises along its normal, a flat facing the frame's
      * direction; the shank runs the other way. `modelledThread` cuts the thread.
      */
-    "occt.parts.mechanical.fasteners.hexBolt": {
+    "occt.parts.mechanical.fasteners.iso.hexBolt": {
         /**
          * When true the bolt is threaded to its head (ISO 4017); when false only for the length ISO 4014
          * gives, leaving a plain shank a modelled thread shows.
          */
         fullyThreaded?: boolean | PipelineRef;
-        /** The length of the screw from under its head to its tip, in millimetres. */
+        /** The length of the screw from under its head to its tip, in `unit`. */
         length?: number | PipelineRef;
         /**
-         * When true the threaded length is modelled, as `parts.mechanical.machining.thread` cuts it, its faces all
-         * named `thread`; when false the thread is a light cosmetic face.
+         * When true the threaded length is modelled, as `parts.mechanical.machining.iso.thread` cuts it, its
+         * faces all named `thread`; when false the thread is a light cosmetic face.
          */
         modelledThread?: boolean | PipelineRef;
         /** The thread size, such as M8. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -11162,21 +11607,26 @@ export interface OperationParams {
      * indexes as `shapes.face.getFaces` numbers them; a bolt threaded to its head has no `shank`. The
      * `seat` frame is the input frame.
      */
-    "occt.parts.mechanical.fasteners.hexBoltWithRoles": {
+    "occt.parts.mechanical.fasteners.iso.hexBoltWithRoles": {
         /**
          * When true the bolt is threaded to its head (ISO 4017); when false only for the length ISO 4014
          * gives, leaving a plain shank a modelled thread shows.
          */
         fullyThreaded?: boolean | PipelineRef;
-        /** The length of the screw from under its head to its tip, in millimetres. */
+        /** The length of the screw from under its head to its tip, in `unit`. */
         length?: number | PipelineRef;
         /**
-         * When true the threaded length is modelled, as `parts.mechanical.machining.thread` cuts it, its faces all
-         * named `thread`; when false the thread is a light cosmetic face.
+         * When true the threaded length is modelled, as `parts.mechanical.machining.iso.thread` cuts it, its
+         * faces all named `thread`; when false the thread is a light cosmetic face.
          */
         modelledThread?: boolean | PipelineRef;
         /** The thread size, such as M8. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -11190,9 +11640,14 @@ export interface OperationParams {
      * Its bearing face lies on the frame's origin and it rises along the normal, a flat facing the
      * frame's direction.
      */
-    "occt.parts.mechanical.fasteners.hexNut": {
+    "occt.parts.mechanical.fasteners.iso.hexNut": {
         /** The thread size, such as M8. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -11205,9 +11660,14 @@ export interface OperationParams {
      * The roles `seat` (the bearing face), `top`, `side` and `thread` (the hole) list face indexes as
      * `shapes.face.getFaces` numbers them. The `seat` frame is the input frame.
      */
-    "occt.parts.mechanical.fasteners.hexNutWithRoles": {
+    "occt.parts.mechanical.fasteners.iso.hexNutWithRoles": {
         /** The thread size, such as M8. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -11220,16 +11680,21 @@ export interface OperationParams {
      *
      * Its recessed end lies on the frame's origin and it runs against the normal.
      */
-    "occt.parts.mechanical.fasteners.setScrew": {
+    "occt.parts.mechanical.fasteners.iso.setScrew": {
         /**
          * The shape of the end that bears on the part: flat (ISO 4026), cone (ISO 4027), dog (ISO 4028)
          * or cup (ISO 4029).
          */
         point?: "flat" | "cone" | "dog" | "cup" | PipelineRef;
-        /** The length of the set screw, in millimetres. */
+        /** The length of the set screw, in `unit`. */
         length?: number | PipelineRef;
         /** The thread size, such as M8. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -11242,16 +11707,21 @@ export interface OperationParams {
      * The roles `top` (the recessed end), `recess`, `thread` and `end` (the point) list face indexes as
      * `shapes.face.getFaces` numbers them. The `top` frame is the input frame.
      */
-    "occt.parts.mechanical.fasteners.setScrewWithRoles": {
+    "occt.parts.mechanical.fasteners.iso.setScrewWithRoles": {
         /**
          * The shape of the end that bears on the part: flat (ISO 4026), cone (ISO 4027), dog (ISO 4028)
          * or cup (ISO 4029).
          */
         point?: "flat" | "cone" | "dog" | "cup" | PipelineRef;
-        /** The length of the set screw, in millimetres. */
+        /** The length of the set screw, in `unit`. */
         length?: number | PipelineRef;
         /** The thread size, such as M8. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -11265,16 +11735,21 @@ export interface OperationParams {
      * The head sits on the frame's origin and rises along its normal; the shank runs the other way.
      * `modelledThread` models the thread.
      */
-    "occt.parts.mechanical.fasteners.socketHeadCapScrew": {
-        /** The length of the screw from under its head to its tip, in millimetres. */
+    "occt.parts.mechanical.fasteners.iso.socketHeadCapScrew": {
+        /** The length of the screw from under its head to its tip, in `unit`. */
         length?: number | PipelineRef;
         /**
-         * When true the threaded length is modelled, as `parts.mechanical.machining.thread` cuts it, its faces all
-         * named `thread`; when false the thread is a light cosmetic face.
+         * When true the threaded length is modelled, as `parts.mechanical.machining.iso.thread` cuts it, its
+         * faces all named `thread`; when false the thread is a light cosmetic face.
          */
         modelledThread?: boolean | PipelineRef;
         /** The thread size, such as M8. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -11288,16 +11763,21 @@ export interface OperationParams {
      * face indexes as `shapes.face.getFaces` numbers them; a screw threaded to its head has no
      * `shank`. The `seat` frame is the input frame.
      */
-    "occt.parts.mechanical.fasteners.socketHeadCapScrewWithRoles": {
-        /** The length of the screw from under its head to its tip, in millimetres. */
+    "occt.parts.mechanical.fasteners.iso.socketHeadCapScrewWithRoles": {
+        /** The length of the screw from under its head to its tip, in `unit`. */
         length?: number | PipelineRef;
         /**
-         * When true the threaded length is modelled, as `parts.mechanical.machining.thread` cuts it, its faces all
-         * named `thread`; when false the thread is a light cosmetic face.
+         * When true the threaded length is modelled, as `parts.mechanical.machining.iso.thread` cuts it, its
+         * faces all named `thread`; when false the thread is a light cosmetic face.
          */
         modelledThread?: boolean | PipelineRef;
         /** The thread size, such as M8. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -11310,7 +11790,7 @@ export interface OperationParams {
      *
      * Its bearing face lies on the frame's origin and it rises along the normal.
      */
-    "occt.parts.mechanical.fasteners.washer": {
+    "occt.parts.mechanical.fasteners.iso.washer": {
         /**
          * When true, the ISO 7090 washer, chamfered on the outside of the face away from the seat, from
          * M5; when false, the flat ISO 7089 one.
@@ -11318,6 +11798,11 @@ export interface OperationParams {
         chamfered?: boolean | PipelineRef;
         /** The thread size, such as M8. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -11330,7 +11815,7 @@ export interface OperationParams {
      * The roles `seat` (the bearing face), `top`, `bore` and `rim` (the chamfer too) list face
      * indexes as `shapes.face.getFaces` numbers them. The `seat` frame is the input frame.
      */
-    "occt.parts.mechanical.fasteners.washerWithRoles": {
+    "occt.parts.mechanical.fasteners.iso.washerWithRoles": {
         /**
          * When true, the ISO 7090 washer, chamfered on the outside of the face away from the seat, from
          * M5; when false, the flat ISO 7089 one.
@@ -11338,6 +11823,11 @@ export interface OperationParams {
         chamfered?: boolean | PipelineRef;
         /** The thread size, such as M8. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
+        /**
+         * The unit the fastener is made in and its lengths are read in; the size names a metric thread
+         * whatever it is.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where it sits: the origin where it bears, as under a head, the normal along its axis away from
          * the part. Left out, the ground, facing +Y.
@@ -11465,7 +11955,7 @@ export interface OperationParams {
     };
     /**
      * Makes an involute helical gear as a solid: its section square to the axis turned steadily along
-     * `width`, with a `bore`, a hub and a DIN 6885 keyway as `spurGear` has them.
+     * `width`, with a `bore`, a hub and a keyway as `spurGear` has them.
      *
      * Two external helical gears of one module and angle in opposite hands mesh, the sum of their
      * pitch radii apart; `herringbone` makes two opposite halves.
@@ -11543,10 +12033,17 @@ export interface OperationParams {
         /** How far the hub stands out beyond the gear's end face along the normal, in model units. */
         hubLength?: number | PipelineRef;
         /**
-         * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
-         * in millimetres, toward the tooth at rotation 0.
+         * When true, a keyway is cut along the bore, sized by `keyStandard` for a shaft of the bore's
+         * diameter in `unit`, toward the tooth at rotation 0.
          */
         keyway?: boolean | PipelineRef;
+        /**
+         * The unit the gear's numbers are in, which sizes its keyway from the key standard's table; the
+         * teeth themselves take any unit.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /** The standard the keyway is sized by: DIN 6885 or the inch ANSI B17.1. */
+        keyStandard?: "din" | "ansi" | PipelineRef;
     };
     /**
      * Makes a helical gear as `helicalGear` does and names the role each face plays.
@@ -11628,10 +12125,17 @@ export interface OperationParams {
         /** How far the hub stands out beyond the gear's end face along the normal, in model units. */
         hubLength?: number | PipelineRef;
         /**
-         * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
-         * in millimetres, toward the tooth at rotation 0.
+         * When true, a keyway is cut along the bore, sized by `keyStandard` for a shaft of the bore's
+         * diameter in `unit`, toward the tooth at rotation 0.
          */
         keyway?: boolean | PipelineRef;
+        /**
+         * The unit the gear's numbers are in, which sizes its keyway from the key standard's table; the
+         * teeth themselves take any unit.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /** The standard the keyway is sized by: DIN 6885 or the inch ANSI B17.1. */
+        keyStandard?: "din" | "ansi" | PipelineRef;
     };
     /**
      * Makes an involute rack as a solid: its outline swept `width` along the frame's normal.
@@ -11902,7 +12406,7 @@ export interface OperationParams {
     };
     /**
      * Makes an involute spur gear as a solid: its outline swept `width` along the frame's normal, with
-     * a `bore`, a hub standing out from its end face and a DIN 6885 keyway.
+     * a `bore`, a hub standing out from its end face and a keyway.
      *
      * The first face lies in the frame's plane. A `bore` of 0 leaves the gear whole; one that
      * reaches the root circle is refused.
@@ -11923,10 +12427,17 @@ export interface OperationParams {
         /** How far the hub stands out beyond the gear's end face along the normal, in model units. */
         hubLength?: number | PipelineRef;
         /**
-         * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
-         * in millimetres, toward the tooth at rotation 0.
+         * When true, a keyway is cut along the bore, sized by `keyStandard` for a shaft of the bore's
+         * diameter in `unit`, toward the tooth at rotation 0.
          */
         keyway?: boolean | PipelineRef;
+        /**
+         * The unit the gear's numbers are in, which sizes its keyway from the key standard's table; the
+         * teeth themselves take any unit.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /** The standard the keyway is sized by: DIN 6885 or the inch ANSI B17.1. */
+        keyStandard?: "din" | "ansi" | PipelineRef;
         /**
          * The size of the teeth: the pitch circle's diameter divided by the number of teeth, in model
          * units. Gears mesh only with gears of the same module.
@@ -12053,10 +12564,17 @@ export interface OperationParams {
         /** How far the hub stands out beyond the gear's end face along the normal, in model units. */
         hubLength?: number | PipelineRef;
         /**
-         * When true, a DIN 6885 keyway is cut along the bore, sized for a shaft of the bore's diameter
-         * in millimetres, toward the tooth at rotation 0.
+         * When true, a keyway is cut along the bore, sized by `keyStandard` for a shaft of the bore's
+         * diameter in `unit`, toward the tooth at rotation 0.
          */
         keyway?: boolean | PipelineRef;
+        /**
+         * The unit the gear's numbers are in, which sizes its keyway from the key standard's table; the
+         * teeth themselves take any unit.
+         */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /** The standard the keyway is sized by: DIN 6885 or the inch ANSI B17.1. */
+        keyStandard?: "din" | "ansi" | PipelineRef;
         /**
          * The size of the teeth: the pitch circle's diameter divided by the number of teeth, in model
          * units. Gears mesh only with gears of the same module.
@@ -12103,17 +12621,22 @@ export interface OperationParams {
         frame?: unknown | PipelineRef;
     };
     /**
-     * Makes a DIN 6885 form A parallel key: a bar with round ends, as wide and high as the standard
+     * Makes an ANSI B17.1 square parallel key: a bar with round ends, as wide and high as the standard
      * gives for a shaft of `shaftDiameter`, lying along the frame's direction on its origin.
      *
-     * Sunk the shaft's keyway depth below the shaft's surface, the key also serves as the tool that
-     * cuts that keyway.
+     * Sunk the shaft's keyseat depth below the shaft's surface, the key also serves as the tool that
+     * cuts that keyseat.
      */
-    "occt.parts.mechanical.keys.parallelKey": {
-        /** The diameter of the shaft the key sits in, in millimetres, which sets its width and height. */
+    "occt.parts.mechanical.keys.ansi.parallelKey": {
+        /**
+         * The diameter of the shaft the key sits in, in `unit`, which sets its size; ANSI B17.1's square
+         * keys cover shafts over 5/16 and up to 6-1/2 inches.
+         */
         shaftDiameter?: number | PipelineRef;
-        /** The key's length from one round end to the other, in millimetres; at least its width. */
+        /** The key's length from one round end to the other, in `unit`; at least its width. */
         length?: number | PipelineRef;
+        /** The unit the key is made in and its lengths are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where the key lies: its bottom face's centre on the origin, its height along the normal, its
          * length along the direction. Left out, the ground, facing +Y.
@@ -12126,14 +12649,592 @@ export interface OperationParams {
      * The roles `bottom`, `top`, `side` and `end` (the round ends) list face indexes as
      * `shapes.face.getFaces` numbers them. The `bottom` frame is the input frame.
      */
-    "occt.parts.mechanical.keys.parallelKeyWithRoles": {
-        /** The diameter of the shaft the key sits in, in millimetres, which sets its width and height. */
+    "occt.parts.mechanical.keys.ansi.parallelKeyWithRoles": {
+        /**
+         * The diameter of the shaft the key sits in, in `unit`, which sets its size; ANSI B17.1's square
+         * keys cover shafts over 5/16 and up to 6-1/2 inches.
+         */
         shaftDiameter?: number | PipelineRef;
-        /** The key's length from one round end to the other, in millimetres; at least its width. */
+        /** The key's length from one round end to the other, in `unit`; at least its width. */
         length?: number | PipelineRef;
+        /** The unit the key is made in and its lengths are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where the key lies: its bottom face's centre on the origin, its height along the normal, its
          * length along the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a DIN 6885 form A parallel key: a bar with round ends, as wide and high as the standard
+     * gives for a shaft of `shaftDiameter`, lying along the frame's direction on its origin.
+     *
+     * Sunk the shaft's keyway depth below the shaft's surface, the key also serves as the tool that
+     * cuts that keyway.
+     */
+    "occt.parts.mechanical.keys.din.parallelKey": {
+        /**
+         * The diameter of the shaft the key sits in, in `unit`, which sets its width and height; DIN 6885
+         * keys shafts over 6 and up to 65 millimetres.
+         */
+        shaftDiameter?: number | PipelineRef;
+        /** The key's length from one round end to the other, in `unit`; at least its width. */
+        length?: number | PipelineRef;
+        /** The unit the key is made in and its lengths are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the key lies: its bottom face's centre on the origin, its height along the normal, its
+         * length along the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a parallel key as `parallelKey` does and names the role each face plays.
+     *
+     * The roles `bottom`, `top`, `side` and `end` (the round ends) list face indexes as
+     * `shapes.face.getFaces` numbers them. The `bottom` frame is the input frame.
+     */
+    "occt.parts.mechanical.keys.din.parallelKeyWithRoles": {
+        /**
+         * The diameter of the shaft the key sits in, in `unit`, which sets its width and height; DIN 6885
+         * keys shafts over 6 and up to 65 millimetres.
+         */
+        shaftDiameter?: number | PipelineRef;
+        /** The key's length from one round end to the other, in `unit`; at least its width. */
+        length?: number | PipelineRef;
+        /** The unit the key is made in and its lengths are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the key lies: its bottom face's centre on the origin, its height along the normal, its
+         * length along the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Cuts an ANSI B17.1 keyseat into a shaft or through a hub, as `keywayTool` places it.
+     *
+     * The body given is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.ansi.keyway": {
+        /** The shaft or the hub to cut. */
+        shape: unknown | PipelineRef;
+        /**
+         * The shaft's or the bore's diameter in `unit`, which sets the keyseat's width and depth; ANSI
+         * B17.1's square keys cover shafts over 5/16 and up to 6-1/2 inches.
+         */
+        diameter?: number | PipelineRef;
+        /** The keyseat's length along the axis, in `unit`; in a shaft, end to end of its round ends. */
+        length?: number | PipelineRef;
+        /**
+         * When true, the straight keyseat cut through a hub's bore; when false, the round-ended pocket
+         * milled into a shaft.
+         */
+        inHub?: boolean | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid an ANSI B17.1 keyseat removes: the round-ended pocket milled into a shaft, or
+     * the straight keyseat cut through a hub's bore, sized for the diameter.
+     *
+     * It starts at the frame's origin on the axis, runs `length` along the normal and faces the
+     * frame's direction.
+     */
+    "occt.parts.mechanical.machining.ansi.keywayTool": {
+        /**
+         * The shaft's or the bore's diameter in `unit`, which sets the keyseat's width and depth; ANSI
+         * B17.1's square keys cover shafts over 5/16 and up to 6-1/2 inches.
+         */
+        diameter?: number | PipelineRef;
+        /** The keyseat's length along the axis, in `unit`; in a shaft, end to end of its round ends. */
+        length?: number | PipelineRef;
+        /**
+         * When true, the straight keyseat cut through a hub's bore; when false, the round-ended pocket
+         * milled into a shaft.
+         */
+        inHub?: boolean | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Knurls a round shaft, as `knurlTool` places the knurl.
+     *
+     * A diamond on a long knurl is heavy to build, its grooves crossing on every tooth. The body given
+     * is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.ansi.knurl": {
+        /** The shaft to knurl. */
+        shape: unknown | PipelineRef;
+        /**
+         * The shaft's diameter in `unit`; the knurl's crests sit on the nearest diameter its teeth track
+         * on.
+         */
+        diameter?: number | PipelineRef;
+        /**
+         * The knurl's length along the axis, in `unit`. A left, right or diamond knurl's grooves twist
+         * through at most 1000 degrees along it.
+         */
+        length?: number | PipelineRef;
+        /** Teeth to an inch of diameter, one of ASME B94.6's: 64, 96, 128 or 160. */
+        diametralPitch?: number | PipelineRef;
+        /** The grooves' pattern; left and right are B94.6's diagonal knurls. */
+        pattern?: "straight" | "left" | "right" | "diamond" | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid an ASME B94.6 knurl removes from a round shaft: diametral pitch teeth at the
+     * standard's depth, straight, diagonal at 30 degrees or crossing in a raised diamond.
+     *
+     * Its crests sit on the diameter the pitch divides into whole teeth, nearest the one given; it
+     * starts at the frame's origin and runs `length` along the normal.
+     */
+    "occt.parts.mechanical.machining.ansi.knurlTool": {
+        /**
+         * The shaft's diameter in `unit`; the knurl's crests sit on the nearest diameter its teeth track
+         * on.
+         */
+        diameter?: number | PipelineRef;
+        /**
+         * The knurl's length along the axis, in `unit`. A left, right or diamond knurl's grooves twist
+         * through at most 1000 degrees along it.
+         */
+        length?: number | PipelineRef;
+        /** Teeth to an inch of diameter, one of ASME B94.6's: 64, 96, 128 or 160. */
+        diametralPitch?: number | PipelineRef;
+        /** The grooves' pattern; left and right are B94.6's diagonal knurls. */
+        pattern?: "straight" | "left" | "right" | "diamond" | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Cuts the groove of an inch tapered retaining ring into a shaft or a bore, as `ringGrooveTool`
+     * places it; `parts.mechanical.retainingRings.ansi.retainingRing` at the same frame sits in it.
+     *
+     * The body given is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.ansi.ringGroove": {
+        /** The shaft or the bored body to cut. */
+        shape: unknown | PipelineRef;
+        /** Whether the groove is in a shaft or in a bore. */
+        kind?: "shaft" | "bore" | PipelineRef;
+        /** The shaft's or the bore's diameter in `unit`, one the inch rings list. */
+        diameter?: number | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid the groove of an inch tapered retaining ring removes from a shaft or a bore: as
+     * wide as the groove, down to its diameter.
+     *
+     * It starts at the frame's origin on the axis and runs the groove's width along the normal.
+     */
+    "occt.parts.mechanical.machining.ansi.ringGrooveTool": {
+        /** Whether the groove is in a shaft or in a bore. */
+        kind?: "shaft" | "bore" | PipelineRef;
+        /** The shaft's or the bore's diameter in `unit`, one the inch rings list. */
+        diameter?: number | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Cuts an ANSI B92.1 spline through a hub, as `splinedHubTool` places it.
+     *
+     * The body given is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.ansi.splinedHub": {
+        /** The hub to cut. */
+        shape: unknown | PipelineRef;
+        /** How many teeth the spline has, a whole number from 6 to 60. */
+        teeth?: number | PipelineRef;
+        /** The pitch over the stub pitch, such as 16/32. */
+        pitch?: "2.5/5" | "3/6" | "4/8" | "5/10" | "6/12" | "8/16" | "10/20" | "12/24" | "16/32" | "20/40" | "24/48" | "32/64" | PipelineRef;
+        /** The spline's length along the axis, in `unit`. */
+        length?: number | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid an ANSI B92.1 hub spline removes: the shaft's flanks, with the hub's tip and
+     * root diameters, so the shaft of the same size slides into the cut.
+     *
+     * It starts at the frame's origin, runs `length` along the normal, and a gap faces the frame's
+     * direction, where `splinedShaft` at the same frame has a tooth.
+     */
+    "occt.parts.mechanical.machining.ansi.splinedHubTool": {
+        /** How many teeth the spline has, a whole number from 6 to 60. */
+        teeth?: number | PipelineRef;
+        /** The pitch over the stub pitch, such as 16/32. */
+        pitch?: "2.5/5" | "3/6" | "4/8" | "5/10" | "6/12" | "8/16" | "10/20" | "12/24" | "16/32" | "20/40" | "24/48" | "32/64" | PipelineRef;
+        /** The spline's length along the axis, in `unit`. */
+        length?: number | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes an ANSI B92.1 involute splined shaft: its teeth at 30 degrees with a flat root, sized from
+     * the number of teeth and the pitch, `length` long.
+     *
+     * It starts at the frame's origin, runs along the normal, and a tooth points along the frame's
+     * direction.
+     */
+    "occt.parts.mechanical.machining.ansi.splinedShaft": {
+        /** How many teeth the spline has, a whole number from 6 to 60. */
+        teeth?: number | PipelineRef;
+        /** The pitch over the stub pitch, such as 16/32. */
+        pitch?: "2.5/5" | "3/6" | "4/8" | "5/10" | "6/12" | "8/16" | "10/20" | "12/24" | "16/32" | "20/40" | "24/48" | "32/64" | PipelineRef;
+        /** The spline's length along the axis, in `unit`. */
+        length?: number | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Models a Unified inch thread on a shank or in a hole, as `threadTool` places it, instead of the
+     * cosmetic thread `parts.mechanical.fasteners.ansi` draws.
+     *
+     * Turn the shank to the nominal diameter, or drill the hole to the minor; a modelled thread is
+     * heavy, so keep it to the parts that need it. Its defaults thread a 1/4-20 shank half an inch.
+     */
+    "occt.parts.mechanical.machining.ansi.thread": {
+        /** The shank or the body with the hole to cut. */
+        shape: unknown | PipelineRef;
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /** Whether the thread is coarse (UNC) or fine (UNF). */
+        series?: "UNC" | "UNF" | PipelineRef;
+        /**
+         * A pitch of the thread's own, as threads to the inch, at least the size's coarsest; it overrides
+         * `series`. Left out, the series' pitch.
+         */
+        threadsPerInch?: number | PipelineRef;
+        /** The threaded length along the axis, in `unit`: at most 400 turns of the pitch. */
+        length?: number | PipelineRef;
+        /**
+         * When true, the thread is cut in a hole drilled to the minor diameter, as in a nut; when false,
+         * on a shank turned to the nominal.
+         */
+        internal?: boolean | PipelineRef;
+        /** The unit the thread is cut in and its length is read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the thread starts, at a hole's mouth or under a head, its normal out of the part: the
+         * thread runs against it. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid a Unified inch thread removes: the 60 degree groove swept along a right-hand
+     * helix.
+     *
+     * It runs `length` from the frame's origin into the part, against the normal, stopping at the
+     * origin's plane. Shanks sit to class 2A and holes to 2B: on frames whole pitches apart, the two
+     * mesh with play.
+     */
+    "occt.parts.mechanical.machining.ansi.threadTool": {
+        /** The thread size, such as 1/4 or #10. */
+        size?: "#0" | "#1" | "#2" | "#3" | "#4" | "#5" | "#6" | "#8" | "#10" | "#12" | "1/4" | "5/16" | "3/8" | "7/16" | "1/2" | "9/16" | "5/8" | "3/4" | "7/8" | "1" | PipelineRef;
+        /** Whether the thread is coarse (UNC) or fine (UNF). */
+        series?: "UNC" | "UNF" | PipelineRef;
+        /**
+         * A pitch of the thread's own, as threads to the inch, at least the size's coarsest; it overrides
+         * `series`. Left out, the series' pitch.
+         */
+        threadsPerInch?: number | PipelineRef;
+        /** The threaded length along the axis, in `unit`: at most 400 turns of the pitch. */
+        length?: number | PipelineRef;
+        /**
+         * When true, the thread is cut in a hole drilled to the minor diameter, as in a nut; when false,
+         * on a shank turned to the nominal.
+         */
+        internal?: boolean | PipelineRef;
+        /** The unit the thread is cut in and its length is read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the thread starts, at a hole's mouth or under a head, its normal out of the part: the
+         * thread runs against it. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Cuts a DIN 6885 keyway into a shaft or through a hub, as `keywayTool` places it.
+     *
+     * The body given is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.din.keyway": {
+        /** The shaft or the hub to cut. */
+        shape: unknown | PipelineRef;
+        /**
+         * The shaft's or the bore's diameter in `unit`, which sets the keyway's width and depth; DIN 6885
+         * keys shafts over 6 and up to 65 millimetres.
+         */
+        diameter?: number | PipelineRef;
+        /** The keyway's length along the axis, in `unit`; in a shaft, end to end of its round ends. */
+        length?: number | PipelineRef;
+        /**
+         * When true, the straight keyway cut through a hub's bore; when false, the round-ended pocket
+         * milled into a shaft.
+         */
+        inHub?: boolean | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid a DIN 6885 keyway removes: the round-ended pocket milled into a shaft, or the
+     * straight keyway cut through a hub's bore, sized for the diameter.
+     *
+     * It starts at the frame's origin on the axis, runs `length` along the normal and faces the
+     * frame's direction.
+     */
+    "occt.parts.mechanical.machining.din.keywayTool": {
+        /**
+         * The shaft's or the bore's diameter in `unit`, which sets the keyway's width and depth; DIN 6885
+         * keys shafts over 6 and up to 65 millimetres.
+         */
+        diameter?: number | PipelineRef;
+        /** The keyway's length along the axis, in `unit`; in a shaft, end to end of its round ends. */
+        length?: number | PipelineRef;
+        /**
+         * When true, the straight keyway cut through a hub's bore; when false, the round-ended pocket
+         * milled into a shaft.
+         */
+        inHub?: boolean | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Knurls a round shaft, as `knurlTool` places the knurl.
+     *
+     * A diamond on a long knurl is heavy to build, its grooves crossing on every pitch. The body given
+     * is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.din.knurl": {
+        /** The shaft to knurl. */
+        shape: unknown | PipelineRef;
+        /**
+         * The shaft's diameter in `unit`; the knurl's crests sit on the nearest diameter its pitch
+         * divides evenly.
+         */
+        diameter?: number | PipelineRef;
+        /**
+         * The knurl's length along the axis, in `unit`. A left, right or diamond knurl's grooves twist
+         * through at most 1000 degrees along it.
+         */
+        length?: number | PipelineRef;
+        /**
+         * The distance between grooves round the circumference, in millimetres as DIN 82 names it, one of
+         * 0.5, 0.6, 0.8, 1, 1.2 or 1.6.
+         */
+        pitch?: number | PipelineRef;
+        /** The grooves' pattern. */
+        pattern?: "straight" | "left" | "right" | "diamond" | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid a DIN 82 knurl removes from a round shaft: 90 degree grooves half the pitch
+     * deep, straight, helical at 30 degrees or crossing in a raised diamond.
+     *
+     * Its crests sit on the diameter the pitch divides evenly, nearest the one given; it starts at the
+     * frame's origin and runs `length` along the normal.
+     */
+    "occt.parts.mechanical.machining.din.knurlTool": {
+        /**
+         * The shaft's diameter in `unit`; the knurl's crests sit on the nearest diameter its pitch
+         * divides evenly.
+         */
+        diameter?: number | PipelineRef;
+        /**
+         * The knurl's length along the axis, in `unit`. A left, right or diamond knurl's grooves twist
+         * through at most 1000 degrees along it.
+         */
+        length?: number | PipelineRef;
+        /**
+         * The distance between grooves round the circumference, in millimetres as DIN 82 names it, one of
+         * 0.5, 0.6, 0.8, 1, 1.2 or 1.6.
+         */
+        pitch?: number | PipelineRef;
+        /** The grooves' pattern. */
+        pattern?: "straight" | "left" | "right" | "diamond" | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Cuts the groove of a DIN 471 or DIN 472 retaining ring into a shaft or a bore, as
+     * `ringGrooveTool` places it; `parts.mechanical.retainingRings.din.retainingRing` at the same frame sits in it.
+     *
+     * The body given is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.din.ringGroove": {
+        /** The shaft or the bored body to cut. */
+        shape: unknown | PipelineRef;
+        /** Whether the groove is in a shaft or in a bore. */
+        kind?: "shaft" | "bore" | PipelineRef;
+        /** The shaft's or the bore's diameter in `unit`, one DIN 471 or DIN 472 lists. */
+        diameter?: number | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid the groove of a DIN 471 or DIN 472 retaining ring removes from a shaft or a
+     * bore: as wide as the groove, down to its diameter.
+     *
+     * It starts at the frame's origin on the axis and runs the groove's width along the normal.
+     */
+    "occt.parts.mechanical.machining.din.ringGrooveTool": {
+        /** Whether the groove is in a shaft or in a bore. */
+        kind?: "shaft" | "bore" | PipelineRef;
+        /** The shaft's or the bore's diameter in `unit`, one DIN 471 or DIN 472 lists. */
+        diameter?: number | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Cuts a DIN 5480 spline through a hub, as `splinedHubTool` places it.
+     *
+     * The body given is kept; a new solid comes back.
+     */
+    "occt.parts.mechanical.machining.din.splinedHub": {
+        /** The hub to cut. */
+        shape: unknown | PipelineRef;
+        /**
+         * The diameter the spline is named by, in millimetres as DIN 5480 names it, such as 25 in
+         * W 25x1.25x18.
+         */
+        referenceDiameter?: number | PipelineRef;
+        /** The module of its teeth in millimetres, one of DIN 5480's from 0.5 to 10. */
+        module?: number | PipelineRef;
+        /** The spline's length along the axis, in `unit`. */
+        length?: number | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes the solid a DIN 5480 hub spline removes: the shaft's flanks, with the hub's tip and root
+     * diameters, so the shaft of the same size slides into the cut.
+     *
+     * It starts at the frame's origin, runs `length` along the normal, and a gap faces the frame's
+     * direction, where `splinedShaft` at the same frame has a tooth.
+     */
+    "occt.parts.mechanical.machining.din.splinedHubTool": {
+        /**
+         * The diameter the spline is named by, in millimetres as DIN 5480 names it, such as 25 in
+         * W 25x1.25x18.
+         */
+        referenceDiameter?: number | PipelineRef;
+        /** The module of its teeth in millimetres, one of DIN 5480's from 0.5 to 10. */
+        module?: number | PipelineRef;
+        /** The spline's length along the axis, in `unit`. */
+        length?: number | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a DIN 5480 involute splined shaft: its teeth at 30 degrees, sized from the reference
+     * diameter and the module, `length` long.
+     *
+     * It starts at the frame's origin, runs along the normal, and a tooth points along the frame's
+     * direction.
+     */
+    "occt.parts.mechanical.machining.din.splinedShaft": {
+        /**
+         * The diameter the spline is named by, in millimetres as DIN 5480 names it, such as 25 in
+         * W 25x1.25x18.
+         */
+        referenceDiameter?: number | PipelineRef;
+        /** The module of its teeth in millimetres, one of DIN 5480's from 0.5 to 10. */
+        module?: number | PipelineRef;
+        /** The spline's length along the axis, in `unit`. */
+        length?: number | PipelineRef;
+        /** The unit the feature is cut in and its lengths and diameter are read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
+         * direction. Left out, the ground, facing +Y.
          */
         frame?: unknown | PipelineRef;
     };
@@ -12178,231 +13279,31 @@ export interface OperationParams {
         frame?: unknown | PipelineRef;
     };
     /**
-     * Cuts a DIN 6885 keyway into a shaft or through a hub, as `keywayTool` places it.
-     *
-     * The body given is kept; a new solid comes back.
-     */
-    "occt.parts.mechanical.machining.keyway": {
-        /** The shaft or the hub to cut. */
-        shape: unknown | PipelineRef;
-        /** The shaft's or the bore's diameter in millimetres, which sets the keyway's width and depth. */
-        diameter?: number | PipelineRef;
-        /** The keyway's length along the axis, in millimetres; in a shaft, end to end of its round ends. */
-        length?: number | PipelineRef;
-        /**
-         * When true, the straight keyway cut through a hub's bore; when false, the round-ended pocket
-         * milled into a shaft.
-         */
-        inHub?: boolean | PipelineRef;
-        /**
-         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
-         * direction. Left out, the ground, facing +Y.
-         */
-        frame?: unknown | PipelineRef;
-    };
-    /**
-     * Makes the solid a DIN 6885 keyway removes: the round-ended pocket milled into a shaft, or the
-     * straight keyway cut through a hub's bore, sized for the diameter.
-     *
-     * It starts at the frame's origin on the axis, runs `length` along the normal and faces the
-     * frame's direction.
-     */
-    "occt.parts.mechanical.machining.keywayTool": {
-        /** The shaft's or the bore's diameter in millimetres, which sets the keyway's width and depth. */
-        diameter?: number | PipelineRef;
-        /** The keyway's length along the axis, in millimetres; in a shaft, end to end of its round ends. */
-        length?: number | PipelineRef;
-        /**
-         * When true, the straight keyway cut through a hub's bore; when false, the round-ended pocket
-         * milled into a shaft.
-         */
-        inHub?: boolean | PipelineRef;
-        /**
-         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
-         * direction. Left out, the ground, facing +Y.
-         */
-        frame?: unknown | PipelineRef;
-    };
-    /**
-     * Knurls a round shaft, as `knurlTool` places the knurl.
-     *
-     * A diamond on a long knurl is heavy to build, its grooves crossing on every pitch. The body given
-     * is kept; a new solid comes back.
-     */
-    "occt.parts.mechanical.machining.knurl": {
-        /** The shaft to knurl. */
-        shape: unknown | PipelineRef;
-        /**
-         * The shaft's diameter in millimetres; the knurl's crests sit on the nearest diameter its pitch
-         * divides evenly.
-         */
-        diameter?: number | PipelineRef;
-        /**
-         * The knurl's length along the axis, in millimetres. A left, right or diamond knurl's grooves
-         * twist through at most 1000 degrees along it.
-         */
-        length?: number | PipelineRef;
-        /**
-         * The distance between grooves round the circumference, one of DIN 82's: 0.5, 0.6, 0.8, 1, 1.2
-         * or 1.6 mm.
-         */
-        pitch?: number | PipelineRef;
-        /** The grooves' pattern. */
-        pattern?: "straight" | "left" | "right" | "diamond" | PipelineRef;
-        /**
-         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
-         * direction. Left out, the ground, facing +Y.
-         */
-        frame?: unknown | PipelineRef;
-    };
-    /**
-     * Makes the solid a DIN 82 knurl removes from a round shaft: 90 degree grooves half the pitch
-     * deep, straight, helical at 30 degrees or crossing in a raised diamond.
-     *
-     * Its crests sit on the diameter the pitch divides evenly, nearest the one given; it starts at the
-     * frame's origin and runs `length` along the normal.
-     */
-    "occt.parts.mechanical.machining.knurlTool": {
-        /**
-         * The shaft's diameter in millimetres; the knurl's crests sit on the nearest diameter its pitch
-         * divides evenly.
-         */
-        diameter?: number | PipelineRef;
-        /**
-         * The knurl's length along the axis, in millimetres. A left, right or diamond knurl's grooves
-         * twist through at most 1000 degrees along it.
-         */
-        length?: number | PipelineRef;
-        /**
-         * The distance between grooves round the circumference, one of DIN 82's: 0.5, 0.6, 0.8, 1, 1.2
-         * or 1.6 mm.
-         */
-        pitch?: number | PipelineRef;
-        /** The grooves' pattern. */
-        pattern?: "straight" | "left" | "right" | "diamond" | PipelineRef;
-        /**
-         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
-         * direction. Left out, the ground, facing +Y.
-         */
-        frame?: unknown | PipelineRef;
-    };
-    /**
-     * Cuts the groove of a DIN 471 or DIN 472 retaining ring into a shaft or a bore, as
-     * `ringGrooveTool` places it; `parts.mechanical.retainingRings.retainingRing` at the same frame sits in it.
-     *
-     * The body given is kept; a new solid comes back.
-     */
-    "occt.parts.mechanical.machining.ringGroove": {
-        /** The shaft or the bored body to cut. */
-        shape: unknown | PipelineRef;
-        /** Whether the groove is in a shaft or in a bore. */
-        kind?: "shaft" | "bore" | PipelineRef;
-        /** The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists. */
-        diameter?: number | PipelineRef;
-        /**
-         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
-         * direction. Left out, the ground, facing +Y.
-         */
-        frame?: unknown | PipelineRef;
-    };
-    /**
-     * Makes the solid the groove of a DIN 471 or DIN 472 retaining ring removes from a shaft or a
-     * bore: as wide as the groove, down to its diameter.
-     *
-     * It starts at the frame's origin on the axis and runs the groove's width along the normal.
-     */
-    "occt.parts.mechanical.machining.ringGrooveTool": {
-        /** Whether the groove is in a shaft or in a bore. */
-        kind?: "shaft" | "bore" | PipelineRef;
-        /** The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists. */
-        diameter?: number | PipelineRef;
-        /**
-         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
-         * direction. Left out, the ground, facing +Y.
-         */
-        frame?: unknown | PipelineRef;
-    };
-    /**
-     * Cuts a DIN 5480 spline through a hub, as `splinedHubTool` places it.
-     *
-     * The body given is kept; a new solid comes back.
-     */
-    "occt.parts.mechanical.machining.splinedHub": {
-        /** The hub to cut. */
-        shape: unknown | PipelineRef;
-        /** The diameter the spline is named by, in millimetres, such as 25 in W 25x1.25x18. */
-        referenceDiameter?: number | PipelineRef;
-        /** The module of its teeth, one of DIN 5480's from 0.5 to 10. */
-        module?: number | PipelineRef;
-        /** The spline's length along the axis, in millimetres. */
-        length?: number | PipelineRef;
-        /**
-         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
-         * direction. Left out, the ground, facing +Y.
-         */
-        frame?: unknown | PipelineRef;
-    };
-    /**
-     * Makes the solid a DIN 5480 hub spline removes: the shaft's flanks, with the hub's tip and root
-     * diameters, so the shaft of the same size slides into the cut.
-     *
-     * It starts at the frame's origin, runs `length` along the normal, and a gap faces the frame's
-     * direction, where `splinedShaft` at the same frame has a tooth.
-     */
-    "occt.parts.mechanical.machining.splinedHubTool": {
-        /** The diameter the spline is named by, in millimetres, such as 25 in W 25x1.25x18. */
-        referenceDiameter?: number | PipelineRef;
-        /** The module of its teeth, one of DIN 5480's from 0.5 to 10. */
-        module?: number | PipelineRef;
-        /** The spline's length along the axis, in millimetres. */
-        length?: number | PipelineRef;
-        /**
-         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
-         * direction. Left out, the ground, facing +Y.
-         */
-        frame?: unknown | PipelineRef;
-    };
-    /**
-     * Makes a DIN 5480 involute splined shaft: its teeth at 30 degrees, sized from the reference
-     * diameter and the module, `length` long.
-     *
-     * It starts at the frame's origin, runs along the normal, and a tooth points along the frame's
-     * direction.
-     */
-    "occt.parts.mechanical.machining.splinedShaft": {
-        /** The diameter the spline is named by, in millimetres, such as 25 in W 25x1.25x18. */
-        referenceDiameter?: number | PipelineRef;
-        /** The module of its teeth, one of DIN 5480's from 0.5 to 10. */
-        module?: number | PipelineRef;
-        /** The spline's length along the axis, in millimetres. */
-        length?: number | PipelineRef;
-        /**
-         * Where the feature starts on the axis, the axis along the normal and the side it faces along the
-         * direction. Left out, the ground, facing +Y.
-         */
-        frame?: unknown | PipelineRef;
-    };
-    /**
      * Models an ISO metric thread on a shank or in a hole, as `threadTool` places it, instead of the
-     * cosmetic thread `parts.mechanical.fasteners` draws.
+     * cosmetic thread `parts.mechanical.fasteners.iso` draws.
      *
      * Turn the shank to the nominal diameter, or drill the hole to the minor; a modelled thread is
      * heavy, so keep it to the parts that need it. Its defaults thread a default bolt.
      */
-    "occt.parts.mechanical.machining.thread": {
+    "occt.parts.mechanical.machining.iso.thread": {
         /** The shank or the body with the hole to cut. */
         shape: unknown | PipelineRef;
         /** The thread size, such as M8; the default is the default screw's and bolt's. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
-        /** The distance from one crest to the next, in millimetres. Left out, the size's coarse pitch. */
+        /**
+         * The distance from one crest to the next, in millimetres as ISO names it. Left out, the size's
+         * coarse pitch.
+         */
         pitch?: number | PipelineRef;
-        /** The threaded length along the axis, in millimetres: at most 400 turns of the pitch. */
+        /** The threaded length along the axis, in `unit`: at most 400 turns of the pitch. */
         length?: number | PipelineRef;
         /**
          * When true, the thread is cut in a hole drilled to the minor diameter, as in a nut; when false,
          * on a shank turned to the nominal.
          */
         internal?: boolean | PipelineRef;
+        /** The unit the thread is cut in and its length is read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where the thread starts, at a hole's mouth or under a head, its normal out of the part: the
          * thread runs against it. Left out, the ground, facing +Y.
@@ -12417,18 +13318,23 @@ export interface OperationParams {
      * origin's plane. Shanks sit to 6g and holes to 6H: on frames whole pitches apart, the two mesh
      * with play.
      */
-    "occt.parts.mechanical.machining.threadTool": {
+    "occt.parts.mechanical.machining.iso.threadTool": {
         /** The thread size, such as M8; the default is the default screw's and bolt's. */
         size?: "M1.6" | "M2" | "M2.5" | "M3" | "M4" | "M5" | "M6" | "M8" | "M10" | "M12" | "M14" | "M16" | "M20" | "M24" | PipelineRef;
-        /** The distance from one crest to the next, in millimetres. Left out, the size's coarse pitch. */
+        /**
+         * The distance from one crest to the next, in millimetres as ISO names it. Left out, the size's
+         * coarse pitch.
+         */
         pitch?: number | PipelineRef;
-        /** The threaded length along the axis, in millimetres: at most 400 turns of the pitch. */
+        /** The threaded length along the axis, in `unit`: at most 400 turns of the pitch. */
         length?: number | PipelineRef;
         /**
          * When true, the thread is cut in a hole drilled to the minor diameter, as in a nut; when false,
          * on a shank turned to the nominal.
          */
         internal?: boolean | PipelineRef;
+        /** The unit the thread is cut in and its length is read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where the thread starts, at a hole's mouth or under a head, its normal out of the part: the
          * thread runs against it. Left out, the ground, facing +Y.
@@ -12436,19 +13342,22 @@ export interface OperationParams {
         frame?: unknown | PipelineRef;
     };
     /**
-     * Makes a DIN 471 retaining ring for a shaft or a DIN 472 ring for a bore, fitted in its groove.
+     * Makes an inch tapered retaining ring, external for a shaft or internal for a bore, fitted in its
+     * groove.
      *
      * Its centre lies on the frame's origin, one side on the frame's plane, it rises along the normal
      * and its lugs point along the direction.
      */
-    "occt.parts.mechanical.retainingRings.retainingRing": {
+    "occt.parts.mechanical.retainingRings.ansi.retainingRing": {
         /** Whether the ring sits on a shaft or in a bore. */
         kind?: "shaft" | "bore" | PipelineRef;
         /**
-         * The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists: from 3 to 100
-         * for shafts, from 8 to 100 for bores.
+         * The shaft's or the bore's diameter in `unit`, one the inch rings list: from 1/8 to 2 inches for
+         * shafts, from 1/4 to 2 for bores.
          */
         diameter?: number | PipelineRef;
+        /** The unit the ring is made in and its diameter is read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where the ring sits: its centre on the origin, one side on the frame's plane, its lugs toward
          * the direction. Left out, the ground, facing +Y.
@@ -12462,14 +13371,61 @@ export interface OperationParams {
      * holes) list face indexes as `shapes.face.getFaces` numbers them. The `centre` frame is the
      * input frame.
      */
-    "occt.parts.mechanical.retainingRings.retainingRingWithRoles": {
+    "occt.parts.mechanical.retainingRings.ansi.retainingRingWithRoles": {
         /** Whether the ring sits on a shaft or in a bore. */
         kind?: "shaft" | "bore" | PipelineRef;
         /**
-         * The shaft's or the bore's diameter in millimetres, one DIN 471 or DIN 472 lists: from 3 to 100
-         * for shafts, from 8 to 100 for bores.
+         * The shaft's or the bore's diameter in `unit`, one the inch rings list: from 1/8 to 2 inches for
+         * shafts, from 1/4 to 2 for bores.
          */
         diameter?: number | PipelineRef;
+        /** The unit the ring is made in and its diameter is read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the ring sits: its centre on the origin, one side on the frame's plane, its lugs toward
+         * the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a DIN 471 retaining ring for a shaft or a DIN 472 ring for a bore, fitted in its groove.
+     *
+     * Its centre lies on the frame's origin, one side on the frame's plane, it rises along the normal
+     * and its lugs point along the direction.
+     */
+    "occt.parts.mechanical.retainingRings.din.retainingRing": {
+        /** Whether the ring sits on a shaft or in a bore. */
+        kind?: "shaft" | "bore" | PipelineRef;
+        /**
+         * The shaft's or the bore's diameter in `unit`, one DIN 471 or DIN 472 lists: from 3 to 100
+         * millimetres for shafts, from 8 to 100 for bores.
+         */
+        diameter?: number | PipelineRef;
+        /** The unit the ring is made in and its diameter is read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
+        /**
+         * Where the ring sits: its centre on the origin, one side on the frame's plane, its lugs toward
+         * the direction. Left out, the ground, facing +Y.
+         */
+        frame?: unknown | PipelineRef;
+    };
+    /**
+     * Makes a retaining ring as `retainingRing` does and names the role each face plays.
+     *
+     * The roles `seat` (the face in the groove), `rim`, `start`, `end`, `gap` and `lug` (the plier
+     * holes) list face indexes as `shapes.face.getFaces` numbers them. The `centre` frame is the
+     * input frame.
+     */
+    "occt.parts.mechanical.retainingRings.din.retainingRingWithRoles": {
+        /** Whether the ring sits on a shaft or in a bore. */
+        kind?: "shaft" | "bore" | PipelineRef;
+        /**
+         * The shaft's or the bore's diameter in `unit`, one DIN 471 or DIN 472 lists: from 3 to 100
+         * millimetres for shafts, from 8 to 100 for bores.
+         */
+        diameter?: number | PipelineRef;
+        /** The unit the ring is made in and its diameter is read in. */
+        unit?: "mm" | "cm" | "m" | "in" | PipelineRef;
         /**
          * Where the ring sits: its centre on the origin, one side on the frame's plane, its lugs toward
          * the direction. Left out, the ground, facing +Y.
