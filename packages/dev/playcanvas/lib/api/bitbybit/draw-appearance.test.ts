@@ -96,12 +96,12 @@ const meshInstancesOf = (root: pc.Entity): pc.MeshInstance[] => {
     });
     return found;
 };
-const surfacesOf = (root: pc.Entity): pc.MeshInstance[] => meshInstancesOf(root).filter(instance => instance.mesh.primitive[0]!.type === pc.PRIMITIVE_TRIANGLES);
-const linesOf = (root: pc.Entity): pc.MeshInstance[] => meshInstancesOf(root).filter(instance => instance.mesh.primitive[0]!.type === pc.PRIMITIVE_LINES);
+const surfacesOf = (root: pc.Entity): pc.MeshInstance[] => meshInstancesOf(root).filter(instance => instance.mesh!.primitive[0]!.type === pc.PRIMITIVE_TRIANGLES);
+const linesOf = (root: pc.Entity): pc.MeshInstance[] => meshInstancesOf(root).filter(instance => instance.mesh!.primitive[0]!.type === pc.PRIMITIVE_LINES);
 const diffuseOf = (instance: pc.MeshInstance): string => (instance.material as pc.StandardMaterial).diffuse.toString(false);
 const lineColours = (line: pc.MeshInstance, vertices: readonly number[]): string[] => {
     const colours: number[] = [];
-    line.mesh.getColors(colours);
+    line.mesh!.getColors(colours);
     return vertices.map(vertex => `#${colours.slice(vertex * 4, vertex * 4 + 3).map(channel => Math.round(channel).toString(16).padStart(2, "0")).join("")}`);
 };
 const instanceMatrices = (instance: pc.MeshInstance): number[][] => {
@@ -154,7 +154,7 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             // Assert
             const surfaces = surfacesOf(drawn);
             expect(surfaces.map(diffuseOf)).toEqual(["#ffffff", "#000000"]);
-            expect(surfaces.map(surface => surface.mesh.primitive[0]!.count)).toEqual([24, 12]);
+            expect(surfaces.map(surface => surface.mesh!.primitive[0]!.count)).toEqual([24, 12]);
             expect(surfaces.map(surface => [(surface.material as pc.StandardMaterial).useMetalness, (surface.material as pc.StandardMaterial).metalness])).toEqual([[true, 0], [true, 1]]);
             expect((surfaces[0]!.material as pc.StandardMaterial).gloss).toBeCloseTo(0.6);
             expect(drawn.parent).toBe(app.root);
@@ -311,7 +311,7 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             const surfaces = surfacesOf(drawn);
             expect(surfaces.map(diffuseOf)).toEqual(["#ff0000", "#00ff00", "#0000ff"]);
             expect((surfaces[2]!.material as pc.StandardMaterial).opacity).toBeCloseTo(128 / 255);
-            expect(surfaces.map(surface => surface.mesh.primitive[0]!.count)).toEqual([18, 12, 6]);
+            expect(surfaces.map(surface => surface.mesh!.primitive[0]!.count)).toEqual([18, 12, 6]);
         });
     });
 

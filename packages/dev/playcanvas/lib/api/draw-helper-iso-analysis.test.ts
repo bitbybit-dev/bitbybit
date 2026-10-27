@@ -84,7 +84,7 @@ describe("DrawHelper iso curves and surface analysis", () => {
         walk(entity);
         return found;
     };
-    const meshOfEntity = (entity: pc.Entity): pc.Mesh => entity.render!.meshInstances[0]!.mesh;
+    const meshOfEntity = (entity: pc.Entity): pc.Mesh => entity.render!.meshInstances[0]!.mesh!;
     const materialOf = (entity: pc.Entity): pc.StandardMaterial => entity.render!.meshInstances[0]!.material as pc.StandardMaterial;
     const frontFaces = (drawn: pc.Entity): pc.Entity[] => rendered(drawn).filter(entity => entity.name.includes("surfaceChild") && !entity.name.includes("backFace"));
     const valuesFor = (spy: { mock: { calls: unknown[][]; contexts: unknown[] } }, mesh: pc.Mesh): number[] | undefined => {

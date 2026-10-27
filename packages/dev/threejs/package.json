@@ -124,7 +124,7 @@
         "@bitbybit-dev/jscad-worker": "1.5.0",
         "@bitbybit-dev/manifold-worker": "1.5.0",
         "@bitbybit-dev/ifc-worker": "1.5.0",
-        "three": "0.186.0",
+        "three": "0.186.1",
         "jsonpath-plus": "10.4.0",
         "verb-nurbs-web": "2.1.3"
     },

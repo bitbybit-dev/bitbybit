@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@bitbybit-dev/playcanvas": "1.5.0",
-    "playcanvas": "2.22.2"
+    "playcanvas": "2.23.3"
   },
   "devDependencies": {
     "@bitbybit-dev/occt": "1.5.0",

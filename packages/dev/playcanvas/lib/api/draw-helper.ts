@@ -982,7 +982,7 @@ export class DrawHelper extends DrawHelperCore {
         for (const drawn of parts) {
             const lineMaterials = (drawn.edges?.render?.meshInstances ?? []).map(meshInstance => meshInstance.material);
             drawn.entity.destroy();
-            lineMaterials.forEach(material => material.destroy());
+            lineMaterials.forEach(material => material?.destroy());
         }
     }
 

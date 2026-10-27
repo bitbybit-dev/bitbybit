@@ -62,12 +62,12 @@ describe("PlayCanvas drawing redrawn again and again", () => {
     const materialsDrawn = (points: pc.Entity): pc.StandardMaterial[] => (points.children as pc.Entity[]).map(child => child.render!.meshInstances[0]!.material as pc.StandardMaterial);
     const coloursDrawn = (points: pc.Entity): string[] => materialsDrawn(points).map(material => material.diffuse.toString(false));
     const opacitiesDrawn = (points: pc.Entity): number[] => materialsDrawn(points).map(material => material.opacity);
-    const radiiDrawn = (points: pc.Entity): number[] => (points.children as pc.Entity[]).map(child => child.render!.meshInstances[0]!.mesh.aabb.halfExtents.x);
+    const radiiDrawn = (points: pc.Entity): number[] => (points.children as pc.Entity[]).map(child => child.render!.meshInstances[0]!.mesh!.aabb.halfExtents.x);
 
     const segmentsOf = (points: Inputs.Base.Point3[]): number[] => points.slice(1).flatMap((end, at) => [...points[at]!, ...end]);
     const linePositionsDrawn = (polyline: pc.Entity): number[] => {
         const positions: number[] = [];
-        (polyline.children[0] as pc.Entity).render!.meshInstances[0]!.mesh.getPositions(positions);
+        (polyline.children[0] as pc.Entity).render!.meshInstances[0]!.mesh!.getPositions(positions);
         return positions;
     };
 

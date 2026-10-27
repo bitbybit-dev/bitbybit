@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "0.186.0",
+    "three": "0.186.1",
     "lil-gui": "0.20.0"
   },
   "devDependencies": {

@@ -124,7 +124,7 @@
         "@bitbybit-dev/jscad-worker": "1.5.0",
         "@bitbybit-dev/manifold-worker": "1.5.0",
         "@bitbybit-dev/ifc-worker": "1.5.0",
-        "playcanvas": "2.22.2",
+        "playcanvas": "2.23.3",
         "jsonpath-plus": "10.4.0",
         "verb-nurbs-web": "2.1.3"
     },

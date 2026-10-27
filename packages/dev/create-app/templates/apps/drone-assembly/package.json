@@ -14,7 +14,7 @@
   "dependencies": {
     "@bitbybit-dev/base": "1.5.0",
     "@bitbybit-dev/threejs": "1.5.0",
-    "three": "0.186.0"
+    "three": "0.186.1"
   },
   "devDependencies": {
     "@bitbybit-dev/occt": "1.5.0",

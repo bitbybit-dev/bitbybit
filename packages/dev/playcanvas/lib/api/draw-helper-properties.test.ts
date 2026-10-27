@@ -221,10 +221,10 @@ describe("what PlayCanvas draws, pushed to the edges of real-world use", () => {
         });
         return found;
     };
-    const trianglesIn = (root: pc.GraphNode): { name: string; instance: pc.MeshInstance }[] => renderedIn(root).filter(each => each.instance.mesh.primitive[0]!.type === pc.PRIMITIVE_TRIANGLES);
-    const backsOf = (root: pc.GraphNode): pc.Mesh[] => trianglesIn(root).filter(each => each.name.includes("backFace")).map(each => each.instance.mesh);
-    const frontsOf = (root: pc.GraphNode): pc.Mesh[] => trianglesIn(root).filter(each => !each.name.includes("backFace")).map(each => each.instance.mesh);
-    const linesIn = (root: pc.GraphNode): pc.Mesh[] => renderedIn(root).filter(each => each.instance.mesh.primitive[0]!.type === pc.PRIMITIVE_LINES).map(each => each.instance.mesh);
+    const trianglesIn = (root: pc.GraphNode): { name: string; instance: pc.MeshInstance }[] => renderedIn(root).filter(each => each.instance.mesh!.primitive[0]!.type === pc.PRIMITIVE_TRIANGLES);
+    const backsOf = (root: pc.GraphNode): pc.Mesh[] => trianglesIn(root).filter(each => each.name.includes("backFace")).map(each => each.instance.mesh!);
+    const frontsOf = (root: pc.GraphNode): pc.Mesh[] => trianglesIn(root).filter(each => !each.name.includes("backFace")).map(each => each.instance.mesh!);
+    const linesIn = (root: pc.GraphNode): pc.Mesh[] => renderedIn(root).filter(each => each.instance.mesh!.primitive[0]!.type === pc.PRIMITIVE_LINES).map(each => each.instance.mesh!);
     const streamOf = (read: (values: number[]) => unknown): number[] | null => {
         const values: number[] = [];
         read(values);
@@ -257,7 +257,7 @@ describe("what PlayCanvas draws, pushed to the edges of real-world use", () => {
         const rendered = trianglesIn(root).find(each => !each.name.includes("backFace"))!;
         const node = root.findByName(rendered.name)!;
         const world = node.getWorldTransform();
-        return pointsOf(numbersOf(rendered.instance.mesh).positions).flatMap(point => {
+        return pointsOf(numbersOf(rendered.instance.mesh!).positions).flatMap(point => {
             const moved = world.transformPoint(new pc.Vec3(...point));
             return [moved.x, moved.y, moved.z].map(value => Math.round(value * 1e6) / 1e6 + 0);
         });

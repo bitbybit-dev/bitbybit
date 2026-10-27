@@ -631,7 +631,7 @@ describe("DrawHelper unit tests", () => {
             expect(lineEntity.render).toBeDefined();
             
             if (lineEntity.render!.meshInstances && lineEntity.render!.meshInstances.length > 0) {
-                const mesh = lineEntity.render!.meshInstances[0]!.mesh;
+                const mesh = lineEntity.render!.meshInstances[0]!.mesh!;
                 if (mesh.vertexBuffer && mesh.vertexBuffer.storage) {
                     expect(mesh.vertexBuffer.storage.byteLength).toBe(0);
                 }

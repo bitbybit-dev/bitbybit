@@ -10,7 +10,7 @@ import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import type { Vector } from "@bitbybit-dev/base";
 import { twoTrianglesBuffers } from "./mesh-buffers";
 
-const partialMock = <T>(members: Partial<T>): T => members as T;
+export const partialMock = <T>(members: Partial<T>): T => members as T;
 
 export function createMockContext(): Context {
     const context = new Context();
@@ -18,8 +18,8 @@ export function createMockContext(): Context {
     context.app = partialMock<pc.AppBase>({
         graphicsDevice: partialMock<pc.NullGraphicsDevice>({
             _vram: { texShadow: 0, texAsset: 0, texLightmap: 0, tex: 0, vb: 0, ib: 0, ub: 0, sb: 0 },
-            createVertexBufferImpl: vi.fn(() => ({ destroy: vi.fn(), unlock: vi.fn() })),
-            createIndexBufferImpl: vi.fn(() => ({ destroy: vi.fn(), unlock: vi.fn() })),
+            createVertexBufferImpl: vi.fn(() => ({ destroy: vi.fn(), unlock: vi.fn(), loseContext: vi.fn() })),
+            createIndexBufferImpl: vi.fn(() => ({ destroy: vi.fn(), unlock: vi.fn(), loseContext: vi.fn() })),
         }),
         systems: partialMock<pc.AppBase["systems"]>({}),
     });

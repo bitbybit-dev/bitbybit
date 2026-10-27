@@ -41,7 +41,7 @@ describe("how the faces and back faces PlayCanvas draws are wound", () => {
         const found: { name: string; mesh: pc.Mesh }[] = [];
         const walk = (node: pc.GraphNode): void => {
             const entity = node as pc.Entity;
-            (entity.render?.meshInstances ?? []).forEach(instance => found.push({ name: node.name, mesh: instance.mesh }));
+            (entity.render?.meshInstances ?? []).forEach(instance => found.push({ name: node.name, mesh: instance.mesh! }));
             node.children.forEach(walk);
         };
         walk(drawn);

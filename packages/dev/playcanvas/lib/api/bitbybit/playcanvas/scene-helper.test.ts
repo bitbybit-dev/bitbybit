@@ -5,6 +5,7 @@ import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
 import type * as Resolved from "../../resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { asMockApp, asMockEntity } from "../../__mocks__/playcanvas.mock";
+import { partialMock } from "../../__mocks__/test-helpers";
 import type { Mock } from "vitest";
 import * as pc from "playcanvas";
 
@@ -284,7 +285,7 @@ describe("initPlayCanvas unit tests", () => {
             const aabb = new pc.BoundingBox();
             aabb.center.set(5, 6, 7);
             aabb.halfExtents.set(2, 4, 3);
-            focusEntity.addComponent("model", { meshInstances: [{ visible: true, aabb }] });
+            focusEntity.addComponent("model", { meshInstances: [partialMock<pc.MeshInstance>({ visible: true, aabb })] });
             const config = new PlayCanvasScene.InitPlayCanvasDto();
             config.canvasId = "test-canvas";
             config.orbitCameraOptions = new PlayCanvasCamera.OrbitCameraDto();
