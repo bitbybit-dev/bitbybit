@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
@@ -14,7 +12,7 @@ describe("OCCT shape signatures and binary BREP", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        const helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel);
+        const helper = new OccHelper(kernel);
         occt = new OCCTService(kernel, helper);
     }, 120_000);
 

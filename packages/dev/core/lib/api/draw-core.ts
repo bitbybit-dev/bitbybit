@@ -1,7 +1,7 @@
 import { isRecord } from "@bitbybit-dev/base";
 import type * as Inputs from "./inputs";
 import type * as Models from "./models";
-import { isFrameShaped, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { isFrameShaped, pointToWorld, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type { ShapeWithAppearance } from "./draw-appearance";
 
 /**
@@ -251,11 +251,7 @@ export class DrawCore {
             if (typeof axes === "string") {
                 return;
             }
-            const at = (u: number, v: number, w: number): Inputs.Base.Point3 => [
-                axes.origin[0] + u * axes.x[0] + v * axes.y[0] + w * axes.z[0],
-                axes.origin[1] + u * axes.x[1] + v * axes.y[1] + w * axes.z[1],
-                axes.origin[2] + u * axes.x[2] + v * axes.y[2] + w * axes.z[2],
-            ];
+            const at = (u: number, v: number, w: number): Inputs.Base.Point3 => pointToWorld(axes, [u, v, w]);
             const length = style.size;
             add([at(0, 0, 0), at(length, 0, 0)], style.colorX);
             add([at(0, 0, 0), at(0, length, 0)], style.colorY);
@@ -389,12 +385,13 @@ export class DrawCore {
     }
 
     /**
-     * Whether the entity is what `occt.design.build` returns: a `report` list and `parts` that each
-     * carry an `id` and a kernel `shape` with an optional appearance, and, for an assembly,
-     * `components` that each carry a `path`, an optional `part` and a 4 x 4 `world` matrix.
+     * Whether the entity is what `occt.design.build` or `occt.design.section` returns: a `report`
+     * list, or the section's `frame`, and `parts` that each carry an `id` and a kernel `shape` with an
+     * optional appearance, and, for an assembly, `components` that each carry a `path`, an optional
+     * `part` and a 4 x 4 `world` matrix.
      */
-    detectDesignBuild(entity: unknown): entity is Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> {
-        if (!isRecord(entity) || !Array.isArray(entity["report"]) || !Array.isArray(entity["parts"])) {
+    detectDesignBuild(entity: unknown): entity is Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer> {
+        if (!isRecord(entity) || !(Array.isArray(entity["report"]) || isRecord(entity["frame"])) || !Array.isArray(entity["parts"])) {
             return false;
         }
         const partsDrawable = entity["parts"].every(part => isRecord(part) && typeof part["id"] === "string" && this.detectShapeWithAppearance(part));

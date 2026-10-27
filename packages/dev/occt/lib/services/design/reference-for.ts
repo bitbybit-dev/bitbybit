@@ -6,6 +6,7 @@ import { referenceHintOf } from "./hints";
 import { DesignProblem, nothing, unlessTrapped } from "./problems";
 import type { ResolveContext } from "./references";
 import { resolveEdges, resolveFaces } from "./references";
+import { releasePending } from "./release-build";
 import { runFeatures } from "./runner";
 import type { DesignRun, DesignRunContext } from "./state";
 import type { Synthesized } from "./synthesis";
@@ -61,7 +62,7 @@ function alike(picked: readonly Look[], found: readonly Look[]): boolean {
 }
 
 function resolved(reference: Reference, context: ResolveContext): number[] | undefined {
-    return unlessTrapped<number[] | undefined>(() => "between" in reference ? resolveEdges(reference, context, "") : resolveFaces(reference, context, ""), nothing);
+    return unlessTrapped<number[] | undefined>(context.occ, () => "between" in reference ? resolveEdges(reference, context, "") : resolveFaces(reference, context, ""), nothing);
 }
 
 function hinted(reference: Reference, picked: DesignPicked, context: ResolveContext): Reference {
@@ -69,7 +70,7 @@ function hinted(reference: Reference, picked: DesignPicked, context: ResolveCont
         return { ...reference, hint: referenceHintOf(picked.indexes, context.shape, context.names, context) };
     }
     const [first, second] = reference.between.map(side => {
-        const faces = unlessTrapped<number[] | undefined>(() => resolveFaces(side, context, ""), nothing);
+        const faces = unlessTrapped<number[] | undefined>(context.occ, () => resolveFaces(side, context, ""), nothing);
         return faces === undefined || faces.length === 0 ? side : { ...side, hint: referenceHintOf(faces, context.shape, context.names, context) };
     });
     return first === undefined || second === undefined ? reference : { ...reference, between: [first, second] };
@@ -111,6 +112,7 @@ function nudgeable(document: Models.OCCT.DesignPartDocument, reads: ReadonlySet<
  */
 export function referenceFor(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext, body: string, picked: DesignPicked, nudge: boolean): Models.OCCT.DesignReferenceFound {
     const { run, report } = runFeatures(document, choice, context);
+    releasePending(run.pending);
     run.cache.trim(run.used);
     const state = run.bodies.get(body);
     if (state === undefined) {
@@ -133,6 +135,7 @@ export function referenceFor(document: Models.OCCT.DesignPartDocument, choice: P
     const built = new Set(report.filter(entry => entry.status === "ok").map(entry => entry.id));
     for (const [name, value] of nudgeable(document, state.reads, run)) {
         const moved = runFeatures(document, { ...choice, overrides: { ...choice.overrides, [name]: value } }, context);
+        releasePending(moved.run.pending);
         moved.run.cache.trim(moved.run.used);
         const movedBody = moved.run.bodies.get(body);
         if (movedBody === undefined || moved.report.some(entry => built.has(entry.id) && BROKEN.has(entry.status))) {

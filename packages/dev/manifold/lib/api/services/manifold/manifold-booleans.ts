@@ -1,6 +1,6 @@
 import * as Inputs from "../../inputs/manifold-inputs";
 import type * as Manifold3D from "manifold-3d";
-import { resolveDto } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../resolved-inputs";
 
 /**
@@ -262,36 +262,46 @@ export class ManifoldBooleans {
      */
     splitByPlaneOnOffsets(inputs: Inputs.Manifold.SplitByPlaneOnOffsetsDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
         const resolved = resolveDto(Inputs.Manifold.SplitByPlaneOnOffsetsDto, inputs) as Resolved.Manifold.SplitByPlaneOnOffsetsDto<Manifold3D.Manifold>;
+        if (!Array.isArray(resolved.originOffsets)) {
+            throw new InputError("The offsets to split at must be a list of distances", "originOffsets");
+        }
         const pieces: Manifold3D.Manifold[] = [];
         const junk: Manifold3D.Manifold[] = [];
 
         let remainder: Manifold3D.Manifold | undefined = resolved.manifold.asOriginal();
 
-        resolved.originOffsets.forEach((offset) => {
-            if (!remainder) {
-                return;
-            }
-            const halfs = remainder.splitByPlane(resolved.normal, offset);
-            junk.push(remainder);
-            remainder = undefined;
+        try {
+            resolved.originOffsets.forEach((offset) => {
+                if (!remainder) {
+                    return;
+                }
+                const splitting = remainder;
+                remainder = undefined;
+                junk.push(splitting);
+                const halfs = splitting.splitByPlane(resolved.normal, offset);
 
-            if (halfs[1].isEmpty()) {
-                junk.push(halfs[1]);
-            } else {
-                pieces.push(halfs[1]);
-            }
+                if (halfs[1].isEmpty()) {
+                    junk.push(halfs[1]);
+                } else {
+                    pieces.push(halfs[1]);
+                }
 
-            if (halfs[0].isEmpty()) {
-                junk.push(halfs[0]);
-            } else {
-                remainder = halfs[0];
-            }
-        });
+                if (halfs[0].isEmpty()) {
+                    junk.push(halfs[0]);
+                } else {
+                    remainder = halfs[0];
+                }
+            });
+        } catch (error) {
+            junk.push(...pieces);
+            throw error;
+        } finally {
+            junk.forEach(j => j.delete());
+        }
 
         if (remainder) {
             pieces.push(remainder);
         }
-        junk.forEach(j => j.delete());
         return pieces;
     }
 
@@ -311,7 +321,12 @@ export class ManifoldBooleans {
      */
     trimByPlane(inputs: Inputs.Manifold.TrimByPlaneDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const resolved = resolveDto(Inputs.Manifold.TrimByPlaneDto, inputs) as Resolved.Manifold.TrimByPlaneDto<Manifold3D.Manifold>;
-        return resolved.manifold.asOriginal().trimByPlane(resolved.normal, resolved.originOffset);
+        const original = resolved.manifold.asOriginal();
+        try {
+            return original.trimByPlane(resolved.normal, resolved.originOffset);
+        } finally {
+            original.delete();
+        }
     }
 
 }

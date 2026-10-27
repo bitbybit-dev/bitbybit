@@ -246,6 +246,8 @@ export class OCCTEdge {
     /**
      * Makes a circular arc that starts at the first point, passes through the middle one and ends
      * at the last.
+     *
+     * No arc passes through three points on one line or two at the same place, so those are refused.
      * @param inputs - The three points
      * @returns The arc edge
      * @group primitives
@@ -264,7 +266,8 @@ export class OCCTEdge {
      * Makes a circular arc from one point to another that leaves the first point in a given
      * direction.
      *
-     * The tangent fixes the plane and the radius of the arc.
+     * The tangent fixes the plane and the radius of the arc, so it must not run along the line from
+     * the start to the end, and the two points must differ.
      * @param inputs - The start point, the tangent direction there and the end point
      * @returns The arc edge
      * @group primitives
@@ -317,8 +320,8 @@ export class OCCTEdge {
     }
 
     /**
-     * Cuts an arc out of a circle edge that starts at a point on the circle and spans a given
-     * angle, in degrees.
+     * Cuts an arc out of a circle edge from a point on the circle to an angle on it, in degrees,
+     * measured from the circle's own start rather than from the point.
      *
      * `sense` picks which way round the circle the arc runs.
      * @param inputs - The circle edge, the start point, the angle in degrees and the direction of travel
@@ -354,7 +357,7 @@ export class OCCTEdge {
     /**
      * Makes a full ellipse as one closed edge, lying in the plane whose normal is `direction`.
      *
-     * `radiusMajor` must not be smaller than `radiusMinor`, or the kernel refuses the ellipse.
+     * Both radii must be above 0, and `radiusMajor` must not be smaller than `radiusMinor`.
      * @param inputs - The center, the plane normal and the two radii
      * @returns The ellipse edge
      * @group primitives
@@ -899,6 +902,8 @@ export class OCCTEdge {
 
     /**
      * Reads the point where an edge starts, in the edge's own direction.
+     *
+     * A degenerate edge, such as the pole of a ball, is a single point, and that point is its start.
      * @param inputs - The edge
      * @returns The start point
      * @group extract
@@ -931,6 +936,8 @@ export class OCCTEdge {
 
     /**
      * Reads the point where an edge ends, in the edge's own direction.
+     *
+     * A degenerate edge, such as the pole of a ball, is a single point, and that point is its end.
      * @param inputs - The edge
      * @returns The end point
      * @group extract

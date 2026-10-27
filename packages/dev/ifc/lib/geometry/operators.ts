@@ -1,5 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
-import { cross3, dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { cross3, dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { PARALLEL_TOLERANCE } from "../build/constants";
 import { directionOf, pointOf } from "../build/placement";
 import type { ModelSnapshot } from "../model/snapshot";

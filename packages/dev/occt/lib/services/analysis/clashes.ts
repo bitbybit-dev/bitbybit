@@ -6,6 +6,9 @@ import type * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { checkedNumber, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
 import { clashOf } from "../base/surface-analysis";
+import { readKernelException } from "../../kernel-exception";
+import { classifiedStates, meshableSolid, meshErrorFrom, once, pairNeedsMeasuring, placedBox, refinedMeshes, trianglesOf } from "./clash-candidates";
+import type { ClashItem } from "./clash-types";
 
 /**
  * Finding shapes and faces that overlap or come closer than a clearance: pairs among a list of
@@ -17,7 +20,7 @@ export class OCCTAnalysisClashes {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        _och: OccHelper,
+        private readonly och: OccHelper,
     ) { }
 
     /**
@@ -25,8 +28,8 @@ export class OCCTAnalysisClashes {
      * other, such as colliding parts.
      *
      * A clash names the two by their positions in the list, from 0, with their distance, 0 where they
-     * touch, overlap or nest, and the volume two solids share.
-     * @param inputs - The shapes and the clearance
+     * touch, overlap or nest, and the volume two solids share. Meshes rule out pairs first.
+     * @param inputs - The shapes, the clearance and whether meshes rule pairs out first
      * @returns The clashing pairs, in list order
      * @group clashes
      * @shortname clashes between shapes
@@ -41,7 +44,22 @@ export class OCCTAnalysisClashes {
         const resolved = resolveDto(Inputs.OCCT.ClashesBetweenShapesDto, inputs) as Resolved.OCCT.ClashesBetweenShapesDto<TopoDS_Shape>;
         const shapes = checkedShapes(resolved.shapes);
         const clearance = checkedNumber(resolved.clearance, "clearance", 0);
-        return this.occ.ClashesBetween(shapes, clearance).map(clashOf);
+        if (resolved.prefilter === false || shapes.length < 2) {
+            return this.occ.ClashesBetween(shapes, clearance).map(clashOf);
+        }
+        const items = shapes.map(shape => this.clashItemOf(shape));
+        try {
+            return shapes.flatMap((first, a) => shapes.slice(a + 1).flatMap((second, offset) => {
+                const b = a + 1 + offset;
+                const measured = pairNeedsMeasuring(items[a]!, items[b]!, clearance, precision => this.occ.FacesWithin(first, second, clearance, precision).length);
+                return measured ? this.occ.ClashesBetween([first, second], clearance).map(found => clashOf({ ...found, indexA: a, indexB: b })) : [];
+            }));
+        } catch (thrown) {
+            if (readKernelException(this.occ, thrown) === thrown) {
+                throw thrown;
+            }
+            return this.occ.ClashesBetween(shapes, clearance).map(clashOf);
+        }
     }
 
     /**
@@ -93,5 +111,15 @@ export class OCCTAnalysisClashes {
         const shape = checkedShape(resolved.shape);
         const precision = checkedWithin(resolved.precision, "precision", { above: 0 });
         return this.occ.SelfIntersections(shape, precision).map(clashOf);
+    }
+
+    private clashItemOf(shape: TopoDS_Shape): ClashItem {
+        const box = once(() => Array.from(this.occ.BoundingBoxOf(shape)));
+        return {
+            box: once(() => placedBox(box(), undefined)),
+            meshable: once(() => meshableSolid(this.occ, shape)),
+            mesh: once(() => refinedMeshes(precision => trianglesOf(this.och.meshingService.shapeToMesh({ shape, precision, adjustYtoZ: false, computeMetadata: false, keepMeshData: false })), meshErrorFrom(box()))),
+            states: points => classifiedStates(this.occ, shape, points),
+        };
     }
 }

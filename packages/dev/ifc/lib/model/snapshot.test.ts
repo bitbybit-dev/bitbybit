@@ -506,6 +506,30 @@ describe("ModelSnapshot.byType", () => {
     });
 });
 
+describe("ModelSnapshot.hasType", () => {
+    it("should find a type the file holds, through its subtypes, and not one it lacks", () => {
+        // Arrange
+        const model = placedWallModel();
+
+        // Act
+        const found = [model.hasType("IfcPoint"), model.hasType("IfcWall"), model.hasType("IfcDoor")];
+
+        // Assert
+        expect(found).toEqual([true, true, false]);
+    });
+
+    it("should answer for the changes over the file: a deleted instance is gone and a created one counts", () => {
+        // Arrange
+        const base = placedWallModel();
+
+        // Act
+        const changed = withChanges(base, [[20, null], [40, { id: 40, type: "IfcDoor", args: [OTHER_GLOBAL_ID, null, null, null, null, null, null, null, null, null, null, null, null] }]], 41);
+
+        // Assert
+        expect([changed.hasType("IfcWall"), changed.hasType("IfcDoor"), base.hasType("IfcWall")]).toEqual([false, true, true]);
+    });
+});
+
 describe("ModelSnapshot.referencesTo", () => {
     it("should list each entity that refers to an entity once, in model order", () => {
         // Arrange

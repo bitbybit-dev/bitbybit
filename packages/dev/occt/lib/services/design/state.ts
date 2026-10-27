@@ -7,7 +7,7 @@ import type { FaceNames } from "./names";
 import type { DesignValues } from "./values";
 import type { Rebinding } from "./hints";
 import type { DesignProgress } from "./progress";
-import type { BaseBitByBit } from "../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 
 /** A body as the build holds it: its face names, the hash of the feature that made it as it is, and the parameters what made it read. */
 export interface BodyState {
@@ -45,6 +45,12 @@ export interface DesignTrace {
     format?: string;
     join?: string;
     lids?: DesignShellLid[];
+    machining?: DesignMachiningTrace;
+}
+
+export interface DesignMachiningTrace {
+    readonly operation: "din.keyway" | "ansi.keyway" | "flat" | "din.ringGroove" | "ansi.ringGroove" | "din.knurl" | "ansi.knurl" | "din.splinedHub" | "ansi.splinedHub" | "iso.thread" | "ansi.thread";
+    readonly inputs: Readonly<Record<string, unknown>>;
 }
 
 /** A lid a shell cut out: the face of the inner copy under an open face, and how far it was swept out. */
@@ -62,6 +68,7 @@ export interface DesignRun {
     occ: BitbybitOcctModule;
     base: BaseBitByBit;
     cache: DesignCache;
+    unit: Inputs.Base.unitOfLengthEnum;
     parameters: DesignValues;
     derived: ReadonlyMap<string, readonly string[]>;
     bodies: Map<string, BodyState>;
@@ -74,6 +81,7 @@ export interface DesignRun {
     assets?: DesignAssetData | undefined;
     order: string[];
     used: Set<string>;
+    digests: Map<string, string>;
     trace?: Map<string, DesignTrace> | undefined;
     rebinding: Rebinding;
     supplied: ReadonlyMap<string, Models.OCCT.DesignSuppliedOutcome<TopoDS_Shape>>;
@@ -96,6 +104,8 @@ export interface DesignRunContext {
     assets?: DesignAssetData | undefined;
     /** The outcomes a larger build has used so far, when a run is one part of it: the run adds to them, and the larger build trims the cache once, at its end. */
     used?: Set<string> | undefined;
+    /** The digests of the asset contents a larger build has worked out so far, by asset id, so a file every part document imports is hashed once a build. */
+    digests?: Map<string, string> | undefined;
     /** Whether lost references with hints take the faces most like them (`report`) or only offer them (`never`, the default). */
     rebind?: "never" | "report" | undefined;
     /** When given, receives a hint for every face reference the run resolves, by its JSON pointer. */

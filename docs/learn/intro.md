@@ -26,7 +26,7 @@ You can reach them in the way that suits you:
 
 - **Wire nodes** in [Rete](/learn/getting-started/rete), **snap blocks** in [Blockly](/learn/getting-started/blockly) or **write code** in the [TypeScript editor](/learn/getting-started/typescript), all free and in the browser.
 - **Model by clicking** in [the Designer](/learn/designer/intro), a parametric CAD modeller of the Gold plan.
-- **Build it into your own product** with the open-source [npm packages](/learn/npm-packages/intro), a one-file [runner](/learn/runners/intro), or the [CAD Cloud API](/api/cloud-api) on our servers.
+- **Build it into your own product** with the free [npm packages](/learn/npm-packages/intro), a one-file [runner](/learn/runners/intro), or the [CAD Cloud API](/api/cloud-api) on our servers.
 - **Let an AI agent do it**, with the exact API from the [Bitbybit CAD MCP](/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp).
 - **Sell it**: [3D Bits](/learn/3d-bits/intro) puts 3D viewers and product configurators on Shopify stores.
 
@@ -137,7 +137,7 @@ Most people who build with Bitbybit want 3D in a website of their own. There are
 
 1. **Embed a published project.** Publish a project on bitbybit.dev and embed its preview with an `<iframe>`; no code at all. [Publishing](/learn/getting-started/basics/projects/publish).
 2. **A runner.** One script file from our CDN, or [hosted by you](./hosting-and-cdn), runs a script exported from an editor, or your own JavaScript, on any page. [Runners](./runners/intro).
-3. **npm packages.** The open-source packages in your React, Angular, Vue, Svelte or plain JavaScript app, with BabylonJS, ThreeJS or PlayCanvas; `npx @bitbybit-dev/create-app` sets one up. [npm packages](./npm-packages/intro).
+3. **npm packages.** The free packages in your React, Angular, Vue, Svelte or plain JavaScript app, with BabylonJS, ThreeJS or PlayCanvas; `npx @bitbybit-dev/create-app` sets one up. [npm packages](./npm-packages/intro).
 4. **CAD Cloud.** Your backend asks our servers for STEP, glTF or mesh files, through the REST API or the TypeScript SDK. [CAD Cloud API](/api/cloud-api).
 5. **An AI agent.** Claude Code, Codex, Cursor, VS Code, claude.ai or ChatGPT look up the exact API while they write, and with a key run geometry on CAD Cloud. [Using AI](./using-ai-with-bitbybit/intro).
 
@@ -157,14 +157,14 @@ In this walk-through, recorded for version 1.0, Matas explains these integration
 
 ## Free and paid
 
-The core is free: the geometry packages are open source under the MIT license (OpenCascade and the other libraries they use keep their own licenses), the runners are free to deploy, and the three coding editors and the Bitbybit CAD MCP cost nothing.
+The core is free: the geometry packages are MIT-licensed, with open-source TypeScript (OpenCascade and the other libraries they use keep their own licenses, and the C++ layer of the Bitbybit OCCT Kernel they ship is closed source), the runners are free to deploy, and the three coding editors and the Bitbybit CAD MCP cost nothing.
 
 - **Silver and Gold** add cloud space, the platform algorithms that need a plan, community projects, the converter and the 3D inspector; Gold adds the Designer. [Plans](./plans) compares them.
 - **CAD Cloud** is sold as API keys with a monthly allowance of compute.
 - **3D Bits** has its own Shopify plans.
 - **Enterprise** work is custom development and managed infrastructure.
 
-The paid products fund the open-source core. [Platform & Products](./offerings) describes each one, and [our approach to open source](./open-source-approach) says what is open.
+The paid products fund the free core. [Platform & Products](./offerings) describes each one, and [our approach to open source](./open-source-approach) says what is open.
 
 ## Next steps
 

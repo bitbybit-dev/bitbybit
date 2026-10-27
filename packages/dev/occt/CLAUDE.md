@@ -13,13 +13,16 @@ at the root) verifies a kernel that is present against the manifest and download
 missing; `kernels:check` only verifies. A kernel on disk whose hash differs from the manifest is an
 error, never overwritten: the deploy folder is the source of truth, and the mismatch means a kernel
 build did not update the manifest. `npm run build-p` then copies all three directories into `dist/`
-via `copy-occt`, with `NOTICE` and `licenses/` (OCCT is LGPL-2.1 with the Open CASCADE exception,
-Draco is Apache-2.0; the package's own code is MIT). `check:tarballs` fails a tarball that lacks any
+via `copy-occt`, with `NOTICE` and `licenses/`. The package is MIT, the Bitbybit OCCT Kernel included
+(`LICENSE` says so; it is closed source: the kernel layer's C++ is not published); OCCT inside it is
+LGPL-2.1 with the Open CASCADE exception, and Draco, RapidJSON and mimalloc keep their own licenses.
+`NOTICE` carries the offer of relinking materials that OCCT's license asks for, so a statement about
+the kernel's licensing anywhere has to agree with it. `check:tarballs` fails a tarball that lacks any
 of it. A build that runs plain `npm run build` produces a package that type-checks and resolves but
 **cannot run** - the kernel is missing.
 
-The wasm is not built here. It is compiled from the OCCT fork and the bindings layer
-(https://github.com/bitbybit-dev/OCCT and its BitbybitOcct module); that build deploys the glue,
+The wasm is not built here. It is compiled from the OCCT fork (https://github.com/bitbybit-dev/OCCT)
+and the kernel layer, whose source is not published; that build deploys the glue,
 the typings and the hashed wasm into the variant directory and rewrites `kernels.json`, and every
 hashed reference in this repository (the `cdn.js` entries, the node examples) is synced to the file
 on disk. Publishing a kernel uploads it as a release asset of the bitbybit-assets repository and
@@ -43,6 +46,30 @@ and wasm from another folder, such as a kernel build that was never deployed, `B
 repeats (5), `BENCH_PARALLEL=off` runs the multithreaded kernel on one thread (the report says which
 it ran) and `BENCH_OUT` writes the report as JSON. Compare two kernels on a quiet machine, one
 after the other: a compile in the background moves the numbers more than most changes do.
+
+## Measuring memory
+
+`npm run heap` runs every case of `lib/__test__/lifetime-cases.ts` 5 times to warm up, then three
+equal windows of a third of `HEAP_CALLS` each (66 calls of the default 200), reading the kernel's
+`HeapBytesInUse()` after each window. After every call it frees the C++ exception the call threw,
+releases the design caches (`releaseDesignCaches`) and deletes every kernel object the call made, its
+answer included, so each call starts from the same heap. A case must succeed or refuse on every call as
+its list says, or the probe fails: a case that starts failing early would otherwise be measured on
+another path. A case leaks when its heap grows by more than 8 bytes a call on average over the three
+windows - one rule, which a steady leak meets in every window and a leak that grows in steps meets in
+one - and the failure names each such case with its mean and its three windows. A leaking case fails
+the probe unless `heap/heap.allow.json` names it with its reason (a leak inside OCCT) and the most
+bytes a call it may grow by in any window, and a listed case whose worst window grows past its bound,
+that no longer grows, or that no case is named after fails it too. `heap/heap-verdict.ts` holds the
+rule and its message, and `heap/heap-verdict.test.ts`, which `npm run heap` runs first, pins both. A
+kernel without that counter (the multithreaded one answers -1) is measured by its heap size, which
+only a large leak moves, so it never calls a listed case stale. Two design sessions build a
+document with edits and free only what each build returns, as a caller does: 50 edits that reuse the
+design cache, and 120 that each make new outcomes, more than the cache holds, so its trimming runs; both
+must come back to their starting heap once the caches are released. It runs outside `npm test`
+(`heap/vitest.config.ts`). `HEAP_KERNEL=<folder>`, `HEAP_CALLS`, `HEAP_THRESHOLD`, `HEAP_CASES=<part of a
+name>`, `HEAP_OUT` and `HEAP_REPORT_ONLY=1` work as the bench's variables do. `kernel-heap.test.ts` and
+`kernel-exceptions.test.ts` pin the leaks it found, each in a few lines.
 
 ## Services are built in a ring
 
@@ -92,9 +119,15 @@ has a reason code. The codes and detail types are in the API report, because cal
 them; a new kind of failure gets a new code, and a code is never reused for another meaning. Inputs
 that would crash or trivially fail the kernel (a loft through fewer than two sections, a loft of
 points only, an empty operand of a boolean) are refused as an `InputError` before it runs. OCCT also
-reports success for some results that are not valid solids - a fillet radius larger than the faces
-allow, a pipe whose profile does not fit its bends - and those still come back without an error;
-`shapeFix.isValid` finds the first kind.
+reports success for some results that are not valid solids. Fillets, chamfers, offsets, thick
+solids and solid lofts refuse a result that is broken beyond use - no solid and not valid, or a volume
+that is not a number, about 0 or larger than its own box (`lib/services/base/solid-results.ts`); an invalid result
+of a plausible volume still comes back without an error, since callers such as the design shell
+repair or judge it themselves, and `shapeFix.isValid` finds it. The kernel catches
+two such kinds itself: a boolean of solids whose result is not valid, or whose volume no such boolean
+can have, is rebuilt from OCCT's split cells and refused as `occt.boolean.inconsistent` when that fails
+too; and a round pipe whose path bends tighter than its radius is refused as `occt.pipe.tooTight`
+(along lines and arcs that pipe is exact, cylinders and tori).
 
 Two behaviours are stable and surprising, so assume the opposite at your peril:
 

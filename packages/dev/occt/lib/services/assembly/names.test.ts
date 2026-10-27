@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll, afterEach } from "vitest";
 import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTAssemblyManager } from "./manager";
 import { OCCTAssemblyQuery } from "./query";
 import { OCCTIO } from "../io";
@@ -22,7 +20,7 @@ describe("assembly names", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        const occHelper = new OccHelper(occt);
         manager = new OCCTAssemblyManager(occt, occHelper);
         query = new OCCTAssemblyQuery(occt, occHelper);
         io = new OCCTIO(occt, occHelper);

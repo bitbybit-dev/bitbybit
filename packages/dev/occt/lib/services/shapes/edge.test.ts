@@ -1,16 +1,15 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { BitbybitOcctModule, CurvePointResult, TopoDS_Edge, TopoDS_Shape, gp_Pnt } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTGeom } from "../geom/geom";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import * as Inputs from "../../api/inputs";
 import { OCCTFace } from "./face";
 import { OCCTBooleans } from "../booleans";
 import { OCCTWire } from "./wire";
 import { OCCTFillets } from "../fillets";
+import { InputError } from "@bitbybit-dev/base";
 
 describe("OCCT edge unit tests", () => {
     let edge: OCCTEdge;
@@ -21,16 +20,12 @@ describe("OCCT edge unit tests", () => {
     let geom: OCCTGeom;
     let occHelper: OccHelper;
     let occt: BitbybitOcctModule;
-    let vec: VectorHelperService;
-    let s: ShapesHelperService;
 
     const closeToNr = 13;
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        vec = new VectorHelperService();
-        s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         geom = new OCCTGeom(occt, occHelper);
         edge = new OCCTEdge(occt, occHelper);
         face = new OCCTFace(occt, occHelper);
@@ -38,6 +33,15 @@ describe("OCCT edge unit tests", () => {
         fillets = new OCCTFillets(occt, occHelper);
         booleans = new OCCTBooleans(occt, occHelper);
     });
+
+    const thrownBy = (act: () => unknown): unknown => {
+        try {
+            act();
+        } catch (error) {
+            return error;
+        }
+        return undefined;
+    };
 
     const within = (expected: unknown): unknown => {
         if (Array.isArray(expected)) {
@@ -111,11 +115,13 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should not make ellipse edge when minor radius is larger than major radius", () => {
-        const e = edge.createEllipseEdge({ radiusMinor: 3, radiusMajor: 2, center: [0, 0, 0], direction: [0, 0, 1] });
-        if (e && !e.IsNull()) {
-            e.delete();
-        }
+    it("should refuse an ellipse edge whose minor radius is larger than its major radius, naming the minor one", () => {
+        // Act
+        const thrown = thrownBy(() => edge.createEllipseEdge({ radiusMinor: 3, radiusMajor: 2, center: [0, 0, 0], direction: [0, 0, 1] }));
+
+        // Assert
+        expect(thrown).toBeInstanceOf(InputError);
+        expect(thrown).toMatchObject({ property: "radiusMinor", message: "`radiusMinor` must not exceed `radiusMajor`; it is 3 and `radiusMajor` is 2." });
     });
 
     it("should be able to get an edge from solid shape", () => {
@@ -1376,6 +1382,20 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
+    it("should leave a closed polyline's points as they were given and make the same edges every time it is drawn", () => {
+        // Arrange
+        const polyline: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]], isClosed: true };
+
+        // Act
+        const first = edge.fromBasePolyline({ polyline });
+        const second = edge.fromBasePolyline({ polyline });
+
+        // Assert
+        expect(polyline.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
+        expect([first.length, second.length]).toEqual([3, 3]);
+        [...first, ...second].forEach(e => e.delete());
+    });
+
     it("should create edges from triangle", () => {
         const triangle: Inputs.Base.Triangle3 = [
             [0, 0, 0],
@@ -1663,6 +1683,476 @@ describe("OCCT edge unit tests", () => {
             expect(point).toEqual([0.5, 0, 0]);
             expect([results!.length, points!.length]).toEqual([1, 1]);
             expect([...results!, ...points!].filter(made => !made.isDeleted())).toEqual([]);
+        });
+    });
+
+    describe("tangent lines from a point that lies inside the circle", () => {
+        const unitCircle = (): TopoDS_Edge => edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 0, 1] });
+        const outside: Inputs.Base.Point3 = [3, 0, 0];
+        const inside: Inputs.Base.Point3 = [0.2, 0, 0];
+        const refusalOf = (act: () => unknown): InputError => {
+            try {
+                act();
+            } catch (error) {
+                expect(error).toBeInstanceOf(InputError);
+                return error as InputError;
+            }
+            throw new Error("expected an InputError, but nothing was thrown");
+        };
+
+        it("should refuse to keep one side of the lines from two points when the second lies inside the circle, naming it", () => {
+            // Arrange
+            const circle = unitCircle();
+
+            // Act
+            const refusal = refusalOf(() => edge.constraintTanLinesFromTwoPtsToCircle({ circle, point1: outside, point2: inside, positionResult: Inputs.OCCT.positionResultEnum.keepSide1, circleRemainder: Inputs.OCCT.circleInclusionEnum.none, tolerance: 1e-7 }));
+
+            // Assert
+            expect([refusal.property, refusal.message]).toEqual(["point2", "`point2` lies inside the circle, so no tangent line from it exists on the side `positionResult` keeps."]);
+        });
+
+        it("should refuse to keep the other side of the lines from two points when the first lies inside the circle, naming it", () => {
+            // Arrange
+            const circle = unitCircle();
+
+            // Act
+            const refusal = refusalOf(() => edge.constraintTanLinesFromTwoPtsToCircle({ circle, point1: inside, point2: outside, positionResult: Inputs.OCCT.positionResultEnum.keepSide2, circleRemainder: Inputs.OCCT.circleInclusionEnum.none, tolerance: 1e-7 }));
+
+            // Assert
+            expect([refusal.property, refusal.message]).toEqual(["point1", "`point1` lies inside the circle, so no tangent line from it exists on the side `positionResult` keeps."]);
+        });
+
+        it("should still give both lines from the point outside when all lines from two points are kept and the other lies inside the circle", () => {
+            // Arrange
+            const circle = unitCircle();
+
+            // Act
+            const lines = edge.constraintTanLinesFromTwoPtsToCircle({ circle, point1: outside, point2: inside, positionResult: Inputs.OCCT.positionResultEnum.all, circleRemainder: Inputs.OCCT.circleInclusionEnum.none, tolerance: 1e-7 });
+
+            // Assert
+            expect(lines.map(line => edge.getEdgeLength({ shape: line }))).toEqual(within([Math.sqrt(8), Math.sqrt(8)]));
+        });
+
+        it.each([Inputs.OCCT.positionResultEnum.keepSide1, Inputs.OCCT.positionResultEnum.keepSide2])("should refuse to keep the %s line from a point inside the circle, naming it", positionResult => {
+            // Arrange
+            const circle = unitCircle();
+
+            // Act
+            const refusal = refusalOf(() => edge.constraintTanLinesFromPtToCircle({ circle, point: inside, positionResult, circleRemainder: Inputs.OCCT.circleInclusionEnum.none, tolerance: 1e-7 }));
+
+            // Assert
+            expect([refusal.property, refusal.message]).toEqual(["point", "`point` lies inside the circle, so no tangent line from it exists on the side `positionResult` keeps."]);
+        });
+
+        it("should give no lines from a point inside the circle when all are kept", () => {
+            // Arrange
+            const circle = unitCircle();
+
+            // Act
+            const lines = edge.constraintTanLinesFromPtToCircle({ circle, point: inside, positionResult: Inputs.OCCT.positionResultEnum.all, circleRemainder: Inputs.OCCT.circleInclusionEnum.keepSide1, tolerance: 1e-7 });
+
+            // Assert
+            expect(lines).toEqual([]);
+        });
+
+        it("should pass on a point that lies on the circle as the kernel's reason, read rather than raw", () => {
+            // Arrange
+            const circle = unitCircle();
+            const onTheCircle: Inputs.Base.Point3 = [1, 0, 0];
+
+            // Act
+            const thrown = thrownBy(() => edge.constraintTanLinesFromPtToCircle({ circle, point: onTheCircle, positionResult: Inputs.OCCT.positionResultEnum.all, circleRemainder: Inputs.OCCT.circleInclusionEnum.none, tolerance: 1e-7 }));
+
+            // Assert
+            expect(thrown).toEqual(new Error("StdFail_NotDone: BRep_API: command not done"));
+        });
+    });
+
+    describe("tangent lines on a circle and the circle touching it inside", () => {
+        const outer = (): TopoDS_Edge => edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+        const touchingInside = (): TopoDS_Edge => edge.createCircleEdge({ radius: 1, center: [1, 0, 0], direction: [0, 0, 1] });
+
+        it.each([
+            [Inputs.OCCT.positionResultEnum.all, Inputs.OCCT.twoCircleInclusionEnum.outside],
+            [Inputs.OCCT.positionResultEnum.keepSide2, Inputs.OCCT.twoCircleInclusionEnum.inside],
+        ])("should refuse lines with no length, kept as %s with the arcs %s them, naming the circle that touches from inside", (positionResult, circleRemainders) => {
+            // Arrange
+            const circle1 = outer();
+            const circle2 = touchingInside();
+
+            // Act
+            const thrown = thrownBy(() => edge.constraintTanLinesOnTwoCircles({ circle1, circle2, positionResult, circleRemainders, tolerance: 1e-7 }));
+
+            // Assert
+            expect(thrown).toEqual(new InputError("`circle2` touches `circle1` from inside, so the lines tangent to both have no length.", "circle2"));
+        });
+
+        it("should refuse the lines with no length even when no arcs are asked for, rather than hand them back", () => {
+            // Arrange
+            const circle1 = outer();
+            const circle2 = touchingInside();
+
+            // Act
+            const thrown = thrownBy(() => edge.constraintTanLinesOnTwoCircles({ circle1, circle2, positionResult: Inputs.OCCT.positionResultEnum.all, circleRemainders: Inputs.OCCT.twoCircleInclusionEnum.none, tolerance: 1e-7 }));
+
+            // Assert
+            expect(thrown).toEqual(new InputError("`circle2` touches `circle1` from inside, so the lines tangent to both have no length.", "circle2"));
+        });
+
+        it("should keep drawing the two lines tangent to a circle and the circle touching it outside", () => {
+            // Arrange
+            const circle1 = outer();
+            const circle2 = edge.createCircleEdge({ radius: 1, center: [3, 0, 0], direction: [0, 0, 1] });
+
+            // Act
+            const lines = edge.constraintTanLinesOnTwoCircles({ circle1, circle2, positionResult: Inputs.OCCT.positionResultEnum.all, circleRemainders: Inputs.OCCT.twoCircleInclusionEnum.none, tolerance: 1e-7 });
+
+            // Assert
+            expect(lines.map(line => edge.getEdgeLength({ shape: line }))).toEqual([expect.closeTo(Math.sqrt(8), 9), expect.closeTo(Math.sqrt(8), 9)]);
+        });
+    });
+
+    describe("an arc the kernel cannot trim", () => {
+        it("should pass on two equal angles of an arc on a circle as the kernel's reason, read rather than raw", () => {
+            // Arrange
+            const circle = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const thrown = thrownBy(() => edge.arcFromCircleAndTwoAngles({ circle, alphaAngle1: 30, alphaAngle2: 30, sense: true }));
+
+            // Assert
+            expect(thrown).toEqual(new Error("Standard_ConstructionError: Geom_TrimmedCurve::U1 == U2"));
+        });
+
+        it("should pass on two equal points of an arc on a circle as the kernel's reason, read rather than raw", () => {
+            // Arrange
+            const circle = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const thrown = thrownBy(() => edge.arcFromCircleAndTwoPoints({ circle, start: [2, 0, 0], end: [2, 0, 0], sense: true }));
+
+            // Assert
+            expect(thrown).toEqual(new Error("Standard_ConstructionError: Geom_TrimmedCurve::U1 == U2"));
+        });
+    });
+
+    describe("tangent circles of a radius that is not above 0", () => {
+        it.each([0, -1])("should refuse a radius of %s before drawing the circles through a point that touch a circle", radius => {
+            // Arrange
+            const circle = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const thrown = thrownBy(() => edge.constraintTanCirclesOnCircleAndPnt({ circle, point: [3, 0, -3], radius, tolerance: 1e-7 }));
+
+            // Assert
+            expect(thrown).toBeInstanceOf(InputError);
+            expect(thrown).toMatchObject({ property: "radius", message: `\`radius\` must be a finite number above 0; it is ${radius}.` });
+        });
+
+        it.each([0, -1])("should refuse a radius of %s before drawing the circles that touch two circles", radius => {
+            // Arrange
+            const circle1 = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+            const circle2 = edge.createCircleEdge({ radius: 1, center: [5, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const thrown = thrownBy(() => edge.constraintTanCirclesOnTwoCircles({ circle1, circle2, radius, tolerance: 1e-7 }));
+
+            // Assert
+            expect(thrown).toBeInstanceOf(InputError);
+            expect(thrown).toMatchObject({ property: "radius", message: `\`radius\` must be a finite number above 0; it is ${radius}.` });
+        });
+    });
+
+    describe("edges joining points where a segment has no length", () => {
+        it("should refuse a polyline that repeats a point with the kernel's reason, read rather than raw", () => {
+            // Arrange
+            const polyline: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 0, 0], [1, 0, 0], [2, 0, 0]], isClosed: false };
+
+            // Act
+            const thrown = thrownBy(() => edge.fromBasePolyline({ polyline }));
+
+            // Assert
+            expect(thrown).toEqual(new Error("StdFail_NotDone: BRep_API: command not done"));
+        });
+
+        it("should skip a triangle with two corners at one point and keep the three edges of the other", () => {
+            // Arrange
+            const mesh: Inputs.Base.Mesh3 = [[[0, 0, 0], [1, 0, 0], [1, 0, 0]], [[0, 0, 0], [1, 0, 0], [0, 1, 0]]];
+            const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+            // Act
+            const edges = edge.fromBaseMesh({ mesh });
+            const warnings = warn.mock.calls.length;
+            warn.mockRestore();
+
+            // Assert
+            expect([edges.length, warnings]).toEqual([3, 1]);
+        });
+    });
+
+    describe("an arc from a point on a circle the kernel cannot trim", () => {
+        it("should pass on an angle that ends the arc at the point it starts from as the kernel's reason, read rather than raw", () => {
+            // Arrange
+            const circle = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const point = edge.startPointOnEdge({ shape: circle });
+
+            // Act
+            const thrown = thrownBy(() => edge.arcFromCirclePointAndAngle({ circle, point, alphaAngle: 0, sense: true }));
+
+            // Assert
+            expect(thrown).toEqual(new Error("Standard_ConstructionError: Geom_TrimmedCurve::U1 == U2"));
+        });
+    });
+
+    describe("an arc through three points no circle passes through", () => {
+        it.each([
+            ["on one line", [1, 0, 0]],
+            ["of which two are the same point", [0, 0, 0]],
+        ] as [string, Inputs.Base.Point3][])("should refuse three points %s, naming the middle one, rather than hand back an empty edge", (_name, middle) => {
+            // Act
+            const thrown = thrownBy(() => edge.arcThroughThreePoints({ start: [0, 0, 0], middle, end: [2, 0, 0] }));
+
+            // Assert
+            expect(thrown).toBeInstanceOf(InputError);
+            expect(thrown).toMatchObject({ property: "middle", message: "`start`, `middle` and `end` lie on one line, or two of them are the same point, so no arc passes through all three." });
+        });
+    });
+
+    describe("an arc from two points and a tangent that cannot make one", () => {
+        it("should refuse a start and an end at the same point, naming the end, rather than hand back an empty edge", () => {
+            // Act
+            const thrown = thrownBy(() => edge.arcThroughTwoPointsAndTangent({ start: [0, 0, 0], tangentVec: [0, 1, 0], end: [0, 0, 0] }));
+
+            // Assert
+            expect(thrown).toBeInstanceOf(InputError);
+            expect(thrown).toMatchObject({ property: "end", message: "`start` and `end` are the same point, so there is no arc between them." });
+        });
+
+        it("should refuse a tangent of no length rather than hand back an edge of no length that can be measured", () => {
+            // Act
+            const thrown = thrownBy(() => edge.arcThroughTwoPointsAndTangent({ start: [0, 0, 0], tangentVec: [0, 0, 0], end: [1, 0, 0] }));
+
+            // Assert
+            expect(thrown).toBeInstanceOf(InputError);
+            expect(thrown).toMatchObject({ property: "tangentVec", message: "`tangentVec` is [0, 0, 0], which points nowhere." });
+        });
+
+        it.each([
+            ["towards the end", [1, 0, 0]],
+            ["away from the end", [-1, 0, 0]],
+        ] as [string, Inputs.Base.Vector3][])("should refuse a tangent along the line %s rather than hand back an edge of no length that can be measured", (_name, tangentVec) => {
+            // Act
+            const thrown = thrownBy(() => edge.arcThroughTwoPointsAndTangent({ start: [0, 0, 0], tangentVec, end: [1, 0, 0] }));
+
+            // Assert
+            expect(thrown).toBeInstanceOf(InputError);
+            expect(thrown).toMatchObject({ property: "tangentVec", message: "`tangentVec` runs along the line from `start` to `end`, so no arc leaves `start` that way and reaches `end`." });
+        });
+
+        it("should keep making the half circle a tangent across the line gives", () => {
+            // Act
+            const arc = edge.arcThroughTwoPointsAndTangent({ start: [0, 0, 0], tangentVec: [0, 1, 0], end: [2, 0, 0] });
+
+            // Assert
+            expect(edge.getEdgeLength({ shape: arc })).toBeCloseTo(Math.PI, 12);
+        });
+    });
+
+    describe("circle and ellipse edges of radii no curve has", () => {
+        it.each([0, -1])("should refuse a circle edge of radius %s, naming the radius", radius => {
+            // Act
+            const thrown = thrownBy(() => edge.createCircleEdge({ radius, center: [0, 0, 0], direction: [0, 1, 0] }));
+
+            // Assert
+            expect(thrown).toBeInstanceOf(InputError);
+            expect(thrown).toMatchObject({ property: "radius", message: `\`radius\` must be a finite number above 0; it is ${radius}.` });
+        });
+
+        it.each([0, -1])("should refuse an ellipse edge of minor radius %s, naming the minor radius", radiusMinor => {
+            // Act
+            const thrown = thrownBy(() => edge.createEllipseEdge({ radiusMinor, radiusMajor: 2, center: [0, 0, 0], direction: [0, 1, 0] }));
+
+            // Assert
+            expect(thrown).toBeInstanceOf(InputError);
+            expect(thrown).toMatchObject({ property: "radiusMinor", message: `\`radiusMinor\` must be a finite number above 0; it is ${radiusMinor}.` });
+        });
+
+        it("should keep making an ellipse edge of two equal radii as the circle it is", () => {
+            // Act
+            const ellipse = edge.createEllipseEdge({ radiusMinor: 2, radiusMajor: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Assert
+            expect(edge.getEdgeLength({ shape: ellipse })).toBeCloseTo(4 * Math.PI, 12);
+        });
+    });
+
+    describe("the points of a degenerate edge, such as the pole of a ball", () => {
+        const ballOfRadius6 = (): TopoDS_Shape => occHelper.solidsService.createSphere({ radius: 6, center: [0, 0, 0] });
+        const poleOfABall = (): TopoDS_Edge => edge.getEdge({ shape: ballOfRadius6(), index: 0 });
+        const northPole = [expect.closeTo(0, 12), expect.closeTo(0, 12), expect.closeTo(6, 12)];
+        const allAt = (points: Inputs.Base.Point3[], at: Inputs.Base.Point3): boolean => points.every(point => point.every((coordinate, axis) => Math.abs(coordinate - at[axis]!) < 1e-9));
+
+        it("should read the start point of the pole as the point it is", () => {
+            // Arrange
+            const shape = poleOfABall();
+
+            // Act
+            const start = edge.startPointOnEdge({ shape });
+
+            // Assert
+            expect(start).toEqual(northPole);
+        });
+
+        it("should read the end point of the pole as the point it is", () => {
+            // Arrange
+            const shape = poleOfABall();
+
+            // Act
+            const end = edge.endPointOnEdge({ shape });
+
+            // Assert
+            expect(end).toEqual(northPole);
+        });
+
+        it("should read the point at any parameter of the pole as the point it is", () => {
+            // Arrange
+            const shape = poleOfABall();
+
+            // Act
+            const middle = edge.pointOnEdgeAtParam({ shape, param: 0.5 });
+
+            // Assert
+            expect(middle).toEqual(northPole);
+        });
+
+        it("should read the start points of a list that holds the pole", () => {
+            // Arrange
+            const shapes = [poleOfABall(), edge.line({ start: [1, 2, 3], end: [4, 5, 6] })];
+
+            // Act
+            const starts = edge.startPointsOnEdges({ shapes });
+
+            // Assert
+            expect(starts).toEqual([northPole, [1, 2, 3]]);
+        });
+
+        it("should trace every edge of a ball as points, each pole as points at the pole and the seam from pole to pole", () => {
+            // Arrange
+            const shape = ballOfRadius6();
+
+            // Act
+            const traced = edge.edgesToPoints({ shape, angularDeflection: 0.1, curvatureDeflection: 0.1, minimumOfPoints: 2, uTolerance: 1e-7, minimumLength: 1e-7 });
+
+            // Assert
+            expect(traced).toHaveLength(3);
+            const seam = traced[1]!;
+            expect([allAt(traced[0]!, [0, 0, 6]), seam[0]![2], seam[seam.length - 1]![2], allAt(traced[2]!, [0, 0, -6])]).toEqual([true, expect.closeTo(-6, 9), expect.closeTo(6, 9), true]);
+        });
+
+        it("should trace every edge of a cone as points, its apex as points at the apex", () => {
+            // Arrange
+            const shape = occHelper.solidsService.createCone({ radius1: 3, radius2: 0, height: 5, angle: 360, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const traced = edge.edgesToPoints({ shape, angularDeflection: 0.1, curvatureDeflection: 0.1, minimumOfPoints: 2, uTolerance: 1e-7, minimumLength: 1e-7 });
+
+            // Assert
+            expect(traced).toHaveLength(3);
+            expect(allAt(traced[0]!, [0, 5, 0])).toBe(true);
+        });
+
+        it("should read the start and end points of an edge and of the pole handed as plain shapes", () => {
+            // Arrange
+            const line = occt.BRepBuilderAPI_Copy_Shape(edge.line({ start: [1, 2, 3], end: [4, 5, 6] }), false);
+            const pole = occt.BRepBuilderAPI_Copy_Shape(poleOfABall(), false);
+
+            // Act
+            const points = [edge.startPointOnEdge({ shape: line }), edge.endPointOnEdge({ shape: line }), edge.startPointOnEdge({ shape: pole })];
+
+            // Assert
+            expect(points).toEqual([[1, 2, 3], [4, 5, 6], northPole]);
+        });
+
+        it("should read the tangent at a length along an edge handed as a plain shape", () => {
+            // Arrange
+            const line = occt.BRepBuilderAPI_Copy_Shape(edge.line({ start: [0, 0, 0], end: [4, 0, 0] }), false);
+
+            // Act
+            const tangent = edge.tangentOnEdgeAtLength({ shape: line, length: 1 });
+
+            // Assert
+            expect(tangent).toEqual([4, 0, 0]);
+        });
+
+        it("should refuse a deleted edge as the shape it was handed in as", () => {
+            // Arrange
+            const shape = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
+            shape.delete();
+
+            // Act
+            const thrown = [thrownBy(() => edge.startPointOnEdge({ shape })), thrownBy(() => edge.endPointOnEdge({ shape }))];
+
+            // Assert
+            expect(thrown).toEqual([
+                new InputError("`shape` was deleted, so nothing of it is left to work on.", "shape"),
+                new InputError("`shape` was deleted, so nothing of it is left to work on.", "shape"),
+            ]);
+        });
+    });
+
+    describe("reading the circle of an edge", () => {
+        it.each([
+            ["a line", (): TopoDS_Edge => edge.line({ start: [0, 0, 0], end: [10, 0, 0] })],
+            ["an ellipse", (): TopoDS_Edge => edge.createEllipseEdge({ radiusMinor: 1, radiusMajor: 2, center: [0, 0, 0], direction: [0, 1, 0] })],
+        ])("should refuse %s as not a circular edge, naming the shape it was given", (_name, made) => {
+            // Arrange
+            const shape = made();
+
+            // Act
+            const thrown = thrownBy(() => edge.getCircularEdgeRadius({ shape }));
+
+            // Assert
+            expect(thrown).toEqual(new InputError("Edge is not a circular edge.", "shape"));
+        });
+
+        it.each([
+            ["the tangent lines from a point", (line: TopoDS_Edge): unknown => edge.constraintTanLinesFromPtToCircle({ circle: line, point: [5, 5, 0], positionResult: Inputs.OCCT.positionResultEnum.all, circleRemainder: Inputs.OCCT.circleInclusionEnum.none, tolerance: 1e-7 }), "circle"],
+            ["the tangent lines on two circles", (line: TopoDS_Edge): unknown => edge.constraintTanLinesOnTwoCircles({ circle1: edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 0, 1] }), circle2: line, positionResult: Inputs.OCCT.positionResultEnum.all, circleRemainders: Inputs.OCCT.twoCircleInclusionEnum.none, tolerance: 1e-7 }), "circle2"],
+        ])("should refuse a straight edge given for %s as not a circular edge, naming the property that held it", (_name, draw, property) => {
+            // Arrange
+            const line = edge.line({ start: [0, 0, 0], end: [10, 0, 0] });
+
+            // Act
+            const thrown = thrownBy(() => draw(line));
+
+            // Assert
+            expect(thrown).toEqual(new InputError("Edge is not a circular edge.", property));
+        });
+
+        it("should let a trap while reading the circle through as itself rather than call the edge not circular", () => {
+            // Arrange
+            const shape = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const trap = new WebAssembly.RuntimeError("unreachable");
+            const spy = vi.spyOn(occt.BRepAdaptor_Curve.prototype, "Circle").mockImplementation(() => {
+                throw trap;
+            });
+
+            // Act
+            const thrown = thrownBy(() => edge.getCircularEdgeRadius({ shape }));
+            spy.mockRestore();
+
+            // Assert
+            expect(thrown).toBe(trap);
+        });
+    });
+
+    describe("a symmetric closed spline the kernel cannot make", () => {
+        it("should pass on two equal points one after the other as the kernel's reason, read rather than raw", () => {
+            // Act
+            const thrown = thrownBy(() => edge.createSymmetricPeriodicBSplineEdge({ points: [[0, 0, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]] }));
+
+            // Assert
+            expect(thrown).toEqual(new Error("Standard_ConstructionError"));
         });
     });
 });

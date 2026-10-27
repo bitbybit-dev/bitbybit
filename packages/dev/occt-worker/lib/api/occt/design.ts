@@ -74,11 +74,11 @@ export class OCCTDesign {
      * Builds the parts of a design document, with a configuration's values and then `parameters`
      * replacing the document's own.
      *
-     * A document `validate` faults is refused. A failed feature is reported and what uses it
-     * skipped; unchanged features are reused. `structure` exports the parts to STEP and glTF through
-     * `assembly.manager.buildAssemblyDocument`; an assembly adds components and a bill of materials.
+     * A document `validate` faults is refused; a failed feature is reported and what uses it skipped.
+     * The caller deletes every shape returned, and an identical call returns the same ones while they
+     * live, so one delete frees both answers.
      * @param inputs - The document, the configuration and the parameter values to build it with
-     * @returns The parts, a report per feature, the problems found after the features ran, and the parameter values used
+     * @returns The parts, a report per feature, the problems found after the features ran, the parameter values used, and the `structure` that `assembly.manager.buildAssemblyDocument` exports to STEP and glTF; an assembly adds its components and bill of materials
      * @group document
      * @shortname build design
      * @drawable true
@@ -101,7 +101,10 @@ export class OCCTDesign {
     /**
      * Builds a design document whose script features run here, on the main thread, as the kernel runs no
      * code: it builds, runs the code of every script the build lists as `pending`, and builds again
-     * with what each made, until no script waits.
+     * with what each made, until no script waits. The shapes of earlier rounds and those the scripts
+     * returned are deleted on the way, each unless another call was answered with it too, so only what
+     * the last build returns is the caller's to delete; as with `build`, an identical call returns the
+     * same shapes while they live.
      *
      * A script's code is the asset its feature names, given in `assets` as an import's file is, and
      * is the body of an async function given `inputs`, the feature's params with bodies as shapes and
@@ -198,8 +201,10 @@ export class OCCTDesign {
      *
      * The document is built as `build` builds it and every part placement is checked against every
      * other in place. Two components a joint holds together are expected to touch, so a touch between
-     * them is left out and an overlap is listed with `joined` true. A part document's parts are checked
-     * where they were built.
+     * them is left out and an overlap is listed with `joined` true. So is a fastener's thread resting in
+     * a tapped hole, faces named in the role `thread` on both, with the hole's rim and the screw's end
+     * chamfer around it; anything else between the two is still listed. A part document's parts are
+     * checked where they were built.
      * @param inputs - The document, the documents an assembly places, the values to build with and the clearance
      * @returns The clashing pairs, with their distance, the volume they share and their nearest points
      * @group document
@@ -275,5 +280,67 @@ export class OCCTDesign {
      */
     referenceFor(inputs: Inputs.OCCT.DesignReferenceForDto): Promise<Models.OCCT.DesignReferenceFound> {
         return this.occWorkerManager.genericCallToWorkerPromise("design.referenceFor", inputs);
+    }
+
+    /**
+     * Turns a STEP file into design documents: a part document for each part it holds and an
+     * assembly document for each assembly, placed as the file places them, so its parts can be edited
+     * and placed like any others.
+     *
+     * Every part document imports its shape from one shapes file: a binary BREP of every part's
+     * shape, written beside the documents, each part taking its own by `child`. A part keeps its name
+     * and its colours, those of single faces included; its part is `part` and its body, the import, is
+     * `shape`, so a face is named `{ "of": "shape", "role": "face", "from": "<index>" }`. An assembly
+     * places its parts and sub-assemblies `at` the frames the file gives them, so a part placed forty
+     * times stays one document placed forty times. A placement that mirrors or scales its part is
+     * built into a part of its own and a hidden one is suppressed; `report.notes` says so. A file that
+     * places more parts than a design builds is refused. Lengths are in `unit`, scaled from the file's
+     * own, and Z is up. Store the asset's `data` at its `uri` before the documents are saved.
+     * @param inputs - The STEP file, its name, the seed of the documents' ids, the folder of the shapes file and the unit
+     * @returns The documents, the id of the one that places everything, the shapes file and a report
+     * @group document
+     * @shortname design from step
+     * @drawable false
+     * @ignore true
+     * @example
+     * ```typescript
+     * const imported = await bitbybit.occt.design.fromStep({ step: stepText, name: "bracket.step" });
+     * const shapes = imported.assets[0]!;
+     * const { parts } = await bitbybit.occt.design.build({
+     *     document: imported.documents.find(document => document.id === imported.root)!,
+     *     documents: imported.documents,
+     *     assets: { [shapes.id]: shapes.data },
+     * });
+     * console.log(imported.report.parts, parts.length);
+     * ```
+     */
+    fromStep(inputs: Inputs.OCCT.DesignFromStepDto): Promise<Models.OCCT.DesignFromStep> {
+        return this.occWorkerManager.genericCallToWorkerPromise("design.fromStep", inputs);
+    }
+
+    /**
+     * Cuts a design build with the plane of a frame: what lies on the side the normal points to is
+     * taken away, the side `operations.hiddenLines` looks from with the same frame.
+     *
+     * Each part the plane crosses gets a cap, the faces it cuts. With `cut`, the pieces behind the
+     * plane and the parts wholly behind it come too.
+     * @param inputs - The build, the frame whose plane cuts it, whether to give the cut parts and the joining tolerance
+     * @returns The caps, and with `cut` the pieces and whole parts behind the plane, placed like the build's parts so they draw as a build does
+     * @group document
+     * @shortname design section
+     * @drawable true
+     * @ignore true
+     * @example
+     * ```typescript
+     * const built = await bitbybit.occt.design.build({ document: assembly, documents: [bracket, pin] });
+     * const section = await bitbybit.occt.design.section({
+     *     build: built,
+     *     frame: { origin: [0, 0, 5], normal: [0, 0, 1], direction: [1, 0, 0] },
+     * });
+     * console.log(section.parts.map(part => part.area));
+     * ```
+     */
+    section(inputs: Inputs.OCCT.DesignSectionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("design.section", inputs);
     }
 }

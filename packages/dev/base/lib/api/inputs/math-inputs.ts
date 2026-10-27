@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-
+import { Base } from "./base-inputs";
 
 /**
  * Parameters for numeric helpers: the operands of arithmetic and trigonometry, the source and target
@@ -623,5 +623,74 @@ export namespace Math {
          * @default 1+1
          */
         expression?: string | undefined = "1+1";
+    }
+    /**
+     * A length and the two units to convert it between, for `math.convertLength`: `value` is read in
+     * `from` and given back in `to`.
+     */
+    export class ConvertLengthDto {
+        constructor(value?: number, from?: Base.unitOfLengthEnum, to?: Base.unitOfLengthEnum) {
+            if (value !== undefined) { this.value = value; }
+            if (from !== undefined) { this.from = from; }
+            if (to !== undefined) { this.to = to; }
+        }
+        /**
+         * The length to convert, in `from`.
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        value?: number | undefined = 1;
+        /**
+         * The unit `value` is in.
+         * @default inch
+         */
+        from?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.inch;
+        /**
+         * The unit to give the length in.
+         * @default millimetre
+         */
+        to?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+    }
+    /**
+     * A unit of length, for `math.millimetresPerUnit`, which says how many millimetres one of it
+     * holds.
+     */
+    export class UnitOfLengthDto {
+        constructor(unit?: Base.unitOfLengthEnum) {
+            if (unit !== undefined) { this.unit = unit; }
+        }
+        /**
+         * The unit to measure in millimetres.
+         * @default inch
+         */
+        unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.inch;
+    }
+    /**
+     * A number and the denominator to write it to, for `math.toFractionText`, which gives it as a
+     * whole number and a reduced fraction such as `1-1/4`.
+     */
+    export class FractionTextDto {
+        constructor(number?: number, denominator?: number) {
+            if (number !== undefined) { this.number = number; }
+            if (denominator !== undefined) { this.denominator = denominator; }
+        }
+        /**
+         * The number to write, such as a length in inches.
+         * @default 1.25
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.0625
+         */
+        number?: number | undefined = 1.25;
+        /**
+         * The finest fraction to round to: a whole number such as 64 for sixty-fourths of an inch.
+         * @default 64
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        denominator?: number | undefined = 64;
     }
 }

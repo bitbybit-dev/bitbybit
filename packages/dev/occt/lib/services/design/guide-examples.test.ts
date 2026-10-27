@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { readFileSync } from "node:fs";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 
@@ -21,7 +18,7 @@ describe("the design documents guide", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
         documents = guideDocuments();
     }, 120_000);
 

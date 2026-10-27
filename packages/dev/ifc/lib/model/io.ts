@@ -1,4 +1,4 @@
-import { isZip, zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/services/helpers/zip";
+import { isZip, zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/services/helpers/files/zip";
 import { describeSupportedSchemas, readingSchemaFor, schemaNamed } from "../schema/registry";
 import { StepSyntaxError } from "../step/errors";
 import { encoderFor } from "../step/encoder";

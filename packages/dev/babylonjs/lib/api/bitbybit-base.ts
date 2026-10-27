@@ -2,7 +2,7 @@ import type { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-wor
 import { JSONPath } from "jsonpath-plus";
 import { Babylon } from "./bitbybit/babylon/babylon";
 import type { Verb, Tag, Time, OCCTW, IFCW, Asset, JSONBitByBit, CSVBitByBit } from "@bitbybit-dev/core";
-import type { Vector, Point, Frame, Line, Polyline, TextBitByBit, Color, MathBitByBit, Lists, Logic, Transforms, Dates, MeshBitByBit } from "@bitbybit-dev/base";
+import type { Color, Dates, Engineering, Frame, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, Recipes, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
 import type { JSCAD } from "@bitbybit-dev/jscad-worker";
 import type { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
 import type { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
@@ -17,12 +17,12 @@ import { DrawHelper } from "./draw-helper";
 
 /**
  * The whole library behind one object for a BabylonJS scene: `occt`, `jscad` and `manifold` for the
- * CAD kernels, `ifc` for IFC building models, `draw` to put anything into the scene, `babylon` for
- * the engine's meshes, cameras, lights, materials and GUI, and the plain data helpers `math`,
- * `vector`, `point`, `frame`, `line`, `polyline`, `transforms`, `lists`, `logic`, `json`, `csv`,
- * `text`, `dates`, `color`, `asset`, `tag` and `time`. Call `init` once with the scene and the
- * kernel workers before using any of them. The `bitbybit` object in the examples throughout these
- * docs is an instance of this class.
+ * CAD kernels, `ifc` for IFC building models, `recipes` for geometry as data, `engineering` for the
+ * sizes and outlines of standard parts, `draw` to put anything into the scene, `babylon` for the
+ * engine's meshes, cameras, lights, materials and GUI, and the plain data helpers `math`, `vector`,
+ * `point`, `frame`, `line`, `polyline`, `transforms`, `lists`, `logic`, `json`, `csv`, `text`,
+ * `dates`, `color`, `asset`, `tag` and `time`. Call `init` once with the scene and the kernel
+ * workers before using any of them. The `bitbybit` object in these docs' examples is one.
  */
 export class BitByBitBase {
 
@@ -45,6 +45,8 @@ export class BitByBitBase {
     public babylon: Babylon;
     public point: Point;
     public frame: Frame;
+    public engineering: Engineering;
+    public recipes: Recipes;
     public line: Line;
     public transforms: Transforms;
     public polyline: Polyline;
@@ -92,6 +94,8 @@ export class BitByBitBase {
         this.transforms = shared.transforms;
         this.point = shared.point;
         this.frame = shared.frame;
+        this.engineering = shared.engineering;
+        this.recipes = shared.recipes;
         this.line = shared.line;
         this.polyline = shared.polyline;
         this.verb = shared.verb;
@@ -120,7 +124,7 @@ export class BitByBitBase {
      * A kernel whose worker is left out is unavailable, so pass only the ones your application
      * loads. `havokPlugin` enables physics for `babylon.scene.enablePhysics`.
      * @param scene - The scene everything is drawn into
-     * @param occt - The worker running the OCCT kernel, when OCCT is used
+     * @param occt - The worker running the Bitbybit OCCT Kernel, when OCCT is used
      * @param jscad - The worker running the JSCAD kernel, when JSCAD is used
      * @param manifold - The worker running the Manifold kernel, when Manifold is used
      * @param havokPlugin - The Havok physics plugin, when physics is used

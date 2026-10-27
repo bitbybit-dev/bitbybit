@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
-import { ShapesHelperService } from "../api/shapes-helper.service";
-import { VectorHelperService } from "../api/vector-helper.service";
 import { OccHelper } from "../occ-helper";
 import { OCCTDimensions } from "./dimensions";
 import { OCCTCompound, OCCTVertex } from "./shapes";
@@ -17,9 +15,7 @@ describe("OCCT dimensions unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         compound = new OCCTCompound(occt, occHelper);
         vertex = new OCCTVertex(occt, occHelper);
         dimensions = new OCCTDimensions(occt, occHelper);
@@ -1159,6 +1155,25 @@ describe("OCCT dimensions unit tests", () => {
 
             // Act & Assert
             expect(() => dimensions.pinWithLabel(inputs)).toThrow(/must not be a zero vector/);
+        });
+
+        it.each([
+            ["a linear dimension", (): unknown => dimensions.simpleLinearLengthDimension({ ...new Inputs.OCCT.SimpleLinearLengthDimensionDto(), start: [0, 0, 0], end: [10, 0, 0], direction: [0, 0, 2], labelSize: 0 })],
+            ["an angular dimension", (): unknown => dimensions.simpleAngularDimension({ ...new Inputs.OCCT.SimpleAngularDimensionDto(), direction1: [1, 0, 0], direction2: [0, 0, 1], labelSize: 0 })],
+            ["a pin", (): unknown => dimensions.pinWithLabel({ ...new Inputs.OCCT.PinWithLabelDto(), labelSize: 0 })],
+        ])("should name the label size when %s is asked for a label of size 0", (_name, act) => {
+            // Arrange
+            let refusal: unknown;
+
+            // Act
+            try {
+                act();
+            } catch (failure) {
+                refusal = failure;
+            }
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property: "labelSize", message: "`labelSize` is 0, too small to tell the points of the letters apart." });
         });
 
         it("should refuse an arrow pointed along the plane the dimension sits in", () => {

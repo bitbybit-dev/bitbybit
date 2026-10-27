@@ -1,3 +1,4 @@
+import { Base } from "@bitbybit-dev/base";
 import type * as Models from "../../models";
 import type { designRebindEnum } from "./enums";
 
@@ -280,3 +281,85 @@ export class DesignClashesDto {
     clearance?: number | undefined = 0;
 }
 
+
+/**
+ * A STEP file, its name, the seed of the ids and the folder of the shapes file, for
+ * `design.fromStep`, which turns the file into design documents.
+ */
+export class DesignFromStepDto {
+    constructor(step?: string | Uint8Array | ArrayBuffer, name?: string, seed?: string, folder?: string, unit?: Base.unitOfLengthEnum) {
+        if (step !== undefined) { this.step = step; }
+        if (name !== undefined) { this.name = name; }
+        if (seed !== undefined) { this.seed = seed; }
+        if (folder !== undefined) { this.folder = folder; }
+        if (unit !== undefined) { this.unit = unit; }
+    }
+    /**
+     * The STEP file, as text or bytes.
+     * @default undefined
+     */
+    step!: string | Uint8Array | ArrayBuffer;
+    /**
+     * The file's name, which names the shapes file, a lone part or assembly the file leaves unnamed,
+     * and the assembly that places shapes the file holds side by side.
+     * @default model.step
+     */
+    name?: string | undefined = "model.step";
+    /**
+     * Text mixed into the documents' ids: the same file and seed give the same ids, so a second
+     * import replaces the first; another seed makes a copy.
+     * @default
+     */
+    seed?: string | undefined = "";
+    /**
+     * The folder of the shapes file's `uri`, relative to the documents, such as `assets`; empty
+     * keeps the file beside them.
+     * @default
+     */
+    folder?: string | undefined = "";
+    /**
+     * The unit the documents are in: the shapes and the placements are scaled from the file's own
+     * unit into it.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+}
+
+/**
+ * A design build and the frame whose plane cuts it, for `design.section`, which gives the faces where
+ * the plane passes through the parts and, when asked, what is left of the parts behind it.
+ */
+export class DesignSectionDto<T> {
+    constructor(build?: Models.OCCT.DesignSectionSource<T>, frame?: Base.Frame, cut?: boolean, tolerance?: number) {
+        if (build !== undefined) { this.build = build; }
+        if (frame !== undefined) { this.frame = frame; }
+        if (cut !== undefined) { this.cut = cut; }
+        if (tolerance !== undefined) { this.tolerance = tolerance; }
+    }
+    /**
+     * The build to cut, as `design.build` returns it: its `parts` and, for an assembly, the
+     * `components` that place them.
+     * @default undefined
+     */
+    build!: Models.OCCT.DesignSectionSource<T>;
+    /**
+     * The plane to cut along, through the frame's origin: what lies on the side its normal points to
+     * is taken away.
+     * @default undefined
+     */
+    frame!: Base.Frame;
+    /**
+     * Whether to give, besides the caps, the pieces of the parts the plane cuts and the parts that
+     * lie wholly behind it, for a view of the cut model.
+     * @default false
+     */
+    cut?: boolean | undefined = false;
+    /**
+     * How close the ends of two section edges must lie to be joined, in model units.
+     * @default 1e-7
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.00001
+     */
+    tolerance?: number | undefined = 1e-7;
+}

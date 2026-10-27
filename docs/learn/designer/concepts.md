@@ -5,7 +5,7 @@ sidebar_label: How it works
 description: The ideas behind the Designer - documents, features built in order, sketches, parameters and expressions, references that survive edits, parts, and assemblies with connectors and joints.
 topic: designer.concepts
 type: explanation
-verified: 2026-10-08
+verified: 2026-10-18
 tags: [designer]
 ---
 
@@ -21,6 +21,8 @@ A Designer project holds any number of documents, listed at the top of the <Ui>F
 - an **assembly document** places parts of other documents, and whole assemblies, as components, and holds them together with joints. It has no geometry of its own.
 
 <Ui>File</Ui> > <Ui>New part</Ui> and <Ui>File</Ui> > <Ui>New assembly</Ui> add one. A part document can be inserted into many assemblies, and many times into one, each time at its own sizes.
+
+To begin again, <Ui>File</Ui> > <Ui>New design</Ui> makes an empty design beside this one in the same project and opens it, and <Ui>File</Ui> > <Ui>Start over</Ui> empties this one, after asking; on bitbybit.dev its History brings the old version back. To delete documents, right-click one in the list; choose several with Ctrl (Cmd on a Mac) or Shift to delete them together, and on an assembly <Ui>Delete with its parts</Ui> also takes the parts and sub-assemblies only it uses.
 
 ## A part is a list of features
 
@@ -65,7 +67,7 @@ The features of a part document make bodies. Each body is a part until you say o
 - **Joints.** <Ui>Joint</Ui> joins a component's connector to another's: fastened, or turning, sliding or both about their shared axis, within limits you set. A joint's angle or offset can be a parameter, so the assembly moves when it changes.
 - **Replicate.** <Ui>Replicate</Ui> places a component on every connector of a set, such as a screw in every hole of a flange, in one step.
 
-The dock's <Ui>Bill of materials</Ui> counts the parts, and <Ui>Check clashes</Ui> finds parts that overlap. A configuration is a named set of parameter values; <Ui>Show configuration</Ui> builds the assembly with one.
+The dock's <Ui>Bill of materials</Ui> counts the parts, <Ui>Check clashes</Ui> finds parts that overlap, and <Ui>Measure</Ui> gives the lengths, areas, radii, distances and angles of what is picked, and <Ui>Section view</Ui> cuts the view open to show the inside. A configuration is a named set of parameter values; <Ui>Show configuration</Ui> builds the assembly with one.
 
 ## Undo is per author
 
@@ -74,6 +76,6 @@ Every change is recorded with who made it. <Ui>Undo</Ui> takes back your own las
 ## Files
 
 - <Ui>Export...</Ui> writes the open document as STEP, GLB, STL or BREP, or the project as a design document file.
-- <Ui>Import STEP, IGES or BREP</Ui> brings a shape from another CAD program into a part, and <Ui>Import design documents</Ui> adds documents from a design document file.
+- <Ui>Import STEP, IGES or BREP</Ui> brings a model from another CAD program in: a STEP file as its assemblies and parts, an IGES or BREP file as one part. <Ui>Import design documents</Ui> adds documents from a design document file.
 
 Everything the Designer saves is a [design document](../using-ai-with-bitbybit/design-documents.md): plain JSON that `bitbybit.occt.design.build` also builds in code, in the browser, in Node or on CAD Cloud.

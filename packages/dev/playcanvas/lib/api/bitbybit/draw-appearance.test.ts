@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
 import * as pc from "playcanvas";
-import { Tag } from "@bitbybit-dev/core";
+import { Tag, type KeptDesignMesh } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import { GeometryHelper, MathBitByBit, Vector, resolveDto } from "@bitbybit-dev/base";
 import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import { meshBuffersOf } from "../__mocks__/mesh-buffers";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 import * as Inputs from "../inputs";
@@ -40,6 +41,8 @@ const boxMesh = (): Inputs.OCCT.DecomposedMeshDto => {
     mesh.pointsList = [];
     return mesh;
 };
+
+const boxBuffers = (): Inputs.OCCT.DecomposedMeshBuffersDto => meshBuffersOf(boxMesh());
 
 const shapeA: Inputs.OCCT.TopoDSShapePointer = { hash: 101, type: "occ-shape" };
 const shapeB: Inputs.OCCT.TopoDSShapePointer = { hash: 102, type: "occ-shape" };
@@ -93,12 +96,12 @@ const meshInstancesOf = (root: pc.Entity): pc.MeshInstance[] => {
     });
     return found;
 };
-const surfacesOf = (root: pc.Entity): pc.MeshInstance[] => meshInstancesOf(root).filter(instance => instance.mesh.primitive[0]!.type === pc.PRIMITIVE_TRIANGLES);
-const linesOf = (root: pc.Entity): pc.MeshInstance[] => meshInstancesOf(root).filter(instance => instance.mesh.primitive[0]!.type === pc.PRIMITIVE_LINES);
+const surfacesOf = (root: pc.Entity): pc.MeshInstance[] => meshInstancesOf(root).filter(instance => instance.mesh!.primitive[0]!.type === pc.PRIMITIVE_TRIANGLES);
+const linesOf = (root: pc.Entity): pc.MeshInstance[] => meshInstancesOf(root).filter(instance => instance.mesh!.primitive[0]!.type === pc.PRIMITIVE_LINES);
 const diffuseOf = (instance: pc.MeshInstance): string => (instance.material as pc.StandardMaterial).diffuse.toString(false);
 const lineColours = (line: pc.MeshInstance, vertices: readonly number[]): string[] => {
     const colours: number[] = [];
-    line.mesh.getColors(colours);
+    line.mesh!.getColors(colours);
     return vertices.map(vertex => `#${colours.slice(vertex * 4, vertex * 4 + 3).map(channel => Math.round(channel).toString(16).padStart(2, "0")).join("")}`);
 };
 const instanceMatrices = (instance: pc.MeshInstance): number[][] => {
@@ -112,13 +115,14 @@ const partEntitiesOf = (root: pc.Entity): (pc.Entity & { designPart?: { part: st
 
 describe("drawing shapes with their appearance and design builds in PlayCanvas", () => {
     let app: pc.AppBase;
+    let device: pc.NullGraphicsDevice;
     let draw: Draw;
     let drawHelper: DrawHelper;
     let workerCall: Mock;
 
     beforeEach(() => {
         const canvas = document.createElement("canvas");
-        const device = new pc.NullGraphicsDevice(canvas);
+        device = new pc.NullGraphicsDevice(canvas);
         app = new pc.AppBase(canvas);
         const appOptions = new pc.AppOptions();
         appOptions.graphicsDevice = device;
@@ -131,7 +135,7 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
         const occtWorkerManager = new OCCTWorkerManager();
         drawHelper = new DrawHelper(context, new JSCADText(jscadWorkerManager), new Vector(new MathBitByBit(), new GeometryHelper()), jscadWorkerManager, new ManifoldWorkerManager(), occtWorkerManager);
         draw = new Draw(drawHelper, context, new Tag(context));
-        workerCall = vi.fn((_method: string, inputs: { shapes: unknown[] }) => Promise.resolve(inputs.shapes.map(() => boxMesh())));
+        workerCall = vi.fn((_method: string, inputs: { shapes: unknown[] }) => Promise.resolve(inputs.shapes.map(() => boxBuffers())));
         occtWorkerManager.genericCallToWorkerPromise = workerCall;
     });
 
@@ -150,7 +154,7 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             // Assert
             const surfaces = surfacesOf(drawn);
             expect(surfaces.map(diffuseOf)).toEqual(["#ffffff", "#000000"]);
-            expect(surfaces.map(surface => surface.mesh.primitive[0]!.count)).toEqual([24, 12]);
+            expect(surfaces.map(surface => surface.mesh!.primitive[0]!.count)).toEqual([24, 12]);
             expect(surfaces.map(surface => [(surface.material as pc.StandardMaterial).useMetalness, (surface.material as pc.StandardMaterial).metalness])).toEqual([[true, 0], [true, 1]]);
             expect((surfaces[0]!.material as pc.StandardMaterial).gloss).toBeCloseTo(0.6);
             expect(drawn.parent).toBe(app.root);
@@ -243,7 +247,7 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             // Assert
             expect(drawn.children).toHaveLength(2);
             expect(workerCall).toHaveBeenCalledTimes(1);
-            expect(workerCall.mock.calls[0]![0]).toBe("shapesToMeshes");
+            expect(workerCall.mock.calls[0]![0]).toBe("shapesToMeshBuffers");
             expect(workerCall.mock.calls[0]![1].shapes).toEqual([shapeA, shapeB]);
         });
 
@@ -256,6 +260,41 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
 
             // Assert
             await expect(drawing).rejects.toThrow("did not return one mesh of faces and edges per shape");
+        });
+    });
+
+    describe("a mesh with a face that cannot be drawn", () => {
+        const tenCoordinates = (): Inputs.OCCT.DecomposedMeshDto => {
+            const mesh = boxMesh();
+            mesh.faceList = [...mesh.faceList].reverse();
+            mesh.faceList[2]!.vertexCoord = [...mesh.faceList[2]!.vertexCoord.slice(0, 9), 5];
+            return mesh;
+        };
+
+        it("should refuse it naming the face, and leave nothing in the scene however often it is tried", async () => {
+            // Arrange
+            const before = app.root.children.length;
+
+            // Act
+            const first = draw.drawAnyAsync({ entity: tenCoordinates() });
+            const second = draw.drawAnyAsync({ entity: tenCoordinates() });
+
+            // Assert
+            await expect(first).rejects.toThrow("Face 3 cannot be drawn: it holds 10 position values and 6 indexes; both must be whole points and triangles, three values each.");
+            await expect(second).rejects.toThrow("Face 3 cannot be drawn");
+            expect(app.root.children).toHaveLength(before);
+        });
+
+        it("should refuse a list of meshes before drawing any of them", async () => {
+            // Arrange
+            const before = app.root.children.length;
+
+            // Act
+            const drawing = draw.drawAnyAsync({ entity: [boxMesh(), tenCoordinates()] });
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Face 3 cannot be drawn");
+            expect(app.root.children).toHaveLength(before);
         });
     });
 
@@ -272,7 +311,7 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             const surfaces = surfacesOf(drawn);
             expect(surfaces.map(diffuseOf)).toEqual(["#ff0000", "#00ff00", "#0000ff"]);
             expect((surfaces[2]!.material as pc.StandardMaterial).opacity).toBeCloseTo(128 / 255);
-            expect(surfaces.map(surface => surface.mesh.primitive[0]!.count)).toEqual([18, 12, 6]);
+            expect(surfaces.map(surface => surface.mesh!.primitive[0]!.count)).toEqual([18, 12, 6]);
         });
     });
 
@@ -354,6 +393,44 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             expect(pin!.parent).toBeNull();
         });
 
+        it("should free every GPU buffer of a build when the caller destroys it", async () => {
+            // Arrange
+            const buffersBefore = device.buffers.size;
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options });
+
+            // Act
+            drawn.destroy();
+
+            // Assert
+            expect(device.buffers.size).toBe(buffersBefore);
+        });
+
+        it("should free the GPU buffer a redraw gave a part placed more often when the caller destroys the build", async () => {
+            // Arrange
+            const buffersBefore = device.buffers.size;
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            await draw.drawAnyAsync({ entity: buildOf([0, 10, 30], [20]), options, group: drawn });
+
+            // Act
+            drawn.destroy();
+
+            // Assert
+            expect(device.buffers.size).toBe(buffersBefore);
+        });
+
+        it("should hold as many GPU buffers after a part is dropped and placed again as after the build was drawn once", async () => {
+            // Arrange
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const buffersOnce = device.buffers.size;
+
+            // Act
+            await draw.drawAnyAsync({ entity: buildOf([0], []), options, group: drawn });
+            await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options, group: drawn });
+
+            // Assert
+            expect(device.buffers.size).toBe(buffersOnce);
+        });
+
         it("should mesh and draw again only a part whose shape changed under the same id", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
@@ -410,6 +487,52 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             expect(coarse).toEqual([]);
             expect(workerCall).toHaveBeenCalledTimes(1);
             expect(workerCall.mock.calls[0]![1].shapes).toEqual([shapeB]);
+        });
+
+        it("should draw parts from kept meshes handed back as a structured clone, without meshing them", async () => {
+            // Arrange
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const kept = structuredClone(drawHelper.keptDesignMeshes(["box-1-shape", "pin-2-shape"], options));
+            drawHelper.dispose();
+            workerCall.mockClear();
+
+            // Act
+            drawHelper.keepDesignMeshes(kept, options);
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+
+            // Assert
+            expect(workerCall).not.toHaveBeenCalled();
+            expect(partEntitiesOf(drawn)).toHaveLength(2);
+        });
+
+        it("should refuse kept meshes whose buffers were handed away to another thread, and keep none of them", async () => {
+            // Arrange
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const kept = drawHelper.keptDesignMeshes(["box-1-shape", "pin-2-shape"], options);
+            const pinFaces = (kept[1]!.mesh as Inputs.OCCT.DecomposedMeshBuffersDto).faceList;
+            structuredClone(kept, { transfer: [...new Set(pinFaces.flatMap(face => [face.vertexCoord.buffer, face.normalCoord.buffer, face.triIndexes.buffer, face.uvs.buffer]))] as ArrayBuffer[] });
+            drawHelper.dispose();
+            workerCall.mockClear();
+
+            // Act
+            const keeping = (): void => drawHelper.keepDesignMeshes(kept, options);
+
+            // Assert
+            expect(keeping).toThrow("The mesh kept for pin-2-shape cannot be drawn: face 0 counts 2 triangles but holds no indexes, as a mesh does once its buffers were handed away to another thread.");
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            expect(workerCall.mock.calls[0]![1].shapes).toEqual([shapeA, shapeB]);
+        });
+
+        it("should refuse kept meshes stored as JSON, whose typed arrays come back as plain records", async () => {
+            // Arrange
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const restored: unknown = JSON.parse(JSON.stringify(drawHelper.keptDesignMeshes(["box-1-shape"], options)));
+
+            // Act
+            const keeping = (): void => drawHelper.keepDesignMeshes(restored as KeptDesignMesh<unknown>[], options);
+
+            // Assert
+            expect(keeping).toThrow("The mesh kept for box-1-shape cannot be drawn: face 0 holds its positions, normals or indexes as something other than a list of numbers, as typed arrays stored as JSON come back.");
         });
 
         it("should mesh a part once for every build it draws, a preview beside the model say, until the meshing changes", async () => {

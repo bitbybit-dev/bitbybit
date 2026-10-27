@@ -338,6 +338,86 @@ describe("OCC Worker Functions Unit Tests", () => {
             });
         }));
 
+        type Post = { data: any; options: { transfer?: ArrayBuffer[] } | undefined };
+        const postsOf = (functionName: string, inputs: Record<string, unknown>, host: (post: Post) => void = (): void => undefined): Post[] => {
+            const posted: Post[] = [];
+            onMessageInput({ action: { functionName, inputs }, uid: `${functionName}-call` }, (data: any, options?: { transfer?: ArrayBuffer[] }) => {
+                const post = { data, options };
+                posted.push(post);
+                host(post);
+            });
+            return posted;
+        };
+        const cachedBox = (): Post[] => postsOf("shapes.solid.createBox", { ...new Inputs.OCCT.BoxDto(1, 1, 1) });
+        const meshOf = (box: Post[], options: Record<string, unknown> = {}): Record<string, unknown> => ({ shape: { hash: box[1]!.data.result.hash, type: "occ-shape" }, precision: 0.01, ...options });
+
+        it("should hand the buffers of shapeToMeshBuffers over with its answer, and copy every other answer", () => {
+            // Arrange
+            const box = cachedBox();
+
+            // Act
+            const meshed = postsOf("shapeToMeshBuffers", meshOf(box));
+
+            // Assert
+            const face = meshed[1]!.data.result.faceList[0];
+            expect(box.map(post => post.options)).toEqual([undefined, undefined]);
+            expect(meshed[0]!.options).toBeUndefined();
+            expect(face.vertexCoord).toBeInstanceOf(Float32Array);
+            expect(meshed[1]!.options?.transfer).toContain(face.vertexCoord.buffer);
+            expect(meshed[1]!.options?.transfer).toContain(face.triIndexes.buffer);
+        });
+
+        it("should hand over the buffer of the surface analysis values with a mesh that carries them", () => {
+            // Arrange
+            const box = cachedBox();
+
+            // Act
+            const meshed = postsOf("shapeToMeshBuffers", meshOf(box, { surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.gaussian }));
+
+            // Assert
+            const faces = meshed[1]!.data.result.faceList;
+            expect(faces.map((face: any) => face.analysisValues instanceof Float32Array && face.analysisValues.length === face.vertexCoord.length / 3)).toEqual(Array(6).fill(true));
+            expect(faces[0].analysisValues.buffer).not.toBe(faces[0].vertexCoord.buffer);
+            expect(meshed[1]!.options?.transfer).toContain(faces[0].analysisValues.buffer);
+        });
+
+        it("should post the answer copied when the host refuses to take its buffers handed over", () => {
+            // Arrange
+            const box = cachedBox();
+            const refusingOptions = (post: Post): void => {
+                if (post.options !== undefined) {
+                    throw new TypeError("this host takes no options");
+                }
+            };
+
+            // Act
+            const meshed = postsOf("shapeToMeshBuffers", meshOf(box), refusingOptions);
+
+            // Assert
+            expect(meshed).toHaveLength(3);
+            expect(meshed[1]!.options?.transfer?.length).toBeGreaterThan(0);
+            expect(meshed[2]!.options).toBeUndefined();
+            expect(meshed[2]!.data.error).toBeUndefined();
+            expect(meshed[2]!.data.result.faceList[0].vertexCoord.length).toBeGreaterThan(0);
+        });
+
+        it("should leave the worker's buffers empty once the answer has crossed with them handed over", () => {
+            // Arrange
+            const box = cachedBox();
+            const meshed = postsOf("shapeToMeshBuffers", meshOf(box));
+            const face = meshed[1]!.data.result.faceList[0];
+            const sent = { length: face.vertexCoord.length, offset: face.vertexCoord.byteOffset, values: Array.from(face.vertexCoord as Float32Array) };
+
+            // Act
+            const received = structuredClone(meshed[1]!.data, { transfer: meshed[1]!.options!.transfer! });
+
+            // Assert
+            expect(face.vertexCoord.buffer.byteLength).toBe(0);
+            expect(received.result.faceList[0].vertexCoord.length).toBe(sent.length);
+            expect(received.result.faceList[0].vertexCoord.byteOffset).toBe(sent.offset);
+            expect(Array.from(received.result.faceList[0].vertexCoord as Float32Array)).toEqual(sent.values);
+        });
+
         it("should throw error for shapeToMesh when shape not in cache", () => new Promise<void>((done) => {
             onMessageInput({
                 action: {
@@ -409,25 +489,17 @@ describe("OCC Worker Functions Unit Tests", () => {
             });
         }));
 
-        it("should throw error for shapesToMeshes when no shapes provided", () => new Promise<void>((done) => {
-            onMessageInput({
-                action: {
-                    functionName: "shapesToMeshes",
-                    inputs: {
-                        shapes: [],
-                        precision: 0.01,
-                        adjustYtoZ: false
-                    }
-                },
-                uid: "uid-1"
-            }, (data: any) => {
-                if (data !== "busy") {
-                    expect(data.error).toBeDefined();
-                    expect(data.error).toContain("No shapes detected");
-                    done();
-                }
-            });
-        }));
+        it.each(["shapesToMeshes", "shapesToMeshBuffers"])("should answer %s with no shapes as an input error naming the call", (functionName) => {
+            // Arrange
+            const posted: any[] = [];
+
+            // Act
+            onMessageInput({ action: { functionName, inputs: { shapes: [], precision: 0.01, adjustYtoZ: false } }, uid: "uid-1" }, (data: any) => posted.push(data));
+
+            // Assert
+            expect(posted).toHaveLength(2);
+            expect(posted[1]).toEqual(expect.objectContaining({ uid: "uid-1", result: undefined, errorKind: "input", error: `${functionName}: \`shapes\` is not a list of at least one shape, so there is nothing to mesh.` }));
+        });
 
         it("should throw error for shapesToMeshes when shape not in cache", () => new Promise<void>((done) => {
             onMessageInput({

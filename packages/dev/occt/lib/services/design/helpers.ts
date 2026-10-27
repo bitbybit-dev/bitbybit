@@ -1,21 +1,34 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { DtoRegistry } from "@bitbybit-dev/base";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { give, nameOf } from "./names";
 import { DesignProblem, pointer } from "./problems";
-import { release } from "./cache";
+import { release } from "../base/release";
 import type { ResolveContext } from "./references";
 import { resolveEdges, resolveFaces } from "./references";
 import type { BodyState, DesignRun } from "./state";
 import { directionOf, pointOf } from "./values";
 import { squaredFrame, tripleOf, unitVector } from "./placement";
 
+const UNITS_OF_LENGTH: readonly Inputs.Base.unitOfLengthEnum[] = Object.values(Inputs.Base.unitOfLengthEnum);
+
+export function unitOfDocument(document: Pick<Models.OCCT.DesignPartDocument, "units">): Inputs.Base.unitOfLengthEnum {
+    const stated = document.units?.length;
+    return UNITS_OF_LENGTH.find(unit => unit.valueOf() === stated) ?? Inputs.Base.unitOfLengthEnum.millimetre;
+}
+
+export function takesLengthUnit(registry: DtoRegistry, operation: string): boolean {
+    const values = registry[operation]?.constraints?.["unit"]?.values ?? [];
+    return values.length === UNITS_OF_LENGTH.length && UNITS_OF_LENGTH.every(each => values.includes(each));
+}
+
 export function faceCount(shape: TopoDS_Shape, run: DesignRun): number {
     return run.occ.CountSubShapes(shape, run.occ.TopAbs_ShapeEnum.FACE, false);
 }
 
 export function contextOf(body: BodyState, run: DesignRun): ResolveContext {
-    return { shape: body.shape, names: body.names, occt: run.occt, base: run.base, suppressed: run.suppressed, rebinding: run.rebinding };
+    return { shape: body.shape, names: body.names, occt: run.occt, occ: run.occ, base: run.base, suppressed: run.suppressed, rebinding: run.rebinding };
 }
 
 export function bodyOf(name: string, run: DesignRun): BodyState {
@@ -60,11 +73,7 @@ const ALONG_SINE = 1e-9;
  */
 export function faceFrame(reference: Models.OCCT.DesignFaceReference, origin: Models.OCCT.DesignPoint | undefined, direction: Models.OCCT.DesignPoint | undefined, body: BodyState, path: string, faceKey: string, run: DesignRun): Inputs.Base.Frame {
     const facePath = pointer(path, faceKey);
-    const faces = resolveFaces(reference, contextOf(body, run), facePath);
-    if (faces.length !== 1) {
-        throw new DesignProblem(facePath, `one face is needed here, and the reference finds ${faces.length}`);
-    }
-    const signature = faceSignatures(body.shape, run)[faces[0]!]!;
+    const { signature } = planeOfFaces(resolveFaces(reference, contextOf(body, run), facePath), body, facePath, run);
     if (signature.type !== Inputs.OCCT.surfaceTypeEnum.plane) {
         throw new DesignProblem(facePath, `a flat face is needed here, and this one is a ${signature.type}`);
     }
@@ -88,11 +97,32 @@ interface FoundFace {
 }
 
 function oneFace(reference: Models.OCCT.DesignFaceReference, body: BodyState, path: string, run: DesignRun): FoundFace {
-    const faces = resolveFaces(reference, contextOf(body, run), path);
-    if (faces.length !== 1) {
-        throw new DesignProblem(path, `one face is needed here, and the reference finds ${faces.length}`);
+    return planeOfFaces(resolveFaces(reference, contextOf(body, run), path), body, path, run);
+}
+
+function inPlaneOf(plane: Models.OCCT.FaceSignature, other: Models.OCCT.FaceSignature, run: DesignRun): boolean {
+    if (other.type !== Inputs.OCCT.surfaceTypeEnum.plane) {
+        return false;
     }
-    return { index: faces[0]!, signature: faceSignatures(body.shape, run)[faces[0]!]! };
+    const vector = run.base.vector;
+    const normal = vector.normalized({ vector: plane.normal });
+    const otherNormal = vector.normalized({ vector: other.normal });
+    if (normal === undefined || otherNormal === undefined || vector.dot({ first: normal, second: otherNormal }) < SQUARE) {
+        return false;
+    }
+    const size = Math.max(vector.dist({ first: plane.box.min, second: plane.box.max }), vector.dist({ first: other.box.min, second: other.box.max }));
+    return Math.abs(vector.dot({ first: vector.sub({ first: other.centre, second: plane.centre }), second: normal })) <= DISTINCT_SHARE_OF_SIZE * size;
+}
+
+function planeOfFaces(faces: number[], body: BodyState, path: string, run: DesignRun): FoundFace {
+    const signatures = faceSignatures(body.shape, run);
+    const first = faces[0] === undefined ? undefined : signatures[faces[0]];
+    if (first === undefined || (faces.length > 1 && (first.type !== Inputs.OCCT.surfaceTypeEnum.plane || !faces.every(index => inPlaneOf(first, signatures[index]!, run))))) {
+        throw new DesignProblem(path, faces.length > 1
+            ? `one face is needed here, or faces in one plane, and the reference finds ${faces.length} that are not`
+            : `one face is needed here, and the reference finds ${faces.length}`);
+    }
+    return { index: faces[0]!, signature: first };
 }
 
 function crossingOf(index: number, plane: Models.OCCT.FaceSignature, body: BodyState, path: string, run: DesignRun): Inputs.Base.Point3 {

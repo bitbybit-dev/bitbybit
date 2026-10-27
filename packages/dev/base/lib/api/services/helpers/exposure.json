@@ -1,0 +1,375 @@
+{
+    "color/color-space.ts": {
+        "linearToSrgb": {
+            "exposedAs": "color.linearToSrgb"
+        },
+        "srgbToLinear": {
+            "exposedAs": "color.srgbToLinear"
+        }
+    },
+    "curves/nurbs.ts": {
+        "expandedKnots": {
+            "internal": "knot bookkeeping under the NURBS point evaluators"
+        },
+        "knotDomain": {
+            "internal": "NURBS evaluation for readers that cannot use a kernel, such as the IFC builder; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "nurbsCurvePoint": {
+            "internal": "NURBS evaluation for readers that cannot use a kernel, such as the IFC builder; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "nurbsSurfacePoint": {
+            "internal": "NURBS evaluation for readers that cannot use a kernel, such as the IFC builder; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        }
+    },
+    "curves/surface-triangulation.ts": {
+        "refinedSurfaceMesh": {
+            "internal": "NURBS evaluation for readers that cannot use a kernel, such as the IFC builder; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        }
+    },
+    "files/crc32.ts": {
+        "crc32": {
+            "internal": "file-format plumbing behind io's readers, not geometry"
+        }
+    },
+    "files/glb.ts": {
+        "glbWithRootScale": {
+            "internal": "file-format plumbing behind the glb writers' unit, not geometry"
+        }
+    },
+    "files/gzip.ts": {
+        "gunzipped": {
+            "internal": "file-format plumbing behind io's readers, not geometry"
+        },
+        "isGzip": {
+            "internal": "file-format plumbing behind io's readers, not geometry"
+        }
+    },
+    "files/inflate.ts": {
+        "huffmanTable": {
+            "internal": "file-format plumbing behind io's readers, not geometry"
+        },
+        "inflateRaw": {
+            "internal": "file-format plumbing behind io's readers, not geometry"
+        }
+    },
+    "files/zip.ts": {
+        "isZip": {
+            "internal": "file-format plumbing behind io's readers, not geometry"
+        },
+        "zipEntries": {
+            "internal": "file-format plumbing behind io's readers, not geometry"
+        },
+        "zipEntryData": {
+            "internal": "file-format plumbing behind io's readers, not geometry"
+        }
+    },
+    "geometry/arcs.ts": {
+        "arcThroughThreePoints": {
+            "exposedAs": "point.arcThroughThreePoints"
+        },
+        "pointOnCubic2": {
+            "internal": "Bezier evaluation for the gear outlines; public curve evaluation is decided with the curves package"
+        },
+        "pointOnCubic3": {
+            "internal": "Bezier evaluation for the gear outlines; public curve evaluation is decided with the curves package"
+        },
+        "pointsOnArc": {
+            "exposedAs": "point.arcThroughThreePoints"
+        }
+    },
+    "geometry/frame-axes.ts": {
+        "PARALLEL_SINE": {
+            "internal": "a tolerance the frame checks share, not an operation"
+        },
+        "WORLD_AXES": {
+            "internal": "a constant, the world's own axes"
+        },
+        "axesAlong": {
+            "internal": "how a mesh primitive stands on a direction alone; a public frame takes the X direction its caller chooses (`frame.create`)"
+        },
+        "axesToMatrix": {
+            "exposedAs": "frame.toMatrix"
+        },
+        "composeAxes": {
+            "exposedAs": "frame.frameToWorld"
+        },
+        "isFrameShaped": {
+            "internal": "an input guard the services run on what they are given"
+        },
+        "isTriple": {
+            "internal": "an input guard the services run on what they are given"
+        },
+        "pointToLocal": {
+            "exposedAs": "frame.pointToLocal"
+        },
+        "pointToWorld": {
+            "exposedAs": "frame.pointToWorld"
+        },
+        "relativeAxes": {
+            "exposedAs": "frame.frameToLocal"
+        },
+        "squareFrame": {
+            "exposedAs": "frame.create"
+        },
+        "unitOf": {
+            "internal": "the 3D tuple form of `vector.normalized` for hot paths"
+        },
+        "vectorToLocal": {
+            "exposedAs": "frame.vectorToLocal"
+        },
+        "vectorToWorld": {
+            "exposedAs": "frame.vectorToWorld"
+        }
+    },
+    "geometry/lengths.ts": {
+        "checkedUnitOfLength": {
+            "internal": "the input guard every unit-aware method runs on its `unit`, before `math.millimetresPerUnit` would see a value outside the enum"
+        },
+        "lengthConverted": {
+            "exposedAs": "math.convertLength"
+        },
+        "lengthsConverted": {
+            "internal": "the per-field form of `math.convertLength` the engineering tables convert their results with"
+        },
+        "millimetresPerUnitOf": {
+            "exposedAs": "math.millimetresPerUnit"
+        },
+        "snappedLength": {
+            "internal": "a table's length converted into the caller's unit, rounded so the conversion leaves no float noise"
+        },
+        "tableLength": {
+            "internal": "a caller's length converted into a table's own unit and rounded to the table's resolution, so a size rounded in another unit still matches its row"
+        }
+    },
+    "geometry/matrices.ts": {
+        "composed": {
+            "exposedAs": "transforms.combine"
+        },
+        "followedBy": {
+            "internal": "the two-matrix step `transforms.combine` folds a list with"
+        },
+        "isRigidMatrix": {
+            "exposedAs": "transforms.isRigid"
+        },
+        "isTransformMatrix": {
+            "internal": "an input guard the services run on what they are given"
+        },
+        "linearDeterminant": {
+            "exposedAs": "transforms.determinant"
+        },
+        "movedCoordinate": {
+            "internal": "the affine tuple and buffer forms of `point.transformPoint` for hot paths; `point.transformPoint` also divides by w"
+        },
+        "movedPoint": {
+            "internal": "the affine tuple and buffer forms of `point.transformPoint` for hot paths; `point.transformPoint` also divides by w"
+        },
+        "movedPositions": {
+            "internal": "the affine tuple and buffer forms of `point.transformPoint` for hot paths; `point.transformPoint` also divides by w"
+        },
+        "rigidInverse": {
+            "exposedAs": "transforms.rigidInverse"
+        },
+        "symmetricEigen": {
+            "internal": "the solve behind `frame.bestFit`; a general linear-algebra API is outside base"
+        },
+        "turnedVector": {
+            "internal": "the affine tuple and buffer forms of `point.transformPoint` for hot paths; `point.transformPoint` also divides by w"
+        }
+    },
+    "geometry/paths.ts": {
+        "pathLength3": {
+            "exposedAs": "polyline.length"
+        },
+        "pathTangents": {
+            "exposedAs": "polyline.tangents"
+        },
+        "roundedPath3": {
+            "exposedAs": "polyline.roundCorners"
+        },
+        "sweepMatrices": {
+            "exposedAs": "polyline.sweepPlacements"
+        },
+        "transportedAxes": {
+            "exposedAs": "polyline.sweepFrames"
+        }
+    },
+    "geometry/polygons.ts": {
+        "isInsidePolygon2": {
+            "exposedAs": "polyline.isPointInside2d"
+        },
+        "perimeter2": {
+            "exposedAs": "polyline.perimeter2d"
+        },
+        "roundedCorners2": {
+            "exposedAs": "polyline.roundCorners2d"
+        },
+        "signedArea2": {
+            "exposedAs": "polyline.signedArea2d"
+        },
+        "wound2": {
+            "exposedAs": "polyline.orient2d"
+        }
+    },
+    "geometry/scalars.ts": {
+        "angleOfCosine": {
+            "exposedAs": "vector.angleBetween"
+        },
+        "degreesOf": {
+            "exposedAs": "math.radToDeg"
+        },
+        "fractionOf": {
+            "exposedAs": "math.fract"
+        },
+        "fractionText": {
+            "exposedAs": "math.toFractionText"
+        },
+        "interpolated": {
+            "exposedAs": "math.lerp"
+        },
+        "radiansOf": {
+            "exposedAs": "math.degToRad"
+        },
+        "roundedTo": {
+            "exposedAs": "math.roundToDecimals"
+        },
+        "roundedToMillionths": {
+            "internal": "the six places the engineering size tables are rounded to; `math.roundToDecimals` is the general form"
+        },
+        "smoothstep": {
+            "exposedAs": "math.smoothstep"
+        }
+    },
+    "geometry/triangulation.ts": {
+        "newellNormal": {
+            "exposedAs": "polyline.polygonNormal"
+        },
+        "triangulateFace": {
+            "exposedAs": "mesh.triangulatePolygon"
+        }
+    },
+    "geometry/vector-grid.ts": {
+        "uniqueVectors": {
+            "exposedAs": "vector.removeAllDuplicateVectors"
+        }
+    },
+    "geometry/vectors.ts": {
+        "add2": {
+            "internal": "the fixed-size tuple form of `vector.add` for hot paths; `vector.add` takes vectors of any length"
+        },
+        "add3": {
+            "internal": "the fixed-size tuple form of `vector.add` for hot paths; `vector.add` takes vectors of any length"
+        },
+        "between2": {
+            "internal": "interpolation from `a` toward `b` for hot paths; public as `vector.lerp`, which weighs `first` by `fraction`, so its operands run the other way"
+        },
+        "between3": {
+            "internal": "interpolation from `a` toward `b` for hot paths; public as `vector.lerp`, which weighs `first` by `fraction`, so its operands run the other way"
+        },
+        "cross2": {
+            "internal": "the plan form of `vector.cross` for hot paths: the turn from one plan direction to another"
+        },
+        "cross3": {
+            "exposedAs": "vector.cross"
+        },
+        "distance2": {
+            "internal": "the plan tuple form of `point.distance` for hot paths"
+        },
+        "distance3": {
+            "internal": "the tuple form of `point.distance` for hot paths"
+        },
+        "dot2": {
+            "internal": "the fixed-size tuple form of `vector.dot` for hot paths; `vector.dot` takes vectors of any length"
+        },
+        "dot3": {
+            "internal": "the fixed-size tuple form of `vector.dot` for hot paths; `vector.dot` takes vectors of any length"
+        },
+        "leftOf2": {
+            "internal": "a plan quarter turn the outline code uses on hot paths; `point.rotatePointsCenterAxis` turns by any angle"
+        },
+        "length2": {
+            "internal": "the plan tuple form of `vector.length` for hot paths; `vector.length` takes a vector in space"
+        },
+        "length3": {
+            "exposedAs": "vector.length"
+        },
+        "polar2": {
+            "internal": "the plan, radian tuple form of `frame.polar` for hot paths"
+        },
+        "rotated2": {
+            "internal": "the plan, radian tuple form of `point.rotatePointsCenterAxis` about z for hot paths"
+        },
+        "scale2": {
+            "internal": "the fixed-size tuple form of `vector.mul` for hot paths; `vector.mul` takes vectors of any length"
+        },
+        "scale3": {
+            "internal": "the fixed-size tuple form of `vector.mul` for hot paths; `vector.mul` takes vectors of any length"
+        },
+        "subtract2": {
+            "internal": "the fixed-size tuple form of `vector.sub` for hot paths; `vector.sub` takes vectors of any length"
+        },
+        "subtract3": {
+            "internal": "the fixed-size tuple form of `vector.sub` for hot paths; `vector.sub` takes vectors of any length"
+        },
+        "unit2Of": {
+            "internal": "the plan tuple form of `vector.normalized` for hot paths, scaled as `unitOf` is so a plan direction normalises to the bits it has in space"
+        },
+        "unitVectorOf": {
+            "exposedAs": "vector.normalized"
+        }
+    },
+    "mesh/mesh-measures.ts": {
+        "signedVolumeOf": {
+            "exposedAs": "mesh.signedVolume"
+        }
+    },
+    "mesh/mesh-normals.ts": {
+        "computeVertexNormals": {
+            "exposedAs": "mesh.smoothNormals"
+        },
+        "creasedMesh": {
+            "internal": "the drawers' single-precision form of `creasedVertices`, with the positions written out for the GPU"
+        },
+        "creasedVertices": {
+            "exposedAs": "mesh.creasedNormals"
+        }
+    },
+    "mesh/mesh-orientation.ts": {
+        "windingComponents": {
+            "exposedAs": "mesh.windingPieces"
+        },
+        "windingRepairs": {
+            "exposedAs": "mesh.orientConsistently"
+        }
+    },
+    "mesh/mesh-primitives.ts": {
+        "frustum": {
+            "exposedAs": "mesh.frustum"
+        },
+        "icosphere": {
+            "exposedAs": "mesh.icosphere"
+        }
+    },
+    "mesh/mesh-proximity.ts": {
+        "pointInTree": {
+            "exposedAs": "mesh.isPointInside"
+        },
+        "pointOnTree": {
+            "internal": "the clash check's choice of points for its inside test, not a building block"
+        },
+        "pointsOnTree": {
+            "internal": "the clash check's choice of points for its inside test, not a building block"
+        },
+        "treeBox": {
+            "internal": "the box of a tree, read by the tree queries"
+        },
+        "treesNested": {
+            "exposedAs": "mesh.meshesWithin"
+        },
+        "treesWithin": {
+            "exposedAs": "mesh.meshesWithin"
+        },
+        "triangleTree": {
+            "internal": "the acceleration structure the mesh queries build; users ask the query, not for the tree"
+        }
+    }
+}

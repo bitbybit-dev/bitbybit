@@ -1,22 +1,34 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { OCCTService, OccHelper, ShapesHelperService, VectorHelperService } from "@bitbybit-dev/occt";
+import { OccHelper, OCCTService } from "@bitbybit-dev/occt";
+import type { Inputs, Models } from "@bitbybit-dev/occt";
 import type { CommandContext } from "./command-handlers";
 import { getCommandHandler, hasCommandHandler } from "./command-handlers";
 import { CacheHelper } from "./cache-helper";
 import { ShapeResolver } from "./shape-resolver";
 import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES } from "./constants";
+import { handlesIn } from "../../../__test__/embind-ledger";
+
+const plateDocument: Models.OCCT.DesignPartDocument = {
+    schemaVersion: 1,
+    features: [
+        { id: "base", type: "sketch", on: { plane: "XY" }, start: [0, 0], pen: [{ type: "hLine", length: 40 }, { type: "vLine", length: 20 }, { type: "hLine", length: -40 }, { type: "close" }] },
+        { id: "plate", type: "extrude", profile: "base", distance: 10 },
+    ],
+};
 
 describe("the reserved command handlers", () => {
     let occt: BitbybitOcctModule;
     let openCascade: OCCTService;
+    let occHelper: OccHelper;
     let cacheHelper: CacheHelper;
     let pending: [string, unknown][];
     let context: CommandContext;
 
     const run = (functionName: string, inputs: Record<string, unknown>) =>
         getCommandHandler(functionName)!(inputs, context);
+    const noShapes = expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` is not a list of at least one shape, so there is nothing to mesh." });
 
     const cacheDocument = (hash: string): void => {
         const box = openCascade.shapes.solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
@@ -37,7 +49,8 @@ describe("the reserved command handlers", () => {
 
     beforeAll(async () => {
         occt = await initOpenCascade();
-        openCascade = new OCCTService(occt, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt));
+        occHelper = new OccHelper(occt);
+        openCascade = new OCCTService(occt, occHelper);
     });
 
     beforeEach(() => {
@@ -46,6 +59,7 @@ describe("the reserved command handlers", () => {
         openCascade.plugins = { dependencies: {} };
         context = {
             openCascade,
+            meshing: occHelper.meshingService,
             kernel: occt,
             setMeshRetention: (triangles) => occt.SetMeshRetention(triangles),
             cacheHelper,
@@ -65,6 +79,15 @@ describe("the reserved command handlers", () => {
     const meshBox = (hash: string): void => {
         run(ReservedFunctions.SHAPE_TO_MESH, { shape: { type: "occ-shape", hash }, precision: 0.1, adjustYtoZ: false });
     };
+
+    const featuresReusedByABuild = (): boolean[] => {
+        const built = openCascade.design.build({ document: plateDocument });
+        handlesIn(built).forEach(handle => { handle.delete(); });
+        return built.report.map(entry => entry.cached);
+    };
+
+    const hashesPastTheThreshold = (): Record<string, number> =>
+        Object.fromEntries(Array.from({ length: CACHE_THRESHOLD + 1 }, (_, index) => [index, index]));
 
     describe("hasCommandHandler", () => {
         it("should know the reserved function names", () => {
@@ -118,16 +141,79 @@ describe("the reserved command handlers", () => {
             expect(result.result).toHaveLength(2);
         });
 
-        it("should refuse a call naming no shapes", () => {
-            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, { shapes: [] })).toThrow("No shapes detected");
+        it("should refuse a call naming no shapes as an input error on shapes", () => {
+            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, { shapes: [] })).toThrow(noShapes);
         });
 
-        it("should refuse a call whose shapes are not a list", () => {
-            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, { shapes: "one shape" })).toThrow("No shapes detected");
+        it("should refuse a call whose shapes are not a list as an input error on shapes", () => {
+            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, { shapes: "one shape" })).toThrow(noShapes);
         });
 
-        it("should refuse a call with no shapes member at all", () => {
-            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, {})).toThrow("No shapes detected");
+        it("should refuse a call with no shapes member at all as an input error on shapes", () => {
+            expect(() => run(ReservedFunctions.SHAPES_TO_MESHES, {})).toThrow(noShapes);
+        });
+    });
+
+    describe("shapeToMeshBuffers and shapesToMeshBuffers", () => {
+        const cacheBox = (hash: string, x: number): void => {
+            cacheHelper.addToCache(hash, openCascade.shapes.solid.createBox({ width: 1, height: 2, length: 3, center: [x, 0, 0] }));
+        };
+
+        it("should mesh the shape the cache holds into typed views of shared buffers, the same numbers shapeToMesh gives", () => {
+            // Arrange
+            cacheBox("box-1", 0);
+            const lists = run(ReservedFunctions.SHAPE_TO_MESH, { shape: { type: "occ-shape", hash: "box-1" }, precision: 0.01 }).result as Inputs.OCCT.DecomposedMeshDto;
+
+            // Act
+            const answer = run(ReservedFunctions.SHAPE_TO_MESH_BUFFERS, { shape: { type: "occ-shape", hash: "box-1" }, precision: 0.01 });
+
+            // Assert
+            const mesh = answer.result as Inputs.OCCT.DecomposedMeshBuffersDto;
+            expect(mesh.faceList).toHaveLength(6);
+            mesh.faceList.forEach((face, at) => {
+                const listed = lists.faceList[at]!;
+                expect(face.vertexCoord).toBeInstanceOf(Float32Array);
+                expect(face.triIndexes).toBeInstanceOf(Uint32Array);
+                expect(face).not.toHaveProperty("vertexCoordVec");
+                expect(Array.from(face.triIndexes)).toEqual(listed.triIndexes);
+                expect(Array.from(face.vertexCoord)).toEqual(listed.vertexCoord.map(Math.fround));
+                expect(Array.from(face.normalCoord)).toEqual(listed.normalCoord.map(Math.fround));
+            });
+            expect(mesh.edgeList).toEqual(lists.edgeList);
+        });
+
+        it("should hand over every buffer the faces view, each once", () => {
+            // Arrange
+            cacheBox("box-1", 0);
+
+            // Act
+            const answer = run(ReservedFunctions.SHAPE_TO_MESH_BUFFERS, { shape: { type: "occ-shape", hash: "box-1" }, precision: 0.01 });
+
+            // Assert
+            const mesh = answer.result as Inputs.OCCT.DecomposedMeshBuffersDto;
+            const viewed = new Set(mesh.faceList.flatMap(face => [face.vertexCoord.buffer, face.normalCoord.buffer, face.uvs.buffer, face.triIndexes.buffer]));
+            expect(answer.transfer).toHaveLength(viewed.size);
+            expect(new Set(answer.transfer)).toEqual(viewed);
+        });
+
+        it("should mesh every shape the cache holds, handing over the buffers of all of them", () => {
+            // Arrange
+            cacheBox("box-1", 0);
+            cacheBox("box-2", 5);
+
+            // Act
+            const answer = run(ReservedFunctions.SHAPES_TO_MESH_BUFFERS, { shapes: [{ type: "occ-shape", hash: "box-1" }, { type: "occ-shape", hash: "box-2" }], precision: 0.01 });
+
+            // Assert
+            const meshes = answer.result as Inputs.OCCT.DecomposedMeshBuffersDto[];
+            expect(meshes).toHaveLength(2);
+            expect(meshes[1]!.faceList[0]!.vertexCoord.buffer).not.toBe(meshes[0]!.faceList[0]!.vertexCoord.buffer);
+            expect(answer.transfer).toHaveLength(8);
+        });
+
+        it("should refuse a call naming no shapes, or no list of them, as an input error on shapes", () => {
+            expect(() => run(ReservedFunctions.SHAPES_TO_MESH_BUFFERS, { shapes: [] })).toThrow(noShapes);
+            expect(() => run(ReservedFunctions.SHAPES_TO_MESH_BUFFERS, {})).toThrow(noShapes);
         });
     });
 
@@ -193,6 +279,94 @@ describe("the reserved command handlers", () => {
         });
     });
 
+    describe("deleteUnsharedShapes", () => {
+        const answeredOnce = (hash: string): Record<string, unknown> => ({ type: "occ-shape", hash, answers: 1 });
+
+        it("should delete a shape only when the answers counted for it are every answer that carried it, and answer with the epoch", () => {
+            // Arrange
+            ["shape-1", "shape-2", "shape-3"].forEach(hash => cacheHelper.addToCache(hash, { hash }));
+            cacheHelper.countAnswer(["shape-1", "shape-2"]);
+            cacheHelper.countAnswer(["shape-2"]);
+
+            // Act
+            const result = run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { epoch: cacheHelper.epoch, shapes: ["shape-1", "shape-2", "shape-3"].map(answeredOnce) });
+
+            // Assert
+            expect(["shape-1", "shape-2", "shape-3"].map(hash => cacheHelper.checkCache(hash))).toEqual([null, { hash: "shape-2" }, { hash: "shape-3" }]);
+            expect(result).toStrictEqual({ handled: true, result: { epoch: cacheHelper.epoch } });
+        });
+
+        it("should delete nothing in an epoch that has ended, as the cache was cleared since and what a key holds now is another caller's, and answer with the current epoch", () => {
+            // Arrange
+            const ended = cacheHelper.epoch;
+            run(ReservedFunctions.CLEAN_ALL_CACHE, {});
+            cacheHelper.addToCache("shape-1", { hash: "shape-1" });
+            cacheHelper.countAnswer(["shape-1"]);
+
+            // Act
+            const result = run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { epoch: ended, shapes: [answeredOnce("shape-1")] });
+
+            // Assert
+            expect(cacheHelper.checkCache("shape-1")).toEqual({ hash: "shape-1" });
+            expect(result).toStrictEqual({ handled: true, result: { epoch: cacheHelper.epoch } });
+            expect(cacheHelper.epoch).not.toBe(ended);
+        });
+
+        it("should delete nothing in an epoch the threshold reset has ended", () => {
+            // Arrange
+            const ended = cacheHelper.epoch;
+            cacheHelper.usedHashes = hashesPastTheThreshold();
+            run(ReservedFunctions.STARTED_THE_RUN, {});
+            cacheHelper.addToCache("shape-1", { hash: "shape-1" });
+            cacheHelper.countAnswer(["shape-1"]);
+
+            // Act
+            run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { epoch: ended, shapes: [answeredOnce("shape-1")] });
+
+            // Assert
+            expect(cacheHelper.checkCache("shape-1")).toEqual({ hash: "shape-1" });
+        });
+
+        it.each([ReservedFunctions.DELETE_SHAPE, ReservedFunctions.DELETE_SHAPES, ReservedFunctions.DELETE_UNSHARED_SHAPES])("should keep the shape a key holds again after %s deleted the one before, whose answers still count", (deletion) => {
+            // Arrange
+            cacheHelper.addToCache("shape-1", { hash: "shape-1" });
+            cacheHelper.countAnswer(["shape-1"]);
+            const deleted = { shape: answeredOnce("shape-1"), shapes: [answeredOnce("shape-1")], epoch: cacheHelper.epoch };
+            run(deletion, deleted);
+            cacheHelper.addToCache("shape-1", { hash: "shape-1", made: "again" });
+            cacheHelper.countAnswer(["shape-1"]);
+
+            // Act
+            run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { epoch: cacheHelper.epoch, shapes: [answeredOnce("shape-1")] });
+
+            // Assert
+            expect(cacheHelper.checkCache("shape-1")).toEqual({ hash: "shape-1", made: "again" });
+        });
+
+        it("should delete nothing when asked without an epoch, and answer with the one a later call names", () => {
+            // Arrange
+            cacheHelper.addToCache("shape-1", { hash: "shape-1" });
+            cacheHelper.countAnswer(["shape-1"]);
+
+            // Act
+            const result = run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { shapes: [answeredOnce("shape-1")] });
+
+            // Assert
+            expect(cacheHelper.checkCache("shape-1")).toEqual({ hash: "shape-1" });
+            expect(result).toStrictEqual({ handled: true, result: { epoch: cacheHelper.epoch } });
+        });
+
+        it("should refuse shapes that are not a list", () => {
+            // Act & Assert
+            expect(() => run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { shapes: "shape-1" })).toThrow(expect.objectContaining({ name: "InputError", property: "shapes" }));
+        });
+
+        it("should refuse an epoch that is not a number", () => {
+            // Act & Assert
+            expect(() => run(ReservedFunctions.DELETE_UNSHARED_SHAPES, { epoch: "1", shapes: [] })).toThrow(expect.objectContaining({ name: "InputError", property: "epoch" }));
+        });
+    });
+
     describe("deleteDocument", () => {
         it("should forget the document it was given", () => {
             // Arrange
@@ -226,7 +400,7 @@ describe("the reserved command handlers", () => {
             cacheBox("box");
             meshBox("box");
             const keptBefore = occt.KeptMeshFaces();
-            cacheHelper.usedHashes = Object.fromEntries(Array.from({ length: CACHE_THRESHOLD + 1 }, (_, index) => [index, index]));
+            cacheHelper.usedHashes = hashesPastTheThreshold();
 
             // Act
             run(ReservedFunctions.STARTED_THE_RUN, {});
@@ -236,6 +410,30 @@ describe("the reserved command handlers", () => {
             expect(cacheHelper.usedHashes).toEqual({});
             expect(occt.KeptMeshFaces()).toBe(0);
             expect(occt.MeshRetentionBudget()).toBe(100);
+        });
+
+        it("should leave the design builder what it kept while the cache is a manageable size, so the next build reuses every feature", () => {
+            // Arrange
+            featuresReusedByABuild();
+            cacheHelper.usedHashes = { one: 1 };
+
+            // Act
+            run(ReservedFunctions.STARTED_THE_RUN, {});
+
+            // Assert
+            expect(featuresReusedByABuild()).toEqual([true, true]);
+        });
+
+        it("should free what the design builder kept once the cache has outgrown the run, so the next build makes every feature again", () => {
+            // Arrange
+            featuresReusedByABuild();
+            cacheHelper.usedHashes = hashesPastTheThreshold();
+
+            // Act
+            run(ReservedFunctions.STARTED_THE_RUN, {});
+
+            // Assert
+            expect(featuresReusedByABuild()).toEqual([false, false]);
         });
     });
 
@@ -319,6 +517,17 @@ describe("the reserved command handlers", () => {
             // Assert
             expect(cacheHelper.argCache).toEqual({});
             expect(result).toEqual({ handled: true, result: {} });
+        });
+
+        it("should free what the design builder kept, so the next build makes every feature again", () => {
+            // Arrange
+            featuresReusedByABuild();
+
+            // Act
+            run(ReservedFunctions.CLEAN_ALL_CACHE, {});
+
+            // Assert
+            expect(featuresReusedByABuild()).toEqual([false, false]);
         });
     });
 

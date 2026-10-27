@@ -4,6 +4,7 @@ import type { Point } from "./point";
 import type { Vector } from "./vector";
 import { resolveDto } from "../kernel-calls";
 import type * as Resolved from "../resolved-inputs";
+import { add3, scale3, subtract3 } from "./helpers/geometry/vectors";
 
 /**
  * Straight lines between two points, held as plain objects of the form `{ start, end }`, and the
@@ -193,10 +194,7 @@ export class Line {
         const point2 = resolved.line.end;
         const parameter = resolved.param;
 
-        const direction = [point2[0] - point1[0], point2[1] - point1[1], point2[2] - point1[2]];
-
-        const point = [point1[0] + parameter * direction[0]!, point1[1] + parameter * direction[1]!, point1[2] + parameter * direction[2]!] as Inputs.Base.Point3;
-        return point;
+        return add3(point1, scale3(subtract3(point2, point1), parameter));
     }
 
     /**

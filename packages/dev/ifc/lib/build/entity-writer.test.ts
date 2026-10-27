@@ -142,8 +142,8 @@ describe("planeFrame", () => {
     it.each([
         [[1, 0, 0], [0, 1, 0]],
         [[0, 1, 0], [1, 0, 0]],
-        [[0, 0, 1], [0, 1, 0]],
-    ])("should fall back to a world axis when the hint lies along the normal %j", (normal, x) => {
+        [[0, 0, 1], [1, 0, 0]],
+    ])("should fall back to the world axis least aligned with the normal, X before Y before Z, when the hint lies along the normal %j", (normal, x) => {
         // Arrange
         const along: [number, number, number] = [normal[0] ?? 0, normal[1] ?? 0, normal[2] ?? 0];
 
@@ -152,5 +152,18 @@ describe("planeFrame", () => {
 
         // Assert
         expect(rounded([frame.x])).toEqual([x]);
+    });
+
+    it("should fall back to a world axis when the hint lies along the normal but for its last digits, rather than take the X axis from rounding", () => {
+        // Arrange
+        const normal: [number, number, number] = [1, 2, 3];
+        const alongNormalButForRounding: [number, number, number] = [2, 4, 6.0000000001];
+        const worldXSquareToNormal = [13 / Math.sqrt(182), -2 / Math.sqrt(182), -3 / Math.sqrt(182)];
+
+        // Act
+        const frame = planeFrame([0, 0, 0], normal, alongNormalButForRounding);
+
+        // Assert
+        expect(rounded([frame.x])).toEqual(rounded([worldXSquareToNormal]));
     });
 });

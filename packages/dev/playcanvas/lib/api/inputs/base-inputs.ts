@@ -42,6 +42,8 @@ export namespace Base {
     export type topBottomEnum = CoreBase.topBottomEnum;
     export const basicAlignmentEnum = CoreBase.basicAlignmentEnum;
     export type basicAlignmentEnum = CoreBase.basicAlignmentEnum;
+    export const unitOfLengthEnum = CoreBase.unitOfLengthEnum;
+    export type unitOfLengthEnum = CoreBase.unitOfLengthEnum;
 
     export const colorMapStrategyEnum = CoreBase.colorMapStrategyEnum;
     export type colorMapStrategyEnum = CoreBase.colorMapStrategyEnum;

@@ -1,4 +1,4 @@
-import { WORLD_AXES, composeAxes, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES, composeAxes, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type { Frame3 } from "../build/build-types";
 import { bodyContext } from "../build/contexts";
 import { planeFrame } from "../build/entity-writer";

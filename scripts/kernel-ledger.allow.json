@@ -1,0 +1,130 @@
+{
+    "//": "Keyed <kernel>:<dotted path>#<ok|threw>: allow holds the paths whose calls leave kernel objects alive today, foreign the paths on which the kernel library's own JavaScript leaves objects it made alive (objects our code never held), each as { reason, mostPerCall }, the most of each class one call may leave; unreached holds, keyed <kernel>:<dotted path>, the paths no test calls from outside the kernel's own services, each with its reason. scripts/kernel-ledger.mjs fails on a leak or a library leak not listed, on one call leaving more of a class than its bound or a class its entry does not name, on a path no test calls that is not listed, and on a listed key or class that no longer leaks, that a test now calls or that names no path. Every list only shrinks.",
+    "unreached": {},
+    "allow": {},
+    "foreign": {
+        "manifold:crossSection.crossSectionFromPoints#ok": {
+            "reason": "manifold-3d's CrossSection.ofPolygons goes through the CrossSection constructor, whose polygons2vec never deletes the Vector_vec2 it builds for each polygon; disposePolygons deletes only the copies get() hands back",
+            "mostPerCall": {
+                "Vector_vec2": 1
+            }
+        },
+        "manifold:crossSection.crossSectionFromPolygons#ok": {
+            "reason": "manifold-3d's CrossSection.ofPolygons goes through the CrossSection constructor, whose polygons2vec never deletes the Vector_vec2 it builds for each polygon; disposePolygons deletes only the copies get() hands back",
+            "mostPerCall": {
+                "Vector_vec2": 2
+            }
+        },
+        "manifold:crossSection.crossSectionToPoints#ok": {
+            "reason": "manifold-3d's CrossSection.prototype.toPolygons (setup's vec2polygons) never deletes the Vector_vec2 that get() hands back for each polygon it reads",
+            "mostPerCall": {
+                "Vector_vec2": 1
+            }
+        },
+        "manifold:crossSection.crossSectionToPolygons#ok": {
+            "reason": "manifold-3d's CrossSection.prototype.toPolygons (setup's vec2polygons) never deletes the Vector_vec2 that get() hands back for each polygon it reads",
+            "mostPerCall": {
+                "Vector_vec2": 1
+            }
+        },
+        "manifold:crossSection.crossSectionsToPoints#ok": {
+            "reason": "manifold-3d's CrossSection.prototype.toPolygons (setup's vec2polygons) never deletes the Vector_vec2 that get() hands back for each polygon it reads",
+            "mostPerCall": {
+                "Vector_vec2": 2
+            }
+        },
+        "manifold:crossSection.crossSectionsToPolygons#ok": {
+            "reason": "manifold-3d's CrossSection.prototype.toPolygons (setup's vec2polygons) never deletes the Vector_vec2 that get() hands back for each polygon it reads",
+            "mostPerCall": {
+                "Vector_vec2": 2
+            }
+        },
+        "manifold:crossSection.operations.compose#ok": {
+            "reason": "manifold-3d's CrossSection constructor (setup's polygons2vec) never deletes the Vector_vec2 it builds for each polygon and pushes into its Vector2_vec2; disposePolygons deletes only the copies get() hands back",
+            "mostPerCall": {
+                "Vector_vec2": 1
+            }
+        },
+        "manifold:crossSection.operations.extrude#ok": {
+            "reason": "manifold-3d's CrossSection.prototype.extrude hands this._ToPolygons() straight to Module._Extrude and never deletes the Vector2_vec2 it returns",
+            "mostPerCall": {
+                "Vector2_vec2": 1
+            }
+        },
+        "manifold:crossSection.operations.loft#ok": {
+            "reason": "manifold-3d's CrossSection.prototype.toPolygons never deletes the Vector_vec2 get() hands back for each ring it reads, and its triangulate never deletes the Vector_ivec3 Module._Triangulate returns nor the Vector_vec2 its polygons2vec builds for each ring",
+            "mostPerCall": {
+                "Vector_ivec3": 2,
+                "Vector_vec2": 6
+            }
+        },
+        "manifold:crossSection.operations.loft#threw": {
+            "reason": "manifold-3d's CrossSection.prototype.toPolygons never deletes the Vector_vec2 get() hands back for each ring it reads, and its triangulate never deletes the Vector_ivec3 Module._Triangulate returns nor the Vector_vec2 its polygons2vec builds for each ring",
+            "mostPerCall": {
+                "Vector_ivec3": 2,
+                "Vector_vec2": 4
+            }
+        },
+        "manifold:crossSection.operations.revolve#ok": {
+            "reason": "manifold-3d's CrossSection.prototype.revolve hands this._ToPolygons() straight to Module._Revolve and never deletes the Vector2_vec2 it returns",
+            "mostPerCall": {
+                "Vector2_vec2": 1
+            }
+        },
+        "manifold:crossSection.operations.sweep#ok": {
+            "reason": "manifold-3d's CrossSection.prototype.toPolygons never deletes the Vector_vec2 get() hands back for each ring it reads, and its triangulate never deletes the Vector_ivec3 Module._Triangulate returns nor the Vector_vec2 its polygons2vec builds for each ring",
+            "mostPerCall": {
+                "Vector_ivec3": 2,
+                "Vector_vec2": 3
+            }
+        },
+        "manifold:crossSection.shapes.create#ok": {
+            "reason": "manifold-3d's CrossSection constructor (setup's polygons2vec) never deletes the Vector_vec2 it builds for each polygon and pushes into its Vector2_vec2; disposePolygons deletes only the copies get() hands back",
+            "mostPerCall": {
+                "Vector_vec2": 1
+            }
+        },
+        "manifold:decomposeManifoldOrCrossSection#ok": {
+            "reason": "manifold-3d's CrossSection.prototype.toPolygons (setup's vec2polygons) never deletes the Vector_vec2 that get() hands back for each polygon it reads",
+            "mostPerCall": {
+                "Vector_vec2": 1
+            }
+        },
+        "manifold:decomposeManifoldsOrCrossSections#ok": {
+            "reason": "manifold-3d's CrossSection.prototype.toPolygons (setup's vec2polygons) never deletes the Vector_vec2 that get() hands back for each polygon it reads",
+            "mostPerCall": {
+                "Vector_vec2": 1
+            }
+        },
+        "manifold:recipes.build#ok": {
+            "reason": "manifold-3d's CrossSection constructor never deletes the Vector_vec2 its polygons2vec builds for each polygon, CrossSection.prototype.extrude and revolve (reached through Manifold.revolve) never delete the Vector2_vec2 of this._ToPolygons(), and triangulate never deletes the Vector_ivec3 Module._Triangulate returns nor a Vector_vec2 for each ring",
+            "mostPerCall": {
+                "Vector_ivec3": 6,
+                "Vector_vec2": 12,
+                "Vector2_vec2": 2
+            }
+        },
+        "manifold:recipes.build#threw": {
+            "reason": "manifold-3d's CrossSection constructor never deletes the Vector_vec2 its polygons2vec builds for each polygon, CrossSection.prototype.extrude and revolve (reached through Manifold.revolve) never delete the Vector2_vec2 of this._ToPolygons(), and triangulate never deletes the Vector_ivec3 Module._Triangulate returns nor a Vector_vec2 for each ring",
+            "mostPerCall": {
+                "Vector_ivec3": 2,
+                "Vector_vec2": 3,
+                "Vector2_vec2": 1
+            }
+        },
+        "manifold:recipes.meshes#ok": {
+            "reason": "manifold-3d's CrossSection constructor never deletes the Vector_vec2 its polygons2vec builds for each polygon, and CrossSection.prototype.extrude never deletes the Vector2_vec2 of this._ToPolygons() it hands to Module._Extrude",
+            "mostPerCall": {
+                "Vector_vec2": 2,
+                "Vector2_vec2": 2
+            }
+        },
+        "manifold:recipes.meshes#threw": {
+            "reason": "manifold-3d's CrossSection constructor never deletes the Vector_vec2 its polygons2vec builds for each polygon, and CrossSection.prototype.extrude never deletes the Vector2_vec2 of this._ToPolygons() it hands to Module._Extrude",
+            "mostPerCall": {
+                "Vector_vec2": 1,
+                "Vector2_vec2": 1
+            }
+        }
+    }
+}

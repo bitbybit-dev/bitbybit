@@ -61,4 +61,26 @@ export class OCCTRecipes {
     buildDocument(inputs: Inputs.OCCT.BuildRecipeDocumentDto): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("recipes.buildDocument", inputs);
     }
+
+    /**
+     * Describes a shape exactly as a recipe: a brep step for its solids and their cavities, and one
+     * for the faces outside any solid.
+     *
+     * Lines, circles, ellipses and elementary surfaces stay as they are, swept surfaces keep their
+     * curve, and the rest become B-splines, as do cones and swept surfaces under `ifcSurfaces`.
+     * `recipes.build` builds it back.
+     * @param inputs - The shape, its unit and whether to keep to the surfaces IFC takes
+     * @returns A recipe whose one root is the shape
+     * @group describe
+     * @shortname describe shape
+     * @drawable false
+     * @example
+     * ```typescript
+     * const recipe = await bitbybit.occt.recipes.describe({ shape });
+     * const [again] = await bitbybit.occt.recipes.build({ recipe });
+     * ```
+     */
+    describe(inputs: Inputs.OCCT.DescribeRecipeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Recipe> {
+        return this.occWorkerManager.genericCallToWorkerPromise("recipes.describe", inputs);
+    }
 }

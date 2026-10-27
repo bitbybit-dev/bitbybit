@@ -67,6 +67,18 @@ describe("Vector unit tests", () => {
         expect(res).toBeCloseTo(124.51133246749056);
     });
 
+    it.each<[string, number[], number[], number]>([
+        ["one way", [1, 1, 1], [1, 1, 1], 0],
+        ["one way at different lengths", [0.1, 0.2, 0.3], [0.3, 0.6, 0.9], 0],
+        ["opposite ways", [1, 1, 1], [-2, -2, -2], 180],
+    ])("should give a finite angle for vectors pointing %s, where rounding would put the cosine past 1", (_name, first, second, expected) => {
+        // Act
+        const angle = vector.angleBetween({ first, second });
+
+        // Assert
+        expect(angle).toBeCloseTo(expected, 5);
+    });
+
     it("should measure angle between normalized 2d vectors", () => {
         const res = vector.angleBetweenNormalized2d({ first: [1, 1.231, 0.3], second: [-13, 1, -0.5512] });
         expect(res).toBeCloseTo(125.06491356368089);
@@ -425,6 +437,31 @@ describe("Vector unit tests", () => {
     describe("normalized", () => {
         it("should give a vector too short to have a direction no direction at all", () => {
             expect(vector.normalized({ vector: [0, 0, 0] })).toBeUndefined();
+        });
+
+        it("should scale a vector of any length to length 1, a very long one without overflowing", () => {
+            // Act
+            const units = [vector.normalized({ vector: [3, 4] }), vector.normalized({ vector: [0, 1e200, 1e200] })];
+
+            // Assert
+            expect(units[0]).toEqual([0.6, 0.8]);
+            expect(units[1]).toEqual([0, expect.closeTo(Math.SQRT1_2, 15), expect.closeTo(Math.SQRT1_2, 15)]);
+        });
+
+        it("should give a vector shorter than 1e-8 no direction", () => {
+            // Act
+            const units = [vector.normalized({ vector: [1e-9, 0, 0] }), vector.normalized({ vector: [2e-8, 0, 0] })];
+
+            // Assert
+            expect(units).toEqual([undefined, [1, 0, 0]]);
+        });
+
+        it("should give a vector with a component that is not finite no direction", () => {
+            // Act
+            const unit = vector.normalized({ vector: [1, Infinity, 0] });
+
+            // Assert
+            expect(unit).toBeUndefined();
         });
     });
 

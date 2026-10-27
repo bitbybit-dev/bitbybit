@@ -32,7 +32,7 @@ This section will guide you through understanding and utilizing the Bitbybit Run
 
 ## The Evolution of Bitbybit Runner
 
-The Bitbybit Runner is a single JavaScript file you can include in your website. It bundles all the open-source components of the Bitbybit platform, including CAD kernels (like OCCT, JSCAD) and various 3D algorithms, making it easier than ever to develop sophisticated parametric 3D experiences and model configurators directly in your web projects.
+The Bitbybit Runner is a single JavaScript file you can include in your website. It bundles the algorithms of the Bitbybit npm packages and runs them on the CAD kernels (OCCT, JSCAD, Manifold), making it easier than ever to develop sophisticated parametric 3D experiences and model configurators directly in your web projects.
 
 Our journey with the Runner began with a version fully based on the **BabylonJS** game engine. This initial runner proved to be incredibly powerful, allowing direct execution of Bitbybit algorithms via JavaScript and enabling users to export scripts from our visual editors (Rete, Blockly, TypeScript) for use in any browser-based coding environment like StackBlitz, CodePen, JSFiddle, or their own websites.
 *   For more background, check out our original announcement: [Introducing BITBYBIT-RUNNER.JS](/blog/introducing-bitbybit-runner)
@@ -101,20 +101,20 @@ Here's a breakdown of the different Bitbybit Runner versions:
     *   Expects `BABYLON`, `GUI`, `LOADERS`, `MATERIALS`, `SERIALIZERS` global objects to be available on the `window` object for successful initialization.
 *   **`bitbybit-runner-threejs.js`**:
     *   Bundles the ThreeJS game engine and OrbitControls.
-    *   Can execute Bitbybit's open-source 3D modeling algorithms and visual scripts, as long as they don't contain BabylonJS-specific logic.
+    *   Can execute the 3D modeling algorithms of the Bitbybit npm packages and visual scripts, as long as they don't contain BabylonJS-specific logic.
 *   **`bitbybit-runner-lite-threejs.js`**:
     *   A lightweight version that *excludes* the ThreeJS engine.
     *   Expects `THREEJS` and `OrbitControls` global objects to be available on the `window` object.
 *   **`bitbybit-runner-playcanvas.js`**:
     *   Bundles the PlayCanvas game engine.
-    *   Can execute Bitbybit's open-source 3D modeling algorithms and visual scripts, as long as they don't contain BabylonJS-specific logic.
+    *   Can execute the 3D modeling algorithms of the Bitbybit npm packages and visual scripts, as long as they don't contain BabylonJS-specific logic.
     *   Ideal for high-performance applications, mobile optimization, and game development.
 *   **`bitbybit-runner-lite-playcanvas.js`**:
     *   A lightweight version that *excludes* the PlayCanvas engine.
     *   Expects `pc` (PlayCanvas) global object to be available on the `window` object.
 
 ### Key Differences: BabylonJS vs. ThreeJS vs. PlayCanvas Runners
-All runner families can execute all of Bitbybit's open-source 3D modeling algorithms and CAD kernels. The primary differences relate to the game engines:
+All runner families can execute all of the algorithms of the Bitbybit npm packages on all three CAD kernels. The primary differences relate to the game engines:
 *   **Visual Script Compatibility:** If you're exporting scripts from our visual editors on bitbybit.dev (which are BabylonJS-based), the BabylonJS runner offers broadest compatibility, especially if your scripts use BabylonJS-specific features (skyboxes, GUI, physics).
 *   **ThreeJS and PlayCanvas Runners for Visual Scripts:** The ThreeJS and PlayCanvas runners will attempt to run visual scripts but will throw an error if they encounter BabylonJS-specific logic. However, if your visual coding is limited to 3D modeling features, it should execute fine on all three engines.
 *   **Direct JavaScript Coding:** If you're writing Bitbybit logic directly in JavaScript, any runner family will work well for accessing the core algorithms.
@@ -652,8 +652,8 @@ function hideSpinner() {
     <script type="importmap">
       {
         "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
-          "three/addons/controls/OrbitControls": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/controls/OrbitControls.min.js"
+          "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+          "three/addons/controls/OrbitControls": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/controls/OrbitControls.min.js"
         }
       }
     </script>

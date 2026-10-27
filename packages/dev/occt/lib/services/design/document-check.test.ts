@@ -56,7 +56,29 @@ describe("design document check", () => {
 
         // Assert
         expect(paths).toEqual(["/features/2", "/features/3/id", "/features/4/id", "/features/5/type"]);
-        expect(message).toBe("\"melt\" is not a feature type: sketch, extrude, revolve, boolean, fillet, chamfer, linearPattern, polarPattern, mirror, transform, pushPull, removeFaces, sweep, loft, shell, hole, boss, pocket, import, operation, script");
+        expect(message).toBe("\"melt\" is not a feature type: sketch, extrude, revolve, boolean, fillet, chamfer, linearPattern, polarPattern, mirror, transform, pushPull, removeFaces, sweep, loft, shell, hole, boss, pocket, keyway, flat, ringGroove, knurl, spline, thread, import, operation, script");
+    });
+
+    it("should check a machining feature's fields: its keys, its pattern and a size that is text", () => {
+        // Act
+        const issues = issuesOf(
+            { id: "key", type: "keyway", body: "block", on: sideOfBlock, length: 10, depth: 2 },
+            { id: "grip", type: "knurl", body: "block", on: sideOfBlock, length: 10, pattern: "spiral" },
+            { id: "screw", type: "thread", body: "block", on: sideOfBlock, length: 10, size: 8 },
+            { id: "ring", type: "ringGroove", body: "block", on: sideOfBlock, at: "size", flip: true },
+        );
+
+        // Assert
+        expect(issues.map(issue => issue.path)).toEqual(["/features/2/depth", "/features/3/pattern", "/features/4/size"]);
+        expect(issues.slice(1).map(issue => issue.message)).toEqual(["one of straight, left, right, diamond is expected", "a text or { expr } is expected"]);
+    });
+
+    it("should take the machining features sized from tables in a document of any unit, since the tables are read in its unit", () => {
+        // Act
+        const issues = documentIssues({ schemaVersion: 1, units: { length: "cm" }, features: [sketch, block, { id: "key", type: "keyway", body: "block", on: sideOfBlock, length: 1 }, { id: "flat", type: "flat", body: "block", on: sideOfBlock, length: 1, depth: 0.1 }] }, OPERATIONS);
+
+        // Assert
+        expect(issues).toEqual([]);
     });
 
     it("should refuse numbers and points that cannot be read", () => {
@@ -459,7 +481,7 @@ describe("design document check", () => {
         const schema = JSON.parse(readFileSync(new URL("../../../schemas/design-document/experimental.json", import.meta.url), "utf8")) as { $defs: Record<string, { properties: Record<string, unknown> }> };
         const keysOf = (name: string): string[] => Object.keys(schema.$defs[name]!.properties).sort();
         const extensible = (keys: readonly string[]): string[] => [...keys, "extras", "extensions"].sort();
-        const featureNames: Record<string, string> = { sketch: "DesignSketchFeature", extrude: "DesignExtrudeFeature", revolve: "DesignRevolveFeature", boolean: "DesignBooleanFeature", fillet: "DesignFilletFeature", chamfer: "DesignChamferFeature", linearPattern: "DesignLinearPatternFeature", polarPattern: "DesignPolarPatternFeature", mirror: "DesignMirrorFeature", transform: "DesignTransformFeature", pushPull: "DesignPushPullFeature", removeFaces: "DesignRemoveFacesFeature", operation: "DesignOperationFeature", sweep: "DesignSweepFeature", loft: "DesignLoftFeature", shell: "DesignShellFeature", hole: "DesignHoleFeature", boss: "DesignBossFeature", pocket: "DesignPocketFeature", import: "DesignImportFeature", script: "DesignScriptFeature" };
+        const featureNames: Record<string, string> = { sketch: "DesignSketchFeature", extrude: "DesignExtrudeFeature", revolve: "DesignRevolveFeature", boolean: "DesignBooleanFeature", fillet: "DesignFilletFeature", chamfer: "DesignChamferFeature", linearPattern: "DesignLinearPatternFeature", polarPattern: "DesignPolarPatternFeature", mirror: "DesignMirrorFeature", transform: "DesignTransformFeature", pushPull: "DesignPushPullFeature", removeFaces: "DesignRemoveFacesFeature", operation: "DesignOperationFeature", sweep: "DesignSweepFeature", loft: "DesignLoftFeature", shell: "DesignShellFeature", hole: "DesignHoleFeature", boss: "DesignBossFeature", pocket: "DesignPocketFeature", keyway: "DesignKeywayFeature", flat: "DesignFlatFeature", ringGroove: "DesignRingGrooveFeature", knurl: "DesignKnurlFeature", spline: "DesignSplineFeature", thread: "DesignThreadFeature", import: "DesignImportFeature", script: "DesignScriptFeature" };
 
         // Act
         const features = Object.entries(FEATURE_KEYS).map(([type, keys]) => [keysOf(featureNames[type]!), extensible([...DOCUMENT_KEYS.feature, ...keys])]);

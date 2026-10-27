@@ -3,8 +3,6 @@ import { KernelOperationError } from "@bitbybit-dev/base";
 import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "./occ-helper";
-import { VectorHelperService } from "./api/vector-helper.service";
-import { ShapesHelperService } from "./api/shapes-helper.service";
 import { OCCTService } from "./occ-service";
 import type { OcctFailureCode } from "./kernel-failures";
 import { OCCT_FAILURES, occtFailure } from "./kernel-failures";
@@ -88,6 +86,7 @@ describe("OCCT_FAILURES", () => {
             "occt.fillet.failedOnEdges": ["edges"],
             "occt.fillet.failedAtCorners": ["corners"],
             "occt.pipe.notValid": ["trihedron"],
+            "occt.pipe.bendDoesNotFit": ["corners"],
             "occt.design.crashed": ["feature", "path"],
             "occt.recipe.failed": ["node", "root", "reason"],
         });
@@ -102,7 +101,7 @@ describe("OCCT operations the kernel cannot complete", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        helper = new OccHelper(occt);
         s = new OCCTService(occt, helper);
     });
 
@@ -529,6 +528,19 @@ describe("OCCT operations the kernel cannot complete", () => {
         });
     });
 
+    describe("booleans", () => {
+        it("names a boolean whose result the kernel found impossible and could not rebuild", () => {
+            // Arrange
+            vi.spyOn(occt, "BooleanFuse").mockReturnValue({ shape: null, errorAlerts: "BitbybitBool_AlertInconsistentResult" });
+
+            // Act
+            const failure = failureOf(() => s.booleans.union({ shapes: [box(), box()], keepEdges: false }));
+
+            // Assert
+            expect(failure).toMatchObject(named("occt.boolean.inconsistent"));
+        });
+    });
+
     describe("pipes", () => {
         it("names the failure when the kernel does not finish a pipe along a path", () => {
             // Arrange
@@ -541,18 +553,42 @@ describe("OCCT operations the kernel cannot complete", () => {
             expect(failure).toMatchObject(named("occt.pipe.failed"));
         });
 
-        it.each([
-            ["pipeWireCylindrical", (): unknown => s.operations.pipeWireCylindrical({ shape: path(), radius: 1, makeSolid: true })],
-            ["pipePolylineWireNGon", (): unknown => s.operations.pipePolylineWireNGon({ shape: path(), radius: 1, nrCorners: 6, makeSolid: true })],
-        ])("names the failure when the kernel does not finish %s", (_what, run) => {
+        it("names the failure when the kernel does not finish pipePolylineWireNGon", () => {
             // Arrange
             reportNotDone("BRepOffsetAPI_MakePipe");
 
             // Act
-            const failure = failureOf(run);
+            const failure = failureOf(() => s.operations.pipePolylineWireNGon({ shape: path(), radius: 1, nrCorners: 6, makeSolid: true }));
 
             // Assert
             expect(failure).toMatchObject(named("occt.pipe.failed"));
+        });
+
+        it("names the failure when the kernel's tube sweep does not finish pipeWireCylindrical", () => {
+            // Arrange
+            vi.spyOn(occt, "PipeCircular").mockImplementation(() => {
+                throw new Error("Standard_DomainError: PipeCircular: OCCT could not sweep the tube");
+            });
+
+            // Act
+            const failure = failureOf(() => s.operations.pipeWireCylindrical({ shape: path(), radius: 1, makeSolid: true }));
+
+            // Assert
+            expect(failure).toMatchObject(named("occt.pipe.failed"));
+        });
+
+        it("names the corners a bend radius does not fit in pipeWireCylindricalWithHistory", () => {
+            // Arrange
+            vi.spyOn(occt, "PipeCircularWithHistory").mockImplementation(() => {
+                throw new Error("Standard_DomainError: PipeCircularWithHistory: the bend radius does not fit the path at corners 1, 3 (counted from 1): the edges meeting there are too short for it");
+            });
+
+            // Act
+            const failure = failureOf(() => s.operations.pipeWireCylindricalWithHistory({ shape: path(), radius: 1, makeSolid: true, bendRadius: 4 }));
+
+            // Assert
+            expect(failure).toMatchObject({ name: "KernelOperationError", code: "occt.pipe.bendDoesNotFit", details: { corners: [1, 3] } });
+            expect((failure as Error).message).toContain("counted from 1: 1 and 3.");
         });
 
         it("still sweeps a pipe the kernel can build", () => {

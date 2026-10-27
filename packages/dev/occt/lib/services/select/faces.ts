@@ -1,8 +1,11 @@
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
+import type { MathBitByBit } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { checkedChoice, checkedCount, checkedDirection, checkedIndexes, checkedNumber, checkedPoint, checkedShape, withIndexesInRange } from "../base/input-checks";
+import { massesAndCentres } from "../base/kernel-arrays";
+import { groupsAreLevels, groupsInOrder, levelsInOrder, nearestInOrder, TIE_LEVEL } from "./tie-order";
 
 const SURFACE_TYPES: readonly Inputs.OCCT.surfaceTypeEnum[] = [
     Inputs.OCCT.surfaceTypeEnum.plane,
@@ -18,8 +21,6 @@ const SURFACE_TYPES: readonly Inputs.OCCT.surfaceTypeEnum[] = [
     Inputs.OCCT.surfaceTypeEnum.other,
 ];
 
-const RADIANS_PER_DEGREE = Math.PI / 180;
-
 /**
  * Choosing the faces of an OpenCascade shape by what they are and where they lie, so that "the top
  * face" still names the right face after a parameter changes. Every method returns face indexes as
@@ -31,6 +32,7 @@ export class OCCTSelectFaces {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
+        private readonly math: MathBitByBit,
     ) { }
 
     /**
@@ -71,7 +73,7 @@ export class OCCTSelectFaces {
         const shape = checkedShape(resolved.shape);
         const direction = checkedDirection(resolved.direction, "direction");
         const angle = checkedNumber(resolved.angle, "angle", 0, 180);
-        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectFacesFacing(shape, among, direction, angle * RADIANS_PER_DEGREE)));
+        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectFacesFacing(shape, among, direction, this.math.degToRad({ number: angle }))));
     }
 
     /**
@@ -154,7 +156,8 @@ export class OCCTSelectFaces {
         const shape = checkedShape(resolved.shape);
         const point = checkedPoint(resolved.point, "point");
         const count = checkedCount(resolved.count, "count");
-        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectFacesNearest(shape, among, point, count)));
+        const chosen = Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectFacesNearest(shape, among, point, Infinity)));
+        return chosen.length < 2 ? chosen : nearestInOrder(chosen, point, count, indexes => this.centresOf(shape, indexes), resolved.indexes);
     }
 
     /**
@@ -277,7 +280,8 @@ export class OCCTSelectFaces {
         const resolved = resolveDto(Inputs.OCCT.SelectSortAlongDto, inputs) as Resolved.OCCT.SelectSortAlongDto<TopoDS_Shape>;
         const shape = checkedShape(resolved.shape);
         const direction = checkedDirection(resolved.direction, "direction");
-        return Array.from(this.chosen(resolved.indexes, new Int32Array(), among => this.occ.SelectFacesSortedAlong(shape, among, direction)));
+        const levels = this.chosen<Int32Array[]>(resolved.indexes, [], among => this.occ.SelectFacesGroupedAlong(shape, among, direction, TIE_LEVEL)).map(level => Array.from(level));
+        return levelsInOrder(levels, resolved.indexes);
     }
 
     /**
@@ -298,7 +302,18 @@ export class OCCTSelectFaces {
         const shape = checkedShape(resolved.shape);
         const direction = checkedDirection(resolved.direction, "direction");
         const tolerance = checkedNumber(resolved.tolerance, "tolerance", 0);
-        return this.chosen<Int32Array[]>(resolved.indexes, [], among => this.occ.SelectFacesGroupedAlong(shape, among, direction, tolerance)).map(group => Array.from(group));
+        const groupedAt = (level: number): number[][] => this.chosen<Int32Array[]>(resolved.indexes, [], among => this.occ.SelectFacesGroupedAlong(shape, among, direction, level)).map(group => Array.from(group));
+        const groups = groupedAt(tolerance);
+        return groupsInOrder(groups, groupsAreLevels(tolerance) || groups.every(group => group.length < 2) ? groups : groupedAt(TIE_LEVEL), resolved.indexes);
+    }
+
+    private centresOf(shape: TopoDS_Shape, indexes: readonly number[]): Inputs.Base.Point3[] {
+        const faces = this.occ.FacesOf(shape, false);
+        try {
+            return massesAndCentres(this.occ.SurfacePropertiesOfEach(indexes.map(index => faces[index]!))).map(properties => properties.centre);
+        } finally {
+            faces.forEach(face => face.delete());
+        }
     }
 
     private chosen<T>(indexes: number[] | undefined, nothing: T, choose: (among: number[]) => T): T {

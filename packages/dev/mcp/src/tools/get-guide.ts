@@ -37,7 +37,7 @@ export const GUIDE_ALIASES: Readonly<Record<string, string>> = {
     "design-mistakes": "mistakes-to-avoid",
     geometry: "geometry-in-bitbybit",
     cad: "geometry-in-bitbybit",
-    occt: "how-the-occt-kernel-thinks",
+    occt: "how-the-bitbybit-occt-kernel-thinks",
     kernels: "which-kernel-to-use",
     manifold: "manifold-and-jscad",
     jscad: "manifold-and-jscad",

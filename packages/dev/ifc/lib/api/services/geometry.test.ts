@@ -1,4 +1,3 @@
-import { checkRecipe } from "@bitbybit-dev/base";
 import type { Base } from "@bitbybit-dev/base";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { modelRecipe } from "../../geometry/elements";
@@ -7,6 +6,9 @@ import * as Inputs from "../inputs";
 import type { IfcModel } from "../../model/model-types";
 import { oneWall, TIME_STAMP } from "../../__test__/build-setup";
 import { OTHER_TOOL_FILE, WALL_A, WALL_B } from "../../__test__/other-tool-file";
+import { Recipes } from "@bitbybit-dev/base";
+
+const RECIPES = new Recipes();
 
 vi.mock("../../geometry/elements", async () => {
     const actual = await vi.importActual<typeof import("../../geometry/elements")>("../../geometry/elements");
@@ -62,7 +64,7 @@ describe("IFCGeometry.recipe", () => {
         const recipe = ifc.geometry.recipe({ model });
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         expect(recipe.roots.map((root) => root.tag["type"])).toEqual(["IfcWall", "IfcWall", "IfcDoor", "IfcDoor", "IfcSlab", "IfcColumn"]);
         expect(recipe.millimetresPerUnit).toBe(1);
         expect(recipe.tolerance).toBe(0.01);
@@ -76,7 +78,7 @@ describe("IFCGeometry.recipe", () => {
         const recipe = ifc.geometry.recipe({ model });
 
         // Assert
-        expect(checkRecipe(recipe)).toEqual([]);
+        expect(RECIPES.check({ recipe })).toEqual([]);
         expect(recipe.groups!.map((group) => [group.name, group.parent, group.tag["type"]])).toEqual([
             ["Site", undefined, "IfcSite"],
             ["Building", 0, "IfcBuilding"],
@@ -154,6 +156,21 @@ describe("IFCGeometry.recipe", () => {
         // Assert
         expect(root.tag["name"]).toBe("South");
         expect(root.tag["rgba"]).toEqual([1, 128 / 255, 0, 0.75]);
+    });
+
+    it("should add an element's property set values to its roots' tags only when asked, describing the model again for each", () => {
+        // Arrange
+        const model = ifc.properties.addSet({ model: house(), elements: ["south"], name: "Pset_WallCommon", properties: [{ name: "IsExternal", value: true }, { name: "FireRating", value: "REI 60" }] });
+
+        // Act
+        const plain = rootOf(ifc.geometry.recipe({ model }), model, "south");
+        const withSets = rootOf(ifc.geometry.recipe({ model, propertySets: true }), model, "south");
+        const east = rootOf(ifc.geometry.recipe({ model, propertySets: true }), model, "east");
+
+        // Assert
+        expect(Object.keys(plain.tag).some((key) => key.startsWith("Pset_"))).toBe(false);
+        expect(withSets.tag).toMatchObject({ "Pset_WallCommon.IsExternal": true, "Pset_WallCommon.FireRating": "REI 60", name: "South" });
+        expect(Object.keys(east.tag).some((key) => key.startsWith("Pset_"))).toBe(false);
     });
 
     it("should leave the colour out of an element whose material has none", () => {

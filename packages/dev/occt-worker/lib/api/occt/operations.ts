@@ -498,6 +498,28 @@ export class OCCTOperations {
     }
 
     /**
+     * Splits a shape as `splitShapeWithShapes` does and gives the pieces as one compound, with one
+     * history per shape given, the shape to split first: `faces` names the pieces each face was
+     * cut into.
+     *
+     * With `nonDestructive` false, shapes that cut nothing off `shape` leave no pieces to follow,
+     * and the call is refused.
+     * @param inputs - The shape to split, the shapes to split it with and the options
+     * @returns The pieces in a compound, and one history per shape given
+     * @group divisions
+     * @shortname split with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.operations.splitShapeWithShapesWithHistory({ shape: box, shapes: [cuttingPlane], localFuzzyTolerance: 1e-4, nonDestructive: false });
+     * const topPieces = histories[0].faces[topIndex];
+     * ```
+     */
+    splitShapeWithShapesWithHistory(inputs: Inputs.OCCT.SplitDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.splitShapeWithShapesWithHistory", inputs);
+    }
+
+    /**
      * Spins a shape around an axis through the origin to sweep out a surface or solid: a face gives
      * a solid, a wire a shell.
      *
@@ -540,8 +562,8 @@ export class OCCTOperations {
      * Extrudes a flat shape up along Y by `height` while twisting it by `angle` degrees about the Y
      * axis, like a twisted column.
      *
-     * The shape should lie flat, as the profiles this package creates do. With `makeSolid` true,
-     * the default, a face profile gives a closed solid; a wire gives a twisted shell.
+     * The profile is a flat wire or edge, or a face without holes, whose outline is swept from its
+     * own plane. With `makeSolid` true, the default, the twist is a solid, otherwise a shell.
      * @param inputs - The profile shape, the height, the twist angle in degrees and whether to make a solid
      * @returns The twisted extrusion
      * @group extrusions
@@ -558,10 +580,29 @@ export class OCCTOperations {
     }
 
     /**
+     * Twists a profile upward as `rotatedExtrude` does, and reports what each part of the profile
+     * became: `facesFromEdges` the twisted side each edge swept, `firstFaces` and `lastFaces` the
+     * bottom and top of a solid. A face profile becomes the bottom (`faces`), where it lay.
+     * @param inputs - The profile shape, the height, the twist angle in degrees and whether to make a solid
+     * @returns The twisted extrusion and the profile's history
+     * @group extrusions
+     * @shortname rotated extrude with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.operations.rotatedExtrudeWithHistory({ shape: square, height: 20, angle: 90, makeSolid: true });
+     * const top = history.lastFaces;
+     * ```
+     */
+    rotatedExtrudeWithHistory(inputs: Inputs.OCCT.RotationExtrudeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.rotatedExtrudeWithHistory", inputs);
+    }
+
+    /**
      * Sweeps one or more profile shapes along a path wire and closes the result into a solid.
      *
      * The profiles should be placed on the path; with several profiles the sweep blends from one to
-     * the next along the way.
+     * the next along the way. An edge profile is swept as a one-edge wire.
      * @param inputs - The path wire and the profile shapes placed on it
      * @returns The swept solid
      * @group pipeing
@@ -596,11 +637,11 @@ export class OCCTOperations {
     }
 
     /**
-     * Sweeps a regular polygon along a wire, giving a bar with `nrCorners` flat sides.
+     * Sweeps a regular polygon along a wire, giving a bar with `nrCorners` flat sides, from 3 to 1000.
      *
      * The polygon of `radius` starts perpendicular to the wire. `makeSolid` gives a solid instead of
-     * a shell, `trihedronEnum` sets how the profile turns, and `forceApproxC1` smooths the result.
-     * An invalid bar is refused; on a nearly straight path, use the discrete trihedron.
+     * a shell, `trihedronEnum` sets how the profile turns and `forceApproxC1` smooths it. An invalid
+     * bar is refused; on a nearly straight path, use the discrete trihedron.
      * @param inputs - The path wire, the polygon radius and corner count, and the sweep options
      * @returns The swept solid or shell
      * @group pipeing
@@ -620,6 +661,25 @@ export class OCCTOperations {
      */
     pipePolylineWireNGon(inputs: Inputs.OCCT.PipePolygonWireNGonDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("operations.pipePolylineWireNGon", inputs);
+    }
+
+    /**
+     * Sweeps a regular polygon along a wire as `pipePolylineWireNGon` does, and reports the path's
+     * history: `facesFromEdges` the flat sides running along each path edge, `edgesFromVertices`
+     * the polygon at each path vertex, `firstFaces` and `lastFaces` the end caps of a solid.
+     * @param inputs - The path wire, the polygon radius and corner count, and the sweep options
+     * @returns The swept bar and the path's history
+     * @group pipeing
+     * @shortname pipe polyline ngon with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.operations.pipePolylineWireNGonWithHistory({ shape: pathWire, radius: 0.5, nrCorners: 6, makeSolid: true, trihedronEnum: Bit.Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal, forceApproxC1: false });
+     * const firstLeg = history.facesFromEdges[0];
+     * ```
+     */
+    pipePolylineWireNGonWithHistory(inputs: Inputs.OCCT.PipePolygonWireNGonDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.pipePolylineWireNGonWithHistory", inputs);
     }
 
     /**
@@ -648,9 +708,9 @@ export class OCCTOperations {
     /**
      * Sweeps a circle along a wire, giving a round tube of the given radius that follows the path.
      *
-     * The circle starts perpendicular to the wire. `makeSolid` gives a solid instead of a shell,
-     * `trihedronEnum` sets how the profile turns, and `forceApproxC1` smooths the result. An invalid
-     * tube is refused; on a nearly straight path, use the discrete trihedron.
+     * `makeSolid` gives a solid instead of a shell. Along smoothly joined lines and arcs the tube is
+     * exact; `bendRadius` bends a polyline's corners into such arcs first. Elsewhere `trihedronEnum`
+     * and `forceApproxC1` steer the sweep. Bends tighter than the radius are refused.
      * @param inputs - The path wire, the radius and the sweep options
      * @returns The tube as a solid or shell
      * @group pipeing
@@ -659,16 +719,37 @@ export class OCCTOperations {
      * @example
      * ```typescript
      * const tube = await bitbybit.occt.operations.pipeWireCylindrical({
-     *     shape: pathWire,
+     *     shape: polylineWire,
      *     radius: 0.5,
      *     makeSolid: true,
      *     trihedronEnum: Bit.Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal,
      *     forceApproxC1: false,
+     *     bendRadius: 2,
      * });
      * ```
      */
     pipeWireCylindrical(inputs: Inputs.OCCT.PipeWireCylindricalDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("operations.pipeWireCylindrical", inputs);
+    }
+
+    /**
+     * Sweeps a circle along a wire as `pipeWireCylindrical` does, and reports the path's history:
+     * `facesFromEdges` the tube faces running along each path edge, `edgesFromVertices` the circle
+     * at each path vertex, `firstFaces` and `lastFaces` the end caps of a solid. A corner bent round
+     * `bendRadius` gives its bend under `facesFromVertices` of that corner.
+     * @param inputs - The path wire, the radius and the sweep options
+     * @returns The tube and the path's history
+     * @group pipeing
+     * @shortname pipe wire cylindrical with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.operations.pipeWireCylindricalWithHistory({ shape: pathWire, radius: 0.5, makeSolid: true, trihedronEnum: Bit.Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal, forceApproxC1: false });
+     * const bend = history.facesFromEdges[1];
+     * ```
+     */
+    pipeWireCylindricalWithHistory(inputs: Inputs.OCCT.PipeWireCylindricalDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.pipeWireCylindricalWithHistory", inputs);
     }
 
     /**
@@ -715,11 +796,11 @@ export class OCCTOperations {
     }
 
     /**
-     * Moves the boundary of a shape outward, or inward for a negative distance, by a fixed
-     * distance: a wire grows into a parallel outline, a face or solid into a bigger one.
+     * Moves the boundary of a shape outward, or inward for a negative distance: a wire into a
+     * parallel outline, a face or solid into a bigger one.
      *
-     * A wire or edge is offset in its own plane, or on `face` when given; corners are rounded. A
-     * distance of 0 returns the shape as it is.
+     * A wire or edge is offset in its own plane, or on `face` when given, with rounded corners. A
+     * distance of 0 gives the same shape in a new handle the caller deletes.
      * @param inputs - The shape, an optional face to offset a wire on, the distance and the tolerance
      * @returns The offset shape
      * @group offsets
@@ -735,10 +816,29 @@ export class OCCTOperations {
     }
 
     /**
+     * Offsets a face, shell or solid as `offset` does, and reports what each face became: the face
+     * offset from it. A wire or edge has no faces to follow and is refused.
+     * @param inputs - The face, shell or solid, the distance and the tolerance
+     * @returns The offset shape and its history
+     * @group offsets
+     * @shortname offset with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.operations.offsetWithHistory({ shape: box, distance: 1, tolerance: 0.1 });
+     * const grownTop = history.faces[topIndex];
+     * ```
+     */
+    offsetWithHistory(inputs: Inputs.OCCT.OffsetDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.offsetWithHistory", inputs);
+    }
+
+    /**
      * Offsets a shape like `offset`, with a choice of how corners are joined: `arc` rounds them,
      * `intersection` extends the sides to a sharp corner, `tangent` keeps them tangent.
      *
-     * `removeIntEdges` drops the internal edges the offset can leave behind on a solid.
+     * `removeIntEdges` drops the internal edges the offset can leave behind on a solid. A distance
+     * of 0 gives the same shape in a new handle the caller deletes, as `offset` does.
      * @param inputs - The shape, an optional face to offset a wire on, the distance, the tolerance, the corner join type and whether to remove internal edges
      * @returns The offset shape
      * @group offsets
@@ -757,6 +857,25 @@ export class OCCTOperations {
      */
     offsetAdv(inputs: Inputs.OCCT.OffsetAdvancedDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("operations.offsetAdv", inputs);
+    }
+
+    /**
+     * Offsets a face, shell or solid as `offsetAdv` does, and reports what each face became: the
+     * face offset from it, with the corner faces the join adds generated from edges. A wire or edge
+     * is refused.
+     * @param inputs - The face, shell or solid, the distance, the tolerance, the corner join type and whether to remove internal edges
+     * @returns The offset shape and its history
+     * @group offsets
+     * @shortname offset adv. with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.operations.offsetAdvWithHistory({ shape: box, distance: 1, tolerance: 0.1, joinType: Bit.Inputs.OCCT.joinTypeEnum.arc, removeIntEdges: false });
+     * const rounds = history.facesFromEdges.flat();
+     * ```
+     */
+    offsetAdvWithHistory(inputs: Inputs.OCCT.OffsetAdvancedDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistory<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.offsetAdvWithHistory", inputs);
     }
 
     /**
@@ -970,6 +1089,59 @@ export class OCCTOperations {
      */
     splitByFrame(inputs: Inputs.OCCT.SplitByFrameDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.SplitByFrameResult<Inputs.OCCT.TopoDSCompoundPointer>> {
         return this.occWorkerManager.genericCallToWorkerPromise("operations.splitByFrame", inputs);
+    }
+
+    /**
+     * Sections a list of shapes with the plane of each frame: for each shape and frame, the faces
+     * where the plane passes through its solids, holes included, or with `makeFaces` false the
+     * section wires.
+     *
+     * A plane that misses a shape gives an empty compound, so the results line up with the shapes
+     * and the frames.
+     * @param inputs - The shapes, the frames, whether to make faces and the joining tolerance
+     * @returns For each shape in order, one compound per frame in order
+     * @group divisions
+     * @shortname section by frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const sections = await bitbybit.occt.operations.sectionByFrames({
+     *     shapes: [box, cylinder],
+     *     frames: [{ origin: [0, 0, 0], normal: [1, 0, 0], direction: [0, 1, 0] }],
+     *     makeFaces: true,
+     *     tolerance: 1e-7,
+     * });
+     * ```
+     */
+    sectionByFrames(inputs: Inputs.OCCT.SectionByFramesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer[][]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.sectionByFrames", inputs);
+    }
+
+    /**
+     * Cuts a list of shapes with the planes of frames, taking away the side each normal points to,
+     * the side `hiddenLines` looks from with the same frame.
+     *
+     * `keep` says what stays: what lies behind every plane, or behind any. A cut solid stays closed,
+     * its cut faces part of it; a shape taken away whole gives an empty compound.
+     * @param inputs - The shapes, the frames whose planes cut them and what to keep
+     * @returns One compound per shape, in the order of the shapes
+     * @group divisions
+     * @shortname cut by frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const cutAway = await bitbybit.occt.operations.cutByFrames({
+     *     shapes: [box, cylinder],
+     *     frames: [
+     *         { origin: [0, 0, 0], normal: [1, 0, 0], direction: [0, 1, 0] },
+     *         { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] },
+     *     ],
+     *     keep: Bit.Inputs.OCCT.sectionKeepEnum.behindAny,
+     * });
+     * ```
+     */
+    cutByFrames(inputs: Inputs.OCCT.CutByFramesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.cutByFrames", inputs);
     }
 
     /**

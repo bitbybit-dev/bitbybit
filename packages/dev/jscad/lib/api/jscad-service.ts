@@ -1,6 +1,6 @@
 import { GeometryHelper, Lists, Point, Transforms, Vector, resolveDto } from "@bitbybit-dev/base";
 import { MathBitByBit } from "@bitbybit-dev/base";
-import { computeVertexNormals } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
+import { computeVertexNormals } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-normals";
 import { JSCADExpansions } from "./services/jscad-expansions";
 import { JSCADBooleans } from "./services/jscad-booleans";
 import { JSCADExtrusions } from "./services/jscad-extrusions";
@@ -14,12 +14,12 @@ import { JSCADHulls } from "./services/jscad-hulls";
 import { JSCADColors } from "./services/jscad-colors";
 import type * as JSCAD from "@jscad/modeling";
 import type * as Resolved from "./resolved-inputs";
+import { writeThreeMf } from "./three-mf/three-mf-writer";
 
 type JscadSerializer = { serialize: (options: object, ...objects: unknown[]) => BlobPart[] };
 type JscadWithSerializers = typeof JSCAD & {
     STLSERIALIZER: JscadSerializer;
     DXFSERIALIZER: JscadSerializer;
-    THREEMFSERIALIZER: JscadSerializer;
 };
 
 
@@ -333,7 +333,8 @@ export class Jscad {
      * Writes a solid, a 2D shape, a path or a list of them as a 3MF file, a modern 3D printing
      * format, and downloads it in the browser as `fileName` plus `.3mf`.
      *
-     * `options` is passed to the 3MF writer as it is and can stay out.
+     * Each solid becomes an object of its own, with its name and color; 2D shapes and paths are
+     * left out.
      * @param inputs - The geometry, the file name and the optional writer options
      * @returns The 3MF file as a blob; the asynchronous API starts the download instead and returns nothing
      * @group io
@@ -345,12 +346,7 @@ export class Jscad {
      */
     downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
         const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
-        const options = resolved.options ? resolved.options : {};
-        const rawData = (this.jscad as JscadWithSerializers).THREEMFSERIALIZER.serialize(options,
-            resolved.geometry
-        );
-        const madeBlob = new Blob(rawData);
-        return { blob: madeBlob };
+        return { blob: new Blob(writeThreeMf(this.jscad, resolved.options, resolved.geometry)) };
     }
 
     private legacyPolygons(entity: Inputs.JSCAD.JSCADEntity): (() => Inputs.JSCAD.JSCADPoly3[]) | undefined {

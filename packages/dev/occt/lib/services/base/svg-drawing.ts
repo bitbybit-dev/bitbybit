@@ -1,13 +1,6 @@
-/** A line of a flat drawing, as the x and y of its points in the drawing's plane. */
-export type DrawingLine = readonly (readonly [number, number])[];
-
-const STROKE_SHARE = 1 / 400;
-const MARGIN_SHARE = 1 / 40;
-const DASH_STROKES = 6;
-const GAP_STROKES = 3;
-const SIGNIFICANT_DIGITS = 9;
-
-type Bounds = { minX: number; minY: number; maxX: number; maxY: number };
+import type * as Inputs from "../../api/inputs";
+import type { Bounds, DrawingLine } from "./svg-drawing-types";
+import { DASH_STROKES, GAP_STROKES, MARGIN_SHARE, SIGNIFICANT_DIGITS, STROKE_SHARE, SVG_LENGTHS } from "./svg-drawing.constants";
 
 function boundsOf(lines: readonly DrawingLine[]): Bounds {
     const bounds: Bounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
@@ -25,9 +18,10 @@ function boundsOf(lines: readonly DrawingLine[]): Bounds {
  * lines solid, the hidden ones dashed beneath them. SVG's y runs down, so every y is written negated
  * and the drawing reads the right way up; x is written as it is. The view box is the drawing's
  * bounds with a border of a fortieth of its larger side, strokes are a four-hundredth of that side
- * wide, and a line with fewer than two points is left out.
+ * wide, and a line with fewer than two points is left out. Given the unit the model is in, the
+ * drawing also states its width and height in it, metres written as centimetres, which SVG has.
  */
-export function svgOfDrawing(visible: readonly DrawingLine[], hidden: readonly DrawingLine[]): string {
+export function svgOfDrawing(visible: readonly DrawingLine[], hidden: readonly DrawingLine[], unit?: `${Inputs.Base.unitOfLengthEnum}`): string {
     const drawn = (lines: readonly DrawingLine[]): DrawingLine[] => lines.filter(line => line.length > 1);
     const visibleLines = drawn(visible);
     const hiddenLines = drawn(hidden);
@@ -49,8 +43,11 @@ export function svgOfDrawing(visible: readonly DrawingLine[], hidden: readonly D
         ...lines.map(path),
         "</g>",
     ];
+    const length = unit === undefined ? undefined : SVG_LENGTHS[unit];
+    const physical = (value: number): string => `${String(Number((value * length!.factor).toPrecision(SIGNIFICANT_DIGITS)))}${length!.unit}`;
+    const sized = length === undefined ? "" : ` width="${physical(viewBox[2]!)}" height="${physical(viewBox[3]!)}"`;
     return [
-        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox.map(number).join(" ")}">`,
+        `<svg xmlns="http://www.w3.org/2000/svg"${sized} viewBox="${viewBox.map(number).join(" ")}">`,
         ...group("hidden", hiddenLines, true),
         ...group("visible", visibleLines, false),
         "</svg>",

@@ -4,7 +4,11 @@ import type { GeometryHelper } from "./geometry-helper";
 import type { MathBitByBit } from "./math";
 import { resolveDto } from "../kernel-calls";
 import type * as Resolved from "../resolved-inputs";
-import { cross3 } from "./helpers/vectors";
+import { cross3, dot3, length3, unitVectorOf } from "./helpers/geometry/vectors";
+import { uniqueVectors } from "./helpers/geometry/vector-grid";
+import { angleOfCosine } from "./helpers/geometry/scalars";
+
+const SHORTEST_DIRECTION = 1e-8;
 
 /**
  * Vector maths on plain number arrays. A vector is an array of numbers; in 3D it is `[x, y, z]`
@@ -35,7 +39,7 @@ export class Vector {
      */
     removeAllDuplicateVectors(inputs: Inputs.Vector.RemoveAllDuplicateVectorsDto): number[][] {
         const resolved = resolveDto(Inputs.Vector.RemoveAllDuplicateVectorsDto, inputs) as Resolved.Vector.RemoveAllDuplicateVectorsDto;
-        return this.geometryHelper.removeAllDuplicateVectors(resolved.vectors, resolved.tolerance);
+        return uniqueVectors(resolved.vectors, resolved.tolerance).kept;
     }
 
     /**
@@ -101,7 +105,7 @@ export class Vector {
      */
     angleBetween(inputs: Inputs.Vector.TwoVectorsDto): number {
         return this.math.radToDeg({
-            number: Math.acos(this.dot({ first: inputs.first, second: inputs.second }) / (this.norm({ vector: inputs.first }) * this.norm({ vector: inputs.second })))
+            number: angleOfCosine(this.dot({ first: inputs.first, second: inputs.second }) / (this.norm({ vector: inputs.first }) * this.norm({ vector: inputs.second })))
         });
     }
 
@@ -523,11 +527,12 @@ export class Vector {
     }
 
     /**
-     * Scales a 3D vector to length 1 while keeping its direction.
+     * Scales a vector to length 1 while keeping its direction.
      *
-     * A vector shorter than 1e-8 has no direction to keep, so the result is undefined.
+     * A vector shorter than 1e-8, or with a component that is not finite, has no direction to keep,
+     * so the result is undefined; a very long vector is scaled without overflowing.
      * Example: [3,4,0] -> [0.6,0.8,0]
-     * @param inputs - The 3D vector to normalize
+     * @param inputs - The vector to normalize
      * @returns The unit vector, or undefined for a zero-length input
      * @group base
      * @shortname normalized
@@ -538,11 +543,8 @@ export class Vector {
      * ```
      */
     normalized(inputs: Inputs.Vector.VectorDto): number[] | undefined {
-        const len = this.length({vector: inputs.vector as Inputs.Base.Vector3});
-        if (len <= 1e-8) {
-            return undefined;
-        }
-        return this.div({ scalar: this.norm(inputs), vector: inputs.vector });
+        const unit = unitVectorOf(inputs.vector);
+        return unit === undefined || !(this.norm(inputs) > SHORTEST_DIRECTION) ? undefined : unit;
     }
 
     /**
@@ -792,8 +794,7 @@ export class Vector {
      * ```
      */
     lengthSq(inputs: Inputs.Vector.Vector3Dto): number {
-        const v = inputs.vector;
-        return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+        return dot3(inputs.vector, inputs.vector);
     }
 
     /**
@@ -811,7 +812,7 @@ export class Vector {
      * ```
      */
     length(inputs: Inputs.Vector.Vector3Dto): number {
-        return Math.sqrt(this.lengthSq(inputs));
+        return length3(inputs.vector);
     }
 
     /**

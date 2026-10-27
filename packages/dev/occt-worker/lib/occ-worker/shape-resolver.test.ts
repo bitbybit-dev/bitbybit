@@ -672,6 +672,32 @@ describe("Shape Resolver edge cases", () => {
             expect(result).toEqual({ type: "occ-entity", hash: "doc-1" });
         });
 
+        it("should hand a buffer back untouched rather than walking it into an empty object", () => {
+            // Arrange
+            const serializer = new ResultSerializer(cacheHelper);
+            const buffer = new Uint8Array([71, 76, 84, 70]).buffer;
+
+            // Act
+            const result = serializer.serializeResult({ glb: buffer, parts: [buffer] }) as { glb: unknown; parts: unknown[] };
+
+            // Assert
+            expect(result.glb).toBe(buffer);
+            expect(result.parts[0]).toBe(buffer);
+        });
+
+        it("should note the hash of every shape it writes a reference for, once each, and none of a document", () => {
+            // Arrange
+            const serializer = new ResultSerializer(cacheHelper);
+            const shape = (hash: number): unknown => ({ $$: {}, hash, ShapeType: (): number => 0 });
+            const carried = new Set<string | number>();
+
+            // Act
+            serializer.serializeResult({ part: shape(1), parts: [shape(2), shape(1)], definition: { compound: shape(3), data: {}, shapes: [{ id: "a", shape: shape(4) }] }, document: { $$: {}, hash: 5 } }, carried);
+
+            // Assert
+            expect([...carried]).toEqual([1, 2, 3, 4]);
+        });
+
         it("should not mistake a plain object for an object definition", () => {
             // Arrange
             const serializer = new ResultSerializer(cacheHelper);

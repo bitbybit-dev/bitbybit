@@ -19,7 +19,7 @@ export namespace Draw {
      * one mesh.
      */
     export interface ShapeWithAppearance {
-        /** The shape to draw, as the OCCT kernel returns it. */
+        /** The shape to draw, as the Bitbybit OCCT Kernel returns it. */
         shape: Inputs.OCCT.TopoDSShapePointer;
         /**
          * How the shape looks. Each `faces` entry gives its values to the faces it lists, `edgeColor`
@@ -64,6 +64,7 @@ export namespace Draw {
         | Inputs.OCCT.TopoDSShapePointer
         | ShapeWithAppearance
         | Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>
+        | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>
         | Inputs.OCCT.DecomposedMeshDto
         | Inputs.Manifold.ManifoldPointer
         | Inputs.Manifold.CrossSectionPointer

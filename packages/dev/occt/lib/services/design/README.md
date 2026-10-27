@@ -28,8 +28,10 @@ each idea comes from, so the reasoning stays next to the code that implements it
   mass.
 - A WebAssembly trap is never reported as a failed feature: after one the kernel cannot be trusted,
   so the build throws it on, tagged `occt.design.crashed` with the id and path of the feature it was
-  making (`tagTrap` in `problems.ts`; an inner build's tag stays). The worker restarts the kernel, and
-  the caller can build again with that feature suppressed or changed.
+  making (`tagTrap` in `problems.ts`; an inner build's tag stays, and a trap inside a document an
+  assembly places carries that document's position in its path, `/documents/<position>/features/<i>`,
+  since feature ids repeat across documents). The worker restarts the kernel, and the caller can build
+  again with that feature suppressed or changed.
 - A shell tries arc joins, OCCT's default, then intersection joins: OCCT builds an invalid shell of
   some filleted bodies with arc joins, refuses others, and returns the body itself, unhollowed and
   "valid", for a thickness well past what the body allows. When neither builds a valid solid with an
@@ -52,7 +54,31 @@ each idea comes from, so the reasoning stays next to the code that implements it
   the document's version pins the geometry every import reads. An asset's `uri` is relative to the
   document's own location in the store that keeps it (an absolute URL is allowed); the runner
   fetches nothing. For OCCT's BREP, `mediaType` records the format version
-  (`model/vnd.occt.brep; version=3`).
+  (`model/vnd.occt.brep; version=3`). An import with `child` takes one shape of a compound; the file
+  is read once per build for every import that takes a child of it, kept in the cache under its
+  contents. A build hashes each asset once, however many documents import it: hashing a large shapes
+  file for each of hundreds of parts took a large assembly's build from seconds to half an hour.
+- `from-step.ts` is `fromStep`. It reads a STEP file into the kernel's assembly document and takes
+  each part and assembly once from its hierarchy (which repeats a sub-assembly under every placement
+  of it), writing a part document per part and an assembly document per assembly, so a part placed
+  forty times stays one document. Every part's shape goes into one binary BREP compound, the shapes
+  file, which the part documents import by `child`: a project then keeps one file per STEP file,
+  not one per part, which the file limits of a project and the time to fetch each would not allow
+  for a large assembly. Placements become `at` frames; one that mirrors or scales is built into a
+  part of its own, since a frame only moves and turns, and a placed sub-assembly that does is
+  flattened into such parts. A part's colour is its label's; a face's comes from the sub-shape labels
+  the STEP reader makes, matched to the part's faces by the kernel's shape hash, and when the part
+  has none, the colour most of its faces share becomes the part's. Ids are UUIDs made from the file's
+  SHA-256 and a seed, so importing the same file again replaces what the first import made.
+- `section.ts` is `section`. It turns the world plane into each placed part's own coordinates (a
+  placement `x -> A x + t` sees the plane `n . x = c` as `(A^T n) . x = c - n . t`, mirrored and scaled
+  placements included), passes over the parts whose box lies on one side, and cuts each part once
+  for every plane its placements see, in one `sliceByFrames` call (and a `splitByFrame` per plane
+  when `cut` asks for the pieces). Cuts are kept in a cache of their own by the part's `shapeHash`,
+  the plane and the tolerance, which also make each cut's `shapeHash`, so placements that meet a
+  part the same way share one cap, a drawer keeps one mesh for it, and the same section again makes
+  nothing. The cuts themselves are `operations.sliceByFrames` and `splitByFrame`, the calls behind
+  `operations.sectionByFrames` and `cutByFrames` for any list of shapes.
 - `typescript-export.ts` is `toTypeScript`: it builds the document once, recording what each feature
   resolved (face frames, face and edge indexes, the import format, the shell's joins or its cut
   lids), and writes the
@@ -66,10 +92,15 @@ each idea comes from, so the reasoning stays next to the code that implements it
   revolved body with nine edges rounded, a radius that builds took under 2 s and one that failed just
   past the largest took up to 113 s, all of it inside OCCT's fillet, so finer steps would cost minutes.
 - `cache.ts` keeps each outcome by a hash of the feature, the parameter values it reads and the
-  hashes of its inputs, and frees the least recently used beyond its capacity when a build ends. It
+  hashes of its inputs, and frees the least recently used beyond its capacity when a build ends,
+  never one that build used, so a build that uses more than the capacity keeps them all. It
   owns every shape it holds: an operation that returns one of its inputs is given its own handle, one
   that returns a list of shapes makes their compound, and the parts a build returns hold new handles
-  the caller owns.
+  the caller owns. The other route out is `releaseDesignCaches` (`release-design-caches.ts` at the
+  package root, reaching the caches through `cache-registry.ts`): it frees every outcome and every
+  cut `section` kept, and empties the boxes and clash meshes, so the next build makes every feature
+  again. It is for whoever frees every kernel object at once; the occt worker calls it from
+  `cleanAllCache` and from the reset when a run outgrows its cache threshold.
 - `assembly-check.ts` is `validate` for an assembly document: each component's source against the
   `documents` given beside it, its joints and their limits, joints that close a loop, and the
   problems of every document it places under `/documents/<position>`. `assembly.ts` builds one: each
@@ -185,17 +216,35 @@ The migrations described below are not built yet.
   suppliers live outside the document; `bomTreatment` is reserved for a later minor (phantom,
   purchased, excluded) and refused until then.
 - **Left for later**: closed loops of joints (a constraint solver), ball and planar joints,
-  interference checks, the kinematics section of STEP AP242, and an assembly, a sketch with loops or
-  a circle written as TypeScript (`toTypeScript` refuses them by name).
+  interference checks, the kinematics section of STEP AP242, and an assembly, a sketch with loops, a
+  circle, a gear or a rack written as TypeScript (`toTypeScript` refuses them by name).
 - **Sketches draw one outline or several.** `pen` draws one, from `start`; `loops` draws several,
   the first the outside and each further one a hole, turned to the right winding whichever way each
   is drawn, so one sketch makes a washer. A `circle` command draws an exact circle as one edge, a
-  loop by itself, so an extruded disc has one side face. Command ids are distinct across a sketch's
-  loops; constraints, when the solver comes, will be stored over them.
+  loop by itself, so an extruded disc has one side face. A `gear` command draws an involute spur
+  gear's outline, or with `internal` the teeth of a ring gear for a hole loop, also a loop by
+  itself, and names its edges by the gear's id and their part (`profile.teeth.tip`, `.flank`,
+  `.root`), so a reference reaches every tip at once. A `rack` command draws an involute rack from
+  `start` at `angle`, a loop by itself too, its edges named `.tip`, `.flank`, `.root`, `.back` and
+  `.side`. Command ids are distinct across a sketch's loops, a gear's three part names and a rack's
+  five included; constraints, when the solver comes, will be stored over them.
+- **Standard parts name their faces by role.** An `operation` feature whose method has a
+  `...WithRoles` twin, such as `parts.mechanical.gears.spurGear`, runs the twin and names each face by the role
+  it returns (`gear:tip`, `gear:bore`), every other face `face`. The twin is tried before a history
+  twin.
 - **Operations name their faces through history.** An `operation` feature whose method has a
   `...WithHistory` twin and is given bodies runs the twin, so the faces it carries keep their names
   (a face of the block keeps `block:face` after a fillet) and the faces it makes take roles: `round`
-  and `bevel` for fillets and chamfers, `side` for faces made of edges, `start` and `end`.
+  and `bevel` for every form of fillet and chamfer, `side` for faces made of edges, `start` and
+  `end`, read from every history the twin returns, so a rib's or a boss's new faces take them from
+  its wire's or profile's. A method that answers with the body's own shape in a handle of its own
+  where it changes nothing keeps the body's names, as do an offset of 0 where the twin refuses it, a
+  repair or a reorientation of a valid body (`shapeFix.basicShapeRepair`, `orientClosedSolid`), a
+  purge of internal edges the body does not have (`shapes.shape.purgeInternalEdges`,
+  `shapes.edge.removeInternalEdges`), a face reversed or taken from a face (`shapes.face.reversedFace`,
+  `getFace`) and a machining cut that misses the body (`parts.mechanical.machining.flat`, `keyway`,
+  `knurl`, `ringGroove`). `ANSWERS_WITH_ITS_INPUT` in `operation-steps.ts` lists them, matched by
+  shape; any other method keeps them only when it hands back the very handle it was given.
 
 ## The format and what stays outside it
 
@@ -249,12 +298,22 @@ The migrations described below are not built yet.
   assembly refuses a document in another, rather than scale it. A number parameter's `unit` is the
   document's length unit, `deg`, or `none` for a count or a ratio, so an editor can show it and a
   tool convert it.
+- **Whatever a standard sizes is sized in the document's unit.** A hole sized by a `fastener`, a
+  `thread`, a `keyway`, a `ringGroove`, a `knurl` and a `spline` look their standard up in that unit,
+  so an inch part can hold an M8 tapped hole and a metric one a 1/4-20 one; the standard's own
+  designations (the size, a pitch, a module, threads per inch, a diametral pitch) are written as the
+  standard writes them and never converted. An `operation` whose method takes a `unit` builds in the
+  document's: leave `unit` out of its `params`, as an explicit one that differs is refused, written or
+  computed. An `import` reads its STEP or IGES file into the document's unit, whatever unit the file
+  states, and `design.fromStep` takes the `unit` of the documents it makes, scaling their shapes and
+  placements together.
 - **`up` is a hint for what reads the build, not a transform.** It says which axis the numbers have
   pointing up, `y` when left out; the build never turns geometry by it, and only the document built
   reports it (`up` on the result, beside `units`): a document an assembly places is placed by its
-  joints, whatever its own `up` says. The STEP export writes the numbers as they are with the length
-  unit (`structure.lengthUnit`), and the glTF export takes the `up` so a y-up document is not turned
-  as a z-up one would be. glTF is written in the document's unit, as every glTF export here is.
+  joints, whatever its own `up` says. The STEP export writes the numbers at their true size in
+  millimetres, scaled by the length unit (`structure.lengthUnit`), and the glTF export takes the `up` so a y-up document is not turned
+  as a z-up one would be. glTF is written in the document's unit unless the export is given that
+  `unit`, when it is written in metres, the unit glTF readers assume, by one scaled root node.
 
 ## The expression language
 
@@ -281,7 +340,10 @@ primary     = number | 'text' | name | name "(" [ expression { "," expression } 
   `e`, `true` (1) and `false` (0). `inf` and `nan` are reserved and have no value. None of these can
   name a parameter.
 - **Functions**: `if(test, then, otherwise)`, `min` and `max` (one value or more), `abs`, `sqrt`,
-  `floor`, `ceil`, `round` (halves away from zero: 2.5 to 3, -2.5 to -3), and trigonometry in degrees:
+  `floor`, `ceil`, `round` (halves away from zero: 2.5 to 3, -2.5 to -3), `fraction(value,
+  denominator)`, which gives text, the value rounded to a whole number of `1/denominator` and written
+  as inch sizes are (`fraction(1.25, 64)` is `'1-1/4'`, `fraction(0.375, 64)` is `'3/8'`) for part
+  numbers and names, and trigonometry in degrees:
   `sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `atan2(y, x)`. An angle is folded into one turn first,
   and multiples of 30 and 45 degrees give their exact values, so `cos(90)` is 0 and `tan(45)` is 1,
   and `asin`/`acos` of those values give whole angles.
@@ -390,7 +452,17 @@ than it expects:
 - **`design.buildWithScripts`** (the worker API, on the main thread) is that loop: it runs each
   script as the body of an async function given `inputs` and `occt`, the package's API reached by
   dotted path, one worker call each, and builds again until nothing waits or every script has had
-  its turn. Scripts run with the rights of the page, so an application runs only the documents it trusts.
+  its turn. It deletes each earlier round's shapes once the next round has used them, and the scripts'
+  outcomes once the last build has cloned them, so only the last result's shapes stay for the caller;
+  on a failure or a cancel it deletes the last round's too. The worker's cache answers an identical
+  call with the same shape, and other calls can be answered between the loop's own, so the worker
+  counts the answers that carry each shape and deletes one only when every answer that carried it
+  was one of the loop's (`deleteUnsharedShapes`): a shape the caller or another call was handed
+  too, before the loop or while it ran, stays.
+  In an assembly, a component whose part waits for a script is reported `pending`, and a component
+  joined to it, or to a connector a sub-assembly publishes from it, is skipped as waiting; a
+  sub-assembly joined by such a connector is `pending` too. Scripts run with the rights of the page,
+  so an application runs only the documents it trusts.
 - **Why not in the kernel:** the worker runs one synchronous call at a time, and an awaiting runner
   would break its posting, cancelling and busy signal; and code a document carries runs where its
   caller decides, never inside the library.
@@ -404,11 +476,16 @@ than it expects:
   them, and so does one that traces. A caller that kept each part's last outcome therefore rebuilds a
   document by reading those back, with nothing before them made.
 - **An assembly builds its documents without their sketches**, since it hands none back.
+- **An assembly hands back the scripts its documents wait for.** Each placed document's pending
+  scripts come back in the assembly's `pending`, one per outcome hash, with their paths under
+  `/documents/<position>`, and the outcomes given to the assembly's build reach those documents'
+  builds, so a caller runs them as it runs a part document's.
 - **Meshes a caller keeps.** Each engine's drawer hands out the meshes it made for design parts,
   by `shapeHash`, for the drawing options given (`drawHelper.keptDesignMeshes`), and takes them back
   (`drawHelper.keepDesignMeshes`), passing over anything that is not a mesh of faces and edges. With
   each part's last outcome and its mesh kept, a caller reopens a design without making or meshing
-  anything.
+  anything. The meshes are the drawer's own typed buffers: they survive a structured clone, but one
+  stored as JSON or transferred to another thread is refused when it is handed back.
 
 ## How well references survive: the naming benchmark
 
@@ -479,6 +556,16 @@ reference. A feature prism stopped at a face, for one, reports neither its walls
 
 The naming logic is TypeScript over facts the kernel gives in bulk (histories, selectors, adjacency,
 signatures): one kernel call per shape, never one per face.
+
+A placement on a face (a sketch's plane, a hole's `on`) needs only the face's plane, so a reference
+that finds several flat faces in one plane, as a face a union split into pieces does, stands on that
+plane; faces in different planes are refused.
+
+Because names follow history rather than face numbers, a feature's booleans group their tools
+(`booleanStrategyEnum.inGroups`): tools whose boxes do not meet share one operation, which gives the
+same shape as one tool after another, numbered differently. An engine block's casting cut of
+twenty-four cavities went from 4.2 s to 1.7 s, and the forty-two part documents of an engine from 33 s
+to 28 s.
 
 ## Left out on purpose
 

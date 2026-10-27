@@ -177,8 +177,8 @@ export class ArcEdgeCircleTwoAnglesDto<T> {
     sense?: boolean | undefined = true;
 }
 /**
- * A circle edge, a point on it and an angle for `shapes.edge.arcFromCirclePointAndAngle`, which
- * cuts an arc of that angle from the point.
+ * A circle edge, a point on it and an angle on it for `shapes.edge.arcFromCirclePointAndAngle`,
+ * which cuts the arc from the point to that angle.
  */
 export class ArcEdgeCirclePointAngleDto<T> {
     constructor(circle?: T, alphaAngle?: number, sense?: boolean) {
@@ -197,7 +197,8 @@ export class ArcEdgeCirclePointAngleDto<T> {
      */
     point!: Base.Point3;
     /**
-     * How far the arc spans from the point, in degrees.
+     * Where the arc ends, in degrees on the circle, measured from the circle's own start rather
+     * than from `point`; an angle that lands on `point` is refused.
      * @default 90
      * @minimum -Infinity
      * @maximum Infinity

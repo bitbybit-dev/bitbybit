@@ -10,6 +10,7 @@ import { MeshBitByBit } from "./mesh";
 import { TOLERANCE, UnitTestHelper } from "../unit-test-helper";
 import { Line } from "./line";
 import { Lists } from "./lists";
+import { InputError } from "../kernel-calls";
 
 describe("Mesh unit tests", () => {
     const uh = new UnitTestHelper();
@@ -508,6 +509,111 @@ describe("Mesh unit tests", () => {
 
             // Assert
             expect(volume).toBe(0);
+        });
+    });
+
+    describe("meshesWithin and isPointInside", () => {
+        const cubeAt = (x: number, y: number, z: number, size: number): Inputs.Base.Mesh3 => [
+            [[0, 0, 0], [0, 1, 0], [1, 1, 0]], [[0, 0, 0], [1, 1, 0], [1, 0, 0]],
+            [[0, 0, 1], [1, 0, 1], [1, 1, 1]], [[0, 0, 1], [1, 1, 1], [0, 1, 1]],
+            [[0, 0, 0], [1, 0, 0], [1, 0, 1]], [[0, 0, 0], [1, 0, 1], [0, 0, 1]],
+            [[0, 1, 0], [0, 1, 1], [1, 1, 1]], [[0, 1, 0], [1, 1, 1], [1, 1, 0]],
+            [[0, 0, 0], [0, 0, 1], [0, 1, 1]], [[0, 0, 0], [0, 1, 1], [0, 1, 0]],
+            [[1, 0, 0], [1, 1, 0], [1, 1, 1]], [[1, 0, 0], [1, 1, 1], [1, 0, 1]],
+        ].map(triangle => triangle.map(([cx, cy, cz]): Inputs.Base.Point3 => [x + cx! * size, y + cy! * size, z + cz! * size]) as Inputs.Base.Triangle3);
+
+        it("should tell meshes half a unit apart are within 0.6 and not within 0.4, and crossing ones within 0", () => {
+            // Arrange
+            const first = cubeAt(0, 0, 0, 1);
+            const apart = cubeAt(1.5, 0.2, 0.3, 1);
+            const crossing = cubeAt(0.5, 0.5, 0.5, 1);
+
+            // Act
+            const answers = [
+                meshBitByBit.meshesWithin({ mesh1: first, mesh2: apart, distance: 0.6 }),
+                meshBitByBit.meshesWithin({ mesh1: first, mesh2: apart, distance: 0.4 }),
+                meshBitByBit.meshesWithin({ mesh1: first, mesh2: crossing }),
+                meshBitByBit.meshesWithin({ mesh1: first, mesh2: [] }),
+            ];
+
+            // Assert
+            expect(answers).toEqual([true, false, true, false]);
+        });
+
+        it("should tell a mesh wholly inside a closed one is within it, whichever is given first", () => {
+            // Arrange
+            const outer = cubeAt(0, 0, 0, 10);
+            const inner = cubeAt(4, 4, 4, 1);
+
+            // Act
+            const answers = [
+                meshBitByBit.meshesWithin({ mesh1: outer, mesh2: inner, distance: 0.1 }),
+                meshBitByBit.meshesWithin({ mesh1: inner, mesh2: outer, distance: 0.1 }),
+                meshBitByBit.meshesWithin({ mesh1: inner, mesh2: cubeAt(20, 0, 0, 1), distance: 0.1 }),
+            ];
+
+            // Assert
+            expect(answers).toEqual([true, true, false]);
+        });
+
+        it("should tell a mesh is within a closed one when the piece inside is not the one its first corner belongs to", () => {
+            // Arrange
+            const outer = cubeAt(0, 0, 0, 10);
+            const innerAndFar = [...cubeAt(4, 4, 4, 2), ...cubeAt(-22, -22, -22, 2)];
+
+            // Act
+            const answers = [
+                meshBitByBit.meshesWithin({ mesh1: outer, mesh2: innerAndFar, distance: 0 }),
+                meshBitByBit.meshesWithin({ mesh1: innerAndFar, mesh2: outer, distance: 0 }),
+            ];
+
+            // Assert
+            expect(answers).toEqual([true, true]);
+        });
+
+        it("should refuse a negative distance", () => {
+            // Act
+            const negative = (): boolean => meshBitByBit.meshesWithin({ mesh1: cubeAt(0, 0, 0, 1), mesh2: cubeAt(2, 0, 0, 1), distance: -1 });
+
+            // Assert
+            expect(negative).toThrow("`distance` is -1; it must be a number from 0.");
+        });
+
+        it("should refuse meshes and a point that are not triangles of three finite numbers and a point of three, naming which", () => {
+            // Arrange
+            const notMesh: unknown = [[[0, 0, 0], [1, 0, 0]]];
+            const nothing: unknown = undefined;
+            const notPoint: unknown = [0, 0];
+
+            // Act
+            const refusals = [
+                (): unknown => meshBitByBit.meshesWithin({ mesh1: notMesh as Inputs.Base.Mesh3, mesh2: cubeAt(0, 0, 0, 1) }),
+                (): unknown => meshBitByBit.meshesWithin({ mesh1: cubeAt(0, 0, 0, 1), mesh2: nothing as Inputs.Base.Mesh3 }),
+                (): unknown => meshBitByBit.isPointInside({ mesh: nothing as Inputs.Base.Mesh3, point: [0, 0, 0] }),
+                (): unknown => meshBitByBit.isPointInside({ mesh: cubeAt(0, 0, 0, 1), point: notPoint as Inputs.Base.Point3 }),
+            ];
+
+            // Assert
+            expect(refusals[0]).toThrow("`mesh1` is not a list of triangles of three points each, every point three finite numbers.");
+            expect(refusals[1]).toThrow("`mesh2` is not a list of triangles of three points each, every point three finite numbers.");
+            expect(refusals[2]).toThrow("`mesh` is not a list of triangles of three points each, every point three finite numbers.");
+            expect(refusals[3]).toThrow("`point` is not a point of three finite numbers.");
+            expect(refusals[3]).toThrow(InputError);
+        });
+
+        it("should tell a point inside a closed mesh from one outside it, and find nothing inside an empty mesh", () => {
+            // Arrange
+            const box = cubeAt(0, 0, 0, 2);
+
+            // Act
+            const answers = [
+                meshBitByBit.isPointInside({ mesh: box, point: [1, 0.7, 1.3] }),
+                meshBitByBit.isPointInside({ mesh: box, point: [3, 1, 1] }),
+                meshBitByBit.isPointInside({ mesh: [], point: [0, 0, 0] }),
+            ];
+
+            // Assert
+            expect(answers).toEqual([true, false, false]);
         });
     });
 });

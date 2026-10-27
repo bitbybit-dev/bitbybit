@@ -1,4 +1,4 @@
-import { Color, Dates, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
+import { BaseBitByBit } from "@bitbybit-dev/base";
 import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
@@ -32,30 +32,26 @@ export function createSharedServices(context: ContextBase): SharedServices {
     const occt = new OCCTW(context, occtWorkerManager);
     const ifc = new IFCW(ifcWorkerManager, occt);
 
-    const geometryHelper = new GeometryHelper();
-    const lists = new Lists();
-    const math = new MathBitByBit();
-    const vector = new Vector(math, geometryHelper);
-    const transforms = new Transforms(vector, math);
-    const point = new Point(geometryHelper, transforms, vector, lists);
-    const line = new Line(vector, point, geometryHelper);
-    const polyline = new Polyline(vector, point, line, geometryHelper);
+    const base = new BaseBitByBit();
 
     return {
         jscadWorkerManager, manifoldWorkerManager, occtWorkerManager, ifcWorkerManager, jscad, manifold, ifc,
-        lists, math, vector, transforms, point, line, polyline, geometryHelper,
-        frame: new Frame(vector, math, geometryHelper),
+        lists: base.lists, math: base.math, vector: base.vector, transforms: base.transforms, point: base.point,
+        line: base.line, polyline: base.polyline, geometryHelper: base.geometryHelper,
+        frame: base.frame,
+        engineering: base.engineering,
+        recipes: base.recipes,
         tag: new Tag(context),
-        color: new Color(math),
-        verb: new Verb(context, geometryHelper, math),
+        color: base.color,
+        verb: new Verb(context, base.geometryHelper, base.math),
         time: new Time(context),
         occt,
         asset: new Asset(),
-        logic: new Logic(),
+        logic: base.logic,
         json: new JSONBitByBit(context),
         csv: new CSVBitByBit(),
-        text: new TextBitByBit(point),
-        dates: new Dates(),
-        mesh: new MeshBitByBit(vector, polyline),
+        text: base.textService,
+        dates: base.dates,
+        mesh: base.mesh,
     };
 }

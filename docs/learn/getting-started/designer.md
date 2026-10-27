@@ -11,7 +11,7 @@ tags: [getting-started, designer]
 
 # The Designer
 
-The Designer is the fourth editor on bitbybit.dev, and the one without code. You model parts and assemblies the way a CAD program works: draw a sketch, extrude or revolve it, round its edges, drill holes, then put parts together with joints. Every step is kept in order, so changing a size later rebuilds everything that depends on it. The OpenCascade kernel builds the model in your browser, the same kernel the coding editors call.
+The Designer is the fourth editor on bitbybit.dev, and the one without code. You model parts and assemblies the way a CAD program works: draw a sketch, extrude or revolve it, round its edges, drill holes, then put parts together with joints. Every step is kept in order, so changing a size later rebuilds everything that depends on it. The Bitbybit OCCT Kernel builds the model in your browser, the same kernel the coding editors call.
 
 Making and changing designs is part of the Gold plan, and a design someone shares opens for everyone to view. Open it from <Ui>Apps</Ui> > <Ui>Designer</Ui>, or choose <Ui>Designer</Ui> as a script's editor in <Ui>My Projects</Ui>.
 

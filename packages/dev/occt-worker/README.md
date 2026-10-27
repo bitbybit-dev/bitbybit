@@ -101,7 +101,7 @@ Beyond NPM packages, Bitbybit offers:
 
 ## Support the Project
 
-This package is part of the open-source Bitbybit ecosystem. Your subscription helps fund continued development.
+This package is part of the Bitbybit ecosystem: MIT-licensed, with open-source TypeScript and the closed-source Bitbybit OCCT Kernel. Your subscription helps fund continued development.
 
 ⭐ **[Subscribe - Silver or Gold plan](https://bitbybit.dev/auth/pick-plan)** | **[Get API Key for CAD Cloud](https://bitbybit.dev/auth/pick-plan?api-keys=true)**
 
@@ -120,3 +120,5 @@ This package is part of the open-source Bitbybit ecosystem. Your subscription he
 ## License
 
 MIT © [Bit By Bit Developers](https://bitbybit.dev)
+
+The Bitbybit OCCT Kernel this worker runs ships in [@bitbybit-dev/occt](https://www.npmjs.com/package/@bitbybit-dev/occt), MIT-licensed like this package; its C++ layer is closed source.

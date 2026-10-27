@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/create-app",
-    "version": "1.5.0",
+    "version": "1.6.0-rc.0",
     "description": "CLI tool to scaffold Bit By Bit Developers 3D/CAD projects with your favorite game engine",
     "type": "module",
     "bin": {
@@ -69,7 +69,7 @@
         "@types/inquirer": "9.0.9",
         "@types/node": "^22.10.2",
         "typescript": "5.9.3",
-        "vitest": "4.1.11"
+        "vitest": "4.1.12"
     },
     "engines": {
         "node": ">=22.12.0"

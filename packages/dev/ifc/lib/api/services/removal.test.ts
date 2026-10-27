@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Fixture } from "../../__test__/fixture-types";
 import { addCentredWall, addRightWall, errorFrom, expressIdOf, groundFloor, oneWall, writingInto } from "../../__test__/build-setup";
-import { bodySolidOf, countOf, footprintOf, refsOf, relatedBy, representationNamed, representationsOf } from "../../__test__/build-geometry";
-import { MATERIAL_ASSOCIATION } from "../../build/constants";
-import { detach } from "../../build/relationships";
+import { bodySolidOf, countOf, footprintOf, refOf, refsOf, relatedBy, representationNamed, representationsOf } from "../../__test__/build-geometry";
 import { enumValue, ref, textValue } from "../../step/values";
 import { OTHER_TOOL_FILE, WALL_A, WALL_B } from "../../__test__/other-tool-file";
 import type { IfcModel } from "../../model/model-types";
@@ -248,7 +246,9 @@ describe("IFCModels.remove", () => {
         const ifc = new IFCService();
         const joined = ifc.walls.connect({ model: ifc.model.read({ data: OTHER_TOOL_FILE }), wall: WALL_A, other: WALL_B });
         const { tx } = writingInto(joined);
-        detach(tx, MATERIAL_ASSOCIATION, expressIdOf(joined, WALL_B));
+        const wallB = expressIdOf(joined, WALL_B);
+        const productShape = refOf(joined.attribute(wallB, "Representation"));
+        tx.update(productShape, { Representations: representationsOf(joined, wallB).filter((representation) => joined.attribute(representation, "RepresentationIdentifier") !== "Axis").map(ref) });
         const model = tx.commit();
         const shape = representationsOf(model, expressIdOf(model, WALL_B));
 

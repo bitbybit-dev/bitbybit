@@ -3,16 +3,26 @@ import * as Inputs from "../inputs";
 import type { Point } from "./point";
 import type { Vector } from "./vector";
 import type { Line } from "./line";
-import { resolveDto } from "../kernel-calls";
-import { unitOf } from "./helpers/frame-axes";
-import { newellNormal } from "./helpers/triangulation";
+import { InputError, resolveDto } from "../kernel-calls";
+import { isTriple, unitOf } from "./helpers/geometry/frame-axes";
+import type { SweepPath } from "./polyline-types";
+import { pathLength3, pathTangents, roundedPath3, sweepMatrices, transportedAxes } from "./helpers/geometry/paths";
+import { isInsidePolygon2, perimeter2, roundedCorners2, signedArea2, wound2 } from "./helpers/geometry/polygons";
+import { distance2, distance3, length3 } from "./helpers/geometry/vectors";
+import { newellNormal } from "./helpers/geometry/triangulation";
 import type * as Resolved from "../resolved-inputs";
+
+const MIN_OUTLINE_POINTS = 3;
+const QUARTER_TURN = Math.PI / 2;
+const SEGMENT_SLACK = 1e-9;
 
 /**
  * Polylines: chains of straight segments through a list of points, held as plain objects of the
  * form `{ points, isClosed }`. A closed polyline joins its last point back to its first. The
  * methods here measure a polyline, convert it to segments or lines, find where polylines cross,
- * sort loose segments into chains and size fillets for its corners. Lengths are in model units.
+ * sort loose segments into chains and size fillets for its corners. They also measure, orient and
+ * round 2D outlines, and frame a sweep along a polyline: the frames or matrices that carry a profile
+ * along it without twisting. Lengths are in model units.
  */
 export class Polyline {
 
@@ -34,13 +44,7 @@ export class Polyline {
      * ```
      */
     length(inputs: Inputs.Polyline.PolylineDto): number {
-        let distanceOfPolyline = 0;
-        for (let i = 1; i < inputs.polyline.points.length; i++) {
-            const previousPoint = inputs.polyline.points[i - 1]!;
-            const currentPoint = inputs.polyline.points[i]!;
-            distanceOfPolyline += this.point.distance({ startPoint: previousPoint, endPoint: currentPoint });
-        }
-        return distanceOfPolyline;
+        return pathLength3(inputs.polyline.points);
     }
 
     /**
@@ -630,11 +634,279 @@ export class Polyline {
      * ```
      */
     polygonArea(inputs: Inputs.Polyline.PolylineDto): number {
-        const [x, y, z] = this.newellOf(inputs.polyline.points);
-        return Math.hypot(x, y, z) / 2;
+        return length3(this.newellOf(inputs.polyline.points)) / 2;
+    }
+
+    /**
+     * Measures the area of a flat outline, signed by the way it runs.
+     *
+     * The area is positive when the outline runs counter-clockwise and negative when it runs
+     * clockwise, so the sign tells which way an outline turns.
+     * Example: [[0,0], [4,0], [4,4], [0,4]] -> 16; the same corners reversed -> -16
+     * @param inputs - The outline's corners
+     * @returns The signed area in square model units
+     * @group polygon 2d
+     * @shortname signed area 2d
+     * @drawable false
+     * @example
+     * ```typescript
+     * const area = bitbybit.polyline.signedArea2d({ points: [[0, 0], [4, 0], [4, 4], [0, 4]] });
+     * ```
+     */
+    signedArea2d(inputs: Inputs.Polyline.Polygon2Dto): number {
+        return signedArea2(this.outlineOf(inputs.points));
+    }
+
+    /**
+     * Measures the length around a flat outline, its closing side included.
+     *
+     * Example: [[0,0], [3,0], [3,4]] -> 12
+     * @param inputs - The outline's corners
+     * @returns The perimeter in model units
+     * @group polygon 2d
+     * @shortname perimeter 2d
+     * @drawable false
+     * @example
+     * ```typescript
+     * const around = bitbybit.polyline.perimeter2d({ points: [[0, 0], [3, 0], [3, 4]] });
+     * ```
+     */
+    perimeter2d(inputs: Inputs.Polyline.Polygon2Dto): number {
+        return perimeter2(this.outlineOf(inputs.points));
+    }
+
+    /**
+     * Tells whether a point lies inside a flat outline.
+     *
+     * It counts the outline's sides a ray from the point crosses, so it holds for outlines that are
+     * not convex; a point exactly on a side may fall either way.
+     * Example: [2,2] in [[0,0], [4,0], [4,4], [0,4]] -> true
+     * @param inputs - The outline's corners and the point
+     * @returns True when the point is inside
+     * @group polygon 2d
+     * @shortname is point inside 2d
+     * @drawable false
+     * @example
+     * ```typescript
+     * const inside = bitbybit.polyline.isPointInside2d({ points: [[0, 0], [4, 0], [4, 4], [0, 4]], point: [2, 2] });
+     * ```
+     */
+    isPointInside2d(inputs: Inputs.Polyline.PointInPolygon2Dto): boolean {
+        return isInsidePolygon2(this.pointOf(inputs.point, "point"), this.outlineOf(inputs.points));
+    }
+
+    /**
+     * Makes a flat outline run counter-clockwise, or clockwise.
+     *
+     * An outline already running that way comes back as it was; otherwise its corners are reversed.
+     * Example: [[0,0], [0,4], [4,4], [4,0]], counter-clockwise -> [[4,0], [4,4], [0,4], [0,0]]
+     * @param inputs - The outline's corners and the way it should run
+     * @returns The corners, running the asked way
+     * @group polygon 2d
+     * @shortname orient 2d
+     * @drawable false
+     * @example
+     * ```typescript
+     * const ccw = bitbybit.polyline.orient2d({ points: [[0, 0], [0, 4], [4, 4], [4, 0]], counterClockwise: true });
+     * ```
+     */
+    orient2d(inputs: Inputs.Polyline.OrientPolygon2Dto): Inputs.Base.Point2[] {
+        const resolved = resolveDto(Inputs.Polyline.OrientPolygon2Dto, inputs) as Resolved.Polyline.OrientPolygon2Dto;
+        return wound2(this.outlineOf(resolved.points), resolved.counterClockwise);
+    }
+
+    /**
+     * Rounds the corners of a flat outline with arcs, drawn as short straight pieces.
+     *
+     * Every corner takes `radius`, or its own entry of `radiusList`; a radius of 0 leaves it sharp.
+     * A radius too large for the sides beside its corner is refused.
+     * Example: a 10 by 10 square, radius 2 -> four quarter arcs at the corners
+     * @param inputs - The outline, the radius or radii and the pieces per quarter turn
+     * @returns The rounded outline's points
+     * @group polygon 2d
+     * @shortname round corners 2d
+     * @drawable false
+     * @example
+     * ```typescript
+     * const rounded = bitbybit.polyline.roundCorners2d({ points: [[0, 0], [10, 0], [10, 10], [0, 10]], radius: 2, segments: 8 });
+     * ```
+     */
+    roundCorners2d(inputs: Inputs.Polyline.RoundPolygon2Dto): Inputs.Base.Point2[] {
+        const resolved = resolveDto(Inputs.Polyline.RoundPolygon2Dto, inputs) as Resolved.Polyline.RoundPolygon2Dto;
+        const points = this.outlineOf(resolved.points);
+        if (resolved.radiusList === undefined && !(resolved.radius >= 0)) {
+            throw new InputError("`radius` is not a number of 0 or more.", "radius");
+        }
+        const radii = resolved.radiusList ?? points.map(() => resolved.radius);
+        if (radii.length !== points.length || !radii.every(radius => radius >= 0)) {
+            throw new InputError("`radiusList` does not hold one radius of 0 or more for each point.", "radiusList");
+        }
+        const repeated = points.findIndex((point, at) => distance2(point, points[(at + 1) % points.length]!) === 0);
+        if (repeated >= 0) {
+            throw new InputError(`\`points\` holds the same point at positions ${repeated} and ${(repeated + 1) % points.length}, so the corner between them has no sides: remove one of them.`, "points");
+        }
+        const segmentsFor = this.segmentsFor(resolved.segments);
+        try {
+            return roundedCorners2(points, radii, segmentsFor);
+        } catch (error) {
+            if (!(error instanceof InputError)) {
+                throw error;
+            }
+            const property = resolved.radiusList === undefined ? "radius" : "radiusList";
+            throw new InputError(`\`${property}\` is too large for a corner: ${error.message}.`, property);
+        }
+    }
+
+    /**
+     * Finds the direction a path heads in at each of its points.
+     *
+     * At an inner point it bisects the segments either side; at the ends it follows the end
+     * segments, unless `startTangent` or `endTangent` is given. Every direction has length 1. A
+     * closed polyline is refused.
+     * Example: [[0,0,0], [1,0,0], [1,1,0]] -> [[1,0,0], [0.707,0.707,0], [0,1,0]]
+     * @param inputs - The path and, optionally, its end directions
+     * @returns One unit direction per point
+     * @group sweep
+     * @shortname tangents
+     * @drawable false
+     * @example
+     * ```typescript
+     * const directions = bitbybit.polyline.tangents({ polyline: { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] } });
+     * ```
+     */
+    tangents(inputs: Inputs.Polyline.PolylineTangentsDto): Inputs.Base.Vector3[] {
+        const points = this.pathOf(inputs.polyline);
+        return pathTangents(points, this.directionOf(inputs.startTangent, "startTangent"), this.directionOf(inputs.endTangent, "endTangent"));
+    }
+
+    /**
+     * Places a frame at each point of a path, facing along it without twisting.
+     *
+     * Each normal is the path's direction there. Each direction, the profile's X axis, turns by the
+     * smallest angle between points, so a swept profile does not spin. `firstDirection` sets it at
+     * the start.
+     * Example: a straight path along X -> frames that differ only in origin
+     * @param inputs - The path and the first X direction
+     * @returns One frame per point
+     * @group sweep
+     * @shortname sweep frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = bitbybit.polyline.sweepFrames({ polyline: { points: [[0, 0, 0], [0, 0, 5], [5, 0, 10]] }, firstDirection: [1, 0, 0] });
+     * ```
+     */
+    sweepFrames(inputs: Inputs.Polyline.PolylineSweepDto): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.Polyline.PolylineSweepDto, inputs) as Resolved.Polyline.PolylineSweepDto;
+        const { points, tangents, axes } = this.sweepOf(resolved);
+        return points.map((origin, at): Inputs.Base.Frame => ({ origin, normal: tangents[at]!, direction: axes[at]! }));
+    }
+
+    /**
+     * Builds a matrix per point of a path that places a flat profile there, for sweeping it.
+     *
+     * Each puts the XY plane on that point's `sweepFrames` frame, Z along the path, and stretches it
+     * across a bend so the pieces either side meet.
+     * Example: a straight path along Z -> matrices that only move up it
+     * @param inputs - The path and the first X direction
+     * @returns One placement matrix per point
+     * @group sweep
+     * @shortname sweep placements
+     * @drawable false
+     * @example
+     * ```typescript
+     * const placements = bitbybit.polyline.sweepPlacements({ polyline: { points: [[0, 0, 0], [0, 0, 5], [5, 0, 10]] } });
+     * const ring = bitbybit.point.transformPoints({ points: [[1, 0, 0], [0, 1, 0], [-1, 0, 0]], transformation: [placements[1]] });
+     * ```
+     */
+    sweepPlacements(inputs: Inputs.Polyline.PolylineSweepDto): Inputs.Base.TransformMatrix[] {
+        const resolved = resolveDto(Inputs.Polyline.PolylineSweepDto, inputs) as Resolved.Polyline.PolylineSweepDto;
+        const { points, tangents, axes } = this.sweepOf(resolved);
+        return sweepMatrices(points, tangents, axes);
+    }
+
+    /**
+     * Rounds the corners of a path in space with arcs, drawn as short straight pieces.
+     *
+     * Where the segments beside a corner are too short for `radius`, it gets the largest arc that
+     * fits half of each. The ends stay; a closed polyline is refused.
+     * Example: [[0,0,0], [10,0,0], [10,10,0]], radius 2 -> one quarter arc at the corner
+     * @param inputs - The path, the radius and the pieces per quarter turn
+     * @returns The rounded path
+     * @group sweep
+     * @shortname round corners
+     * @drawable true
+     * @example
+     * ```typescript
+     * const rounded = bitbybit.polyline.roundCorners({ polyline: { points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] }, radius: 2, segments: 8 });
+     * ```
+     */
+    roundCorners(inputs: Inputs.Polyline.RoundPolylineDto): Inputs.Polyline.PolylinePropertiesDto {
+        const resolved = resolveDto(Inputs.Polyline.RoundPolylineDto, inputs) as Resolved.Polyline.RoundPolylineDto;
+        const points = this.pathOf(resolved.polyline);
+        if (!(resolved.radius >= 0)) {
+            throw new InputError("`radius` is not a number of 0 or more.", "radius");
+        }
+        return { points: roundedPath3(points, resolved.radius, this.segmentsFor(resolved.segments)), isClosed: false };
     }
 
     private newellOf(points: readonly Inputs.Base.Point3[]): Inputs.Base.Vector3 {
         return newellNormal(points.flat(), points.map((_, at) => at));
+    }
+
+    private sweepOf(resolved: Resolved.Polyline.PolylineSweepDto): SweepPath {
+        const points = this.pathOf(resolved.polyline);
+        const tangents = pathTangents(points);
+        return { points, tangents, axes: transportedAxes(points, tangents, this.directionOf(resolved.firstDirection, "firstDirection") ?? [1, 0, 0]) };
+    }
+
+    private pathOf(polyline: Inputs.Polyline.PolylinePropertiesDto | undefined): Inputs.Base.Point3[] {
+        const points: unknown = polyline?.points;
+        if (!Array.isArray(points) || points.length < 2 || !points.every(isTriple)) {
+            throw new InputError("`polyline` does not hold a path of at least two points of three finite numbers.", "polyline");
+        }
+        if (polyline?.isClosed === true) {
+            throw new InputError("`polyline` is closed; give it as an open path, repeating its first point at the end to follow it all the way round.", "polyline");
+        }
+        const repeated = points.findIndex((point, at) => at > 0 && distance3(point, points[at - 1]!) === 0);
+        if (repeated > 0) {
+            throw new InputError(`\`polyline\` has two points in one place, at positions ${repeated - 1} and ${repeated}.`, "polyline");
+        }
+        return points;
+    }
+
+    private outlineOf(points: unknown): Inputs.Base.Point2[] {
+        if (!Array.isArray(points) || points.length < MIN_OUTLINE_POINTS || !points.every(point => this.isPoint2(point))) {
+            throw new InputError("`points` does not hold an outline of at least three points of two finite numbers.", "points");
+        }
+        return points;
+    }
+
+    private pointOf(point: unknown, property: string): Inputs.Base.Point2 {
+        if (!this.isPoint2(point)) {
+            throw new InputError(`\`${property}\` is not a point of two finite numbers.`, property);
+        }
+        return point;
+    }
+
+    private isPoint2(value: unknown): value is Inputs.Base.Point2 {
+        return Array.isArray(value) && value.length === 2 && value.every(part => typeof part === "number" && Number.isFinite(part));
+    }
+
+    private directionOf(direction: Inputs.Base.Vector3 | undefined, property: string): Inputs.Base.Vector3 | undefined {
+        if (direction === undefined) {
+            return undefined;
+        }
+        if (!isTriple(direction) || unitOf(direction) === undefined) {
+            throw new InputError(`\`${property}\` is not a direction of three finite numbers with some length.`, property);
+        }
+        return direction;
+    }
+
+    private segmentsFor(segments: number): (sweep: number) => number {
+        if (!Number.isInteger(segments) || segments < 1) {
+            throw new InputError("`segments` is not a whole number of at least 1.", "segments");
+        }
+        return (sweep: number): number => Math.max(1, Math.ceil(segments * sweep / QUARTER_TURN - SEGMENT_SLACK));
     }
 }

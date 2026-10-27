@@ -101,7 +101,7 @@ Beyond NPM packages, Bitbybit offers:
 
 ## Support the Project
 
-This package is part of the open-source Bitbybit ecosystem. Your subscription helps fund continued development.
+This package is part of the Bitbybit ecosystem: MIT-licensed, with open-source TypeScript and the closed-source Bitbybit OCCT Kernel. Your subscription helps fund continued development.
 
 ⭐ **[Subscribe - Silver or Gold plan](https://bitbybit.dev/auth/pick-plan)** | **[Get API Key for CAD Cloud](https://bitbybit.dev/auth/pick-plan?api-keys=true)**
 
@@ -116,13 +116,14 @@ This package is part of the open-source Bitbybit ecosystem. Your subscription he
 ## Major Dependencies
 
 [OpenCascade Technology (OCCT)](https://github.com/Open-Cascade-SAS/OCCT), compiled to WebAssembly together with
-[Draco](https://github.com/google/draco) for glTF compression.
+the Bitbybit kernel layer, [Draco](https://github.com/google/draco) for glTF compression and
+[RapidJSON](https://github.com/Tencent/rapidjson).
 
 ## License
 
-The TypeScript and JavaScript in this package: MIT © [Bit By Bit Developers](https://bitbybit.dev).
-
-The WebAssembly kernels it ships embed OCCT (LGPL-2.1 with the Open CASCADE exception) and Draco
-(Apache-2.0). `NOTICE` lists them and `licenses/` reproduces their license texts. The kernel is a
-separately replaceable component: it is loaded at runtime through the emscripten `locateFile` hook, so a
-modified OCCT compiled to WebAssembly can be substituted without relinking this package.
+MIT © [Bit By Bit Developers](https://bitbybit.dev): the TypeScript and JavaScript in this package and
+the Bitbybit OCCT Kernel it ships (WebAssembly, built on OCCT). The kernel is closed source: each of its
+builds links OCCT (LGPL-2.1 with the Open CASCADE exception) and other open-source components with the
+Bitbybit kernel layer, C++ whose source is not published. `NOTICE` lists the components, `licenses/`
+reproduces their license texts, and `NOTICE` also says how to get the materials to relink the kernel with
+a modified OCCT.

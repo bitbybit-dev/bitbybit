@@ -4,11 +4,10 @@ import * as Inputs from "../../inputs";
 import type { OrbitCameraInstance, InputHandler, OrbitCameraController } from "../../inputs/threejs-camera-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../resolved-inputs";
+import { degreesOf, interpolated, radiansOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 export type { OrbitCameraInstance, InputHandler, OrbitCameraController };
 
-const DEG_TO_RAD = Math.PI / 180;
-const RAD_TO_DEG = 180 / Math.PI;
 
 interface OrbitCameraState {
     _modelsAabb: THREEJS.Box3;
@@ -299,8 +298,8 @@ export class ThreeJSOrbitCamera {
         const distanceBetween = new THREEJS.Vector3();
 
         const updatePosition = (): void => {
-            const phi = (90 - state._pitch) * DEG_TO_RAD;
-            const theta = state._yaw * DEG_TO_RAD;
+            const phi = radiansOf(90 - state._pitch);
+            const theta = radiansOf(state._yaw);
 
             const sinPhi = Math.sin(phi);
             const cosPhi = Math.cos(phi);
@@ -331,9 +330,6 @@ export class ThreeJSOrbitCamera {
             state._modelsAabb.setFromObject(object);
         };
 
-        const lerp = (start: number, end: number, t: number): number => {
-            return start + (end - start) * t;
-        };
 
         return {
             autoRender: config.autoRender,
@@ -398,7 +394,7 @@ export class ThreeJSOrbitCamera {
                 state._modelsAabb.getSize(size);
                 
                 const maxDim = Math.max(size.x, size.y, size.z);
-                const fov = camera.fov * DEG_TO_RAD;
+                const fov = radiansOf(camera.fov);
                 let distance = maxDim / (2 * Math.tan(fov / 2));
                 distance *= padding;
                 
@@ -419,8 +415,8 @@ export class ThreeJSOrbitCamera {
                 const direction = new THREEJS.Vector3();
                 direction.subVectors(resetPoint, lookAtPoint).normalize();
                 
-                this.yaw = Math.atan2(direction.x, direction.z) * RAD_TO_DEG;
-                this.pitch = Math.asin(direction.y) * RAD_TO_DEG;
+                this.yaw = degreesOf(Math.atan2(direction.x, direction.z));
+                this.pitch = degreesOf(Math.asin(direction.y));
 
                 removeInertia();
                 updatePosition();
@@ -446,9 +442,9 @@ export class ThreeJSOrbitCamera {
                     ? (config.dampingFactor === 0 ? 1 : Math.min(dt / (config.inertiaFactor || 0.1), 1))
                     : 1;
                 
-                state._distance = lerp(state._distance, state._targetDistance, t);
-                state._yaw = lerp(state._yaw, state._targetYaw, t);
-                state._pitch = lerp(state._pitch, state._targetPitch, t);
+                state._distance = interpolated(state._distance, state._targetDistance, t);
+                state._yaw = interpolated(state._yaw, state._targetYaw, t);
+                state._pitch = interpolated(state._pitch, state._targetPitch, t);
                 state._pivotPoint.lerp(state._targetPivotPoint, t);
 
                 updatePosition();
@@ -578,9 +574,7 @@ export class ThreeJSOrbitCamera {
         const panVector = new THREEJS.Vector3();
 
         const getPinchDistance = (touch1: Touch, touch2: Touch): number => {
-            const dx = touch1.clientX - touch2.clientX;
-            const dy = touch1.clientY - touch2.clientY;
-            return Math.sqrt(dx * dx + dy * dy);
+            return Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
         };
 
         const getPinchMidpoint = (touch1: Touch, touch2: Touch): { x: number; y: number } => {

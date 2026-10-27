@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, ClassHandle, TopoDS_Edge } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
-import { VectorHelperService } from "../api/vector-helper.service";
-import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTShapeFix } from "./shape-fix";
 import { OCCTEdge } from "./shapes/edge";
 import { OCCTWire } from "./shapes/wire";
@@ -42,10 +40,8 @@ describe("OCCT shape fix unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
 
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         wire = new OCCTWire(occt, occHelper);
         edge = new OCCTEdge(occt, occHelper);
         shapeFix = new OCCTShapeFix(occt, occHelper);

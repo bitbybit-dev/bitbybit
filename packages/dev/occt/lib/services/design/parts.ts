@@ -1,11 +1,11 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Models from "../../api/models";
-import { DesignProblem, pointer } from "./problems";
-import { connectorFrame, contextOf } from "./helpers";
+import { cleanedUpOnError, DesignProblem, pointer } from "./problems";
+import { connectorFrame, contextOf, unitOfDocument } from "./helpers";
 import { connectorMembers } from "./connectors";
 import { resolveEdges, resolveFaces } from "./references";
 import * as Inputs from "../../api/inputs";
-import { release } from "./cache";
+import { release } from "../base/release";
 import type { BodyState, DesignRun } from "./state";
 import { bodyKey } from "./state";
 import { declaredValues, numberOf, parametersIn, propertyValue, textOf } from "./values";
@@ -13,8 +13,6 @@ import { buildKeyOf, itemKeyOf, versionOf } from "./identity";
 import { DIMENSIONS } from "./constants";
 
 const COLOR = /^#[0-9a-fA-F]{6}$/;
-
-const METRES_PER_UNIT: Record<NonNullable<Models.OCCT.DesignUnits["length"]>, number> = { mm: 0.001, cm: 0.01, m: 1, in: 0.0254 };
 
 type Look = Pick<Models.OCCT.DesignAppearance, "color" | "metallic" | "roughness" | "opacity" | "emissive" | "emissiveStrength" | "edgeColor">;
 type BuiltLook = Pick<Models.OCCT.DesignBuiltAppearance, "color" | "metallic" | "roughness" | "opacity" | "emissive" | "emissiveStrength" | "edgeColor">;
@@ -145,14 +143,17 @@ function declaredParts(document: Models.OCCT.DesignPartDocument, run: DesignRun)
 export function buildParts(document: Models.OCCT.DesignPartDocument, run: DesignRun, issues: Models.OCCT.DesignIssue[]): Models.OCCT.DesignBuiltPart<TopoDS_Shape>[] {
     const materials = document.materials ?? [];
     const builtMaterials = new Map<string, Models.OCCT.DesignBuiltMaterial | undefined>();
-    const metres = METRES_PER_UNIT[document.units?.length ?? "mm"];
+    const metres = run.base.math.convertLength({ value: 1, from: unitOfDocument(document), to: Inputs.Base.unitOfLengthEnum.metre });
     const version = versionOf(document);
     const builtPart = (part: Models.OCCT.DesignPart, index: number): Models.OCCT.DesignBuiltPart<TopoDS_Shape> | undefined => {
         const path = pointer("/parts", index);
         const body = run.bodies.get(part.body);
         if (body === undefined) {
-            const reason = run.failed.get(bodyKey(part.body)) === "suppressed" ? "was suppressed" : "failed";
-            issues.push({ path: pointer(path, "body"), message: `the body "${part.body}" ${reason}, so the part was not built` });
+            const reason = run.failed.get(bodyKey(part.body));
+            const message = reason === "pending"
+                ? `the body "${part.body}" waits for the outcome of its script, so the part was not built yet`
+                : `the body "${part.body}" ${reason === "suppressed" ? "was suppressed" : "failed"}, so the part was not built`;
+            issues.push({ path: pointer(path, "body"), message });
             return undefined;
         }
         const materialId = part.material === undefined ? undefined : attempt(issues, () => materialIdOf(part.material!, materials, pointer(path, "material"), run));
@@ -193,18 +194,15 @@ export function buildParts(document: Models.OCCT.DesignPartDocument, run: Design
         };
     };
     const built: Models.OCCT.DesignBuiltPart<TopoDS_Shape>[] = [];
-    try {
+    return cleanedUpOnError(() => {
         declaredParts(document, run).forEach((part, index) => {
             const made = builtPart(part, index);
             if (made !== undefined) {
                 built.push(made);
             }
         });
-    } catch (error) {
-        built.forEach(part => release(part.shape));
-        throw error;
-    }
-    return built;
+        return built;
+    }, () => built.forEach(part => release(part.shape)));
 }
 
 const volumes = new WeakMap<TopoDS_Shape, number | null>();

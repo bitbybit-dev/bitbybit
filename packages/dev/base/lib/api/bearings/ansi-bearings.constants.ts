@@ -1,0 +1,28 @@
+import type { AnsiBallBearingDesignation, AnsiBallBearingRow } from "./bearing-types";
+
+export const ANSI_BALL_BEARINGS: Readonly<Record<AnsiBallBearingDesignation, AnsiBallBearingRow>> = {
+    "R1-4": { bore: 0.078125, outside: 0.25, width: 0.09375, shieldedWidth: 0.140625 },
+    "R1-5": { bore: 0.09375, outside: 0.3125, width: 0.109375, shieldedWidth: 0.140625 },
+    "R133": { bore: 0.09375, outside: 0.1875, width: 0.0625, shieldedWidth: 0.09375 },
+    "R144": { bore: 0.125, outside: 0.25, width: 0.09375, shieldedWidth: 0.109375 },
+    "R155": { bore: 0.15625, outside: 0.3125, width: 0.109375, shieldedWidth: 0.125 },
+    "R156": { bore: 0.1875, outside: 0.3125, width: 0.109375, shieldedWidth: 0.125 },
+    "R166": { bore: 0.1875, outside: 0.375, width: 0.125, shieldedWidth: 0.125 },
+    "R168": { bore: 0.25, outside: 0.375, width: 0.125, shieldedWidth: 0.125 },
+    "R188": { bore: 0.25, outside: 0.5, width: 0.125, shieldedWidth: 0.1875 },
+    "R1810": { bore: 0.3125, outside: 0.5, width: 0.15625, shieldedWidth: 0.15625 },
+    "R2": { bore: 0.125, outside: 0.375, width: 0.15625, shieldedWidth: 0.15625 },
+    "R2-5": { bore: 0.125, outside: 0.3125, width: 0.109375, shieldedWidth: 0.140625 },
+    "R2-6": { bore: 0.125, outside: 0.375, width: 0.109375, shieldedWidth: 0.140625 },
+    "R3": { bore: 0.1875, outside: 0.5, width: 0.15625, shieldedWidth: 0.196 },
+    "R4": { bore: 0.25, outside: 0.625, width: 0.196, shieldedWidth: 0.196 },
+    "R4A": { bore: 0.25, outside: 0.75, width: 0.21875, shieldedWidth: 0.28125 },
+    "R6": { bore: 0.375, outside: 0.875, width: 0.21875, shieldedWidth: 0.28125 },
+    "R8": { bore: 0.5, outside: 1.125, width: 0.25, shieldedWidth: 0.3125 },
+    "R10": { bore: 0.625, outside: 1.375, width: 0.28125, shieldedWidth: 0.34375 },
+    "R12": { bore: 0.75, outside: 1.625, width: 0.3125, shieldedWidth: 0.4375 },
+    "R14": { bore: 0.875, outside: 1.875, width: 0.375, shieldedWidth: 0.5 },
+    "R16": { bore: 1, outside: 2, width: 0.375, shieldedWidth: 0.5 },
+    "R18": { bore: 1.125, outside: 2.125, width: 0.375, shieldedWidth: 0.5 },
+    "R20": { bore: 1.25, outside: 2.25, width: 0.375, shieldedWidth: 0.5 },
+};

@@ -1,9 +1,9 @@
-import type { Base } from "@bitbybit-dev/base";
-import { recipeSourceOf } from "@bitbybit-dev/base";
-import { followedBy, isRigidMatrix } from "@bitbybit-dev/base/lib/api/services/helpers/matrices";
+import type { Base, Recipes } from "@bitbybit-dev/base";
+import { followedBy, isRigidMatrix } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
 import type * as Models from "../../api/models";
 import type { PlannedInstance, PlannedPart, RecipeDocumentPlan } from "./recipe-types";
-import { IDENTITY_MATRIX, RGBA_SIZE, RGB_SIZE, STEP_UNITS, UNIT_TOLERANCE } from "./recipes.constants";
+import { RGBA_SIZE, RGB_SIZE, STEP_UNITS, UNIT_TOLERANCE } from "./recipes.constants";
+import { IDENTITY_MATRIX } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices.constants";
 
 const TOP_ID = "recipe";
 
@@ -79,14 +79,14 @@ function groupIdOf(group: number): string {
     return `group-${group}`;
 }
 
-export function documentPlan(recipe: Base.Recipe): RecipeDocumentPlan {
+export function documentPlan(recipe: Base.Recipe, recipes: Recipes): RecipeDocumentPlan {
     const unit = STEP_UNITS.find(([millimetres]) => Math.abs(millimetres - recipe.millimetresPerUnit) <= millimetres * UNIT_TOLERANCE);
     const scale = recipe.millimetresPerUnit;
     const toMillimetres: Base.TransformMatrix = [scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, 1];
     const parts: PlannedPart[] = [];
     const partOfNode = new Map<number, number>();
     const instances = recipe.roots.map((root, index): PlannedInstance => {
-        const { node, matrix } = recipeSourceOf(recipe, root.node, unit ? root.matrix : followedBy(root.matrix, toMillimetres));
+        const { node, matrix } = recipes.sourceOf({ recipe, node: root.node, matrix: unit ? root.matrix : followedBy(root.matrix, toMillimetres) });
         if (!isRigidMatrix(matrix)) {
             return { part: parts.push({ root: { node, matrix, tag: {} }, roots: [index] }) - 1, matrix: IDENTITY_MATRIX };
         }

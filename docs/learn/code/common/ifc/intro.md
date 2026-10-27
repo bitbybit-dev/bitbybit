@@ -85,7 +85,7 @@ Lengths are in millimetres unless `model.create` is given another `lengthUnit`, 
 
 ## Reading and writing files
 
-`model.read` reads an `.ifc` file, given as text or bytes: in a project, load it with `bitbybit.asset.getFile` and `bitbybit.asset.toUint8Array` ([Assets](../base/asset/intro)). `model.summary` says what it holds, and `model.elements` lists the elements of a type. Unchanged parts of a file are written back exactly as they were read. `model.write` gives the text of the file, which `bitbybit.asset.download` saves. An IFC2X3 file can be read and drawn; `model.upgradeToIfc4` makes it editable.
+`model.read` reads an `.ifc` file, given as text or bytes: in a project, load it with `bitbybit.asset.getFile` and `bitbybit.asset.toUint8Array` ([Assets](../base/asset/intro)). `model.summary` says what it holds, and `model.elements` lists the elements of a type. Unchanged parts of a file are written back exactly as they were read. `model.write` gives the text of the file, which `bitbybit.asset.download` saves. An IFC4X3 file can be read, queried and drawn but not changed. An IFC2X3 file can be read and drawn; `model.upgradeToIfc4` makes it editable. Bytes of an `.ifczip` archive are read from the `.ifc` file inside it.
 
 ## Geometry
 
@@ -95,7 +95,7 @@ A model describes its geometry; a kernel builds it:
 - `geometry.toStep` writes the model as a STEP file of such shapes, each element a named product, and `geometry.toDocument` gives the assembly document instead.
 - `geometry.recipe` describes the geometry as data, a **recipe**, which `bitbybit.manifold.recipes.build` builds as fast mesh solids for large models, and `bitbybit.occt.recipes.build` exactly.
 
-Building needs the OpenCascade kernel beside the IFC one; the editors on bitbybit.dev start both.
+Building needs the Bitbybit OCCT Kernel beside the IFC one; the editors on bitbybit.dev start both.
 
 ## More
 

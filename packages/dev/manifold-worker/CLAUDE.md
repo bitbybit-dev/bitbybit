@@ -31,9 +31,12 @@ worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the
   tuned to a memory figure. The number is a practical ceiling on how far the cache drifts before being
   reset, and all three kernel workers use the same one under the same name.
 
-- **`manifoldObjectHashes` is the liveness ledger.** An entry that was a handle but no longer carries
-  embind's `$$` marker is evicted and reported as a miss rather than returned as a dangling pointer.
-  That marker is an embind implementation detail and would not survive a change of bindings.
+- **`manifoldObjectHashes` is the liveness ledger.** An entry that was a handle but has since been
+  deleted - `delete()` called on it anywhere, not only through `cleanCacheForHash` - is evicted and
+  reported as a miss rather than returned as a dangling pointer. Liveness is asked of the handle
+  itself, through the `isDeleted()` embind gives every handle: embind's `$$` marker stays on a handle
+  after `delete()` (only the pointer inside it is cleared), so `$$` tells a handle from a plain value
+  and nothing more. Both are embind details and would not survive a change of bindings.
 
 ## Loading from a CDN
 

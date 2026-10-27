@@ -3,6 +3,9 @@ import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
+import type * as Models from "../../api/models";
+import { historiesFromKernel } from "../base/history";
+import { checkedShape } from "../base/input-checks";
 
 /**
  * Questions and repairs that apply to any OpenCascade shape whatever its kind: what type it is,
@@ -63,6 +66,28 @@ export class OCCTShape {
             resolved.unifyFaces, 
             resolved.concatBSplines
         );
+    }
+
+    /**
+     * Merges faces and edges as `unifySameDomain` does, and reports what each face, edge and vertex
+     * of the shape became: both halves of a face a fuse split name the one face they merge into.
+     * @param inputs - The shape and which kinds of merge to apply
+     * @returns The simplified shape and its history
+     * @group edit
+     * @shortname unify same domain with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.shapes.shape.unifySameDomainWithHistory({ shape: fused, unifyEdges: true, unifyFaces: true, concatBSplines: true });
+     * const mergedTop = history.faces[topIndex];
+     * ```
+     */
+    unifySameDomainWithHistory(inputs: Inputs.OCCT.UnifySameDomainDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.UnifySameDomainDto, inputs) as Resolved.OCCT.UnifySameDomainDto<TopoDS_Shape>;
+        const made = this.occ.UnifySameDomainWithHistory(checkedShape(resolved.shape), resolved.unifyEdges, resolved.unifyFaces, resolved.concatBSplines);
+        const shape = this.och.converterService.getActualTypeOfShape(made.shape);
+        made.shape.delete();
+        return { shape, history: historiesFromKernel(made.histories)[0]! };
     }
 
     /**

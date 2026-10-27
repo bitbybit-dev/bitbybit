@@ -461,6 +461,15 @@ export const schemaBundle = {
       ],
       "additionalProperties": false
     },
+    "LengthUnit": {
+      "type": "string",
+      "enum": [
+        "mm",
+        "cm",
+        "m",
+        "in"
+      ]
+    },
     "MapStep": {
       "type": "object",
       "properties": {
@@ -725,6 +734,9 @@ export const schemaBundle = {
         },
         "includePipelineInMetadata": {
           "type": "boolean"
+        },
+        "unit": {
+          "$ref": "#/$defs/LengthUnit"
         }
       },
       "required": [

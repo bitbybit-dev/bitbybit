@@ -1,5 +1,7 @@
 import type * as Inputs from "./inputs";
 import type * as Models from "./models";
+import { mergedMeshBuffers } from "./mesh-buffers";
+import type { MeshMerge, MeshPart } from "./draw-helper-types";
 
 /**
  * A kernel shape with the looks to draw it in: a base look for the whole shape and groups of faces
@@ -7,7 +9,7 @@ import type * as Models from "./models";
  * one by hand to color some faces of any shape.
  */
 export interface ShapeWithAppearance {
-    /** The shape to draw, as the OCCT kernel returns it. */
+    /** The shape to draw, as the Bitbybit OCCT Kernel returns it. */
     shape: Inputs.OCCT.TopoDSShapePointer;
     /**
      * How the shape looks. Each `faces` entry gives its values to the faces it lists, numbered as
@@ -54,6 +56,24 @@ export interface LookMesh {
     faceRanges: FaceRange[];
 }
 
+/** Where the faces of one look sit in a mesh that holds every look: a start and a count of its vertices and of its indices. */
+export interface LookSpan {
+    group: LookGroup;
+    vertexStart: number;
+    vertexCount: number;
+    indexStart: number;
+    indexCount: number;
+}
+
+/** The faces of every look in one set of flat arrays a renderer uploads, look after look, with where each look and each face's triangles are. */
+export interface LookedMesh {
+    positions: Float32Array;
+    normals: Float32Array;
+    indices: Uint32Array;
+    looks: LookSpan[];
+    faceRanges: FaceRange[];
+}
+
 /** Where the segments of one edge sit among the segments of a shape: `start` and `count` in segments. */
 export interface EdgeRange {
     edge: number;
@@ -73,13 +93,18 @@ export interface PartPlacement {
     world: readonly number[];
 }
 
-/** The faces of a mesh, as `shapeToMesh` returns them. */
+/**
+ * The faces of a mesh, as `shapeToMesh` and `shapeToMeshBuffers` return them: positions, normals
+ * and triangles, and the texture coordinates and surface analysis values a face may also carry.
+ */
 export interface LookMeshSource {
     faceList: readonly {
         faceIndex: number;
         vertexCoord: ArrayLike<number>;
         normalCoord: ArrayLike<number>;
         triIndexes: ArrayLike<number>;
+        uvs?: ArrayLike<number> | undefined;
+        analysisValues?: ArrayLike<number> | undefined;
     }[];
 }
 
@@ -121,6 +146,8 @@ type LookValues = {
     emissive?: string | undefined;
     emissiveStrength?: number | undefined;
 };
+
+const POSITION_SIZE = 3;
 
 const IDENTITY: readonly number[] = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
@@ -260,6 +287,43 @@ export function defaultEdgeColor(faceColor: string, edgeColour: string, edgeCont
     return edgeContrast === undefined ? edgeColour : contrastColor(faceColor, edgeContrast);
 }
 
+type LookMeshFace = LookMeshSource["faceList"][number];
+
+function facesOfLooks(mesh: LookMeshSource, groups: readonly LookGroup[]): LookMeshFace[][] {
+    const facesOf = new Map<number, LookMeshFace[]>();
+    for (const face of mesh.faceList) {
+        const sharing = facesOf.get(face.faceIndex);
+        if (sharing) {
+            sharing.push(face);
+        } else {
+            facesOf.set(face.faceIndex, [face]);
+        }
+    }
+    const taken = new Map<number, number>();
+    return groups.map(group => group.faces.flatMap(index => {
+        const next = taken.get(index) ?? 0;
+        const face = facesOf.get(index)?.[next];
+        if (face === undefined) {
+            return [];
+        }
+        taken.set(index, next + 1);
+        return [face];
+    }));
+}
+
+function meshPartOf(face: LookMeshFace): MeshPart {
+    return { positions: face.vertexCoord, normals: face.normalCoord, indices: face.triIndexes };
+}
+
+function faceRangesOf(faces: readonly LookMeshFace[]): FaceRange[] {
+    let start = 0;
+    return faces.map((face): FaceRange => {
+        const range = { face: face.faceIndex, start, count: face.triIndexes.length };
+        start += face.triIndexes.length;
+        return range;
+    });
+}
+
 /**
  * The faces of each look merged into flat arrays, in the order of `groups`, with where each face's
  * triangles are. Indices count from the first vertex of their look.
@@ -268,36 +332,46 @@ export function defaultEdgeColor(faceColor: string, edgeColour: string, edgeCont
  * @returns One merged mesh per look
  */
 export function lookMeshesOf(mesh: LookMeshSource, groups: readonly LookGroup[]): LookMesh[] {
-    const faceOf = new Map(mesh.faceList.map(face => [face.faceIndex, face]));
-    return groups.map(group => {
-        const present = group.faces.flatMap(index => {
-            const face = faceOf.get(index);
-            return face ? [face] : [];
-        });
-        let vertexCount = 0;
-        let indexCount = 0;
-        for (const face of present) {
-            vertexCount += face.vertexCoord.length / 3;
-            indexCount += face.triIndexes.length;
-        }
-        const positions = new Float32Array(vertexCount * 3);
-        const normals = new Float32Array(vertexCount * 3);
-        const indices = new Uint32Array(indexCount);
-        const faceRanges: FaceRange[] = [];
-        let vertexOffset = 0;
-        let indexOffset = 0;
-        for (const face of present) {
-            positions.set(face.vertexCoord, vertexOffset * 3);
-            normals.set(face.normalCoord, vertexOffset * 3);
-            for (let i = 0; i < face.triIndexes.length; i++) {
-                indices[indexOffset + i] = face.triIndexes[i]! + vertexOffset;
-            }
-            faceRanges.push({ face: face.faceIndex, start: indexOffset, count: face.triIndexes.length });
-            vertexOffset += face.vertexCoord.length / 3;
-            indexOffset += face.triIndexes.length;
-        }
-        return { group, positions, normals, indices, faceRanges };
+    const faces = facesOfLooks(mesh, groups);
+    return groups.map((group, at) => {
+        const present = faces[at]!;
+        const { positions, normals, indices } = mergedMeshBuffers(present.map(meshPartOf));
+        return { group, positions, normals, indices, faceRanges: faceRangesOf(present) };
     });
+}
+
+/**
+ * The faces of every look merged in one pass into one set of flat arrays, for a renderer that draws
+ * a shape's looks as parts of one mesh: the looks in the order of `groups`, each look's faces in its
+ * order, with where each look's vertices and indices sit and where each face's triangles are,
+ * counted from the start of the whole mesh. A look whose faces hold no triangles is left out, since
+ * nothing would wear its material. With `reverseWinding` every triangle is wound the other way, for
+ * an engine that reads them clockwise; the normals stay as the faces give them.
+ * @param mesh - The mesh whose faces are merged
+ * @param groups - The looks and their faces
+ * @param winding - Whether to wind every triangle the other way
+ * @returns The merged mesh, the span of each look it holds and the range of each face
+ */
+export function lookedMeshOf(mesh: LookMeshSource, groups: readonly LookGroup[], winding: Pick<MeshMerge, "reverseWinding"> = {}): LookedMesh {
+    const faces = facesOfLooks(mesh, groups);
+    const drawn = groups.flatMap((group, at) => faces[at]!.some(face => face.triIndexes.length > 0) ? [{ group, faces: faces[at]! }] : []);
+    const drawnFaces = drawn.flatMap(look => look.faces);
+    const { positions, normals, indices } = mergedMeshBuffers(drawnFaces.map(meshPartOf), winding);
+    let vertexStart = 0;
+    let indexStart = 0;
+    const looks = drawn.map((look): LookSpan => {
+        const span = {
+            group: look.group,
+            vertexStart,
+            vertexCount: look.faces.reduce((sum, face) => sum + face.vertexCoord.length / POSITION_SIZE, 0),
+            indexStart,
+            indexCount: look.faces.reduce((sum, face) => sum + face.triIndexes.length, 0),
+        };
+        vertexStart += span.vertexCount;
+        indexStart += span.indexCount;
+        return span;
+    });
+    return { positions, normals, indices, looks, faceRanges: faceRangesOf(drawnFaces) };
 }
 
 /**
@@ -381,13 +455,13 @@ export interface KeptDesignMesh<T = DesignMesh> {
 }
 
 /**
- * How many numbers a mesh holds: its vertex, normal and index data and its edge points, which is
- * what a cache of meshes weighs it by.
+ * How many numbers a mesh holds: its vertex, normal, index, texture coordinate and surface analysis
+ * data and its edge points, which is what a cache of meshes weighs it by.
  * @param mesh - The mesh
  * @returns The count of numbers it holds
  */
 export function meshNumbersOf(mesh: DesignMesh): number {
-    const faces = mesh.faceList.reduce((sum, face) => sum + face.vertexCoord.length + face.normalCoord.length + face.triIndexes.length, 0);
+    const faces = mesh.faceList.reduce((sum, face) => sum + face.vertexCoord.length + face.normalCoord.length + face.triIndexes.length + (face.uvs?.length ?? 0) + (face.analysisValues?.length ?? 0), 0);
     const edges = mesh.edgeList.reduce((sum, edge) => sum + edge.vertexCoord.length * 3, 0);
     return faces + edges;
 }
@@ -565,14 +639,38 @@ export function samePlacements(first: ReadonlyMap<string, readonly PartPlacement
     return true;
 }
 
-/** The drawing options a design build's plan reads: the look, and the precision its parts are meshed at. */
+/** The drawing options that change the mesh the worker makes of a kernel shape: how finely its faces are cut into triangles. */
+export interface DesignMeshingOptions {
+    precision: number;
+    angularDeflection: number;
+    relativeDeflection: boolean;
+    allowQualityDecrease: boolean;
+    forceFaceDeflection: boolean;
+}
+
+/**
+ * The drawing options that change a part's mesh, written out as text: what a drawer keeps the meshes
+ * of design parts under, and what tells a redraw whether its parts must be meshed again. Colours,
+ * opacities and the other look options are left out, so changing them never meshes a part again.
+ * @param options - The resolved drawing options
+ * @returns The text, the same for every set of options that meshes a shape the same way
+ */
+export function designMeshingTextOf(options: DesignMeshingOptions): string {
+    return JSON.stringify([options.precision, options.angularDeflection, options.relativeDeflection, options.allowQualityDecrease, options.forceFaceDeflection]);
+}
+
+/** The drawing options a design build's plan reads: the look, and the precision and the meshing options its parts are meshed with. */
 export interface DesignPlanOptions extends DesignLookOptions {
     precision: number;
+    /** The options the parts are meshed with, as `designMeshingTextOf` writes them; a build meshed with other text is meshed again rather than only moved. */
+    meshing?: string | undefined;
 }
 
 /** What a drawer remembers of the design build it drew last on a node: what the next plan compares against. */
 export interface DesignDrawMemory<T extends DesignMesh> {
     precision: number;
+    /** The options the parts were meshed with, as `designMeshingTextOf` writes them. */
+    meshing?: string | undefined;
     signature: string;
     placements: ReadonlyMap<string, readonly PartPlacement[]>;
     meshes: ReadonlyMap<string, T>;
@@ -589,6 +687,10 @@ export interface DesignDrawPlan<P extends DesignDrawnPart> {
     posesOnly: boolean;
 }
 
+function meshedAlike(memory: DesignDrawMemory<DesignMesh>, options: DesignPlanOptions): boolean {
+    return memory.precision === options.precision && memory.meshing === options.meshing;
+}
+
 /**
  * Lays a design build out for drawing, and tells whether the drawing it replaces only needs its parts
  * moved.
@@ -603,13 +705,13 @@ export function designDrawPlanOf<P extends DesignDrawnPart & { id: string }>(bui
     const placed = [...placements.keys()].filter(id => parts.has(id));
     const signature = designSignatureOf(parts, placed, options);
     const meshKeys = new Map(placed.map(id => [id, designMeshKeyOf(parts.get(id)!)]));
-    const posesOnly = memory !== undefined && memory.precision === options.precision && memory.signature === signature && samePlacements(memory.placements, placements);
+    const posesOnly = memory !== undefined && meshedAlike(memory, options) && memory.signature === signature && samePlacements(memory.placements, placements);
     return { placements, parts, placed, signature, meshKeys, posesOnly };
 }
 
 /**
  * The mesh of every placed part of a plan: the one the drawing it replaces kept under the same key
- * at the same precision, else the one the drawer's cache holds, else one `mesh` makes, in a single
+ * at the same precision and meshing, else the one the drawer's cache holds, else one `mesh` makes, in a single
  * call for every part still without one. What `mesh` makes is kept in the cache.
  * @param plan - The plan
  * @param options - The resolved drawing options
@@ -621,7 +723,7 @@ export function designDrawPlanOf<P extends DesignDrawnPart & { id: string }>(bui
  */
 export async function designMeshesOf<T extends DesignMesh, P extends DesignDrawnPart>(plan: DesignDrawPlan<P>, options: DesignPlanOptions, memory: DesignDrawMemory<T> | undefined, meshing: string, cache: DesignMeshCache<T>, mesh: (parts: P[]) => Promise<T[]>): Promise<Map<string, T>> {
     const meshes = new Map<string, T>();
-    if (memory !== undefined && memory.precision === options.precision) {
+    if (memory !== undefined && meshedAlike(memory, options)) {
         for (const id of plan.placed) {
             const kept = memory.meshes.get(plan.meshKeys.get(id)!);
             if (kept !== undefined) {

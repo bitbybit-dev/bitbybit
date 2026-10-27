@@ -47,6 +47,7 @@ We are committed to open-sourcing the foundational elements that empower develop
         *   `bitbybit.ifc`
         *   `bitbybit.frame`
         *   `bitbybit.asset`
+    *   `bitbybit.occt` runs on the Bitbybit OCCT Kernel, built on OCCT, that `@bitbybit-dev/occt` ships. The package is MIT-licensed, the kernel included, and its TypeScript is open source; the kernel's own C++ layer is closed source (see [below](#the-occt-kernel)).
 
 2.  **Official Documentation:**
     *   The Docusaurus site source code (`docs/src/`, config files, scripts) is MIT licensed.
@@ -55,14 +56,14 @@ We are committed to open-sourcing the foundational elements that empower develop
     *   We encourage contributions to improve documentation clarity and add examples!
 
 3.  **Application Examples:**
-    *   We provide example projects and snippets demonstrating how to use our open-source NPM packages. The source code in `examples/` is MIT licensed.
+    *   We provide example projects and snippets demonstrating how to use our MIT-licensed NPM packages. The source code in `examples/` is MIT licensed.
     *   Note: examples may link to or reference assets (such as the Bitbybit logo) that are not themselves open-source.
 
 4.  **Language/Localization Files:**
     *   All files in `languages/` are MIT licensed.
 
 <Admonition type="success" title="Key Takeaway">
-    The code for all the core building blocks — the mathematical and geometric engines, and fundamental utilities — is available for you to inspect, use, and even contribute to via our main GitHub monorepo. Documentation text is freely shareable under CC BY 4.0. Logos and trademarks are not open-source — see our [CONTENT-LICENSE.md](https://github.com/bitbybit-dev/bitbybit/blob/master/CONTENT-LICENSE.md) for the full breakdown.
+    The TypeScript of all the core building blocks - the mathematical and geometric libraries, and fundamental utilities - is available for you to inspect, use, and even contribute to via our main GitHub monorepo. Every @bitbybit-dev package is MIT-licensed; the one part whose source is closed is the C++ layer of the Bitbybit OCCT Kernel. Documentation text is freely shareable under CC BY 4.0. Logos and trademarks are not open-source — see our [CONTENT-LICENSE.md](https://github.com/bitbybit-dev/bitbybit/blob/master/CONTENT-LICENSE.md) for the full breakdown.
 </Admonition>
 
 ## What is NOT Open Source (Proprietary Components)?
@@ -75,7 +76,7 @@ To support the development and hosting of the Bitbybit platform, certain compone
 
 2.  **Code Execution "Runners":**
     *   While you can freely embed and use our "Runners" (the components that execute Bitbybit scripts) in your own websites, their internal source code is not public.
-    *   We provide built versions of these Runners via the [bitbybit-assets repository](https://github.com/bitbybit-dev/bitbybit-assets). The Runner bundle as a whole is governed by the proprietary [Bitbybit Runner License](./runners/licensing) - free to use, embed, and self-host (including commercially), but you cannot reverse-engineer, modify, or redistribute it as a standalone product. The open-source components bundled within (OCCT, BabylonJS, Three.js, PlayCanvas, JSCAD, Manifold, etc.) retain their own licenses.
+    *   We provide built versions of these Runners via the [bitbybit-assets repository](https://github.com/bitbybit-dev/bitbybit-assets). The Runner bundle as a whole is governed by the proprietary [Bitbybit Runner License](./runners/licensing) - free to use, embed, and self-host (including commercially), but you cannot reverse-engineer, modify, or redistribute it as a standalone product. The open-source components it bundles or loads (BabylonJS, Three.js, PlayCanvas, JSCAD, Manifold, etc.) retain their own licenses, and the Bitbybit OCCT Kernel it loads is [MIT-licensed](#the-occt-kernel), with OCCT inside it under its own license.
     *   These Runners enable the execution of some of our proprietary advanced algorithms (like certain 3D text/font features) free of charge within the context of the Runner, but the source code for those specific advanced algorithms will remain closed together with implementation details of Runners themselves.
 
 3.  **Visual Editor to JavaScript Conversion Logic:**
@@ -102,10 +103,19 @@ To support the development and hosting of the Bitbybit platform, certain compone
     *   This E-Commerce application is fully proprietary and is not shared as open-source project. It is meant to serve commercial B2B customers of Bit by bit developers company. 
     *   There are no plans to open-source any part of this application such as [Composer](/learn/3d-bits/composer/intro) or other related tools.
 
+## The Bitbybit OCCT Kernel {#the-occt-kernel}
+
+The Bitbybit OCCT Kernel that `@bitbybit-dev/occt` ships (the `bitbybit-dev-occt*.wasm` files, also on our CDN) is WebAssembly compiled from [OpenCASCADE Technology](https://github.com/bitbybit-dev/OCCT) (LGPL v2.1 with the Open CASCADE exception) and our own C++ kernel layer, whose source is not published.
+
+*   The kernel is **MIT-licensed**, like the rest of the package: you may use, modify and redistribute it in any project, personal or commercial.
+*   It is **closed source**. A license applies to what is distributed, and we distribute the kernel as compiled WebAssembly only: the MIT License covers that file, and the C++ of our kernel layer is not published. Havok's WebAssembly build for Babylon.js is licensed the same way.
+*   OCCT inside it keeps its own license. To use a modified OCCT, you relink the kernel with the relinking kit we publish beside each of its builds; [Runner Licensing](./runners/licensing#using-a-modified-occt) says where to find it.
+*   Our most advanced algorithms run on [CAD Cloud](https://bitbybit.dev/cad-cloud), on our servers.
+
 ## Our Commitment to Transparency
 
 We aim to be as transparent as possible about our open source model.
-*   **The Rule of Thumb:** If you can't find the source code within the main [Bitbybit GitHub Monorepo](https://github.com/bitbybit-dev/bitbybit), it's likely proprietary and part of our intellectual property. Everything you can install via NPM is open-source.
+*   **The Rule of Thumb:** If you can't find the source code within the main [Bitbybit GitHub Monorepo](https://github.com/bitbybit-dev/bitbybit), it's likely proprietary and part of our intellectual property. Every @bitbybit-dev package on NPM is MIT-licensed, and all of them are open source with one exception: the Bitbybit OCCT Kernel inside `@bitbybit-dev/occt`, whose C++ layer is closed source.
 *   **Trademarks & Assets:** Logos, brand assets, and third-party trademarks in the repository are **not** open-source, regardless of which directory they appear in. See [CONTENT-LICENSE.md](https://github.com/bitbybit-dev/bitbybit/blob/master/CONTENT-LICENSE.md) for specifics.
 *   **Why This Model?** This hybrid approach allows us to offer powerful core tools to the community while funding the ongoing development, maintenance, and innovation of the broader Bitbybit platform and its advanced features.
 

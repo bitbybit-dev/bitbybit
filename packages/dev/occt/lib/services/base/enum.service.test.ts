@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, EmbindEnumValue } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { EnumService } from "./enum.service";
 import * as Inputs from "../../api/inputs";
 
@@ -15,9 +13,7 @@ describe("OCCT enum service unit tests", () => {
     beforeAll(async () => {
         occt = await createBitbybitOcct();
         enumService = new EnumService(occt);
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
     });
 
     it("should get gcc position unqualified", () => {

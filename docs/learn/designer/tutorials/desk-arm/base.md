@@ -3,10 +3,10 @@ sidebar_position: 1
 slug: /designer/tutorials/desk-arm/base
 title: "Model a desk robot arm: the base"
 sidebar_label: 1. The base
-description: The first chapter of the desk arm - a pedestal revolved from half its section, four counterbored holes in its ledge, its material, and the two connectors where the shoulder sits and its screws go.
+description: The first chapter of the desk arm - a pedestal revolved from half its section, four holes for M5 screws in its ledge, its material, and the two connectors where the shoulder sits and its screws go.
 topic: designer.tutorials.desk-arm.base
 type: tutorial
-verified: 2026-10-12
+verified: 2026-10-19
 tags: [designer]
 ---
 
@@ -20,7 +20,7 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
 1. **[New part](../../reference/commands.md#designer-file-new-part)**, from <Ui>File</Ui> > <Ui>New part</Ui>: name Base.
 
-   The base is a revolved pedestal: draw half its profile on the XY plane, then revolve it a full turn about its axis. Four counterbored holes go in its ledge, and two connectors mark where the turntable sits and where its screws go.
+   The base is a revolved pedestal: draw half its profile on the XY plane, then revolve it a full turn about its axis. Four holes sized for M5 screws go in its ledge, and two connectors mark where the turntable sits and where its screws go.
 
    <Shot id="designer.tutorials.desk-arm/where-file-new-part" />
 
@@ -42,9 +42,9 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
    <Shot id="designer.tutorials.desk-arm/step-3" />
 
-4. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id mounts, body base, on the side face of base, diameter 5.
+4. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id mounts, body base, on the side face of base.
 
-   Drill four counterbored holes through the ledge, one on each diagonal, so the screw heads sit below its surface.
+   Drill four holes through the ledge, one on each diagonal, sized for M5 socket head cap screws: the size gives the clearance hole and the counterbore the screw heads sink into.
 
    <Shot id="designer.tutorials.desk-arm/where-part-hole" />
 
@@ -66,7 +66,7 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
 7. **[Add connector](../../reference/commands.md#designer-product-add-connector)**, from <Ui>Insert</Ui> > <Ui>Add connector</Ui>: part base, id bolts, on the side face of base, axis the wall face of mounts.
 
-   Add a connector on the ledge, its axis along the holes' walls. A screw replicated onto it lands in every hole.
+   Add a connector on the ledge, its axis along the holes' walls. Fastening it puts a screw in every hole.
 
    <Shot id="designer.tutorials.desk-arm/step-7" />
 

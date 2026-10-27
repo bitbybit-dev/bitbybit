@@ -6,7 +6,7 @@ sidebar_label: 6. The jaw
 description: The sixth chapter of the desk arm - a serrated finger drawn as one profile, a carriage that rides in the gripper's rail, two screw holes and the connector it slides on.
 topic: designer.tutorials.desk-arm.jaw
 type: tutorial
-verified: 2026-10-12
+verified: 2026-10-19
 tags: [designer]
 ---
 
@@ -48,9 +48,9 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
     <Shot id="designer.tutorials.desk-arm/step-92" />
 
-93. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id screws, body jaw, on the end face of jaw, diameter 3.
+93. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id screws, body jaw, on the end face of jaw.
 
-    Drill two counterbored screw holes through the jaw.
+    Drill two holes through the jaw for M3 socket head cap screws.
 
     <Shot id="designer.tutorials.desk-arm/step-93" />
 
@@ -60,9 +60,9 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
     <Shot id="designer.tutorials.desk-arm/step-94" />
 
-95. **[Add connector](../../reference/commands.md#designer-product-add-connector)**, from <Ui>Insert</Ui> > <Ui>Add connector</Ui>: part jaw, id slide, on the side face of foot.
+95. **[Add connector](../../reference/commands.md#designer-product-add-connector)**, from <Ui>Insert</Ui> > <Ui>Add connector</Ui>: part jaw, id slide, on the side face of foot, origin 0.5, -2.5, 0.
 
-    Add a connector on the carriage's end. The jaw slides along the gripper's rail on it.
+    Add a connector in the middle of the carriage's end, below the jaw. The jaw slides along the gripper's rail on it, the carriage down in the rail and the jaw on the gripper's top.
 
     <Shot id="designer.tutorials.desk-arm/step-95" />
 

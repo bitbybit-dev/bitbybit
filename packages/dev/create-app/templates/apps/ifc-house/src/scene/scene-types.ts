@@ -18,13 +18,14 @@ export interface ElementInfo {
     layer: Layer;
 }
 
-export interface DrawnElement {
-    info: ElementInfo;
-    object: THREE.Object3D;
+export interface DrawnHouse {
+    groups: THREE.Group[];
+    elements: Map<string, ElementInfo>;
 }
 
 export interface Look {
     roughness: number;
     metalness: number;
     faceted?: boolean;
+    glass?: boolean;
 }

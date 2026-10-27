@@ -11,11 +11,34 @@ non-engine service directly to one renderer's `BitByBitBase` gives it to that pa
 other two silently lack it.
 
 **Reverse a triangle once, not twice.** There are two ways to flip which side a surface presents:
-reverse the winding, or negate the normals. `prepareBackFaceMeshData` picks one according to what it
-was given. Normals supplied with the mesh are negated and the winding reversed; normals recomputed
-from the already-reversed winding already point correctly and must not be negated as well. Manifold
-back faces take their indices from the original `triVerts`, not from the front mesh's reversed copy,
-for the same reason.
+reverse the winding, or negate the normals. `prepareBackFaceMeshData` does both, through
+`mergedMeshBuffers` (`lib/api/mesh-buffers.ts`), and a part without normals gets them worked out from
+its own front triangles before they are negated, which is the same as working them out from the
+reversed winding; negating normals that were already worked out from a reversed winding would turn
+them round twice. Manifold back faces take their indices from the original `triVerts`, not from the
+front mesh's reversed copy, for the same reason.
+
+**Surfaces are joined into typed buffers once.** Every list of faces a renderer draws is joined by
+`mergedMeshBuffers`: through `mergeMeshParts` for plain faces and back faces, through `lookMeshesOf`
+for one set of buffers per look (PlayCanvas, and three.js's design batches), and through
+`lookedMeshOf` for every look in one set with each look's span (BabylonJS and three.js). It counts
+first, then writes each `Float32Array` and `Uint32Array` in one pass, winding the triangles the
+other way when asked, so nothing copies the result again or turns it round after uploading it. A
+Manifold or JSCAD solid arrives as one mesh and is uploaded as it comes. Never join face arrays with
+`push(...face)`: a spread passes every number as an argument, and one finely meshed face (about
+50,000 points) overflows the call stack.
+
+**A mesh is checked before anything of it is drawn.** `checkDrawableMesh` (`lib/api/mesh-checks.ts`)
+refuses a face whose positions or indexes are not lists of numbers in threes, or whose triangles
+point at a vertex the face does not have (indexes count the face's own vertices from 0), and names
+it by its `faceIndex`, not its place in the list. Faces that share a `faceIndex` are each drawn. Every renderer calls it before it adds a node to the scene,
+and on every mesh of a list before it draws the first, so a refused mesh leaves nothing behind
+however often it is retried. `checkKeptDesignMesh` refuses a mesh handed back to
+`keepDesignMeshes` that can no longer be drawn: the meshes `keptDesignMeshes` hands out are the
+drawer's own, views into buffers the worker handed over, which survive a structured clone but come
+back as plain records from JSON and empty once transferred to another thread. A part whose
+positions or indexes are missing is left out of a merge with a warning (`drawableMeshParts`), the
+same in all three renderers.
 
 **The colour array is dense, one slot per polyline.** A draw call carries one shared colour and any
 polyline may override it with a colour baked onto its geometry. The array is built by filling every
@@ -66,13 +89,16 @@ class, the values `optionsOcctShape` and its siblings give.
 `draw-appearance.ts` holds what the renderers share for a shape with its appearance and a design
 build, above the engine objects: the looks of a shape's faces (`lookGroupsOf`: the base look
 first, the last `faces` entry listing a face wins, a look no face wears is dropped), the faces of
-each look merged into typed arrays with each face's index range kept for picking (`lookMeshesOf`),
+each look merged into typed arrays with each face's index range kept for picking (`lookMeshesOf`,
+or `lookedMeshOf` for all of them in one set),
 the edges as segments (`edgeSegmentsOf`), the colour of each edge (`edgeColorsOf`: the last `edges`
 entry listing it, else the appearance's `edgeColor`, else the fallback, which `defaultEdgeColor`
 derives from the face colour when the options carry `edgeContrast`), and where each part is placed
 (`partPlacementsOf`: a build without components places each part once, at the origin).
 `samePlacements` and `designSignatureOf` (the looks, the shapes and the drawing options) are the tests
-that decide a redraw only moves instances. A part's mesh is kept under `designMeshKeyOf`, its
+that decide a redraw only moves instances. The meshes a drawer keeps across builds are weighed by every number they
+hold, uvs and surface analysis values included (`meshNumbersOf`), and reused only for the same
+meshing options (`designMeshingTextOf`: the settings that change the mesh, not the look). A part's mesh is kept under `designMeshKeyOf`, its
 `shapeHash`: a variant's id survives an edit to its source that keeps its values, its shape hash
 does not, so keying meshes by id would show the old shape after such an edit. `detectShapeWithAppearance`
 and `detectDesignBuild` check the shape of what arrives - integer face and edge indexes, colours as

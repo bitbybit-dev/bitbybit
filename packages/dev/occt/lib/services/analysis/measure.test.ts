@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import { readKernelException } from "../../kernel-exception";
 import * as Inputs from "../../api/inputs";
@@ -15,7 +12,7 @@ describe("OCCT boxes and nearest points", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const close = (values: number[], digits = 9): unknown[] => values.map(value => expect.closeTo(value, digits));

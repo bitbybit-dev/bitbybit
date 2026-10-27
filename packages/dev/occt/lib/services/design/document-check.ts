@@ -1,13 +1,20 @@
+import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import type { DtoRegistry } from "@bitbybit-dev/base";
 import { isRecord, unknownProperties } from "@bitbybit-dev/base";
-import { namesIn } from "./expressions";
 import { OPERATION_API_MAJOR, OPERATION_KERNEL, operationPathOf, versionProblem } from "./format";
 import { holePositionIds, setHoleOf } from "./connectors";
 import { DesignProblem, pointer } from "./problems";
 import { checkIdList, checkKeys, checkLabel, checkObject, checkText } from "./structure";
+import { checkHoleFastener, checkHoleSizing } from "./hole-fastener";
+import { checkMachiningStandard } from "./standard-checks";
+import { takesLengthUnit } from "./helpers";
+import type { Check, Known } from "./document-check-types";
+import { NAME_ID, checkNames, checkNumber, checkNumbersIn, inputsOf } from "./value-checks";
+import { checkLoops, checkPen, commandNames } from "./pen-check";
 import { isExpressionObject, parameterTypeOf, parameterValues, parsed, templatePieces } from "./values";
 import { DIMENSIONS } from "./constants";
+import { isTriple } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 
 const FEATURE_ID = /^[A-Za-z_][A-Za-z0-9_-]*$/;
 const UUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
@@ -78,10 +85,16 @@ export const FEATURE_KEYS: Record<Models.OCCT.DesignFeature["type"], readonly st
     sweep: ["profile", "path", "body", "join"],
     loft: ["profiles", "solid", "body", "join"],
     shell: ["body", "thickness", "open"],
-    hole: ["body", "on", "origin", "direction", "at", "diameter", "depth", "tipAngle", "counterbore", "countersink"],
+    hole: ["body", "on", "origin", "direction", "at", "diameter", "fastener", "depth", "tipAngle", "counterbore", "countersink"],
     boss: ["profile", "body", "distance", "until"],
     pocket: ["profile", "body", "distance", "until", "through"],
-    import: ["asset", "format"],
+    keyway: ["body", "on", "at", "flip", "standard", "length", "angle"],
+    flat: ["body", "on", "at", "flip", "length", "depth", "angle"],
+    ringGroove: ["body", "on", "at", "flip", "standard"],
+    knurl: ["body", "on", "at", "flip", "standard", "length", "pitch", "diametralPitch", "pattern"],
+    spline: ["body", "on", "at", "flip", "standard", "length", "module", "diameter", "pitch", "teeth"],
+    thread: ["body", "on", "at", "flip", "standard", "length", "size", "pitch", "series", "threadsPerInch"],
+    import: ["asset", "format", "child"],
     operation: ["operation", "params", "body"],
     script: ["script", "params", "body"],
 };
@@ -90,47 +103,6 @@ export const FEATURE_KEYS: Record<Models.OCCT.DesignFeature["type"], readonly st
 export const BODY_STARTERS: readonly string[] = ["extrude", "revolve", "sweep", "loft", "operation", "script"];
 
 /** What the check knows of the document before the value it reads. */
-export interface Known {
-    features: Map<string, string>;
-    sketches: Map<string, Set<string>>;
-    bodies: Set<string>;
-    parameters: Set<string>;
-    materials: Set<string>;
-    assets: Set<string>;
-    pinnedAssets: Set<string>;
-    holePositions: Map<string, Set<string>>;
-    faceSketches: Set<string>;
-    registry: DtoRegistry;
-    operations: ReadonlySet<string>;
-}
-
-export type Check = (value: unknown, path: string, known: Known) => void;
-
-function inputsOf(known: Known, path: string): string[] | undefined {
-    const entry = known.registry[path];
-    return entry?.constraints === undefined ? undefined : Object.keys(entry.constraints);
-}
-
-export const checkNumber: Check = (value, path, known) => {
-    if (typeof value === "number") {
-        if (!Number.isFinite(value)) {
-            throw new DesignProblem(path, "the value is not a finite number");
-        }
-        return;
-    }
-    if (typeof value !== "string") {
-        throw new DesignProblem(path, "a number or an expression is expected");
-    }
-    checkNames(parsed(value, path), path, known);
-};
-
-function checkNames(tree: ReturnType<typeof parsed>, path: string, known: Known): void {
-    for (const name of namesIn(tree)) {
-        if (!known.parameters.has(name)) {
-            throw new DesignProblem(path, `"${name}" is not a parameter of this document`);
-        }
-    }
-}
 
 export const checkSwitch: Check = (value, path, known) => {
     if (typeof value !== "boolean") {
@@ -190,8 +162,6 @@ function checkCount(value: unknown, path: string, required: boolean): void {
 
 const WHOLE_NUMBER = /^(0|[1-9][0-9]*)$/;
 
-const NAME_ID = /^[A-Za-z_][A-Za-z0-9_-]*$/;
-
 function checkFrom(from: unknown, of: string, path: string, known: Known): void {
     const type = known.features.get(of);
     if (type === "hole") {
@@ -209,13 +179,13 @@ function checkFrom(from: unknown, of: string, path: string, known: Known): void 
         }
         return;
     }
-    const pieces = typeof from === "string" ? from.split(".") : [];
-    const [sketch, command] = pieces;
-    if (pieces.length === 2 && sketch !== undefined && command !== undefined && known.sketches.has(sketch) && WHOLE_NUMBER.test(command) && !known.sketches.get(sketch)!.has(command)) {
+    const [sketch, ...rest] = typeof from === "string" ? from.split(".") : [];
+    const command = rest.join(".");
+    if (rest.length === 1 && sketch !== undefined && known.sketches.has(sketch) && WHOLE_NUMBER.test(command) && !known.sketches.get(sketch)!.has(command)) {
         throw new DesignProblem(path, `commands are named by their id, not by their position: give command ${command} of "${sketch}" an id`);
     }
-    if (pieces.length !== 2 || sketch === undefined || command === undefined || !known.sketches.get(sketch)?.has(command)) {
-        throw new DesignProblem(path, `${JSON.stringify(from)} is not "<sketch>.<command id>" of an earlier sketch`);
+    if (sketch === undefined || rest.length === 0 || !known.sketches.get(sketch)?.has(command)) {
+        throw new DesignProblem(path, `${JSON.stringify(from)} is not "<sketch>.<command id>" of an earlier sketch, "<sketch>.<gear id>.<tip, flank or root>" or "<sketch>.<rack id>.<tip, flank, root, back or side>"`);
     }
 }
 
@@ -263,8 +233,6 @@ export const checkFaces: Check = (value, path, known) => {
     }
 };
 
-const isFinite3 = (value: unknown): value is [number, number, number] => Array.isArray(value) && value.length === DIMENSIONS && value.every(item => typeof item === "number" && Number.isFinite(item));
-
 function checkHint(value: unknown, path: string): void {
     const hint = checkObject(value, ["v", "box", "faces"], path, false, "a hint { v: 1, box, faces }");
     if (hint["v"] !== 1) {
@@ -273,7 +241,7 @@ function checkHint(value: unknown, path: string): void {
     const box = checkObject(hint["box"], ["min", "max"], pointer(path, "box"), false, "a box { min, max }");
     const least = box["min"];
     const most = box["max"];
-    if (!isFinite3(least) || !isFinite3(most) || least.some((value, axis) => value > most[axis]!)) {
+    if (!isTriple(least) || !isTriple(most) || least.some((value, axis) => value > most[axis]!)) {
         throw new DesignProblem(pointer(path, "box"), "a box has a least and a greatest corner of three numbers each");
     }
     const faces = hint["faces"];
@@ -285,7 +253,7 @@ function checkHint(value: unknown, path: string): void {
         const checked = checkObject(face, ["type", "area", "centre", "normal", "neighbours"], facePath, false, "a face hint { type, area, centre, normal, neighbours }");
         const area = checked["area"];
         const neighbours = checked["neighbours"];
-        if (typeof checked["type"] !== "string" || typeof area !== "number" || !(area >= 0 && area <= 1) || !isFinite3(checked["centre"]) || !isFinite3(checked["normal"])
+        if (typeof checked["type"] !== "string" || typeof area !== "number" || !(area >= 0 && area <= 1) || !isTriple(checked["centre"]) || !isTriple(checked["normal"])
             || !Array.isArray(neighbours) || !neighbours.every(name => typeof name === "string")) {
             throw new DesignProblem(facePath, "a face hint has a surface type, an area from 0 to 1, a centre and a normal of three numbers, and the names of its neighbours");
         }
@@ -334,76 +302,6 @@ const checkPlacement: Check = (value, path, known) => {
     }
 };
 
-const CIRCLE_KEYS = ["id", "centre", "radius"];
-
-function checkPen(value: unknown, path: string, known: Known, ids = new Set<string>()): Set<string> {
-    if (!Array.isArray(value) || value.length === 0) {
-        throw new DesignProblem(path, "pen is a list of sketch commands");
-    }
-    value.forEach((command, index) => {
-        const commandPath = pointer(path, index);
-        if (!isRecord(command) || typeof command["type"] !== "string") {
-            throw new DesignProblem(commandPath, "a pen command is an object with a type");
-        }
-        if (command["type"] === "circle" && value.length > 1) {
-            throw new DesignProblem(commandPath, "a circle is a loop by itself: give it a pen or a loop of its own");
-        }
-        const inputs = command["type"] === "circle" ? CIRCLE_KEYS : inputsOf(known, `sketch.commands.${command["type"]}`);
-        if (inputs === undefined) {
-            throw new DesignProblem(pointer(commandPath, "type"), `${JSON.stringify(command["type"])} is not a sketch command`);
-        }
-        checkKeys(command, ["type", ...inputs], commandPath, false);
-        const id = command["id"];
-        if (id !== undefined && id !== "") {
-            if (typeof id !== "string" || !NAME_ID.test(id) || ids.has(id)) {
-                throw new DesignProblem(pointer(commandPath, "id"), "command ids are distinct, start with a letter or _ and hold letters, digits, _ and -");
-            }
-            ids.add(id);
-        }
-        for (const [key, inner] of Object.entries(command)) {
-            if (key !== "type" && key !== "id") {
-                checkNumbersIn(inner, pointer(commandPath, key), known);
-            }
-        }
-    });
-    return ids;
-}
-
-function checkLoops(feature: Record<string, unknown>, path: string, known: Known): Set<string> {
-    for (const key of ["pen", "start"]) {
-        if (feature[key] !== undefined) {
-            throw new DesignProblem(pointer(path, key), `a sketch draws with pen or with loops: give ${key} inside each loop`);
-        }
-    }
-    if (feature["face"] === false) {
-        throw new DesignProblem(pointer(path, "face"), "loops are the outline and the holes of one face, so a sketch with loops is a face");
-    }
-    const loops = feature["loops"];
-    if (!Array.isArray(loops) || loops.length === 0) {
-        throw new DesignProblem(pointer(path, "loops"), "loops is a list of { start?, pen }, the outline first and then its holes");
-    }
-    const ids = new Set<string>();
-    loops.forEach((value: unknown, index) => {
-        const loopPath = pointer(path, "loops", index);
-        const loop = checkObject(value, ["start", "pen"], loopPath, false, "a loop { start?, pen }");
-        if (loop["start"] !== undefined) {
-            checkNumbersIn(loop["start"], pointer(loopPath, "start"), known);
-        }
-        checkPen(loop["pen"], pointer(loopPath, "pen"), known, ids);
-    });
-    return ids;
-}
-
-function checkNumbersIn(value: unknown, path: string, known: Known): void {
-    if (typeof value === "number" || typeof value === "string") {
-        checkNumber(value, path, known);
-    } else if (Array.isArray(value)) {
-        value.forEach((inner, index) => checkNumbersIn(inner, pointer(path, index), known));
-    } else if (isRecord(value)) {
-        Object.entries(value).forEach(([key, inner]) => checkNumbersIn(inner, pointer(path, key), known));
-    }
-}
-
 function optional(check: Check): Check {
     return (value, path, known) => {
         if (value !== undefined) {
@@ -422,6 +320,12 @@ export function oneOf(values: readonly string[], optionalValue: boolean): (value
         }
     };
 }
+
+const checkChild: Check = (value, path) => {
+    if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+        throw new DesignProblem(path, "a child is the position of a shape in the file's compound, a whole number from 0");
+    }
+};
 
 export const checkBoolean = (value: unknown, path: string): void => {
     if (typeof value !== "boolean") {
@@ -442,7 +346,6 @@ const checkFaceProfile: Check = (value, path, known) => {
         throw new DesignProblem(path, `${JSON.stringify(value)} is not a sketch on a face: a boss or a pocket starts from one`);
     }
 };
-
 
 function positionIds(value: unknown): Set<string> {
     return new Set((Array.isArray(value) ? value : []).flatMap(position => isRecord(position) && typeof position["id"] === "string" ? [position["id"]] : []));
@@ -491,6 +394,17 @@ const checkAsset: Check = (value, path, known) => {
     }
 };
 
+const checkTextValue: Check = (value, path, known) => {
+    if (isExpressionObject(value)) {
+        checkTextExpression(value.expr, pointer(path, "expr"), known);
+    } else if (typeof value !== "string") {
+        throw new DesignProblem(path, "a text or { expr } is expected");
+    }
+};
+
+const MACHINED: Record<string, Check> = { body: checkBody, on: checkFaces, at: optional(checkNumber), flip: optional(checkBoolean) };
+const SHAFT_STANDARD = oneOf(["din", "ansi"], true);
+
 function checkExtent(feature: Record<string, unknown>, path: string, kinds: readonly string[]): void {
     const given = kinds.filter(kind => feature[kind] !== undefined);
     if (given.length !== 1) {
@@ -514,13 +428,23 @@ const FIELDS: Record<Exclude<Models.OCCT.DesignFeature["type"], "sketch">, Recor
     loft: { profiles: checkProfiles, solid: optional(checkBoolean), body: optional(checkBody), join: oneOf(JOINS, true) },
     shell: { body: checkBody, thickness: checkNumber, open: checkCountedFaces },
     hole: {
-        body: checkBody, on: checkFaces, origin: optional(checkPoint), direction: optional(checkPoint), at: checkPositions, diameter: checkNumber,
+        body: checkBody, on: checkFaces, origin: optional(checkPoint), direction: optional(checkPoint), at: checkPositions, diameter: optional(checkNumber),
+        fastener: optional((value, path, known) => { checkHoleFastener(value, path, (text, at) => { checkTextExpression(text, at, known); }); }),
         depth: optional(checkNumber), tipAngle: optional(checkNumber),
         counterbore: optional(sized(DOCUMENT_KEYS.counterbore, "a counterbore { diameter, depth }")), countersink: optional(sized(DOCUMENT_KEYS.countersink, "a countersink { diameter, angle }")),
     },
     boss: { profile: checkFaceProfile, body: checkBody, distance: optional(checkNumber), until: optional(checkFaces) },
     pocket: { profile: checkFaceProfile, body: checkBody, distance: optional(checkNumber), until: optional(checkFaces), through: optional(checkBoolean) },
-    import: { asset: checkAsset, format: oneOf(["brep", "brep-binary", "step", "iges"], true) },
+    keyway: { ...MACHINED, standard: SHAFT_STANDARD, length: checkNumber, angle: optional(checkNumber) },
+    flat: { ...MACHINED, length: checkNumber, depth: checkNumber, angle: optional(checkNumber) },
+    ringGroove: { ...MACHINED, standard: SHAFT_STANDARD },
+    knurl: { ...MACHINED, standard: SHAFT_STANDARD, length: checkNumber, pitch: optional(checkNumber), diametralPitch: optional(checkNumber), pattern: oneOf(["straight", "left", "right", "diamond"], true) },
+    spline: { ...MACHINED, standard: SHAFT_STANDARD, length: checkNumber, module: optional(checkNumber), diameter: optional(checkNumber), pitch: optional(checkTextValue), teeth: optional(checkNumber) },
+    thread: {
+        ...MACHINED, standard: oneOf(["iso", "ansi"], true), length: checkNumber, size: optional(checkTextValue), pitch: optional(checkNumber),
+        series: oneOf(Object.values(Inputs.Engineering.ansiThreadSeriesEnum), true), threadsPerInch: optional(checkNumber),
+    },
+    import: { asset: checkAsset, format: oneOf(["brep", "brep-binary", "step", "iges"], true), child: optional(checkChild) },
     operation: { body: optional(checkBody) },
     script: { script: checkAsset, body: optional(checkBody) },
 };
@@ -576,10 +500,9 @@ function checkFeature(feature: unknown, path: string, known: Known): void {
     if (type === "boss" || type === "pocket") {
         checkExtent(feature, path, type === "boss" ? ["distance", "until"] : ["distance", "until", "through"]);
     }
-    if (type === "hole" && feature["counterbore"] !== undefined && feature["countersink"] !== undefined) {
-        throw new DesignProblem(pointer(path, "countersink"), "a hole has a counterbore or a countersink, not both");
-    }
+    checkMachiningStandard(type, feature, path);
     if (type === "hole") {
+        checkHoleSizing(feature, path);
         known.holePositions.set(id, positionIds(feature["at"]));
     }
     if (type === "import" && typeof feature["asset"] === "string" && known.assets.has(feature["asset"]) && !known.pinnedAssets.has(feature["asset"])) {
@@ -635,6 +558,9 @@ function checkOperation(feature: Record<string, unknown>, path: string, known: K
     if (unknown !== undefined) {
         throw new DesignProblem(pointer(path, "params", unknown), `"${unknown}" is not an input of ${String(operation)}`);
     }
+    if (typeof params["unit"] === "string" && params["unit"] !== known.lengthUnit && takesLengthUnit(known.registry, operationPath)) {
+        throw new DesignProblem(pointer(path, "params", "unit"), `the unit is ${params["unit"]}, and this document is in ${known.lengthUnit}: an operation builds in its document's unit, so leave unit out`);
+    }
     checkOperationParams(params, pointer(path, "params"), known);
 }
 
@@ -689,7 +615,7 @@ function takeAsMade(feature: unknown, known: Known): void {
         const loops: unknown[] = Array.isArray(feature["loops"]) ? feature["loops"] : [];
         const pens = [feature["pen"], ...loops.map(loop => isRecord(loop) ? loop["pen"] : undefined)];
         const commands: unknown[] = pens.flatMap(pen => Array.isArray(pen) ? pen : []);
-        known.sketches.set(id, new Set(commands.flatMap(command => isRecord(command) && typeof command["id"] === "string" && command["id"] !== "" ? [command["id"]] : [])));
+        known.sketches.set(id, new Set(commands.flatMap(command => isRecord(command) && typeof command["id"] === "string" && command["id"] !== "" ? commandNames(command, command["id"]) : [])));
         if (isRecord(feature["on"]) && "face" in feature["on"]) {
             known.faceSketches.add(id);
         }
@@ -725,7 +651,7 @@ export function checkHeader(document: Record<string, unknown>, record: (run: () 
     record(() => {
         if (document["units"] !== undefined) {
             const units = checkObject(document["units"], DOCUMENT_KEYS.units, "/units", false, "units");
-            oneOf(["mm", "cm", "m", "in"], true)(units["length"], "/units/length");
+            oneOf(Object.values(Inputs.Base.unitOfLengthEnum), true)(units["length"], "/units/length");
             oneOf(["deg"], true)(units["angle"], "/units/angle");
         }
     });
@@ -992,9 +918,9 @@ function checkParts(document: Record<string, unknown>, known: Known, record: (ru
 }
 
 /** A fresh account of what a check knows, for the operations `registry` lists. */
-export function knownFor(registry: DtoRegistry): Known {
+export function knownFor(registry: DtoRegistry, lengthUnit = "mm"): Known {
     const operations = new Set(Object.keys(registry).filter(path => !path.startsWith("design.")));
-    return { features: new Map(), sketches: new Map(), bodies: new Set(), parameters: new Set(), materials: new Set(), assets: new Set(), pinnedAssets: new Set(), holePositions: new Map(), faceSketches: new Set(), registry, operations };
+    return { features: new Map(), sketches: new Map(), bodies: new Set(), parameters: new Set(), materials: new Set(), assets: new Set(), pinnedAssets: new Set(), holePositions: new Map(), faceSketches: new Set(), registry, operations, lengthUnit };
 }
 
 /** A recorder that turns each problem `run` throws into an issue. */
@@ -1025,7 +951,7 @@ export function documentIssues(document: unknown, registry: DtoRegistry): Models
     if (!isRecord(document)) {
         return [{ path: "", message: "a design document is an object" }];
     }
-    const known = knownFor(registry);
+    const known = knownFor(registry, lengthUnitOf(document));
     checkHeader(document, record);
     checkParameters(document, known, record);
     checkAssets(document, known, record);

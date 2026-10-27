@@ -1,5 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
-import { cross3, dot3, length3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { cross3, dot3, length3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { describe, expect, it } from "vitest";
 import { rounded } from "../__test__/build-geometry";
 import type { Frame3 } from "./build-types";

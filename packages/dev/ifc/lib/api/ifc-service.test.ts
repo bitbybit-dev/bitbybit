@@ -144,9 +144,9 @@ describe("IFCService", () => {
         const model = twoStoreyHouse(ifc);
 
         // Assert
-        expect(countOf(model, "IfcPropertySet")).toBe(1);
+        expect(model.byType("IfcPropertySet").filter((set) => set.args[2] === "Pset_WallCommon")).toHaveLength(1);
         for (const wall of EXTERIOR) {
-            expect(ifc.properties.getSets({ model, element: wall })).toEqual([{ name: "Pset_WallCommon", properties: { IsExternal: true, LoadBearing: true, FireRating: "REI 60" } }]);
+            expect(ifc.properties.getSets({ model, element: wall }).filter((set) => set.name !== "BBIM_Boolean")).toEqual([{ name: "Pset_WallCommon", properties: { IsExternal: true, LoadBearing: true, FireRating: "REI 60" } }]);
         }
         expect(ifc.properties.getSets({ model, element: "ground-partition" })).toEqual([]);
     });

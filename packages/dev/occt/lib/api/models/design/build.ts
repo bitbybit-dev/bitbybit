@@ -15,10 +15,12 @@ export interface DesignIssue {
  * What became of one feature in a build: `ok`, `failed` with why, `suppressed`, `skipped` because a
  * body, profile or face it uses failed or was suppressed first, `rebound` when a reference lost its
  * faces and, in a build with `rebind: "report"`, took the faces most like its hint, or `pending` when
- * its outcome must come from the caller, as a script's does (see `pending` on the result). `ms` is the
- * time it took and `cached` says it was reused from an earlier build of the same inputs. A failed
- * feature whose lost references have hints lists, in `repairs`, the faces most like each; a rebound
- * one lists the faces each took.
+ * its outcome must come from the caller, as a script's does (see `pending` on the result); an
+ * assembly reports a component whose part waits for a script `pending` the same way, and a
+ * sub-assembly joined by a connector it publishes from such a part. `ms` is the time it took and
+ * `cached` says it was reused from an earlier build of the same inputs. A failed feature whose lost
+ * references have hints lists, in `repairs`, the faces most like each; a rebound one lists the faces
+ * each took.
  */
 export interface DesignFeatureReport {
     id: string;
@@ -188,7 +190,8 @@ export interface DesignBomLine {
 /**
  * An outcome the caller made, or kept from an earlier build, for the feature whose `hash` it carries: the
  * `shape`, and either the `names` of its faces in `shapes.face.getFaces` order, as a build names them,
- * or the `roles` a script gave its faces by index. A build takes it instead of making the feature.
+ * or the `roles` a script gave its faces by index. A build takes it instead of making the feature, on
+ * a copy of `shape`, which the caller keeps and deletes.
  */
 export interface DesignSuppliedOutcome<T> {
     hash: string;
@@ -199,9 +202,10 @@ export interface DesignSuppliedOutcome<T> {
 
 /**
  * A feature a build could not make itself, waiting for the caller: the script feature's `id`, its JSON
- * pointer, the asset that holds its code, the `inputs` its script is given (shapes, face and edge
- * indexes, numbers and the values written as they are) and the `hash` its outcome must be supplied
- * under.
+ * pointer (under `/documents/<position>` for a document an assembly places), the asset that holds its
+ * code, the `inputs` its script is given (shapes, face and edge indexes, numbers and the values written
+ * as they are) and the `hash` its outcome must be supplied under. The shapes in `inputs` are copies of
+ * the bodies, the caller's to delete with the rest of the build's answer.
  */
 export interface DesignPendingScript<T> {
     id: string;

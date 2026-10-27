@@ -1,8 +1,9 @@
 import type * as Manifold3D from "manifold-3d";
 import type { Base } from "@bitbybit-dev/base";
 import { loftMesh } from "./recipe-loft";
-import { DEGREES_PER_RADIAN } from "./recipes.constants";
+import { manifoldOfMesh } from "../manifold-of-mesh";
 import type { Built, ProfileRings } from "./recipe-types";
+import { degreesOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 const UNIT_HEIGHT = 1;
 const FULL_TURN = 2 * Math.PI;
@@ -55,6 +56,8 @@ function requiredInputsOf(node: Base.RecipeNode): readonly number[] {
             return [node.profile];
         case "loft":
             return node.profiles;
+        case "brep":
+            return node.fallback === undefined ? [] : [node.fallback];
         default:
             return [];
     }
@@ -215,6 +218,11 @@ class RecipeExecutor {
                 return this.revolve(node, index);
             case "loft":
                 return this.loft(node, index);
+            case "brep":
+                if (node.fallback === undefined) {
+                    throw new Error(`Recipe node ${index} describes faces on exact surfaces, which this kernel does not build, and gives no fallback to build instead`);
+                }
+                return this.solid(node.fallback).translate([0, 0, 0]);
         }
     }
 
@@ -241,7 +249,7 @@ class RecipeExecutor {
         }
         const normal = along[0] * across[1] - along[1] * across[0];
         try {
-            const turned = this.wasm.Manifold.revolve(profile, Math.max(MIN_REVOLVE_SEGMENTS, Math.ceil((this.circularSegments * node.angle) / FULL_TURN)), node.angle * DEGREES_PER_RADIAN);
+            const turned = this.wasm.Manifold.revolve(profile, Math.max(MIN_REVOLVE_SEGMENTS, Math.ceil((this.circularSegments * node.angle) / FULL_TURN)), degreesOf(node.angle));
             try {
                 return turned.transform([across[0], across[1], 0, 0, 0, 0, normal, 0, along[0], along[1], 0, 0, ox, oy, 0, 1]);
             } finally {
@@ -268,7 +276,7 @@ class RecipeExecutor {
     private loft(node: Base.RecipeLoftNode, index: number): Manifold3D.Manifold {
         const frames = this.recipe.buffers.f64.subarray(node.frames[0], node.frames[0] + node.frames[1]);
         const sections = node.profiles.map((profile) => this.profileRings(profile));
-        return this.wasm.Manifold.ofMesh(loftMesh(this.wasm, sections, frames, this.recipe.tolerance, `Recipe node ${index}`));
+        return manifoldOfMesh(this.wasm, loftMesh(this.wasm, sections, frames, this.recipe.tolerance, `Recipe node ${index}`));
     }
 
     private polygon(node: Base.RecipePolygonNode): Manifold3D.CrossSection {
@@ -343,7 +351,7 @@ class RecipeExecutor {
         const mesh = new this.wasm.Mesh({ numProp: POSITION_PROPERTIES, vertProperties: Float32Array.from(positions), triVerts: Uint32Array.from(indices) });
         mesh.merge();
         try {
-            return this.wasm.Manifold.ofMesh(mesh);
+            return manifoldOfMesh(this.wasm, mesh);
         } catch (error) {
             throw new Error(`Recipe node ${index} is a triangle mesh that is not closed, so it cannot be built as a solid`, { cause: error });
         }

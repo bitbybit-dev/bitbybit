@@ -6,12 +6,19 @@ import type { IO } from "@bitbybit-dev/base/lib/api/inputs";
 import { InputError, messageOf, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../api/resolved-inputs";
 import { checkedFrame, checkedNumber, checkedShape } from "./base/input-checks";
-import { readKernelException } from "../kernel-exception";
+import { withKernelRefusals } from "./base/kernel-refusals";
 import { numbersOfFrames } from "./base/frames";
 import { SMALLEST_MESH_DEFLECTION, bytesOfFile, objNameOf, textOfFile } from "./base/file-data";
-import type { DrawingLine } from "./base/svg-drawing";
+import { igesLengthUnit, stepLengthUnit, stepOrIgesKindOf } from "./base/file-units";
+import { gunzipped, isGzip } from "@bitbybit-dev/base/lib/api/services/helpers/files/gzip";
+import { checkedUnitOfLength } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/lengths";
+import type { DrawingLine } from "./base/svg-drawing-types";
 import { svgOfDrawing } from "./base/svg-drawing";
 import { stlWithYAndZSwapped } from "./base/stl-data";
+import { readKernelException } from "../kernel-exception";
+import { trapOr } from "../kernel-traps";
+import { withKernelErrorsRead } from "./base/kernel-refusals";
+import { kernelObjects, released } from "./base/release";
 
 const BREP_HEADER = /^\s*(DBRep_DrawableShape\s+)?CASCADE Topology V\d/;
 
@@ -33,13 +40,12 @@ export class OCCTIO {
     }
 
     /**
-     * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and returns the
-     * file's text.
+     * Writes a shape as STEP, the exchange format for exact CAD geometry, and returns its text.
      *
-     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape;
-     * turn it 90 degrees about X with `transforms.rotate` first to keep it as built. `fileName` and
-     * `tryDownload` matter only where a browser download can be started.
-     * @param inputs - The shape, the file name, the axis adjustment and the download options
+     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, mirroring the shape; turn it
+     * 90 degrees about X with `transforms.rotate` first to keep it as built. The file is in
+     * millimetres, a shape in another `unit` scaled to them.
+     * @param inputs - The shape, the file name, the axis adjustment, the unit and the download options
      * @returns The STEP file as text
      * @group io
      * @shortname save step and return
@@ -51,56 +57,43 @@ export class OCCTIO {
      */
     saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<TopoDS_Shape>): string {
         const resolved = resolveDto(Inputs.OCCT.SaveStepDto, inputs) as Resolved.OCCT.SaveStepDto<TopoDS_Shape>;
-        const shapeToUse = resolved.shape;
-        let adjustedShape;
-        if (resolved.adjustYtoZ) {
-            const rotatedShape = this.och.transformsService.rotate({ shape: resolved.shape, axis: [1, 0, 0], angle: -90 });
-            if (resolved.fromRightHanded) {
-                adjustedShape = rotatedShape;
-            } else {
-                adjustedShape = this.och.transformsService.mirrorAlongNormal(
-                    { shape: rotatedShape, origin: [0, 0, 0], normal: [0, 0, 1] }
-                );
-                rotatedShape.delete();
-            }
-        }
-        const fileName = "x";
+        const millimetres = this.och.base.math.millimetresPerUnit({ unit: resolved.unit });
+        const adjustedShape = resolved.adjustYtoZ ? this.zUpOf(resolved.shape, resolved.fromRightHanded) : undefined;
+        const scaledShape = millimetres === 1 ? undefined : released(adjustedShape === undefined ? [] : [adjustedShape], () => this.och.transformsService.scaleFromCenter({ shape: adjustedShape ?? resolved.shape, factor: millimetres, center: [0, 0, 0] }));
         const writer = new this.occ.STEPControl_Writer();
-        let transferShape;
-        if (adjustedShape) {
-            transferShape = adjustedShape;
-        } else {
-            transferShape = shapeToUse;
-        }
-
-        let transferResult;
         try {
-            transferResult = writer.Transfer(
-                transferShape,
-                this.occ.STEPControl_StepModelType.AsIs
-            );
-        } catch (ex) {
-            throw new Error("Failed when calling writer.Transfer.", { cause: ex });
-        }
-        let result: string;
-        if (transferResult === this.occ.IFSelect_ReturnStatus.RetDone) {
-            const writeResult = writer.Write(fileName);
-            if (writeResult === this.occ.IFSelect_ReturnStatus.RetDone) {
-                const stepFileText = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" }) as string;
-                this.occ.FS.unlink("/" + fileName);
-
-                result = stepFileText;
-            } else {
+            let transferResult;
+            try {
+                transferResult = withKernelErrorsRead(this.occ, () => writer.Transfer(scaledShape ?? adjustedShape ?? resolved.shape, this.occ.STEPControl_StepModelType.AsIs));
+            } catch (ex) {
+                throw trapOr(ex, () => new Error("Failed when calling writer.Transfer.", { cause: ex }));
+            }
+            if (transferResult !== this.occ.IFSelect_ReturnStatus.RetDone) {
+                throw (new Error("Failed when transfering to step writer."));
+            }
+            const fileName = "x";
+            if (writer.Write(fileName) !== this.occ.IFSelect_ReturnStatus.RetDone) {
                 throw (new Error("Failed when writing step file."));
             }
-        } else {
-            throw (new Error("Failed when transfering to step writer."));
+            const stepFileText = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" }) as string;
+            this.occ.FS.unlink("/" + fileName);
+            return stepFileText;
+        } finally {
+            writer.delete();
+            (scaledShape === undefined ? adjustedShape : scaledShape)?.delete();
         }
-        if (adjustedShape) {
-            adjustedShape.delete();
-        }
+    }
 
-        return result;
+    private zUpOf(shape: TopoDS_Shape, fromRightHanded: boolean): TopoDS_Shape {
+        const rotatedShape = this.och.transformsService.rotate({ shape, axis: [1, 0, 0], angle: -90 });
+        if (fromRightHanded) {
+            return rotatedShape;
+        }
+        try {
+            return this.och.transformsService.mirrorAlongNormal({ shape: rotatedShape, origin: [0, 0, 0], normal: [0, 0, 1] });
+        } finally {
+            rotatedShape.delete();
+        }
     }
 
     /**
@@ -123,11 +116,14 @@ export class OCCTIO {
      */
     saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<TopoDS_Shape>): string | Uint8Array {
         const resolved = resolveDto(Inputs.OCCT.SaveStlDto, inputs) as Resolved.OCCT.SaveStlDto<TopoDS_Shape>;
-        const transferShape = this.occ.BRepBuilderAPI_Copy_Shape(resolved.shape, false);
+        const shape = checkedShape(resolved.shape);
+        const precision = checkedNumber(resolved.precision, "precision", SMALLEST_MESH_DEFLECTION);
         const fileName = "x";
-        const writer = new this.occ.StlAPI_Writer();
-        const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, resolved.precision, false, 0.5, this.occ.RunsInParallel());
+        const { own, releaseAll } = kernelObjects();
         try {
+            const transferShape = own(this.occ.BRepBuilderAPI_Copy_Shape(shape, false));
+            const writer = own(new this.occ.StlAPI_Writer());
+            own(new this.occ.BRepMesh_IncrementalMesh(transferShape, precision, false, 0.5, this.occ.RunsInParallel()));
             writer.SetASCIIMode(!resolved.binary);
             if (!writer.Write(transferShape, fileName)) {
                 throw (new Error("Failed when writing stl file."));
@@ -137,9 +133,7 @@ export class OCCTIO {
             return resolved.binary ? turned : new TextDecoder().decode(turned);
         } finally {
             this.removeFile("/" + fileName);
-            writer.delete();
-            incrementalMeshBuilder.delete();
-            transferShape.delete();
+            releaseAll();
         }
     }
 
@@ -241,12 +235,13 @@ export class OCCTIO {
     }
 
     /**
-     * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
-     * asked, and returns the file's text.
+     * Draws the edges a view of a shape sees as SVG, hidden ones dashed when asked, and returns the
+     * file's text.
      *
-     * It shows the view from the frame's normal side in model units, x running right along the
-     * frame's direction and y up, so the file holds each point as x and minus y.
-     * @param inputs - The shape, the view, whether to draw hidden edges, the precision and the download options
+     * The view looks from the frame's normal side, x along the frame's direction and y up, so each
+     * point is written as x and minus y. With the shape's `unit`, it states its true width and
+     * height.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit and the download options
      * @returns The SVG file as text
      * @group io
      * @shortname save svg and return
@@ -265,9 +260,10 @@ export class OCCTIO {
         if (precision === 0) {
             throw new InputError("`precision` must be above 0; it is 0.", "precision");
         }
+        const unit = resolved.unit === undefined ? undefined : checkedUnitOfLength(resolved.unit, "unit");
         const lines = this.occ.HiddenLines(shape, numbersOfFrames([frame]), true, false, resolved.drawHidden, 0, precision);
         try {
-            return svgOfDrawing(this.drawingLinesOf(lines.visible, precision), this.drawingLinesOf(lines.hidden, precision));
+            return svgOfDrawing(this.drawingLinesOf(lines.visible, precision), this.drawingLinesOf(lines.hidden, precision), unit);
         } finally {
             lines.visible.delete();
             lines.hidden.delete();
@@ -278,32 +274,18 @@ export class OCCTIO {
      * Reads a STEP or IGES file into one shape.
      *
      * The extension of `fileName` decides the kind: `.step`, `.stp`, `.stpz` are STEP, `.iges`,
-     * `.igs`, `.igz` are IGES. `filetext` is the file's text, or an ArrayBuffer for compressed and
-     * binary forms; `adjustZtoY` turns the file's Z-up into Y-up. An unreadable file gives
+     * `.igs`, `.igz` are IGES. `filetext` is text, or an ArrayBuffer for compressed and binary forms;
+     * `adjustZtoY` turns Z-up into Y-up. The shape comes back in `unit`. An unreadable file gives
      * undefined.
-     * @param inputs - The file content, its name with extension and the axis adjustment
+     * @param inputs - The file content, its name with extension, the axis adjustment and the unit
      * @returns The shape, or undefined when the file could not be read
      */
     loadSTEPorIGES(inputs: Inputs.OCCT.LoadStepOrIgesDto): TopoDS_Shape | undefined {
         const resolved = resolveDto(Inputs.OCCT.LoadStepOrIgesDto, inputs) as Resolved.OCCT.LoadStepOrIgesDto;
         const fileName = resolved.fileName;
         const fileText = resolved.filetext;
-        const extension = fileName.toLowerCase().split(".").pop();
-        
-        const fileType = (() => {
-            switch (extension) {
-                case "step":
-                case "stp":
-                case "stpz":
-                    return "step";
-                case "iges":
-                case "igs":
-                case "igz":
-                    return "iges";
-                default:
-                    return undefined;
-            }
-        })();
+        const millimetres = this.och.base.math.millimetresPerUnit({ unit: resolved.unit });
+        const fileType = stepOrIgesKindOf(fileName);
         
         if (!fileType) {
             console.error("opencascade can't parse this extension!");
@@ -323,50 +305,72 @@ export class OCCTIO {
             }
             
             if (!stepShape || stepShape.IsNull()) {
+                stepShape?.delete();
                 console.error("Failed to read " + fileType.toUpperCase() + " file: " + fileName);
                 return undefined;
             }
         } else {
             this.occ.FS.createDataFile("/", `file.${fileType}`, fileText, true, true, true);
             
-            let reader: STEPControl_Reader | IGESControl_Reader;
-            if (fileType === "step") {
-                reader = new this.occ.STEPControl_Reader();
-            } else {
-                reader = new this.occ.IGESControl_Reader();
-            }
-            
-            const readResult = reader.ReadFile(`file.${fileType}`);
-            if (readResult === this.occ.IFSelect_ReturnStatus.RetDone) {
-                reader.TransferRoots();
-                stepShape = reader.OneShape();
-                this.occ.FS.unlink(`/file.${fileType}`);
-                if (!stepShape || stepShape.IsNull()) {
-                    console.error("Failed to read " + fileType.toUpperCase() + " file: " + fileName);
+            const reader: STEPControl_Reader | IGESControl_Reader = fileType === "step" ? new this.occ.STEPControl_Reader() : new this.occ.IGESControl_Reader();
+            try {
+                const readResult = withKernelErrorsRead(this.occ, () => reader.ReadFile(`file.${fileType}`));
+                if (readResult !== this.occ.IFSelect_ReturnStatus.RetDone) {
+                    console.error("Something in OCCT went wrong trying to read " + fileName);
                     return undefined;
                 }
-            } else {
-                console.error("Something in OCCT went wrong trying to read " + fileName);
+                stepShape = withKernelErrorsRead(this.occ, () => {
+                    reader.TransferRoots();
+                    return reader.OneShape();
+                });
+            } finally {
+                reader.delete();
                 this.occ.FS.unlink(`/file.${fileType}`);
+            }
+            if (stepShape.IsNull()) {
+                stepShape.delete();
+                console.error("Failed to read " + fileType.toUpperCase() + " file: " + fileName);
                 return undefined;
             }
         }
         
-        let adjustedShape;
-        if (resolved.adjustZtoY && stepShape) {
-            const mirroredShape = this.och.transformsService.mirrorAlongNormal(
-                { shape: stepShape, origin: [0, 0, 0], normal: [0, 0, 1] }
-            );
-            adjustedShape = this.och.transformsService.rotate({ shape: mirroredShape, axis: [1, 0, 0], angle: 90 });
-            mirroredShape.delete();
+        const loaded = stepShape;
+        const turned = !resolved.adjustZtoY ? loaded : released([loaded], () => {
+            const mirroredShape = this.och.transformsService.mirrorAlongNormal({ shape: loaded, origin: [0, 0, 0], normal: [0, 0, 1] });
+            return released([mirroredShape], () => this.och.transformsService.rotate({ shape: mirroredShape, axis: [1, 0, 0], angle: 90 }));
+        });
+        if (millimetres === 1) {
+            return turned;
         }
-        
-        if (adjustedShape) {
-            stepShape?.delete();
-            return adjustedShape;
-        }
+        return released([turned], () => this.och.transformsService.scaleFromCenter({ shape: turned, factor: 1 / millimetres, center: [0, 0, 0] }));
+    }
 
-        return stepShape;
+    /**
+     * Reads the unit a STEP or IGES file writes its lengths in, without building its geometry.
+     *
+     * Millimetres, centimetres, metres and inches are told; a file in another unit, one whose parts
+     * disagree, or one that states none gives undefined. `io.loadSTEPorIGES` reads any of them into
+     * the `unit` it is asked for.
+     * @param inputs - The file content and its name with extension
+     * @returns The file's unit, or undefined when it is none of these or cannot be told
+     * @group io
+     * @shortname file length unit
+     * @drawable false
+     * @example
+     * ```typescript
+     * const unit = await bitbybit.occt.io.fileLengthUnit({ filetext: stepText, fileName: "bracket.step" });
+     * const shape = await bitbybit.occt.io.loadSTEPorIGES({ filetext: stepText, fileName: "bracket.step", unit: unit ?? Bit.Inputs.Base.unitOfLengthEnum.millimetre });
+     * ```
+     */
+    fileLengthUnit(inputs: Inputs.OCCT.FileLengthUnitDto): Inputs.Base.unitOfLengthEnum | undefined {
+        const resolved = resolveDto(Inputs.OCCT.FileLengthUnitDto, inputs) as Resolved.OCCT.FileLengthUnitDto;
+        const fileType = stepOrIgesKindOf(resolved.fileName);
+        if (fileType === undefined) {
+            throw new InputError(`\`fileName\` is ${JSON.stringify(resolved.fileName)}, which ends in none of a STEP or IGES file's extensions.`, "fileName");
+        }
+        const bytes = typeof resolved.filetext === "string" ? undefined : bytesOfFile(resolved.filetext, "filetext");
+        const text = bytes === undefined ? textOfFile(resolved.filetext, "filetext") : new TextDecoder().decode(isGzip(bytes) ? gunzipped(bytes) : bytes);
+        return fileType === "step" ? stepLengthUnit(text) : igesLengthUnit(text);
     }
 
     /**
@@ -443,29 +447,17 @@ export class OCCTIO {
     loadBrepBinary(inputs: Inputs.OCCT.LoadBrepBinaryDto): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.LoadBrepBinaryDto, inputs);
         const bytes = bytesOfFile(resolved.brepData, "brepData");
-        try {
-            return this.occ.ReadBREPFromBytes(bytes);
-        } catch (thrown) {
-            const read = readKernelException(this.occ, thrown);
-            const refusal = read instanceof Error ? /ReadBREPFromBytes: (?:the binary BREP data is damaged: )?(.+)$/.exec(read.message) : null;
-            if (refusal === null) {
-                throw read;
-            }
-            throw new InputError(`\`brepData\` is damaged: ${refusal[1]}.`, "brepData");
-        }
+        return withKernelRefusals(this.occ, () => this.occ.ReadBREPFromBytes(bytes), message => {
+            const refusal = /ReadBREPFromBytes: (?:the binary BREP data is damaged: )?(.+)$/.exec(message);
+            return refusal === null ? undefined : new InputError(`\`brepData\` is damaged: ${refusal[1]}.`, "brepData");
+        });
     }
 
     private brepShapeOf(text: string): TopoDS_Shape {
-        try {
-            return this.occ.ReadBREPFromString(text);
-        } catch (thrown) {
-            const read = readKernelException(this.occ, thrown);
-            const damage = read instanceof Error ? /the BREP text is damaged: (.+)$/.exec(read.message) : null;
-            if (damage === null) {
-                throw read;
-            }
-            throw new InputError(`\`brepData\` is damaged: ${damage[1]}.`, "brepData");
-        }
+        return withKernelRefusals(this.occ, () => this.occ.ReadBREPFromString(text), message => {
+            const damage = /the BREP text is damaged: (.+)$/.exec(message);
+            return damage === null ? undefined : new InputError(`\`brepData\` is damaged: ${damage[1]}.`, "brepData");
+        });
     }
 
     /**
@@ -520,9 +512,9 @@ export class OCCTIO {
      * Writes DXF parts into one DXF file and returns its text.
      *
      * `colorFormat` chooses AutoCAD's indexed colors or true color, `acadVersion` the DXF version:
-     * AC1009 is R12, the most widely readable, AC1015 is 2000. `fileName` and `tryDownload` matter
-     * only where a browser download can be started.
-     * @param inputs - The layered parts, the color format, the DXF version and the download options
+     * AC1009 is R12, the most widely readable, AC1015 is 2000, which can also state the drawing's
+     * `unit`. `fileName` and `tryDownload` matter only where a browser download can be started.
+     * @param inputs - The layered parts, the color format, the DXF version, the unit and the download options
      * @returns The DXF file as text
      * @group dxf
      * @shortname dxf create
@@ -573,7 +565,7 @@ export class OCCTIO {
             const controlSurfaceDeflection = resolved.controlSurfaceDeflection;
 
             if (stepData instanceof Uint8Array) {
-                result = this.occ.ConvertStepToGltfFromBinary(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinary(
                     stepData,
                     meshPrecision,
                     meshAngle,
@@ -581,9 +573,9 @@ export class OCCTIO {
                     internalVerticesMode,
                     controlSurfaceDeflection,
                     -1
-                );
+                ));
             } else if (stepData instanceof ArrayBuffer) {
-                result = this.occ.ConvertStepToGltfFromBinary(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinary(
                     new Uint8Array(stepData),
                     meshPrecision,
                     meshAngle,
@@ -591,9 +583,9 @@ export class OCCTIO {
                     internalVerticesMode,
                     controlSurfaceDeflection,
                     -1
-                );
+                ));
             } else if (typeof stepData === "string") {
-                result = this.occ.ConvertStepToGltfFromMemory(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromMemory(
                     stepData,
                     meshPrecision,
                     meshAngle,
@@ -601,7 +593,7 @@ export class OCCTIO {
                     internalVerticesMode,
                     controlSurfaceDeflection,
                     -1
-                );
+                ));
             } else {
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
@@ -613,7 +605,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = messageOf(error);
-            throw new Error(`STEP to glTF conversion failed: ${errorMessage}`, { cause: error });
+            throw trapOr(error, () => new Error(`STEP to glTF conversion failed: ${errorMessage}`, { cause: error }));
         }
     }
 
@@ -652,7 +644,7 @@ export class OCCTIO {
             const transformFormatNum = this.gltfTransformFormatEnumToOcct(resolved.transformFormat);
             
             if (stepData instanceof Uint8Array) {
-                result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     stepData,
                     resolved.readColors,
                     resolved.readNames,
@@ -676,9 +668,9 @@ export class OCCTIO {
                     transformFormatNum,
                     resolved.adjustZtoY,
                     resolved.scale
-                );
+                ));
             } else if (stepData instanceof ArrayBuffer) {
-                result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     new Uint8Array(stepData),
                     resolved.readColors,
                     resolved.readNames,
@@ -702,11 +694,11 @@ export class OCCTIO {
                     transformFormatNum,
                     resolved.adjustZtoY,
                     resolved.scale
-                );
+                ));
             } else if (typeof stepData === "string") {
                 const encoder = new TextEncoder();
                 const binaryData = encoder.encode(stepData);
-                result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
+                result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     binaryData,
                     resolved.readColors,
                     resolved.readNames,
@@ -730,7 +722,7 @@ export class OCCTIO {
                     transformFormatNum,
                     resolved.adjustZtoY,
                     resolved.scale
-                );
+                ));
             } else {
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
@@ -742,7 +734,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = messageOf(error);
-            throw new Error(`STEP to glTF advanced conversion failed: ${errorMessage}`, { cause: error });
+            throw trapOr(error, () => new Error(`STEP to glTF advanced conversion failed: ${errorMessage}`, { cause: error }));
         }
     }
 
@@ -783,7 +775,7 @@ export class OCCTIO {
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
 
-            const result = this.occ.ConvertStepToGltfFromBinaryWithDraco(
+            const result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinaryWithDraco(
                 binaryData,
                 resolved.meshPrecision,
                 resolved.meshAngle,
@@ -799,7 +791,7 @@ export class OCCTIO {
                 resolved.dracoQuantizeColorBits,
                 resolved.dracoQuantizeGenericBits,
                 resolved.dracoUnifiedQuantization
-            );
+            ));
 
             if (result.length === 0) {
                 throw new Error("Failed to convert STEP to glTF");
@@ -808,7 +800,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = messageOf(error);
-            throw new Error(`STEP to glTF (Draco) conversion failed: ${errorMessage}`, { cause: error });
+            throw trapOr(error, () => new Error(`STEP to glTF (Draco) conversion failed: ${errorMessage}`, { cause: error }));
         }
     }
 
@@ -853,7 +845,7 @@ export class OCCTIO {
             const meshNameFormatNum = this.gltfNameFormatEnumToOcct(resolved.meshNameFormat);
             const transformFormatNum = this.gltfTransformFormatEnumToOcct(resolved.transformFormat);
 
-            const result = this.occ.ConvertStepToGltfFromBinaryAdvancedWithDraco(
+            const result = withKernelErrorsRead(this.occ, () => this.occ.ConvertStepToGltfFromBinaryAdvancedWithDraco(
                 binaryData,
                 resolved.readColors,
                 resolved.readNames,
@@ -885,7 +877,7 @@ export class OCCTIO {
                 resolved.dracoQuantizeColorBits,
                 resolved.dracoQuantizeGenericBits,
                 resolved.dracoUnifiedQuantization
-            );
+            ));
 
             if (result.length === 0) {
                 throw new Error("Failed to convert STEP to glTF");
@@ -894,7 +886,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = messageOf(error);
-            throw new Error(`STEP to glTF advanced (Draco) conversion failed: ${errorMessage}`, { cause: error });
+            throw trapOr(error, () => new Error(`STEP to glTF advanced (Draco) conversion failed: ${errorMessage}`, { cause: error }));
         }
     }
 
@@ -935,7 +927,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = messageOf(error);
+            const errorMessage = messageOf(readKernelException(this.occ, error));
             return {
                 version: "1.0",
                 nodes: [],

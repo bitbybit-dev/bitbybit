@@ -1,9 +1,10 @@
 import type { Base } from "@bitbybit-dev/base";
-import { arcThroughThreePoints, pointsOnArc } from "@bitbybit-dev/base/lib/api/services/helpers/arcs";
-import { pointToLocal, squareFrame, type FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { expandedKnots, knotDomain, nurbsCurvePoint } from "@bitbybit-dev/base/lib/api/services/helpers/nurbs";
-import { newellNormal } from "@bitbybit-dev/base/lib/api/services/helpers/triangulation";
-import { add3, dot3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { arcThroughThreePoints, pointsOnArc } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/arcs";
+import { pathLength3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/paths";
+import { pointToLocal, squareFrame, type FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { expandedKnots, knotDomain, nurbsCurvePoint } from "@bitbybit-dev/base/lib/api/services/helpers/curves/nurbs";
+import { newellNormal } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/triangulation";
+import { add3, dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { axisPlacementFrame, directionOf, numbersOf, pointOf } from "../build/placement";
 import { radiansPerUnit } from "../build/project";
 import type { ModelSnapshot } from "../model/snapshot";
@@ -146,6 +147,24 @@ export class CurveSampler {
         const forward = this.model.attribute(curve, "SenseAgreement") !== false;
         const sweep = sweepBetween(first.parameter * this.radiansPerUnit, second.parameter * this.radiansPerUnit, forward);
         return Math.abs(sweep) / this.radiansPerUnit;
+    }
+
+    lengthSpan(curve: number): number | undefined {
+        const type = this.model.entity(curve).type;
+        if (type === "IfcPolyline") {
+            return pathLength3(this.polylinePoints(curve));
+        }
+        const basis = type === "IfcTrimmedCurve" ? this.model.attribute(curve, "BasisCurve") : null;
+        if (!isReference(basis)) {
+            return undefined;
+        }
+        const basisType = this.model.entity(basis.ref).type;
+        if (basisType === "IfcLine") {
+            return pathLength3(this.trimmed(curve));
+        }
+        const radius = basisType === "IfcCircle" ? this.model.attribute(basis.ref, "Radius") : null;
+        const turn = this.parameterSpan(curve);
+        return typeof radius === "number" && turn !== undefined ? radius * turn * this.radiansPerUnit : undefined;
     }
 
     planeOf(curve: number): FrameAxes | undefined {
@@ -315,19 +334,18 @@ export class CurveSampler {
         if (trim.point !== undefined && !(byParameter && trim.parameter !== undefined)) {
             return trim.point;
         }
-        const [x, y, z] = pointOf(this.model, this.model.attribute(line, "Pnt"));
+        const point = pointOf(this.model, this.model.attribute(line, "Pnt"));
         const vector = this.model.attribute(line, "Dir");
         if (!isReference(vector)) {
             throw new UnsupportedGeometryError(`#${line} has no direction`);
         }
-        const [dx, dy, dz] = directionOf(this.model, this.model.attribute(vector.ref, "Orientation"), [1, 0, 0]);
+        const direction = directionOf(this.model, this.model.attribute(vector.ref, "Orientation"), [1, 0, 0]);
         const magnitude = this.model.attribute(vector.ref, "Magnitude");
-        const length = Math.hypot(dx, dy, dz);
+        const length = length3(direction);
         if (typeof magnitude !== "number" || !(length > 0)) {
             throw new UnsupportedGeometryError(`#${vector.ref} has no direction or no magnitude`);
         }
-        const step = trim.parameter! * magnitude / length;
-        return [x + dx * step, y + dy * step, z + dz * step];
+        return add3(point, scale3(direction, trim.parameter! * magnitude / length));
     }
 
     private conicAngle(conic: number, trim: CurveTrim, byParameter: boolean): number {

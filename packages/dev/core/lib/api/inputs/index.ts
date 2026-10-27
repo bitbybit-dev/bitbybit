@@ -9,4 +9,4 @@ export { JSCAD } from "@bitbybit-dev/jscad/lib/api/inputs";
 export { Manifold } from "@bitbybit-dev/manifold/lib/api/inputs";
 export { IFC } from "@bitbybit-dev/ifc/lib/api/inputs";
 export { OCCT } from "@bitbybit-dev/occt/lib/api/inputs";
-export { Color, Dates, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/base/lib/api/inputs";
+export { Color, Dates, Engineering, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Recipes, Text, Transforms, Vector } from "@bitbybit-dev/base/lib/api/inputs";

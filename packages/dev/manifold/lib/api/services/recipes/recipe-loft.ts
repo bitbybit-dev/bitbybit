@@ -1,7 +1,7 @@
 import type * as Manifold3D from "manifold-3d";
-import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-measures";
-import { signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
-import { cross3, length3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-measures";
+import { signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
+import { cross3, length3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type { ProfileRings } from "./recipe-types";
 import { FLOAT32_THICKNESS, TRIANGLE_CORNERS } from "./recipes.constants";
 

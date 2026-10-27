@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-measures";
+import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-measures";
 import type { Fixture } from "../../__test__/fixture-types";
 import { expressIdOf, groundFloor, notAModel } from "../../__test__/build-setup";
 import { constituentsOf, enumOf, extrusionOf, innerCurvesOf, outerCurveOf, refOf, refsOf, relatedBy, relatingOf, styleNamesOf, sweptAreaOf } from "../../__test__/build-geometry";
 import { modelOf } from "./service-support";
+import { placedOnPlan } from "../../build/math";
 import { absoluteFrame } from "../../build/placement";
 import type { IfcModel } from "../../model/model-types";
 import type * as Inputs from "../inputs";
@@ -16,6 +17,11 @@ function withPlanting(): Fixture {
     const lawn = ifc.materials.add({ model, name: "Lawn", color: "#8fa877" });
     const foliage = ifc.materials.add({ model: lawn, name: "Foliage", color: "#6d8a5a" });
     return { ifc, model: ifc.materials.add({ model: foliage, name: "Bark", color: "#5b4a3c" }) };
+}
+
+function inPlan(model: IfcModel, terrain: number, points: readonly number[][]): Inputs.Base.Point2[] {
+    const frame = absoluteFrame(modelOf(model), refOf(model.attribute(terrain, "ObjectPlacement")));
+    return points.map((point) => placedOnPlan(frame, [point[0]!, point[1]!]));
 }
 
 function siteOf(model: IfcModel): number {
@@ -37,7 +43,7 @@ function meshOf(model: IfcModel, faceSet: number): { positions: number[]; indice
 }
 
 describe("IFCSite.addTerrain", () => {
-    it("should add the ground as terrain of the site, its top at the elevation and reaching the depth down", () => {
+    it("should add the ground as terrain of the site, placed at its outline's first point with its top at the elevation and reaching the depth down", () => {
         // Arrange
         const { ifc, model } = withPlanting();
 
@@ -50,7 +56,7 @@ describe("IFCSite.addTerrain", () => {
         expect([changed.typeOf(terrain), enumOf(changed.attribute(terrain, "PredefinedType")), changed.attribute(terrain, "Name")]).toEqual(["IfcGeographicElement", "TERRAIN", "Terrain"]);
         expect(relatedBy(changed, "IfcRelContainedInSpatialStructure", "RelatingStructure", "RelatedElements", siteOf(changed))).toContain(terrain);
         expect([extrusion.direction, extrusion.depth]).toEqual([[0, 0, -1], 600]);
-        expect(absoluteFrame(modelOf(changed), refOf(changed.attribute(terrain, "ObjectPlacement"))).origin).toEqual([0, 0, -50]);
+        expect(absoluteFrame(modelOf(changed), refOf(changed.attribute(terrain, "ObjectPlacement"))).origin).toEqual([-20000, -20000, -50]);
     });
 
     it("should leave holes in the ground and give it its material", () => {
@@ -76,9 +82,10 @@ describe("IFCSite.addTerrain", () => {
         const changed = ifc.site.addTerrain({ model, id: "terrain", outline: [...PLOT].reverse(), holes: [FOOTPRINT] });
 
         // Assert
-        const profile = sweptAreaOf(changed, expressIdOf(changed, "terrain"));
-        expect(outerCurveOf(changed, profile)).toEqual(PLOT);
-        expect(innerCurvesOf(changed, profile)).toEqual([[[0, 8000], [10000, 8000], [10000, 0], [0, 0]]]);
+        const terrain = expressIdOf(changed, "terrain");
+        const profile = sweptAreaOf(changed, terrain);
+        expect(inPlan(changed, terrain, outerCurveOf(changed, profile))).toEqual(PLOT);
+        expect(innerCurvesOf(changed, profile).map((hole) => inPlan(changed, terrain, hole))).toEqual([[[0, 8000], [10000, 8000], [10000, 0], [0, 0]]]);
     });
 
     it("should take a metre of ground when no depth is given, in the model's unit", () => {

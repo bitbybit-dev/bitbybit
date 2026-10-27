@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
 
-export type StepLengthUnit = "mm" | "cm" | "m" | "in";
+export type StepLengthUnit = `${Base.unitOfLengthEnum}`;
 
 export interface StepFailure {
     readonly node: number;
@@ -10,6 +10,7 @@ export interface StepFailure {
 export interface BuiltRootReport {
     readonly built: true;
     readonly uncut?: StepFailure;
+    readonly approximated?: StepFailure;
 }
 
 export interface FailedRootReport extends StepFailure {
@@ -50,4 +51,14 @@ export interface RecipeDocumentPlan {
     readonly parts: readonly PlannedPart[];
     readonly instances: readonly PlannedInstance[];
     readonly lengthUnit: StepLengthUnit;
+}
+
+export interface KernelBrepDescription {
+    readonly description: string;
+    readonly numbers: ArrayLike<number>;
+}
+
+export interface KernelDescribedShape {
+    readonly nodes: Base.RecipeBrepNode[];
+    readonly tolerance: number;
 }

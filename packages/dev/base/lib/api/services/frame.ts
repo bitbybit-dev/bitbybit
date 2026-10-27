@@ -4,9 +4,9 @@ import type * as Resolved from "../resolved-inputs";
 import type { GeometryHelper } from "./geometry-helper";
 import type { MathBitByBit } from "./math";
 import type { Vector } from "./vector";
-import type { FrameAxes } from "./helpers/frame-axes";
-import { composeAxes, isFrameShaped, isTriple, PARALLEL_SINE, pointToLocal, pointToWorld, relativeAxes, squareFrame, unitOf, vectorToLocal, vectorToWorld, WORLD_AXES } from "./helpers/frame-axes";
-import { composed, symmetricEigen } from "./helpers/matrices";
+import type { FrameAxes } from "./helpers/geometry/frame-axes";
+import { axesToMatrix, composeAxes, isFrameShaped, isTriple, PARALLEL_SINE, pointToLocal, pointToWorld, relativeAxes, squareFrame, unitOf, vectorToLocal, vectorToWorld, WORLD_AXES } from "./helpers/geometry/frame-axes";
+import { composed, symmetricEigen } from "./helpers/geometry/matrices";
 
 type Vec3 = Inputs.Base.Vector3;
 type Axes = FrameAxes;
@@ -659,7 +659,7 @@ export class Frame {
      * ```
      */
     toMatrix(inputs: Inputs.Frame.FrameDto): Inputs.Base.TransformMatrixes {
-        return [this.matrixBetween(WORLD_AXES, this.axesOf(inputs.frame, "frame"))];
+        return [axesToMatrix(this.axesOf(inputs.frame, "frame"))];
     }
 
     /**

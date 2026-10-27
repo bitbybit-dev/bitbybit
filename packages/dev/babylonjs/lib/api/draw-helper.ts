@@ -1,9 +1,9 @@
 import * as BABYLON from "@babylonjs/core";
 import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
-import type { KeptDesignMesh } from "@bitbybit-dev/core";
-import type { FaceLook, FaceRange, LookMesh, PartPlacement, MeshData } from "@bitbybit-dev/core";
+import { DrawHelperCore, checkDrawableMesh, checkKeptDesignMesh, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookedMeshOf, designDrawPlanOf, designMeshesOf, designMeshingTextOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
+import type { KeptDesignMesh, DrawableShapeMesh } from "@bitbybit-dev/core";
+import type { FaceLook, LookGroup, PartPlacement, MeshData, MeshPart, GrowingMeshData } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import type { Vector } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
@@ -13,6 +13,8 @@ import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { CACHE_CONFIG, DEFAULT_COLORS, BABYLONJS_MATERIAL_DEFAULTS } from "./constants";
 import type * as Resolved from "./resolved-inputs";
 import { RecipeMeshesDrawer } from "./draw-recipe-meshes";
+import { freeWithItsLastUser } from "./material-lifetime";
+import type { PointsLook } from "./draw-helper-types";
 
 const POSITION_SIZE = 3;
 const SIXTEEN_BIT_VERTICES = 65536;
@@ -27,18 +29,12 @@ interface DesignPartDrawn {
 
 interface DesignDrawState {
     placements: Map<string, PartPlacement[]>;
-    meshes: Map<string, Inputs.OCCT.DecomposedMeshDto>;
+    meshes: Map<string, DrawableShapeMesh>;
     signature: string;
     looks: string;
     precision: number;
+    meshing: string;
     parts: DesignPartDrawn[];
-}
-
-interface LookRange {
-    vertexStart: number;
-    vertexCount: number;
-    indexStart: number;
-    indexCount: number;
 }
 
 export class DrawHelper extends DrawHelperCore {
@@ -47,7 +43,11 @@ export class DrawHelper extends DrawHelperCore {
 
     private readonly designStates = new WeakMap<BABYLON.Mesh, DesignDrawState>();
 
-    private readonly designMeshes = new DesignMeshCache<Inputs.OCCT.DecomposedMeshDto>();
+    private readonly jscadBackFaces = new WeakMap<BABYLON.Mesh, BABYLON.Mesh>();
+
+    private readonly pointsLooks = new WeakMap<BABYLON.Mesh, PointsLook>();
+
+    private readonly designMeshes = new DesignMeshCache<DrawableShapeMesh>();
 
     private readonly recipeDrawer = new RecipeMeshesDrawer({
         scene: () => this.context.scene,
@@ -209,12 +209,9 @@ export class DrawHelper extends DrawHelperCore {
             return mat;
         });
 
-        let backFaceMeshData: MeshData;
-        if (skipWindingReversal) {
-            backFaceMeshData = this.prepareBackFaceMeshDataNoWindingReversal(meshDataConverted);
-        } else {
-            backFaceMeshData = this.prepareBackFaceMeshData(meshDataConverted);
-        }
+        const backFaceMeshData = skipWindingReversal
+            ? this.mergeMeshParts(meshDataConverted, { flipNormals: true })
+            : this.prepareBackFaceMeshData(meshDataConverted);
 
         const mesh = new BABYLON.Mesh(this.generateEntityId("backFaceSurface"), this.context.scene);
         const vertexData = new BABYLON.VertexData();
@@ -231,93 +228,28 @@ export class DrawHelper extends DrawHelperCore {
         return mesh;
     }
     
-    private prepareBackFaceMeshDataNoWindingReversal(meshDataArray: MeshData[]): MeshData {
-        const totalPositions: number[] = [];
-        const totalNormals: number[] = [];
-        const totalIndices: number[] = [];
-        const totalUvs: number[] = [];
-        let indexOffset = 0;
-
-        meshDataArray.forEach(meshItem => {
-            totalPositions.push(...meshItem.positions);
-            
-            if (meshItem.normals && meshItem.normals.length > 0) {
-                for (let i = 0; i < meshItem.normals.length; i++) {
-                    totalNormals.push(-meshItem.normals[i]!);
-                }
-            }
-            
-            if (meshItem.uvs) {
-                totalUvs.push(...meshItem.uvs);
-            }
-            
-            for (let i = 0; i < meshItem.indices.length; i++) {
-                totalIndices.push(meshItem.indices[i]! + indexOffset);
-            }
-            indexOffset += meshItem.positions.length / 3;
-        });
-
-        return {
-            positions: totalPositions,
-            indices: totalIndices,
-            normals: totalNormals,
-            uvs: totalUvs.length > 0 ? totalUvs : undefined
-        };
-    }
-
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined; colors?: number[] | undefined }[],
+        meshDataConverted: readonly MeshPart[],
         mesh: BABYLON.Mesh | undefined, updatable: boolean, material: BABYLON.PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
     ): BABYLON.Mesh {
-        const colored = meshDataConverted.every(meshData => meshData.colors !== undefined && meshData.colors.length === meshData.positions.length / 3 * 4);
-        const createMesh = () => {
-            const first = meshDataConverted[meshDataConverted.length - 1]!;
-            const rest = meshDataConverted.slice(0, -1);
-            const vd = new BABYLON.VertexData();
-            vd.positions = first.positions;
-            vd.indices = first.indices;
-            vd.normals = first.normals;
-            if (first.uvs) {
-                vd.uvs = first.uvs;
-            }
-            if (colored) {
-                vd.colors = first.colors!;
-            }
-
-            const v: BABYLON.VertexData[] = [];
-            rest.forEach(meshData => {
-                const vertexData = new BABYLON.VertexData();
-                vertexData.positions = meshData.positions;
-                vertexData.indices = meshData.indices;
-                vertexData.normals = meshData.normals;
-                if (meshData.uvs) {
-                    vertexData.uvs = meshData.uvs;
-                }
-                if (colored) {
-                    vertexData.colors = meshData.colors!;
-                }
-                v.push(vertexData);
-            });
-            vd.merge(v);
-            vd.applyToMesh(mesh!, updatable);
-        };
-
+        const merged = this.mergeMeshParts(this.drawableMeshParts(meshDataConverted), { colorSize: 4, reverseWinding: true });
         if (mesh && updatable) {
-            mesh.dispose();
-            createMesh();
-            mesh.flipFaces(false);
+            mesh.getChildMeshes(true).forEach(child => child.dispose());
+            mesh.geometry?.releaseForMesh(mesh, true);
         } else {
-            let scene = null;
-            if (addToScene) {
-                scene = this.context.scene;
-            }
-            mesh = new BABYLON.Mesh(this.generateEntityId("surface"), scene);
-            createMesh();
-            mesh.flipFaces(false);
-            if (material) {
-                mesh.material = material;
-            }
+            mesh = new BABYLON.Mesh(this.generateEntityId("surface"), addToScene ? this.context.scene : null);
         }
+        const vd = new BABYLON.VertexData();
+        vd.positions = merged.positions;
+        vd.indices = merged.indices;
+        vd.normals = merged.normals;
+        if (merged.uvs) {
+            vd.uvs = merged.uvs;
+        }
+        if (merged.colors) {
+            vd.colors = merged.colors;
+        }
+        vd.applyToMesh(mesh, updatable);
         if (material) {
             mesh.material = material;
         }
@@ -417,7 +349,7 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.Verb.DrawSurfaceDto, inputs) as Resolved.Verb.DrawSurfaceDto<BABYLON.Mesh>;
         const meshData = resolved.surface.tessellate();
 
-        const meshDataConverted: MeshData = {
+        const meshDataConverted: GrowingMeshData = {
             positions: [],
             indices: [],
             normals: [],
@@ -474,7 +406,7 @@ export class DrawHelper extends DrawHelperCore {
             tessellatedSurfaces.push(srf.tessellate());
         });
 
-        const meshDataConverted: MeshData = {
+        const meshDataConverted: GrowingMeshData = {
             positions: [],
             indices: [],
             normals: [],
@@ -730,6 +662,7 @@ export class DrawHelper extends DrawHelperCore {
         if (visibility < 1) {
             result.material!.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
         }
+        freeWithItsLastUser(result.material!, result);
         return result as BABYLON.GreasedLineMesh;
     }
 
@@ -834,14 +767,16 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.Point.DrawPointDto, inputs) as Resolved.Point.DrawPointDto<BABYLON.Mesh>;
         const vectorPoints = [resolved.point];
 
-        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours : [resolved.colours];
-        if (resolved.pointMesh && resolved.updatable) {
+        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours.slice() : [resolved.colours];
+        const look: PointsLook = { colours: colorsHex, opacity: resolved.opacity, size: resolved.size };
+        if (resolved.pointMesh && resolved.updatable && this.drawnInLook(resolved.pointMesh, look)) {
             this.updatePointsInstances(resolved.pointMesh, vectorPoints);
-        } else {
-            resolved.pointMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointMesh"), vectorPoints, colorsHex, resolved.opacity, resolved.size, resolved.updatable
-            );
+            return resolved.pointMesh;
         }
+        if (resolved.pointMesh && resolved.updatable) {
+            resolved.pointMesh.dispose();
+        }
+        resolved.pointMesh = this.createPointsInLook("pointMesh", vectorPoints, look, resolved.updatable);
         return resolved.pointMesh;
     }
 
@@ -852,22 +787,16 @@ export class DrawHelper extends DrawHelperCore {
         
         const coloursHex = this.resolveAllColors(resolved.colours, vectorPoints.length, strategy);
         
-        if (resolved.pointsMesh && resolved.updatable) {
-            const storedPointCount = resolved.pointsMesh.metadata?.originalPointCount;
-            if (storedPointCount === vectorPoints.length && resolved.pointsMesh.metadata?.canUpdate) {
-                this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
-                return resolved.pointsMesh;
-            } else {
-                resolved.pointsMesh.dispose();
-                resolved.pointsMesh = this.createPointSpheresMesh(
-                    this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size, resolved.updatable
-                );
-            }
-        } else {
-            resolved.pointsMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size, resolved.updatable
-            );
+        const look: PointsLook = { colours: coloursHex, opacity: resolved.opacity, size: resolved.size };
+        if (resolved.pointsMesh && resolved.updatable && resolved.pointsMesh.metadata?.originalPointCount === vectorPoints.length
+            && resolved.pointsMesh.metadata?.canUpdate && this.drawnInLook(resolved.pointsMesh, look)) {
+            this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
+            return resolved.pointsMesh;
         }
+        if (resolved.pointsMesh && resolved.updatable) {
+            resolved.pointsMesh.dispose();
+        }
+        resolved.pointsMesh = this.createPointsInLook("pointsMesh", vectorPoints, look, resolved.updatable);
         return resolved.pointsMesh;
     }
 
@@ -895,6 +824,18 @@ export class DrawHelper extends DrawHelperCore {
                 child.thinInstanceSetBuffer("matrix", matricesData, 16, false);
             }
         });
+    }
+
+    private createPointsInLook(name: string, points: Inputs.Base.Point3[], look: PointsLook, updatable: boolean): BABYLON.Mesh {
+        const drawn = this.createPointSpheresMesh(this.generateEntityId(name), points, look.colours, look.opacity, look.size, updatable);
+        this.pointsLooks.set(drawn, look);
+        return drawn;
+    }
+
+    private drawnInLook(points: BABYLON.Mesh, look: PointsLook): boolean {
+        const drawnLook = this.pointsLooks.get(points);
+        return drawnLook !== undefined && drawnLook.opacity === look.opacity && drawnLook.size === look.size
+            && drawnLook.colours.length === look.colours.length && drawnLook.colours.every((colour, at) => colour === look.colours[at]);
     }
 
     private createPointSpheresMesh(
@@ -988,7 +929,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawTwoSided: boolean, backFaceColour: string, backFaceOpacity: number }, meshToUpdate: BABYLON.Mesh, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
-        this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable);
+        const normals = this.createMesh(res.positions, res.indices, meshToUpdate, res.transforms, inputs.updatable);
         
         const zOffset = 0;
         const pbr = this.getOrCreateMaterial(inputs.colour, inputs.opacity, zOffset, () => {
@@ -1010,16 +951,18 @@ export class DrawHelper extends DrawHelperCore {
             meshToUpdate.isVisible = false;
         }
         
+        this.jscadBackFaces.get(meshToUpdate)?.dispose();
+        this.jscadBackFaces.delete(meshToUpdate);
         if (inputs.drawTwoSided) {
             const isRightHanded = this.context.scene.useRightHandedSystem === true;
             
             const meshDataArray: MeshData[] = [{
                 positions: res.positions,
-                normals: res.normals,
+                normals,
                 indices: res.indices
             }];
             const usesClockWiseSideOrientation = false;
-            const skipWindingReversal = isRightHanded;
+            const skipWindingReversal = !isRightHanded;
             const backFaceMesh = this.createBackFaceMesh(
                 meshDataArray,
                 inputs.backFaceColour,
@@ -1029,6 +972,7 @@ export class DrawHelper extends DrawHelperCore {
                 skipWindingReversal
             );
             backFaceMesh.parent = meshToUpdate;
+            this.jscadBackFaces.set(meshToUpdate, backFaceMesh);
             
             if (inputs.hidden) {
                 backFaceMesh.isVisible = false;
@@ -1166,14 +1110,17 @@ export class DrawHelper extends DrawHelperCore {
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>;
         const safeWorkerOptions = this.getMeshingOptions(resolved);
-        const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", safeWorkerOptions);
+        const decomposedMesh: DrawableShapeMesh = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMeshBuffers", safeWorkerOptions);
         return this.handleDecomposedMesh(resolved, decomposedMesh, resolved);
     }
 
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapesDto, inputs) as Resolved.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>;
         const safeWorkerOptions = this.getMeshingOptions(resolved);
-        const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", safeWorkerOptions);
+        const meshes: DrawableShapeMesh[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshBuffers", safeWorkerOptions);
+        if (resolved.drawFaces) {
+            meshes.forEach(checkDrawableMesh);
+        }
         const pooled = this.withSurfaceAnalysisRange(resolved, meshes);
         const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(pooled, decomposedMesh, pooled)));
         const shapesMeshContainer = new BABYLON.Mesh(this.generateEntityId("shapesMeshContainer"), this.context.scene);
@@ -1214,7 +1161,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
-     * Draws what `occt.design.build` returns. Every part is meshed once, in one call to the worker,
+     * Draws what `occt.design.build` or `occt.design.section` returns. Every part is meshed once, in one call to the worker,
      * into one mesh with a sub-mesh per look and one line for its edges, and every placement is a
      * thin instance of both. Given the mesh an earlier build drew, it redraws in place: when the same
      * parts sit at the same paths, it only moves them, and otherwise it keeps what it drew for every
@@ -1225,17 +1172,19 @@ export class DrawHelper extends DrawHelperCore {
      * @param previous - The mesh an earlier build drew, to redraw in place
      * @returns The mesh holding the build: `previous` when given, else a new mesh added to the scene
      */
-    async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: BABYLON.Mesh): Promise<BABYLON.Mesh> {
+    async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: BABYLON.Mesh): Promise<BABYLON.Mesh> {
         const options = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
         const state = previous ? this.designStates.get(previous) : undefined;
-        const plan = designDrawPlanOf(build, options, state);
+        const meshing = this.meshingTextOf(options);
+        const planOptions = { ...options, meshing };
+        const plan = designDrawPlanOf<Models.OCCT.DesignBuiltPart<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSectionPart<Inputs.OCCT.TopoDSShapePointer>>(build, planOptions, state);
         if (previous && state && plan.posesOnly) {
             this.poseDesign(state, plan.placements);
             return previous;
         }
-        const meshes = await designMeshesOf(plan, options, state, this.meshingTextOf(options), this.designMeshes, parts => this.meshShapesForLooks(parts.map(part => part.shape), options));
+        const meshes = await designMeshesOf(plan, planOptions, state, meshing, this.designMeshes, parts => this.meshShapesForLooks(parts.map(part => part.shape), options));
         const looks = designOptionsKeyOf(options);
-        const kept = new Map(state && state.looks === looks && state.precision === options.precision
+        const kept = new Map(state && state.looks === looks && state.precision === options.precision && state.meshing === meshing
             ? state.parts.filter(drawn => plan.parts.has(drawn.part) && plan.placements.has(drawn.part) && drawn.key === designPartKeyOf(plan.parts.get(drawn.part)!)).map(drawn => [drawn.part, drawn])
             : []);
         const target = previous && state ? previous : this.newDesignRoot();
@@ -1243,7 +1192,7 @@ export class DrawHelper extends DrawHelperCore {
             this.clearDesign(state.parts.filter(drawn => kept.get(drawn.part) !== drawn));
         }
         const drawnParts = this.fillDesign(target, plan.parts, plan.placements, plan.placed, meshes, options, kept);
-        this.designStates.set(target, { placements: plan.placements, meshes: meshesByKeyOf(plan, meshes), signature: plan.signature, looks, precision: options.precision, parts: drawnParts });
+        this.designStates.set(target, { placements: plan.placements, meshes: meshesByKeyOf(plan, meshes), signature: plan.signature, looks, precision: options.precision, meshing, parts: drawnParts });
         return target;
     }
 
@@ -1251,11 +1200,16 @@ export class DrawHelper extends DrawHelperCore {
     /**
      * The meshes this drawer keeps for design parts with the given shape hashes, as it meshed them for
      * these drawing options, so a caller can store them and hand them back with `keepDesignMeshes`.
+     * They are the drawer's own meshes, not copies, and their numbers are views into buffers the
+     * worker handed over, so store them where a structured clone keeps them, such as IndexedDB or a
+     * message posted without a transfer list. Never transfer their buffers to another thread, which
+     * empties them here too, and never store them as JSON, which turns their typed arrays into plain
+     * records: `keepDesignMeshes` refuses both rather than drawing nothing.
      * @param shapeHashes - The parts' shape hashes, as a design build gives them
      * @param drawOptions - The options the parts were drawn with
      * @returns The meshes it keeps, each with its part's shape hash; a part it has not meshed for these options is left out
      */
-    keptDesignMeshes(shapeHashes: readonly string[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): KeptDesignMesh<Inputs.OCCT.DecomposedMeshDto>[] {
+    keptDesignMeshes(shapeHashes: readonly string[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): KeptDesignMesh<DrawableShapeMesh>[] {
         const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
         const meshing = this.meshingTextOf(resolved);
         return shapeHashes.flatMap(shapeHash => {
@@ -1269,15 +1223,15 @@ export class DrawHelper extends DrawHelperCore {
      * these options without being meshed again. A mesh that is not one of faces and edges is passed over.
      * @param meshes - The meshes, each with its part's shape hash
      * @param drawOptions - The options the meshes were made for
+     * @throws Error when a mesh of faces and edges can no longer be drawn: its buffers were transferred
+     * to another thread, or it was stored as JSON; then none of the meshes is kept
      */
     keepDesignMeshes(meshes: readonly KeptDesignMesh<unknown>[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): void {
         const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
         const meshing = this.meshingTextOf(resolved);
-        meshes.forEach(({ shapeHash, mesh }) => {
-            if (this.isMeshOfFacesAndEdges(mesh)) {
-                this.designMeshes.set(keptMeshKeyOf(shapeHash, meshing), mesh);
-            }
-        });
+        const keepable = meshes.filter((kept): kept is KeptDesignMesh<DrawableShapeMesh> => this.isMeshOfFacesAndEdges(kept.mesh));
+        keepable.forEach(checkKeptDesignMesh);
+        keepable.forEach(({ shapeHash, mesh }) => this.designMeshes.set(keptMeshKeyOf(shapeHash, meshing), mesh));
     }
 
     private meshingForLooks(options: Resolved.Draw.DrawOcctShapeOptions): Omit<Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, "faceMaterial"> {
@@ -1286,29 +1240,30 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private meshingTextOf(options: Resolved.Draw.DrawOcctShapeOptions): string {
-        return JSON.stringify(this.meshingForLooks(options));
+        return designMeshingTextOf(options);
     }
 
-    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<DrawableShapeMesh[]> {
         const meshing = this.meshingForLooks(options);
-        const meshes: unknown = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", { ...meshing, shapes });
+        const meshes: unknown = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshBuffers", { ...meshing, shapes });
         if (!Array.isArray(meshes) || meshes.length !== shapes.length || !meshes.every(mesh => this.isMeshOfFacesAndEdges(mesh))) {
             throw new Error(`Meshing ${shapes.length} shapes did not return one mesh of faces and edges per shape.`);
         }
+        meshes.forEach(checkDrawableMesh);
         return meshes;
     }
 
-    private isMeshOfFacesAndEdges(mesh: unknown): mesh is Inputs.OCCT.DecomposedMeshDto {
+    private isMeshOfFacesAndEdges(mesh: unknown): mesh is DrawableShapeMesh {
         return typeof mesh === "object" && mesh !== null && Array.isArray((mesh as Record<string, unknown>)["faceList"]) && Array.isArray((mesh as Record<string, unknown>)["edgeList"]);
     }
 
-    private lookedShapeMesh(mesh: Inputs.OCCT.DecomposedMeshDto, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): BABYLON.Mesh {
+    private lookedShapeMesh(mesh: DrawableShapeMesh, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): BABYLON.Mesh {
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMeshWithAppearance"), this.context.scene);
         shapeMesh.isVisible = false;
         const zOffset = options.drawEdges ? 2 : 0;
         if (options.drawFaces && mesh.faceList.length > 0) {
             const looks = lookGroupsOf(appearance, mesh.faceList.map(face => face.faceIndex), options.faceColour);
-            this.lookedMesh(lookMeshesOf(mesh, looks), options.faceOpacity, zOffset).parent = shapeMesh;
+            this.lookedMesh(mesh, looks, options.faceOpacity, zOffset).parent = shapeMesh;
             if (options.drawTwoSided) {
                 const meshData: MeshData[] = mesh.faceList.map(face => ({ positions: face.vertexCoord, normals: face.normalCoord, indices: face.triIndexes }));
                 this.createBackFaceMesh(meshData, options.backFaceColour || DEFAULT_COLORS.BACK_FACE, options.backFaceOpacity, zOffset).parent = shapeMesh;
@@ -1320,7 +1275,7 @@ export class DrawHelper extends DrawHelperCore {
         return shapeMesh;
     }
 
-    private partEdges(mesh: Inputs.OCCT.DecomposedMeshDto, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): BABYLON.GreasedLineMesh {
+    private partEdges(mesh: DrawableShapeMesh, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): BABYLON.GreasedLineMesh {
         const fallback = defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
         const edgeIndexes = mesh.edgeList.map(edge => edge.edgeIndex);
         const colors = edgeColorsOf(appearance, edgeIndexes, fallback);
@@ -1329,36 +1284,8 @@ export class DrawHelper extends DrawHelperCore {
         return line;
     }
 
-    private lookedMesh(lookMeshes: readonly LookMesh[], faceOpacity: number, zOffset: number): BABYLON.Mesh {
-        const drawn = lookMeshes.filter(look => look.indices.length > 0);
-        let vertexCount = 0;
-        let indexCount = 0;
-        for (const look of drawn) {
-            vertexCount += look.positions.length / 3;
-            indexCount += look.indices.length;
-        }
-        const positions = new Float32Array(vertexCount * 3);
-        const normals = new Float32Array(vertexCount * 3);
-        const indices = new Uint32Array(indexCount);
-        const ranges: LookRange[] = [];
-        const faceRanges: FaceRange[] = [];
-        let vertexOffset = 0;
-        let indexOffset = 0;
-        for (const look of drawn) {
-            positions.set(look.positions, vertexOffset * 3);
-            normals.set(look.normals, vertexOffset * 3);
-            for (let i = 0; i < look.indices.length; i += 3) {
-                indices[indexOffset + i] = look.indices[i]! + vertexOffset;
-                indices[indexOffset + i + 1] = look.indices[i + 2]! + vertexOffset;
-                indices[indexOffset + i + 2] = look.indices[i + 1]! + vertexOffset;
-            }
-            ranges.push({ vertexStart: vertexOffset, vertexCount: look.positions.length / 3, indexStart: indexOffset, indexCount: look.indices.length });
-            for (const range of look.faceRanges) {
-                faceRanges.push({ face: range.face, start: range.start + indexOffset, count: range.count });
-            }
-            vertexOffset += look.positions.length / 3;
-            indexOffset += look.indices.length;
-        }
+    private lookedMesh(source: DrawableShapeMesh, looks: readonly LookGroup[], faceOpacity: number, zOffset: number): BABYLON.Mesh {
+        const { positions, normals, indices, looks: drawn, faceRanges } = lookedMeshOf(source, looks, { reverseWinding: true });
         const mesh = new BABYLON.Mesh(this.generateEntityId("lookedSurface"), this.context.scene);
         const vertexData = new BABYLON.VertexData();
         vertexData.positions = positions;
@@ -1372,8 +1299,9 @@ export class DrawHelper extends DrawHelperCore {
             const multi = new BABYLON.MultiMaterial(this.generateEntityId("lookMaterials"), this.context.scene);
             multi.subMaterials = materials;
             mesh.material = multi;
+            freeWithItsLastUser(multi, mesh);
             mesh.subMeshes = [];
-            ranges.forEach((range, materialIndex) => new BABYLON.SubMesh(materialIndex, range.vertexStart, range.vertexCount, range.indexStart, range.indexCount, mesh));
+            drawn.forEach((span, materialIndex) => new BABYLON.SubMesh(materialIndex, span.vertexStart, span.vertexCount, span.indexStart, span.indexCount, mesh));
         }
         mesh.isPickable = false;
         mesh.metadata = { faceRanges };
@@ -1405,7 +1333,7 @@ export class DrawHelper extends DrawHelperCore {
         return root;
     }
 
-    private fillDesign(target: BABYLON.Mesh, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance & { shapeHash?: string }>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, options: Resolved.Draw.DrawOcctShapeOptions, kept: ReadonlyMap<string, DesignPartDrawn>): DesignPartDrawn[] {
+    private fillDesign(target: BABYLON.Mesh, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance & { shapeHash?: string }>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: ReadonlyMap<string, DrawableShapeMesh>, options: Resolved.Draw.DrawOcctShapeOptions, kept: ReadonlyMap<string, DesignPartDrawn>): DesignPartDrawn[] {
         const zOffset = options.drawEdges ? 2 : 0;
         return placed.map((id): DesignPartDrawn => {
             const part = parts.get(id)!;
@@ -1415,7 +1343,7 @@ export class DrawHelper extends DrawHelperCore {
             const reused = kept.get(id);
             const mesh = reused ? undefined : meshes.get(id)!;
             const faces = reused ? reused.faces : mesh && options.drawFaces && mesh.faceList.length > 0
-                ? this.lookedMesh(lookMeshesOf(mesh, lookGroupsOf(part.appearance, mesh.faceList.map(face => face.faceIndex), options.faceColour)), options.faceOpacity, zOffset)
+                ? this.lookedMesh(mesh, lookGroupsOf(part.appearance, mesh.faceList.map(face => face.faceIndex), options.faceColour), options.faceOpacity, zOffset)
                 : undefined;
             const edges = reused ? reused.edges : mesh && options.drawEdges && mesh.edgeList.length > 0 ? this.partEdges(mesh, part.appearance, options) : undefined;
             const paths = partPlacements.map(placement => placement.path);
@@ -1446,20 +1374,17 @@ export class DrawHelper extends DrawHelperCore {
 
     private clearDesign(parts: readonly DesignPartDrawn[]): void {
         for (const drawn of parts) {
-            if (drawn.faces) {
-                const material = drawn.faces.material;
-                drawn.faces.dispose(false, false);
-                if (material instanceof BABYLON.MultiMaterial) {
-                    material.dispose();
-                }
-            }
-            drawn.edges?.dispose(false, true);
+            drawn.faces?.dispose();
+            drawn.edges?.dispose();
         }
     }
 
-    async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
+    async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: DrawableShapeMesh, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
         const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+        if (resolved.drawFaces) {
+            checkDrawableMesh(decomposedMesh);
+        }
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
         const dummy = undefined;
@@ -1514,7 +1439,7 @@ export class DrawHelper extends DrawHelperCore {
 
             const colorGroups = decomposedMesh.colorGroups;
             const mesh = !analysisColors && !resolvedOptions.faceMaterial && colorGroups && Object.keys(colorGroups).length > 0
-                ? this.lookedMesh(lookMeshesOf(decomposedMesh, lookGroupsOfColors(colorGroups, decomposedMesh.faceList.map(face => face.faceIndex), hex)), alpha, zOffset)
+                ? this.lookedMesh(decomposedMesh, lookGroupsOfColors(colorGroups, decomposedMesh.faceList.map(face => face.faceIndex), hex), alpha, zOffset)
                 : this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
             mesh.parent = shapeMesh;
 
@@ -1587,16 +1512,18 @@ export class DrawHelper extends DrawHelperCore {
                 return texts;
             });
             const textPolylines = await Promise.all(promises);
-            const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, resolved.edgeIndexColour, 1e-7, true)!;
-            edgeMesh.parent = shapeMesh;
-            edgeMesh.material!.zOffset = -2;
+            const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, resolved.edgeIndexColour, 1e-7, true);
+            if (edgeMesh) {
+                edgeMesh.parent = shapeMesh;
+                edgeMesh.material!.zOffset = -2;
+            }
         }
         if (resolved.drawFaceIndexes) {
-            const promises = decomposedMesh.faceList.map(async (face) => {
-                let faceMiddle = face.centerPoint;
-                if (faceMiddle === undefined) {
-                    faceMiddle = this.computeFaceMiddlePos(face.vertexCoordVec) as Inputs.Base.Point3;
-                }
+            const labelled = decomposedMesh.faceList.flatMap(face => {
+                const faceMiddle = this.faceLabelPositionOf(face);
+                return faceMiddle === undefined ? [] : [{ face, faceMiddle }];
+            });
+            const promises = labelled.map(async ({ face, faceMiddle }) => {
                 const tdto = new Inputs.JSCAD.TextDto();
                 tdto.text = `${face.faceIndex}`;
                 tdto.height = resolved.faceIndexHeight;
@@ -1617,18 +1544,23 @@ export class DrawHelper extends DrawHelperCore {
             });
             const textPolylines = await Promise.all(promises);
 
-            const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, resolved.faceIndexColour, 1e-7, true)!;
-            faceMesh.parent = shapeMesh;
-            if (resolved.drawEdges) {
-                faceMesh.material!.zOffset = -2;
+            const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, resolved.faceIndexColour, 1e-7, true);
+            if (faceMesh) {
+                faceMesh.parent = shapeMesh;
+                if (resolved.drawEdges) {
+                    faceMesh.material!.zOffset = -2;
+                }
             }
         }
         return shapeMesh;
     }
 
-    async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
+    async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: DrawableShapeMesh, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
         const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+        if (resolved.drawFaces) {
+            checkDrawableMesh(decomposedMesh);
+        }
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
         const dummy = undefined;
@@ -1656,10 +1588,10 @@ export class DrawHelper extends DrawHelperCore {
                 if (resolved.drawTwoSided !== false) {
                     const backFaceMesh = this.createBackFaceMesh(
                         [{
-                            positions: [...face.vertexCoord],
-                            normals: [...face.normalCoord],
-                            indices: [...face.triIndexes],
-                            uvs: face.uvs ? [...face.uvs] : undefined,
+                            positions: face.vertexCoord,
+                            normals: face.normalCoord,
+                            indices: face.triIndexes,
+                            uvs: face.uvs,
                         }],
                         resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE,
                         resolved.backFaceOpacity,
@@ -1670,10 +1602,10 @@ export class DrawHelper extends DrawHelperCore {
                 }
 
                 const faceMesh = this.createOrUpdateSurfacesMesh([{
-                    positions: [...face.vertexCoord],
-                    normals: [...face.normalCoord],
-                    indices: [...face.triIndexes],
-                    uvs: face.uvs ? [...face.uvs] : undefined,
+                    positions: face.vertexCoord,
+                    normals: face.normalCoord,
+                    indices: face.triIndexes,
+                    uvs: face.uvs,
                     colors: analysisColors?.[index],
                 }], dummy, false, pbr, true, false);
                 faceMesh.name = `face ${face.faceIndex}`;
@@ -1792,11 +1724,7 @@ export class DrawHelper extends DrawHelperCore {
                 }
 
                 if (options.drawTwoSided !== false) {
-                    const meshDataArray: MeshData[] = [{
-                        positions: Array.from(vertexData.positions),
-                        indices: Array.from(indices),
-                        normals: Array.from(normals),
-                    }];
+                    const meshDataArray: MeshData[] = [{ positions, indices, normals }];
 
                     const usesClockWiseSideOrientation = true;
                     const backFaceMesh = this.createBackFaceMesh(
@@ -1849,16 +1777,18 @@ export class DrawHelper extends DrawHelperCore {
 
 
     private createMesh(
-        positions: number[], indices: number[], normals: number[], jscadMesh: BABYLON.Mesh, transforms: number[], updatable: boolean
-    ): void {
+        positions: number[], indices: number[], jscadMesh: BABYLON.Mesh, transforms: number[], updatable: boolean
+    ): number[] {
         const vertexData = new BABYLON.VertexData();
+        const normals: number[] = [];
         vertexData.positions = positions;
-        vertexData.indices = indices;
+        vertexData.indices = indices.slice();
         BABYLON.VertexData.ComputeNormals(positions, indices, normals, { useRightHandedSystem: true });
         vertexData.normals = normals;
 
         vertexData.applyToMesh(jscadMesh, updatable);
         jscadMesh.setPreTransformMatrix(BABYLON.Matrix.FromArray(transforms));
+        return normals;
     }
 
     private parseFaces(

@@ -42,6 +42,8 @@ function createPbrSkybox(scene: BABYLON.Scene, texture: BABYLON.BaseTexture | un
  */
 export class BabylonScene {
 
+    private readonly madeEnvironmentTextures = new WeakSet<BABYLON.BaseTexture>();
+
     constructor(private readonly context: Context) { }
 
     /**
@@ -358,9 +360,12 @@ export class BabylonScene {
     }
 
     /**
-     * Removes everything drawn from the scene: meshes, materials, textures, lights other than the
-     * default hemispheric one, transform nodes, shadow generators, fog and the environment texture,
-     * and restores the default camera when another was active.
+     * Removes everything drawn from the scene: meshes, the materials and the textures they wear,
+     * procedural textures, the scene's custom render targets, every light but the default
+     * hemispheric one, transform nodes, shadow generators, fog and the environment texture, and
+     * restores the default camera when another was active.
+     *
+     * Textures that pipelines, post-processes, probes and the scene's lookups hold stay.
      * @group environment
      * @shortname clear all drawn
      * @example
@@ -371,42 +376,28 @@ export class BabylonScene {
     clearAllDrawn(): void {
         const scene = this.context.scene;
         if (scene) {
-
+            const texturesOfTheDrawing = this.texturesOfTheDrawing(scene);
             if (scene.environmentTexture) {
                 scene.environmentTexture.dispose();
             }
             scene.environmentTexture = null;
             scene.fogMode = BABYLON.Scene.FOGMODE_NONE;
-            scene.meshes.forEach(m => m.dispose());
-            scene.meshes = [];
-            scene.materials.forEach(m => m.dispose());
-            scene.textures.forEach(m => m.dispose());
-            scene.materials = [];
-            scene.textures = [];
+            this.disposeNodes(scene.meshes);
+            scene.materials.slice().forEach(material => material.dispose());
+            scene.textures
+                .filter(texture => texturesOfTheDrawing.has(texture))
+                .forEach(texture => texture.dispose());
             scene.useRightHandedSystem = false;
-            scene.geometries.forEach((g: BABYLON.Geometry) => {
-                if (g.meshes) {
-                    g.meshes.forEach(m => m.dispose());
-                }
-                if (g.dispose) {
-                    g.dispose();
+            scene.geometries.slice().forEach(geometry => {
+                this.disposeNodes(geometry.meshes);
+                if (!geometry.isDisposed()) {
+                    geometry.dispose();
                 }
             });
-            scene.geometries = [];
 
-            scene.lights.forEach(l => {
-                if (l.name !== "HemiLight") {
-                    l.dispose();
-                }
-            });
-            scene.lights = scene.lights.filter(i => i.name === "HemiLight");
-            if (scene.transformNodes) {
-                scene.transformNodes.forEach(t => {
-                    if (t && t.name !== "root") {
-                        t.dispose();
-                    }
-                });
-            }
+            this.disposeNodes(scene.lights.filter(light => light.name !== "HemiLight"));
+            const root = scene.getTransformNodeByName("root");
+            this.disposeNodes(scene.transformNodes.filter(node => node !== root));
 
             if (scene.metadata) {
                 if (scene.metadata.shadowGenerators.length > 0) {
@@ -421,11 +412,9 @@ export class BabylonScene {
                     (scene.metadata.guiManager as GUI.GUI3DManager).dispose();
                 }
             }
-            const root = scene.getTransformNodeByName("root");
-            scene.transformNodes = root ? [root] : [];
 
             if (scene.activeCamera && scene.activeCamera.name !== "Camera") {
-                scene.cameras.forEach(cam => cam.dispose());
+                this.disposeNodes(scene.cameras);
                 const camera = new BABYLON.ArcRotateCamera("Camera", 0, 10, 10, new BABYLON.Vector3(0, 0, 0), scene);
                 camera.lowerRadiusLimit = 0;
                 scene.setActiveCameraByName(camera.name);
@@ -468,6 +457,9 @@ export class BabylonScene {
                 this.context.scene, false, false);
         }
 
+        if (texture) {
+            this.madeEnvironmentTextures.add(texture);
+        }
         this.createSkyboxMesh(texture, resolved);
     }
 
@@ -503,6 +495,7 @@ export class BabylonScene {
                 texture = new BABYLON.CubeTexture(textureUrl, this.context.scene);
             }
 
+            this.madeEnvironmentTextures.add(texture);
             this.createSkyboxMesh(texture, resolved);
         }
     }
@@ -827,11 +820,41 @@ export class BabylonScene {
         }
     }
 
+    private texturesOfTheDrawing(scene: BABYLON.Scene): ReadonlySet<BABYLON.BaseTexture> {
+        const heldBySceneSystems = this.texturesSceneSystemsHold(scene);
+        const worn = scene.materials.flatMap(material => material.getActiveTextures());
+        return new Set([...worn, ...scene.customRenderTargets, ...scene.proceduralTextures]
+            .filter(texture => !heldBySceneSystems.has(texture)));
+    }
+
+    private texturesSceneSystemsHold(scene: BABYLON.Scene): ReadonlySet<unknown> {
+        const probes: BABYLON.ReflectionProbe[] | undefined = scene.reflectionProbes;
+        const held: unknown[] = [
+            scene.environmentBRDFTexture,
+            scene.environmentFuzzBRDFTexture,
+            scene.imageProcessingConfiguration.colorGradingTexture,
+            ...(probes ?? []).map(probe => probe.cubeTexture),
+        ];
+        if ("openPBREnvironmentBRDFTexture" in scene) {
+            held.push(scene.openPBREnvironmentBRDFTexture);
+        }
+        return new Set(held.filter(texture => texture instanceof BABYLON.BaseTexture));
+    }
+
+    private disposeNodes(nodes: readonly BABYLON.Node[]): void {
+        nodes.slice().forEach(node => {
+            if (!node.isDisposed()) {
+                node.dispose();
+            }
+        });
+    }
+
     private getRadians(degrees: number): number {
         return BABYLON.Tools.ToRadians(degrees);
     }
 
     private createSkyboxMesh(texture: BABYLON.BaseTexture | undefined, inputs: SkyboxMeshInputs): void {
+        const previous = this.context.scene.environmentTexture;
         this.context.scene.getMeshByName("bitbybit-hdrSkyBox")?.dispose(false, true);
         const skybox = inputs.enableGroundProjection && texture
             ? this.createGroundProjectedSkybox(texture, inputs)
@@ -841,6 +864,15 @@ export class BabylonScene {
             skybox.isVisible = false;
         }
         this.context.scene.environmentIntensity = inputs.environmentIntensity;
+        this.releaseReplacedEnvironment(previous);
+    }
+
+    private releaseReplacedEnvironment(previous: BABYLON.Nullable<BABYLON.BaseTexture>): void {
+        const scene = this.context.scene;
+        if (previous && previous !== scene.environmentTexture && this.madeEnvironmentTextures.has(previous)
+            && !scene.materials.some(material => material.hasTexture(previous))) {
+            previous.dispose();
+        }
     }
 
     private createGroundProjectedSkybox(texture: BABYLON.BaseTexture, inputs: SkyboxMeshInputs): BABYLON.Mesh {

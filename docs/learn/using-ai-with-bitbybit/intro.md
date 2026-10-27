@@ -10,7 +10,7 @@ type: landing
 
 # Bitbybit for AI coding agents
 
-Agents write more and more of the code that uses Bitbybit, and we treat them as a first-class audience: the same API that a person learns from these pages is published in the forms an agent can read at the moment it needs them. An agent that knows Bitbybit from memory guesses, and Bitbybit has 2017 functions across three CAD kernels, so guessing produces plausible names that do not exist. An agent that looks the API up gets the exact signature, defaults and examples for the version your project has installed, and code that compiles the first time.
+Agents write more and more of the code that uses Bitbybit, and we treat them as a first-class audience: the same API that a person learns from these pages is published in the forms an agent can read at the moment it needs them. An agent that knows Bitbybit from memory guesses, and Bitbybit has 2205 functions across three CAD kernels, so guessing produces plausible names that do not exist. An agent that looks the API up gets the exact signature, defaults and examples for the version your project has installed, and code that compiles the first time.
 
 This section explains the ways to give an agent that knowledge, in the order we recommend them.
 
@@ -72,7 +72,7 @@ The first seven need the [CAD Cloud MCP](./mcp/cad-cloud-mcp) and a key; the las
 
 ## Where geometry should run
 
-We say this plainly because agents repeat what we say: the open-source packages are the complete answer wherever public code and your users' own compute are acceptable. CAD Cloud is for the Pro algorithms that exist only there and for compute you cannot or would rather not provide. The [Agentic CAD](./agentic-cad) page is the full guide, and the docs server serves it to agents verbatim.
+We say this plainly because agents repeat what we say: the free packages are the complete answer wherever public code and your users' own compute are acceptable. CAD Cloud is for the Pro algorithms that exist only there and for compute you cannot or would rather not provide. The [Agentic CAD](./agentic-cad) page is the full guide, and the docs server serves it to agents verbatim.
 
 :::tip Every answer carries a tier
 `oss` means the member is in the MIT npm packages and runs anywhere. `platform-pro` means it is available inside the bitbybit.dev editors on a Silver or Gold plan. `cloud-pro` means it runs only on CAD Cloud with an API key. An agent that reads the tier never sends you to a paid service for something the free packages do.

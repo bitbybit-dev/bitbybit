@@ -4,10 +4,11 @@ import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../inputs";
 import type { BabylonNode } from "./babylon/node";
 import type { Tag } from "@bitbybit-dev/core";
-import { DrawCore } from "@bitbybit-dev/core";
+import { DrawCore, checkDrawableMesh } from "@bitbybit-dev/core";
 import type { Context } from "../context";
 import { GridMaterial } from "@babylonjs/materials";
 import type { DrawHelper } from "../draw-helper";
+import { freeWithItsLastUser } from "../material-lifetime";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../resolved-inputs";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
@@ -159,6 +160,9 @@ export class Draw extends DrawCore {
     private async handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny) {
         const options = this.mergedOcctShapeOptions(inputs);
         const decomposedMeshes = inputs.entity as Inputs.OCCT.DecomposedMeshDto[];
+        if (options.drawFaces) {
+            decomposedMeshes.forEach(checkDrawableMesh);
+        }
         const pooled = this.drawHelper.withSurfaceAnalysisRange(options, decomposedMeshes);
         const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
             pooled, dm, pooled)));
@@ -413,6 +417,7 @@ export class Draw extends DrawCore {
             );
             ground.isPickable = false;
             ground.material = groundMaterial;
+            freeWithItsLastUser(groundMaterial, ground);
             return ground;
         } catch (e) {
             console.log("Error happened: ", e);
@@ -1115,7 +1120,7 @@ export class Draw extends DrawCore {
 
     private handleDesignBuild(inputs: Inputs.Draw.DrawAny) {
         const options = this.mergedOcctShapeOptions(inputs);
-        return this.drawHelper.drawDesignBuild(inputs.entity as Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, options, inputs.babylonMesh).then(r => {
+        return this.drawHelper.drawDesignBuild(inputs.entity as Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>, options, inputs.babylonMesh).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occtShapes, options, r);
             return r;
         });

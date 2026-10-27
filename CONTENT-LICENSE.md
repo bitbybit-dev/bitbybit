@@ -11,6 +11,10 @@ All source code in the following directories is licensed under the [MIT License]
 - `examples/` — Example application source code
 - `docs/src/` — Docusaurus site source code (React components, config, scripts)
 
+## Bitbybit OCCT Kernel (MIT, closed source)
+
+The Bitbybit OCCT Kernel (`bitbybit-dev-occt*.wasm`, built on OCCT) that the `@bitbybit-dev/occt` package ships is MIT-licensed like the package ([LICENSE](./packages/dev/occt/LICENSE)), but it is not built from this repository: the source of its C++ kernel layer is not published. OCCT and the other open-source components compiled into it keep their own licenses; [NOTICE](./packages/dev/occt/NOTICE) lists them.
+
 ## Documentation Text (CC BY 4.0)
 
 The written documentation content in `docs/` (Markdown files in `docs/learn/`, `docs/api/`, `docs/blog/`) is licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/). You are free to share and adapt the text with attribution.
@@ -26,6 +30,7 @@ The following assets are **NOT** covered by the MIT license or any open-source/p
 ### What This Means
 
 - ✅ You **can** freely use, modify, and distribute all source code under MIT
+- ✅ You **can** use, modify and redistribute the Bitbybit OCCT Kernel under MIT (the C++ source of its kernel layer is not published)
 - ✅ You **can** share and adapt documentation text with attribution (CC BY 4.0)
 - ❌ You **cannot** use Bitbybit or third-party logos/trademarks without permission
 - ❌ You **cannot** imply endorsement by Bitbybit or its clients

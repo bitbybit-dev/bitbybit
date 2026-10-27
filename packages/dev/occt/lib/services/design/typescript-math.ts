@@ -1,4 +1,6 @@
-export const DEGREES = "Math.PI / 180";
+export const IN_RADIANS = " * Math.PI / 180";
+
+export const IN_DEGREES = " * 180 / Math.PI";
 
 /** A function a document's expressions compute differently from JavaScript's `Math`. */
 export type MathHelper = "sin" | "cos" | "tan" | "asin" | "acos" | "round";
@@ -23,7 +25,7 @@ export const MATH_HELPERS: Record<MathHelper, MathHelperCode> = {
             "    const angle = ((degrees % 360) + 360) % 360 + 0;",
             "    const quarter = angle <= 90 ? angle : angle <= 180 ? 180 - angle : angle <= 270 ? angle - 180 : 360 - angle;",
             `    const exact = ${EXACT_TABLE}.find(([at]) => at === quarter);`,
-            `    return exact === undefined ? Math.sin(angle * (${DEGREES})) : (angle > 180 ? -exact[1]! : exact[1]!) + 0;`,
+            `    return exact === undefined ? Math.sin(angle${IN_RADIANS}) : (angle > 180 ? -exact[1]! : exact[1]!) + 0;`,
             "}",
         ].join("\n"),
     },
@@ -34,7 +36,7 @@ export const MATH_HELPERS: Record<MathHelper, MathHelperCode> = {
         code: () => [
             "(value: number): number => {",
             `    const exact = ${INVERSE_TABLE}.find(([at]) => at === Math.abs(value));`,
-            `    return exact === undefined ? Math.asin(value) / (${DEGREES}) : (value < 0 ? -exact[1]! : exact[1]!) + 0;`,
+            `    return exact === undefined ? Math.asin(value)${IN_DEGREES} : (value < 0 ? -exact[1]! : exact[1]!) + 0;`,
             "}",
         ].join("\n"),
     },
@@ -43,7 +45,7 @@ export const MATH_HELPERS: Record<MathHelper, MathHelperCode> = {
         code: () => [
             "(value: number): number => {",
             `    const exact = ${INVERSE_TABLE}.find(([at]) => at === Math.abs(value));`,
-            `    return exact === undefined ? Math.acos(value) / (${DEGREES}) : value < 0 ? 90 + exact[1]! : 90 - exact[1]!;`,
+            `    return exact === undefined ? Math.acos(value)${IN_DEGREES} : value < 0 ? 90 + exact[1]! : 90 - exact[1]!;`,
             "}",
         ].join("\n"),
     },

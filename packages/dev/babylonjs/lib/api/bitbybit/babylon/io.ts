@@ -3,7 +3,8 @@ import { uniqueName } from "../../unique-name";
 import * as SERIALIZERS from "@babylonjs/serializers";
 import * as BABYLON from "@babylonjs/core";
 import type { Context } from "../../context";
-import { resolveDto } from "@bitbybit-dev/base";
+import { MathBitByBit, resolveDto } from "@bitbybit-dev/base";
+import { glbWithRootScale } from "@bitbybit-dev/base/lib/api/services/helpers/files/glb";
 import type * as Resolved from "../../resolved-inputs";
 
 function receiveShadowsWhereSupported(mesh: BABYLON.AbstractMesh): void {
@@ -26,13 +27,16 @@ export class BabylonIO {
     ];
     private objectUrl!: string;
 
+    private readonly math = new MathBitByBit();
+
     constructor(private readonly context: Context) { }
 
     /**
      * Loads a glTF, glb, STL or OBJ model from a File into the scene and gives back a container
      * mesh with the model's meshes as its children; any other extension throws an error.
      *
-     * The loaded meshes cast and receive shadows and start hidden when `hidden` is true.
+     * The loaded meshes cast and receive shadows and start hidden when `hidden` is true. Like drawn
+     * meshes, they are not pickable until `bitbybit.babylon.mesh.setPickable` makes them so.
      * @param inputs - The model file and whether it starts hidden
      * @returns The container mesh holding the loaded model
      * @group load
@@ -81,8 +85,9 @@ export class BabylonIO {
      * Loads a glTF, glb, STL or OBJ model from a web address into the scene and gives back a
      * container mesh with the model's meshes as its children.
      *
-     * `rootUrl` is the folder and `assetFile` the file name in it, so textures beside the model
-     * resolve too; the server must allow cross-origin requests.
+     * `rootUrl` is the folder and `assetFile` the file in it, so textures beside the model resolve;
+     * the server must allow cross-origin requests. The meshes are not pickable until
+     * `bitbybit.babylon.mesh.setPickable` makes them so.
      * @param inputs - The folder URL, the file name and whether it starts hidden
      * @returns The container mesh holding the loaded model
      * @group load
@@ -127,6 +132,9 @@ export class BabylonIO {
      * Loads a glb model held as bytes into the scene, such as the output of
      * `occt.io.convertStepToGltf`, and gives back a container mesh with the model's meshes as its
      * children.
+     *
+     * Like drawn meshes, the loaded ones are not pickable until `bitbybit.babylon.mesh.setPickable`
+     * makes them so.
      * @param inputs - The glb bytes, a name for the model and whether it starts hidden
      * @returns The container mesh holding the loaded model
      * @group load
@@ -208,8 +216,9 @@ export class BabylonIO {
 
     /**
      * Downloads the whole scene as a glb file, the binary glTF that most 3D tools and web viewers
-     * read; `discardSkyboxAndGrid` leaves out the skybox and ground this library adds.
-     * @param inputs - The file name and whether to leave out the skybox and ground
+     * read; `discardSkyboxAndGrid` leaves out the skybox and ground this library adds. Given the
+     * `unit` the scene is modelled in, the file is in metres, glTF's own unit.
+     * @param inputs - The file name, whether to leave out the skybox and ground, and the unit
      * @group export
      * @shortname gltf scene
      * @example
@@ -220,18 +229,28 @@ export class BabylonIO {
     exportGLB(inputs: Inputs.BabylonIO.ExportSceneGlbDto): void {
         const resolved = resolveDto(Inputs.BabylonIO.ExportSceneGlbDto, inputs) as Resolved.BabylonIO.ExportSceneGlbDto;
         const options = this.glbExportOptions(resolved.discardSkyboxAndGrid === true, false);
+        const scale = this.metresPer(resolved.unit);
         SERIALIZERS.GLTF2Export.GLBAsync(this.context.scene, resolved.fileName, options)
-            .then((glb) => glb.downloadFiles())
+            .then(async (glb) => {
+                if (scale !== 1) {
+                    const name = this.glbFileNameOf(glb);
+                    const file = glb.files[name];
+                    if (file instanceof Blob) {
+                        glb.files[name] = new Blob([this.scaled(new Uint8Array(await file.arrayBuffer()), scale)], { type: file.type });
+                    }
+                }
+                glb.downloadFiles();
+            })
             .catch((error: unknown) => console.error(`Failed to export the scene to ${resolved.fileName}:`, error));
     }
 
     /**
-     * Writes the whole scene, or chosen nodes with their ancestors, as glb bytes without downloading
-     * anything, so they can be saved, sent on or loaded back with `loadGlbFromArrayBuffer`.
+     * Writes the whole scene, or chosen nodes, as glb bytes without downloading anything, to save,
+     * send on or load back with `loadGlbFromArrayBuffer`.
      *
-     * Every ancestor of a chosen node is written too, so the geometry keeps its place, and the
-     * file carries the materials the meshes have at the time of the call.
-     * @param inputs - The nodes to write, whether to leave out the skybox and ground, and whether to compress with Draco
+     * Every ancestor of a chosen node is written too, so the geometry keeps its place, with the
+     * meshes' materials as they are. With the scene's `unit`, the file is in metres.
+     * @param inputs - The nodes to write, whether to leave out the skybox and ground, whether to compress with Draco, and the unit
      * @returns The glb file as bytes
      * @group export
      * @shortname gltf scene bytes
@@ -244,13 +263,25 @@ export class BabylonIO {
     async exportGLBBytes(inputs: Inputs.BabylonIO.ExportSceneGlbBytesDto): Promise<Uint8Array> {
         const resolved = resolveDto(Inputs.BabylonIO.ExportSceneGlbBytesDto, inputs) as Resolved.BabylonIO.ExportSceneGlbBytesDto;
         const options = this.glbExportOptions(resolved.discardSkyboxAndGrid === true, resolved.compressWithDraco === true, resolved.nodes);
+        const scale = this.metresPer(resolved.unit);
         const data = await SERIALIZERS.GLTF2Export.GLBAsync(this.context.scene, "scene", options);
-        const glbName = Object.keys(data.files).find((name) => name.toLowerCase().endsWith(".glb"));
-        const file = glbName === undefined ? undefined : data.files[glbName];
+        const file = data.files[this.glbFileNameOf(data)];
         if (!(file instanceof Blob)) {
             throw new Error("The glb export produced no file");
         }
-        return new Uint8Array(await file.arrayBuffer());
+        return this.scaled(new Uint8Array(await file.arrayBuffer()), scale);
+    }
+
+    private metresPer(unit: Inputs.Base.unitOfLengthEnum | undefined): number {
+        return unit === undefined ? 1 : this.math.millimetresPerUnit({ unit }) / this.math.millimetresPerUnit({ unit: Inputs.Base.unitOfLengthEnum.metre });
+    }
+
+    private scaled(glb: Uint8Array<ArrayBuffer>, scale: number): Uint8Array<ArrayBuffer> {
+        return scale === 1 ? glb : new Uint8Array(glbWithRootScale(glb, scale));
+    }
+
+    private glbFileNameOf(data: SERIALIZERS.GLTFData): string {
+        return Object.keys(data.files).find((name) => name.toLowerCase().endsWith(".glb")) ?? "";
     }
 
     private glbExportOptions(discardSkyboxAndGrid: boolean, compressWithDraco: boolean, nodes?: BABYLON.Node[]): SERIALIZERS.IExportOptions {
@@ -338,36 +369,19 @@ export class BabylonIO {
         const res = await BABYLON.SceneLoader.ImportMeshAsync("", rootUrl, fileOrName, this.context.scene);
         const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
         const container = new BABYLON.Mesh(uniqueName("ImportedMeshContainer"), this.context.scene);
-        if (sgs.length > 0) {
-            res.meshes.forEach(mesh => {
-                mesh.isPickable = false;
-                if (importHidden) {
-                    mesh.isVisible = false;
-                }
-                const children = mesh.getChildMeshes();
-                children.forEach(c => {
-                    c.isPickable = false;
-                    if (importHidden) {
-                        c.isVisible = false;
-                    }
-                });
-                if (this.context.scene.metadata.shadowGenerators.length > 0) {
-                    receiveShadowsWhereSupported(mesh);
-                    sgs.forEach(sg => {
-                        sg.addShadowCaster(mesh);
-                    });
-                    const children = mesh.getChildMeshes();
-                    children.forEach(child => {
-                        receiveShadowsWhereSupported(child);
-                        sgs.forEach(sg => {
-                            sg.addShadowCaster(child);
-                        });
-                    });
-                }
-            });
-        }
-        const root = res.meshes.find(m => m.name === "__root__")!;
-        root.parent = container;
+        [...res.meshes, ...res.transformNodes]
+            .filter(node => node.parent === null)
+            .forEach(node => { node.parent = container; });
+        container.getChildMeshes().forEach(mesh => {
+            mesh.isPickable = false;
+            if (importHidden) {
+                mesh.isVisible = false;
+            }
+            if (sgs.length > 0) {
+                receiveShadowsWhereSupported(mesh);
+                sgs.forEach(sg => sg.addShadowCaster(mesh, false));
+            }
+        });
         return container;
     }
 

@@ -59,17 +59,17 @@ root by transforming its node's solid with the root's matrix.
 - **Nothing outlives a failure.** Every node's result is released once the roots are placed, and when
   anything throws, the roots already placed are released too, so a recipe that fails halfway leaks no
   WASM memory.
-- **An open mesh is drawn, not built.** `recipes.surfaceMeshes` hands base's `recipeSurfaceMeshes`
+- **An open mesh is drawn, not built.** `recipes.surfaceMeshes` hands base's `recipes.surfaceMeshes`
   the roots a caller names, typically the ones `build` gave back empty, and returns them in the shape
   `manifoldToMesh` gives (positions only, so the renderer computes their normals), with an empty mesh
   for a root that holds a solid step. The renderers draw that shape through `drawAnyAsync` directly.
 - **`recipes.meshes` gives a drawer what it batches.** Each root is followed to its source with
-  base's `recipeSourceOf`, its rigid transforms folded into the placement, and the executor builds
+  base's `recipes.sourceOf`, its rigid transforms folded into the placement, and the executor builds
   the recipe once and hands back a copy of each source's solid (`executeRecipeNodes`), undefined for
   one that failed. Each solid is meshed once with creased normals (`creasedMeshData`, which
   `decomposeManifoldOrCrossSection` uses too), and every root becomes a placement: its mesh or -1,
   its matrix with `adjustZtoY` folded in, its tag and group. A root whose source failed and that is
-  triangles alone is drawn as its surface (`recipeSurfaceMeshes`, placed already); a root built
+  triangles alone is drawn as its surface (base's `recipes.surfaceMeshes`, placed already); a root built
   empty, such as a host its openings cut away, draws nothing, so a cut host never comes back uncut.
   A door type placed a hundred times is one mesh, which is what lets the renderers instance it.
 
@@ -111,3 +111,14 @@ round.
 
 `lib/api/__test__/kernel.ts` sets Manifold's WASM up once per process and every suite in a file
 shares it; the service holds no state of its own beyond the kernel it wraps.
+
+Every test runs with the kernel ledger (`lib/api/__test__/kernel-ledger.setup.ts`, the root
+`scripts/README.md`): each outermost call through the service tree is checked for kernel objects it
+made and left alive outside its answer. manifold-3d's own JavaScript leaks some of the vectors it
+converts arrays through (`toPolygons` never deletes each polygon's vector, `extrude` and `revolve`
+never delete the polygons they read, `triangulate` never deletes its result). The ledger tells those
+apart by where they were made, not by their class: an object manifold-3d's own script made and no
+call from our code returned is the library's, counted apart and bounded per call and per class in
+`scripts/kernel-ledger.allow.json` (`foreign`), and anything else left alive is the call's. `extrude` translates
+a centred solid itself, because the library's centring leaves the uncentred solid behind.
+`kernel-lifetimes.test.ts` names the cases one at a time through `ledgerRun`.

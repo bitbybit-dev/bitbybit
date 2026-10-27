@@ -2,10 +2,10 @@
 sidebar_position: 3
 title: "Joints"
 sidebar_label: Joints
-description: Join Designer components by their connectors - fastened, turning, sliding or both - set the angle or offset and the limits, drive a joint by a parameter, and pose the assembly with configurations.
+description: Join Designer components by their connectors - fastened, turning, sliding or both - set the angle or offset and the limits, drive a joint by a parameter, mesh two gears, and pose the assembly with configurations.
 topic: designer.assemblies.joints
 type: how-to
-verified: 2026-10-09
+verified: 2026-10-19
 tags: [designer]
 ---
 
@@ -45,6 +45,16 @@ Select a joint in the <Ui>Joints</Ui> group to see it in <Ui>Properties</Ui>. A 
 - **Driven by a parameter.** Write a parameter's name, or an expression, as the angle or the offset, and the joint follows the parameter. The picture shows the desk arm's elbow, driven by its `elbow` parameter within ±150°.
 
 <Ui>Remove joint</Ui> takes the joint out; its component stays where it is and can then be moved by hand.
+
+## Mesh two gears {#mesh-gears}
+
+Two gears drive each other only when their teeth interlock - they mesh - and that takes three things at once: their centres the right distance apart (half the module times their teeth added together, for standard gears), the teeth of one sitting in the gaps of the other, and the second turning the other way, slower or faster by the ratio of their teeth. [<Ui>Mesh gears</Ui>](../reference/commands.md#designer-assembly-mesh-gears) does all three. Select two spur gears from the standard parts in the tree, the one that drives first, and run it from the <Ui>Insert</Ui> menu:
+
+- each gear gets a revolute joint about its axis, the driving one where it stands, the driven one moved towards where it stood to the distance the pair needs;
+- both joints are driven by one angle parameter, `turn`, added when the assembly has none, so dragging `turn` turns both gears together, their teeth in mesh all the way round;
+- the two gears must have the same module and pressure angle. If their teeth would cut into each other's flanks, the command still meshes them and says so (`interferes`).
+
+The joints are written with the teeth counts the gears have now; mesh them again after changing one.
 
 ## Pose the assembly
 

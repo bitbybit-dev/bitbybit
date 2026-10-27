@@ -5,7 +5,7 @@ sidebar_label: Open a design
 description: Find a Designer script in My Projects and open it, open someone else's public design, what happens to the changes you make to it, and what a plan below Gold sees.
 topic: designer.get-started.open-design
 type: how-to
-verified: 2026-10-09
+verified: 2026-10-18
 tags: [designer]
 ---
 
@@ -17,7 +17,7 @@ tags: [designer]
 2. On the left, choose the project: your cloud projects are listed first, then the ones in this browser. Drafts you started from the Apps menu are in <Ui>Drafts</Ui>, in this browser.
 3. Choose <Ui>Open</Ui> beside the script.
 
-The Designer opens the design with every one of its documents, listed at the top of the <Ui>Features</Ui> panel, where you switch between them.
+The Designer opens the design with every one of its documents, listed at the top of the <Ui>Features</Ui> panel, where you switch between them. It shows the document you had open last; the first time, its first top-level assembly (one no other assembly places), or its first document when it has no assembly. Drag a document in the list, or press Alt and an arrow, to move it among the documents of its kind: the first top-level assembly is what someone opening the design for the first time sees.
 
 ## Someone else's design
 

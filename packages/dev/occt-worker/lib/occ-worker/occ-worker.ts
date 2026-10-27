@@ -1,14 +1,16 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules, readKernelException } from "@bitbybit-dev/occt";
+import { OccHelper, OCCTService, occtDtoRegistry, occtDtoRules, readKernelException } from "@bitbybit-dev/occt";
 import { InputError, describeKernelFailure, prepareKernelCall, setKernelStepSink } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
-import type { CommandContext } from "./command-handlers";
+import type { CommandContext, PostMessage } from "./command-handlers";
 import { getCommandHandler } from "./command-handlers";
+import { releaseMadeObjects } from "./kernel-objects";
 
 let kernel: BitbybitOcctModule;
 let openCascade: OCCTService;
+let occHelper: OccHelper;
 let cacheHelper: CacheHelper;
 let shapeResolver: ShapeResolver;
 let resultSerializer: ResultSerializer;
@@ -28,7 +30,7 @@ let meshRetention = 0;
 let progressWords: Int32Array | undefined;
 let stepWords: Int32Array | undefined;
 
-type Held = { call: DataInput; postMessage: (message: unknown) => void };
+type Held = { call: DataInput; postMessage: PostMessage };
 
 let held: Held[] | undefined = [];
 
@@ -107,10 +109,8 @@ export const initializationComplete = (
     restartKernel = restart;
     cacheHelper = new CacheHelper();
 
-    const vecService = new VectorHelperService();
-    const shapesService = new ShapesHelperService();
-
-    openCascade = new OCCTService(occ, new OccHelper(vecService, shapesService, occ));
+    occHelper = new OccHelper(occ);
+    openCascade = new OCCTService(occ, occHelper);
 
     shapeResolver = new ShapeResolver(cacheHelper);
     resultSerializer = new ResultSerializer(cacheHelper);
@@ -150,6 +150,7 @@ export const initializationComplete = (
 function createCommandContext(): CommandContext {
     return {
         openCascade,
+        meshing: occHelper.meshingService,
         kernel,
         setMeshRetention: (triangles: number) => {
             kernel.SetMeshRetention(triangles);
@@ -166,6 +167,14 @@ function createCommandContext(): CommandContext {
 const unreportableFailure = (functionName: unknown): string => typeof functionName === "string" && functionName !== ""
     ? `OCCT '${functionName}' failed, and the failure could not be reported.`
     : "OCCT computation failed, and the failure could not be reported.";
+
+function readOrTrapped(thrown: unknown): unknown {
+    try {
+        return readKernelException(kernel, thrown);
+    } catch (trap) {
+        return trap;
+    }
+}
 
 function afterCrash(crash: string): string {
     const restart = restartKernel;
@@ -192,21 +201,32 @@ function afterCrash(crash: string): string {
     return " The kernel is restarting, and every shape made before it is gone.";
 }
 
+function postHandedOver(message: Parameters<PostMessage>[0], transfer: ArrayBuffer[], postMessage: PostMessage): void {
+    try {
+        postMessage(message, { transfer });
+    } catch {
+        postMessage(message);
+    }
+}
+
 function executeStandardFunction(
-    action: DataInput["action"]
+    action: DataInput["action"],
+    carried: Set<string | number>
 ): unknown {
     const call = prepareKernelCall("OCCT", occtDtoRegistry, action.functionName, action.inputs, occtDtoRules);
 
     const res = cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs }, () => {
         call.reportIssues();
-        const computed = functionPathResolver.callFunction(openCascade, action.functionName, shapeResolver.resolveShapeReferences(call.inputs));
+        const resolvedInputs = shapeResolver.resolveShapeReferences(call.inputs);
+        const computed = functionPathResolver.callFunction(openCascade, action.functionName, resolvedInputs);
         if (stopRequested()) {
+            releaseMadeObjects(computed, resolvedInputs);
             throw new CallStopped();
         }
         return computed;
     });
 
-    return resultSerializer.serializeResult(res);
+    return resultSerializer.serializeResult(res, carried);
 }
 
 /**
@@ -220,7 +240,7 @@ function executeStandardFunction(
  */
 export const onMessageInput = (
     d: DataInput,
-    postMessage: (message: unknown) => void
+    postMessage: PostMessage
 ): void => {
     if (held !== undefined) {
         held.push({ call: d, postMessage });
@@ -242,7 +262,9 @@ export const onMessageInput = (
     }
 
     let result: unknown;
+    let transfer: ArrayBuffer[] | undefined;
     let started = "";
+    const carried = new Set<string | number>();
 
     try {
         if (typeof d.action?.functionName !== "string" || d.action.functionName === "") {
@@ -256,17 +278,20 @@ export const onMessageInput = (
         if (commandHandler) {
             const commandResult = commandHandler(inputs, createCommandContext());
             result = commandResult.result;
+            transfer = commandResult.transfer;
         } else if (!NON_CACHEABLE_FUNCTIONS.has(functionName)) {
-            result = executeStandardFunction(d.action);
+            result = executeStandardFunction(d.action, carried);
         }
 
         if (stopRequested()) {
             throw new CallStopped();
         }
-        postMessage({
-            uid: d.uid,
-            result,
-        });
+        if (transfer !== undefined && transfer.length > 0) {
+            postHandedOver({ uid: d.uid, result }, transfer, postMessage);
+        } else {
+            postMessage({ uid: d.uid, result });
+        }
+        cacheHelper.countAnswer(carried);
     } catch (e) {
         const cancelled = (): void => postMessage({ uid: d.uid, result: undefined, error: `OCCT '${started}' was cancelled before it finished; nothing it made was kept.`, errorKind: "cancelled" });
         if (e instanceof CallStopped) {
@@ -274,7 +299,7 @@ export const onMessageInput = (
             return;
         }
         try {
-            const read = readKernelException(kernel, e);
+            const read = readOrTrapped(e);
             const failure = describeKernelFailure("OCCT", d.action?.functionName ?? "", d.action?.inputs, read);
             if (failure.kind !== "crash" && started !== "" && stopRequested()) {
                 cancelled();

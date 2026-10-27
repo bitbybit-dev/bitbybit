@@ -1,8 +1,10 @@
 import type { Base } from "@bitbybit-dev/base";
 import type { IfcModel } from "../index";
 import { IFC, IFCService } from "../index";
+import { cylinderBody, exactRecipe, hollowedBody, meshBoxRecipe, quarterCylinderBody } from "../lib/__test__/exact-bodies";
 import { rehungDoor } from "../lib/__test__/hand-made";
-import { OTHER_TOOL_FILE, WALL_A, WALL_B, WALL_B_PLACED_APART_FROM_ITS_AXIS } from "../lib/__test__/other-tool-file";
+import { OTHER_TOOL_FILE, OTHER_TOOL_FILE_IFC4X3, WALL_A, WALL_B, WALL_B_PLACED_APART_FROM_ITS_AXIS, WALLS_WITHOUT_LAYER_USAGE } from "../lib/__test__/other-tool-file";
+import { ownedFile } from "../lib/__test__/owned-file";
 import type { ValidationFixture } from "./validation-types";
 
 const CORNERS: Base.Point2[] = [[0, 0], [10, 0], [10, 8], [0, 8]];
@@ -131,6 +133,64 @@ function otherToolFile(): IfcModel {
     return ifc.model.setAttribute({ model, element: WALL_B, attribute: "Description", value: "Load bearing" });
 }
 
+function ownerHistories(): IfcModel {
+    const ifc = new IFCService();
+    let model = ifc.model.read({ data: ownedFile() });
+    model = ifc.walls.connect({ model, wall: WALL_A, other: WALL_B });
+    model = ifc.doors.addType({ model, id: "door", width: 0.9, height: 2.1 });
+    model = ifc.doors.add({ model, wall: WALL_A, doorType: "door", id: "entrance", offset: 1 });
+    model = ifc.properties.addSet({ model, elements: [WALL_B], name: "Pset_WallCommon", properties: [{ name: "FireRating", value: "REI 30" }] });
+    model = ifc.properties.setValues({ model, element: WALL_B, name: "Pset_WallCommon", properties: [{ name: "FireRating", value: "REI 60" }] });
+    return ifc.model.setAttribute({ model, element: WALL_B, attribute: "Description", value: "Load bearing" });
+}
+
+function wallsWithoutLayerUsage(): IfcModel {
+    const ifc = new IFCService();
+    let model = ifc.walls.connect({ model: ifc.model.read({ data: WALLS_WITHOUT_LAYER_USAGE }), wall: WALL_A, other: WALL_B });
+    model = ifc.doors.addType({ model, id: "door", width: 0.9, height: 2.1 });
+    model = ifc.doors.add({ model, wall: WALL_A, doorType: "door", id: "entrance", offset: 1 });
+    model = ifc.walls.edit({ model, wall: WALL_B, thickness: 0.4 });
+    return ifc.walls.edit({ model, wall: WALL_A, height: 3.2 });
+}
+
+function ifc4x3Edits(): IfcModel {
+    const ifc = new IFCService();
+    let model = ifc.model.read({ data: OTHER_TOOL_FILE_IFC4X3 });
+    model = ifc.walls.connect({ model, wall: WALL_A, other: WALL_B });
+    model = ifc.doors.addType({ model, id: "door", width: 0.9, height: 2.1 });
+    model = ifc.doors.add({ model, wall: WALL_A, doorType: "door", id: "entrance", offset: 1 });
+    model = ifc.windows.addType({ model, id: "window", width: 1.2, height: 1.4 });
+    model = ifc.windows.add({ model, wall: WALL_B, windowType: "window", id: "view", offset: 1.4, sill: 0.9 });
+    model = ifc.walls.clipByPlane({ model, wall: WALL_B, origin: [6, 0, 2.6], normal: [0, -0.5, 1] });
+    model = ifc.spatial.addStorey({ model, id: "first", name: "First floor", elevation: 3 });
+    model = ifc.materials.add({ model, name: "Concrete", category: "concrete", color: "#9a9a9a" });
+    model = ifc.materials.addLayerSet({ model, name: "Floor", layers: [{ material: "Concrete", thickness: 0.2 }] });
+    model = ifc.slabs.add({ model, storey: "first", id: "floor", outline: [[0, -0.3], [6.3, -0.3], [6.3, 4], [0, 4]], layerSet: "Floor" });
+    model = ifc.walls.add({ model, storey: "first", id: "upper", start: [0, 0], end: [6, 0], height: 2.8, thickness: 0.2 });
+    model = ifc.spaces.add({ model, storey: "first", id: "room", name: "1.01", outline: [[0, 0], [6, 0], [6, 4], [0, 4]], height: 2.6 });
+    model = ifc.properties.addSet({ model, elements: [WALL_A], name: "Pset_WallCommon", properties: [{ name: "IsExternal", value: true }] });
+    model = ifc.model.setAttribute({ model, element: WALL_B, attribute: "Description", value: "Load bearing" });
+    return ifc.quantities.compute({ model });
+}
+
+function ifc4x3StructureAndSite(): IfcModel {
+    const ifc = new IFCService();
+    let model = ifc.walls.connect({ model: ifc.model.read({ data: OTHER_TOOL_FILE_IFC4X3 }), wall: WALL_A, other: WALL_B });
+    model = ifc.spatial.addStorey({ model, id: "roof-level", name: "Roof", elevation: 3 });
+    model = ifc.materials.add({ model, name: "Steel", category: "steel", color: "#8899aa" });
+    model = ifc.columns.add({ model, storey: "roof-level", id: "column", position: [0, 6], height: 2.5, profile: IFC.profileKindEnum.rectangle, width: 0.3, depth: 0.3, material: "Steel" });
+    model = ifc.beams.add({ model, storey: "roof-level", id: "beam", start: [0, 6, 2.5], end: [6, 6, 2.5], profile: IFC.profileKindEnum.iShape, width: 0.15, depth: 0.3, webThickness: 0.008, flangeThickness: 0.012, material: "Steel" });
+    model = ifc.members.add({ model, storey: "roof-level", id: "chord", start: [0, 8, 2], end: [4, 8, 2], width: 0.1, depth: 0.15, predefinedType: IFC.memberPredefinedTypeEnum.chord });
+    model = ifc.members.add({ model, storey: "roof-level", id: "strut", start: [0, 8, 2], end: [2, 8, 3], width: 0.1, depth: 0.1, predefinedType: IFC.memberPredefinedTypeEnum.strut });
+    model = ifc.assemblies.add({ model, parts: ["chord", "strut"], id: "truss", name: "Truss", predefinedType: IFC.elementAssemblyPredefinedTypeEnum.truss });
+    model = ifc.roofs.add({ model, storey: "roof-level", id: "roof", kind: IFC.roofKindEnum.gable, pitch: 30, thickness: 0.25, outline: [[-0.3, -0.3], [6.3, -0.3], [6.3, 4.3], [-0.3, 4.3]] });
+    model = ifc.elements.add({ model, storey: "roof-level", id: "post", name: "Post", body: exactRecipe(cylinderBody(100, 1000)), position: [3, 8, 0], material: "Steel" });
+    model = ifc.site.addTerrain({ model, id: "terrain", outline: [[-10, -10], [16, -10], [16, 14], [-10, 14]], holes: [[[-0.2, -0.2], [6.2, -0.2], [6.2, 4.2], [-0.2, 4.2]]], depth: 0.5 });
+    model = ifc.site.addTree({ model, id: "birch", species: "Silver birch", position: [-6, -7], height: 9 });
+    model = ifc.model.move({ model, element: "column", translation: [0.5, 0, 0], rotation: 15 });
+    return ifc.model.remove({ model, element: "beam" });
+}
+
 function wallPlacedApartFromItsAxis(): IfcModel {
     const ifc = new IFCService();
     let model = ifc.walls.connect({ model: ifc.model.read({ data: WALL_B_PLACED_APART_FROM_ITS_AXIS }), wall: WALL_A, other: WALL_B });
@@ -251,6 +311,22 @@ function assemblies(): IfcModel {
     return ifc.assemblies.add({ model, parts: ["chord", "strut"], id: "truss", name: "Truss", predefinedType: IFC.elementAssemblyPredefinedTypeEnum.truss });
 }
 
+function exactElements(): IfcModel {
+    const ifc = new IFCService();
+    let model = ifc.model.create({ name: "Exact elements", seed: "validation-exact-elements" });
+    model = ifc.spatial.addStorey({ model, id: "ground", elevation: 0 });
+    model = ifc.materials.add({ model, name: "Steel", category: "steel", color: "#8899aa" });
+    model = ifc.elements.add({ model, storey: "ground", id: "post", name: "Post", body: exactRecipe(cylinderBody(100, 1000)), position: [1000, 500, 0], rotation: 30, material: "Steel" });
+    model = ifc.elements.add({ model, storey: "ground", id: "tube", name: "Sealed tube", type: "IfcPipeSegment", predefinedType: "RIGIDSEGMENT", body: exactRecipe(hollowedBody(cylinderBody(200, 600), cylinderBody(100, 400, 100))), position: [3000, 0, 0] });
+    model = ifc.elements.add({ model, storey: "ground", id: "bench", name: "Bench", type: "IfcFurniture", objectType: "Quarter bench", body: exactRecipe(quarterCylinderBody(1000, 500)), position: [0, 3000, 0], rotation: -45 });
+    model = ifc.elements.add({ model, storey: "ground", id: "crate", name: "Crate", type: "IfcFurnishingElement", body: meshBoxRecipe([0.5, 0.4, 0.3], 1000), position: [3000, 3000, 0] });
+    const expected: [string, number][] = [["post", Math.PI * 0.01], ["tube", Math.PI * 0.02], ["bench", Math.PI / 8], ["crate", 0.06]];
+    for (const [element, volume] of expected) {
+        model = ifc.properties.addSet({ model, elements: [element], name: "Validation_Expected", properties: [{ name: "NetVolume", value: volume, type: "IfcVolumeMeasure" }] });
+    }
+    return model;
+}
+
 function roofedHouse(kind: IFC.roofKindEnum): () => IfcModel {
     return () => {
         const ifc = new IFCService();
@@ -280,6 +356,10 @@ export const VALIDATION_FIXTURES: readonly ValidationFixture[] = [
     { name: "columns-and-beams", build: columnsAndBeams },
     { name: "properties-and-attributes", build: propertiesAndAttributes },
     { name: "other-tool-file", build: otherToolFile },
+    { name: "owner-histories", build: ownerHistories },
+    { name: "walls-without-layer-usage", build: wallsWithoutLayerUsage },
+    { name: "ifc4x3-edits", build: ifc4x3Edits },
+    { name: "ifc4x3-structure-and-site", build: ifc4x3StructureAndSite },
     { name: "edited-walls", build: editedWalls },
     { name: "wall-placed-apart-from-its-axis", build: wallPlacedApartFromItsAxis },
     { name: "door-hung-on-its-wall", build: carriedDoor("wall") },
@@ -295,4 +375,5 @@ export const VALIDATION_FIXTURES: readonly ValidationFixture[] = [
     { name: "hip-roof", build: roofedHouse(IFC.roofKindEnum.hip) },
     { name: "mono-pitch-roof", build: roofedHouse(IFC.roofKindEnum.monoPitch) },
     { name: "flat-roof", build: roofedHouse(IFC.roofKindEnum.flat) },
+    { name: "exact-elements", build: exactElements },
 ];

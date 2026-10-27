@@ -10,7 +10,7 @@ export const NO_KEY_EXIT = 2;
 
 export const NO_KEY_MESSAGE = [
     `--cloud converts on CAD Cloud, and ${KEY_VARIABLE} is not set.`,
-    "Without --cloud this tool converts in-process on the open-source kernel, free, with the same result for any file this machine can hold;",
+    "Without --cloud this tool converts in-process on the local kernel, free, with the same result for any file this machine can hold;",
     "--cloud is for the cases a local kernel cannot serve: a serverless or edge function without the memory for it, or a volume of files worth handing to a queue.",
     `Any CAD Cloud plan includes conversion (${CAD_CLOUD_URL}); create a key in Bitbybit Studio (${STUDIO_KEYS_URL}) and export ${KEY_VARIABLE} before running with --cloud.`,
 ].join("\n");

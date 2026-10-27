@@ -19,8 +19,8 @@ export class OCCTFeatures {
      * Drills plain holes into a shape, one at each frame: its origin is where the hole enters and its
      * normal points out of the material.
      *
-     * `depth` 0 drills through the whole shape; `tipAngle` 0 leaves a flat bottom and 118 the point of
-     * a twist drill, in degrees. Holes that meet are cut as one.
+     * `depth` 0 drills through the shape; `tipAngle`, in degrees, is 0 for a flat bottom and 118 for
+     * a drill point. Holes that meet are cut as one; give at least one frame.
      * @param inputs - The shape, the frames and the size of the holes
      * @returns The drilled shape
      * @group holes
@@ -375,6 +375,25 @@ export class OCCTFeatures {
     }
 
     /**
+     * Grows a tapered boss as `taperedBoss` does, and reports two histories: the base's, then the
+     * profile's, whose `facesFromEdges` holds the leaning side each profile edge swept and
+     * `lastFaces` the top.
+     * @param inputs - The base, the profile, its sketch face, the draft angle in degrees and how far to go
+     * @returns The base with the tapered boss, and the histories of the base and of the profile
+     * @group forms
+     * @shortname tapered boss with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.taperedBossWithHistory({ shape: block, profile, sketchFaceIndex: top, angle: 10, length: 3 });
+     * const bossTop = histories[1].lastFaces;
+     * ```
+     */
+    taperedBossWithHistory(inputs: Inputs.OCCT.TaperedPrismFeatureDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("features.taperedBossWithHistory", inputs);
+    }
+
+    /**
      * Cuts a pocket into a base as `pocket` does, straight in from the sketch face, with its sides
      * leaning by `angle` degrees.
      *
@@ -394,6 +413,25 @@ export class OCCTFeatures {
      */
     taperedPocket(inputs: Inputs.OCCT.TaperedPrismFeatureDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("features.taperedPocket", inputs);
+    }
+
+    /**
+     * Cuts a tapered pocket as `taperedPocket` does, and reports two histories: the base's, then the
+     * profile's, whose `facesFromEdges` holds the leaning wall each profile edge swept and
+     * `lastFaces` the floor.
+     * @param inputs - The base, the profile, its sketch face, the draft angle in degrees and how far to go
+     * @returns The base with the tapered pocket, and the histories of the base and of the profile
+     * @group forms
+     * @shortname tapered pocket with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.taperedPocketWithHistory({ shape: block, profile, sketchFaceIndex: top, angle: 5, length: 3 });
+     * const floor = histories[1].lastFaces;
+     * ```
+     */
+    taperedPocketWithHistory(inputs: Inputs.OCCT.TaperedPrismFeatureDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("features.taperedPocketWithHistory", inputs);
     }
 
     /**
@@ -420,6 +458,25 @@ export class OCCTFeatures {
     }
 
     /**
+     * Adds a ring as `revolvedBoss` does, and reports two histories: the base's, then the profile's,
+     * whose `facesFromEdges` holds the face each profile edge turned into, such as the ring's outer
+     * wall and its two sides.
+     * @param inputs - The base, the profile, its sketch face, the axis and the angle in degrees
+     * @returns The base with the ring, and the histories of the base and of the profile
+     * @group forms
+     * @shortname revolved boss with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.revolvedBossWithHistory({ shape: shaft, profile, sketchFaceIndex: side, axisOrigin: [0, 0, 0], axisDirection: [0, 1, 0], angle: 360 });
+     * const collarFaces = histories[1].facesFromEdges.flat();
+     * ```
+     */
+    revolvedBossWithHistory(inputs: Inputs.OCCT.RevolvedFeatureDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("features.revolvedBossWithHistory", inputs);
+    }
+
+    /**
      * Cuts a groove round a base by turning a profile face about an axis, such as the seat of a
      * circlip on a shaft: the profile lies on a face of the base, in a plane through the axis.
      *
@@ -439,6 +496,25 @@ export class OCCTFeatures {
      */
     revolvedPocket(inputs: Inputs.OCCT.RevolvedFeatureDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("features.revolvedPocket", inputs);
+    }
+
+    /**
+     * Cuts a groove round a base as `revolvedPocket` does, and reports two histories: the base's,
+     * whose side splits into the pieces on either side of the groove, then the profile's, whose
+     * `facesFromEdges` holds the groove's floor and walls.
+     * @param inputs - The base, the profile, its sketch face, the axis and the angle in degrees
+     * @returns The base with the groove, and the histories of the base and of the profile
+     * @group forms
+     * @shortname revolved pocket with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.revolvedPocketWithHistory({ shape: shaft, profile, sketchFaceIndex: side, axisOrigin: [0, 0, 0], axisDirection: [0, 1, 0], angle: 360 });
+     * const grooveFaces = histories[1].facesFromEdges.flat();
+     * ```
+     */
+    revolvedPocketWithHistory(inputs: Inputs.OCCT.RevolvedFeatureDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("features.revolvedPocketWithHistory", inputs);
     }
 
     /**
@@ -468,6 +544,25 @@ export class OCCTFeatures {
     }
 
     /**
+     * Adds a rib as `rib` does, and reports two histories: the base's, then the wire's, whose
+     * `facesFromEdges` holds the face each wire edge made and `firstFaces` and `lastFaces` the rib's
+     * two flat sides.
+     * @param inputs - The base, the wire, the plane it lies in and the thickness on each side
+     * @returns The base with the rib, and the histories of the base and of the wire
+     * @group forms
+     * @shortname rib with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.ribWithHistory({ shape: bracket, wire, frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] }, thickness: 0.5, otherSideThickness: 0.5 });
+     * const slantedTop = histories[1].facesFromEdges[0];
+     * ```
+     */
+    ribWithHistory(inputs: Inputs.OCCT.RibFeatureDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("features.ribWithHistory", inputs);
+    }
+
+    /**
      * Cuts a groove into a base: the part of the base's section on the left of a wire as it runs,
      * seen from the side the frame's normal points to, removed across the plane.
      *
@@ -492,5 +587,24 @@ export class OCCTFeatures {
      */
     groove(inputs: Inputs.OCCT.RibFeatureDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("features.groove", inputs);
+    }
+
+    /**
+     * Cuts a groove as `groove` does, and reports two histories: the base's, then the wire's, whose
+     * `facesFromEdges` holds the wall each wire edge cut and `firstFaces` and `lastFaces` the
+     * groove's two flat sides.
+     * @param inputs - The base, the wire, the plane it lies in and the thickness on each side
+     * @returns The base with the groove, and the histories of the base and of the wire
+     * @group forms
+     * @shortname groove with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.grooveWithHistory({ shape: block, wire, frame: { origin: [0, 0, 0], normal: [0, 0, -1], direction: [1, 0, 0] }, thickness: 0.5, otherSideThickness: 0.5 });
+     * const walls = histories[1].facesFromEdges.flat();
+     * ```
+     */
+    grooveWithHistory(inputs: Inputs.OCCT.RibFeatureDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("features.grooveWithHistory", inputs);
     }
 }

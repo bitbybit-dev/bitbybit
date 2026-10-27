@@ -1,9 +1,7 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
@@ -11,7 +9,10 @@ import { runAssembly } from "./assembly";
 import { itemKeyOf } from "./identity";
 import { libraryOf } from "./library";
 import { DesignCache } from "./cache";
-import { BaseBitByBit } from "../../base";
+import { BaseBitByBit } from "@bitbybit-dev/base";
+import { sha256 } from "./digest";
+import { releaseDesignCaches } from "../../release-design-caches";
+import { handlesIn, namesOf, openWindow } from "../../../../__test__/embind-ledger";
 
 const base = new BaseBitByBit();
 
@@ -139,7 +140,7 @@ describe("design assemblies", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        const helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel);
+        const helper = new OccHelper(kernel);
         occt = new OCCTService(kernel, helper);
     }, 120_000);
 
@@ -342,7 +343,244 @@ describe("design assemblies", () => {
         });
     });
 
+    describe("scripts in the documents it places", () => {
+        const LUGGED_ID = "88888888-8888-4888-8888-888888888888";
+        const LUG_CODE = "return occt.shapes.solid.createBox(inputs);";
+        const assets = { lugScript: LUG_CODE };
+        const lugged: Part = {
+            schemaVersion: 1,
+            id: LUGGED_ID,
+            parameters: { revision: { type: "text", value: "A" } },
+            assets: [{ id: "lugScript", uri: "lug.js", sha256: sha256(new TextEncoder().encode(LUG_CODE)) }],
+            features: [
+                square("base", 40, 20),
+                { id: "plate", type: "extrude", profile: "base", distance: 10 },
+                { id: "lug", type: "script", script: "lugScript", params: { plate: { body: "plate" }, list: [{ body: "plate" }] } },
+            ],
+            parts: [{ id: "plate", body: "plate", properties: { revision: "{revision}" } }, { id: "lug", body: "lug" }],
+        };
+        const placing = (...components: Models.OCCT.DesignComponent[]): Assembly => ({ schemaVersion: 1, kind: "assembly", components });
+        const keptAfter = <T>(act: () => T): { answer: T; kept: string[] } => {
+            const opened = openWindow();
+            let answer: T;
+            try {
+                answer = act();
+                handlesIn(answer).forEach(handle => { handle.delete(); });
+            } finally {
+                opened.close();
+            }
+            releaseDesignCaches(occt);
+            return { answer, kept: namesOf(opened.made().filter(handle => !handle.isDeleted())) };
+        };
+
+        beforeEach(() => {
+            releaseDesignCaches(occt);
+        });
+
+        it("should hand back the script a placed document waits for, under the document's position, and place the part its outcome makes on the next build", () => {
+            // Arrange
+            const document = placing({ id: "plate", source: { document: LUGGED_ID, part: "plate" } }, { id: "lug", source: { document: LUGGED_ID, part: "lug" } });
+            const documents = [plate, lugged];
+            const first = occt.design.build({ document, documents, assets });
+            const box = occt.shapes.solid.createBox({ width: 6, length: 6, height: 6, center: [0, 0, 3] });
+            const outcomes = (first.pending ?? []).map(waiting => ({ hash: waiting.hash, shape: box }));
+
+            // Act
+            const second = occt.design.build({ document, documents, assets, outcomes });
+
+            // Assert
+            expect(first.pending?.map(waiting => [waiting.id, waiting.path, waiting.script, Object.keys(waiting.inputs)])).toEqual([["lug", "/documents/1/features/2", "lugScript", ["plate", "list"]]]);
+            expect(first.report.map(entry => [entry.id, entry.status, entry.messages])).toEqual([["plate", "ok", []], ["lug", "pending", ["/components/1/source/part: the part \"lug\" waits for the outcome of a script: \"lug\" at /documents/1/features/2"]]]);
+            expect(second.pending).toBeUndefined();
+            expect(second.report.map(entry => [entry.id, entry.status])).toEqual([["plate", "ok"], ["lug", "ok"]]);
+            expect(occt.shapes.solid.getSolidVolume({ shape: second.parts.find(part => part.id.startsWith("lug-"))!.shape })).toBeCloseTo(216, 6);
+            [first, second, box].forEach(made => handlesIn(made).forEach(handle => { handle.delete(); }));
+        });
+
+        it("should skip a component joined to one whose part waits for a script, saying it waits, and report the part's own failure as a failure", () => {
+            // Arrange
+            const joinable: Part = {
+                ...lugged,
+                parts: [
+                    { id: "plate", body: "plate", connectors: [{ id: "bottom", on: { of: "plate", role: "start" } }] },
+                    { id: "lug", body: "lug", connectors: [{ id: "top", on: { of: "lug", role: "top" } }] },
+                    { id: "missing", body: "missing" },
+                ],
+                features: [
+                    ...lugged.features,
+                    { id: "missing", type: "extrude", profile: "base", distance: 1 },
+                    { id: "bevel", type: "chamfer", body: "missing", distance: 0.2, edges: { between: [{ of: "missing", role: "rim" }, { of: "missing", role: "side" }], count: 4 } },
+                ],
+            };
+            const document: Assembly = {
+                ...placing({ id: "cap", source: { document: LUGGED_ID, part: "plate" } }, { id: "lug", source: { document: LUGGED_ID, part: "lug" } }, { id: "lost", source: { document: LUGGED_ID, part: "missing" } }),
+                joints: [{ id: "capOnLug", type: "fastened", component: "cap", connector: "bottom", to: { component: "lug", connector: "top" } }],
+            };
+
+            // Act
+            const { answer, kept } = keptAfter(() => occt.design.build({ document, documents: [joinable], assets }));
+
+            // Assert
+            expect(answer.report.map(entry => [entry.id, entry.status, entry.messages])).toEqual([
+                ["lug", "pending", ["/components/1/source/part: the part \"lug\" waits for the outcome of a script: \"lug\" at /documents/0/features/2"]],
+                ["cap", "skipped", ["the component \"lug\" waits for a script"]],
+                ["lost", "failed", [expect.stringMatching(/^\/components\/2\/source\/part: the part "missing" was not built: feature "bevel" failed: /)]],
+            ]);
+            expect([answer.pending?.map(waiting => waiting.path), kept]).toEqual([["/documents/0/features/2"], []]);
+        });
+
+        describe("a sub-assembly whose part waits for a script", () => {
+            const SUB_ID = "77777777-7777-4777-8777-777777777777";
+            const connected: Part = {
+                ...lugged,
+                parts: [
+                    { id: "plate", body: "plate", connectors: [{ id: "bottom", on: { of: "plate", role: "start" } }] },
+                    { id: "lug", body: "lug", connectors: [{ id: "top", on: { of: "lug", role: "top" } }] },
+                ],
+            };
+            const sub: Assembly = {
+                schemaVersion: 1,
+                kind: "assembly",
+                id: SUB_ID,
+                components: [{ id: "plate", source: { document: LUGGED_ID, part: "plate" } }, { id: "lug", source: { document: LUGGED_ID, part: "lug" } }],
+                connectors: [{ id: "tip", component: "lug", connector: "top" }, { id: "foot", component: "plate", connector: "bottom" }],
+            };
+            const reportOf = (built: Models.OCCT.DesignBuildResult<TopoDS_Shape>): [string, string, string[]][] => built.report.map(entry => [entry.id, entry.status, entry.messages]);
+            const lugWaits = "/components/1/source/part: the part \"lug\" waits for the outcome of a script: \"lug\" at /documents/0/features/2";
+
+            it("should skip a component joined to the connector the sub-assembly publishes from that part, saying it waits, as one joined to the part itself is", () => {
+                // Arrange
+                const document: Assembly = {
+                    ...placing({ id: "sub", source: { document: SUB_ID } }, { id: "cap", source: { document: LUGGED_ID, part: "plate" } }),
+                    joints: [{ id: "capOnTip", type: "fastened", component: "cap", connector: "bottom", to: { component: "sub", connector: "tip" } }],
+                };
+
+                // Act
+                const { answer, kept } = keptAfter(() => occt.design.build({ document, documents: [connected, sub], assets }));
+
+                // Assert
+                expect(reportOf(answer)).toEqual([
+                    ["sub/plate", "ok", []],
+                    ["sub/lug", "pending", [lugWaits]],
+                    ["sub", "ok", []],
+                    ["cap", "skipped", ["the connector \"tip\" of \"sub\" waits for a script"]],
+                ]);
+                expect([answer.pending?.map(waiting => waiting.path), kept]).toEqual([["/documents/0/features/2"], []]);
+            });
+
+            it("should report the sub-assembly pending when it is joined by that connector, skipping what is inside it and what is joined to it as waiting", () => {
+                // Arrange
+                const document: Assembly = {
+                    ...placing({ id: "base", source: { document: LUGGED_ID, part: "plate" } }, { id: "sub", source: { document: SUB_ID } }, { id: "cap", source: { document: LUGGED_ID, part: "plate" } }),
+                    joints: [
+                        { id: "subOnBase", type: "fastened", component: "sub", connector: "tip", to: { component: "base", connector: "bottom" } },
+                        { id: "capOnSub", type: "fastened", component: "cap", connector: "bottom", to: { component: "sub", connector: "foot" } },
+                    ],
+                };
+
+                // Act
+                const { answer, kept } = keptAfter(() => occt.design.build({ document, documents: [connected, sub], assets }));
+
+                // Assert
+                expect(reportOf(answer)).toEqual([
+                    ["base", "ok", []],
+                    ["sub/plate", "skipped", ["the assembly \"sub\" waits for a script"]],
+                    ["sub/lug", "pending", [lugWaits]],
+                    ["sub", "pending", ["/joints/0/connector: the connector \"tip\" waits for a script"]],
+                    ["cap", "skipped", ["the component \"sub\" waits for a script"]],
+                ]);
+                expect([answer.pending?.map(waiting => waiting.path), kept]).toEqual([["/documents/0/features/2"], []]);
+            });
+        });
+
+        it("should list a script once when two builds of a placed document wait for the same outcome, keeping none of the shapes either was given", () => {
+            // Arrange
+            const document = placing(
+                { id: "first", source: { document: LUGGED_ID, part: "plate", parameters: { revision: "A" } } },
+                { id: "second", source: { document: LUGGED_ID, part: "plate", parameters: { revision: "B" } } },
+            );
+
+            // Act
+            const { answer, kept } = keptAfter(() => occt.design.build({ document, documents: [lugged], assets }));
+
+            // Assert
+            expect(answer.parts.map(part => part.properties["revision"])).toEqual(["A", "B"]);
+            expect([answer.pending?.map(waiting => waiting.path), kept]).toEqual([["/documents/0/features/2"], []]);
+        });
+
+        it("should free the shapes the scripts of the placed documents were given when placing a component throws", () => {
+            // Arrange
+            const document = placing({ id: "plates", source: { document: LUGGED_ID, part: "plate" }, pattern: { linear: { direction: [1, 0, 0], spacing: 50, count: 2 } } });
+            const products = vi.spyOn(occt.transforms, "multiplyTransforms").mockImplementation(() => { throw new Error("no product"); });
+
+            // Act
+            const { answer, kept } = keptAfter(() => {
+                try {
+                    return occt.design.build({ document, documents: [lugged], assets });
+                } catch (error) {
+                    return error instanceof Error ? error.message : "not an error";
+                } finally {
+                    products.mockRestore();
+                }
+            });
+
+            // Assert
+            expect(answer).toBe("no product");
+            expect(kept).toEqual([]);
+        });
+    });
+
     describe("building", () => {
+        it("should hand a trap in a placed document's feature on, tagged with the feature's path under the document's position, asking the trapped kernel to free nothing, not even the parts built before it", () => {
+            // Arrange
+            const ROUNDED_ID = "99999999-9999-4999-8999-999999999999";
+            const rounded: Part = {
+                schemaVersion: 1,
+                id: ROUNDED_ID,
+                features: [
+                    square("base", 10, 10),
+                    { id: "block", type: "extrude", profile: "base", distance: 5 },
+                    { id: "round", type: "fillet", body: "block", radius: 1, edges: { between: [{ of: "block", role: "end" }, { of: "block", role: "side" }], count: 4 } },
+                ],
+                parts: [{ id: "block", body: "block" }],
+            };
+            const document: Assembly = { schemaVersion: 1, kind: "assembly", components: [{ id: "plate", source: { document: PLATE_ID, part: "plate" } }, { id: "block", source: { document: ROUNDED_ID, part: "block" } }] };
+            const trap = new WebAssembly.RuntimeError("unreachable");
+            const shapes: unknown = Reflect.get(kernel.TopoDS_Shape, "prototype");
+            const prototype = shapes as { delete: () => void };
+            const deleteShape = prototype.delete;
+            const sprung: boolean[] = [];
+            const deletes = vi.spyOn(prototype, "delete").mockImplementation(function (this: unknown): void {
+                if (sprung.length > 0) {
+                    throw new WebAssembly.RuntimeError("a shape deleted after the trap");
+                }
+                Reflect.apply(deleteShape, this, []);
+            });
+            const rounding = vi.spyOn(occt.fillets, "filletEdgesWithHistory").mockImplementation(() => {
+                sprung.push(true);
+                throw trap;
+            });
+            const opened = openWindow();
+
+            // Act
+            let thrown: unknown;
+            try {
+                occt.design.build({ document, documents: [plate, rounded] });
+            } catch (error) {
+                thrown = error;
+            } finally {
+                opened.close();
+                deletes.mockRestore();
+                rounding.mockRestore();
+            }
+            opened.made().filter(handle => !handle.isDeleted()).forEach(handle => { handle.delete(); });
+            releaseDesignCaches(occt);
+
+            // Assert
+            expect(thrown).toBe(trap);
+            expect([Reflect.get(trap, "code"), Reflect.get(trap, "details")]).toEqual(["occt.design.crashed", { feature: "round", path: "/documents/1/features/2" }]);
+        });
+
         it("should join posts by their connectors, build each part once per parameter set, and count them in the bill of materials", () => {
             // Act
             const built = occt.design.build({ document: pair, documents: [plate, post] });

@@ -212,8 +212,29 @@ export class FaceFromWiresOnFaceDto<T, U> {
     inside?: boolean | undefined = true;
 }
 /**
- * Faces and a tolerance for `shapes.shell.sewFaces`, which stitches faces that share edges into one
- * shell.
+ * Wires and a guiding face for `shapes.face.createFaceBoundedByWiresOnFace`, which makes the one face
+ * of the guiding surface the wires bound.
+ */
+export class FaceBoundedByWiresOnFaceDto<T, U> {
+    constructor(wires?: T[], face?: U) {
+        if (wires !== undefined) { this.wires = wires; }
+        if (face !== undefined) { this.face = face; }
+    }
+    /**
+     * The wires on the guiding surface, in any order and either way round: the outer boundary and the
+     * holes, or two loops that go round a closed surface.
+     * @default undefined
+     */
+    wires!: T[];
+    /**
+     * The face whose surface the new face is cut from.
+     * @default undefined
+     */
+    face!: U;
+}
+/**
+ * Faces and a tolerance for `shapes.shell.sewFaces` and its twin with history, and for
+ * `shapes.solid.fromFaces`, which stitch faces that share edges into one shell or solid.
  */
 export class SewDto<T> {
     constructor(shapes?: T[], tolerance?: number) {
@@ -257,17 +278,19 @@ export class Geom2dEllipseDto {
      */
     direction?: Base.Vector2 | undefined = [1, 0];
     /**
-     * The half-width across the ellipse's short axis; must not exceed `radiusMajor`.
+     * The half-width across the ellipse's short axis, above 0; must not exceed `radiusMajor`.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
     radiusMinor?: number | undefined = 1;
     /**
-     * The half-width along the ellipse's long axis.
+     * The half-width along the ellipse's long axis, above 0.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -299,9 +322,10 @@ export class Geom2dCircleDto {
      */
     direction?: Base.Vector2 | undefined = [1, 0];
     /**
-     * The distance from the center to the curve.
+     * The distance from the center to the curve, above 0.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -622,18 +646,20 @@ export class EllipseDto {
      */
     direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
-     * The half-width across the ellipse's short axis, in model units; must not exceed
-     * `radiusMajor`.
+     * The half-width across the ellipse's short axis, in model units, above 0; must not
+     * exceed `radiusMajor`.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
     radiusMinor?: number | undefined = 1;
     /**
-     * The half-width along the ellipse's long axis, in model units.
+     * The half-width along the ellipse's long axis, in model units, above 0.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -654,25 +680,28 @@ export class HelixWireDto {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * The distance from the axis to the coil, in model units.
+     * The distance from the axis to the coil, in model units, above 0.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
     radius?: number | undefined = 1;
     /**
-     * How far the coil climbs along the axis in one full turn, in model units.
+     * How far the coil climbs along the axis in one full turn, in model units, above 0.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
     pitch?: number | undefined = 1;
     /**
-     * The total climb of the coil along the axis, in model units.
+     * The total climb of the coil along the axis, in model units, above 0.
      * @default 5
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -716,25 +745,28 @@ export class HelixWireByTurnsDto {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * The distance from the axis to the coil, in model units.
+     * The distance from the axis to the coil, in model units, above 0.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
     radius?: number | undefined = 1;
     /**
-     * How far the coil climbs along the axis in one full turn, in model units.
+     * How far the coil climbs along the axis in one full turn, in model units, above 0.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
     pitch?: number | undefined = 1;
     /**
-     * How many full turns the coil makes; fractions are allowed.
+     * How many full turns the coil makes, above 0; fractions are allowed.
      * @default 5
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.5
      */
@@ -779,33 +811,37 @@ export class TaperedHelixWireDto {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * The distance from the axis to the coil at its base, in model units.
+     * The distance from the axis to the coil at its base, in model units, above 0.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
     startRadius?: number | undefined = 2;
     /**
-     * The distance from the axis to the coil at its top, in model units.
+     * The distance from the axis to the coil at its top, in model units, above 0.
      * @default 0.5
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
     endRadius?: number | undefined = 0.5;
     /**
-     * How far the coil climbs along the axis in one full turn, in model units.
+     * How far the coil climbs along the axis in one full turn, in model units, above 0.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
     pitch?: number | undefined = 1;
     /**
-     * The total climb of the coil along the axis, in model units.
+     * The total climb of the coil along the axis, in model units, above 0.
      * @default 5
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -857,17 +893,20 @@ export class FlatSpiralWireDto {
      */
     startRadius?: number | undefined = 0.5;
     /**
-     * The distance from the center where the spiral ends, in model units.
+     * The distance from the center where the spiral ends, in model units, above 0.
      * @default 5
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
     endRadius?: number | undefined = 5;
     /**
-     * How many full turns the spiral makes between the two radii; fractions are allowed.
+     * How many full turns the spiral makes between the two radii, above 0; fractions are
+     * allowed.
      * @default 5
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.5
      */
@@ -988,9 +1027,10 @@ export class GeomCylindricalSurfaceDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * The distance from the axis to the surface, in model units.
+     * The distance from the axis to the surface, in model units, above 0.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */

@@ -3,8 +3,6 @@ import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Solid } from "../../../bit
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTFace } from "./face";
 import { OCCTShell } from "./shell";
 import { OCCTSolid } from "./solid";
@@ -20,13 +18,93 @@ describe("OCCT solid unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         face = new OCCTFace(occt, occHelper);
         shell = new OCCTShell(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);
         compound = new OCCTCompound(occt, occHelper);
+    });
+
+    describe("fromFaces and fromFacesWithHistory", () => {
+        const facesOfBox = (center: Inputs.Base.Point3): TopoDS_Face[] => face.getFaces({ shape: solid.createBox({ width: 2, length: 2, height: 2, center }) });
+        const refusalsOf = (shapes: TopoDS_Face[], tolerance: number): unknown[] => [
+            (): unknown => solid.fromFaces({ shapes, tolerance }),
+            (): unknown => solid.fromFacesWithHistory({ shapes, tolerance }),
+        ].map(act => {
+            try {
+                act();
+            } catch (error) {
+                return error;
+            }
+            return undefined;
+        });
+
+        it("should sew the six faces of a box into a solid of the box's volume, handed back as a solid", () => {
+            // Arrange
+            const faces = facesOfBox([0, 0, 0]);
+
+            // Act
+            const made = solid.fromFaces({ shapes: faces, tolerance: 1e-7 });
+
+            // Assert
+            expect(made).toBeInstanceOf(occt.TopoDS_Solid);
+            expect(solid.getSolidVolume({ shape: made })).toBeCloseTo(8, 9);
+            expect(faces.map(each => each.isDeleted())).toEqual(Array(6).fill(false));
+        });
+
+        it("should give each face it was given the one face of the solid it became", () => {
+            // Arrange
+            const faces = facesOfBox([0, 0, 0]);
+
+            // Act
+            const { shape, histories } = solid.fromFacesWithHistory({ shapes: faces, tolerance: 1e-7 });
+
+            // Assert
+            const madeFaces = face.getFaces({ shape });
+            expect(shape).toBeInstanceOf(occt.TopoDS_Solid);
+            expect(histories.map(history => history.faces.map(each => each.length))).toEqual(Array(6).fill([1]));
+            expect(new Set(histories.map(history => history.faces[0]![0]!)).size).toBe(6);
+            expect(histories.map((history, index) => occHelper.facesService.getFaceCenterOfMass({ shape: madeFaces[history.faces[0]![0]!]! }).map((value, axis) => Math.abs(value - occHelper.facesService.getFaceCenterOfMass({ shape: faces[index]! })[axis]!) < 1e-9).every(Boolean))).toEqual(Array(6).fill(true));
+        });
+
+        it("should refuse faces that leave a gap wider than the tolerance, and sew them when the tolerance spans it", () => {
+            // Arrange
+            const faces = facesOfBox([0, 0, 0]);
+            const apart = [occHelper.transformsService.translate({ shape: faces[0]!, translation: [0, 0.01, 0] }), ...faces.slice(1)];
+
+            // Act
+            const refusals = refusalsOf(apart, 1e-7);
+            const spanned = solid.fromFaces({ shapes: apart, tolerance: 0.1 });
+
+            // Assert
+            expect(refusals).toEqual(Array(2).fill(expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` do not sew into one solid: the faces leave 8 free edges, so they close no volume." })));
+            expect(solid.getSolidVolume({ shape: spanned })).toBeCloseTo(8, 1);
+        });
+
+        it("should refuse faces that close several volumes", () => {
+            // Arrange
+            const faces = [...facesOfBox([0, 0, 0]), ...facesOfBox([10, 0, 0])];
+
+            // Act
+            const refusals = refusalsOf(faces, 1e-7);
+
+            // Assert
+            expect(refusals).toEqual(Array(2).fill(expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` do not sew into one solid: the faces sew into 2 shells, not one." })));
+        });
+
+        it("should refuse faces that leave the box open, and no faces at all", () => {
+            // Arrange
+            const open = facesOfBox([0, 0, 0]).slice(0, 5);
+
+            // Act
+            const refusals = [...refusalsOf(open, 1e-7), ...refusalsOf([], 1e-7)];
+
+            // Assert
+            expect(refusals).toEqual([
+                ...Array(2).fill(expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` do not sew into one solid: the faces leave 4 free edges, so they close no volume." })),
+                ...Array(2).fill(expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` is empty, and sewing needs at least one face." })),
+            ]);
+        });
     });
 
     it("should recreate a solid from closed shell if sewing all edges of the box", () => {
@@ -532,6 +610,31 @@ describe("OCCT solid unit tests", () => {
 
             standing.delete();
             centred.delete();
+        });
+    });
+
+    describe("primitives of a size the kernel cannot build", () => {
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
+
+        it.each([
+            ["a ball of radius 0", (): unknown => solid.createSphere({ radius: 0, center: [0, 0, 0] }), "MakeSphereFromAx2: the radius must be more than 1e-7"],
+            ["a box of width 0", (): unknown => solid.createBox({ width: 0, length: 1, height: 1, center: [0, 0, 0] }), "MakeBoxFromPntAndDims: every size must be more than 1e-7 in magnitude"],
+            ["a cylinder of radius 0", (): unknown => solid.createCylinder({ radius: 0, height: 2, center: [0, 0, 0], direction: [0, 1, 0] }), "BRepPrimAPI_MakeCylinder.Shape: the radius must be more than 1e-7"],
+            ["a torus of minor radius 0", (): unknown => solid.createTorus({ majorRadius: 2, minorRadius: 0, angle: 360, center: [0, 0, 0], direction: [0, 1, 0] }), "BRepPrimAPI_MakeTorus.Shape: the minor radius must be more than 1e-7"],
+            ["a cone of two equal radii", (): unknown => solid.createCone({ radius1: 0, radius2: 0, height: 2, angle: 360, center: [0, 0, 0], direction: [0, 1, 0] }), "cone with two identic radii"],
+        ] as [string, () => unknown, string][])("should pass on the kernel's reason for refusing %s, read rather than raw", (_primitive, build, reason) => {
+            // Act
+            const refused = refusalOf(build);
+
+            // Assert
+            expect(refused).toEqual(new Error(`Standard_DomainError: ${reason}`));
         });
     });
 

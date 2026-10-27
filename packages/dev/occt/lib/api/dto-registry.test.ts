@@ -3,10 +3,7 @@ import type { InputIssue } from "@bitbybit-dev/base";
 import { resolveInputs, validateInputs, withDefaults } from "@bitbybit-dev/base";
 import type { TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
 import { OCCTService } from "../occ-service";
-import { VectorHelperService } from "./vector-helper.service";
-import { ShapesHelperService } from "./shapes-helper.service";
 import { occtDtoRegistry } from "./dto-registry";
 import { occtDtoRules } from "./validation";
 import * as Inputs from "./inputs";
@@ -18,7 +15,7 @@ describe("the OCCT operation registry", () => {
 
     beforeAll(async () => {
         const occ = await createBitbybitOcct();
-        service = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+        service = new OCCTService(occ);
     });
 
     it("should name a kernel method for every listed path", () => {
@@ -82,8 +79,9 @@ const constraintRows: [path: string, what: string, inputs: object, issues: Input
     ["shapes.solid.createBox", "pass a width just above its exclusive minimum", { width: 1e-9 }, []],
     ["shapes.solid.createBox", "report a center of two coordinates where three are needed", { center: [0, 0] }, [{ property: "center", code: "arity", params: { expected: 3, actual: 2 }, message: "must have 3 numbers, not 2" }]],
     ["shapes.solid.createBox", "report a flag that is not true or false", { originOnCenter: "yes" }, [{ property: "originOnCenter", code: "type", message: "must be true or false" }]],
-    ["shapes.wire.createCircleWire", "pass a radius exactly at its inclusive minimum", { radius: 0 }, []],
-    ["shapes.wire.createCircleWire", "report a radius below its inclusive minimum", { radius: -0.5 }, [{ property: "radius", code: "minimum", params: { limit: 0, exclusive: false, actual: -0.5 }, message: "must be at least 0" }]],
+    ["shapes.wire.createFlatSpiralWire", "pass a start radius exactly at its inclusive minimum", { startRadius: 0 }, []],
+    ["shapes.wire.createFlatSpiralWire", "report a start radius below its inclusive minimum", { startRadius: -0.5 }, [{ property: "startRadius", code: "minimum", params: { limit: 0, exclusive: false, actual: -0.5 }, message: "must be at least 0" }]],
+    ["shapes.wire.createCircleWire", "report a radius of 0, at its exclusive minimum", { radius: 0 }, [{ property: "radius", code: "minimum", params: { limit: 0, exclusive: true, actual: 0 }, message: "must be above 0" }]],
     ["shapes.wire.createCircleWire", "report a direction holding something other than numbers", { direction: [0, Number.NaN, 1] }, [{ property: "direction", code: "type", message: "must be a list of 3 numbers" }]],
     ["fillets.chamferEdgeDistAngle", "report an angle exactly at its exclusive maximum", { shape: S, edge: S, face: S, angle: 90 }, [{ property: "angle", code: "maximum", params: { limit: 90, exclusive: true, actual: 90 }, message: "must be below 90" }]],
     ["fillets.chamferEdgeDistAngle", "pass an angle just below its exclusive maximum", { shape: S, edge: S, face: S, angle: 89.999 }, []],
@@ -177,13 +175,13 @@ const zeroRows: ZeroRow[] = [
     ["booleans.meshMeshIntersectionWires", "precision2", ({ box, sphere }) => ({ shape1: box, shape2: sphere })],
 ];
 
-describe("a value of 0 the OCCT kernel cannot build with", () => {
+describe("a value of 0 the Bitbybit OCCT Kernel cannot build with", () => {
     let kernel: OCCTService;
     let shapes: Fixtures;
 
     beforeAll(async () => {
         const occ = await createBitbybitOcct();
-        kernel = withDefaults(new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ)), occtDtoRegistry);
+        kernel = withDefaults(new OCCTService(occ), occtDtoRegistry);
         const box = kernel.shapes.solid.createBox({ width: 2, length: 2, height: 2 });
         const face = kernel.shapes.face.getFaces({ shape: box })[0]!;
         shapes = {

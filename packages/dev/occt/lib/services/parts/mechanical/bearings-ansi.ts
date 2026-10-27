@@ -1,0 +1,63 @@
+import type { TopoDS_Shape } from "../../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Inputs from "../../../api/inputs";
+import type * as Models from "../../../api/models";
+import type * as Resolved from "../../../api/resolved-inputs";
+import type { BallBearingShapes } from "./ball-bearing-shapes";
+
+/**
+ * Inch R-series deep groove ball bearings made from their designation, in the unit asked for: the
+ * miniature R1-4 to R1810 and R2 to R20, with their rings, balls and cage as separate solids in one
+ * compound, and shields if asked for, at the shielded bearing's width. The balls and the raceways are
+ * drawn to typical proportions; a catalogue gives a particular maker's.
+ */
+export class OCCTBearingsAnsi {
+
+    constructor(private readonly shapes: BallBearingShapes) { }
+
+    /**
+     * Makes a deep groove ball bearing as a compound of its inner and outer rings with their
+     * raceways, its balls, its cage and, when `shields` is true, a shield on each side.
+     *
+     * One side lies on the frame's origin and the axis runs along the normal.
+     * @param inputs - The designation, whether it has shields, the unit and the frame
+     * @returns A compound of the bearing's solids
+     * @group bearings
+     * @shortname ansi ball bearing
+     * @drawable true
+     * @example
+     * ```typescript
+     * const bearing = await bitbybit.occt.parts.mechanical.bearings.ansi.ballBearing({ designation: Bit.Inputs.Engineering.ansiBallBearingEnum.r8, shields: true });
+     * ```
+     */
+    ballBearing(inputs: Inputs.OCCT.AnsiBallBearingDto): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.AnsiBallBearingDto, inputs) as Resolved.OCCT.AnsiBallBearingDto;
+        return this.made(resolved).shape;
+    }
+
+    /**
+     * Makes a ball bearing as `ballBearing` does and names the role each face plays.
+     *
+     * The roles `bore`, `outside`, the rings' sides `innerStart`, `innerEnd`, `outerStart` and
+     * `outerEnd`, `innerRing`, `outerRing`, `race`, `ball`, `cage` and `shield` list face indexes as
+     * `shapes.face.getFaces` numbers them across the compound. The `axis` frame is the input frame.
+     * @param inputs - The designation, whether it has shields, the unit and the frame
+     * @returns The bearing, the faces each role names and its axis
+     * @group bearings
+     * @shortname ansi ball bearing with roles
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, roles } = await bitbybit.occt.parts.mechanical.bearings.ansi.ballBearingWithRoles({ designation: Bit.Inputs.Engineering.ansiBallBearingEnum.r188 });
+     * ```
+     */
+    ballBearingWithRoles(inputs: Inputs.OCCT.AnsiBallBearingDto): Models.OCCT.ShapeWithRoles<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.AnsiBallBearingDto, inputs) as Resolved.OCCT.AnsiBallBearingDto;
+        return this.made(resolved);
+    }
+
+    private made(resolved: Resolved.OCCT.AnsiBallBearingDto): Models.OCCT.ShapeWithRoles<TopoDS_Shape> {
+        const sizes = this.shapes.build.base.engineering.mechanical.bearings.ansi.ballBearingSizes({ designation: resolved.designation, shields: resolved.shields, unit: resolved.unit });
+        return this.shapes.bearing(sizes, resolved.shields, resolved.frame);
+    }
+}

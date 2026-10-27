@@ -5,6 +5,7 @@ vi.mock("playcanvas", async () => {
 });
 
 import { createDrawHelperMocks } from "./__mocks__/test-helpers";
+import { meshBuffersOf } from "./__mocks__/mesh-buffers";
 import { DrawHelper } from "./draw-helper";
 import * as Inputs from "./inputs";
 import * as pc from "playcanvas";
@@ -49,6 +50,9 @@ describe("DrawHelper iso curves and surface analysis", () => {
     let setColors: MockInstance<pc.Mesh["setColors"]>;
     let setColors32: MockInstance<pc.Mesh["setColors32"]>;
     let setPositions: MockInstance<pc.Mesh["setPositions"]>;
+    let setNormals: MockInstance<pc.Mesh["setNormals"]>;
+    let setIndices: MockInstance<pc.Mesh["setIndices"]>;
+    let setUvs: MockInstance<pc.Mesh["setUvs"]>;
 
     beforeEach(() => {
         const mocks = createDrawHelperMocks();
@@ -57,6 +61,9 @@ describe("DrawHelper iso curves and surface analysis", () => {
         setColors = vi.spyOn(pc.Mesh.prototype, "setColors");
         setColors32 = vi.spyOn(pc.Mesh.prototype, "setColors32");
         setPositions = vi.spyOn(pc.Mesh.prototype, "setPositions");
+        setNormals = vi.spyOn(pc.Mesh.prototype, "setNormals");
+        setIndices = vi.spyOn(pc.Mesh.prototype, "setIndices");
+        setUvs = vi.spyOn(pc.Mesh.prototype, "setUvs");
     });
 
     afterEach(() => {
@@ -77,19 +84,28 @@ describe("DrawHelper iso curves and surface analysis", () => {
         walk(entity);
         return found;
     };
-    const meshOfEntity = (entity: pc.Entity): pc.Mesh => entity.render!.meshInstances[0]!.mesh;
+    const meshOfEntity = (entity: pc.Entity): pc.Mesh => entity.render!.meshInstances[0]!.mesh!;
     const materialOf = (entity: pc.Entity): pc.StandardMaterial => entity.render!.meshInstances[0]!.material as pc.StandardMaterial;
     const frontFaces = (drawn: pc.Entity): pc.Entity[] => rendered(drawn).filter(entity => entity.name.includes("surfaceChild") && !entity.name.includes("backFace"));
     const valuesFor = (spy: { mock: { calls: unknown[][]; contexts: unknown[] } }, mesh: pc.Mesh): number[] | undefined => {
         const call = spy.mock.contexts.indexOf(mesh);
         return call === -1 ? undefined : Array.from(spy.mock.calls[call]![0] as ArrayLike<number>);
     };
+    const backFaces = (drawn: pc.Entity): pc.Entity[] => rendered(drawn).filter(entity => entity.name.includes("backFace"));
+    const uvsFor = (mesh: pc.Mesh): number[] | undefined => {
+        const call = setUvs.mock.contexts.indexOf(mesh);
+        return call === -1 ? undefined : Array.from(setUvs.mock.calls[call]![1]);
+    };
+    const numbersOf = (entity: pc.Entity): { positions: number[] | undefined; normals: number[] | undefined; indices: number[] | undefined; uvs: number[] | undefined; colors: number[] | undefined } => {
+        const mesh = meshOfEntity(entity);
+        return { positions: valuesFor(setPositions, mesh), normals: valuesFor(setNormals, mesh), indices: valuesFor(setIndices, mesh), uvs: uvsFor(mesh), colors: valuesFor(setColors, mesh) };
+    };
     const colorsOf = (entity: pc.Entity): number[][] | undefined => {
         const colors = valuesFor(setColors, meshOfEntity(entity));
         return colors === undefined ? undefined : Array.from({ length: colors.length / 4 }, (_, vertex) => colors.slice(4 * vertex, 4 * vertex + 4).map(value => Number(value.toFixed(7))));
     };
 
-    const draw = (mesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>>): Promise<pc.Entity> =>
+    const draw = (mesh: Inputs.OCCT.DecomposedMeshDto | Inputs.OCCT.DecomposedMeshBuffersDto, options: Partial<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>>): Promise<pc.Entity> =>
         drawHelper.handleDecomposedMesh({ drawEdges: false, drawTwoSided: false, ...options }, mesh, {});
 
     describe("what reaches the worker", () => {
@@ -131,7 +147,7 @@ describe("DrawHelper iso curves and surface analysis", () => {
 
             // Assert
             const [name, inputs] = occtWorkerCall.mock.calls[0]!;
-            expect(name).toBe("shapesToMeshes");
+            expect(name).toBe("shapesToMeshBuffers");
             expect([inputs.isoCurvesU, inputs.isoCurvesV, inputs.surfaceAnalysis]).toEqual([5, 2, Inputs.OCCT.surfaceAnalysisEnum.mean]);
             expect("faceMaterial" in inputs).toBe(false);
         });
@@ -170,6 +186,25 @@ describe("DrawHelper iso curves and surface analysis", () => {
     });
 
     describe("surface analysis", () => {
+        it("should draw the typed buffers the worker hands over exactly as it draws lists, analysis colors and back faces included", async () => {
+            // Arrange
+            const lists = meshOf([triangle(0, [0, 2, 4]), { ...triangle(1), uvs: [] }]);
+            const buffers = meshBuffersOf(lists, { withoutCenters: true });
+
+            // Act
+            const fromLists = await draw(lists, { drawTwoSided: true });
+            const fromBuffers = await draw(buffers, { drawTwoSided: true });
+
+            // Assert
+            expect(buffers.faceList[1]!.vertexCoord.byteOffset).toBeGreaterThan(0);
+            expect(buffers.faceList[1]!.uvs).toHaveLength(0);
+            expect(numbersOf(frontFaces(fromLists)[0]!).positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0, 0, 11, 0, 0, 10, 1, 0]);
+            expect(numbersOf(frontFaces(fromBuffers)[0]!)).toEqual(numbersOf(frontFaces(fromLists)[0]!));
+            expect(numbersOf(backFaces(fromLists)[0]!).indices).toEqual([0, 2, 1, 3, 5, 4]);
+            expect(numbersOf(backFaces(fromBuffers)[0]!)).toEqual(numbersOf(backFaces(fromLists)[0]!));
+            expect(rendered(fromBuffers)).toHaveLength(rendered(fromLists).length);
+        });
+
         it("should color each vertex through the ramp, from the lowest value found to the highest", async () => {
             // Act
             const drawn = await draw(meshOf([triangle(0, [0, 2, 4])]), {});

@@ -242,7 +242,7 @@ async function start() {
 **Explanation of `main.ts`:**
 
 1.  **Imports:** Includes `BitByBitBase`, `Inputs`, `initBitByBit`, and `InitBitByBitOptions` from `@bitbybit-dev/babylonjs`, along with local models and helper functions.
-2.  **`options`:** Specifies that only the OCCT kernel should be enabled and initialized for this particular application, as it's the one used for the Hex Shell's CAD operations.
+2.  **`options`:** Specifies that only the Bitbybit OCCT Kernel should be enabled and initialized for this particular application, as it's the one used for the Hex Shell's CAD operations.
 3.  **`start()` function (Main Application Flow):**
     *   **BabylonJS Setup:** `initBabylonJS()` initializes the BabylonJS `Engine` and `Scene`.
     *   **Bitbybit Initialization:** An instance of `BitByBitBase` is created. The `initBitByBit()` helper function is then called to initialize the Bitbybit instance with the scene and the kernel options. This helper automatically creates web workers, loads kernel WASM files from CDN, and waits for the selected kernels to be ready.

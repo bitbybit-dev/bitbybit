@@ -2,6 +2,9 @@ import * as Inputs from "../inputs";
 import type { MathBitByBit } from "./math";
 import { resolveDto } from "../kernel-calls";
 import type * as Resolved from "../resolved-inputs";
+import { linearToSrgb, srgbToLinear } from "./helpers/color/color-space";
+
+const HEX_RADIX = 16;
 
 /**
  * Colors in the two forms the library uses: a hex text such as `#ff5733`, and an object `{ r, g, b
@@ -162,8 +165,8 @@ export class Color {
     /**
      * Writes three channel values as a hex color.
      *
-     * `min` and `max` say which range the values use; a range other than 0 to 255 is remapped
-     * first, so channels from 0 to 1 work as well.
+     * `min` and `max` give the values' range; a range other than 0 to 255 is remapped first, and
+     * each channel is rounded and held between 0 and 255.
      * Example: r 255, g 87, b 51 in [0,255] -> '#ff5733'; r 1, g 0.5, b 0.2 in [0,1] -> '#ff8033'
      * @param inputs - The red, green and blue values and their range
      * @returns The hex color
@@ -177,19 +180,11 @@ export class Color {
      */
     rgbToHex(inputs: Inputs.Color.RGBMinMaxDto): Inputs.Base.Color {
         const resolved = resolveDto(Inputs.Color.RGBMinMaxDto, inputs) as Resolved.Color.RGBMinMaxDto;
-        let r = resolved.r;
-        let g = resolved.g;
-        let b = resolved.b;
-
-        if (resolved.max !== 255) {
-            r = Math.round(this.math.remap({ number: r, fromLow: resolved.min, fromHigh: resolved.max, toLow: 0, toHigh: 255 }));
-            g = Math.round(this.math.remap({ number: g, fromLow: resolved.min, fromHigh: resolved.max, toLow: 0, toHigh: 255 }));
-            b = Math.round(this.math.remap({ number: b, fromLow: resolved.min, fromHigh: resolved.max, toLow: 0, toHigh: 255 }));
-        }
-
-        const s = `#${Number(0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).substring(1, 7)}`;
-
-        return s;
+        const byteOf = (channel: number): number => {
+            const scaled = resolved.min === 0 && resolved.max === 255 ? channel : this.math.remap({ number: channel, fromLow: resolved.min, fromHigh: resolved.max, toLow: 0, toHigh: 255 });
+            return Math.min(255, Math.max(0, Math.round(scaled)));
+        };
+        return `#${Number(0x1000000 + byteOf(resolved.r) * 0x10000 + byteOf(resolved.g) * 0x100 + byteOf(resolved.b)).toString(HEX_RADIX).substring(1, 7)}`;
     }
 
 
@@ -369,5 +364,46 @@ export class Color {
         const gInv = (255 - g);
         const bInv = (255 - b);
         return this.rgbToHex({ r: rInv, g: gInv, b: bInv, min: 0, max: 255 });
+    }
+
+    /**
+     * Turns one sRGB-encoded color channel into linear light, the form glTF, STEP colors read by
+     * XCAF and the renderers' lighting work in. A hex color's channels are sRGB-encoded.
+     *
+     * Example: 0.5 -> 0.214
+     * @param inputs - The encoded channel, from 0 to 1
+     * @returns The linear channel, from 0 to 1
+     * @group linear light
+     * @shortname srgb to linear
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { r, g, b } = bitbybit.color.hexToRgbMapped({ color: "#ff8800", from: 0, to: 1 });
+     * const linear = [r, g, b].map(channel => bitbybit.color.srgbToLinear({ channel }));
+     * ```
+     */
+    srgbToLinear(inputs: Inputs.Color.ChannelDto): number {
+        const resolved = resolveDto(Inputs.Color.ChannelDto, inputs) as Resolved.Color.ChannelDto;
+        return srgbToLinear(resolved.channel);
+    }
+
+    /**
+     * Turns one linear-light color channel back into its sRGB encoding, the inverse of
+     * `srgbToLinear`, as a hex color holds it.
+     *
+     * Example: 0.214 -> 0.5
+     * @param inputs - The linear channel, from 0 to 1
+     * @returns The encoded channel, from 0 to 1
+     * @group linear light
+     * @shortname linear to srgb
+     * @drawable false
+     * @example
+     * ```typescript
+     * const half = bitbybit.color.linearToSrgb({ channel: 0.214 });
+     * ```
+     */
+    linearToSrgb(inputs: Inputs.Color.ChannelDto): number {
+        const resolved = resolveDto(Inputs.Color.ChannelDto, inputs) as Resolved.Color.ChannelDto;
+        return linearToSrgb(resolved.channel);
     }
 }

@@ -17,12 +17,14 @@ import type * as Resolved from "../../resolved-inputs";
 
 export class BabylonNode {
 
+    private readonly drawnAxes = new WeakMap<BABYLON.TransformNode, BABYLON.Mesh>();
+
     constructor(private readonly context: Context, private readonly drawHelper: DrawHelper) { }
 
     /**
      * Draws the three axes of a node as colored lines of the given length, parented to it, so its
      * position and orientation can be seen; the default colors are red for X, green for Y and blue
-     * for Z.
+     * for Z. Drawing the same node again replaces the axes drawn before.
      * @param inputs - The node, the axis colors and the axis length
      * @example
      * ```typescript
@@ -31,15 +33,12 @@ export class BabylonNode {
      */
     drawNode(inputs: Inputs.BabylonNode.DrawNodeDto): void {
         const resolved = resolveDto(Inputs.BabylonNode.DrawNodeDto, inputs) as Resolved.BabylonNode.DrawNodeDto;
-        const cotAxis = this.drawHelper.localAxes(
-            resolved.size, this.context.scene, resolved.colorX, resolved.colorY, resolved.colorZ
-        );
-        cotAxis.parent = resolved.node;
+        this.replaceAxes(resolved.node, resolved);
     }
 
     /**
      * Draws the three axes of several nodes as colored lines of the given length, each set parented
-     * to its node, as `drawNode` does for one.
+     * to its node, as `drawNode` does for one, replacing the axes drawn on a node before.
      * @param inputs - The nodes, the axis colors and the axis length
      * @example
      * ```typescript
@@ -48,11 +47,7 @@ export class BabylonNode {
      */
     drawNodes(inputs: Inputs.BabylonNode.DrawNodesDto): void {
         const resolved = resolveDto(Inputs.BabylonNode.DrawNodesDto, inputs) as Resolved.BabylonNode.DrawNodesDto;
-        resolved.nodes.forEach(node => {
-            const CoTAxis = this.drawHelper.localAxes(
-                resolved.size, this.context.scene, resolved.colorX, resolved.colorY, resolved.colorZ);
-            CoTAxis.parent = node;
-        });
+        resolved.nodes.forEach(node => this.replaceAxes(node, resolved));
     }
 
     /**
@@ -306,5 +301,15 @@ export class BabylonNode {
             new BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
             inputs.distance,
         );
+    }
+
+    private replaceAxes(node: BABYLON.TransformNode, inputs: Resolved.BabylonNode.DrawNodeSharedDto): void {
+        const previous = this.drawnAxes.get(node);
+        if (previous && !previous.isDisposed()) {
+            previous.dispose();
+        }
+        const axes = this.drawHelper.localAxes(inputs.size, this.context.scene, inputs.colorX, inputs.colorY, inputs.colorZ);
+        axes.parent = node;
+        this.drawnAxes.set(node, axes);
     }
 }

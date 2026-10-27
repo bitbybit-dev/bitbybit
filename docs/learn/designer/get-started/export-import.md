@@ -5,7 +5,7 @@ sidebar_label: Export and import
 description: Save a whole Designer project or one document as a file - project, project with geometry, design document, STEP, GLB, BREP or STL - and bring design documents or CAD files back in.
 topic: designer.get-started.export-import
 type: how-to
-verified: 2026-10-09
+verified: 2026-10-18
 tags: [designer]
 ---
 
@@ -32,4 +32,5 @@ When you view someone else's design below Gold, the dialog offers only what its 
 ## Import
 
 - <Ui>File</Ui> > <Ui>Import design documents</Ui> adds the documents of a `.bitbybit`, `.bitbybitz` or design document file to the project. A document with the same id as one you have replaces it.
-- <Ui>File</Ui> > <Ui>Import STEP, IGES or BREP</Ui> keeps a file from another CAD program with the project and starts a part that imports it. It needs the project to be open on bitbybit.dev, which keeps the file.
+- When the design already holds documents, the documents list asks where an import goes: <Ui>Add to this design</Ui>, or <Ui>Open as a new design</Ui>, which puts what the file gave into a new design in the same project and opens it, leaving this one as it was.
+- <Ui>File</Ui> > <Ui>Import STEP, IGES or BREP</Ui> brings in a file from another CAD program. A STEP file becomes its assemblies and parts: an assembly document for each assembly and a part document for each part, placed where the file places them, with their names and colours; a part placed many times stays one document. Their shapes are kept with the project as one file, and the status bar says what changed on the way, such as a mirrored placement built into a part of its own. An import is not undone with <Ui>Undo</Ui>: <Ui>File</Ui> > <Ui>Remove the last import</Ui> deletes the documents it added, after asking, while no other document uses them; the file itself stays with the project. Importing the same file again adds a second copy. An IGES or BREP file starts one part that imports it. Both need the project to be open on bitbybit.dev, which keeps the files.

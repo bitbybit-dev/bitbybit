@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/occt",
-    "version": "1.5.0",
+    "version": "1.6.0-rc.0",
     "description": "Bit By Bit Developers CAD algorithms using OpenCascade Technology kernel. Run in Node and in Browser.",
     "homepage": "https://docs.bitbybit.dev/classes/Bit.OCCT",
     "main": "index.js",
@@ -51,16 +51,17 @@
         "copy-readme-license": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist && shx cp -R ./NOTICE ./dist && shx cp -R ./licenses ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "delete-bak": "find ./dist -name '*.bak' -delete || true",
-        "test": "NODE_OPTIONS=--max-old-space-size=8192 vitest run",
-        "test:coverage": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --coverage",
+        "test": "shx rm -rf test-results/kernel-ledger && NODE_OPTIONS=--max-old-space-size=8192 vitest run",
+        "test:coverage": "shx rm -rf test-results/kernel-ledger && NODE_OPTIONS=--max-old-space-size=8192 vitest run --coverage",
         "test:watch": "NODE_OPTIONS=--max-old-space-size=8192 vitest",
         "bench": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --config bench/vitest.config.ts",
+        "heap": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --config heap/vitest.config.ts",
         "fetch-kernels": "node ../../../scripts/fetch-kernels.mjs",
         "api:check": "api-extractor run",
         "api:update": "api-extractor run --local"
     },
     "author": "Bit by bit developers",
-    "license": "MIT",
+    "license": "MIT AND Apache-2.0 AND LGPL-2.1-only WITH OCCT-exception-1.0",
     "funding": {
         "type": "corporate",
         "url": "https://bitbybit.dev/auth/pick-plan"
@@ -191,13 +192,14 @@
     },
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/base": "1.5.0"
+        "@bitbybit-dev/base": "1.6.0-rc.0"
     },
     "devDependencies": {
         "@microsoft/api-extractor": "7.59.1",
-        "@vitest/coverage-v8": "4.1.11",
+        "@vitest/coverage-v8": "4.1.12",
+        "fast-check": "4.10.2",
         "shx": "0.4.0",
         "typescript": "5.9.3",
-        "vitest": "4.1.11"
+        "vitest": "4.1.12"
     }
 }

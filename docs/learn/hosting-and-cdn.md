@@ -69,7 +69,7 @@ An important consideration: **you probably don't need to host all assets**, only
 
 **Examples:**
 - If you use `bitbybit-runner-babylonjs.js`, you won't need `bitbybit-runner-threejs.js`, `bitbybit-runner-playcanvas.js`, or any of the lite runners
-- If you only use the OCCT kernel, you'll only need to host `bitbybit-occt-webworker.js`
+- If you only use the Bitbybit OCCT Kernel, you'll only need to host its worker (`workers/bitbybit-dev-occt-webworker.js`), its WebAssembly binary (`wasm/bitbybit-dev-occt.*.wasm`) with the license files beside it (`wasm/bitbybit-dev-occt.LICENSE.txt`, `wasm/bitbybit-dev-occt.NOTICE.txt`, `wasm/licenses/`), and the fonts it loads unless you pass `loadFonts: []`
 - If you never load GLTF files with Draco compression, you don't need the Draco decompressor
 
 ### Determining Your Asset Dependencies

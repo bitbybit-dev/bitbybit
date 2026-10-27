@@ -2,7 +2,7 @@
 
 **Scaffold a Bit By Bit Developers 3D/CAD project: a browser app on one of three game engines, a complete app template ready for a coding agent, or a CAD Cloud backend with its frontend.**
 
-Every project it creates runs on the open-source [Bitbybit](https://bitbybit.dev) CAD packages (OpenCascade, JSCAD and Manifold compiled to WebAssembly, MIT licensed), ships with a headless smoke test behind a strict TypeScript configuration and the ESLint rules the Bitbybit code base is held to, and comes configured for AI coding agents: an `AGENTS.md` that explains the project, and the free [Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp) server set up for Claude Code, Cursor and VS Code, so the agent looks the API up instead of guessing it.
+Every project it creates runs on the free [Bitbybit](https://bitbybit.dev) CAD packages (OpenCascade, JSCAD and Manifold compiled to WebAssembly; the packages are MIT licensed, and the C++ layer of the Bitbybit OCCT Kernel is closed source), ships with a headless smoke test behind a strict TypeScript configuration and the ESLint rules the Bitbybit code base is held to, and comes configured for AI coding agents: an `AGENTS.md` that explains the project, and the free [Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp) server set up for Claude Code, Cursor and VS Code, so the agent looks the API up instead of guessing it.
 
 ## Quick start
 
@@ -63,7 +63,7 @@ The generated README says what needs CAD Cloud and where to get a key; the key g
 
 ## Where geometry runs
 
-The packages, in your own process, are the complete answer for everything they can do: they are free, and nothing of ours sits in the loop. [CAD Cloud](https://bitbybit.dev/cad-cloud) exists for Pro algorithms that are available nowhere else (the sheet-metal unfold, for one) and for compute you cannot provide, such as an edge function or file conversion at volume. Every template that touches the cloud explains this in its README and its `AGENTS.md`, keeps working without a key, and links to the [plans](https://bitbybit.dev/cad-cloud) and to [Bitbybit Studio](https://studio.bitbybit.dev/keys/billing), where keys are made.
+The packages, in your own process, are the complete answer for everything they can do: they are free, and no service of ours sits in the loop. [CAD Cloud](https://bitbybit.dev/cad-cloud) exists for Pro algorithms that are available nowhere else (the sheet-metal unfold, for one) and for compute you cannot provide, such as an edge function or file conversion at volume. Every template that touches the cloud explains this in its README and its `AGENTS.md`, keeps working without a key, and links to the [plans](https://bitbybit.dev/cad-cloud) and to [Bitbybit Studio](https://studio.bitbybit.dev/keys/billing), where keys are made.
 
 ## Every project is agent-ready
 

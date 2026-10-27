@@ -1,9 +1,9 @@
 
 import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
-import type { KeptDesignMesh } from "@bitbybit-dev/core";
-import type { FaceLook, FaceRange, LookMesh, PartPlacement } from "@bitbybit-dev/core";
+import { DrawHelperCore, checkDrawableMesh, checkKeptDesignMesh, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, designMeshingTextOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
+import type { KeptDesignMesh, DrawableShapeMesh } from "@bitbybit-dev/core";
+import type { FaceLook, FaceRange, LookMesh, MeshPart, PartPlacement } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import type { JSCADText } from "@bitbybit-dev/jscad-worker";
 import type { Vector } from "@bitbybit-dev/base";
@@ -14,6 +14,7 @@ import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as pc from "playcanvas";
 import { DEFAULT_COLORS, CACHE_CONFIG } from "./constants";
 import type * as Resolved from "./resolved-inputs";
+import type { InstancedPointsEntity, PointsLook } from "./draw-helper-types";
 import { RecipeMeshesDrawer } from "./draw-recipe-meshes";
 
 function float32ViewOf(locked: ArrayBuffer | ArrayBufferView): Float32Array {
@@ -22,6 +23,8 @@ function float32ViewOf(locked: ArrayBuffer | ArrayBufferView): Float32Array {
     }
     return new Float32Array(locked);
 }
+
+const MIRRORED_AXIS_END = 3;
 
 type PolylineEntity = Inputs.Draw.PolylineEntity;
 
@@ -41,10 +44,11 @@ interface DesignPartDrawn {
 
 interface DesignDrawState {
     placements: Map<string, PartPlacement[]>;
-    meshes: Map<string, Inputs.OCCT.DecomposedMeshDto>;
+    meshes: Map<string, DrawableShapeMesh>;
     signature: string;
     looks: string;
     precision: number;
+    meshing: string;
     parts: DesignPartDrawn[];
 }
 
@@ -54,6 +58,10 @@ export class DrawHelper extends DrawHelperCore {
 
     private readonly designStates = new WeakMap<pc.Entity, DesignDrawState>();
 
+    private readonly designBuffers = new WeakMap<pc.Entity, pc.VertexBuffer>();
+
+    private readonly pointsLooks = new WeakMap<pc.Entity, PointsLook>();
+
     private readonly recipeDrawer = new RecipeMeshesDrawer({
         scene: () => this.context.scene,
         device: () => this.context.app.graphicsDevice,
@@ -61,7 +69,7 @@ export class DrawHelper extends DrawHelperCore {
         material: (transparent, metallic, roughness) => this.recipeMaterial(transparent, metallic, roughness),
     });
 
-    private readonly designMeshes = new DesignMeshCache<Inputs.OCCT.DecomposedMeshDto>();
+    private readonly designMeshes = new DesignMeshCache<DrawableShapeMesh>();
     
     private entityIdCounter = 0;
     private readonly instanceId = `pc-${Date.now()}`;
@@ -161,7 +169,7 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>;
         try {
             const safeWorkerOptions = this.getMeshingOptions(resolved);
-            const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", safeWorkerOptions);
+            const decomposedMesh: DrawableShapeMesh = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMeshBuffers", safeWorkerOptions);
             return this.handleDecomposedMesh(resolved, decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing OCCT shape:", error);
@@ -173,7 +181,10 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.OCCT.DrawShapesDto, inputs) as Resolved.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>;
         try {
             const safeWorkerOptions = this.getMeshingOptions(resolved);
-            const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", safeWorkerOptions);
+            const meshes: DrawableShapeMesh[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshBuffers", safeWorkerOptions);
+            if (resolved.drawFaces) {
+                meshes.forEach(checkDrawableMesh);
+            }
             const pooled = this.withSurfaceAnalysisRange(resolved, meshes);
             const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(pooled, decomposedMesh, pooled)));
             const containerId = this.generateEntityId("shapesMeshContainer");
@@ -328,14 +339,16 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.Point.DrawPointDto, inputs) as Resolved.Point.DrawPointDto<pc.Entity>;
         const vectorPoints = [resolved.point];
 
-        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours : [resolved.colours];
-        if (resolved.pointMesh && resolved.updatable) {
+        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours.slice() : [resolved.colours];
+        const look: PointsLook = { colours: colorsHex, opacity: resolved.opacity, size: resolved.size };
+        if (resolved.pointMesh && resolved.updatable && this.drawnInLook(resolved.pointMesh, look)) {
             this.updatePointsInstances(resolved.pointMesh, vectorPoints);
-        } else {
-            resolved.pointMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointMesh"), vectorPoints, colorsHex, resolved.opacity, resolved.size
-            );
+            return resolved.pointMesh;
         }
+        if (resolved.pointMesh && resolved.updatable) {
+            resolved.pointMesh.destroy();
+        }
+        resolved.pointMesh = this.createPointsInLook("pointMesh", vectorPoints, look);
         return resolved.pointMesh;
     }
 
@@ -360,14 +373,10 @@ export class DrawHelper extends DrawHelperCore {
         pointsToDraw: Inputs.Base.Point3[],
         updatable: boolean, size: number, opacity: number, colours: string | string[],
         arrowSize = 0, arrowAngle = 30): pc.Entity {
-        const polylines = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours,
+        const existingLine = updatable && mesh ? mesh.children[0] as pc.Entity | undefined : undefined;
+        const polyline = this.drawPolylines(existingLine, [pointsToDraw], updatable, size, opacity, colours,
             Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize, arrowAngle);
-        if (!mesh) {
-            mesh = new pc.Entity(this.generateEntityId("polyline"));
-            mesh.addChild(polylines!);
-            this.context.scene.addChild(mesh);
-        }
-        return mesh;
+        return this.wrapPolylineInGroup(polyline!, mesh, updatable);
     }
 
     drawCurve(inputs: Inputs.Verb.DrawCurveDto<pc.Entity>): pc.Entity {
@@ -390,21 +399,16 @@ export class DrawHelper extends DrawHelperCore {
         
         const coloursHex = this.resolveAllColors(resolved.colours, vectorPoints.length, strategy);
         
-        if (resolved.pointsMesh && resolved.updatable) {
-            const children = resolved.pointsMesh.children;
-            if (children.length === vectorPoints.length) {
-                this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
-            } else {
-                resolved.pointsMesh.destroy();
-                resolved.pointsMesh = this.createPointSpheresMesh(
-                    this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size
-                );
-            }
-        } else {
-            resolved.pointsMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size
-            );
+        const look: PointsLook = { colours: coloursHex, opacity: resolved.opacity, size: resolved.size };
+        if (resolved.pointsMesh && resolved.updatable
+            && this.instancedPointCount(resolved.pointsMesh) === vectorPoints.length && this.drawnInLook(resolved.pointsMesh, look)) {
+            this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
+            return resolved.pointsMesh;
         }
+        if (resolved.pointsMesh && resolved.updatable) {
+            resolved.pointsMesh.destroy();
+        }
+        resolved.pointsMesh = this.createPointsInLook("pointsMesh", vectorPoints, look);
         return resolved.pointsMesh;
     }
 
@@ -418,7 +422,7 @@ export class DrawHelper extends DrawHelperCore {
 
         (children as pc.Entity[]).forEach((child: pc.Entity) => {
             if (child.tags?.has("instancedPoints")) {
-                const extendedChild = child as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] };
+                const extendedChild = child as InstancedPointsEntity;
                 const instanceBuffer = extendedChild.instanceBuffer;
                 const pointIndices = extendedChild.pointIndices;
                 
@@ -484,73 +488,35 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined; colors?: number[] | undefined }[],
+        meshDataConverted: readonly MeshPart[],
         group: pc.Entity | undefined, updatable: boolean, material: pc.StandardMaterial, addToScene: boolean, hidden: boolean
     ): pc.Entity {
-        const createMesh = () => {
-            const totalPositions: number[] = [];
-            let totalNormals: number[] = [];
-            const totalIndices: number[] = [];
-            const totalUvs: number[] = [];
-            const totalColors: number[] = [];
-            let indexOffset = 0;
-
-            meshDataConverted.forEach(meshItem => {
-                totalPositions.push(...meshItem.positions);
-                if (meshItem.normals && meshItem.normals.length > 0) {
-                    totalNormals.push(...meshItem.normals);
-                }
-                if (meshItem.uvs) {
-                    totalUvs.push(...meshItem.uvs);
-                }
-                if (meshItem.colors) {
-                    totalColors.push(...meshItem.colors);
-                }
-                const offsetIndices = meshItem.indices.map(i => i + indexOffset);
-                totalIndices.push(...offsetIndices);
-                indexOffset += meshItem.positions.length / 3;
-            });
-
-            if (totalNormals.length === 0 && totalPositions.length > 0) {
-                totalNormals = this.computeNormals(totalPositions, totalIndices);
-            }
-
-            const mesh = new pc.Mesh(this.context.app.graphicsDevice);
-            mesh.setPositions(totalPositions);
-            mesh.setNormals(totalNormals);
-            mesh.setIndices(totalIndices);
-            if (totalUvs.length > 0) {
-                mesh.setUvs(0, totalUvs);
-            }
-            if (totalColors.length > 0 && totalColors.length === totalPositions.length / 3 * 4) {
-                mesh.setColors(totalColors);
-            }
-            mesh.update(pc.PRIMITIVE_TRIANGLES);
-            return mesh;
-        };
+        const merged = this.mergeMeshParts(this.drawableMeshParts(meshDataConverted), { colorSize: 4 });
+        const mesh = new pc.Mesh(this.context.app.graphicsDevice);
+        mesh.setPositions(merged.positions);
+        mesh.setNormals(merged.normals);
+        mesh.setIndices(merged.indices);
+        if (merged.uvs) {
+            mesh.setUvs(0, merged.uvs);
+        }
+        if (merged.colors) {
+            mesh.setColors(merged.colors);
+        }
+        mesh.update(pc.PRIMITIVE_TRIANGLES);
 
         if (group && updatable) {
             this.clearEntity(group);
-            const mesh = createMesh();
-            const meshInstance = new pc.MeshInstance(mesh, material);
-            const entity = new pc.Entity(this.generateEntityId("surfaceChild"));
-            entity.addComponent("render", {
-                meshInstances: [meshInstance]
-            });
-            group.addChild(entity);
         } else {
             group = new pc.Entity(this.generateEntityId("surface"));
             if (addToScene) {
                 this.context.scene.addChild(group);
             }
-            const mesh = createMesh();
-            const meshInstance = new pc.MeshInstance(mesh, material);
-            const entity = new pc.Entity(this.generateEntityId("surfaceChild"));
-            entity.addComponent("render", {
-                meshInstances: [meshInstance]
-            });
-            group.addChild(entity);
         }
+        const entity = new pc.Entity(this.generateEntityId("surfaceChild"));
+        entity.addComponent("render", {
+            meshInstances: [new pc.MeshInstance(mesh, material)]
+        });
+        group.addChild(entity);
         if (hidden) {
             group.enabled = false;
         }
@@ -558,7 +524,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private createBackFaceMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined }[],
+        meshDataConverted: readonly MeshPart[],
         backFaceColour: string,
         backFaceOpacity: number,
         zOffset: number
@@ -585,7 +551,7 @@ export class DrawHelper extends DrawHelperCore {
         mesh.setPositions(backFaceData.positions);
         mesh.setNormals(backFaceData.normals);
         mesh.setIndices(backFaceData.indices);
-        if (backFaceData.uvs && backFaceData.uvs.length > 0) {
+        if (backFaceData.uvs) {
             mesh.setUvs(0, backFaceData.uvs);
         }
         mesh.update(pc.PRIMITIVE_TRIANGLES);
@@ -728,14 +694,18 @@ export class DrawHelper extends DrawHelperCore {
         jscadMesh.addChild(entity);
         
         if (transforms && transforms.length === 16) {
+            const mirrored = this.mirrors(transforms);
             const mat4 = new pc.Mat4();
-            mat4.data = new Float32Array(transforms);
+            mat4.data = new Float32Array(mirrored ? transforms.map((value, at) => at < MIRRORED_AXIS_END ? -value : value) : transforms);
             const pos = new pc.Vec3();
             const rot = new pc.Quat();
             const scale = new pc.Vec3();
             mat4.getTranslation(pos);
             mat4.getScale(scale);
             rot.setFromMat4(mat4);
+            if (mirrored) {
+                scale.x = -scale.x;
+            }
             jscadMesh.setLocalPosition(pos);
             jscadMesh.setLocalRotation(rot);
             jscadMesh.setLocalScale(scale);
@@ -776,7 +746,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
-     * Draws what `occt.design.build` returns. Every part is meshed once, in one call to the worker,
+     * Draws what `occt.design.build` or `occt.design.section` returns. Every part is meshed once, in one call to the worker,
      * into one entity with a mesh instance per look and one for its edges, and every placement is a
      * hardware instance of each, from one buffer of matrices per part. Given the entity an earlier
      * build drew, it redraws in place: when the same parts sit at the same paths, it only moves
@@ -787,17 +757,19 @@ export class DrawHelper extends DrawHelperCore {
      * @param previous - The entity an earlier build drew, to redraw in place
      * @returns The entity holding the build: `previous` when given, else a new entity added to the scene
      */
-    async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: pc.Entity): Promise<pc.Entity> {
+    async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: pc.Entity): Promise<pc.Entity> {
         const options = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
         const state = previous ? this.designStates.get(previous) : undefined;
-        const plan = designDrawPlanOf(build, options, state);
+        const meshing = this.meshingTextOf(options);
+        const planOptions = { ...options, meshing };
+        const plan = designDrawPlanOf<Models.OCCT.DesignBuiltPart<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSectionPart<Inputs.OCCT.TopoDSShapePointer>>(build, planOptions, state);
         if (previous && state && plan.posesOnly) {
             this.poseDesign(state, plan.placements);
             return previous;
         }
-        const meshes = await designMeshesOf(plan, options, state, this.meshingTextOf(options), this.designMeshes, parts => this.meshShapesForLooks(parts.map(part => part.shape), options));
+        const meshes = await designMeshesOf(plan, planOptions, state, meshing, this.designMeshes, parts => this.meshShapesForLooks(parts.map(part => part.shape), options));
         const looks = designOptionsKeyOf(options);
-        const kept = new Map(state && state.looks === looks && state.precision === options.precision
+        const kept = new Map(state && state.looks === looks && state.precision === options.precision && state.meshing === meshing
             ? state.parts.filter(drawn => plan.parts.has(drawn.part) && plan.placements.has(drawn.part) && drawn.key === designPartKeyOf(plan.parts.get(drawn.part)!)).map(drawn => [drawn.part, drawn])
             : []);
         const target = previous && state ? previous : this.newDesignRoot();
@@ -805,7 +777,7 @@ export class DrawHelper extends DrawHelperCore {
             this.clearDesign(state.parts.filter(drawn => kept.get(drawn.part) !== drawn));
         }
         const drawnParts = this.fillDesign(target, plan.parts, plan.placements, plan.placed, meshes, options, kept);
-        this.designStates.set(target, { placements: plan.placements, meshes: meshesByKeyOf(plan, meshes), signature: plan.signature, looks, precision: options.precision, parts: drawnParts });
+        this.designStates.set(target, { placements: plan.placements, meshes: meshesByKeyOf(plan, meshes), signature: plan.signature, looks, precision: options.precision, meshing, parts: drawnParts });
         return target;
     }
 
@@ -813,11 +785,16 @@ export class DrawHelper extends DrawHelperCore {
     /**
      * The meshes this drawer keeps for design parts with the given shape hashes, as it meshed them for
      * these drawing options, so a caller can store them and hand them back with `keepDesignMeshes`.
+     * They are the drawer's own meshes, not copies, and their numbers are views into buffers the
+     * worker handed over, so store them where a structured clone keeps them, such as IndexedDB or a
+     * message posted without a transfer list. Never transfer their buffers to another thread, which
+     * empties them here too, and never store them as JSON, which turns their typed arrays into plain
+     * records: `keepDesignMeshes` refuses both rather than drawing nothing.
      * @param shapeHashes - The parts' shape hashes, as a design build gives them
      * @param drawOptions - The options the parts were drawn with
      * @returns The meshes it keeps, each with its part's shape hash; a part it has not meshed for these options is left out
      */
-    keptDesignMeshes(shapeHashes: readonly string[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): KeptDesignMesh<Inputs.OCCT.DecomposedMeshDto>[] {
+    keptDesignMeshes(shapeHashes: readonly string[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): KeptDesignMesh<DrawableShapeMesh>[] {
         const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
         const meshing = this.meshingTextOf(resolved);
         return shapeHashes.flatMap(shapeHash => {
@@ -831,15 +808,15 @@ export class DrawHelper extends DrawHelperCore {
      * these options without being meshed again. A mesh that is not one of faces and edges is passed over.
      * @param meshes - The meshes, each with its part's shape hash
      * @param drawOptions - The options the meshes were made for
+     * @throws Error when a mesh of faces and edges can no longer be drawn: its buffers were transferred
+     * to another thread, or it was stored as JSON; then none of the meshes is kept
      */
     keepDesignMeshes(meshes: readonly KeptDesignMesh<unknown>[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): void {
         const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
         const meshing = this.meshingTextOf(resolved);
-        meshes.forEach(({ shapeHash, mesh }) => {
-            if (this.isMeshOfFacesAndEdges(mesh)) {
-                this.designMeshes.set(keptMeshKeyOf(shapeHash, meshing), mesh);
-            }
-        });
+        const keepable = meshes.filter((kept): kept is KeptDesignMesh<DrawableShapeMesh> => this.isMeshOfFacesAndEdges(kept.mesh));
+        keepable.forEach(checkKeptDesignMesh);
+        keepable.forEach(({ shapeHash, mesh }) => this.designMeshes.set(keptMeshKeyOf(shapeHash, meshing), mesh));
     }
 
     private meshingForLooks(options: Resolved.Draw.DrawOcctShapeOptions): Omit<Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, "faceMaterial"> {
@@ -848,23 +825,24 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private meshingTextOf(options: Resolved.Draw.DrawOcctShapeOptions): string {
-        return JSON.stringify(this.meshingForLooks(options));
+        return designMeshingTextOf(options);
     }
 
-    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<DrawableShapeMesh[]> {
         const meshing = this.meshingForLooks(options);
-        const meshes: unknown = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", { ...meshing, shapes });
+        const meshes: unknown = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshBuffers", { ...meshing, shapes });
         if (!Array.isArray(meshes) || meshes.length !== shapes.length || !meshes.every(mesh => this.isMeshOfFacesAndEdges(mesh))) {
             throw new Error(`Meshing ${shapes.length} shapes did not return one mesh of faces and edges per shape.`);
         }
+        meshes.forEach(checkDrawableMesh);
         return meshes;
     }
 
-    private isMeshOfFacesAndEdges(mesh: unknown): mesh is Inputs.OCCT.DecomposedMeshDto {
+    private isMeshOfFacesAndEdges(mesh: unknown): mesh is DrawableShapeMesh {
         return typeof mesh === "object" && mesh !== null && Array.isArray((mesh as Record<string, unknown>)["faceList"]) && Array.isArray((mesh as Record<string, unknown>)["edgeList"]);
     }
 
-    private lookedShapeEntity(mesh: Inputs.OCCT.DecomposedMeshDto, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): pc.Entity {
+    private lookedShapeEntity(mesh: DrawableShapeMesh, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): pc.Entity {
         const shapeGroup = new pc.Entity(this.generateEntityId("brepMeshWithAppearance"));
         const zOffset = options.drawEdges ? 2 : 0;
         if (options.drawFaces && mesh.faceList.length > 0) {
@@ -884,7 +862,7 @@ export class DrawHelper extends DrawHelperCore {
         return shapeGroup;
     }
 
-    private partEdges(mesh: Inputs.OCCT.DecomposedMeshDto, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): pc.Entity | undefined {
+    private partEdges(mesh: DrawableShapeMesh, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): pc.Entity | undefined {
         const fallback = defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
         const colors = edgeColorsOf(appearance, mesh.edgeList.map(edge => edge.edgeIndex), fallback);
         return this.drawPolylines(undefined, mesh.edgeList.map(edge => edge.vertexCoord.filter(point => point !== undefined)), false, options.edgeWidth, options.edgeOpacity, colors);
@@ -937,7 +915,7 @@ export class DrawHelper extends DrawHelperCore {
         return root;
     }
 
-    private fillDesign(target: pc.Entity, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance & { shapeHash?: string }>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, options: Resolved.Draw.DrawOcctShapeOptions, kept: ReadonlyMap<string, DesignPartDrawn>): DesignPartDrawn[] {
+    private fillDesign(target: pc.Entity, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance & { shapeHash?: string }>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: ReadonlyMap<string, DrawableShapeMesh>, options: Resolved.Draw.DrawOcctShapeOptions, kept: ReadonlyMap<string, DesignPartDrawn>): DesignPartDrawn[] {
         const zOffset = options.drawEdges ? 2 : 0;
         const device = this.context.app.graphicsDevice;
         return placed.map((id): DesignPartDrawn => {
@@ -952,7 +930,8 @@ export class DrawHelper extends DrawHelperCore {
             }
             const buffer = reused && sameCount ? reused.buffer : new pc.VertexBuffer(device, pc.VertexFormat.getDefaultInstancingFormat(device), partPlacements.length, { usage: pc.BUFFER_DYNAMIC });
             this.writeInstances(buffer, matrices);
-            const entity: DesignPartEntity = reused ? reused.entity : new pc.Entity(this.generateEntityId("designPart"));
+            const entity: DesignPartEntity = reused ? reused.entity : this.newDesignPart();
+            this.designBuffers.set(entity, buffer);
             entity.designPart = { part: id, paths: partPlacements.map(placement => placement.path) };
             const mesh = reused ? undefined : meshes.get(id)!;
             const faces = reused ? reused.faces : mesh && options.drawFaces && mesh.faceList.length > 0
@@ -977,6 +956,12 @@ export class DrawHelper extends DrawHelperCore {
         });
     }
 
+    private newDesignPart(): DesignPartEntity {
+        const entity = new pc.Entity(this.generateEntityId("designPart"));
+        entity.once("destroy", () => this.designBuffers.get(entity)?.destroy());
+        return entity;
+    }
+
     private writeInstances(buffer: pc.VertexBuffer, matrices: Float32Array): void {
         const locked = buffer.lock();
         if (locked) {
@@ -997,14 +982,16 @@ export class DrawHelper extends DrawHelperCore {
         for (const drawn of parts) {
             const lineMaterials = (drawn.edges?.render?.meshInstances ?? []).map(meshInstance => meshInstance.material);
             drawn.entity.destroy();
-            lineMaterials.forEach(material => material.destroy());
-            drawn.buffer.destroy();
+            lineMaterials.forEach(material => material?.destroy());
         }
     }
 
-    async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
+    async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: DrawableShapeMesh, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
         const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+        if (resolved.drawFaces) {
+            checkDrawableMesh(decomposedMesh);
+        }
         const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
         this.context.scene.addChild(shapeGroup);
         const linesOnFaces = resolved.drawEdges || resolved.drawIsoCurves;
@@ -1127,14 +1114,16 @@ export class DrawHelper extends DrawHelperCore {
             });
             const textPolylines = await Promise.all(promises);
             const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, resolved.edgeIndexColour);
-            shapeGroup.addChild(edgeMesh!);
+            if (edgeMesh) {
+                shapeGroup.addChild(edgeMesh);
+            }
         }
         if (resolved.drawFaceIndexes) {
-            const promises = decomposedMesh.faceList.map(async (face) => {
-                let faceMiddle = face.centerPoint;
-                if (faceMiddle === undefined) {
-                    faceMiddle = this.computeFaceMiddlePos(face.vertexCoordVec) as Inputs.Base.Point3;
-                }
+            const labelled = decomposedMesh.faceList.flatMap(face => {
+                const faceMiddle = this.faceLabelPositionOf(face);
+                return faceMiddle === undefined ? [] : [{ face, faceMiddle }];
+            });
+            const promises = labelled.map(async ({ face, faceMiddle }) => {
                 const tdto = new Inputs.JSCAD.TextDto();
                 tdto.text = `${face.faceIndex}`;
                 tdto.height = resolved.faceIndexHeight;
@@ -1156,14 +1145,19 @@ export class DrawHelper extends DrawHelperCore {
             const textPolylines = await Promise.all(promises);
 
             const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, resolved.faceIndexColour);
-            shapeGroup.addChild(faceMesh!);
+            if (faceMesh) {
+                shapeGroup.addChild(faceMesh);
+            }
         }
         return shapeGroup;
     }
 
-    async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
+    async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: DrawableShapeMesh, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
         const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+        if (resolved.drawFaces) {
+            checkDrawableMesh(decomposedMesh);
+        }
         const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
         this.context.scene.addChild(shapeGroup);
 
@@ -1195,10 +1189,10 @@ export class DrawHelper extends DrawHelperCore {
 
             decomposedMesh.faceList.forEach((face, index) => {
                 const meshData = [{
-                    positions: [...face.vertexCoord],
-                    normals: [...face.normalCoord],
-                    indices: [...face.triIndexes],
-                    uvs: face.uvs ? [...face.uvs] : undefined,
+                    positions: face.vertexCoord,
+                    normals: face.normalCoord,
+                    indices: face.triIndexes,
+                    uvs: face.uvs,
                     colors: analysisColors?.[index],
                 }];
 
@@ -1463,10 +1457,7 @@ export class DrawHelper extends DrawHelperCore {
         if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
             const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
             if (decomposedMesh.triVerts.length !== 0) {
-                const attributes = this.manifoldMeshAttributes(decomposedMesh, this.manifoldSharpAngle(options));
-                const positions = Array.from(attributes.positions);
-                const normals = Array.from(attributes.normals);
-                const indices = Array.from(attributes.indices);
+                const { positions, normals, indices } = this.manifoldMeshAttributes(decomposedMesh, this.manifoldSharpAngle(options));
 
                 const mesh = new pc.Mesh(this.context.app.graphicsDevice);
                 mesh.setPositions(positions);
@@ -1539,6 +1530,22 @@ export class DrawHelper extends DrawHelperCore {
                 return undefined;
             }
         }
+    }
+
+    private createPointsInLook(name: string, points: Inputs.Base.Point3[], look: PointsLook): pc.Entity {
+        const drawn = this.createPointSpheresMesh(this.generateEntityId(name), points, look.colours, look.opacity, look.size);
+        this.pointsLooks.set(drawn, look);
+        return drawn;
+    }
+
+    private drawnInLook(group: pc.Entity, look: PointsLook): boolean {
+        const drawnLook = this.pointsLooks.get(group);
+        return drawnLook !== undefined && drawnLook.opacity === look.opacity && drawnLook.size === look.size
+            && drawnLook.colours.length === look.colours.length && drawnLook.colours.every((colour, at) => colour === look.colours[at]);
+    }
+
+    private instancedPointCount(group: pc.Entity): number {
+        return (group.children as InstancedPointsEntity[]).reduce((count, child) => count + (child.pointIndices?.length ?? 0), 0);
     }
 
     private clearEntity(entity: pc.Entity): void {
@@ -1773,16 +1780,17 @@ export class DrawHelper extends DrawHelperCore {
         meshInstance.castShadow = false;
         meshInstance.receiveShadow = false;
         
-        const entity = new pc.Entity(name);
+        const entity: InstancedPointsEntity = new pc.Entity(name);
         entity.addComponent("render", {
             meshInstances: [meshInstance],
             castShadows: false,
             receiveShadows: false
         });
+        entity.once("destroy", () => instanceBuffer.destroy());
         
         entity.tags?.add("instancedPoints");
-        (entity as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] }).instanceBuffer = instanceBuffer;
-        (entity as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] }).pointIndices = positions.map(p => p.index);
+        entity.instanceBuffer = instanceBuffer;
+        entity.pointIndices = positions.map(p => p.index);
         
         return entity;
     }

@@ -19,13 +19,13 @@ export class OCCTIO {
     }
 
     /**
-     * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and starts a
-     * browser download of the file.
+     * Writes a shape as STEP, the exchange format for exact CAD geometry, and starts a browser
+     * download of the file.
      *
-     * With `adjustYtoZ` true, Y and Z swap, which mirrors the shape; to keep it as built, turn it 90
-     * degrees about X with `transforms.rotate` first. `fileName` names the download, `tryDownload`
-     * false skips it, and `saveShapeSTEPAndReturn` gives the text instead.
-     * @param inputs - The shape, the file name, the axis adjustment and the download options
+     * With `adjustYtoZ` true, Y and Z swap, mirroring the shape; turn it 90 degrees about X with
+     * `transforms.rotate` first to keep it as built. The file is in millimetres, another `unit`
+     * scaled to them; `saveShapeSTEPAndReturn` returns the text.
+     * @param inputs - The shape, the file name, the axis adjustment, the unit and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
      * @shortname save step
@@ -41,13 +41,12 @@ export class OCCTIO {
     }
 
     /**
-     * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and returns the
-     * file's text.
+     * Writes a shape as STEP, the exchange format for exact CAD geometry, and returns its text.
      *
-     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape;
-     * turn it 90 degrees about X with `transforms.rotate` first to keep it as built. `fileName` and
-     * `tryDownload` matter only where a browser download can be started.
-     * @param inputs - The shape, the file name, the axis adjustment and the download options
+     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, mirroring the shape; turn it
+     * 90 degrees about X with `transforms.rotate` first to keep it as built. The file is in
+     * millimetres, a shape in another `unit` scaled to them.
+     * @param inputs - The shape, the file name, the axis adjustment, the unit and the download options
      * @returns The STEP file as text
      * @group io
      * @shortname save step and return
@@ -330,9 +329,9 @@ export class OCCTIO {
      * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
      * asked, and starts a browser download of the file.
      *
-     * The drawing shows the view from the frame's normal side, x running right along its direction.
-     * `tryDownload` false skips the download; `saveShapeSvgAndReturn` gives the text instead.
-     * @param inputs - The shape, the view, whether to draw hidden edges, the precision and the download options
+     * The drawing shows the view from the frame's normal side, x along its direction; with the shape's
+     * `unit`, it states its true width and height. `saveShapeSvgAndReturn` gives the text instead.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
      * @shortname save svg
@@ -349,12 +348,13 @@ export class OCCTIO {
     }
 
     /**
-     * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
-     * asked, and returns the file's text.
+     * Draws the edges a view of a shape sees as SVG, hidden ones dashed when asked, and returns the
+     * file's text.
      *
-     * It shows the view from the frame's normal side in model units, x running right along the
-     * frame's direction and y up, so the file holds each point as x and minus y.
-     * @param inputs - The shape, the view, whether to draw hidden edges, the precision and the download options
+     * The view looks from the frame's normal side, x along the frame's direction and y up, so each
+     * point is written as x and minus y. With the shape's `unit`, it states its true width and
+     * height.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit and the download options
      * @returns The SVG file as text
      * @group io
      * @shortname save svg and return
@@ -393,6 +393,27 @@ export class OCCTIO {
         fileLink.download = fileName;
         fileLink.click();
         fileLink.remove();
+    }
+
+    /**
+     * Reads the unit a STEP or IGES file writes its lengths in, without building its geometry.
+     *
+     * Millimetres, centimetres, metres and inches are told; a file in another unit, one whose parts
+     * disagree, or one that states none gives undefined. `io.loadSTEPorIGES` reads any of them into
+     * the `unit` it is asked for.
+     * @param inputs - The file content and its name with extension
+     * @returns The file's unit, or undefined when it is none of these or cannot be told
+     * @group io
+     * @shortname file length unit
+     * @drawable false
+     * @example
+     * ```typescript
+     * const unit = await bitbybit.occt.io.fileLengthUnit({ filetext: stepText, fileName: "bracket.step" });
+     * const shape = await bitbybit.occt.io.loadSTEPorIGES({ filetext: stepText, fileName: "bracket.step", unit: unit ?? Bit.Inputs.Base.unitOfLengthEnum.millimetre });
+     * ```
+     */
+    fileLengthUnit(inputs: Inputs.OCCT.FileLengthUnitDto): Promise<Inputs.Base.unitOfLengthEnum | undefined> {
+        return this.occWorkerManager.genericCallToWorkerPromise("io.fileLengthUnit", inputs);
     }
 
     /**
@@ -512,9 +533,9 @@ export class OCCTIO {
      * Writes DXF parts into one DXF file and returns its text.
      *
      * `colorFormat` chooses AutoCAD's indexed colors or true color, `acadVersion` the DXF version:
-     * AC1009 is R12, the most widely readable, AC1015 is 2000. `fileName` and `tryDownload` matter
-     * only where a browser download can be started.
-     * @param inputs - The layered parts, the color format, the DXF version and the download options
+     * AC1009 is R12, the most widely readable, AC1015 is 2000, which can also state the drawing's
+     * `unit`. `fileName` and `tryDownload` matter only where a browser download can be started.
+     * @param inputs - The layered parts, the color format, the DXF version, the unit and the download options
      * @returns The DXF file as text
      * @group dxf
      * @shortname dxf create

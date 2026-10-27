@@ -1,4 +1,5 @@
 import { resolveDto } from "@bitbybit-dev/base";
+import { requireFinite } from "../../build/checks";
 import { createFilling, createWindowType } from "../../build/fillings";
 import type { IfcModel } from "../../model/model-types";
 import * as Inputs from "../inputs";
@@ -72,9 +73,11 @@ export class IFCWindows {
         const model = modelOf(resolved.model);
         const wall = resolveId(model, resolved.wall, "IfcWall", "wall");
         const type = resolveId(model, resolved.windowType, "IfcWindowType", "window type");
+        const offset = lengthIn(model, resolved.offset, DEFAULT_MILLIMETRES.openingOffset);
+        const sill = lengthIn(model, resolved.sill, DEFAULT_MILLIMETRES.windowSill);
+        requireFinite(offset, "window's offset");
+        requireFinite(sill, "window's sill");
         return editModel(model, (tx, writer) => {
-            const offset = lengthIn(model, resolved.offset, DEFAULT_MILLIMETRES.openingOffset);
-            const sill = lengthIn(model, resolved.sill, DEFAULT_MILLIMETRES.windowSill);
             createFilling(tx, writer, "IfcWindow", { wall, type, id: resolved.id, name: resolved.name, offset, sill }, lengthTolerance(model));
         });
     }

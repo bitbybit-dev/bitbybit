@@ -1,7 +1,7 @@
 import type { Base } from "@bitbybit-dev/base";
-import { pointToLocal, vectorToLocal } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
-import { add2, leftOf2, length2, scale2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { WORLD_AXES, pointToLocal, pointToWorld, vectorToLocal } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
+import { add2, leftOf2, length2, length3, scale2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import * as Inputs from "../api/inputs";
 import { isEnumeration, isReference } from "../step/values";
 import type { ModelReader, WallCuts, WallEnd, WallGeometry } from "./build-types";
@@ -9,11 +9,17 @@ import { requiredReference } from "./checks";
 import { PARALLEL_TOLERANCE, VERTICAL_COSINE } from "./constants";
 import { layerSetThickness, materialOf } from "./materials";
 import type { Frame3, Line2 } from "./build-types";
-import { distanceToLine, intersectLines, normalize2, parameterOnLine, placedOnPlan } from "./math";
+import { distanceToLine, intersectLines, direction2Of, parameterOnLine, placedOnPlan } from "./math";
 import { absoluteFrame, axisPlacementFrame, directionOf, objectPlacementOf } from "./placement";
 import { describeObject } from "./spatial";
 import { firstItem, representationOf, unwrapClippings } from "./representations";
 import { polylinePoints } from "./curves";
+import { profileShape } from "./measure";
+
+const LAYER_SET_USAGE = "IfcMaterialLayerSetUsage";
+const VOIDED_PROFILE = "IfcArbitraryProfileDefWithVoids";
+const STRIP_CORNERS = 4;
+const SIDE_SLACK = 1e-6;
 
 function axisPoints(reader: ModelReader, wall: number): [Base.Point2, Base.Point2] {
     const axis = representationOf(reader, wall, "Axis");
@@ -37,17 +43,36 @@ function axisPoints(reader: ModelReader, wall: number): [Base.Point2, Base.Point
     return [start, end];
 }
 
-function layerBounds(reader: ModelReader, wall: number): [number, number, number] {
-    const usage = materialOf(reader, wall);
-    if (usage === undefined || reader.entity(usage).type !== "IfcMaterialLayerSetUsage") {
-        throw new Error(`${describeObject(reader, wall)} has no material layer set usage, so its thickness is unknown`);
-    }
+function layerBounds(reader: ModelReader, usage: number): [number, number] {
     const layerSet = reader.attribute(usage, "ForLayerSet");
     const offset = reader.attribute(usage, "OffsetFromReferenceLine");
     const sense = reader.attribute(usage, "DirectionSense");
     const thickness = isReference(layerSet) ? layerSetThickness(reader, layerSet.ref) : 0;
     const start = typeof offset === "number" ? offset : 0;
-    return isEnumeration(sense) && sense.enum === "NEGATIVE" ? [start - thickness, start, usage] : [start, start + thickness, usage];
+    return isEnumeration(sense) && sense.enum === "NEGATIVE" ? [start - thickness, start] : [start, start + thickness];
+}
+
+function bodySides(reader: ModelReader, wall: number, body: number | undefined, axisAcross: number): [number, number] {
+    const refusal = `${describeObject(reader, wall)} has no material layer set usage, so its thickness is read from its body, and `;
+    if (body === undefined) {
+        throw new Error(`${refusal}it has none`);
+    }
+    const [solid] = unwrapClippings(reader, firstItem(reader, body));
+    const profile = reader.entity(solid).type === "IfcExtrudedAreaSolid" ? reader.attribute(solid, "SweptArea") : null;
+    const outline = isReference(profile) && reader.entity(profile.ref).type !== VOIDED_PROFILE ? profileShape(reader, profile.ref)?.outline : undefined;
+    if (outline === undefined || outline.length < STRIP_CORNERS) {
+        throw new Error(`${refusal}it is not a plan outline without holes extruded upwards`);
+    }
+    const position = reader.attribute(solid, "Position");
+    const frame = isReference(position) ? axisPlacementFrame(reader, position.ref) : undefined;
+    const across = outline.map((point) => (frame === undefined ? point[1] : pointToWorld(frame, [point[0], point[1], 0])[1]) - axisAcross);
+    const low = Math.min(...across);
+    const high = Math.max(...across);
+    const slack = (high - low) * SIDE_SLACK;
+    if (!(high - low > 0) || across.some((value) => Math.abs(value - low) > slack && Math.abs(value - high) > slack)) {
+        throw new Error(`${refusal}its outline is not a strip between two sides along its axis`);
+    }
+    return [low, high];
 }
 
 function verticalExtrusion(reader: ModelReader, wall: number, body: number): [number, number] {
@@ -60,7 +85,7 @@ function verticalExtrusion(reader: ModelReader, wall: number, body: number): [nu
     const position = reader.attribute(solid, "Position");
     const frame: Frame3 | undefined = isReference(position) ? axisPlacementFrame(reader, position.ref) : undefined;
     const direction = directionOf(reader, reader.attribute(solid, "ExtrudedDirection"), [0, 0, 1]);
-    const upwards = Math.hypot(direction[0], direction[1], direction[2]);
+    const upwards = length3(direction);
     if (typeof depth !== "number" || !(depth > 0) || (frame !== undefined && frame.z[2] < VERTICAL_COSINE) || !(direction[2] / upwards >= VERTICAL_COSINE)) {
         throw new Error(`${refusal}its extrusion does not rise straight up from a plan outline`);
     }
@@ -75,16 +100,18 @@ export function readWall(reader: ModelReader, wall: number): WallGeometry {
     const [localStart, localEnd] = axisPoints(reader, wall);
     const start = placedOnPlan(frame, localStart);
     const end = placedOnPlan(frame, localEnd);
-    const [low, high, usage] = layerBounds(reader, wall);
+    const material = materialOf(reader, wall);
+    const usage = material !== undefined && reader.entity(material).type === LAYER_SET_USAGE ? material : undefined;
     const body = representationOf(reader, wall, "Body");
     const [height, base] = body === undefined ? [0, 0] : verticalExtrusion(reader, wall, body);
-    return { wall, frame, start, end, direction: normalize2(subtract2(end, start)), length: length2(subtract2(end, start)), low, high, height, base, body, usage };
+    const [low, high] = usage === undefined ? bodySides(reader, wall, body, localStart[1]) : layerBounds(reader, usage);
+    return { wall, frame, start, end, direction: direction2Of(subtract2(end, start)), length: length2(subtract2(end, start)), low, high, height, base, body, usage };
 }
 
 export function axisFrame(geometry: WallGeometry): Frame3 {
     const start = pointToLocal(geometry.frame, [geometry.start[0], geometry.start[1], 0]);
     const end = pointToLocal(geometry.frame, [geometry.end[0], geometry.end[1], 0]);
-    const direction = normalize2([end[0] - start[0], end[1] - start[1]]);
+    const direction = direction2Of(subtract2([end[0], end[1]], [start[0], start[1]]));
     return { origin: [start[0], start[1], geometry.base], x: [direction[0], direction[1], 0], y: [-direction[1], direction[0], 0], z: [0, 0, 1] };
 }
 
@@ -98,8 +125,8 @@ export function alignmentOf(geometry: WallGeometry, tolerance: number): Inputs.I
     return Math.abs(geometry.low + geometry.high) <= tolerance ? Inputs.IFC.wallAlignmentEnum.center : undefined;
 }
 
-export function layerSetOf(reader: ModelReader, geometry: WallGeometry): number {
-    return requiredReference(reader, geometry.usage, "ForLayerSet");
+export function layerSetOf(reader: ModelReader, geometry: WallGeometry): number | undefined {
+    return geometry.usage === undefined ? undefined : requiredReference(reader, geometry.usage, "ForLayerSet");
 }
 
 export function sideLine(geometry: WallGeometry, across: number): Line2 {
@@ -126,7 +153,7 @@ export function mitreCut(wall: WallGeometry, wallEnd: WallEnd, other: WallGeomet
     if (length2(along) <= tolerance) {
         return undefined;
     }
-    return { point: first, direction: normalize2(along) };
+    return { point: first, direction: direction2Of(along) };
 }
 
 export function buttCut(stem: WallGeometry, stemEnd: WallEnd, through: WallGeometry): Line2 {
@@ -138,11 +165,11 @@ export function footprintOf(geometry: WallGeometry, cuts: WallCuts, tolerance: n
     const toLocalLine = (line: Line2): Line2 => {
         const point = pointToLocal(geometry.frame, [line.point[0], line.point[1], 0]);
         const direction = vectorToLocal(geometry.frame, [line.direction[0], line.direction[1], 0]);
-        return { point: [point[0], point[1]], direction: normalize2([direction[0], direction[1]]) };
+        return { point: [point[0], point[1]], direction: direction2Of([direction[0], direction[1]]) };
     };
     const startLocal = pointToLocal(geometry.frame, [geometry.start[0], geometry.start[1], 0]);
     const endLocal = pointToLocal(geometry.frame, [geometry.end[0], geometry.end[1], 0]);
-    const axisDirection = normalize2([endLocal[0] - startLocal[0], endLocal[1] - startLocal[1]]);
+    const axisDirection = direction2Of(subtract2([endLocal[0], endLocal[1]], [startLocal[0], startLocal[1]]));
     const across = leftOf2(axisDirection);
     const squareAt = (point: Base.Point3): Line2 => ({ point: [point[0], point[1]], direction: across });
     const startCut = cuts.start ? toLocalLine(cuts.start) : squareAt(startLocal);
@@ -171,4 +198,9 @@ export function readableWall(reader: ModelReader, wall: number): WallGeometry | 
     } catch {
         return undefined;
     }
+}
+
+export function inOwnFrame(reader: ModelReader, geometry: WallGeometry): WallGeometry {
+    const [start, end] = axisPoints(reader, geometry.wall);
+    return { ...geometry, frame: WORLD_AXES, start, end, direction: direction2Of(subtract2(end, start)), length: length2(subtract2(end, start)) };
 }

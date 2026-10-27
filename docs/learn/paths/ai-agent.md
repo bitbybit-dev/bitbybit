@@ -44,7 +44,7 @@ In [the Designer](../designer/working-with-agents), an agent runs the same comma
 
 ## Know where geometry should run
 
-Read [Agentic CAD](../using-ai-with-bitbybit/agentic-cad) once. The open-source packages are the complete answer wherever public code and your users' compute are acceptable; CAD Cloud is for the Pro algorithms that exist only there and for compute you cannot provide. The agent reads the same page through the docs server, so its advice matches ours.
+Read [Agentic CAD](../using-ai-with-bitbybit/agentic-cad) once. The free packages are the complete answer wherever public code and your users' compute are acceptable; CAD Cloud is for the Pro algorithms that exist only there and for compute you cannot provide. The agent reads the same page through the docs server, so its advice matches ours.
 
 ## Start a project the agent can iterate on
 

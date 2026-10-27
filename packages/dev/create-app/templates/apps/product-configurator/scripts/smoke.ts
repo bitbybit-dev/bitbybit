@@ -2,7 +2,7 @@ import { createRequire } from "node:module";
 import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
-import { OCCTService, OccHelper, VectorHelperService, ShapesHelperService } from "@bitbybit-dev/occt";
+import { OCCTService } from "@bitbybit-dev/occt";
 import { bottomSize, buildModel, clampParams, defaultParams, drainageHoleCenters, STYLE, type Occt, type PlanterParams } from "../src/model.ts";
 import { PRESETS, quoteFor } from "../src/catalog.ts";
 
@@ -22,9 +22,9 @@ function inProcess(service: object): Occt {
 const require = createRequire(import.meta.url);
 const kernelDir = dirname(require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/index.js"));
 const wasmFile = readdirSync(kernelDir).find((file) => file.endsWith(".wasm"));
-if (!wasmFile) throw new Error(`no OCCT kernel (.wasm) found in ${kernelDir}`);
+if (!wasmFile) throw new Error(`no Bitbybit OCCT Kernel (.wasm) found in ${kernelDir}`);
 const occ = await initOpenCascade({ locateFile: (file: string) => (file.endsWith(".wasm") ? join(kernelDir, wasmFile) : file) });
-const occt = inProcess(new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ)));
+const occt = inProcess(new OCCTService(occ));
 
 const round = (n: number): number => Math.round(n * 1000) / 1000;
 const spans = (box: number[], expected: [number, number, number], tolerance: number): boolean => expected.every((value, i) => Math.abs((box[i] ?? Number.NaN) - value) < tolerance);

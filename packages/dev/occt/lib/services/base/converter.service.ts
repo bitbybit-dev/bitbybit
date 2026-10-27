@@ -1,6 +1,7 @@
 import type { BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Inputs from "../../api/inputs";
 import { checkedShapes } from "./input-checks";
+import { released } from "./release";
 
 export class ConverterService {
 
@@ -30,6 +31,14 @@ export class ConverterService {
         }
     }
 
+    castAndRelease(made: TopoDS_Shape): TopoDS_Edge | TopoDS_Wire | TopoDS_Vertex | TopoDS_Solid | TopoDS_Shell | TopoDS_Face | TopoDS_Compound {
+        const actual = this.getActualTypeOfShape(made);
+        if (actual !== made) {
+            made.delete();
+        }
+        return actual;
+    }
+
     combineEdgesAndWiresIntoAWire(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge | TopoDS_Wire>): TopoDS_Wire {
         checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
@@ -45,13 +54,34 @@ export class ConverterService {
         });
         if (makeWire.IsDone()) {
             const wire = makeWire.Wire();
-            this.occ.BRepLib_BuildCurves3d_Full(wire, 1.0e-7, this.occ.GeomAbs_Shape.C1, 14, 0);
             makeWire.delete();
-            return wire;
+            return this.withCurvesIn3d(wire);
         } else {
             makeWire.delete();
             throw new Error("Wire could not be constructed");
         }
+    }
+
+    private withCurvesIn3d(wire: TopoDS_Wire): TopoDS_Wire {
+        if (!this.hasEdgeWithoutCurveIn3d(wire)) {
+            return wire;
+        }
+        const copied = released([wire], () => this.occ.ReadBREPFromBytes(this.occ.WriteBREPToBytes(wire, false)));
+        return released([copied], () => {
+            this.occ.BRepLib_BuildCurves3d_Full(copied, 1.0e-7, this.occ.GeomAbs_Shape.C1, 14, 0);
+            return this.occ.CastToWire(copied);
+        });
+    }
+
+    private hasEdgeWithoutCurveIn3d(wire: TopoDS_Wire): boolean {
+        const edges = this.occ.EdgesOf(wire, true);
+        return released(edges, () => edges.some(edge => {
+            if (this.occ.BRep_Tool_Degenerated(edge)) {
+                return false;
+            }
+            const curve = this.occ.GetEdgeCurve(edge);
+            return released([curve], () => curve.IsNull());
+        }));
     }
 
     vertexToPoint(inputs: Inputs.OCCT.ShapeDto<TopoDS_Vertex>): Inputs.Base.Point3 {

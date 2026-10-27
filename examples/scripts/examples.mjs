@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { ROOT, selected } from "./discover.mjs";
+import { REPO, ROOT, selected } from "./discover.mjs";
 
 const LOGS = path.join(ROOT, ".verify-logs");
+const ALLOW_FILE = path.join(REPO, "scripts", "advisories.allow.json");
+const AUDIT_RANK = { info: 0, low: 0, moderate: 1, high: 2, critical: 3 };
+const allowed = new Set((existsSync(ALLOW_FILE) ? JSON.parse(readFileSync(ALLOW_FILE, "utf8")).allow ?? [] : []).map((a) => `${a.ghsa}|${a.package}`));
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -12,17 +15,39 @@ const heavy = args.includes("--heavy");
 
 const examples = selected(args);
 
-function run(example, step, cmd, cmdArgs, { failureIsInformation = false } = {}) {
+function lastLinesOnFailure(r) {
+    return r.status === 0 ? [] : (r.stdout + r.stderr).split("\n").slice(-25);
+}
+
+function unallowedAdvisories(r) {
+    let report;
+    try {
+        report = JSON.parse(r.stdout);
+    } catch {
+        return lastLinesOnFailure(r);
+    }
+    if (report.error) {
+        return [JSON.stringify(report.error)];
+    }
+    const advisories = Object.values(report.vulnerabilities ?? {}).flatMap((v) => v.via.filter((via) => typeof via === "object"));
+    const lines = advisories
+        .filter((a) => (AUDIT_RANK[a.severity] ?? 0) >= AUDIT_RANK.moderate && !allowed.has(`${a.url.split("/").pop()}|${a.name}`))
+        .map((a) => `${a.severity.padEnd(8)} ${a.name} ${a.range}  ${a.url.split("/").pop()}  ${a.title}`);
+    return [...new Set(lines)];
+}
+
+function run(example, step, cmd, cmdArgs, { failureIsInformation = false, problemsOf = lastLinesOnFailure } = {}) {
     const log = path.join(LOGS, `${example.path.replaceAll("/", "__")}.${step}.log`);
     mkdirSync(LOGS, { recursive: true });
     const started = Date.now();
     const r = spawnSync(cmd, cmdArgs, { cwd: path.join(ROOT, example.path), encoding: "utf8", env: { ...process.env, CI: "1", NO_COLOR: "1" } });
     writeFileSync(log, `$ ${cmd} ${cmdArgs.join(" ")}\n${r.stdout ?? ""}${r.stderr ?? ""}`);
     const seconds = ((Date.now() - started) / 1000).toFixed(0);
-    const ok = r.status === 0;
+    const problems = problemsOf(r);
+    const ok = problems.length === 0;
     console.log(`${ok ? "ok  " : failureIsInformation ? "note" : "FAIL"}  ${step.padEnd(8)} ${example.path}  (${seconds}s)`);
     if (!ok && !failureIsInformation) {
-        console.log((r.stdout + r.stderr).split("\n").slice(-25).map((l) => `        ${l}`).join("\n"));
+        console.log(problems.map((l) => `        ${l}`).join("\n"));
     }
     return { example: example.path, step, ok, seconds, log };
 }
@@ -42,7 +67,7 @@ const steps = {
         if (!e.lockfile) {
             return { example: e.path, step: "audit", ok: true, seconds: "0", note: "no lockfile" };
         }
-        return run(e, "audit", "npm", ["audit", "--package-lock-only", "--audit-level=moderate"]);
+        return run(e, "audit", "npm", ["audit", "--package-lock-only", "--json"], { problemsOf: unallowedAdvisories });
     },
     refresh: (e) => {
         if (!e.lockfile) {

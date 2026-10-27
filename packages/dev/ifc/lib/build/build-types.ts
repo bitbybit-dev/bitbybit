@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
 import type { MeshArrays } from "@bitbybit-dev/base/lib/api/services/helpers/helper-types";
-import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type * as Inputs from "../api/inputs";
 import type { IfcSchema } from "../schema/schema";
 import type { IfcEntity, IfcFileHeader, IfcValue } from "../step/step-types";
@@ -94,7 +94,7 @@ export interface WallGeometry {
     readonly height: number;
     readonly base: number;
     readonly body: number | undefined;
-    readonly usage: number;
+    readonly usage: number | undefined;
 }
 
 export interface WallCuts {
@@ -121,12 +121,15 @@ export interface WallChange {
     readonly bottom: number | undefined;
     readonly height: number | undefined;
     readonly layerSet: number | undefined;
+    readonly thickness: number | undefined;
     readonly alignment: Inputs.IFC.wallAlignmentEnum | undefined;
 }
 
 export interface WallBody {
     readonly height: number;
     readonly base: number;
+    readonly low: number;
+    readonly high: number;
     readonly halfSpaces: readonly number[];
 }
 
@@ -395,4 +398,32 @@ export interface ContextKey {
     readonly contextType: string;
     readonly identifier: string;
     readonly view: string;
+}
+
+export interface BrepItems {
+    readonly items: number[];
+    readonly carved: boolean;
+}
+
+export interface BodyItems {
+    readonly items: readonly number[];
+    readonly representationType: string;
+}
+
+export interface PlacedSource {
+    readonly node: Base.RecipeNode;
+    readonly matrix: Base.TransformMatrix;
+}
+
+export interface ElementSpec {
+    readonly storey: number;
+    readonly id: string | undefined;
+    readonly name: string;
+    readonly type: string;
+    readonly predefinedType: string | undefined;
+    readonly objectType: string | undefined;
+    readonly body: Base.Recipe;
+    readonly scale: number;
+    readonly frame: Frame3;
+    readonly material: number | undefined;
 }

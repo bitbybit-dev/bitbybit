@@ -1,9 +1,9 @@
 import type { Base } from "@bitbybit-dev/base";
-import { length2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { length2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { describe, expect, it } from "vitest";
 import { rounded } from "../__test__/build-geometry";
 import type { Line2 } from "./build-types";
-import { normalize2 } from "./math";
+import { direction2Of } from "./math";
 import type { WallGeometry } from "./build-types";
 import { axisLine, buttCut, endPoint, footprintOf, mitreCut, sideLine } from "./wall-geometry";
 
@@ -13,7 +13,7 @@ const RIGHT_LOW = -200;
 const RIGHT_HIGH = 0;
 
 function wallGeometry(start: Base.Point2, end: Base.Point2, low: number, high: number): WallGeometry {
-    const direction = normalize2(subtract2(end, start));
+    const direction = direction2Of(subtract2(end, start));
     return {
         wall: 1,
         frame: { origin: [start[0], start[1], 0], x: [direction[0], direction[1], 0], y: [-direction[1], direction[0], 0], z: [0, 0, 1] },

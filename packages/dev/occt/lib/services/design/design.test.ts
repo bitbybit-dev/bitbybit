@@ -2,12 +2,12 @@ import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 import * as Inputs from "../../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
+import { releaseDesignCaches } from "../../release-design-caches";
+import { handlesIn, namesOf, openWindow } from "../../../../__test__/embind-ledger";
 
 type Document = Models.OCCT.DesignPartDocument;
 
@@ -40,7 +40,7 @@ describe("OCCT design documents", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        const helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel);
+        const helper = new OccHelper(kernel);
         occt = new OCCTService(kernel, helper);
     }, 120_000);
 
@@ -689,7 +689,7 @@ describe("OCCT design documents", () => {
             // Assert
             expect(messages).toEqual([
                 ["/features/2/on/face/of: \"base\" made no faces of a body"],
-                ["/features/2/on/face: one face is needed here, and the reference finds 4"],
+                ["/features/2/on/face: one face is needed here, or faces in one plane, and the reference finds 4 that are not"],
                 ["/features/4/on/face: a flat face is needed here, and this one is a cylinder"],
                 ["/features/2/on/direction: the direction runs along the face's normal"],
             ]);
@@ -1200,6 +1200,134 @@ describe("OCCT design documents", () => {
     });
 
     describe("failures", () => {
+        const keptAfter = <T>(act: () => T): { answer: T; kept: string[] } => {
+            const opened = openWindow();
+            let answer: T;
+            try {
+                answer = act();
+                handlesIn(answer).forEach(handle => { handle.delete(); });
+            } finally {
+                opened.close();
+            }
+            releaseDesignCaches(occt);
+            return { answer, kept: namesOf(opened.made().filter(handle => !handle.isDeleted())) };
+        };
+
+        const armedTrap = (): { trap: WebAssembly.RuntimeError; spring: () => never; disarm: () => void } => {
+            const trap = new WebAssembly.RuntimeError("unreachable");
+            const shapes: unknown = Reflect.get(kernel.TopoDS_Shape, "prototype");
+            const prototype = shapes as { delete: () => void };
+            const deleteShape = prototype.delete;
+            let sprung = false;
+            const deletes = vi.spyOn(prototype, "delete").mockImplementation(function (this: unknown): void {
+                if (sprung) {
+                    throw new WebAssembly.RuntimeError("a shape deleted after the trap");
+                }
+                Reflect.apply(deleteShape, this, []);
+            });
+            return {
+                trap,
+                spring: (): never => {
+                    sprung = true;
+                    throw trap;
+                },
+                disarm: (): void => deletes.mockRestore(),
+            };
+        };
+        const thrownWhile = (act: () => unknown, disarm: () => void): unknown => {
+            const opened = openWindow();
+            let thrown: unknown;
+            try {
+                act();
+            } catch (error) {
+                thrown = error;
+            } finally {
+                opened.close();
+                disarm();
+            }
+            opened.made().filter(handle => !handle.isDeleted()).forEach(handle => { handle.delete(); });
+            releaseDesignCaches(occt);
+            return thrown;
+        };
+        const tagOf = (thrown: unknown): unknown[] => [Reflect.get(Object(thrown), "code"), Reflect.get(Object(thrown), "details")];
+        const filleted = (height: number): Document => plate([{ id: "round", type: "fillet", body: "plate", radius: 1, edges: { between: [{ of: "plate", role: "end" }, { of: "plate", role: "side" }], count: 4 } }], { width: 40, depth: 20, height });
+
+        it("should hand a feature's trap on unchanged from writing hints or code, asking the trapped kernel to free nothing", () => {
+            // Arrange
+            const document = filleted(14);
+            const rounding = vi.spyOn(occt.fillets, "filletEdgesWithHistory");
+
+            // Act
+            const hinting = armedTrap();
+            rounding.mockImplementation(hinting.spring);
+            const fromHints = thrownWhile(() => occt.design.withHints({ document }), hinting.disarm);
+            const writing = armedTrap();
+            rounding.mockImplementation(writing.spring);
+            const fromCode = thrownWhile(() => occt.design.toTypeScript({ document }), writing.disarm);
+            rounding.mockRestore();
+
+            // Assert
+            expect(fromHints).toBe(hinting.trap);
+            expect(fromCode).toBe(writing.trap);
+            expect([tagOf(fromHints), tagOf(fromCode)]).toEqual([0, 1].map(() => ["occt.design.crashed", { feature: "round", path: "/features/2" }]));
+        });
+
+        it("should hand a trap while measuring clashes on unchanged, asking the trapped kernel to free nothing", () => {
+            // Arrange
+            const PLATE_ID = "9a9a9a9a-9a9a-4a9a-8a9a-9a9a9a9a9a9a";
+            const placedPlate: Document = { ...plate(), id: PLATE_ID, parts: [{ id: "plate", body: "plate" }] };
+            const overlapping: Models.OCCT.DesignAssemblyDocument = {
+                schemaVersion: 1,
+                kind: "assembly",
+                components: [
+                    { id: "first", source: { document: PLATE_ID, part: "plate" } },
+                    { id: "second", source: { document: PLATE_ID, part: "plate" }, at: { origin: [5, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] } },
+                ],
+            };
+            const measuring = armedTrap();
+
+            // Act
+            const between = vi.spyOn(occt.analysis.clashes, "betweenShapes").mockImplementation(measuring.spring);
+            const thrown = thrownWhile(() => occt.design.clashes({ document: overlapping, documents: [placedPlate] }), measuring.disarm);
+            between.mockRestore();
+
+            // Assert
+            expect(thrown).toBe(measuring.trap);
+        });
+
+        it("should hand a trap while building the parts on unchanged, asking the trapped kernel to free nothing", () => {
+            // Arrange
+            const twoParts: Document = {
+                ...plate([{ id: "slab", type: "extrude", profile: "base", distance: 3 }], { width: 40, depth: 20, height: 15 }),
+                parts: [{ id: "plate", body: "plate" }, { id: "slab", body: "slab" }],
+            };
+            const measuring = armedTrap();
+            const volumeOf = occt.shapes.solid.getSolidVolume.bind(occt.shapes.solid);
+
+            // Act
+            const volumes = vi.spyOn(occt.shapes.solid, "getSolidVolume").mockImplementationOnce(volumeOf).mockImplementationOnce(measuring.spring);
+            const thrown = thrownWhile(() => occt.design.build({ document: twoParts }), measuring.disarm);
+            volumes.mockRestore();
+
+            // Assert
+            expect(thrown).toBe(measuring.trap);
+        });
+
+        it("should fail a sketch whose closed outline encloses no area or crosses itself, keeping none of the outline it drew first", () => {
+            // Arrange
+            const bowTie: Document = { schemaVersion: 1, features: [{ id: "tie", type: "sketch", on: { plane: "XY" }, pen: [{ type: "line", to: [10, 10] }, { type: "vLine", length: -10 }, { type: "line", to: [0, 10] }, { type: "close" }] }] };
+            const crossed: Document = { schemaVersion: 1, features: [{ id: "tie", type: "sketch", on: { plane: "XY" }, pen: [{ type: "line", to: [10, 10] }, { type: "vLine", length: -10 }, { type: "line", to: [0, 6] }, { type: "close" }] }] };
+
+            // Act
+            const flat = keptAfter(() => occt.design.build({ document: bowTie }));
+            const crossing = keptAfter(() => occt.design.build({ document: crossed }));
+
+            // Assert
+            expect([flat.answer.report[0]?.status, flat.answer.report[0]?.messages[0]]).toEqual(["failed", expect.stringMatching(/encloses no area/)]);
+            expect([crossing.answer.report[0]?.status, crossing.answer.report[0]?.messages[0]]).toEqual(["failed", expect.stringMatching(/crosses itself/)]);
+            expect([flat.kept, crossing.kept]).toEqual([[], []]);
+        });
+
         it("should hand a trap inside the kernel on to the caller rather than report a failed feature, and forget what it had kept", () => {
             // Arrange
             const document = plate();

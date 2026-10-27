@@ -9,7 +9,8 @@ import { GeometryHelper, MathBitByBit, Vector, resolveDto } from "@bitbybit-dev/
 import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker/lib";
-import { mockOCCTBoxDecomposedMesh } from "../__mocks__/test-data";
+import { mockOCCTBoxDecomposedMesh, mockOCCTBoxMeshBuffers } from "../__mocks__/test-data";
+import type { KeptDesignMesh } from "@bitbybit-dev/core";
 import { partialMock } from "../__mocks__/test-helpers";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
@@ -74,19 +75,21 @@ const segmentColors = (line: LineSegments2, segments: readonly number[]): string
 
 describe("drawing shapes with their appearance and design builds", () => {
     let draw: Draw;
+    let scene: Scene;
     let drawHelper: DrawHelper;
     let occtWorkerManager: OCCTWorkerManager;
     let workerCall: Mock;
 
     beforeEach(() => {
         const context = new Context();
-        context.scene = new Scene();
+        scene = new Scene();
+        context.scene = scene;
         const jscadWorkerManager = new JSCADWorkerManager();
         occtWorkerManager = new OCCTWorkerManager();
         const vector = new Vector(new MathBitByBit(), new GeometryHelper());
         drawHelper = new DrawHelper(context, new JSCADText(jscadWorkerManager), vector, jscadWorkerManager, new ManifoldWorkerManager(), occtWorkerManager);
         draw = new Draw(drawHelper, context, new Tag(context));
-        workerCall = vi.fn((_method: string, inputs: { shapes: unknown[] }) => Promise.resolve(inputs.shapes.map(() => mockOCCTBoxDecomposedMesh())));
+        workerCall = vi.fn((_method: string, inputs: { shapes: unknown[] }) => Promise.resolve(inputs.shapes.map(() => mockOCCTBoxMeshBuffers())));
         occtWorkerManager.genericCallToWorkerPromise = workerCall;
     });
 
@@ -107,6 +110,25 @@ describe("drawing shapes with their appearance and design builds", () => {
             expect(materials.map(material => material.color.getHexString())).toEqual(["ffffff", "000000"]);
             expect(materials.map(material => material.metalness)).toEqual([0, 1]);
             expect(drawn.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
+        });
+
+        it("should put every look's faces in one geometry with the faces' own winding and normals, look after look", async () => {
+            // Arrange
+            const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), drawTwoSided: false, drawEdges: false };
+            const box = mockOCCTBoxDecomposedMesh();
+
+            // Act
+            const drawn = await draw.drawAnyAsync({ entity: { shape: shapeA, appearance: boxAppearance }, options });
+
+            // Assert
+            const mesh = drawn.children[0] as Mesh;
+            const faceOrder = [2, 3, 4, 5, 0, 1];
+            expect(Array.from(mesh.geometry.getIndex()!.array)).toEqual([
+                1, 3, 0, 0, 3, 2, 7, 5, 4, 7, 4, 6, 9, 11, 8, 8, 11, 10, 15, 13, 12, 15, 12, 14,
+                16, 17, 18, 18, 17, 19, 21, 20, 22, 21, 22, 23,
+            ]);
+            expect(Array.from(mesh.geometry.getAttribute("normal").array)).toEqual(faceOrder.flatMap(face => box.faceList[face]!.normalCoord));
+            expect(Array.from(mesh.geometry.getAttribute("position").array)).toEqual(faceOrder.flatMap(face => box.faceList[face]!.vertexCoord));
         });
 
         it("should record where the triangles of each face sit in the index buffer", async () => {
@@ -212,7 +234,7 @@ describe("drawing shapes with their appearance and design builds", () => {
             // Assert
             expect(drawn.children).toHaveLength(2);
             expect(workerCall).toHaveBeenCalledTimes(1);
-            expect(workerCall.mock.calls[0]![0]).toBe("shapesToMeshes");
+            expect(workerCall.mock.calls[0]![0]).toBe("shapesToMeshBuffers");
             expect(workerCall.mock.calls[0]![1].shapes).toEqual([shapeA, shapeB]);
             expect(drawn.userData["type"]).toBe(Inputs.Draw.drawingTypes.occtShapes);
         });
@@ -240,6 +262,41 @@ describe("drawing shapes with their appearance and design builds", () => {
         });
     });
 
+    describe("a mesh with a face that cannot be drawn", () => {
+        const tenCoordinates = (): Inputs.OCCT.DecomposedMeshDto => {
+            const mesh = mockOCCTBoxDecomposedMesh();
+            mesh.faceList = [...mesh.faceList].reverse();
+            mesh.faceList[2]!.vertexCoord = [...mesh.faceList[2]!.vertexCoord.slice(0, 9), 5];
+            return mesh;
+        };
+
+        it("should refuse it naming the face, and leave nothing in the scene however often it is tried", async () => {
+            // Arrange
+            const before = scene.children.length;
+
+            // Act
+            const first = draw.drawAnyAsync({ entity: tenCoordinates() });
+            const second = draw.drawAnyAsync({ entity: tenCoordinates() });
+
+            // Assert
+            await expect(first).rejects.toThrow("Face 3 cannot be drawn: it holds 10 position values and 6 indexes; both must be whole points and triangles, three values each.");
+            await expect(second).rejects.toThrow("Face 3 cannot be drawn");
+            expect(scene.children).toHaveLength(before);
+        });
+
+        it("should refuse a list of meshes before drawing any of them", async () => {
+            // Arrange
+            const before = scene.children.length;
+
+            // Act
+            const drawing = draw.drawAnyAsync({ entity: [mockOCCTBoxDecomposedMesh(), tenCoordinates()] });
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Face 3 cannot be drawn");
+            expect(scene.children).toHaveLength(before);
+        });
+    });
+
     describe("the color groups of an assembly document", () => {
         it("should color the faces of each group in one mesh", async () => {
             // Arrange
@@ -261,7 +318,7 @@ describe("drawing shapes with their appearance and design builds", () => {
     describe("the edges of a shape drawn without an appearance", () => {
         it("should take the edge color of the options, or the face color moved by the edge contrast", async () => {
             // Arrange
-            workerCall.mockResolvedValueOnce(mockOCCTBoxDecomposedMesh()).mockResolvedValueOnce(mockOCCTBoxDecomposedMesh());
+            workerCall.mockResolvedValueOnce(mockOCCTBoxMeshBuffers()).mockResolvedValueOnce(mockOCCTBoxMeshBuffers());
             const options = { ...new Inputs.Draw.DrawOcctShapeOptions(), faceColour: "#ffffff", edgeColour: "#00ff00", drawFaces: false };
 
             // Act
@@ -376,6 +433,52 @@ describe("drawing shapes with their appearance and design builds", () => {
             expect(coarse).toEqual([]);
             expect(workerCall).toHaveBeenCalledTimes(1);
             expect(workerCall.mock.calls[0]![1].shapes).toEqual([shapeB]);
+        });
+
+        it("should draw parts from kept meshes handed back as a structured clone, without meshing them", async () => {
+            // Arrange
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const kept = structuredClone(drawHelper.keptDesignMeshes(["box-1-shape", "pin-2-shape"], options));
+            drawHelper.dispose();
+            workerCall.mockClear();
+
+            // Act
+            drawHelper.keepDesignMeshes(kept, options);
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+
+            // Assert
+            expect(workerCall).not.toHaveBeenCalled();
+            expect(batchesOf(drawn).length).toBeGreaterThan(0);
+        });
+
+        it("should refuse kept meshes whose buffers were handed away to another thread, and keep none of them", async () => {
+            // Arrange
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const kept = drawHelper.keptDesignMeshes(["box-1-shape", "pin-2-shape"], options);
+            const pinFaces = (kept[1]!.mesh as Inputs.OCCT.DecomposedMeshBuffersDto).faceList;
+            structuredClone(kept, { transfer: [...new Set(pinFaces.flatMap(face => [face.vertexCoord.buffer, face.normalCoord.buffer, face.triIndexes.buffer, face.uvs.buffer]))] as ArrayBuffer[] });
+            drawHelper.dispose();
+            workerCall.mockClear();
+
+            // Act
+            const keeping = (): void => drawHelper.keepDesignMeshes(kept, options);
+
+            // Assert
+            expect(keeping).toThrow("The mesh kept for pin-2-shape cannot be drawn: face 0 counts 2 triangles but holds no indexes, as a mesh does once its buffers were handed away to another thread.");
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            expect(workerCall.mock.calls[0]![1].shapes).toEqual([shapeA, shapeB]);
+        });
+
+        it("should refuse kept meshes stored as JSON, whose typed arrays come back as plain records", async () => {
+            // Arrange
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const restored: unknown = JSON.parse(JSON.stringify(drawHelper.keptDesignMeshes(["box-1-shape"], options)));
+
+            // Act
+            const keeping = (): void => drawHelper.keepDesignMeshes(restored as KeptDesignMesh<unknown>[], options);
+
+            // Assert
+            expect(keeping).toThrow("The mesh kept for box-1-shape cannot be drawn: face 0 holds its positions, normals or indexes as something other than a list of numbers, as typed arrays stored as JSON come back.");
         });
 
         it("should mesh a part once for every build it draws, a preview beside the model say, until the meshing changes", async () => {

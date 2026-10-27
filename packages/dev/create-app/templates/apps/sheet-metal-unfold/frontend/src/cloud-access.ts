@@ -25,7 +25,7 @@ export function renderAccess(root: HTMLElement, access: Access): void {
     if (access.state === "locked") {
         root.innerHTML = `
             <strong>Unfolding needs CAD Cloud</strong>
-            Everything else on this page runs in your browser on the open-source packages. The sheet-metal unfold is a Pro algorithm that exists only on
+            Everything else on this page runs in your browser on the free packages. The sheet-metal unfold is a Pro algorithm that exists only on
             <a href="${CAD_CLOUD_URL}" target="_blank" rel="noopener noreferrer">CAD Cloud</a>; any plan includes it.
             Create a key in <a href="${STUDIO_KEYS_URL}" target="_blank" rel="noopener noreferrer">Bitbybit Studio</a>, put it in <code>backend/.env</code> as
             <code>${KEY_LINE}</code>

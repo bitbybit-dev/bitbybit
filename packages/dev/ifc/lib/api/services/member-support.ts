@@ -1,5 +1,5 @@
 import type { ProfileSpec } from "../../build/build-types";
-import { requireFinite } from "../../build/checks";
+import { requireTurn } from "../../build/checks";
 import { requireMaterial } from "../../build/materials";
 import type { ModelSnapshot } from "../../model/snapshot";
 import type { IfcTransaction } from "../../model/transaction";
@@ -32,5 +32,5 @@ export function memberMaterial(tx: IfcTransaction, name: string | undefined): nu
 }
 
 export function finiteRotation(rotation: number): void {
-    requireFinite(rotation, "rotation in degrees");
+    requireTurn(rotation, "rotation");
 }

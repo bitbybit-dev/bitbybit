@@ -3,9 +3,6 @@ import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Vertex } from "../../../bi
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { readKernelException } from "../../kernel-exception";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type * as Inputs from "../../api/inputs";
 
@@ -15,7 +12,7 @@ describe("OCCT edges tangent to planar curves", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const XY: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] };

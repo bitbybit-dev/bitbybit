@@ -54,8 +54,7 @@ export class OCCTCorners {
             result.delete();
             throw new Error("Could not fillet the corner(s) for the given point(s).");
         }
-        const shape = this.och.converterService.getActualTypeOfShape(result);
-        result.delete();
+        const shape = this.och.converterService.castAndRelease(result);
         return shape;
     }
 
@@ -92,8 +91,7 @@ export class OCCTCorners {
             result.delete();
             throw new Error("Could not chamfer the corner(s) for the given point(s).");
         }
-        const shape = this.och.converterService.getActualTypeOfShape(result);
-        result.delete();
+        const shape = this.och.converterService.castAndRelease(result);
         return shape;
     }
 

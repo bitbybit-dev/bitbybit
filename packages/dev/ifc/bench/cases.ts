@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import type { Base } from "@bitbybit-dev/base";
 import type { IfcModel } from "../index";
 import { IFC, IFCService } from "../index";
@@ -11,6 +12,7 @@ const BAY = 6000;
 const DEPTH = 12000;
 const POINT_ROWS = 200000;
 const TIME_STAMP = "2026-10-07T12:00:00";
+const CONE_IN_METRES = readFileSync(new URL("./cone-in-metres.ifc", import.meta.url), "utf8");
 
 function corners(): Base.Point2[] {
     return [[0, 0], [BAYS * BAY, 0], [BAYS * BAY, DEPTH], [0, DEPTH]];
@@ -131,4 +133,5 @@ export const benchCases: BenchCase[] = [
         const model = ifc.model.read({ data: points });
         return [model.ids().reduce((sum, id) => sum + (model.entity(id).args.length), 0)];
     } },
+    { name: "describe a cone written from metres, its B-spline surface running 0.92 along it, as a recipe", budgetMs: 1000, run: () => [ifc.geometry.recipe({ model: ifc.model.read({ data: CONE_IN_METRES }) }).buffers.f64.length] },
 ];

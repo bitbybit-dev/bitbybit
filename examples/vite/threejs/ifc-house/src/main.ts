@@ -5,14 +5,14 @@ import { houseStep } from "./export/step-export";
 import { HouseAuthor } from "./house/build-house";
 import type { Layer, StoreyKey } from "./house/house-types";
 import { drawHouse } from "./scene/draw-house";
-import type { DrawnElement, ElementInfo, Stage } from "./scene/scene-types";
+import type { DrawnHouse, ElementInfo, Stage } from "./scene/scene-types";
 import { createStage } from "./scene/stage";
 import { HousePanel, showStatus } from "./ui/panel";
 import { RoomLabels } from "./ui/room-labels";
 
 const DOWNLOAD_URL_LIFETIME_MS = 10000;
 const CLICK_TOLERANCE_PX = 4;
-const HIGHLIGHT = new THREE.MeshStandardMaterial({ color: "#e9b44c", emissive: "#3d2700", roughness: 0.5 });
+const HIGHLIGHT = "#e9b44c";
 
 const status = document.getElementById("status") as HTMLElement;
 start().catch((error: unknown) => {
@@ -53,8 +53,9 @@ async function start(): Promise<void> {
                 panel.turn("roof", false);
             }
             if (key !== "labels") {
-                drawn.filter((item) => item.info.layer === key).forEach((item) => {
-                    item.object.visible = on;
+                const keys = [...drawn.elements.values()].filter((info) => info.layer === key).map((info) => info.globalId);
+                drawn.groups.forEach((group) => {
+                    bitbybit.draw.setRecipeElementsVisible({ drawn: group, keys, visible: on });
                 });
             }
             labels.show(labelledStorey(panel));
@@ -72,7 +73,7 @@ async function start(): Promise<void> {
             }
         },
     });
-    enablePicking(stage, drawn, (info) => {
+    enablePicking(stage, bitbybit, drawn, (info) => {
         panel.select(info);
     });
     showStatus(status, undefined);
@@ -86,11 +87,16 @@ function labelledStorey(panel: HousePanel): StoreyKey | undefined {
     return order.find(([layer]) => panel.isOn(layer))?.[1];
 }
 
-function enablePicking(stage: Stage, drawn: DrawnElement[], onPick: (info: ElementInfo | undefined) => void): void {
+function enablePicking(stage: Stage, bitbybit: BitByBitBase, drawn: DrawnHouse, onPick: (info: ElementInfo | undefined) => void): void {
     const canvas = stage.renderer.domElement;
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
-    const restore = new Map<THREE.Mesh, THREE.Material | THREE.Material[]>();
+    const paint = (key: string, colour?: string): void => {
+        drawn.groups.forEach((group) => {
+            bitbybit.draw.setRecipeElementsColour({ drawn: group, keys: [key], colour });
+        });
+    };
+    let selected: string | undefined;
     let down: [number, number] = [0, 0];
     canvas.addEventListener("pointerdown", (event) => {
         down = [event.clientX, event.clientY];
@@ -102,28 +108,18 @@ function enablePicking(stage: Stage, drawn: DrawnElement[], onPick: (info: Eleme
         const bounds = canvas.getBoundingClientRect();
         pointer.set((event.clientX - bounds.left) / bounds.width * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1);
         raycaster.setFromCamera(pointer, stage.camera);
-        const visible = drawn.filter((item) => item.object.visible).map((item) => item.object);
-        const hit = raycaster.intersectObjects(visible, true).find((candidate) => candidate.object.userData["element"]);
-        restore.forEach((material, mesh) => {
-            mesh.material = material;
-        });
-        restore.clear();
-        const info = hit?.object.userData["element"] as ElementInfo | undefined;
-        if (hit && info) {
-            const owner = drawn.find((item) => item.info === info);
-            owner?.object.traverse((part) => {
-                if (isMesh(part)) {
-                    restore.set(part, part.material);
-                    part.material = HIGHLIGHT;
-                }
-            });
+        const hit = raycaster.intersectObjects(drawn.groups, true)[0];
+        const group = drawn.groups.find((candidate) => candidate === hit?.object.parent);
+        const key = hit && group ? bitbybit.draw.recipeElementOfPick({ drawn: group, mesh: hit.object, triangle: hit.faceIndex ?? undefined, instance: hit.instanceId }) : undefined;
+        if (selected !== undefined) {
+            paint(selected);
         }
-        onPick(info);
+        selected = key;
+        if (key !== undefined) {
+            paint(key, HIGHLIGHT);
+        }
+        onPick(key === undefined ? undefined : drawn.elements.get(key));
     });
-}
-
-function isMesh(object: THREE.Object3D): object is THREE.Mesh {
-    return object instanceof THREE.Mesh;
 }
 
 function saveFile(data: BlobPart, fileName: string, type: string): void {

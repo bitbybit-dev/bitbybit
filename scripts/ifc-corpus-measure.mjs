@@ -1,15 +1,17 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { isZip, zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/services/helpers/zip";
+import { isZip, zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/services/helpers/files/zip";
 import { IFCService } from "@bitbybit-dev/ifc";
 import { ManifoldService } from "@bitbybit-dev/manifold";
+import { editForValidation } from "./ifc-corpus-edit.mjs";
 import { canonicalSets, compareBoxes, compareSemantics, compareVolumes, cutHost, joinBoxes, nodeShape, oracleByGlobalId, oracleInMetres, problemKinds, sameDataSection } from "./ifc-corpus.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const BATCH = 2000;
 const POINT3_SIZE = 3;
 const SET_SAMPLE = 5000;
+const EXACT_BOX_DEFLECTION = 1e-4;
 const MILLIMETRES_PER_METRE = 1000;
 const KILOBYTES_PER_MEGABYTE = 1024;
 const BYTES_PER_MEGABYTE = 1024 * 1024;
@@ -18,6 +20,7 @@ const args = process.argv.slice(2);
 const file = args[0];
 const oraclePath = args.includes("--oracle") ? args[args.indexOf("--oracle") + 1] : undefined;
 const exact = args.includes("--exact");
+const editedFolder = args.includes("--edited") ? args[args.indexOf("--edited") + 1] : undefined;
 
 process.on("uncaughtException", (error) => {
     console.log(JSON.stringify({ failed: error instanceof Error ? error.message : String(error) }));
@@ -38,10 +41,10 @@ async function manifoldService() {
 }
 
 async function occtService() {
-    const { OCCTService, OccHelper, VectorHelperService, ShapesHelperService } = await import("@bitbybit-dev/occt");
+    const { OCCTService } = await import("@bitbybit-dev/occt");
     const { default: initOpenCascade } = await import("@bitbybit-dev/occt/bitbybit-dev-occt/index.js");
     const occ = await initOpenCascade({ print: () => undefined, printErr: () => undefined });
-    return new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+    return new OCCTService(occ);
 }
 
 function batches(ids) {
@@ -167,20 +170,57 @@ for (const batch of batches(ids)) {
     builtHosts.forEach((host) => host.delete());
 }
 
+function meshedBoxOf(occt, shape) {
+    const loose = occt.operations.boundingBoxOfShape({ shape });
+    const precision = Math.max(Math.hypot(...loose.size) * EXACT_BOX_DEFLECTION, Number.EPSILON);
+    const min = [Infinity, Infinity, Infinity];
+    const max = [-Infinity, -Infinity, -Infinity];
+    for (const face of occt.shapeToMesh({ shape, precision, adjustYtoZ: false }).faceList) {
+        boxOfPositionsInto(face.vertexCoord, min, max);
+    }
+    return { min: min.map((value) => value * metresPerUnit), max: max.map((value) => value * metresPerUnit) };
+}
+
+function boxOfPositionsInto(positions, min, max) {
+    for (let at = 0; at < positions.length; at += POINT3_SIZE) {
+        for (let axis = 0; axis < POINT3_SIZE; axis++) {
+            min[axis] = Math.min(min[axis], positions[at + axis]);
+            max[axis] = Math.max(max[axis], positions[at + axis]);
+        }
+    }
+}
+
 let exactMs;
 let exactEmpty;
+const exactVolumes = new Map();
+const exactBoxes = new Map();
 if (exact) {
     const occt = await occtService();
-    const start = performance.now();
     exactEmpty = 0;
+    let building = 0;
     for (const batch of batches(ids)) {
-        const shapes = occt.recipes.build({ recipe: ifc.geometry.recipe({ model, elements: batch }), emptyWhenFailed: true, facetedMeshes: false });
-        shapes.forEach((shape) => {
-            if (occt.shapes.face.getFaces({ shape }).length === 0) { exactEmpty++; }
+        const part = ifc.geometry.recipe({ model, elements: batch });
+        const start = performance.now();
+        const shapes = occt.recipes.build({ recipe: part, emptyWhenFailed: true, facetedMeshes: false });
+        building += performance.now() - start;
+        shapes.forEach((shape, index) => {
+            const id = String(part.roots[index]?.tag["globalId"]);
+            const faces = occt.shapes.face.getFaces({ shape });
+            if (faces.length === 0) {
+                exactEmpty++;
+            } else {
+                const solids = occt.shapes.solid.getSolids({ shape });
+                if (solids.length > 0) {
+                    exactVolumes.set(id, (exactVolumes.get(id) ?? 0) + solids.reduce((sum, solid) => sum + Math.abs(occt.shapes.solid.getSolidVolume({ shape: solid })), 0) * scale);
+                }
+                solids.forEach((solid) => solid.delete());
+                exactBoxes.set(id, joinBoxes(exactBoxes.get(id), meshedBoxOf(occt, shape)));
+            }
+            faces.forEach((face) => face.delete());
             shape.delete();
         });
     }
-    exactMs = Math.round(performance.now() - start);
+    exactMs = Math.round(building);
 }
 
 const [written, writeMs] = timed(() => ifc.model.writeBytes({ model, fileName: path.basename(file) }));
@@ -189,6 +229,15 @@ const oracle = oraclePath === undefined ? undefined : JSON.parse(readFileSync(or
 const inMetres = oracle === undefined ? undefined : oracleInMetres(oracle, metresPerUnit);
 const oracleElements = inMetres === undefined ? undefined : oracleByGlobalId(inMetres.elements);
 const sharedGlobalIds = elements.length - new Set(elements.map((element) => element.globalId)).size;
+
+function editedFiles(folder) {
+    const { baseline, edited, edits } = editForValidation(ifc, model, recipe.millimetresPerUnit);
+    writeFileSync(path.join(folder, "baseline.ifc"), baseline === model ? read : ifc.model.writeBytes({ model: baseline, fileName: "baseline.ifc" }));
+    writeFileSync(path.join(folder, "edited.ifc"), ifc.model.writeBytes({ model: edited, fileName: "edited.ifc" }));
+    return { edits, editable: edited.editable };
+}
+
+const [editing, editMs] = editedFolder === undefined ? [undefined, undefined] : timed(() => editedFiles(editedFolder));
 
 console.log(JSON.stringify({
     bytes: bytes.byteLength,
@@ -225,5 +274,8 @@ console.log(JSON.stringify({
     unitsAgree: inMetres?.unitsAgree,
     volumes: oracleElements === undefined ? undefined : compareVolumes(volumes, oracleElements),
     boxes: oracleElements === undefined ? undefined : compareBoxes(boxes, oracleElements),
+    exactVolumes: oracleElements === undefined || !exact ? undefined : compareVolumes(exactVolumes, oracleElements),
+    exactBoxes: oracleElements === undefined || !exact ? undefined : compareBoxes(exactBoxes, oracleElements),
+    editing: editing === undefined ? undefined : { ...editing, editMs },
     semantics: oracle?.semantics === undefined ? undefined : compareSemantics({ counts: summary.elementCounts, storeys: new Map(elements.map((element) => [element.globalId, element.storey])), sets: sampleSets }, oracle.semantics),
 }));

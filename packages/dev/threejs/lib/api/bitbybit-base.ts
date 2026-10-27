@@ -4,7 +4,7 @@ import type { Verb, Tag, Time, OCCTW, IFCW, Asset, JSONBitByBit, CSVBitByBit } f
 import type { JSCAD } from "@bitbybit-dev/jscad-worker";
 import type { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
 import type { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
-import type { Vector, Point, Frame, Line, Polyline, TextBitByBit, Color, MathBitByBit, Lists, Logic, Transforms, Dates, MeshBitByBit } from "@bitbybit-dev/base";
+import type { Color, Dates, Engineering, Frame, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, Recipes, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
 import { createSharedServices } from "@bitbybit-dev/core/lib/api/shared-services";
 import { Draw } from "./bitbybit/draw";
 import { Context } from "./context";
@@ -17,11 +17,12 @@ import type * as THREEJS from "three";
 
 /**
  * The whole library behind one object for a Three.js scene: `occt`, `jscad` and `manifold` for the
- * CAD kernels, `ifc` for IFC building models, `draw` to put anything into the scene, `three` for
- * the camera, and the plain data helpers `math`, `vector`, `point`, `frame`, `line`, `polyline`,
+ * CAD kernels, `ifc` for IFC building models, `recipes` for geometry as data, `engineering` for the
+ * sizes and outlines of standard parts, `draw` to put anything into the scene, `three` for the
+ * camera, and the plain data helpers `math`, `vector`, `point`, `frame`, `line`, `polyline`,
  * `transforms`, `lists`, `logic`, `json`, `csv`, `text`, `dates`, `color`, `asset`, `tag` and
  * `time`. Call `init` once with the scene and the kernel workers before using any of them. The
- * `bitbybit` object in the examples throughout these docs is an instance of this class.
+ * `bitbybit` object in these docs' examples is one.
  */
 export class BitByBitBase {
 
@@ -44,6 +45,8 @@ export class BitByBitBase {
     public three: ThreeJS;
     public point: Point;
     public frame: Frame;
+    public engineering: Engineering;
+    public recipes: Recipes;
     public line: Line;
     public transforms: Transforms;
     public polyline: Polyline;
@@ -91,6 +94,8 @@ export class BitByBitBase {
         this.transforms = shared.transforms;
         this.point = shared.point;
         this.frame = shared.frame;
+        this.engineering = shared.engineering;
+        this.recipes = shared.recipes;
         this.line = shared.line;
         this.polyline = shared.polyline;
         this.verb = shared.verb;
@@ -115,7 +120,7 @@ export class BitByBitBase {
      * A kernel whose worker is left out is unavailable, so pass only the ones your application
      * loads.
      * @param scene - The scene everything is drawn into
-     * @param occt - The worker running the OCCT kernel, when OCCT is used
+     * @param occt - The worker running the Bitbybit OCCT Kernel, when OCCT is used
      * @param jscad - The worker running the JSCAD kernel, when JSCAD is used
      * @param manifold - The worker running the Manifold kernel, when Manifold is used
      * @returns Nothing

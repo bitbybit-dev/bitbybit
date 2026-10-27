@@ -13,7 +13,7 @@ import { AGENT_SECTION_FILE, applyAgentLayer, listFiles, restoreTemplateDotfiles
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CLI_VERSION = "1.5.0";
+const CLI_VERSION = "1.6.0-rc.0";
 const TEMPLATES_ROOT = path.join(__dirname, "..", "templates");
 
 const BITBYBIT_LOGO = `
@@ -68,7 +68,7 @@ const APP_TEMPLATES: Record<AppTemplateId, AppTemplate> = {
     },
     "step-to-gltf-cli": {
         name: "STEP to glTF command line",
-        description: "Batch STEP and IGES to GLB and STL in-process on the open-source kernel, with a JSON of facts per file; --cloud for serverless or volume",
+        description: "Batch STEP and IGES to GLB and STL in-process on the free local kernel, with a JSON of facts per file; --cloud for serverless or volume",
         cloud: false,
     },
     "drone-assembly": {
@@ -527,7 +527,7 @@ async function createProject(options: ProjectOptions): Promise<void> {
         if (occtArchitecture !== "32") {
             const mainTsPath = path.join(targetDir, "src", "main.ts");
             if (!fs.existsSync(mainTsPath)) {
-                throw new Error(`Cannot select the ${occtArchitecture} OCCT kernel: ${path.relative(targetDir, mainTsPath)} is not in this template, and it is the file the architecture is written into.`);
+                throw new Error(`Cannot select the ${occtArchitecture} build of the Bitbybit OCCT Kernel: ${path.relative(targetDir, mainTsPath)} is not in this template, and it is the file the architecture is written into.`);
             }
             const mainTsContent = await fs.readFile(mainTsPath, "utf-8");
 
@@ -536,7 +536,7 @@ async function createProject(options: ProjectOptions): Promise<void> {
 
             const patched = mainTsContent.replace(optionsPattern, replacement);
             if (patched === mainTsContent) {
-                throw new Error(`Cannot select the ${occtArchitecture} OCCT kernel: the options object in src/main.ts is not in the shape this patch expects (enableManifold last). Writing the file unchanged would have produced a 32-bit project reported as ${occtArchitecture}.`);
+                throw new Error(`Cannot select the ${occtArchitecture} build of the Bitbybit OCCT Kernel: the options object in src/main.ts is not in the shape this patch expects (enableManifold last). Writing the file unchanged would have produced a 32-bit project reported as ${occtArchitecture}.`);
             }
             await fs.writeFile(mainTsPath, patched, "utf-8");
         }
@@ -765,7 +765,7 @@ ${backend === "dotnet-rest" ? `    ├── Program.cs
 
 ## What Needs CAD Cloud and Where to Get It
 
-Everything this app renders is computed on CAD Cloud. That is the point of this template: it is the hosted-compute case, for a backend that cannot host the CAD kernels (a Cloudflare Worker, a .NET server) or chooses not to. If your geometry could run in your users' browsers, or in a Node server with the memory for a kernel, the free open-source packages are the whole answer and \`npm init @bitbybit-dev/app\` has Vite templates for that; nothing of Bitbybit's sits in the loop there.
+Everything this app renders is computed on CAD Cloud. That is the point of this template: it is the hosted-compute case, for a backend that cannot host the CAD kernels (a Cloudflare Worker, a .NET server) or chooses not to. If your geometry could run in your users' browsers, or in a Node server with the memory for a kernel, the free packages are the whole answer and \`npm init @bitbybit-dev/app\` has Vite templates for that; no Bitbybit service sits in the loop there.
 
 | | |
 |---|---|
@@ -994,7 +994,7 @@ async function createAppProject(options: AppProjectOptions): Promise<void> {
     console.log(`  ${chalk.gray("Project:")}     ${chalk.white.bold(projectName)}`);
     console.log(`  ${chalk.gray("Type:")}        ${chalk.hex("#F0CEBB")("App Template")}`);
     console.log(`  ${chalk.gray("Template:")}    ${chalk.hex("#F0CEBB")(meta.name)} ${chalk.gray(`(${template})`)}`);
-    console.log(`  ${chalk.gray("Runs on:")}     ${meta.cloud ? chalk.hex("#FF6633")("the packages + CAD Cloud (API key needed)") : chalk.green("the open-source packages, in the browser")}`);
+    console.log(`  ${chalk.gray("Runs on:")}     ${meta.cloud ? chalk.hex("#FF6633")("the packages + CAD Cloud (API key needed)") : chalk.green("the free packages, locally")}`);
     console.log();
     console.log(chalk.gray("─".repeat(72)));
     console.log();

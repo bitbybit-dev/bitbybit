@@ -22,9 +22,10 @@ buildingSMART's EXPRESS files, kept exactly as published (changing one would nee
 consent). Never edit any of them by hand; `npm run gen:ifc-schema` rewrites the tables and
 `npm run check:ifc-schema` (part of `npm test`) fails on a stale one. Each table carries buildingSMART's
 notice - IFC4X3_ADD2.exp has none in it, so `schema/IFC4X3_ADD2.notice.txt` holds the publication's -
-and the package's `NOTICE` the attribution. Only IFC4 models are editable (`isEditableSchema`): an
-IFC4X3 model is read with its own table and shown and queried, and refuses every change until edits
-are proven on IFC4X3 files. There is no IFC2X3 table: an IFC2X3 file is read through the IFC4 one
+and the package's `NOTICE` the attribution. IFC4 and IFC4X3 ADD2 models are editable
+(`isEditableSchema`), each changed through its own table, so an edit is written in the file's own
+schema; a file naming the bare IFC4X3 is read through the ADD2 table and refuses changes. New models
+are IFC4. There is no IFC2X3 table: an IFC2X3 file is read through the IFC4 one
 (`readingSchemaFor`), which keeps most of its entities and appended most of its new attributes, so the
 model can be shown and queried but refuses every change until `upgradeToIfc4` makes it an IFC4 model.
 
@@ -81,7 +82,7 @@ with its tests, and a public method in the matching base service when users woul
 are checked against IfcOpenShell by `npm run validate` (`validation/`, never part of `npm test`): its
 validator with the schema's rules, a shape for every product, and its own wall regeneration over our
 walls. Every new verb adds a fixture there that uses it. `npm run bench` (`bench/`, outside `npm test`
-too) times eight workloads, a file of 40 copies of a block among them, through the public API against
+too) times nine workloads, a file of 40 copies of a block among them, through the public API against
 budgets about three times their measured time, so a change that makes one grow out of proportion
 fails; each must give the same fingerprint every run. Measure a large file with the built `dist` in
 plain Node as well: under the test runner every imported constant is a getter call, which makes the

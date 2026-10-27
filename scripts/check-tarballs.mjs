@@ -165,8 +165,9 @@ for (const { dir, fromDist } of [...distProjects, ...rootProjects]) {
         const kernels = JSON.parse(readFileSync(join(dir, "kernels.json"), "utf8")).kernels;
         subpaths.push(...kernels.flatMap((k) => [`${k.dir}/${k.dir}`, `${k.dir}/cdn`]));
         const schemas = readdirSync(join(dir, "schemas/design-document")).filter((file) => file.endsWith(".json")).map((file) => `schemas/design-document/${file}`);
+        const licenseTexts = readdirSync(join(dir, "licenses")).filter((file) => file.endsWith(".txt")).map((file) => `licenses/${file}`);
         const required = [
-            "NOTICE", "licenses/LGPL-2.1.txt", "licenses/OCCT-LGPL-exception.txt", "licenses/Draco-Apache-2.0.txt", ...schemas,
+            "README.md", "LICENSE", "NOTICE", ...licenseTexts, ...schemas,
             ...kernels.flatMap((k) => [`${k.dir}/${k.file}`, `${k.dir}/${k.dir}.js`, `${k.dir}/${k.dir}.d.ts`, `${k.dir}/index.js`, `${k.dir}/index.d.ts`, `${k.dir}/cdn.js`]),
         ];
         const missing = required.filter((f) => !shipped.includes(f));

@@ -1,14 +1,23 @@
-import type { BitbybitOcctModule, TopoDS_Shape, gp_Trsf, gp_GTrsf } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape, gp_Ax3, gp_Trsf, gp_GTrsf } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { KernelObjects } from "./release-types";
 import * as Inputs from "../../api/inputs";
-import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type { ConverterService } from "./converter.service";
 import type { EntitiesService } from "./entities.service";
 import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
-import { checkedShapes } from "./input-checks";
+import { checkedDirection, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "./input-checks";
+import { kernelObjects, release, released, releasedOnError } from "./release";
 import { readKernelException } from "../../kernel-exception";
+import { trapOr } from "../../kernel-traps";
+import { movedPoint } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
+import { dot3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { IDENTITY_MATRIX } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices.constants";
+import { withKernelErrorsRead, withKernelRefusals } from "./kernel-refusals";
 
 const smallestScale = 1e-100;
+const QUATERNION_PARTS = 4;
+const NO_INVERSE = /gp_GTrsf\.Inverted: the determinant is 0 or not a finite number/;
 
 export class TransformsService {
 
@@ -16,263 +25,194 @@ export class TransformsService {
         private readonly occ: BitbybitOcctModule,
         private readonly converterService: ConverterService,
         private readonly entitiesService: EntitiesService,
-        private readonly vecHelper: VectorHelperService
+        private readonly base: BaseBitByBit
     ) { }
 
     alignAndTranslate(inputs: Resolved.OCCT.AlignAndTranslateDto<TopoDS_Shape>): TopoDS_Shape {
-        const alignedShape = this.align(
-            {
-                shape: inputs.shape,
-                fromOrigin: [0, 0, 0],
-                fromDirection: [0, 1, 0],
-                toOrigin: [0, 0, 0],
-                toDirection: inputs.direction
-            }
-        );
-        const translated = this.translate(
-            {
-                shape: alignedShape,
-                translation: inputs.center
-            }
-        );
-        alignedShape.delete();
-        return translated;
+        const direction = checkedDirection(inputs.direction, "direction");
+        const alignedShape = this.align({ shape: inputs.shape, fromOrigin: [0, 0, 0], fromDirection: [0, 1, 0], toOrigin: [0, 0, 0], toDirection: direction });
+        return released([alignedShape], () => this.translate({ shape: alignedShape, translation: inputs.center }));
     }
 
     scale3d(inputs: Resolved.OCCT.Scale3DDto<TopoDS_Shape>): TopoDS_Shape {
+        const shape = checkedShape(inputs.shape);
+        checkedNumberList(inputs.scale, "scale");
+        checkedNumberList(inputs.center, "center");
         const [sx, sy, sz] = inputs.scale;
         if (this.isUsableScale(sx) && sx === sy && sx === sz) {
-            return this.scaleFromCenter({ shape: inputs.shape, factor: sx, center: inputs.center });
+            return this.scaleFromCenter({ shape, factor: sx, center: inputs.center });
         }
-        const shapeTranslated = this.translate({ shape: inputs.shape, translation: inputs.center.map(c => -c) as Inputs.Base.Vector3 });
+        const shapeTranslated = this.translate({ shape, translation: inputs.center.map(c => -c) as Inputs.Base.Vector3 });
         const transformation = new this.occ.gp_GTrsf();
         const scale = inputs.scale;
         const mat = new this.occ.gp_Mat(scale[0], 0.0, 0.0, 0.0, scale[1], 0.0, 0.0, 0.0, scale[2]);
         transformation.SetVectorialPart(mat);
-        let result;
         try {
-            const gtrans = new this.occ.BRepBuilderAPI_GTransform(shapeTranslated, transformation);
-            const scaledShape = gtrans.Shape();
-            result = this.translate({ shape: scaledShape, translation: inputs.center });
-            gtrans.delete();
-            scaledShape.delete();
+            return withKernelErrorsRead(this.occ, () => {
+                const gtrans = new this.occ.BRepBuilderAPI_GTransform(shapeTranslated, transformation);
+                try {
+                    const scaledShape = gtrans.Shape();
+                    try {
+                        return this.translate({ shape: scaledShape, translation: inputs.center });
+                    } finally {
+                        scaledShape.delete();
+                    }
+                } finally {
+                    gtrans.delete();
+                }
+            });
         } catch (ex) {
-            throw new Error("Could not scale the shape", { cause: ex });
+            throw trapOr(ex, () => new Error("Could not scale the shape", { cause: ex }));
+        } finally {
+            [shapeTranslated, transformation, mat].forEach(release);
         }
-        shapeTranslated.delete();
-        transformation.delete();
-        mat.delete();
-        return result;
     }
 
     translate(inputs: Resolved.OCCT.TranslateDto<TopoDS_Shape>): TopoDS_Shape {
-        const transformation = new this.occ.gp_Trsf();
-        const gpVec = new this.occ.gp_Vec(inputs.translation[0], inputs.translation[1], inputs.translation[2]);
-        transformation.SetTranslation(gpVec);
-        const transf = new this.occ.BRepBuilderAPI_Transform(inputs.shape, transformation, true);
-        const s = transf.Shape();
-        const shp = this.converterService.getActualTypeOfShape(s);
-        s.delete();
-        transformation.delete();
-        transf.delete();
-        gpVec.delete();
-        return shp;
+        const shape = checkedShape(inputs.shape);
+        const [x, y, z] = inputs.translation;
+        checkedNumberList(inputs.translation, "translation");
+        return this.movedBy(shape, (transformation, own) => transformation.SetTranslation(own(new this.occ.gp_Vec(x, y, z))));
     }
 
     mirror(inputs: Resolved.OCCT.MirrorDto<TopoDS_Shape>): TopoDS_Shape {
-        const transformation = new this.occ.gp_Trsf();
-        const ax1 = this.entitiesService.gpAx1(inputs.origin, inputs.direction);
-        transformation.SetMirrorAx1(ax1);
-        const transformed = new this.occ.BRepBuilderAPI_Transform(inputs.shape, transformation, true);
-        const transformedShape = transformed.Shape();
-        const shp = this.converterService.getActualTypeOfShape(transformedShape);
-
-        transformedShape.delete();
-        transformed.delete();
-        transformation.delete();
-        ax1.delete();
-
-        return shp;
+        const shape = checkedShape(inputs.shape);
+        const direction = checkedDirection(inputs.direction, "direction");
+        return this.movedBy(shape, (transformation, own) => transformation.SetMirrorAx1(own(this.entitiesService.gpAx1(inputs.origin, direction))));
     }
 
     mirrorAlongNormal(inputs: Resolved.OCCT.MirrorAlongNormalDto<TopoDS_Shape>): TopoDS_Shape {
-        const transformation = new this.occ.gp_Trsf();
-        const ax = this.entitiesService.gpAx2(inputs.origin, inputs.normal);
-        transformation.SetMirrorOnPlane(ax);
-        const transformed = new this.occ.BRepBuilderAPI_Transform(inputs.shape, transformation, true);
-        const transformedShape = transformed.Shape();
-        const shp = this.converterService.getActualTypeOfShape(transformedShape);
-        ax.delete();
-        transformedShape.delete();
-        transformed.delete();
-        transformation.delete();
-        return shp;
+        const shape = checkedShape(inputs.shape);
+        const normal = checkedDirection(inputs.normal, "normal");
+        return this.movedBy(shape, (transformation, own) => transformation.SetMirrorOnPlane(own(this.entitiesService.gpAx2(inputs.origin, normal))));
     }
 
     rotate(inputs: Resolved.OCCT.RotateDto<TopoDS_Shape>): TopoDS_Shape {
-        let rotated;
-        if (inputs.angle === 0) {
-            rotated = inputs.shape;
-        } else {
-            const transformation = new this.occ.gp_Trsf();
-            const gpVec = new this.occ.gp_Vec(inputs.axis[0], inputs.axis[1], inputs.axis[2]);
-            const dir = new this.occ.gp_Dir(inputs.axis[0], inputs.axis[1], inputs.axis[2]);
-            const pt1 = new this.occ.gp_Pnt(0, 0, 0);
-            const ax = new this.occ.gp_Ax1(pt1, dir);
-            transformation.SetRotation(ax, this.vecHelper.degToRad(inputs.angle));
-            const transf = new this.occ.BRepBuilderAPI_Transform(inputs.shape, transformation, true);
-            const s = transf.Shape();
-            const shp = this.converterService.getActualTypeOfShape(s);
-            s.delete();
-            gpVec.delete();
-            dir.delete();
-            pt1.delete();
-            ax.delete();
-            transf.delete();
-            transformation.delete();
-            return shp;
-        }
-        const actualShape = this.converterService.getActualTypeOfShape(rotated);
-        if (inputs.angle !== 0) {
-            rotated.delete();
-        }
-        return actualShape;
+        return this.turned(checkedShape(inputs.shape), [0, 0, 0], inputs.axis, inputs.angle);
     }
 
     rotateAroundCenter(inputs: Resolved.OCCT.RotateAroundCenterDto<TopoDS_Shape>): TopoDS_Shape {
-        if (inputs.angle === 0) {
-            return this.converterService.getActualTypeOfShape(inputs.shape);
+        return this.turned(checkedShape(inputs.shape), inputs.center, inputs.axis, inputs.angle);
+    }
+
+    private turned(shape: TopoDS_Shape, center: Inputs.Base.Point3, axis: Inputs.Base.Vector3, angle: number): TopoDS_Shape {
+        if (checkedWithin(angle, "angle", {}) === 0) {
+            return this.converterService.getActualTypeOfShape(shape);
         }
-        const transformation = new this.occ.gp_Trsf();
-        const axis = this.entitiesService.gpAx1(inputs.center, inputs.axis);
-        transformation.SetRotation(axis, this.vecHelper.degToRad(inputs.angle));
-        const shp = this.applyTrsf(inputs.shape, transformation);
-        axis.delete();
-        transformation.delete();
-        return shp;
+        const direction = checkedDirection(axis, "axis");
+        return this.movedBy(shape, (transformation, own) => transformation.SetRotation(own(this.entitiesService.gpAx1(center, direction)), this.base.math.degToRad({ number: angle })));
     }
 
     transform(inputs: Resolved.OCCT.TransformDto<TopoDS_Shape>): TopoDS_Shape {
+        const shape = checkedShape(inputs.shape);
         this.refuseCollapsingScale(inputs.scaleFactor, "scaleFactor");
-        const origin = this.entitiesService.gpPnt([0, 0, 0]);
-        const scaling = new this.occ.gp_Trsf();
-        scaling.SetScale(origin, inputs.scaleFactor);
-        const rotation = new this.occ.gp_Trsf();
-        if (inputs.rotationAngle !== 0) {
-            const axis = this.entitiesService.gpAx1([0, 0, 0], inputs.rotationAxis);
-            rotation.SetRotation(axis, this.vecHelper.degToRad(inputs.rotationAngle));
-            axis.delete();
+        checkedNumberList(inputs.translation, "translation");
+        const rotationAxis = checkedWithin(inputs.rotationAngle, "rotationAngle", {}) === 0 ? undefined : checkedDirection(inputs.rotationAxis, "rotationAxis");
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const scaling = own(new this.occ.gp_Trsf());
+            scaling.SetScale(own(this.entitiesService.gpPnt([0, 0, 0])), inputs.scaleFactor);
+            const rotation = own(new this.occ.gp_Trsf());
+            if (rotationAxis !== undefined) {
+                rotation.SetRotation(own(this.entitiesService.gpAx1([0, 0, 0], rotationAxis)), this.base.math.degToRad({ number: inputs.rotationAngle }));
+            }
+            const translation = own(new this.occ.gp_Trsf());
+            translation.SetTranslation(own(new this.occ.gp_Vec(inputs.translation[0], inputs.translation[1], inputs.translation[2])));
+            const composed = own(translation.Multiplied(own(rotation.Multiplied(scaling))));
+            return this.applyTrsf(shape, composed);
+        } finally {
+            releaseAll();
         }
-        const translation = new this.occ.gp_Trsf();
-        const vector = new this.occ.gp_Vec(inputs.translation[0], inputs.translation[1], inputs.translation[2]);
-        translation.SetTranslation(vector);
-        const turned = rotation.Multiplied(scaling);
-        const composed = translation.Multiplied(turned);
-        const shp = this.applyTrsf(inputs.shape, composed);
-        [origin, scaling, rotation, translation, vector, turned, composed].forEach(temporary => temporary.delete());
-        return shp;
     }
 
     placePoints(points: Inputs.Base.Point3[], rotation: number, direction: Inputs.Base.Vector3, center: Inputs.Base.Point3): Inputs.Base.Point3[] {
-        const turn = new this.occ.gp_Trsf();
-        if (rotation !== 0) {
-            const axis = this.entitiesService.gpAx1([0, 0, 0], [0, 1, 0]);
-            turn.SetRotation(axis, this.vecHelper.degToRad(rotation));
-            axis.delete();
+        const to = this.entitiesService.gpAx3_4([0, 0, 0], checkedDirection(direction, "direction"));
+        const { own, releaseAll } = kernelObjects();
+        own(to);
+        try {
+            const turn = own(new this.occ.gp_Trsf());
+            if (rotation !== 0) {
+                const axis = own(this.entitiesService.gpAx1([0, 0, 0], [0, 1, 0]));
+                turn.SetRotation(axis, this.base.math.degToRad({ number: rotation }));
+            }
+            const from = own(this.entitiesService.gpAx3_4([0, 0, 0], [0, 1, 0]));
+            const alignment = own(new this.occ.gp_Trsf());
+            alignment.SetDisplacement(from, to);
+            const move = own(new this.occ.gp_Trsf());
+            move.SetTranslation(own(new this.occ.gp_Vec(center[0], center[1], center[2])));
+            const placement = own(move.Multiplied(own(alignment.Multiplied(turn))));
+            const m = this.trsfToMatrix(placement);
+            return points.map(point => movedPoint(m, point));
+        } finally {
+            releaseAll();
         }
-        const from = this.entitiesService.gpAx3_4([0, 0, 0], [0, 1, 0]);
-        const to = this.entitiesService.gpAx3_4([0, 0, 0], direction);
-        const alignment = new this.occ.gp_Trsf();
-        alignment.SetDisplacement(from, to);
-        const move = new this.occ.gp_Trsf();
-        const vector = new this.occ.gp_Vec(center[0], center[1], center[2]);
-        move.SetTranslation(vector);
-        const aligned = alignment.Multiplied(turn);
-        const placement = move.Multiplied(aligned);
-        const m = this.trsfToMatrix(placement);
-        [turn, from, to, alignment, move, vector, aligned, placement].forEach(temporary => temporary.delete());
-        return points.map(([x, y, z]) => [
-            m[0] * x + m[4] * y + m[8] * z + m[12],
-            m[1] * x + m[5] * y + m[9] * z + m[13],
-            m[2] * x + m[6] * y + m[10] * z + m[14],
-        ]);
     }
 
     align(inputs: Resolved.OCCT.AlignDto<TopoDS_Shape>): TopoDS_Shape {
-        const transformation = new this.occ.gp_Trsf();
+        const shape = checkedShape(inputs.shape);
+        const ax1 = this.entitiesService.gpAx3_4(inputs.fromOrigin, checkedDirection(inputs.fromDirection, "fromDirection"));
+        const ax2 = releasedOnError([ax1], () => this.entitiesService.gpAx3_4(inputs.toOrigin, checkedDirection(inputs.toDirection, "toDirection")));
+        return this.movedBetween(shape, ax1, ax2);
+    }
 
-        const ax1 = this.entitiesService.gpAx3_4(inputs.fromOrigin, inputs.fromDirection);
-        const ax2 = this.entitiesService.gpAx3_4(inputs.toOrigin, inputs.toDirection);
-
-        transformation.SetDisplacement(
-            ax1,
-            ax2,
-        );
-        const location = new this.occ.TopLoc_Location(transformation);
-        const moved = inputs.shape.Moved(location);
-
-        location.delete();
-        transformation.delete();
-        ax1.delete();
-        ax2.delete();
-        const shp = this.converterService.getActualTypeOfShape(moved);
-        moved.delete();
-        return shp;
+    private movedBetween(shape: TopoDS_Shape, from: gp_Ax3, to: gp_Ax3): TopoDS_Shape {
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const transformation = own(new this.occ.gp_Trsf());
+            transformation.SetDisplacement(from, to);
+            const moved = shape.Moved(own(new this.occ.TopLoc_Location(transformation)));
+            return releasedOnError([moved], () => this.converterService.castAndRelease(moved));
+        } finally {
+            releaseAll();
+            [from, to].forEach(release);
+        }
     }
 
     alignNormAndAxis(inputs: Resolved.OCCT.AlignNormAndAxisDto<TopoDS_Shape>): TopoDS_Shape {
-        const transformation = new this.occ.gp_Trsf();
+        const shape = checkedShape(inputs.shape);
         const ax1 = this.entitiesService.gpAx3_3(inputs.fromOrigin, inputs.fromNorm, inputs.fromAx);
-        const ax2 = this.entitiesService.gpAx3_3(inputs.toOrigin, inputs.toNorm, inputs.toAx);
-
-        transformation.SetDisplacement(
-            ax1,
-            ax2,
-        );
-        const location = new this.occ.TopLoc_Location(transformation);
-        const moved = inputs.shape.Moved(location);
-
-        location.delete();
-        transformation.delete();
-        ax1.delete();
-        ax2.delete();
-        const shp = this.converterService.getActualTypeOfShape(moved);
-        moved.delete();
-        return shp;
+        const ax2 = releasedOnError([ax1], () => this.entitiesService.gpAx3_3(inputs.toOrigin, inputs.toNorm, inputs.toAx));
+        return this.movedBetween(shape, ax1, ax2);
     }
 
     transformByMatrix(inputs: Inputs.OCCT.TransformByMatrixDto<TopoDS_Shape>): TopoDS_Shape {
+        const shape = checkedShape(inputs.shape);
         const matrix = this.foldTransformations(inputs.transformation);
+        checkedNumberList(matrix, "transformation");
         if (this.isSimilarity(matrix)) {
-            const trsf = this.matrixToTrsf(matrix);
-            try {
-                return this.applyTrsf(inputs.shape, trsf);
-            } finally {
-                trsf.delete();
-            }
+            return this.movedBy(shape, transformation => this.setValuesOf(transformation, matrix));
         }
-        if (typeof this.occ.TransformByMatrix === "function" && this.holdsFaceWithoutSurface(inputs.shape)) {
-            return this.stretchedMesh(inputs.shape, matrix);
+        if (typeof this.occ.TransformByMatrix === "function" && this.holdsFaceWithoutSurface(shape)) {
+            return this.stretchedMesh(shape, matrix);
         }
         const gtrsf = this.matrixToGTrsf(matrix);
         let shp: TopoDS_Shape;
         try {
-            const gtrans = new this.occ.BRepBuilderAPI_GTransform(inputs.shape, gtrsf);
-            const s = gtrans.Shape();
-            shp = this.converterService.getActualTypeOfShape(s);
-            s.delete();
-            gtrans.delete();
+            shp = withKernelErrorsRead(this.occ, () => {
+                const gtrans = new this.occ.BRepBuilderAPI_GTransform(shape, gtrsf);
+                try {
+                    return this.converterService.castAndRelease(gtrans.Shape());
+                } finally {
+                    gtrans.delete();
+                }
+            });
         } catch (ex) {
             gtrsf.delete();
-            throw new Error("Could not apply the transformation matrix to the shape.", { cause: ex });
+            throw trapOr(ex, () => new Error("Could not apply the transformation matrix to the shape.", { cause: ex }));
         }
         gtrsf.delete();
         return shp;
     }
 
     transformShapesByMatrix(inputs: Inputs.OCCT.TransformShapesByMatrixDto<TopoDS_Shape>): TopoDS_Shape[] {
-        checkedShapes(inputs.shapes);
-        return inputs.shapes.map(shape => this.transformByMatrix({ shape, transformation: inputs.transformation }));
+        const shapes = checkedShapes(inputs.shapes);
+        const transformed: TopoDS_Shape[] = [];
+        return releasedOnError(transformed, () => {
+            shapes.forEach(shape => {
+                transformed.push(this.transformByMatrix({ shape, transformation: inputs.transformation }));
+            });
+            return transformed;
+        });
     }
 
     getShapeTransform(inputs: Inputs.OCCT.ShapeTransformQueryDto<TopoDS_Shape>): Inputs.OCCT.ShapeTransformInfo {
@@ -288,64 +228,38 @@ export class TransformsService {
     }
 
     scaleFromCenter(inputs: Resolved.OCCT.ScaleFromCenterDto<TopoDS_Shape>): TopoDS_Shape {
+        const shape = checkedShape(inputs.shape);
         this.refuseCollapsingScale(inputs.factor, "factor");
-        const transformation = new this.occ.gp_Trsf();
-        const center = this.entitiesService.gpPnt(inputs.center);
-        transformation.SetScale(center, inputs.factor);
-        const shp = this.applyTrsf(inputs.shape, transformation);
-        center.delete();
-        transformation.delete();
-        return shp;
+        return this.movedBy(shape, (transformation, own) => transformation.SetScale(own(this.entitiesService.gpPnt(inputs.center)), inputs.factor));
     }
 
     mirrorAboutPoint(inputs: Resolved.OCCT.MirrorAboutPointDto<TopoDS_Shape>): TopoDS_Shape {
-        const transformation = new this.occ.gp_Trsf();
-        const pnt = this.entitiesService.gpPnt(inputs.point);
-        transformation.SetMirror(pnt);
-        const shp = this.applyTrsf(inputs.shape, transformation);
-        pnt.delete();
-        transformation.delete();
-        return shp;
+        const shape = checkedShape(inputs.shape);
+        return this.movedBy(shape, (transformation, own) => transformation.SetMirror(own(this.entitiesService.gpPnt(inputs.point))));
     }
 
     rotateByQuaternion(inputs: Resolved.OCCT.RotateByQuaternionDto<TopoDS_Shape>): TopoDS_Shape {
+        const shape = checkedShape(inputs.shape);
         const matrix = this.quaternionToMatrix({ quaternion: inputs.quaternion });
-        const transformation = this.matrixToTrsf(matrix);
-        const shp = this.applyTrsf(inputs.shape, transformation);
-        transformation.delete();
-        return shp;
+        return this.movedBy(shape, transformation => this.setValuesOf(transformation, matrix));
     }
 
     identityTransform(): Inputs.Base.TransformMatrix {
-        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+        return [...IDENTITY_MATRIX];
     }
 
     composeTransform(inputs: Resolved.OCCT.ComposeTransformDto): Inputs.Base.TransformMatrix {
-        const scale = inputs.scale;
-        const rotation = inputs.rotation;
-        const translation = inputs.translation;
-
-        const s = new this.occ.gp_Trsf();
-        const origin = this.entitiesService.gpPnt([0, 0, 0]);
-        s.SetScale(origin, scale);
-
-        const rot = this.eulerXyzToTrsf(rotation);
-        const t = new this.occ.gp_Trsf();
-        const vec = new this.occ.gp_Vec(translation[0], translation[1], translation[2]);
-        t.SetTranslation(vec);
-
-        const rs = rot.Multiplied(s);
-        const trs = t.Multiplied(rs);
-        const matrix = this.trsfToMatrix(trs);
-
-        origin.delete();
-        vec.delete();
-        s.delete();
-        rot.delete();
-        t.delete();
-        rs.delete();
-        trs.delete();
-        return matrix;
+        this.refuseCollapsingScale(inputs.scale, "scale");
+        checkedNumberList(inputs.rotation, "rotation");
+        checkedNumberList(inputs.translation, "translation");
+        return this.matrixOf((composed, own) => {
+            const scaling = own(new this.occ.gp_Trsf());
+            scaling.SetScale(own(this.entitiesService.gpPnt([0, 0, 0])), inputs.scale);
+            const moving = own(new this.occ.gp_Trsf());
+            moving.SetTranslation(own(this.entitiesService.gpVec(inputs.translation)));
+            const rotated = own(this.eulerXyzToTrsf(inputs.rotation));
+            composed.Multiply(own(moving.Multiplied(own(rotated.Multiplied(scaling)))));
+        });
     }
 
     multiplyTransforms(inputs: Inputs.OCCT.MultiplyTransformsDto): Inputs.Base.TransformMatrix {
@@ -354,11 +268,18 @@ export class TransformsService {
 
     invertTransform(inputs: Inputs.OCCT.InvertTransformDto): Inputs.Base.TransformMatrix {
         const gtrsf = this.matrixToGTrsf(inputs.transformation);
-        const inverted = gtrsf.Inverted();
-        const matrix = this.gtrsfToMatrix(inverted);
-        gtrsf.delete();
-        inverted.delete();
-        return matrix;
+        try {
+            const inverted = withKernelRefusals(this.occ, () => gtrsf.Inverted(), message => NO_INVERSE.test(message)
+                ? new InputError("`transformation` has no inverse: its determinant is 0 or not a finite number.", "transformation")
+                : undefined);
+            try {
+                return this.gtrsfToMatrix(inverted);
+            } finally {
+                inverted.delete();
+            }
+        } finally {
+            gtrsf.delete();
+        }
     }
 
     translationToMatrix(inputs: Resolved.OCCT.TranslationToMatrixDto): Inputs.Base.TransformMatrix {
@@ -366,56 +287,35 @@ export class TransformsService {
     }
 
     rotationAxisAngleToMatrix(inputs: Resolved.OCCT.RotationAxisAngleToMatrixDto): Inputs.Base.TransformMatrix {
-        const transformation = new this.occ.gp_Trsf();
-        const ax1 = this.entitiesService.gpAx1(inputs.center, inputs.axis);
-        transformation.SetRotation(ax1, this.vecHelper.degToRad(inputs.angle));
-        const matrix = this.trsfToMatrix(transformation);
-        ax1.delete();
-        transformation.delete();
-        return matrix;
+        const axis = checkedDirection(inputs.axis, "axis");
+        const radians = this.base.math.degToRad({ number: checkedWithin(inputs.angle, "angle", {}) });
+        return this.matrixOf((transformation, own) => transformation.SetRotation(own(this.entitiesService.gpAx1(inputs.center, axis)), radians));
     }
 
     scaleUniformToMatrix(inputs: Resolved.OCCT.ScaleUniformToMatrixDto): Inputs.Base.TransformMatrix {
-        const transformation = new this.occ.gp_Trsf();
-        const center = this.entitiesService.gpPnt(inputs.center);
-        transformation.SetScale(center, inputs.factor);
-        const matrix = this.trsfToMatrix(transformation);
-        center.delete();
-        transformation.delete();
-        return matrix;
+        this.refuseCollapsingScale(inputs.factor, "factor");
+        return this.matrixOf((transformation, own) => transformation.SetScale(own(this.entitiesService.gpPnt(inputs.center)), inputs.factor));
     }
 
     mirrorPointToMatrix(inputs: Resolved.OCCT.MirrorPointToMatrixDto): Inputs.Base.TransformMatrix {
-        const transformation = new this.occ.gp_Trsf();
-        const pnt = this.entitiesService.gpPnt(inputs.point);
-        transformation.SetMirror(pnt);
-        const matrix = this.trsfToMatrix(transformation);
-        pnt.delete();
-        transformation.delete();
-        return matrix;
+        return this.matrixOf((transformation, own) => transformation.SetMirror(own(this.entitiesService.gpPnt(inputs.point))));
     }
 
     mirrorAxisToMatrix(inputs: Resolved.OCCT.MirrorAxisToMatrixDto): Inputs.Base.TransformMatrix {
-        const transformation = new this.occ.gp_Trsf();
-        const ax1 = this.entitiesService.gpAx1(inputs.origin, inputs.direction);
-        transformation.SetMirrorAx1(ax1);
-        const matrix = this.trsfToMatrix(transformation);
-        ax1.delete();
-        transformation.delete();
-        return matrix;
+        const direction = checkedDirection(inputs.direction, "direction");
+        return this.matrixOf((transformation, own) => transformation.SetMirrorAx1(own(this.entitiesService.gpAx1(inputs.origin, direction))));
     }
 
     mirrorPlaneToMatrix(inputs: Resolved.OCCT.MirrorPlaneToMatrixDto): Inputs.Base.TransformMatrix {
-        const transformation = new this.occ.gp_Trsf();
-        const ax2 = this.entitiesService.gpAx2(inputs.origin, inputs.normal);
-        transformation.SetMirrorOnPlane(ax2);
-        const matrix = this.trsfToMatrix(transformation);
-        ax2.delete();
-        transformation.delete();
-        return matrix;
+        const normal = checkedDirection(inputs.normal, "normal");
+        return this.matrixOf((transformation, own) => transformation.SetMirrorOnPlane(own(this.entitiesService.gpAx2(inputs.origin, normal))));
     }
 
     quaternionToMatrix(inputs: Resolved.OCCT.QuaternionToMatrixDto): Inputs.Base.TransformMatrix {
+        const parts = checkedNumberList(inputs.quaternion, "quaternion").length;
+        if (parts !== QUATERNION_PARTS) {
+            throw new InputError(`\`quaternion\` holds ${parts} numbers, and a quaternion is four: x, y, z and w.`, "quaternion");
+        }
         const [qx, qy, qz, qw] = inputs.quaternion;
         const len = Math.sqrt(qx * qx + qy * qy + qz * qz + qw * qw) || 1;
         const x = qx / len, y = qy / len, z = qz / len, w = qw / len;
@@ -441,18 +341,44 @@ export class TransformsService {
 
     private applyTrsf(shape: TopoDS_Shape, transformation: gp_Trsf): TopoDS_Shape {
         const transf = new this.occ.BRepBuilderAPI_Transform(shape, transformation, true);
-        const s = transf.Shape();
-        const shp = this.converterService.getActualTypeOfShape(s);
-        s.delete();
-        transf.delete();
-        return shp;
+        try {
+            return this.converterService.castAndRelease(transf.Shape());
+        } finally {
+            transf.delete();
+        }
+    }
+
+    private movedBy(shape: TopoDS_Shape, place: (transformation: gp_Trsf, own: KernelObjects["own"]) => void): TopoDS_Shape {
+        const { own, releaseAll } = kernelObjects();
+        try {
+            return withKernelErrorsRead(this.occ, () => {
+                const transformation = own(new this.occ.gp_Trsf());
+                place(transformation, own);
+                return this.applyTrsf(shape, transformation);
+            });
+        } finally {
+            releaseAll();
+        }
+    }
+
+    private matrixOf(place: (transformation: gp_Trsf, own: KernelObjects["own"]) => void): Inputs.Base.TransformMatrix {
+        const { own, releaseAll } = kernelObjects();
+        try {
+            return withKernelErrorsRead(this.occ, () => {
+                const transformation = own(new this.occ.gp_Trsf());
+                place(transformation, own);
+                return this.trsfToMatrix(transformation);
+            });
+        } finally {
+            releaseAll();
+        }
     }
 
     private eulerXyzToTrsf(rotation: Inputs.Base.Vector3) {
         const make = (axis: Inputs.Base.Vector3, angleDeg: number) => {
             const t = new this.occ.gp_Trsf();
             const ax1 = this.entitiesService.gpAx1([0, 0, 0], axis);
-            t.SetRotation(ax1, this.vecHelper.degToRad(angleDeg));
+            t.SetRotation(ax1, this.base.math.degToRad({ number: angleDeg }));
             ax1.delete();
             return t;
         };
@@ -486,14 +412,12 @@ export class TransformsService {
         ];
     }
 
-    private matrixToTrsf(m: Inputs.Base.TransformMatrix) {
-        const t = new this.occ.gp_Trsf();
+    private setValuesOf(t: gp_Trsf, m: Inputs.Base.TransformMatrix): void {
         t.SetValues(
             m[0], m[4], m[8], m[12],
             m[1], m[5], m[9], m[13],
             m[2], m[6], m[10], m[14],
         );
-        return t;
     }
 
     refuseCollapsingScale(factor: number, property: string): void {
@@ -513,8 +437,7 @@ export class TransformsService {
         } catch (thrown) {
             throw readKernelException(this.occ, thrown);
         }
-        const shp = this.converterService.getActualTypeOfShape(placed);
-        placed.delete();
+        const shp = this.converterService.castAndRelease(placed);
         return shp;
     }
 
@@ -538,18 +461,17 @@ export class TransformsService {
     }
 
     private isSimilarity(m: Inputs.Base.TransformMatrix): boolean {
-        const columns = [[m[0], m[1], m[2]], [m[4], m[5], m[6]], [m[8], m[9], m[10]]];
-        const dot = (a: number[], b: number[]): number => a[0]! * b[0]! + a[1]! * b[1]! + a[2]! * b[2]!;
-        const length = dot(columns[0]!, columns[0]!);
+        const columns: Inputs.Base.Vector3[] = [[m[0], m[1], m[2]], [m[4], m[5], m[6]], [m[8], m[9], m[10]]];
+        const length = dot3(columns[0]!, columns[0]!);
         if (!(length >= smallestScale * smallestScale) || !Number.isFinite(length)) {
             return false;
         }
         const tolerance = 1e-12 * length;
-        return Math.abs(dot(columns[1]!, columns[1]!) - length) <= tolerance
-            && Math.abs(dot(columns[2]!, columns[2]!) - length) <= tolerance
-            && Math.abs(dot(columns[0]!, columns[1]!)) <= tolerance
-            && Math.abs(dot(columns[0]!, columns[2]!)) <= tolerance
-            && Math.abs(dot(columns[1]!, columns[2]!)) <= tolerance;
+        return Math.abs(dot3(columns[1]!, columns[1]!) - length) <= tolerance
+            && Math.abs(dot3(columns[2]!, columns[2]!) - length) <= tolerance
+            && Math.abs(dot3(columns[0]!, columns[1]!)) <= tolerance
+            && Math.abs(dot3(columns[0]!, columns[2]!)) <= tolerance
+            && Math.abs(dot3(columns[1]!, columns[2]!)) <= tolerance;
     }
 
     private matrixToGTrsf(m: Inputs.Base.TransformMatrix) {

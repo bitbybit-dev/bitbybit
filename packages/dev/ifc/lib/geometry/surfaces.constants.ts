@@ -14,4 +14,5 @@ export const FIT_PROBES = 8;
 export const FIT_TOLERANCE = 1e-6;
 export const CUT_SAMPLES = 64;
 export const CUT_TURN = (2 * Math.PI) / 32;
+export const CUT_SLACK = 1e-9;
 export const POLE_RATIO = 1e-9;

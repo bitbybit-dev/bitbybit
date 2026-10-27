@@ -1,7 +1,7 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, pointToLocal, pointToWorld, vectorToWorld, type FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { expandedKnots, knotDomain, nurbsSurfacePoint } from "@bitbybit-dev/base/lib/api/services/helpers/nurbs";
-import { add3, cross3, dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { WORLD_AXES, pointToLocal, pointToWorld, vectorToWorld, type FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { expandedKnots, knotDomain, nurbsSurfacePoint } from "@bitbybit-dev/base/lib/api/services/helpers/curves/nurbs";
+import { add3, cross3, distance3, dot3, length2, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { axisPlacementFrame, directionOf, pointOf } from "../build/placement";
 import type { ModelSnapshot } from "../model/snapshot";
 import type { IfcValue } from "../step/step-types";
@@ -101,7 +101,7 @@ function sphere(frame: FrameAxes, radius: number): ParametricSurface {
         point: (u, v) => pointToWorld(frame, [radius * Math.cos(v) * Math.cos(u), radius * Math.cos(v) * Math.sin(u), radius * Math.sin(v)]),
         parameters: (point) => {
             const [x, y, z] = pointToLocal(frame, point);
-            const across = Math.hypot(x, y);
+            const across = length2([x, y]);
             return [across <= POLE_RATIO * radius ? Number.NaN : Math.atan2(y, x), Math.atan2(z, across)];
         },
         pole: (axis, side) => (axis === 1 ? (side * Math.PI) / 2 : undefined),
@@ -117,7 +117,7 @@ function torus(frame: FrameAxes, major: number, minor: number): ParametricSurfac
         },
         parameters: (point) => {
             const [x, y, z] = pointToLocal(frame, point);
-            return [Math.atan2(y, x), Math.atan2(z, Math.hypot(x, y) - major)];
+            return [Math.atan2(y, x), Math.atan2(z, length2([x, y]) - major)];
         },
         pole: noPole,
     };
@@ -207,7 +207,9 @@ function splineSurface(model: ModelSnapshot, surface: number, divided: boolean):
     const clampV = (v: number): number => into(v, v0, v1, closedV);
     const point = (u: number, v: number): Base.Point3 => nurbsSurfacePoint([uDegree, vDegree], net, weights, [uKnots, vKnots], clampU(u), clampV(v));
     const corners = net.flat();
-    const size = Math.hypot(...[0, 1, 2].map((axis) => Math.max(...corners.map((corner) => corner[axis]!)) - Math.min(...corners.map((corner) => corner[axis]!))));
+    const lowest = (axis: number): number => Math.min(...corners.map((corner) => corner[axis]!));
+    const highest = (axis: number): number => Math.max(...corners.map((corner) => corner[axis]!));
+    const size = distance3([highest(0), highest(1), highest(2)], [lowest(0), lowest(1), lowest(2)]);
     const accepted = size * FIT_RATIO;
     const seed = (target: Base.Point3): Base.Point2 => {
         let best: Base.Point2 = [u0, v0];

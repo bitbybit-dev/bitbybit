@@ -1,6 +1,6 @@
 {
     "name": "bitbybit",
-    "version": "1.5.0",
+    "version": "1.6.0-rc.0",
     "private": true,
     "description": "Monorepo for browser CAD which holds bitbybit.dev npm packages",
     "packageManager": "pnpm@11.25.0",
@@ -27,6 +27,7 @@
         "test-ifc-worker": "cd packages/dev/ifc-worker && npm run test:coverage",
         "gen:references": "node scripts/gen-ts-references.mjs",
         "check:references": "node scripts/gen-ts-references.mjs --check",
+        "check:kernel-ledger": "node scripts/kernel-ledger.mjs",
         "check:json": "node scripts/check-json.mjs",
         "gen:exports": "node scripts/gen-exports.mjs",
         "check:exports": "node scripts/check-exports.mjs",
@@ -53,8 +54,8 @@
         "check:templates": "node scripts/sync-templates.mjs --check",
         "check:draw-parity": "node scripts/check-draw-parity.mjs",
         "check:resolved-entry": "node scripts/check-resolved-entry.mjs",
-        "test:scripts": "node --test \"scripts/**/*.test.mjs\" \"eslint-rules/*.test.mjs\"",
-        "test": "npm run check:references && npm run check:json && npm run check:exports && npm run check:inputs && npm run check:templates && npm run check:draw-parity && npm run check:worker-api && npm run check:dto-meta && npm run check:design-schema && npm run check:ifc-schema && npm run check:resolved-entry && npm run check:worker-parity && npm run check:api-docs && npm run test:scripts && npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-ifc && npm run test-threejs && npm run test-playcanvas && npm run test-babylonjs && npm run test-occt-worker && npm run test-jscad-worker && npm run test-manifold-worker && npm run test-ifc-worker",
+        "test:scripts": "node --test \"scripts/**/*.test.mjs\" \"eslint-rules/*.test.mjs\" \"docs/scripts/*.test.mjs\"",
+        "test": "npm run check:references && npm run check:json && npm run check:exports && npm run check:inputs && npm run check:templates && npm run check:draw-parity && npm run check:worker-api && npm run check:dto-meta && npm run check:design-schema && npm run check:ifc-schema && npm run check:resolved-entry && npm run check:worker-parity && npm run check:api-docs && npm run test:scripts && npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run check:kernel-ledger && npm run test-ifc && npm run test-threejs && npm run test-playcanvas && npm run test-babylonjs && npm run test-occt-worker && npm run test-jscad-worker && npm run test-manifold-worker && npm run test-ifc-worker",
         "test:report": "node scripts/test-report.mjs --expect \"packages/dev/*\" --baseline packages/dev/coverage-baseline.json --logo docs/static/img/logo-gold-small.png",
         "check:coverage-baseline": "node scripts/coverage-baseline.mjs",
         "coverage-baseline:save": "node scripts/coverage-baseline.mjs --save",
@@ -109,6 +110,6 @@
         "tsc-baseline": "2.1.0",
         "typescript": "5.9.3",
         "typescript-eslint": "8.70.0",
-        "vitest": "4.1.11"
+        "vitest": "4.1.12"
     }
 }

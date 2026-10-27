@@ -5,8 +5,8 @@ import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { occtDtoRegistry } from "../../api/dto-registry";
 import type { OCCTService } from "../../occ-service";
-import type { BaseBitByBit } from "../../base";
-import { DesignCache, release } from "./cache";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
+import { DesignCache } from "./cache";
 import { hintedDocument } from "./hints";
 import { featuresReached, runAssembly } from "./assembly";
 import { DesignProgress } from "./progress";
@@ -16,16 +16,25 @@ import { libraryOf } from "./library";
 import { documentIssues } from "./document-check";
 import { probeRounding } from "./probe";
 import { clashesOf } from "./clashes";
+import { ClashStore } from "./clash-store";
+import { registerDesignCaches } from "./cache-registry";
+import { releaseBuild } from "./release-build";
+import { documentsFromStep } from "./from-step";
+import { sectionOf } from "./section";
+import { checkedFrame } from "../base/input-checks";
 import type { DesignPicked } from "./reference-for";
 import { referenceFor } from "./reference-for";
-import { DesignProblem, isKernelTrap } from "./problems";
+import { cleanedUp, DesignProblem, isKernelTrap } from "./problems";
 import { runDesign, runFeatures } from "./runner";
 import { partStructureOf } from "./export-structure";
 import type { DesignTrace } from "./state";
 import { typescriptOf } from "./typescript-export";
 import type { ParameterChoice } from "./values";
+import { isExpressionObject } from "./values";
 
 const CACHE_CAPACITY = 256;
+
+const SECTION_CAPACITY = 512;
 
 const MAX_PROBE_ATTEMPTS = 64;
 
@@ -59,12 +68,17 @@ function pickedOf(faces: number[] | undefined, edges: number[] | undefined): Des
  */
 export class OCCTDesign {
     private readonly cache = new DesignCache(CACHE_CAPACITY);
+    private readonly sections = new DesignCache(SECTION_CAPACITY);
+    private readonly boxes = new Map<string, readonly number[]>();
+    private readonly clashStore = new ClashStore();
 
     constructor(
         private readonly occ: BitbybitOcctModule,
         private readonly service: () => OCCTService,
         private readonly base: BaseBitByBit,
-    ) {}
+    ) {
+        registerDesignCaches(this, { cache: this.cache, sections: this.sections, boxes: this.boxes, clashStore: this.clashStore });
+    }
 
     /**
      * Checks a design document without building it and lists every problem found.
@@ -127,11 +141,11 @@ export class OCCTDesign {
      * Builds the parts of a design document, with a configuration's values and then `parameters`
      * replacing the document's own.
      *
-     * A document `validate` faults is refused. A failed feature is reported and what uses it
-     * skipped; unchanged features are reused. `structure` exports the parts to STEP and glTF through
-     * `assembly.manager.buildAssemblyDocument`; an assembly adds components and a bill of materials.
+     * A document `validate` faults is refused; a failed feature is reported and what uses it skipped.
+     * The caller deletes every shape returned, and an identical call returns the same ones while they
+     * live, so one delete frees both answers.
      * @param inputs - The document, the configuration and the parameter values to build it with
-     * @returns The parts, a report per feature, the problems found after the features ran, and the parameter values used
+     * @returns The parts, a report per feature, the problems found after the features ran, the parameter values used, and the `structure` that `assembly.manager.buildAssemblyDocument` exports to STEP and glTF; an assembly adds its components and bill of materials
      * @group document
      * @shortname build design
      * @drawable true
@@ -157,7 +171,7 @@ export class OCCTDesign {
         }
         return this.inputProblems(() => {
             const built = runDesign(document, this.choiceOf(inputs), { ...context, progress: new DesignProgress(document.features.length) });
-            return { ...built, structure: partStructureOf(document, built.parts) };
+            return { ...built, structure: partStructureOf(document, built.parts, this.occ) };
         });
     }
 
@@ -196,12 +210,7 @@ export class OCCTDesign {
         }
         const hints = new Map<string, Models.OCCT.DesignReferenceHint | null>();
         const cache = new DesignCache(0);
-        try {
-            const built = this.inputProblems(() => runDesign(document, this.choiceOf(inputs), { occt: this.service(), occ: this.occ, base: this.base, cache, assets: inputs.assets, hints, outcomes: inputs.outcomes }));
-            built.parts.forEach(part => release(part.shape));
-        } finally {
-            cache.clear();
-        }
+        cleanedUp(() => releaseBuild(this.inputProblems(() => runDesign(document, this.choiceOf(inputs), { occt: this.service(), occ: this.occ, base: this.base, cache, assets: inputs.assets, hints, outcomes: inputs.outcomes }))), () => cache.clear());
         return hintedDocument(document, hints);
     }
 
@@ -235,9 +244,13 @@ export class OCCTDesign {
         if (document.kind === "assembly") {
             throw new InputError("An assembly document is not written as TypeScript yet: write the documents of its parts one by one.", "document");
         }
-        const drawnApart = document.features.findIndex(feature => feature.type === "sketch" && (feature.loops !== undefined || (feature.pen ?? []).some(command => command.type === "circle")));
+        const drawnApart = document.features.findIndex(feature => feature.type === "sketch" && (feature.loops !== undefined || (feature.pen ?? []).some(command => command.type === "circle" || command.type === "gear" || command.type === "rack")));
         if (drawnApart >= 0) {
-            throw new InputError(`/features/${drawnApart}: a sketch with loops or a circle is not written as TypeScript yet`, "document");
+            throw new InputError(`/features/${drawnApart}: a sketch with loops, a circle, a gear or a rack is not written as TypeScript yet`, "document");
+        }
+        const parametricFastener = document.features.findIndex(feature => feature.type === "hole" && feature.fastener !== undefined && isExpressionObject(feature.fastener.size));
+        if (parametricFastener >= 0) {
+            throw new InputError(`/features/${parametricFastener}: a hole sized by a fastener whose size is an expression is not written as TypeScript yet`, "document");
         }
         const scripted = document.features.findIndex(feature => feature.type === "script");
         if (scripted >= 0) {
@@ -246,19 +259,15 @@ export class OCCTDesign {
         const choice = this.choiceOf(inputs);
         const cache = new DesignCache(0);
         const trace = new Map<string, DesignTrace>();
-        try {
-            return this.inputProblems(() => {
-                const { run, report } = runFeatures(document, choice, { occt: this.service(), occ: this.occ, base: this.base, cache, assets: inputs.assets }, trace);
-                const broken = report.filter(entry => entry.status === "failed" || entry.status === "skipped");
-                if (broken.length > 0) {
-                    const listed = broken.slice(0, PROBLEMS_LISTED).map(entry => `"${entry.id}": ${entry.messages.join("; ")}`).join("; ");
-                    throw new InputError(`The design document does not build with these values, so it has no code: ${listed}${broken.length > PROBLEMS_LISTED ? "; and more" : ""}.`, "document");
-                }
-                return typescriptOf(document, run, trace, choice);
-            });
-        } finally {
-            cache.clear();
-        }
+        return cleanedUp(() => this.inputProblems(() => {
+            const { run, report } = runFeatures(document, choice, { occt: this.service(), occ: this.occ, base: this.base, cache, assets: inputs.assets }, trace);
+            const broken = report.filter(entry => entry.status === "failed" || entry.status === "skipped");
+            if (broken.length > 0) {
+                const listed = broken.slice(0, PROBLEMS_LISTED).map(entry => `"${entry.id}": ${entry.messages.join("; ")}`).join("; ");
+                throw new InputError(`The design document does not build with these values, so it has no code: ${listed}${broken.length > PROBLEMS_LISTED ? "; and more" : ""}.`, "document");
+            }
+            return typescriptOf(document, run, trace, choice);
+        }), () => cache.clear());
     }
 
     /**
@@ -267,8 +276,10 @@ export class OCCTDesign {
      *
      * The document is built as `build` builds it and every part placement is checked against every
      * other in place. Two components a joint holds together are expected to touch, so a touch between
-     * them is left out and an overlap is listed with `joined` true. A part document's parts are checked
-     * where they were built.
+     * them is left out and an overlap is listed with `joined` true. So is a fastener's thread resting in
+     * a tapped hole, faces named in the role `thread` on both, with the hole's rim and the screw's end
+     * chamfer around it; anything else between the two is still listed. A part document's parts are
+     * checked where they were built.
      * @param inputs - The document, the documents an assembly places, the values to build with and the clearance
      * @returns The clashing pairs, with their distance, the volume they share and their nearest points
      * @group document
@@ -288,9 +299,10 @@ export class OCCTDesign {
         }
         const built = this.build({ document: resolved.document, documents: resolved.documents, configuration: resolved.configuration, parameters: resolved.parameters, assets: resolved.assets });
         try {
-            return clashesOf(built, resolved.clearance, this.service());
-        } finally {
-            built.parts.forEach(part => release(part.shape));
+            return cleanedUp(() => clashesOf(built, resolved.clearance, { occt: this.service(), occ: this.occ, base: this.base, boxes: this.boxes, store: this.clashStore }), () => releaseBuild(built));
+        } catch (error) {
+            this.forgetAfterTrap(error);
+            throw error;
         }
     }
 
@@ -373,6 +385,80 @@ export class OCCTDesign {
         return this.inputProblems(() => referenceFor(document, this.choiceOf(resolved), context, resolved.body, picked, resolved.nudge));
     }
 
+    /**
+     * Turns a STEP file into design documents: a part document for each part it holds and an
+     * assembly document for each assembly, placed as the file places them, so its parts can be edited
+     * and placed like any others.
+     *
+     * Every part document imports its shape from one shapes file: a binary BREP of every part's
+     * shape, written beside the documents, each part taking its own by `child`. A part keeps its name
+     * and its colours, those of single faces included; its part is `part` and its body, the import, is
+     * `shape`, so a face is named `{ "of": "shape", "role": "face", "from": "<index>" }`. An assembly
+     * places its parts and sub-assemblies `at` the frames the file gives them, so a part placed forty
+     * times stays one document placed forty times. A placement that mirrors or scales its part is
+     * built into a part of its own and a hidden one is suppressed; `report.notes` says so. A file that
+     * places more parts than a design builds is refused. Lengths are in `unit`, scaled from the file's
+     * own, and Z is up. Store the asset's `data` at its `uri` before the documents are saved.
+     * @param inputs - The STEP file, its name, the seed of the documents' ids, the folder of the shapes file and the unit
+     * @returns The documents, the id of the one that places everything, the shapes file and a report
+     * @group document
+     * @shortname design from step
+     * @drawable false
+     * @ignore true
+     * @example
+     * ```typescript
+     * const imported = await bitbybit.occt.design.fromStep({ step: stepText, name: "bracket.step" });
+     * const shapes = imported.assets[0]!;
+     * const { parts } = await bitbybit.occt.design.build({
+     *     document: imported.documents.find(document => document.id === imported.root)!,
+     *     documents: imported.documents,
+     *     assets: { [shapes.id]: shapes.data },
+     * });
+     * console.log(imported.report.parts, parts.length);
+     * ```
+     */
+    fromStep(inputs: Inputs.OCCT.DesignFromStepDto): Models.OCCT.DesignFromStep {
+        const resolved = resolveDto(Inputs.OCCT.DesignFromStepDto, inputs) as Resolved.OCCT.DesignFromStepDto;
+        if (typeof resolved.step !== "string" && !(resolved.step instanceof Uint8Array) && !(resolved.step instanceof ArrayBuffer)) {
+            throw new InputError("The STEP file is text or bytes.", "step");
+        }
+        const scale = 1 / this.base.math.millimetresPerUnit({ unit: resolved.unit });
+        return this.inputProblems(() => documentsFromStep(resolved.step, { name: resolved.name, seed: resolved.seed, folder: resolved.folder, unit: resolved.unit, scale }, { occt: this.service(), occ: this.occ }));
+    }
+
+    /**
+     * Cuts a design build with the plane of a frame: what lies on the side the normal points to is
+     * taken away, the side `operations.hiddenLines` looks from with the same frame.
+     *
+     * Each part the plane crosses gets a cap, the faces it cuts. With `cut`, the pieces behind the
+     * plane and the parts wholly behind it come too.
+     * @param inputs - The build, the frame whose plane cuts it, whether to give the cut parts and the joining tolerance
+     * @returns The caps, and with `cut` the pieces and whole parts behind the plane, placed like the build's parts so they draw as a build does
+     * @group document
+     * @shortname design section
+     * @drawable true
+     * @ignore true
+     * @example
+     * ```typescript
+     * const built = await bitbybit.occt.design.build({ document: assembly, documents: [bracket, pin] });
+     * const section = await bitbybit.occt.design.section({
+     *     build: built,
+     *     frame: { origin: [0, 0, 5], normal: [0, 0, 1], direction: [1, 0, 0] },
+     * });
+     * console.log(section.parts.map(part => part.area));
+     * ```
+     */
+    section(inputs: Inputs.OCCT.DesignSectionDto<TopoDS_Shape>): Models.OCCT.DesignSection<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.DesignSectionDto, inputs) as Resolved.OCCT.DesignSectionDto<TopoDS_Shape>;
+        const frame = checkedFrame(resolved.frame, "frame");
+        try {
+            return sectionOf(resolved.build, frame, { cut: resolved.cut, tolerance: resolved.tolerance }, { occt: this.service(), occ: this.occ, cache: this.sections, boxes: this.boxes });
+        } catch (error) {
+            this.forgetAfterTrap(error);
+            throw error;
+        }
+    }
+
     private choiceOf(inputs: Pick<Inputs.OCCT.DesignBuildDto<unknown>, "configuration" | "parameters">): ParameterChoice {
         return { configuration: inputs.configuration === "" ? undefined : inputs.configuration, overrides: inputs.parameters };
     }
@@ -389,13 +475,20 @@ export class OCCTDesign {
         try {
             return run();
         } catch (error) {
-            if (isKernelTrap(error)) {
-                this.cache.forget();
-            }
+            this.forgetAfterTrap(error);
             if (error instanceof DesignProblem) {
                 throw new InputError(`${error.path}: ${error.message}.`, error.path.startsWith("/configurations") ? "configuration" : "parameters");
             }
             throw error;
+        }
+    }
+
+    private forgetAfterTrap(error: unknown): void {
+        if (isKernelTrap(error)) {
+            this.cache.forget();
+            this.sections.forget();
+            this.boxes.clear();
+            this.clashStore.clear();
         }
     }
 }

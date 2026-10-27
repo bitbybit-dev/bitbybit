@@ -1,15 +1,17 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Models from "../../api/models";
 import { InputError, messageOf } from "@bitbybit-dev/base";
-import { release } from "./cache";
+import { release } from "../base/release";
 import { contextOf } from "./helpers";
 import { DesignProblem, isKernelTrap, pointer } from "./problems";
 import { countProblem, edgesBetween, facesFound } from "./references";
+import { releasePending } from "./release-build";
 import { runFeatures } from "./runner";
 import type { BodyState, DesignRun, DesignRunContext } from "./state";
 import { bodyKey } from "./state";
 import type { ParameterChoice } from "./values";
 import { numberOf } from "./values";
+import { readKernelException } from "../../kernel-exception";
 
 type Rounding = Models.OCCT.DesignFilletFeature | Models.OCCT.DesignChamferFeature;
 
@@ -116,7 +118,7 @@ function attempt(feature: Rounding, body: BodyState, indexes: number[], value: n
         if (isKernelTrap(error)) {
             throw error;
         }
-        probe.attempts.push({ value, builds: false, ms: ms(), message: problemText(error) });
+        probe.attempts.push({ value, builds: false, ms: ms(), message: problemText(readKernelException(run.occ, error)) });
         return false;
     } finally {
         if (made !== undefined) {
@@ -182,6 +184,7 @@ export function probeRounding(document: Models.OCCT.DesignPartDocument, choice: 
     const { feature, index } = roundingOf(document, id);
     const path = pointer("/features", index);
     const { run, report } = runFeatures({ ...document, features: document.features.slice(0, index) }, choice, context);
+    releasePending(run.pending);
     run.cache.trim(run.used);
     const body = bodyBefore(feature, report, run);
     const probe: Models.OCCT.DesignFilletProbe = { feature: id, type: feature.type, between: [[], []], edges: [], count: feature.edges.count, builds: false, attempts: [], messages: [] };

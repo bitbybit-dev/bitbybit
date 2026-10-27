@@ -1083,8 +1083,8 @@ export namespace IFC {
          */
         schema = "";
         /**
-         * Whether the model can be changed: false for an `IFC2X3` file, which is read through `IFC4`
-         * to be shown and queried.
+         * Whether the model can be changed: false for an `IFC2X3` file or one naming the bare `IFC4X3`,
+         * each read through a newer table to be shown and queried.
          * @default true
          */
         editable = true;
@@ -2621,6 +2621,133 @@ export namespace IFC {
         trunkMaterial?: string | undefined;
     }
     /**
+     * What every element `elements.add` and `elements.addShape` add shares: the model, the storey it
+     * stands on, its class, names, placement and material.
+     */
+    export abstract class ElementSharedDto<T> {
+        /**
+         * The model to change; it stays as it was, and the call returns the changed model.
+         * @default undefined
+         */
+        model!: T;
+        /**
+         * The storey the element stands on, by GlobalId or by the id it was added with.
+         * @default undefined
+         */
+        storey!: string;
+        /**
+         * An id of your own for the element. Leave it out for a generated one.
+         * @default undefined
+         * @optional true
+         */
+        id?: string | undefined;
+        /**
+         * A name for the element, which other tools show.
+         * @default Element
+         */
+        name?: string | undefined = "Element";
+        /**
+         * The IFC class of the element, any kind of IfcElement that is not abstract, such as
+         * `IfcBuildingElementProxy`, `IfcFurniture` or `IfcPipeFitting`.
+         * @default IfcBuildingElementProxy
+         */
+        type?: string | undefined = "IfcBuildingElementProxy";
+        /**
+         * The predefined type of a class that has one, as IFC writes it, such as `NOTDEFINED`; left
+         * out, `NOTDEFINED`, or `USERDEFINED` when `objectType` is given.
+         * @default undefined
+         * @optional true
+         */
+        predefinedType?: string | undefined;
+        /**
+         * What the element is, in words, when no predefined type says it, such as `Bracket`.
+         * @default undefined
+         * @optional true
+         */
+        objectType?: string | undefined;
+        /**
+         * Where the body's origin stands, as `[x, y, z]` in the storey's plan, z up from its floor.
+         * @default [0, 0, 0]
+         */
+        position?: Base.Point3 | undefined = [0, 0, 0];
+        /**
+         * How far the body turns about the vertical, in degrees, counterclockwise seen from above.
+         * @default 0
+         * @minimum -360
+         * @maximum 360
+         * @step 15
+         */
+        rotation?: number | undefined = 0;
+        /**
+         * The name of a material the model holds, given to the element.
+         * @default undefined
+         * @optional true
+         */
+        material?: string | undefined;
+    }
+
+    /**
+     * An element to add for `elements.add`: any kind of element, its body given as exact boundary
+     * representations or triangle meshes, standing on a storey.
+     */
+    export class AddElementDto<T> extends ElementSharedDto<T> {
+        constructor(model?: T, storey?: string, body?: Base.Recipe, id?: string, name?: string, type?: string, predefinedType?: string, objectType?: string, position?: Base.Point3, rotation?: number, material?: string) {
+            super();
+            if (model !== undefined) { this.model = model; }
+            if (storey !== undefined) { this.storey = storey; }
+            if (body !== undefined) { this.body = body; }
+            if (id !== undefined) { this.id = id; }
+            if (name !== undefined) { this.name = name; }
+            if (type !== undefined) { this.type = type; }
+            if (predefinedType !== undefined) { this.predefinedType = predefinedType; }
+            if (objectType !== undefined) { this.objectType = objectType; }
+            if (position !== undefined) { this.position = position; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (material !== undefined) { this.material = material; }
+        }
+        /**
+         * The element's body: a recipe whose roots are brep steps, written as advanced breps, or
+         * triangle steps, written as triangulated face sets, such as `occt.recipes.describe` gives.
+         * @default undefined
+         */
+        body!: Base.Recipe;
+    }
+
+    /**
+     * An element to add for `elements.addShape`: any kind of element whose body is an OpenCascade shape,
+     * standing on a storey.
+     */
+    export class AddShapeElementDto<T, S> extends ElementSharedDto<T> {
+        constructor(model?: T, storey?: string, shape?: S, millimetresPerUnit?: number, id?: string, name?: string, type?: string, predefinedType?: string, objectType?: string, position?: Base.Point3, rotation?: number, material?: string) {
+            super();
+            if (model !== undefined) { this.model = model; }
+            if (storey !== undefined) { this.storey = storey; }
+            if (shape !== undefined) { this.shape = shape; }
+            if (millimetresPerUnit !== undefined) { this.millimetresPerUnit = millimetresPerUnit; }
+            if (id !== undefined) { this.id = id; }
+            if (name !== undefined) { this.name = name; }
+            if (type !== undefined) { this.type = type; }
+            if (predefinedType !== undefined) { this.predefinedType = predefinedType; }
+            if (objectType !== undefined) { this.objectType = objectType; }
+            if (position !== undefined) { this.position = position; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (material !== undefined) { this.material = material; }
+        }
+        /**
+         * The element's body: a solid, several, a shell or faces, described exactly.
+         * @default undefined
+         */
+        shape!: S;
+        /**
+         * How many millimetres one unit of the shape's coordinates is.
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        millimetresPerUnit?: number | undefined = 1;
+    }
+    /**
      * One property of a property set: its name, its value and, when the value needs one, its IFC type.
      * Used by `properties.addSet` and `properties.setValues`. A type outside `IfcValue`, or a value it
      * cannot hold, is refused.
@@ -2828,10 +2955,11 @@ export namespace IFC {
      * A model, the elements to describe and how to group them for `geometry.recipe`.
      */
     export class GeometryDto<T> {
-        constructor(model?: T, elements?: string[], groupByClass?: boolean) {
+        constructor(model?: T, elements?: string[], groupByClass?: boolean, propertySets?: boolean) {
             if (model !== undefined) { this.model = model; }
             if (elements !== undefined) { this.elements = elements; }
             if (groupByClass !== undefined) { this.groupByClass = groupByClass; }
+            if (propertySets !== undefined) { this.propertySets = propertySets; }
         }
         /**
          * The model whose elements are described.
@@ -2851,6 +2979,12 @@ export namespace IFC {
          * @default true
          */
         groupByClass?: boolean | undefined = true;
+        /**
+         * When true, each element's property set values join its results' tags, named like
+         * `Pset_WallCommon.IsExternal`, so they reach what the results become, such as STEP properties.
+         * @default false
+         */
+        propertySets?: boolean | undefined = false;
     }
     /**
      * A model and the elements to check for `geometry.unsupported`.
@@ -2931,7 +3065,7 @@ export namespace IFC {
      * model's recipe into an OpenCascade assembly document.
      */
     export class GeometryToDocumentDto<T> {
-        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean) {
+        constructor(model?: T, elements?: string[], name?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, groupByClass?: boolean, propertySets?: boolean) {
             if (model !== undefined) { this.model = model; }
             if (elements !== undefined) { this.elements = elements; }
             if (name !== undefined) { this.name = name; }
@@ -2939,6 +3073,7 @@ export namespace IFC {
             if (facetedMeshes !== undefined) { this.facetedMeshes = facetedMeshes; }
             if (maxTriangles !== undefined) { this.maxTriangles = maxTriangles; }
             if (groupByClass !== undefined) { this.groupByClass = groupByClass; }
+            if (propertySets !== undefined) { this.propertySets = propertySets; }
         }
         /**
          * The model whose elements are built.
@@ -2984,13 +3119,19 @@ export namespace IFC {
          * @default true
          */
         groupByClass?: boolean | undefined = true;
+        /**
+         * When true, each element's product carries its property set values as properties, named by set
+         * and property, such as `Pset_WallCommon.IsExternal`, beside its GlobalId and IFC type.
+         * @default true
+         */
+        propertySets?: boolean | undefined = true;
     }
     /**
      * A model, the elements to write, and the file options for `geometry.toStep`, which writes the
      * model's elements as a STEP file of OpenCascade shapes.
      */
     export class GeometryToStepDto<T> {
-        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean) {
+        constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean, propertySets?: boolean) {
             if (model !== undefined) { this.model = model; }
             if (elements !== undefined) { this.elements = elements; }
             if (name !== undefined) { this.name = name; }
@@ -3001,6 +3142,7 @@ export namespace IFC {
             if (compress !== undefined) { this.compress = compress; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
             if (groupByClass !== undefined) { this.groupByClass = groupByClass; }
+            if (propertySets !== undefined) { this.propertySets = propertySets; }
         }
         /**
          * The model whose elements are written.
@@ -3062,6 +3204,12 @@ export namespace IFC {
          * @default true
          */
         groupByClass?: boolean | undefined = true;
+        /**
+         * When true, each element's product carries its property set values as properties, named by set
+         * and property, such as `Pset_WallCommon.IsExternal`, beside its GlobalId and IFC type.
+         * @default true
+         */
+        propertySets?: boolean | undefined = true;
     }
     /**
      * An element `geometry.recipe` had to leave out, as `geometry.unsupported` lists it.

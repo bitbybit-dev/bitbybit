@@ -19,7 +19,7 @@ import Admonition from '@theme/Admonition';
 This tutorial guides you through creating a "Hex House," an architectural concept featuring a distinctive hexagonal shell structure. We'll use Bitbybit's PlayCanvas integration, leveraging the OpenCascade (OCCT) kernel for advanced CAD operations, and `lil-gui` for a user interface that allows real-time parameter adjustments.
 
 <Admonition type="note" title="Video shows ThreeJS implementation">
-  The video tutorial below demonstrates the Hex House concept using ThreeJS, not PlayCanvas. The geometric operations, parametric design techniques, and OCCT kernel usage are the same across both engines. This PlayCanvas documentation adapts the same concepts for PlayCanvas's rendering architecture.
+  The video tutorial below demonstrates the Hex House concept using ThreeJS, not PlayCanvas. The geometric operations, parametric design techniques, and Bitbybit OCCT Kernel usage are the same across both engines. This PlayCanvas documentation adapts the same concepts for PlayCanvas's rendering architecture.
 </Admonition>
 
 In this related video tutorial you can see how the results of this app look like (rendered in Unreal Engine).
@@ -192,7 +192,7 @@ async function start() {
 
 **Core Logic in `main.ts`:**
 1.  Initializes the PlayCanvas application using `initPlayCanvas()` and adds lighting/ground via `createLightsAndGround()`.
-2.  Initializes `BitByBitBase` for PlayCanvas and then the OCCT kernel using `initBitByBit()` from `@bitbybit-dev/playcanvas`, which automatically creates workers from CDN.
+2.  Initializes `BitByBitBase` for PlayCanvas and then the Bitbybit OCCT Kernel using `initBitByBit()` from `@bitbybit-dev/playcanvas`, which automatically creates workers from CDN.
 3.  Sets up download functions and the `lil-gui` interface through `createGui()`. Changes in the GUI trigger `updateShape`.
 4.  A simple `rotateEntities` animation is tied to PlayCanvas's update loop.
 5.  The `updateShape` function is central to interactivity:

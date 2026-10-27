@@ -6,7 +6,7 @@ import type * as Models from "../../api/models";
 import type * as Resolved from "../../api/resolved-inputs";
 import { checkedDirection, checkedNumber, checkedNumberList, checkedPoints, checkedShape, checkedWhole } from "../base/input-checks";
 import { pointsFromCoordinates } from "../base/kernel-arrays";
-import { RADIANS_PER_DEGREE, edgeNumbering } from "../base/curve-analysis";
+import { edgeNumbering } from "../base/curve-analysis";
 import { uvFractions } from "../base/surface-analysis";
 
 const curveKindOf = (occ: BitbybitOcctModule, value: number): Inputs.OCCT.curveTypeEnum => {
@@ -181,9 +181,9 @@ export class OCCTAnalysisCurves {
         const resolved = resolveDto(Inputs.OCCT.CurveKinksDto, inputs) as Resolved.OCCT.CurveKinksDto<TopoDS_Wire | TopoDS_Edge>;
         const curve = checkedShape(resolved.shape);
         const angle = checkedNumber(resolved.angle, "angle", 0, 180);
-        const found = this.occ.KinksOfCurve(curve, angle * RADIANS_PER_DEGREE);
+        const found = this.occ.KinksOfCurve(curve, this.och.base.math.degToRad({ number: angle }));
         const edgeIndexOf = edgeNumbering(this.occ, curve);
-        return found.map(kink => ({ point: kink.point, edgeIndex: edgeIndexOf(kink.edge), angle: kink.angle / RADIANS_PER_DEGREE }));
+        return found.map(kink => ({ point: kink.point, edgeIndex: edgeIndexOf(kink.edge), angle: this.och.base.math.radToDeg({ number: kink.angle }) }));
     }
 
     /**

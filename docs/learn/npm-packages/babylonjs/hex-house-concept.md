@@ -163,7 +163,7 @@ async function start() {
 
 **Core Logic in `main.ts`:**
 1.  Initializes BabylonJS (`initBabylonJS`) and then Bitbybit.
-2.  Initializes the OCCT kernel via `initBitByBit()` from `@bitbybit-dev/babylonjs`, which automatically creates workers from CDN.
+2.  Initializes the Bitbybit OCCT Kernel via `initBitByBit()` from `@bitbybit-dev/babylonjs`, which automatically creates workers from CDN.
 3.  Sets up download functions and the `lil-gui` interface using `createGui`. The GUI will call `updateShape` when parameters change.
 4.  Implements a simple rotation for the generated model parts.
 5.  The `updateShape` function is key:
@@ -387,7 +387,7 @@ async function createHexagonsRoof(f, nrHexagonsU, nrHexagonsV, bitbybit) { /* ..
 
 ## Conclusion
 
-This Hex House concept tutorial demonstrates a robust approach to building highly parametric and visually complex 3D models using Bitbybit with BabylonJS and the OCCT kernel. You've seen how to:
+This Hex House concept tutorial demonstrates a robust approach to building highly parametric and visually complex 3D models using Bitbybit with BabylonJS and the Bitbybit OCCT Kernel. You've seen how to:
 
 *   Structure a project with clear separation of concerns (BabylonJS setup, GUI, core geometry logic).
 *   Initialize Bitbybit correctly within a BabylonJS context.

@@ -120,9 +120,12 @@ export class OCCTBooleans {
      */
     intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.IntersectionDto, inputs) as Resolved.OCCT.IntersectionDto<TopoDS_Shape>;
-        const int = this.och.booleansService.intersection(resolved);
-        const res = this.och.converterService.makeCompound({ shapes: int });
-        return res;
+        const pieces = this.och.booleansService.intersection(resolved);
+        try {
+            return this.och.converterService.makeCompound({ shapes: pieces });
+        } finally {
+            pieces.forEach(piece => piece.delete());
+        }
     }
 
     /**

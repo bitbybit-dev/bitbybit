@@ -1,14 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
-import { BaseBitByBit } from "../../base";
+import { BaseBitByBit } from "@bitbybit-dev/base";
 import { REBIND_MARGIN, REBIND_SCORE, candidatesOf, hintedDocument, rebindOf, recordHint, referenceHintOf } from "./hints";
 
 type Document = Models.OCCT.DesignPartDocument;
@@ -23,7 +20,7 @@ const square = (id: string, x: number, size = 10): Models.OCCT.DesignSketchFeatu
 
 const A_TOP: Models.OCCT.DesignFaceReference = { of: "a", role: "end", count: 1 };
 
-const DENT_FACE = "/features/6/on/face";
+const DENT_FACE = "/features/7/on/face";
 
 const mergedTops = (): Document => ({
     schemaVersion: 1,
@@ -35,6 +32,7 @@ const mergedTops = (): Document => ({
         { id: "b", type: "extrude", profile: "bSketch", distance: 5 },
         { id: "joined", type: "boolean", operation: "union", body: "a", tools: ["b"] },
         { id: "unified", type: "operation", operation: "occt.shapes.shape.unifySameDomain", params: { shape: { body: "a" }, unifyEdges: true, unifyFaces: true, concatBSplines: true }, body: "a", suppressed: "!merged" },
+        { id: "rebuilt", type: "operation", operation: "occt.shapes.solid.getSolids", params: { shape: { body: "a" } }, body: "a", suppressed: "!merged" },
         { id: "dent", type: "sketch", on: { face: A_TOP, origin: [5, 5, 0], direction: [1, 0, 0] }, start: [-1, -1], pen: [{ type: "hLine", length: 2 }, { type: "vLine", length: 2 }, { type: "hLine", length: -2 }, { type: "close" }] },
         { id: "dip", type: "pocket", profile: "dent", body: "a", distance: 1 },
     ],
@@ -51,7 +49,7 @@ describe("design hints", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const statusOf = (result: Models.OCCT.DesignBuildResult<unknown>, id: string): Models.OCCT.DesignFeatureReport => result.report.find(entry => entry.id === id)!;
@@ -173,7 +171,7 @@ describe("design hints", () => {
             const hinted = occt.design.withHints({ document });
 
             // Assert
-            const on = hinted.features[6]!.type === "sketch" ? hinted.features[6].on : undefined;
+            const on = hinted.features[7]!.type === "sketch" ? hinted.features[7].on : undefined;
             const written = on !== undefined && "face" in on ? on.face.hint : undefined;
             expect(written?.box).toEqual({ min: [0, 0, 0], max: [20, 10, 5] });
             expect(written?.faces).toEqual([{
@@ -206,7 +204,7 @@ describe("design hints", () => {
             const good = hint([0.5, 0.5, 1]);
             const withHint = (value: unknown): Document => {
                 const document = mergedTops();
-                return { ...document, features: document.features.map((feature, index) => index === 6 && feature.type === "sketch" ? { ...feature, on: { face: { ...A_TOP, hint: value as Models.OCCT.DesignReferenceHint }, origin: [5, 5, 0], direction: [1, 0, 0] } } : feature) };
+                return { ...document, features: document.features.map((feature, index) => index === 7 && feature.type === "sketch" ? { ...feature, on: { face: { ...A_TOP, hint: value as Models.OCCT.DesignReferenceHint }, origin: [5, 5, 0], direction: [1, 0, 0] } } : feature) };
             };
             const paths = (value: unknown): string[] => occt.design.validate({ document: withHint(value) }).map(issue => issue.path);
 
@@ -233,7 +231,7 @@ describe("design hints", () => {
     });
 
     describe("rebinding lost references", () => {
-        it("should fail a reference whose faces a merge without history lost, and offer the face most like its hint as a clear repair", () => {
+        it("should fail a reference whose faces a merge and a step without history lost, and offer the face most like its hint as a clear repair", () => {
             // Arrange
             const document = occt.design.withHints({ document: mergedTops() });
 
@@ -259,9 +257,9 @@ describe("design hints", () => {
             const repaired = occt.design.build({ document, parameters: { merged: true } });
             const dent = statusOf(first, "dent");
             expect(dent.status).toBe("rebound");
-            expect(dent.messages).toEqual([`${DENT_FACE}: its faces were lost, and it took faces ${repaired.report[6]!.repairs![0]!.faces[0]}, the most like its hint (score 1)`]);
-            expect(dent.repairs).toEqual([{ path: DENT_FACE, faces: repaired.report[6]!.repairs![0]!.faces, score: 1, clear: true }]);
-            expect(statusOf(first, "dip").messages).toEqual([`/features/7/profile: its faces were lost, and it took faces ${repaired.report[6]!.repairs![0]!.faces[0]}, the most like its hint (score 1)`]);
+            expect(dent.messages).toEqual([`${DENT_FACE}: its faces were lost, and it took faces ${repaired.report[7]!.repairs![0]!.faces[0]}, the most like its hint (score 1)`]);
+            expect(dent.repairs).toEqual([{ path: DENT_FACE, faces: repaired.report[7]!.repairs![0]!.faces, score: 1, clear: true }]);
+            expect(statusOf(first, "dip").messages).toEqual([`/features/8/profile: its faces were lost, and it took faces ${repaired.report[7]!.repairs![0]!.faces[0]}, the most like its hint (score 1)`]);
             expect(occt.shapes.solid.getSolidVolume({ shape: first.parts[0]!.shape })).toBeCloseTo(20 * 10 * 5 - 4, 6);
             expect([statusOf(again, "dent").status, statusOf(again, "dent").cached, statusOf(again, "dent").messages]).toEqual(["rebound", true, dent.messages]);
         });
@@ -276,7 +274,7 @@ describe("design hints", () => {
                     ...hinted.features.slice(0, 5),
                     { id: "slotSketch", type: "sketch", on: { plane: "XY", offset: -1 }, start: [9, -1], pen: [{ type: "hLine", length: 2 }, { type: "vLine", length: 12 }, { type: "hLine", length: -2 }, { type: "close" }] },
                     { id: "slot", type: "extrude", profile: "slotSketch", distance: 7, body: "a", join: "cut" },
-                    ...hinted.features.slice(6),
+                    ...hinted.features.slice(7),
                 ],
             };
 
@@ -296,7 +294,7 @@ describe("design hints", () => {
             // Arrange
             const path = "/parts/0/appearance/faces/0/faces";
             const blocks = mergedTops();
-            const document = occt.design.withHints({ document: { ...blocks, features: blocks.features.slice(0, 6), parts: [{ id: "a", body: "a", appearance: { faces: [{ faces: A_TOP, color: "#ff0000" }] } }] } });
+            const document = occt.design.withHints({ document: { ...blocks, features: blocks.features.slice(0, 7), parts: [{ id: "a", body: "a", appearance: { faces: [{ faces: A_TOP, color: "#ff0000" }] } }] } });
 
             // Act
             const failing = occt.design.build({ document, parameters: { merged: true } });

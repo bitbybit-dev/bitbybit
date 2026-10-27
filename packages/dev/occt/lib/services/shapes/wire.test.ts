@@ -4,8 +4,6 @@ import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import * as Inputs from "../../api/inputs";
 import { OCCTFace } from "./face";
 import { OCCTShape } from "./shape";
@@ -24,9 +22,7 @@ describe("OCCT wire unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         edge = new OCCTEdge(occt, occHelper);
         wire = new OCCTWire(occt, occHelper);
         face = new OCCTFace(occt, occHelper);
@@ -142,7 +138,7 @@ describe("OCCT wire unit tests", () => {
         const wires = wire.interpolateWires(interpolations) as TopoDS_Wire[];
 
         const lengths = wires.map(w => wire.getWireLength({ shape: w }));
-        expect(lengths).toEqual([7.253889764838339, 11.692896245003144].map(length => expect.closeTo(length, 11)));
+        expect(lengths).toEqual([7.253889764838339, 11.022164367007143].map(length => expect.closeTo(length, 11)));
         wires.forEach(w => w.delete());
     });
 
@@ -158,14 +154,14 @@ describe("OCCT wire unit tests", () => {
 
         const wires = wire.getWires({ shape: resCompound });
         const lengths = wires.map(w => wire.getWireLength({ shape: w }));
-        expect(lengths).toEqual([7.253889764838339, 11.692896245003144].map(length => expect.closeTo(length, 11)));
+        expect(lengths).toEqual([7.253889764838339, 11.022164367007143].map(length => expect.closeTo(length, 11)));
         wires.forEach(w => w.delete());
     });
 
     it("should interpolate points into periodic bspline", () => {
         const w = wire.interpolatePoints({ points: [[0, 0, 0], [1, 1, 0], [0, 2, 5]], periodic: true, tolerance: 1e-7 });
         const length = wire.getWireLength({ shape: w });
-        expect(length).toBeCloseTo(13.783010662282262, 11);
+        expect(length).toBeCloseTo(13.441541011447658, 11);
         w.delete();
     });
 
@@ -1168,6 +1164,32 @@ describe("OCCT wire unit tests", () => {
         w1.delete();
         w2.delete();
         placed.forEach((w) => w.delete());
+    });
+
+    it("should place an edge given where a wire is expected on a face and leave the edge alive", () => {
+        // Arrange
+        const flat = face.createRectangleFace({ width: 8, length: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+        const flatEdge = edge.line({ start: [0.1, 0, 0.1], end: [0.5, 0, 0.5] });
+
+        // Act
+        const placed = wire.placeWireOnFace({ wire: flatEdge, face: flat });
+
+        // Assert
+        expect(wire.getWireLength({ shape: placed })).toBeCloseTo(Math.hypot(0.4, 0.4), 9);
+        expect(flatEdge.isDeleted()).toBe(false);
+    });
+
+    it("should place edges given where wires are expected on a face and leave the edges alive", () => {
+        // Arrange
+        const flat = face.createRectangleFace({ width: 8, length: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+        const flatEdges = [edge.line({ start: [0.1, 0, 0.1], end: [0.5, 0, 0.5] }), edge.line({ start: [0.5, 0, 0.1], end: [0.5, 0, 0.4] })];
+
+        // Act
+        const placed = wire.placeWiresOnFace({ wires: flatEdges, face: flat });
+
+        // Assert
+        expect(placed.map(onFace => wire.getWireLength({ shape: onFace }))).toEqual([expect.closeTo(Math.hypot(0.4, 0.4), 9), expect.closeTo(0.3, 9)]);
+        expect(flatEdges.map(flatEdge => flatEdge.isDeleted())).toEqual([false, false]);
     });
 
     it("should create a ngon wire", () => {
@@ -3449,6 +3471,14 @@ describe("OCCT wire unit tests", () => {
         });
     });
     describe("interpolating through points, and the knobs that changes", () => {
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
         const CORNERS: Inputs.Base.Point3[] = [[0, 0, 0], [1, 0, 0], [10, 0, 3], [12, 0, 12]];
 
         it("should follow a uniform parametrization when it was asked for one", () => {
@@ -3508,6 +3538,20 @@ describe("OCCT wire unit tests", () => {
             expect(wire.getWireLength({ shape: created })).toBeGreaterThan(0);
 
             created.delete();
+        });
+
+        it.each([
+            ["interpolatePoints", "MakeInterpolatedBSplineEdge", (points: Inputs.Base.Point3[]): unknown => wire.interpolatePoints({ points, periodic: false, tolerance: 1e-7 })],
+            ["interpolatePointsSymmetric", "MakeSymmetricInterpolatedBSplineEdge", (points: Inputs.Base.Point3[]): unknown => wire.interpolatePointsSymmetric({ points, tolerance: 1e-7 })],
+        ] as [string, string, (points: Inputs.Base.Point3[]) => unknown][])("should pass on two equal consecutive points to %s as the kernel's reason, read rather than raw", (_method, builder, interpolate) => {
+            // Arrange
+            const repeatingTheFirst: Inputs.Base.Point3[] = [[0, 0, 0], [0, 0, 0], [1, 0, 0]];
+
+            // Act
+            const thrown = refusalOf(() => interpolate(repeatingTheFirst));
+
+            // Assert
+            expect(thrown).toEqual(new Error(`Standard_DomainError: ${builder}: two consecutive points lie within the tolerance`));
         });
     });
 
@@ -3628,6 +3672,168 @@ describe("OCCT wire unit tests", () => {
             expect(leftOut.data).toEqual(spelled.data);
             leftOut.compound?.delete();
             spelled.compound?.delete();
+        });
+    });
+
+    describe("refusals that name what the caller gave", () => {
+        const twoLinesEndingAtOnePoint = (): TopoDS_Wire[] => [wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }), wire.createLineWire({ start: [0, 0, 5], end: [10, 0, 0] })];
+        const wireOfThePoleOfABall = (): TopoDS_Wire => {
+            const ball = occHelper.solidsService.createSphere({ radius: 2, center: [0, 0, 0] });
+            const ballFace = face.getFace({ shape: ball, index: 0 });
+            const edges = edge.getEdges({ shape: ballFace });
+            const pole = wire.createWireFromEdge({ shape: edges[0]! });
+            [ball, ballFace, ...edges].forEach(each => each.delete());
+            return pole;
+        };
+
+        it("should name the shapes that end at one point when connecting their start and end points", () => {
+            // Arrange
+            const shapes = twoLinesEndingAtOnePoint();
+
+            // Act
+            const act = (): TopoDS_Wire[] => wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes });
+
+            // Assert
+            expect(act).toThrow("`shapes` at positions 0 and 1 end at the same point, so the wire through their end points would join a point to itself.");
+            shapes.forEach(each => each.delete());
+        });
+
+        it("should name the shapes that start at one point when a closed wire joins the last start point back to the first", () => {
+            // Arrange
+            const shapes = [wire.createLineWire({ start: [0, 0, 0], end: [0, 0, 5] }), wire.createLineWire({ start: [3, 0, 0], end: [3, 0, 5] }), wire.createLineWire({ start: [0, 0, 0], end: [6, 0, 5] })];
+
+            // Act
+            const act = (): TopoDS_Wire[] => wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes, closed: true });
+
+            // Assert
+            expect(act).toThrow("`shapes` at positions 2 and 0 start at the same point, and `closed` joins them, so the wire through their start points would join a point to itself.");
+            shapes.forEach(each => each.delete());
+        });
+
+        it("should name the shapes and the division where they meet when connecting their subdivided points", () => {
+            // Arrange
+            const shapes = twoLinesEndingAtOnePoint();
+
+            // Act
+            const act = (): TopoDS_Wire[] => wire.createWiresBetweenSubdividedPointsOfWiresAndEdges({ shapes, nrOfDivisions: 3 });
+
+            // Assert
+            expect(act).toThrow("`shapes` at positions 0 and 1 share their point at division 3 of 3, so the wire through those points would join a point to itself.");
+            shapes.forEach(each => each.delete());
+        });
+
+        it("should refuse shapes that meet when connecting their subdivided points by interpolated wires, as it does polylines", () => {
+            // Arrange
+            const shapes = twoLinesEndingAtOnePoint();
+
+            // Act
+            const act = (): TopoDS_Wire[] => wire.createWiresBetweenSubdividedPointsOfWiresAndEdges({ shapes, nrOfDivisions: 3, wireType: Inputs.OCCT.wireFromPointsTypeEnum.interpolated });
+
+            // Assert
+            expect(act).toThrow("`shapes` at positions 0 and 1 share their point at division 3 of 3, so the wire through those points would join a point to itself.");
+            shapes.forEach(each => each.delete());
+        });
+
+        it.each([
+            ["the tangent at a length", (shape: TopoDS_Wire): unknown => wire.tangentOnWireAtLength({ shape, length: 0.1 })],
+            ["the tangent at a parameter", (shape: TopoDS_Wire): unknown => wire.tangentOnWireAtParam({ shape, param: 0.5 })],
+            ["the derivatives at a length", (shape: TopoDS_Wire): unknown => wire.derivativesOnWireAtLength({ shape, length: 0.1 })],
+            ["the derivatives at a parameter", (shape: TopoDS_Wire): unknown => wire.derivativesOnWireAtParam({ shape, param: 0.5 })],
+        ])("should refuse %s along a wire with no curve as an input error naming the wire", (_name, read) => {
+            // Arrange
+            const shape = wireOfThePoleOfABall();
+            let refusal: unknown;
+
+            // Act
+            try {
+                read(shape);
+            } catch (failure) {
+                refusal = failure;
+            }
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property: "shape", message: "`shape` has no edge with a curve, only degenerate edges such as the pole of a ball or none at all, so there is no curve to follow along it." });
+            shape.delete();
+        });
+    });
+
+    describe("wires and curves no kernel shape stands for", () => {
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
+        const helixAt = { center: [0, 0, 0] as Inputs.Base.Point3, direction: [0, 1, 0] as Inputs.Base.Vector3, clockwise: false, tolerance: 1e-4 };
+
+        it.each([
+            ["a circle wire of radius 0", (): unknown => wire.createCircleWire({ radius: 0, center: [0, 0, 0], direction: [0, 1, 0] }), "radius", "`radius` must be a finite number above 0; it is 0."],
+            ["a circle wire of radius -1", (): unknown => wire.createCircleWire({ radius: -1, center: [0, 0, 0], direction: [0, 1, 0] }), "radius", "`radius` must be a finite number above 0; it is -1."],
+            ["an ellipse wire whose minor radius is larger than its major radius", (): unknown => wire.createEllipseWire({ radiusMinor: 3, radiusMajor: 2, center: [0, 0, 0], direction: [0, 1, 0] }), "radiusMinor", "`radiusMinor` must not exceed `radiusMajor`; it is 3 and `radiusMajor` is 2."],
+            ["a helix of radius 0", (): unknown => wire.createHelixWire({ ...helixAt, radius: 0, pitch: 1, height: 5 }), "radius", "`radius` must be a finite number above 0; it is 0."],
+            ["a helix of pitch 0", (): unknown => wire.createHelixWire({ ...helixAt, radius: 1, pitch: 0, height: 5 }), "pitch", "`pitch` must be a finite number above 0; it is 0."],
+            ["a helix of height -1", (): unknown => wire.createHelixWire({ ...helixAt, radius: 1, pitch: 1, height: -1 }), "height", "`height` must be a finite number above 0; it is -1."],
+            ["a helix of radius 0 by turns", (): unknown => wire.createHelixWireByTurns({ ...helixAt, radius: 0, pitch: 1, numTurns: 3 }), "radius", "`radius` must be a finite number above 0; it is 0."],
+            ["a helix of no turns", (): unknown => wire.createHelixWireByTurns({ ...helixAt, radius: 1, pitch: 1, numTurns: 0 }), "numTurns", "`numTurns` must be a finite number above 0; it is 0."],
+            ["a tapered helix that starts at radius 0", (): unknown => wire.createTaperedHelixWire({ ...helixAt, startRadius: 0, endRadius: 1, pitch: 1, height: 5 }), "startRadius", "`startRadius` must be a finite number above 0; it is 0."],
+            ["a tapered helix that ends at radius 0", (): unknown => wire.createTaperedHelixWire({ ...helixAt, startRadius: 1, endRadius: 0, pitch: 1, height: 5 }), "endRadius", "`endRadius` must be a finite number above 0; it is 0."],
+            ["a tapered helix of height 0", (): unknown => wire.createTaperedHelixWire({ ...helixAt, startRadius: 1, endRadius: 2, pitch: 1, height: 0 }), "height", "`height` must be a finite number above 0; it is 0."],
+            ["a flat spiral that ends at radius 0", (): unknown => wire.createFlatSpiralWire({ ...helixAt, startRadius: 1, endRadius: 0, numTurns: 3 }), "endRadius", "`endRadius` must be a finite number above 0; it is 0."],
+            ["a flat spiral that starts at radius -1", (): unknown => wire.createFlatSpiralWire({ ...helixAt, startRadius: -1, endRadius: 2, numTurns: 3 }), "startRadius", "`startRadius` must be a finite number 0 or more; it is -1."],
+            ["a flat spiral of no turns", (): unknown => wire.createFlatSpiralWire({ ...helixAt, startRadius: 1, endRadius: 2, numTurns: 0 }), "numTurns", "`numTurns` must be a finite number above 0; it is 0."],
+        ])("should refuse %s, naming the input, rather than hand back an empty wire", (_name, act, property, message) => {
+            // Act
+            const refusal = refusalOf(act);
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property, message });
+        });
+
+        it("should keep winding a flat spiral out from its center", () => {
+            // Act
+            const spiral = wire.createFlatSpiralWire({ ...helixAt, startRadius: 0, endRadius: 2, numTurns: 3 });
+
+            // Assert
+            expect(wire.startPointOnWire({ shape: spiral })).toEqual([expect.closeTo(0, 9), expect.closeTo(0, 9), expect.closeTo(0, 9)]);
+            spiral.delete();
+        });
+
+        it.each([
+            ["one spline", (): unknown => wire.createBSpline({ points: [[0, 0, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]], closed: false })],
+            ["a list of splines", (): unknown => wire.createBSplines({ bSplines: [{ points: [[0, 0, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]], closed: false }], returnCompound: false })],
+        ])("should hand on the kernel's refusal of %s through a repeated point as a read error, not a raw C++ exception", (_name, act) => {
+            // Act
+            const refusal = refusalOf(act);
+
+            // Assert
+            expect(refusal).toEqual(new Error("Standard_ConstructionError: BSpline curve: Knots interval values too close"));
+        });
+
+        it.each([
+            ["textWires", (): unknown => wire.textWires({ ...new Inputs.OCCT.TextWiresDto(), text: "Hello", height: 1e-6 })],
+            ["textWiresWithData", (): unknown => wire.textWiresWithData({ ...new Inputs.OCCT.TextWiresDto(), text: "Hello", height: 1e-6 })],
+        ])("should name the height when %s is asked for letters too small to tell their points apart", (_name, act) => {
+            // Act
+            const refusal = refusalOf(act);
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property: "height", message: "`height` is 0.000001, too small to tell the points of the letters apart." });
+        });
+
+        it("should trace the wire of a ball as points that all lie on the ball, from pole to pole", () => {
+            // Arrange
+            const ball = occHelper.solidsService.createSphere({ radius: 6, center: [0, 0, 0] });
+
+            // Act
+            const traced = wire.wiresToPoints({ shape: ball, angularDeflection: 0.1, curvatureDeflection: 0.1, minimumOfPoints: 2, uTolerance: 1e-7, minimumLength: 1e-7 });
+
+            // Assert
+            expect(traced).toHaveLength(1);
+            expect(traced[0]!.every(point => Math.abs(Math.hypot(...point) - 6) < 1e-9)).toBe(true);
+            expect(traced[0]!.map(point => point[2]).filter(z => Math.abs(Math.abs(z) - 6) < 1e-9).length).toBeGreaterThanOrEqual(2);
+            ball.delete();
         });
     });
 });

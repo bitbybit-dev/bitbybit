@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { modelOf } from "./service-support";
-import { expressIdOf, groundFloor, notAModel } from "../../__test__/build-setup";
+import { errorFrom, expressIdOf, groundFloor, notAModel } from "../../__test__/build-setup";
 import { countOf, enumOf, extrusionOf, materialOf, objectPlacementOf, placementOf, refOf, rounded, sweptAreaOf } from "../../__test__/build-geometry";
 import { findMaterial } from "../../build/materials";
-import type { Base } from "@bitbybit-dev/base";
+import { InputError, type Base } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
 
 describe("IFCColumns.add", () => {
@@ -205,6 +205,19 @@ describe("IFCColumns.add", () => {
 
         // Act & Assert
         expect(() => ifc.columns.add({ model, storey: "ground", rotation: Number.NaN })).toThrow("The rotation in degrees must be a finite number");
+    });
+
+    it("should refuse a rotation too large to turn by with an InputError naming the rotation", () => {
+        // Arrange
+        const { ifc, model } = groundFloor();
+        const rotationBeyondRadians = 1e308;
+
+        // Act
+        const error = errorFrom(() => ifc.columns.add({ model, storey: "ground", rotation: rotationBeyondRadians }));
+
+        // Assert
+        expect(error).toBeInstanceOf(InputError);
+        expect(error).toMatchObject({ property: "rotation", message: "The rotation in degrees is too large to turn by, got 1e+308: give the same turn within 360 degrees" });
     });
 
     it("should refuse a position that is not two finite numbers with a TypeError", () => {

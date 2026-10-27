@@ -1,6 +1,6 @@
 {
   "name": "ifc-house",
-  "version": "1.5.0",
+  "version": "1.6.0-rc.0",
   "description": "Example of how to write an IFC building model with @bitbybit-dev/ifc within node",
   "type": "module",
   "scripts": {
@@ -13,7 +13,7 @@
     "node": ">=20.19.4"
   },
   "dependencies": {
-    "@bitbybit-dev/ifc": "1.5.0"
+    "@bitbybit-dev/ifc": "1.6.0-rc.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.0",

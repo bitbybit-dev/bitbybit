@@ -67,7 +67,7 @@ Later calls refer to what earlier calls made, so this order avoids every "not fo
 6. **Doors, windows and openings**: `doors.add` and `windows.add` place a type in a wall `offset` along its axis from its start, and cut their own opening; do not add an opening for them as well. `openings.add` cuts an empty opening. A window's `sill` defaults to 900 mm above the wall's base, a door's to 0. Keep an opening at least the wall's thickness away from a mitred corner: the offset runs along the axis, and the face on the other side of a corner is shorter by the thickness. A door type's `operation` names its hinges as IFC does, seen from the wall's right side, its start on your left: `singleSwingLeft` is hinged toward the wall's start, `singleSwingRight` toward its end, and the handle is on the other edge.
 7. **Slabs**: `slabs.add` with an `outline`, `thickness` or `layerSet` and `topOffset` above the storey's floor; `holes` or `openings.addInSlab` for stairwells and shafts. A floor over a storey whose walls run up to it fits between their inner faces: an outline at the outer faces puts the slab and the top of the walls in the same space.
 8. **Roofs**: `roofs.add` over a rectangle of four corners (`kind`: `flat`, `monoPitch`, `gable`, `hip`), with `baseOffset` the height of the walls under it and an `overhang`. A mono-pitch roof rises from the outline's first side and a gable's ridge runs along it. Then `walls.clipByRoof` for each wall it covers. A wall under a slope is added taller than `baseOffset`, up to the ridge at most, and clipping cuts it to the slope, a gable wall to its triangle; a wall added exactly at `baseOffset` is left square, with a wedge open under the slope.
-9. **Structure and detail**: `columns.add`, `beams.add` and `members.add` with a `profile` (`rectangle`, `circle`, `iShape`); `assemblies.add` to group parts such as a facade's cladding boards.
+9. **Structure and detail**: `columns.add`, `beams.add` and `members.add` with a `profile` (`rectangle`, `circle`, `iShape`); `assemblies.add` to group parts such as a facade's cladding boards; `elements.add` for anything else, its body an OpenCascade shape described with `occt.recipes.describe({ shape, ifcSurfaces: true })` or a mesh.
 10. **Rooms**: `spaces.add` per room, with its `name` (the room number), `longName` and `height`.
 11. **Data**: `properties.addSet`, such as `Pset_WallCommon` with `IsExternal: true` shared by every outside wall. A property's value is written as a label, boolean, integer or real as it is, or as the `type` it names: any of IFC4's `IfcValue` types, such as `IfcText`, `IfcLengthMeasure` or `IfcThermalTransmittanceMeasure` for a U-value.
 12. **Quantities last**: `quantities.compute` measures every element as it is now; compute again after any later change.
@@ -150,11 +150,13 @@ Read the model back before handing it over; every check here is cheap:
 
 ## Reading and changing IFC files
 
-- `model.read` takes the text or the bytes of an `.ifc` file, such as `readFileSync("in.ifc")` or `await file.arrayBuffer()`. It indexes the file without decoding it, so files of hundreds of megabytes open in seconds.
+- `model.read` takes the text or the bytes of an `.ifc` file, or the bytes of an `.ifczip` archive, such as `readFileSync("in.ifc")` or `await file.arrayBuffer()`. It indexes the file without decoding it, so files of hundreds of megabytes open in seconds.
 - `model.elements` lists objects by IFC type, its subtypes included (`IfcWall`, `IfcBuildingElement`, or `IfcElement` for every element), optionally of one storey; `model.element` describes one; `model.getAttribute` and `model.setAttribute` read and set one attribute such as `Name` or `Tag`.
 - `properties.getSets` reads an object's property sets; `properties.setValues` changes one object's values, copying a set it shares with others first, so the others keep theirs.
 - `walls.parameters` and `walls.edit` read and change walls other tools wrote with an axis and layers; joined walls are trimmed again and the wall's openings move with it. `model.move` moves and turns any element, and `model.remove` takes it away with what only it uses.
 - **IFC2X3 files** are read, queried and written back, but not changed: `model.upgradeToIfc4` gives a model that can be.
+- **IFC4X3 files** are read with their own schema, queried, drawn and written back, but not changed. `model.summary` gives `editable` false for both.
+- `model.georeference` reads a model's map conversion (`crs`, `eastings`, `northings`) and its site's latitude and longitude.
 - `model.writeBytes` writes untouched entities back byte for byte, so a small change to a large file stays small. Prefer it to `model.write` for files read from elsewhere: a JavaScript string holds about 512 MB.
 
 ## Drawing an IFC model and exporting STEP
@@ -167,7 +169,7 @@ const solids = await bitbybit.manifold.recipes.build({ recipe, adjustZtoY: true 
 await bitbybit.draw.drawAnyAsync({ entity: solids });
 ```
 
-The solids come back one per root of the recipe, and `recipe.roots[i].tag` carries the element's `globalId`, `type`, `name` and, when its material has a colour, `rgba`. With the OpenCascade worker enabled as well, `ifc.geometry.toShapes` gives exact shapes and `ifc.geometry.toStep` the bytes of a STEP file, nested by site, building, storey and IFC class: `await bitbybit.ifc.geometry.toStep({ model, name: "House", fileName: "house.step" })`. A Babylon.js scene is left-handed unless told otherwise; set `scene.useRightHandedSystem = true` before drawing, or the building is mirrored.
+The solids come back one per root of the recipe, and `recipe.roots[i].tag` carries the element's `globalId`, `type`, `name` and, when its material has a colour, `rgba`; `propertySets: true` adds its property set values, named like `Pset_WallCommon.IsExternal`. With the OpenCascade worker enabled as well, `ifc.geometry.toShapes` gives exact shapes and `ifc.geometry.toStep` the bytes of a STEP file, nested by site, building, storey and IFC class, each product carrying its property sets: `await bitbybit.ifc.geometry.toStep({ model, name: "House", fileName: "house.step" })`. A Babylon.js scene is left-handed unless told otherwise; set `scene.useRightHandedSystem = true` before drawing, or the building is mirrored.
 
 ## Mistakes to avoid in IFC models
 
@@ -181,5 +183,5 @@ The solids come back one per root of the recipe, and `recipe.roots[i].tag` carri
 - **The roof before its walls are clipped, or a roof that is not a rectangle.** `roofs.add` takes four corners, and walls are clipped with `walls.clipByRoof` after the roof exists.
 - **Quantities computed too early.** They are a snapshot; compute them once the model is finished, or again after a change.
 - **An assembly of a user-defined kind without words.** `assemblies.add` with `predefinedType` `userDefined` needs an `objectType` that says what it is, such as `"Cladding"`.
-- **Changing an IFC2X3 model.** It refuses every change until `model.upgradeToIfc4`.
+- **Changing an IFC2X3 or IFC4X3 model.** An IFC2X3 model refuses every change until `model.upgradeToIfc4`; an IFC4X3 model refuses every change.
 - **Fields that do not exist.** Look each method up with `describe`; its inputs, defaults and ranges come from the index, not from memory.

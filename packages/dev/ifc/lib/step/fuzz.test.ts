@@ -1,4 +1,3 @@
-import { checkRecipe } from "@bitbybit-dev/base";
 import { describe, expect, it } from "vitest";
 import { mutated, randomReal, randomText, randomValue, seeded, spelledList, spelledReal, spelledText, whole } from "../__test__/fuzz";
 import { OTHER_TOOL_FILE } from "../__test__/other-tool-file";
@@ -11,6 +10,9 @@ import { IfcValueError, StepSyntaxError } from "./errors";
 import { formatReal } from "./numbers";
 import { decodeArguments } from "./reader";
 import { decodeString, encodeString } from "./strings";
+import { Recipes } from "@bitbybit-dev/base";
+
+const RECIPES = new Recipes();
 
 const CASES = 400;
 const MUTATIONS = 300;
@@ -65,7 +67,7 @@ function queryProblem(bytes: Uint8Array): string | undefined {
         return isRefusal(error) ? undefined : described(error);
     }
     try {
-        const issues = checkRecipe(ifc.geometry.recipe({ model }));
+        const issues = RECIPES.check({ recipe: ifc.geometry.recipe({ model }) });
         return issues.length ? `an invalid recipe: ${JSON.stringify(issues[0])}` : undefined;
     } catch (error) {
         return `the recipe of a model whose units it reads threw ${described(error)}`;

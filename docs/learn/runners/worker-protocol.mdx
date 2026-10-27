@@ -1,8 +1,8 @@
 ---
 sidebar_position: 11
-title: OCCT Worker Protocol - Replace or Customize the CAD Kernel
+title: OCCT Worker Protocol - Build or Customize the OCCT Worker
 sidebar_label: Worker Protocol (OCCT)
-description: Technical specification of the OCCT Web Worker message protocol used by Bitbybit Runners. Use this to build compatible custom workers or replace the OpenCASCADE component.
+description: Technical specification of the OCCT Web Worker message protocol used by Bitbybit Runners. Use this to build or debug a compatible custom worker.
 tags: [runners, occt, advanced]
 topic: runners.worker-protocol
 type: reference
@@ -12,12 +12,12 @@ import Admonition from '@theme/Admonition';
 
 # OCCT Worker Protocol Specification
 
-The OpenCASCADE Technology (OCCT) component in Bitbybit Runners is loaded as a **separate Web Worker** at runtime. It is not compiled into the main runner bundle. This means you can replace it with your own build of OpenCASCADE (or any compatible CAD kernel) by hosting custom worker files and pointing the runner to them.
+The Bitbybit OCCT Kernel in Bitbybit Runners is loaded in a **separate Web Worker** at runtime. It is not compiled into the main runner bundle, so the runner can talk to a worker of your own that speaks the same protocol, hosted with the rest of the assets and reached through `cdnUrl`.
 
-This document specifies the complete message protocol between the runner (main thread) and the OCCT worker, enabling you to build a compatible replacement.
+This document specifies the complete message protocol between the runner (main thread) and the OCCT worker, for building or debugging a compatible worker.
 
-<Admonition type="info" title="Why This Page Exists">
-OCCT is licensed under LGPL v2.1, which requires that users can replace the LGPL-licensed component with their own version. This specification ensures you have the information needed to do so. See the <a href="/learn/runners/licensing">Runner Licensing</a> page for details.
+<Admonition type="info" title="Using a modified OCCT">
+To run the kernel with a modified OpenCASCADE, you relink the kernel, then use a worker that works with the glue your link produced (the Runner's own worker modified for your own use, or one built around your glue), since the Runner's worker bundles the glue of our kernel: the <a href="/learn/runners/licensing#using-a-modified-occt">Runner Licensing</a> page says how to get the materials and how the Runner then loads your kernel.
 </Admonition>
 
 ## Architecture Overview
@@ -28,7 +28,7 @@ Main Thread (Runner)                    OCCT Web Worker
 │                     │  postMessage   │                         │
 │  Runner init        │ ──────────────►│  Load WASM              │
 │                     │  {type:        │  Load fonts             │
-│                     │   "initialise"}│  Init OCCT kernel       │
+│                     │   "initialise"}│  Init the CAD kernel    │
 │                     │                │                         │
 │                     │◄────────────── │  postMessage            │
 │  State: initialised │  "occ-         │  ("occ-initialised")    │
@@ -158,9 +158,10 @@ These function names have special behavior and bypass the standard function disp
 | `docToMeshes` | Convert several assembly documents to mesh data |
 | `deleteShape` | Remove a single shape from the internal cache |
 | `deleteShapes` | Remove multiple shapes from the internal cache |
+| `deleteUnsharedShapes` | Remove the shapes no other call was answered with. Takes `{ epoch, shapes: [{ type, hash, answers }] }`: each shape goes only when `epoch` is still the cache's and the worker's count of answers that carried a shape under that key in this epoch equals `answers`; a delete of one key keeps its count, and `cleanAllCache` or the threshold reset begins a new epoch. Without `epoch` nothing is deleted. Answers `{ epoch }`, the current epoch. `design.buildWithScripts` asks for it with `{ shapes: [] }` before its first build and frees its earlier rounds through it |
 | `deleteDocument` | Remove an assembly document handle from the cache |
 | `startedTheRun` | Signal a new computation run; may clean cache if too large |
-| `cleanAllCache` | Clear all cached shapes and entities, and any meshes kept on them |
+| `cleanAllCache` | Clear all cached shapes and entities, any meshes kept on them, and what the design builder keeps between builds |
 | `setMeshRetention` | Set how many triangles meshing may keep on shapes for reuse (`{ triangles }`, 0 keeps none); answers with what is kept |
 | `addOc` | Add OpenCascade dependencies or plugins |
 | `saveShapeSTEP` | Export a shape to STEP format |
@@ -182,7 +183,7 @@ loading → initialised → loaded ↔ computing
 
 ### Using `cdnUrl` (Recommended)
 
-The simplest way to replace OCCT is to host your own worker and WASM files, maintaining the expected directory structure:
+The simplest way to run your own worker (and a relinked kernel) is to host the worker and WASM files yourself, maintaining the expected directory structure:
 
 ```
 https://your-cdn.com/bitbybit/
@@ -219,7 +220,7 @@ locateFile(path, scriptDirectory) {
 }
 ```
 
-If you build your own WASM, update `locateFile` in your worker to point to your binary.
+If you relink the kernel ([Runner Licensing](/learn/runners/licensing#using-a-modified-occt)), update `locateFile` in your worker to point to your binary (or keep the original file name).
 
 ### Building a Compatible Worker
 
@@ -232,8 +233,6 @@ Your custom worker must:
 5. **Post `{ uid, result }` or `{ uid, result: undefined, error }` responses** for each call
 6. **Handle shape references** (`{ type: "occ-shape", hash }`) in inputs and outputs
 7. **Implement the reserved functions** listed above
-
-The OpenCASCADE source code is available at [https://dev.opencascade.org/](https://dev.opencascade.org/).
 
 ## Worker Variants
 

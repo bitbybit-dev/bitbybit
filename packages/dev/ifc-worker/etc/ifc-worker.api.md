@@ -45,6 +45,10 @@ export class IFCBitByBit {
     //
     // (undocumented)
     readonly doors: IFCDoors;
+    // Warning: (ae-forgotten-export) The symbol "IFCElements" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly elements: IFCElements;
     // Warning: (ae-forgotten-export) The symbol "IFCGeometry" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

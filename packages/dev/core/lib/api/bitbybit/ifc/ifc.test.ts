@@ -138,7 +138,23 @@ describe("IFC geometry built with OpenCascade", () => {
             await ifc.geometry.toStep({ model, elements: ["floor"], groupByClass: false });
 
             // Assert
-            expect(recipe.mock.calls[0]![0]).toEqual({ model, elements: ["floor"], groupByClass: false });
+            expect(recipe.mock.calls[0]![0]).toEqual({ model, elements: ["floor"], groupByClass: false, propertySets: true });
+        });
+
+        it("should give each product its element's property set values, unless asked not to", async () => {
+            // Arrange
+            const withSet = await ifc.properties.addSet({ model, elements: ["floor"], name: "Pset_SlabCommon", properties: [{ name: "IsExternal", value: false }, { name: "Reference", value: "S-1" }] });
+            const document: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-entity" };
+            const buildDocument = vi.spyOn(occt.recipes, "buildDocument").mockResolvedValue(document);
+
+            // Act
+            await ifc.geometry.toDocument({ model: withSet, elements: ["floor"] });
+            await ifc.geometry.toDocument({ model: withSet, elements: ["floor"], propertySets: false });
+
+            // Assert
+            const [withValues, without] = buildDocument.mock.calls.map((call) => call[0].recipe.roots[0]!.tag);
+            expect(withValues).toMatchObject({ "Pset_SlabCommon.IsExternal": false, "Pset_SlabCommon.Reference": "S-1", type: "IfcSlab" });
+            expect(Object.keys(without!).some((key) => key.startsWith("Pset_"))).toBe(false);
         });
 
         it("should hand the kernel the document options as given or defaulted", async () => {
@@ -174,6 +190,19 @@ describe("IFC geometry built with OpenCascade", () => {
             expect(deleteDocument).toHaveBeenCalledTimes(1);
         });
 
+        it("should write an element's property set values into the STEP file as its product's properties", async () => {
+            // Arrange
+            const withSet = await ifc.properties.addSet({ model, elements: ["floor"], name: "Pset_SlabCommon", properties: [{ name: "Reference", value: "Slab S-1" }] });
+
+            // Act
+            const step = await ifc.geometry.toStep({ model: withSet, elements: ["floor"], name: "Room", fileName: "room.step" });
+            const text = new TextDecoder().decode(step);
+
+            // Assert
+            expect(text).toContain("'Pset_SlabCommon.Reference'");
+            expect(text).toContain("'Slab S-1'");
+        });
+
         it("should let go of the document when the export fails, and pass the failure on", async () => {
             // Arrange
             const deleteDocument = vi.spyOn(occt.assembly.manager, "deleteDocument");
@@ -186,6 +215,43 @@ describe("IFC geometry built with OpenCascade", () => {
             await expect(act).rejects.toThrow("disk full");
             expect(exportDocumentToStep.mock.calls[0]![0]).toEqual(expect.objectContaining({ fileName: "model.step", compress: true, tryDownload: true }));
             expect(deleteDocument).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe("elements.addShape", () => {
+        it("should add a cone and a hollow box as elements whose exact bodies build back to their volumes", async () => {
+            // Arrange
+            const cone = await occt.shapes.solid.createCone({ radius1: 400, radius2: 200, height: 900, angle: 360, center: [0, 0, 0], direction: [0, 0, 1] });
+            const outer = await occt.shapes.solid.createBox({ width: 800, length: 800, height: 800, center: [0, 0, 400] });
+            const inner = await occt.shapes.solid.createBox({ width: 400, length: 400, height: 400, center: [0, 0, 400] });
+            const hollow = await occt.booleans.difference({ shape: outer, shapes: [inner], keepEdges: false });
+
+            // Act
+            let added = await ifc.elements.addShape({ model, storey: "ground", shape: cone, id: "cone", type: "IfcFurniture", name: "Cone", position: [1500, 1500, 0] });
+            added = await ifc.elements.addShape({ model: added, storey: "ground", shape: hollow, id: "hollow", position: [4000, 2000, 200], rotation: 30 });
+            const [builtCone, builtHollow] = await ifc.geometry.toShapes({ model: added, elements: ["cone", "hollow"], adjustZtoY: false });
+            const coneCentre = await occt.shapes.solid.getSolidCenterOfMass({ shape: builtCone! });
+            const hollowCentre = await occt.shapes.solid.getSolidCenterOfMass({ shape: builtHollow! });
+
+            // Assert
+            expect(await volumeOf(builtCone!) / (Math.PI * 900 * (400 * 400 + 400 * 200 + 200 * 200) / 3)).toBeCloseTo(1, 5);
+            expect(await volumeOf(builtHollow!) / (800 ** 3 - 400 ** 3)).toBeCloseTo(1, 9);
+            expect(coneCentre.map((value) => Math.round(value))).toEqual([1500, 1500, Math.round(900 * (400 * 400 + 2 * 400 * 200 + 3 * 200 * 200) / (4 * (400 * 400 + 400 * 200 + 200 * 200)))]);
+            expect(hollowCentre.map((value) => Math.round(value * 1e6) / 1e6)).toEqual([4000, 2000, 600]);
+        });
+
+        it("should describe the shape in its own unit and keep to the surfaces IFC takes", async () => {
+            // Arrange
+            const describe = vi.spyOn(occt.recipes, "describe");
+            const cone = await occt.shapes.solid.createCone({ radius1: 0.4, radius2: 0.2, height: 0.9, angle: 360, center: [0, 0, 0], direction: [0, 0, 1] });
+
+            // Act
+            const added = await ifc.elements.addShape({ model, storey: "ground", shape: cone, millimetresPerUnit: 1000, id: "metres" });
+            const [built] = await ifc.geometry.toShapes({ model: added, elements: ["metres"], adjustZtoY: false });
+
+            // Assert
+            expect(describe.mock.calls[0]![0]).toEqual({ shape: cone, millimetresPerUnit: 1000, ifcSurfaces: true });
+            expect(await volumeOf(built!) / (Math.PI * 900 * (400 * 400 + 400 * 200 + 200 * 200) / 3)).toBeCloseTo(1, 5);
         });
     });
 });

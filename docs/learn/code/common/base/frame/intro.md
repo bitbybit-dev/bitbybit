@@ -31,6 +31,7 @@ Frames are how the rest of the API places things:
 - `bitbybit.occt.transforms.placeOnFrames` puts a copy of a shape on every frame of a list, and `orient` moves a shape from one frame to another. See [Transforms](../../occt/transforms/intro).
 - `bitbybit.occt.features.holes` and its counterbored and countersunk forms drill one hole at each frame: the origin is where the hole enters and the normal points out of the material. See [Features](../../occt/features/intro).
 - `bitbybit.occt.operations.sliceByFrames` cuts a solid with the plane of each frame. See [Sections and slices](../../occt/operations/sections-and-slices).
+- `bitbybit.occt.operations.cutByFrames` and `sectionByFrames` cut a list of shapes with the planes of frames, for section views, section boxes and corners cut away. See [Section views](../../occt/operations/sections-and-slices#section-views).
 - `bitbybit.occt.analysis.measure.boundingBoxInFrame` measures a shape in a frame of your own.
 
 A shape placed on a frame is moved so that its own X, Y and Z axes lie along the frame's direction, Y axis and normal. A cylinder built along Z therefore stands along each frame's normal.

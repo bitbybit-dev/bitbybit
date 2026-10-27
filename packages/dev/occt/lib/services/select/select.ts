@@ -1,3 +1,4 @@
+import type { MathBitByBit } from "@bitbybit-dev/base";
 import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTSelectFaces } from "./faces";
 import { OCCTSelectEdges } from "./edges";
@@ -16,8 +17,9 @@ export class OCCTSelect {
 
     constructor(
         occ: BitbybitOcctModule,
+        math: MathBitByBit,
     ) {
-        this.faces = new OCCTSelectFaces(occ);
-        this.edges = new OCCTSelectEdges(occ);
+        this.faces = new OCCTSelectFaces(occ, math);
+        this.edges = new OCCTSelectEdges(occ, math);
     }
 }

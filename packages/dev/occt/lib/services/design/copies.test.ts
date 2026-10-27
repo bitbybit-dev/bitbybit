@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 
@@ -26,7 +23,7 @@ describe("references to copies", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const coloured = (copy: Models.OCCT.DesignFaceReference["copy"]): number => occt.design.build({ document: grid(copy) }).parts[0]!.appearance!.faces[0]!.indexes.length;

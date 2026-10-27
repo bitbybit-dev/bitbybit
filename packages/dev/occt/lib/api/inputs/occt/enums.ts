@@ -344,3 +344,12 @@ export enum designRebindEnum {
     never = "never",
     report = "report",
 }
+/**
+ * What cutting with several frames keeps: `behindAll` what lies behind every plane, such as the
+ * inside of a box of six frames; `behindAny` what lies behind any of them, so only what lies in
+ * front of every plane is taken away, such as a corner cut away by two frames.
+ */
+export enum sectionKeepEnum {
+    behindAll = "behindAll",
+    behindAny = "behindAny",
+}

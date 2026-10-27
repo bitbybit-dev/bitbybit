@@ -178,6 +178,7 @@ export class MockEntity {
     _rotation = new MockQuat();
     _localScale = new MockVec3(1, 1, 1);
     localPosition?: MockVec3;
+    private readonly onDestroy: (() => void)[] = [];
     
     constructor(name?: string) {
         if (name) {
@@ -231,7 +232,13 @@ export class MockEntity {
     lookAt(_target: MockVec3) { }
     findByName() { return null; }
     findOne() { return null; }
+    once(event: string, callback: () => void) {
+        if (event === "destroy") {
+            this.onDestroy.push(callback);
+        }
+    }
     destroy() { 
+        this.onDestroy.splice(0).forEach(callback => callback());
         this.children.forEach(child => {
             child.parent = null;
         });

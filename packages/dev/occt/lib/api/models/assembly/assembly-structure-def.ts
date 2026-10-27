@@ -43,9 +43,9 @@ export interface AssemblyStructureDef<T> {
      */
     loadedParts?: AssemblyLoadedPartDef[] | undefined;
     /**
-     * The length unit the shapes' numbers are in, which the STEP export writes into the file. Left
-     * out, a new document states none and the STEP export takes millimetres; an existing document
-     * keeps its own.
+     * The length unit the shapes' numbers are in. The STEP export writes its file in millimetres and
+     * scales the numbers from this unit, so a part keeps its size. Left out, a new document states
+     * none and the numbers are taken as millimetres; an existing document keeps its own.
      */
     lengthUnit?: "mm" | "cm" | "m" | "in" | undefined;
     /**

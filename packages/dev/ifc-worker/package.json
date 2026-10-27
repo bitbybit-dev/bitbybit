@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/ifc-worker",
-    "version": "1.5.0",
+    "version": "1.6.0-rc.0",
     "description": "Bit By Bit Developers IFC library to write, read and author BIM models via WebWorker",
     "homepage": "https://docs.bitbybit.dev/classes/Bit.IFC",
     "main": "index.js",
@@ -16,7 +16,6 @@
         "IFC",
         "BIM",
         "Industry Foundation Classes",
-        "buildingSMART",
         "IFC4",
         "WebWorker",
         "AEC",
@@ -90,15 +89,15 @@
     },
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/base": "1.5.0",
-        "@bitbybit-dev/ifc": "1.5.0",
+        "@bitbybit-dev/base": "1.6.0-rc.0",
+        "@bitbybit-dev/ifc": "1.6.0-rc.0",
         "rxjs": "7.8.2"
     },
     "devDependencies": {
         "@microsoft/api-extractor": "7.59.1",
-        "@vitest/coverage-v8": "4.1.11",
+        "@vitest/coverage-v8": "4.1.12",
         "shx": "0.4.0",
         "typescript": "5.9.3",
-        "vitest": "4.1.11"
+        "vitest": "4.1.12"
     }
 }

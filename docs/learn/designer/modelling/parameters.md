@@ -5,7 +5,7 @@ sidebar_label: Parameters
 description: Name the sizes that matter in a Designer part or assembly, write other numbers as expressions of them, drag a slider to see the model follow, and keep sets of values as configurations.
 topic: designer.modelling.parameters
 type: how-to
-verified: 2026-10-09
+verified: 2026-10-15
 tags: [designer]
 ---
 
@@ -34,6 +34,12 @@ The picture shows the desk arm link's `length`, which its sketches and its end h
 
 Type a new value, or drag the slider, and the part rebuilds as you go: every feature that reads the parameter, and everything built after it. Here the link's `length` went from 160 to 220, and its outline, its slot and the hole at its end followed. <Ui>Undo</Ui> puts the old value back.
 
+## Play a parameter
+
+<Ui>Play</Ui>, at the top of a parameter's panel, runs it between its least and its most value, four seconds each way, starting from where it stands, so everything that reads it moves: a crank turns, a slide slides, a jaw opens and closes. An angle in degrees whose range covers a whole turn or more keeps turning the same way instead. <Ui>Stop</Ui> shows the model as it stands again.
+
+Playing changes nothing in the document and saves nothing. It needs a min and a max, like the slider. In an assembly, a joint whose angle or distance reads the parameter, by its name or through an expression such as `crank / 2`, moves at once; a feature that reads it rebuilds as fast as the build allows. Agents run it as `view.playParameter` and `view.stopPlaying`, and visitors who open a shared design can play it too.
+
 ## Writing expressions
 
 An expression is arithmetic over the parameters' names:
@@ -42,6 +48,7 @@ An expression is arithmetic over the parameters' names:
 - `min`, `max`, `abs`, `sqrt`, `round`, `floor` and `ceil`;
 - `sin`, `cos` and `tan`, with angles in degrees, and `asin`, `acos`, `atan` and `atan2`, which give degrees;
 - comparisons and `if(condition, then, otherwise)`, such as `if(length > 200, 3, 2)`;
+- `fraction(value, denominator)`, which writes a number as inch sizes are written, rounded to a `1/denominator`: `fraction(1.25, 64)` is `1-1/4`. It gives text, for a part number or a name, such as `"Pin {fraction(length, 64)}"`;
 - `pi`, `tau` and `e`.
 
 A field shows the expression as you wrote it. A name that is not a parameter is reported in the <Ui>Problems</Ui> tab with the field it is in.

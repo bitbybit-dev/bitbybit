@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as pc from "playcanvas";
 import { Tag } from "@bitbybit-dev/core";
-import { GeometryHelper, MathBitByBit, Vector, srgbToLinear } from "@bitbybit-dev/base";
+import { GeometryHelper, MathBitByBit, Vector } from "@bitbybit-dev/base";
+import { srgbToLinear } from "@bitbybit-dev/base/lib/api/services/helpers/color/color-space";
 import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
@@ -82,7 +83,7 @@ describe("drawing the meshes of a recipe in PlayCanvas", () => {
         expect([glassMaterial.opacityVertexColor, glassMaterial.blendType]).toEqual([true, pc.BLEND_NORMAL]);
         expect(Array.from(opaque!.getLocalPosition().toArray())).toEqual([5, 0.5, 0.5]);
         const colors: number[] = [];
-        meshInstanceOf(opaque!).mesh.getColors(colors);
+        meshInstanceOf(opaque!).mesh!.getColors(colors);
         expect(colors.slice(0, 4).map((value) => Math.round(value * 255))).toEqual([255, 0, 0, 255]);
     });
 
@@ -104,7 +105,7 @@ describe("drawing the meshes of a recipe in PlayCanvas", () => {
     it("should hide an element by collapsing its triangles, and show it again as it was", async () => {
         // Arrange
         const root = await draw.drawAnyAsync({ entity: MESHES });
-        const mesh = meshInstanceOf(batchesOf(root)[0]!).mesh;
+        const mesh = meshInstanceOf(batchesOf(root)[0]!).mesh!;
         const planned: number[] = [];
         mesh.getIndices(planned);
 
@@ -126,7 +127,7 @@ describe("drawing the meshes of a recipe in PlayCanvas", () => {
     it("should color an element's vertices in linear light, and give them their own colors back", async () => {
         // Arrange
         const root = await draw.drawAnyAsync({ entity: MESHES });
-        const mesh = meshInstanceOf(batchesOf(root)[0]!).mesh;
+        const mesh = meshInstanceOf(batchesOf(root)[0]!).mesh!;
         const colorsNow = (): number[] => {
             const colors: number[] = [];
             mesh.getColors(colors);

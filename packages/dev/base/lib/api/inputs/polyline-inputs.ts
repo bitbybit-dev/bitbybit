@@ -287,4 +287,172 @@ export namespace Polyline {
          */
         tolerance?: number | undefined = 1e-5;
     }
+    /**
+     * A flat outline for `polyline.signedArea2d`, `polyline.perimeter2d` and the other 2D polygon
+     * methods: its points in order, the last joining back to the first.
+     */
+    export class Polygon2Dto {
+        constructor(points?: Base.Point2[]) {
+            if (points !== undefined) { this.points = points; }
+        }
+        /**
+         * The outline's corners in order; the last joins back to the first.
+         * @default undefined
+         */
+        points!: Base.Point2[];
+    }
+    /**
+     * A flat outline and a point for `polyline.isPointInside2d`.
+     */
+    export class PointInPolygon2Dto {
+        constructor(points?: Base.Point2[], point?: Base.Point2) {
+            if (points !== undefined) { this.points = points; }
+            if (point !== undefined) { this.point = point; }
+        }
+        /**
+         * The outline's corners in order; the last joins back to the first.
+         * @default undefined
+         */
+        points!: Base.Point2[];
+        /**
+         * The point to test.
+         * @default undefined
+         */
+        point!: Base.Point2;
+    }
+    /**
+     * A flat outline and the way `polyline.orient2d` should make it run.
+     */
+    export class OrientPolygon2Dto {
+        constructor(points?: Base.Point2[], counterClockwise?: boolean) {
+            if (points !== undefined) { this.points = points; }
+            if (counterClockwise !== undefined) { this.counterClockwise = counterClockwise; }
+        }
+        /**
+         * The outline's corners in order; the last joins back to the first.
+         * @default undefined
+         */
+        points!: Base.Point2[];
+        /**
+         * When true the outline is made to run counter-clockwise, when false clockwise.
+         * @default true
+         */
+        counterClockwise?: boolean | undefined = true;
+    }
+    /**
+     * A flat outline and the arcs `polyline.roundCorners2d` rounds its corners with.
+     */
+    export class RoundPolygon2Dto {
+        constructor(points?: Base.Point2[], radius?: number, radiusList?: number[], segments?: number) {
+            if (points !== undefined) { this.points = points; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (radiusList !== undefined) { this.radiusList = radiusList; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
+        /**
+         * The outline's corners in order; the last joins back to the first.
+         * @default undefined
+         */
+        points!: Base.Point2[];
+        /**
+         * The radius every corner is rounded with; 0 leaves corners sharp.
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius?: number | undefined = 1;
+        /**
+         * A radius per corner, in the order of `points`, used instead of `radius` when given.
+         * @default undefined
+         * @optional true
+         */
+        radiusList?: number[] | undefined;
+        /**
+         * How many straight pieces draw a quarter turn of arc; a smaller turn takes fewer.
+         * @default 8
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        segments?: number | undefined = 8;
+    }
+    /**
+     * A path and, optionally, the directions it starts and ends in, for `polyline.tangents`.
+     */
+    export class PolylineTangentsDto {
+        constructor(polyline?: PolylinePropertiesDto, startTangent?: Base.Vector3, endTangent?: Base.Vector3) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+            if (startTangent !== undefined) { this.startTangent = startTangent; }
+            if (endTangent !== undefined) { this.endTangent = endTangent; }
+        }
+        /**
+         * The path, an open polyline of at least two points; one with `isClosed` set is refused.
+         * @default undefined
+         */
+        polyline!: PolylinePropertiesDto;
+        /**
+         * The direction at the first point; left out, the first segment's.
+         * @default undefined
+         * @optional true
+         */
+        startTangent?: Base.Vector3 | undefined;
+        /**
+         * The direction at the last point; left out, the last segment's.
+         * @default undefined
+         * @optional true
+         */
+        endTangent?: Base.Vector3 | undefined;
+    }
+    /**
+     * A path and the direction a profile's X axis starts in, for `polyline.sweepFrames` and
+     * `polyline.sweepPlacements`.
+     */
+    export class PolylineSweepDto {
+        constructor(polyline?: PolylinePropertiesDto, firstDirection?: Base.Vector3) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+            if (firstDirection !== undefined) { this.firstDirection = firstDirection; }
+        }
+        /**
+         * The path, an open polyline of at least two points; one with `isClosed` set is refused.
+         * @default undefined
+         */
+        polyline!: PolylinePropertiesDto;
+        /**
+         * Roughly where the profile's X axis points at the start; it is turned square to the path.
+         * @default [1, 0, 0]
+         */
+        firstDirection?: Base.Vector3 | undefined = [1, 0, 0];
+    }
+    /**
+     * A path and the arcs `polyline.roundCorners` rounds its corners with.
+     */
+    export class RoundPolylineDto {
+        constructor(polyline?: PolylinePropertiesDto, radius?: number, segments?: number) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
+        /**
+         * The path, an open polyline of at least two points; one with `isClosed` set is refused.
+         * @default undefined
+         */
+        polyline!: PolylinePropertiesDto;
+        /**
+         * The radius each corner is rounded with; it shrinks where the segments beside it are short.
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius?: number | undefined = 1;
+        /**
+         * How many straight pieces draw a quarter turn of arc; a smaller turn takes fewer.
+         * @default 8
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        segments?: number | undefined = 8;
+    }
 }

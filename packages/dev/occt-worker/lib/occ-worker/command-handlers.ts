@@ -1,15 +1,33 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import type { CacheHelper } from "./cache-helper";
 import type { MeshRetention } from "./constants";
-import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES } from "./constants";
+import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES, isShapeReference } from "./constants";
 import type { ShapeResolver } from "./shape-resolver";
-import type { OCCTService } from "@bitbybit-dev/occt";
+import { Inputs, releaseDesignCaches } from "@bitbybit-dev/occt";
+import type { OccHelper, OCCTService, TopoDS_Shape } from "@bitbybit-dev/occt";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
+import { meshBuffersOf } from "./mesh-transfer";
 
 const meshRetentionOf = (kernel: BitbybitOcctModule): MeshRetention => ({
     budget: kernel.MeshRetentionBudget(),
     faces: kernel.KeptMeshFaces(),
     triangles: kernel.KeptMeshTriangles(),
 });
+
+/**
+ * What the worker may pass with an answer: the buffers it hands over with the message rather than
+ * copying them.
+ */
+export interface ReplyOptions {
+    transfer?: ArrayBuffer[];
+}
+
+/**
+ * How the worker answers the thread that called it: the message and, for an answer that hands
+ * buffers over, its options. A worker's own `postMessage` takes both, typed as a worker's or as a
+ * window's.
+ */
+export type PostMessage = (message: unknown, options?: ReplyOptions) => void;
 
 /**
  * CommandResult represents the outcome of a command handler.
@@ -19,6 +37,8 @@ export interface CommandResult {
     handled: boolean;
     /** The result to return to the caller (if handled is true) */
     result?: unknown;
+    /** The buffers the result's typed arrays view, handed to the caller rather than copied; nothing else may hold them */
+    transfer?: ArrayBuffer[];
 }
 
 /**
@@ -27,6 +47,8 @@ export interface CommandResult {
 export interface CommandContext {
     /** The OpenCascade service instance */
     openCascade: OCCTService;
+    /** The meshing the service runs on, for the drawing layouts the service does not offer */
+    meshing: OccHelper["meshingService"];
     /** The kernel module the service runs on, for the switches that live on the kernel itself */
     kernel: BitbybitOcctModule;
     /** Sets the kernel's mesh retention budget, kept by the worker for a kernel that replaces a crashed one */
@@ -73,12 +95,34 @@ export const CommandHandlers: Record<string, CommandHandler> = {
     [ReservedFunctions.SHAPES_TO_MESHES]: (inputs, context): CommandResult => {
         const shapesInput = inputs["shapes"] as unknown[];
         if (!shapesInput || !Array.isArray(shapesInput) || shapesInput.length === 0) {
-            throw new Error("No shapes detected");
+            throw new InputError("`shapes` is not a list of at least one shape, so there is nothing to mesh.", "shapes");
         }
         const resolvedInputs = context.shapeResolver.resolveShapeReferences(inputs);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = context.openCascade.shapesToMeshes(resolvedInputs as any);
         return { handled: true, result };
+    },
+
+    /**
+     * Meshes one shape for drawing: typed arrays, their buffers handed to the caller rather than copied.
+     */
+    [ReservedFunctions.SHAPE_TO_MESH_BUFFERS]: (inputs, context): CommandResult => {
+        const resolvedInputs = resolveDto<Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>>(Inputs.OCCT.ShapeToMeshDto, context.shapeResolver.resolveShapeReferences(inputs));
+        const result = context.meshing.shapeToMeshBuffers(resolvedInputs);
+        return { handled: true, result, transfer: meshBuffersOf([result]) };
+    },
+
+    /**
+     * Meshes several shapes for drawing, as `shapeToMeshBuffers` does one.
+     */
+    [ReservedFunctions.SHAPES_TO_MESH_BUFFERS]: (inputs, context): CommandResult => {
+        const shapesInput = inputs["shapes"] as unknown[];
+        if (!shapesInput || !Array.isArray(shapesInput) || shapesInput.length === 0) {
+            throw new InputError("`shapes` is not a list of at least one shape, so there is nothing to mesh.", "shapes");
+        }
+        const resolvedInputs = resolveDto<Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>>(Inputs.OCCT.ShapesToMeshesDto, context.shapeResolver.resolveShapeReferences(inputs));
+        const result = context.meshing.shapesToMeshBuffers(resolvedInputs);
+        return { handled: true, result, transfer: meshBuffersOf(result) };
     },
 
     /**
@@ -122,6 +166,33 @@ export const CommandHandlers: Record<string, CommandHandler> = {
     },
 
     /**
+     * Deletes each shape given whose `answers`, the answers the caller counted carrying it, are every
+     * answer that has carried a shape under its key in this epoch, so no other caller was handed it:
+     * the cache answers an identical call with the same shape. Any other shape stays. Only an `epoch`
+     * that is still the cache's deletes anything, since emptying the cache began a new one and what a
+     * key holds since is another caller's; without one, nothing is deleted. Answers `{ epoch }`, the
+     * cache's epoch now.
+     */
+    [ReservedFunctions.DELETE_UNSHARED_SHAPES]: (inputs, context): CommandResult => {
+        const shapesInput = inputs["shapes"];
+        const epoch = inputs["epoch"];
+        if (!Array.isArray(shapesInput)) {
+            throw new InputError("`shapes` is not a list of shapes, each with the answers that carried it.", "shapes");
+        }
+        if (epoch !== undefined && typeof epoch !== "number") {
+            throw new InputError("`epoch` is not a number: it is the epoch an earlier answer of deleteUnsharedShapes named.", "epoch");
+        }
+        if (epoch === context.cacheHelper.epoch) {
+            shapesInput.forEach((shape: unknown) => {
+                if (isShapeReference(shape) && "answers" in shape && context.cacheHelper.answersOf(shape.hash) === shape.answers) {
+                    context.cacheHelper.cleanCacheForHash(String(shape.hash));
+                }
+            });
+        }
+        return { handled: true, result: { epoch: context.cacheHelper.epoch } };
+    },
+
+    /**
      * Handles assembly document deletion from cache. A document handle lives in the same cache
      * as shapes; releasing it here frees the OCCT object and forgets the reference, exactly as
      * shape deletion does. Previously this was dispatched to a kernel method that does not exist.
@@ -140,6 +211,7 @@ export const CommandHandlers: Record<string, CommandHandler> = {
         if (Object.keys(context.cacheHelper.usedHashes).length > CACHE_THRESHOLD) {
             context.kernel.ReleaseKeptMeshes();
             context.cacheHelper.cleanAllCache();
+            releaseDesignCaches(context.openCascade);
         }
         return { handled: true, result: {} };
     },
@@ -150,6 +222,7 @@ export const CommandHandlers: Record<string, CommandHandler> = {
     [ReservedFunctions.CLEAN_ALL_CACHE]: (_inputs, context): CommandResult => {
         context.kernel.ReleaseKeptMeshes();
         context.cacheHelper.cleanAllCache();
+        releaseDesignCaches(context.openCascade);
         return { handled: true, result: {} };
     },
 

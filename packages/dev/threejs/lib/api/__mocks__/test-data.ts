@@ -1,4 +1,5 @@
 import type * as Inputs from "../inputs";
+import { meshBuffersOf } from "./mesh-buffers";
 
 export function createSurfaceMock() {
     return {
@@ -54,6 +55,12 @@ export function mockOCCTBoxDecomposedMesh(): Inputs.OCCT.DecomposedMeshDto {
         ],
         "pointsList": [[-0.5, -1, 1.5], [-0.5, -1, -1.5], [-0.5, 1, 1.5], [-0.5, -1, 1.5], [-0.5, 1, 1.5], [-0.5, 1, -1.5], [-0.5, 1, -1.5], [-0.5, -1, -1.5], [0.5, -1, 1.5], [0.5, -1, -1.5], [0.5, 1, 1.5], [0.5, -1, 1.5], [0.5, 1, 1.5], [0.5, 1, -1.5], [0.5, 1, -1.5], [0.5, -1, -1.5], [0.5, -1, -1.5], [-0.5, -1, -1.5], [0.5, -1, 1.5], [0.5, -1, -1.5], [0.5, -1, 1.5], [-0.5, -1, 1.5], [-0.5, -1, 1.5], [-0.5, -1, -1.5], [0.5, 1, -1.5], [-0.5, 1, -1.5], [0.5, 1, 1.5], [0.5, 1, -1.5], [0.5, 1, 1.5], [-0.5, 1, 1.5], [-0.5, 1, 1.5], [-0.5, 1, -1.5], [-0.5, 1, -1.5], [-0.5, -1, -1.5], [0.5, 1, -1.5], [-0.5, 1, -1.5], [0.5, 1, -1.5], [0.5, -1, -1.5], [0.5, -1, -1.5], [-0.5, -1, -1.5], [-0.5, 1, 1.5], [-0.5, -1, 1.5], [0.5, 1, 1.5], [-0.5, 1, 1.5], [0.5, 1, 1.5], [0.5, -1, 1.5], [0.5, -1, 1.5], [-0.5, -1, 1.5]]
     };
+}
+
+export function mockOCCTBoxMeshBuffers(): Inputs.OCCT.DecomposedMeshBuffersDto {
+    const lists = mockOCCTBoxDecomposedMesh();
+    lists.faceList[5]!.uvs = [];
+    return meshBuffersOf(lists);
 }
 
 export function mockJSCADBoxDecomposedMesh() {

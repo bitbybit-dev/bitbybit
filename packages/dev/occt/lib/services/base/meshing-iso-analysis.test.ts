@@ -2,9 +2,6 @@ import { describe, it, expect, beforeAll, vi, afterEach } from "vitest";
 import type { BitbybitOcctModule, MeshBuffers, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 
@@ -19,7 +16,7 @@ describe("MeshingService iso curves and surface analysis", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        service = new OCCTService(occt, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt));
+        service = new OCCTService(occt);
     });
 
     afterEach(() => {

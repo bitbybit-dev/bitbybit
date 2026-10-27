@@ -1,6 +1,8 @@
 import { messageOf } from "@bitbybit-dev/base";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
+import { unitOfDocument } from "./helpers";
 import type { DesignOutcome } from "./cache";
 import { hashText, stableJson } from "./cache";
 import type { RebindEntry } from "./hints";
@@ -8,10 +10,14 @@ import type { DesignPlan, DesignRun, DesignRunContext, DesignTrace, HollowState,
 import { bodyKey, isBodyKey, isSketchKey, nameInKey, sketchKey } from "./state";
 import { importPlan, localPlan } from "./local-features";
 import { scriptPlan, suppliedOutcome } from "./scripts";
-import { bodyPlan, operationPlan, sketchPlan, sweepPlan } from "./steps";
-import { DesignPending, DesignProblem, isKernelTrap, pointer, tagTrap } from "./problems";
+import { operationPlan } from "./operation-steps";
+import { machiningPlan } from "./machining-features";
+import { bodyPlan, sketchPlan, sweepPlan } from "./steps";
+import { cleanedUpOnError, DesignPending, DesignProblem, isKernelTrap, pointer, tagTrap } from "./problems";
 import { readKernelException } from "../../kernel-exception";
 import { buildParts } from "./parts";
+import { releasePending } from "./release-build";
+import { release } from "../base/release";
 import type { ParameterChoice } from "./values";
 import { parameterValues, parametersIn, truthOf } from "./values";
 
@@ -68,6 +74,13 @@ function planOf(feature: Feature, path: string, run: DesignRun): DesignPlan {
         case "boss":
         case "pocket":
             return localPlan(feature, path, run);
+        case "keyway":
+        case "flat":
+        case "ringGroove":
+        case "knurl":
+        case "spline":
+        case "thread":
+            return machiningPlan(feature, path, run);
         case "import":
             return importPlan(feature, path, run);
         case "operation":
@@ -93,7 +106,8 @@ function readsOf(feature: Feature, plan: DesignPlan, run: DesignRun): Set<string
 
 function hashOf(feature: Feature, plan: DesignPlan, run: DesignRun): string {
     const inputs = plan.reads.map(key => stateOf(key, run).hash);
-    return hashText([stableJson(feature), parametersUsed(feature, run.parameters), plan.salt ?? "", `rebind:${run.rebinding.mode}`, ...inputs].join("\n"));
+    const unit = run.unit === Inputs.Base.unitOfLengthEnum.millimetre ? [] : [`unit:${run.unit}`];
+    return hashText([stableJson(feature), parametersUsed(feature, run.parameters), plan.salt ?? "", `rebind:${run.rebinding.mode}`, ...unit, ...inputs].join("\n"));
 }
 
 function reportMessageOf(error: unknown): string {
@@ -315,6 +329,7 @@ function newRun(document: Models.OCCT.DesignPartDocument, choice: ParameterChoic
     const derived = new Map<string, readonly string[]>();
     return {
         ...context,
+        unit: unitOfDocument(document),
         parameters: parameterValues(document.parameters, document.configurations, choice, derived),
         derived,
         bodies: new Map(),
@@ -326,6 +341,7 @@ function newRun(document: Models.OCCT.DesignPartDocument, choice: ParameterChoic
         declaredAssets: document.assets ?? [],
         order: [],
         used: context.used ?? new Set(),
+        digests: context.digests ?? new Map(),
         trace,
         rebinding: { mode: context.rebind ?? "never", entries: [], hints: context.hints },
         supplied: new Map((context.outcomes ?? []).map(outcome => [outcome.hash, outcome])),
@@ -344,13 +360,21 @@ export function framingOf(document: Pick<Models.OCCT.DesignPartDocument, "units"
  * owns.
  */
 export function runDesign(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext): Models.OCCT.DesignBuildResult<TopoDS_Shape> {
+    return runDesignWaiting(document, choice, context)[0];
+}
+
+/**
+ * Builds a checked document as `runDesign` does, and names the bodies it could not make because they
+ * wait for an outcome the caller has still to make, such as a script's.
+ */
+export function runDesignWaiting(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext): readonly [Models.OCCT.DesignBuildResult<TopoDS_Shape>, ReadonlySet<string>] {
     const { run, report } = runFeatures(document, choice, context);
     if (context.used === undefined) {
         run.cache.trim(run.used);
     }
     const issues: Models.OCCT.DesignIssue[] = [];
     const before = run.rebinding.entries.length;
-    const parts = buildParts(document, run, issues);
+    const parts = cleanedUpOnError(() => buildParts(document, run, issues), () => releasePending(run.pending));
     run.rebinding.entries.slice(before).forEach(entry => issues.push({
         path: entry.path,
         message: entry.kind === "rebound"
@@ -358,7 +382,12 @@ export function runDesign(document: Models.OCCT.DesignPartDocument, choice: Para
             : `faces ${entry.faces.join(", ")} are the most like its hint (score ${entry.score}); ${entry.clear === true ? "a build with rebind \"report\" takes them" : "they do not stand clear of the others, so no build takes them"}`,
     }));
     const parameters = Object.fromEntries([...run.parameters].filter(([name]) => name !== "configuration"));
-    return {
+    const sketches = context.sketches === true ? cleanedUpOnError(() => builtSketches(document, run), () => {
+        releasePending(run.pending);
+        parts.forEach(part => release(part.shape));
+    }) : undefined;
+    const waiting = new Set([...run.failed].filter(([key, reason]) => reason === "pending" && isBodyKey(key)).map(([key]) => nameInKey(key)));
+    return [{
         parts,
         report,
         issues,
@@ -366,19 +395,20 @@ export function runDesign(document: Models.OCCT.DesignPartDocument, choice: Para
         parameters,
         ...framingOf(document),
         ...(run.pending.length === 0 ? {} : { pending: run.pending }),
-        ...(context.sketches === true ? { sketches: builtSketches(document, run) } : {}),
-    };
+        ...(sketches === undefined ? {} : { sketches }),
+    }, waiting];
 }
 
 function builtSketches(document: Models.OCCT.DesignPartDocument, run: DesignRun): Models.OCCT.DesignBuiltSketch<TopoDS_Shape>[] {
-    return document.features.flatMap(feature => {
-        const state = feature.type === "sketch" ? run.sketches.get(feature.id) : undefined;
-        return state === undefined || feature.type !== "sketch" ? [] : [{
-            id: feature.id,
-            shape: state.shape.clone(),
-            face: run.occ.CountSubShapes(state.shape, run.occ.TopAbs_ShapeEnum.FACE, false) > 0,
-            frame: state.frame,
-            commands: state.commands.map(command => command ?? null),
-        }];
-    });
+    const built: Models.OCCT.DesignBuiltSketch<TopoDS_Shape>[] = [];
+    return cleanedUpOnError(() => {
+        document.features.forEach(feature => {
+            const state = feature.type === "sketch" ? run.sketches.get(feature.id) : undefined;
+            if (state !== undefined) {
+                const face = run.occ.CountSubShapes(state.shape, run.occ.TopAbs_ShapeEnum.FACE, false) > 0;
+                built.push({ id: feature.id, shape: state.shape.clone(), face, frame: state.frame, commands: state.commands.map(command => command ?? null) });
+            }
+        });
+        return built;
+    }, () => built.forEach(sketch => release(sketch.shape)));
 }

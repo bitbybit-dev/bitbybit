@@ -125,6 +125,11 @@ export class ModelSnapshot extends EntityLookup implements IfcModel {
         return ids.sort(ascending).map((id) => this.entity(id));
     }
 
+    hasType(type: string): boolean {
+        const indexes = this.overlayIndexes();
+        return this.schema.subtypesOf(type).some((name) => (indexes.idsOfType(name)?.size ?? 0) > 0 || (this.source?.idsOfType(name) ?? NO_IDS).some((id) => !this.overlay.has(id)));
+    }
+
     globalIdOwners(globalId: string): number[] {
         const owners = [...(this.overlayIndexes().ownersOfGlobalId(globalId) ?? NO_IDS)];
         for (const id of this.source?.ownersOfGlobalId(globalId) ?? NO_IDS) {

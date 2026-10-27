@@ -2,7 +2,7 @@
 sidebar_position: 16
 title: Our Vision
 sidebar_label: Our Vision
-description: Why Bitbybit exists, our open-core philosophy, and how commercial products sustain the open-source foundation.
+description: Why Bitbybit exists, our open-core philosophy, and how commercial products sustain the free, MIT-licensed foundation.
 topic: platform.about.vision
 type: explanation
 verified: 2026-10-11
@@ -23,13 +23,13 @@ Bitbybit exists to make geometry programming accessible on the open web. We prov
 
 ## The Open-Core Model
 
-We are transparent about how this works. Our business follows an **open-core model**: the foundational geometry engine is free and open-source, while managed services and specialized applications generate the revenue that funds development.
+We are transparent about how this works. Our business follows an **open-core model**: the foundational geometry packages are free and MIT-licensed, while managed services and specialized applications generate the revenue that funds development.
 
 ### What is free and open
 
-The core NPM packages - wrapping OpenCASCADE, JSCAD, Manifold, and our base utilities - are MIT-licensed and always will be. You can install them, inspect the source, modify them, and ship them in commercial products. (Third-party dependencies like OpenCASCADE retain their own licenses, such as LGPL.) The three coding editors are free to use. Runners are free to deploy under the [Bitbybit Runner License](./runners/licensing).
+The core NPM packages - wrapping OpenCASCADE, JSCAD, Manifold, and our base utilities - are MIT-licensed and always will be. You can install them, inspect their TypeScript source, modify them, and ship them in commercial products. (Third-party dependencies like OpenCASCADE retain their own licenses, such as LGPL, and the Bitbybit OCCT Kernel the packages ship is MIT-licensed but closed source: its C++ layer is not published.) The three coding editors are free to use. Runners are free to deploy under the [Bitbybit Runner License](./runners/licensing).
 
-This is not a trial or a freemium teaser. The open-source core is production-grade software that powers real applications.
+This is not a trial or a freemium teaser. The free core is production-grade software that powers real applications.
 
 ### What is commercial
 
@@ -37,12 +37,12 @@ Revenue comes from:
 
 1. **CAD Cloud API** - Managed server infrastructure for heavy geometry processing. Customers pay based on usage.
 2. **3D Bits for Shopify** - A subscription-based app that brings 3D configurators to e-commerce storefronts, including the no-code [Composer](/learn/3d-bits/composer/intro) for building configurators visually.
-3. **The Silver and Gold plans of bitbybit.dev** - Cloud space, the platform algorithms (`bitbybit.advanced` and `bitbybit.things`) that go beyond the open-source core, and, with Gold, the [Designer](/learn/designer/intro). [Plans](/learn/plans) lists what each includes.
+3. **The Silver and Gold plans of bitbybit.dev** - Cloud space, the platform algorithms (`bitbybit.advanced` and `bitbybit.things`) that go beyond the free core, and, with Gold, the [Designer](/learn/designer/intro). [Plans](/learn/plans) lists what each includes.
 4. **Enterprise services** - Custom development, dedicated infrastructure, and bespoke CAD solutions built in close collaboration with B2B clients.
 
 ### Why this matters
 
-Commercial revenue directly funds the open-source core. Every subscription, API call, and enterprise contract makes the free tools better for everyone. When a manufacturing company pays for a custom CAD solution, that investment flows back into improving the core of bitbybit that any developer can use for free.
+Commercial revenue directly funds the free core. Every subscription, API call, and enterprise contract makes the free tools better for everyone. When a manufacturing company pays for a custom CAD solution, that investment flows back into improving the core of bitbybit that any developer can use for free.
 
 This creates a virtuous cycle: developers and designers start with the free tools, build their skills, and as their needs grow - more compute, more automation, more support - they move to paid products. Meanwhile, the free tier keeps getting stronger.
 
@@ -64,6 +64,6 @@ These audiences are not in tension. The open tools create a pipeline of skilled 
 
 ## Our Commitment
 
-We don't aim to reinvent the web. We leverage its best standards - open-source packages on NPM, WebAssembly for performance, standard rendering engines for display. We meet developers where they already are.
+We don't aim to reinvent the web. We leverage its best standards - MIT-licensed packages on NPM, WebAssembly for performance, standard rendering engines for display. We meet developers where they already are.
 
 We are building the infrastructure for the next generation of 3D on the web. Whether you are here to learn, to build, or to scale - welcome.

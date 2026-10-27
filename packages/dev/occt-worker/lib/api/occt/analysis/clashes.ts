@@ -19,8 +19,8 @@ export class OCCTAnalysisClashes {
      * other, such as colliding parts.
      *
      * A clash names the two by their positions in the list, from 0, with their distance, 0 where they
-     * touch, overlap or nest, and the volume two solids share.
-     * @param inputs - The shapes and the clearance
+     * touch, overlap or nest, and the volume two solids share. Meshes rule out pairs first.
+     * @param inputs - The shapes, the clearance and whether meshes rule pairs out first
      * @returns The clashing pairs, in list order
      * @group clashes
      * @shortname clashes between shapes

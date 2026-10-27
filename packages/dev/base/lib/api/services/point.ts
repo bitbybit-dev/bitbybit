@@ -5,7 +5,8 @@ import type { Vector } from "./vector";
 import type * as Models from "../models";
 import type { Lists } from "./lists";
 import { InputError, resolveDto } from "../kernel-calls";
-import { arcThroughThreePoints, pointsOnArc } from "./helpers/arcs";
+import { arcThroughThreePoints, pointsOnArc } from "./helpers/geometry/arcs";
+import { add3, length3, scale3, subtract3 } from "./helpers/geometry/vectors";
 import type * as Resolved from "../resolved-inputs";
 
 /**
@@ -264,11 +265,7 @@ export class Point {
 
         const min = [Math.min(...xVals), Math.min(...yVals), Math.min(...zVals)] as Inputs.Base.Point3;
         const max = [Math.max(...xVals), Math.max(...yVals), Math.max(...zVals)] as Inputs.Base.Point3;
-        const center = [
-            (min[0] + max[0]) / 2,
-            (min[1] + max[1]) / 2,
-            (min[2] + max[2]) / 2,
-        ] as Inputs.Base.Point3;
+        const center = scale3(add3(min, max), 1 / 2);
         const width = max[0] - min[0];
         const height = max[1] - min[1];
         const length = max[2] - min[2];
@@ -351,10 +348,7 @@ export class Point {
      * ```
      */
     distance(inputs: Inputs.Point.StartEndPointsDto): number {
-        const x = inputs.endPoint[0] - inputs.startPoint[0];
-        const y = inputs.endPoint[1] - inputs.startPoint[1];
-        const z = inputs.endPoint[2] - inputs.startPoint[2];
-        return Math.sqrt(x * x + y * y + z * z);
+        return length3(subtract3(inputs.endPoint, inputs.startPoint));
     }
 
     /**

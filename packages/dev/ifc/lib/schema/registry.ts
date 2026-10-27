@@ -7,7 +7,7 @@ const TABLES = new Map([[IFC4_SCHEMA.name, IFC4_SCHEMA], [IFC4X3_ADD2_SCHEMA.nam
 
 const READ_THROUGH = new Map([["IFC2X3", IFC4_SCHEMA.name], ["IFC4X3", IFC4X3_ADD2_SCHEMA.name]]);
 
-const EDITABLE = new Set([IFC4_SCHEMA.name]);
+const EDITABLE = new Set([IFC4_SCHEMA.name, IFC4X3_ADD2_SCHEMA.name]);
 
 export const SUPPORTED_SCHEMAS: readonly string[] = [...TABLES.keys()];
 

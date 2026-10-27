@@ -16,13 +16,13 @@ function described(memo: WeakMap<ModelSnapshot, DescribedModel>, inputs: Resolve
     if (elements !== undefined && !Array.isArray(elements)) {
         throw new TypeError("Expected the elements as a list of GlobalIds or ids");
     }
-    const key = JSON.stringify([elements ?? null, inputs.groupByClass]);
+    const key = JSON.stringify([elements ?? null, inputs.groupByClass, inputs.propertySets]);
     const last = memo.get(model);
     if (last?.key === key) {
         return last.described;
     }
     const globalIds = inputs.elements?.map((element) => selectedGlobalId(model, element));
-    const result = modelRecipe(model, globalIds, millimetresPerUnit(model), lengthTolerance(model), inputs.groupByClass);
+    const result = modelRecipe(model, globalIds, millimetresPerUnit(model), lengthTolerance(model), inputs.groupByClass, inputs.propertySets);
     memo.set(model, { key, described: result });
     return result;
 }
@@ -89,6 +89,6 @@ export class IFCGeometry {
      * ```
      */
     unsupported(inputs: Inputs.IFC.GeometryElementsDto<IfcModel>): Inputs.IFC.GeometryProblemDto[] {
-        return described(this.lastDescribed, { ...inputs, groupByClass: true }).problems;
+        return described(this.lastDescribed, { ...inputs, groupByClass: true, propertySets: false }).problems;
     }
 }

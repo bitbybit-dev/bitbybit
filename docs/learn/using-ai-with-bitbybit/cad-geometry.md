@@ -41,10 +41,10 @@ The methods have the same paths and the same inputs everywhere. What differs is 
 
   ```typescript
   import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
-  import { OCCTService, OccHelper, ShapesHelperService, VectorHelperService } from "@bitbybit-dev/occt";
+  import { OCCTService } from "@bitbybit-dev/occt";
 
   const occ = await initOpenCascade({ print: () => undefined });
-  const occt = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+  const occt = new OCCTService(occ);
   const box = occt.shapes.solid.createBox({ width: 80, length: 50, height: 8 });
   ```
 
@@ -56,11 +56,11 @@ A few members differ between the two. Only the worker has `occt.deleteShape`, `o
 
 `describe` shows the worker form, `createBox(inputs: Inputs.OCCT.BoxDto): Promise<Inputs.OCCT.TopoDSSolidPointer>`; in Node the same method returns the shape itself. A method's answer also names the types it returns, such as `Models.OCCT.SolidDebugInfo` for `occt.shapes.solid.debugInfo`; `describe` with that name lists their fields.
 
-## How the OCCT kernel thinks
+## How the Bitbybit OCCT Kernel thinks
 
 - **Y is up.** The ground is the XZ plane. A box's `height` runs along Y, a cylinder grows along its `direction`, `[0, 1, 0]` unless given, and a rectangle or circle wire lies flat on the ground unless its `direction`, the normal of its plane, says otherwise. Manifold and JSCAD build along Z instead: their cylinders stand on the XY plane.
 - **Shapes nest.** A vertex is a point, an edge a curve between vertices, a wire a chain of edges, a face a surface bounded by wires, a shell faces joined at their edges, a solid the volume a closed shell bounds, and a compound a group of shapes kept apart. Each method says which kinds it takes and gives: `operations.extrude` turns a face into a solid, but a wire only into a shell.
-- **Units are plain numbers.** STEP files are written in millimetres, so model in millimetres when the part goes to another CAD tool. Angles are degrees, and tolerances are in the model's units.
+- **Units are plain numbers.** Model in whichever unit the part is drawn in; angles are degrees, and tolerances are in the model's units. A file says its unit only when told it: give `io.saveShapeSTEP` the `unit` the part is modelled in (`Bit.Inputs.Base.unitOfLengthEnum.inch`, say) and it is written at its true size, in millimetres; `io.loadSTEPorIGES` takes the `unit` to bring a file in at, and `io.fileLengthUnit` tells the unit a STEP or IGES file states.
 - **Right-handed.** OpenCascade is right-handed, as three.js and PlayCanvas are. A Babylon.js scene is left-handed, and shows every part mirrored, unless `scene.useRightHandedSystem` is set when it is created.
 - **Colours** are hex strings such as `"#ff8000"`, or arrays of three numbers from 0 to 1.
 
@@ -124,7 +124,7 @@ The result is a valid solid of 18 faces, 80 by 28 by 50 mm, of about 36,556 mm³
 ```typescript
 import { writeFileSync } from "node:fs";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
-import { OCCTService, OccHelper, ShapesHelperService, VectorHelperService } from "@bitbybit-dev/occt";
+import { OCCTService } from "@bitbybit-dev/occt";
 import { buildBracket } from "./bracket.ts";
 
 type Occt = Parameters<typeof buildBracket>[0];
@@ -139,7 +139,7 @@ function asKernelShape(shape: object): KernelShape {
 }
 
 const occ = await initOpenCascade({ print: () => undefined });
-const service = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+const service = new OCCTService(occ);
 const bracket = asKernelShape(await buildBracket(asWorkerApi(service)));
 const upright = service.transforms.rotate({ shape: bracket, axis: [1, 0, 0], angle: 90 });
 writeFileSync("bracket.step", service.io.saveShapeSTEP({ shape: upright, fileName: "bracket.step" }));
@@ -164,7 +164,7 @@ Each check is one call. Run them after any step that may have gone wrong:
 ## Drawing and exporting a part
 
 - **Drawing.** In the browser and in the editors, `draw.drawAnyAsync({ entity: shape, options })` draws any shape, mesh or point list; for OpenCascade shapes `options` is an `Inputs.Draw.DrawOcctShapeOptions`, with `faceColour`, `edgeColour`, `edgeWidth` and `precision`, the meshing tolerance. Draw the finished part rather than every step.
-- **STEP**, the exact format other CAD tools open: `io.saveShapeSTEPAndReturn` through the worker, `io.saveShapeSTEP` on the in-process service in Node, both giving the file's text in millimetres. Most CAD tools are Z-up: turn the part first with `transforms.rotate({ shape, axis: [1, 0, 0], angle: 90 })`, which takes Y up to Z and keeps the part as it was built. The `adjustYtoZ` option swaps Y and Z instead, which mirrors the part: it matches what a left-handed Babylon.js scene shows.
+- **STEP**, the exact format other CAD tools open: `io.saveShapeSTEPAndReturn` through the worker, `io.saveShapeSTEP` on the in-process service in Node, both giving the file's text in millimetres, the shape scaled from the `unit` it is modelled in when one is given. Most CAD tools are Z-up: turn the part first with `transforms.rotate({ shape, axis: [1, 0, 0], angle: 90 })`, which takes Y up to Z and keeps the part as it was built. The `adjustYtoZ` option swaps Y and Z instead, which mirrors the part: it matches what a left-handed Babylon.js scene shows.
 - **STL** for printing: `io.saveShapeStlAndReturn` through the worker, `io.saveShapeStl` in Node, with `precision` as the meshing tolerance and `binary` for the smaller form. Turn the part as for STEP.
 - **Drawings and assemblies.** `io.shapeToDxfPaths` and `io.dxfCreate` write a DXF of flat geometry, and the documents of `occt.assembly.manager` hold several parts with names, colours and placements, written to one STEP file with `occt.assembly.manager.exportDocumentToStep`.
 

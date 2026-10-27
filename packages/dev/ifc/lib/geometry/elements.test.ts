@@ -108,19 +108,23 @@ describe("modelRecipe", () => {
         expect(problems).toEqual([]);
     });
 
-    it("should take the model context's precision as the recipe's tolerance, and the fallback without one", () => {
+    it("should take the model context's precision as the recipe's tolerance, and the fallback without one, held between 0.01 and 1 millimetre", () => {
         // Arrange
         const withPrecision = withContext([]);
         const without = modelOfRows([]);
 
         // Act
         const precise = modelRecipe(modelOf(withPrecision), undefined, 1000, 0.5).recipe;
-        const fallback = modelRecipe(modelOf(without), undefined, 1000, 0.5).recipe;
+        const coarse = modelRecipe(modelOf(without), undefined, 1000, 0.5).recipe;
+        const fine = modelRecipe(modelOf(without), undefined, 1000, 1e-9).recipe;
+        const inMillimetres = modelRecipe(modelOf(without), undefined, 1, 0.2).recipe;
 
         // Assert
         expect(precise.tolerance).toBe(0.001);
         expect(precise.millimetresPerUnit).toBe(1000);
-        expect(fallback.tolerance).toBe(0.5);
+        expect(coarse.tolerance).toBe(0.001);
+        expect(fine.tolerance).toBe(0.00001);
+        expect(inMillimetres.tolerance).toBe(0.2);
     });
 
     it("should colour an element by its material's surface style, transparency turned into alpha", () => {

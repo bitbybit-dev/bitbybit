@@ -7,12 +7,14 @@ import { PRUNABLE_TYPES } from "./constants";
 import { EntityLookup } from "./entity-lookup";
 import { automaticGlobalId, keyGlobalId, randomGlobalId, structureGlobalId } from "./guid";
 import type { IfcAttributes } from "./model-types";
+import { stampOwnerHistories } from "./owner-history";
 import { checkReferences } from "./references";
 import { ModelSnapshot } from "./snapshot";
 
 const ascending = (a: number, b: number): number => a - b;
 const STYLED_ITEM = "IfcStyledItem";
 const LAYER_ASSIGNMENT = "IfcPresentationLayerAssignment";
+const SHAPE_ASPECT = "IfcShapeAspect";
 
 export class IfcTransaction extends EntityLookup {
     readonly base: ModelSnapshot;
@@ -28,9 +30,7 @@ export class IfcTransaction extends EntityLookup {
     constructor(base: ModelSnapshot, keySeed: string = base.keySeed) {
         super();
         if (!base.editable) {
-            throw new Error(base.schemaName === base.schema.name
-                ? `This ${base.schemaName} model can be shown and queried but not changed; changes are made to IFC4 models`
-                : `This ${base.schemaName} file is read through the ${base.schema.name} schema, so it can be shown and queried but not changed`);
+            throw new Error(`This ${base.schemaName} file is read through the ${base.schema.name} schema, so it can be shown and queried but not changed`);
         }
         this.base = base;
         this.nextId = base.nextId;
@@ -150,8 +150,10 @@ export class IfcTransaction extends EntityLookup {
 
     commit(): ModelSnapshot {
         this.assertOpen();
-        this.committed = true;
         this.pruneUnused();
+        const kept = [...this.changes.keys()].filter((id) => this.changes.get(id) !== null).sort(ascending);
+        stampOwnerHistories(this, kept.filter((id) => id >= this.base.nextId), kept.filter((id) => id < this.base.nextId));
+        this.committed = true;
         const overlay = this.base.overlay.withChanges([...this.changes].map(([id, entity]) => [id, entity === null && !this.base.source?.has(id) ? undefined : entity] as const));
         const next = new ModelSnapshot({ ...this.base.parts, overlay, nextId: this.nextId });
         const inherited = this.base.releaseIndexes();
@@ -238,7 +240,7 @@ export class IfcTransaction extends EntityLookup {
             if (!users.every((user) => this.onlyPresents(user, id, removed))) {
                 continue;
             }
-            users.forEach((user) => this.letGo(user, id, removed));
+            users.forEach((user) => work.push(...this.letGo(user, id, removed)));
             removed.add(id);
             this.record(id, null);
             work.push(...entity.args.flatMap((arg) => referencesIn(arg)));
@@ -250,19 +252,25 @@ export class IfcTransaction extends EntityLookup {
         if (!entity) {
             return false;
         }
-        if (this.schema.isSubtypeOf(entity.type, STYLED_ITEM)) {
-            const item = this.attribute(user, "Item");
-            return isReference(item) && item.ref === id && this.referencesTo(user).every((other) => removed.has(other));
+        const part = this.schema.isSubtypeOf(entity.type, STYLED_ITEM) ? "Item" : this.schema.isSubtypeOf(entity.type, SHAPE_ASPECT) ? "PartOfProductDefinitionShape" : undefined;
+        if (part !== undefined) {
+            const whole = this.attribute(user, part);
+            return isReference(whole) && whole.ref === id && this.referencesTo(user).every((other) => removed.has(other));
         }
         return this.schema.isSubtypeOf(entity.type, LAYER_ASSIGNMENT);
     }
 
-    private letGo(user: number, id: number, removed: Set<number>): void {
+    private letGo(user: number, id: number, removed: Set<number>): number[] {
         const entity = this.get(user)!;
         if (this.schema.isSubtypeOf(entity.type, STYLED_ITEM)) {
             removed.add(user);
             this.record(user, null);
-            return;
+            return [];
+        }
+        if (this.schema.isSubtypeOf(entity.type, SHAPE_ASPECT)) {
+            removed.add(user);
+            this.record(user, null);
+            return entity.args.flatMap((arg) => referencesIn(arg));
         }
         const position = this.schema.entity(entity.type).positions.get("AssignedItems")!;
         const assigned = entity.args[position];
@@ -270,8 +278,9 @@ export class IfcTransaction extends EntityLookup {
         if (!kept.length) {
             removed.add(user);
             this.record(user, null);
-            return;
+            return [];
         }
         this.record(user, { ...entity, args: entity.args.map((arg, index) => (index === position ? kept : arg)) });
+        return [];
     }
 }

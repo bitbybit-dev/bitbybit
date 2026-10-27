@@ -599,6 +599,64 @@ describe("IfcTransaction.dropIfUnused", () => {
         expect(overlayIds(pruned)).toEqual([1, 2, context]);
     });
 
+    it("should take a product shape's shape aspects with it, and the representations only they held", () => {
+        // Arrange
+        const { model, context, shape, placement, wall } = extrudedWall();
+        const tx = new IfcTransaction(model, SEED);
+        const profile = tx.create("IfcRectangleProfileDef", { ProfileType: "AREA", XDim: 1, YDim: 0.2 });
+        const solid = tx.create("IfcExtrudedAreaSolid", { SweptArea: ref(profile), ExtrudedDirection: ref(5), Depth: 3 });
+        const part = tx.create("IfcShapeRepresentation", { ContextOfItems: ref(context), RepresentationIdentifier: "Body", RepresentationType: "SweptSolid", Items: [ref(solid)] });
+        tx.create("IfcShapeAspect", { ShapeRepresentations: [ref(part)], Name: "Leaf", ProductDefinitional: enumValue("U"), PartOfProductDefinitionShape: ref(shape) });
+        const withAspect = tx.commit();
+        const pruning = new IfcTransaction(withAspect, SEED);
+
+        // Act
+        pruning.delete(wall);
+        pruning.dropIfUnused([shape, placement]);
+        const pruned = pruning.commit();
+
+        // Assert
+        expect(pruned.ids()).toEqual([1, 2, context]);
+    });
+
+    it("should keep a product shape whose shape aspect a door panel's properties refer to", () => {
+        // Arrange
+        const { model, context, shape, wall } = extrudedWall();
+        const tx = new IfcTransaction(model, SEED);
+        const solid = tx.create("IfcExtrudedAreaSolid", { SweptArea: ref(4), ExtrudedDirection: ref(5), Depth: 1 });
+        const part = tx.create("IfcShapeRepresentation", { ContextOfItems: ref(context), RepresentationIdentifier: "Body", RepresentationType: "SweptSolid", Items: [ref(solid)] });
+        const aspect = tx.create("IfcShapeAspect", { ShapeRepresentations: [ref(part)], ProductDefinitional: false, PartOfProductDefinitionShape: ref(shape) });
+        tx.create("IfcDoorPanelProperties", { GlobalId: tx.globalId("panel"), PanelOperation: enumValue("NOTDEFINED"), PanelPosition: enumValue("NOTDEFINED"), ShapeAspectStyle: ref(aspect) });
+        const withAspects = tx.commit();
+        const pruning = new IfcTransaction(withAspects, SEED);
+
+        // Act
+        pruning.delete(wall);
+        pruning.dropIfUnused([shape]);
+        const pruned = pruning.commit();
+
+        // Assert
+        expect([pruned.has(shape), pruned.has(aspect), pruned.has(part)]).toEqual([true, true, true]);
+    });
+
+    it("should keep a representation a shape aspect lists while the shape the aspect is part of stays", () => {
+        // Arrange
+        const { model, context, shape } = extrudedWall();
+        const tx = new IfcTransaction(model, SEED);
+        const solid = tx.create("IfcExtrudedAreaSolid", { SweptArea: ref(4), ExtrudedDirection: ref(5), Depth: 1 });
+        const part = tx.create("IfcShapeRepresentation", { ContextOfItems: ref(context), RepresentationIdentifier: "Body", RepresentationType: "SweptSolid", Items: [ref(solid)] });
+        const aspect = tx.create("IfcShapeAspect", { ShapeRepresentations: [ref(part)], ProductDefinitional: false, PartOfProductDefinitionShape: ref(shape) });
+        const withAspect = tx.commit();
+        const pruning = new IfcTransaction(withAspect, SEED);
+
+        // Act
+        pruning.dropIfUnused([part]);
+        const pruned = pruning.commit();
+
+        // Assert
+        expect([pruned.has(part), pruned.has(aspect), pruned.has(shape)]).toEqual([true, true, true]);
+    });
+
     it("should leave what it is not asked to drop", () => {
         // Arrange
         const { model, placement, wall } = extrudedWall();

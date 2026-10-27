@@ -126,6 +126,9 @@ export class BooleansService {
             if (alerts.includes("BitbybitBool_AlertFaceWithoutSurface")) {
                 throw occtFailure("occt.boolean.tessellated");
             }
+            if (alerts.includes("BitbybitBool_AlertInconsistentResult")) {
+                throw occtFailure("occt.boolean.inconsistent");
+            }
             throw alerts.includes("BOPAlgo_AlertBOPNotAllowed") ? occtFailure("occt.boolean.mixedDimensions") : occtFailure("occt.boolean.failed");
         }
         return result.shape;

@@ -127,6 +127,30 @@ describe("CurveSampler and what sweeps read from curves", () => {
         expect(spans).toEqual([expect.closeTo(0.5, 12), 3, 2, undefined, undefined]);
     });
 
+    it("should measure the length of a polyline, a trimmed line by its vector's magnitude and a trimmed circle, and of no curve it cannot measure exactly", () => {
+        // Arrange
+        const sampler = samplerOf([
+            ...UNIT_CIRCLE_ROWS,
+            "#23=IFCTRIMMEDCURVE(#22,(IFCPARAMETERVALUE(1.)),(IFCPARAMETERVALUE(0.5)),.F.,.PARAMETER.);",
+            "#24=IFCCARTESIANPOINT((0.,0.));",
+            "#25=IFCDIRECTION((1.,0.));",
+            "#26=IFCVECTOR(#25,2.);",
+            "#27=IFCLINE(#24,#26);",
+            "#28=IFCTRIMMEDCURVE(#27,(IFCPARAMETERVALUE(2.)),(IFCPARAMETERVALUE(5.)),.T.,.PARAMETER.);",
+            "#29=IFCCARTESIANPOINT((3.,4.));",
+            "#30=IFCPOLYLINE((#24,#29,#24));",
+            "#31=IFCTRIMMEDCURVE(#22,(#24),(#29),.T.,.CARTESIAN.);",
+            "#32=IFCELLIPSE(#21,2.,1.);",
+            "#33=IFCTRIMMEDCURVE(#32,(IFCPARAMETERVALUE(0.)),(IFCPARAMETERVALUE(1.)),.T.,.PARAMETER.);",
+        ]);
+
+        // Act
+        const lengths = [23, 28, 30, 22, 31, 33].map((curve) => sampler.lengthSpan(curve));
+
+        // Assert
+        expect(lengths).toEqual([expect.closeTo(0.5, 12), 6, 10, undefined, undefined, undefined]);
+    });
+
     it("should outline a B-spline curve through its domain, and refuse one whose knots do not fit its points", () => {
         // Arrange
         const sampler = samplerOf([

@@ -1,6 +1,6 @@
 # {{PROJECT_NAME}}
 
-A finger-jointed box generator for laser cutting, built on the open-source [Bitbybit](https://bitbybit.dev) CAD packages and Three.js. Set the outer dimensions, the sheet thickness, your laser's kerf and the finger width, toggle the lid (it gets a finger-hole handle when it has room), and download the cutting layout as DXF or SVG or the assembled box as STEP. Everything runs in the browser; no account, key or server is involved.
+A finger-jointed box generator for laser cutting, built on the free [Bitbybit](https://bitbybit.dev) CAD packages and Three.js. Set the outer dimensions, the sheet thickness, your laser's kerf and the finger width, toggle the lid (it gets a finger-hole handle when it has room), and download the cutting layout as DXF or SVG or the assembled box as STEP. Everything runs in the browser; no account, key or server is involved.
 
 ```bash
 npm install

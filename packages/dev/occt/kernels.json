@@ -2,24 +2,24 @@
     "kernels": [
         {
             "dir": "bitbybit-dev-occt",
-            "file": "bitbybit-dev-occt.ca35ee3e.wasm",
-            "bytes": 31368705,
-            "sha256": "558104795c0d60c2b227fa7411e644f961ff727fbca1ce83916fa9d2ddcd5ea3",
-            "url": "https://github.com/bitbybit-dev/bitbybit-assets/releases/download/kernel-bitbybit-dev-occt.ca35ee3e/bitbybit-dev-occt.ca35ee3e.wasm"
+            "file": "bitbybit-dev-occt.1717d008.wasm",
+            "bytes": 31618479,
+            "sha256": "3800b98ce03b087d2c2c8d41c2837468da1c4048ed150047669ed669e1071c60",
+            "url": "https://github.com/bitbybit-dev/bitbybit-assets/releases/download/kernel-bitbybit-dev-occt.1717d008/bitbybit-dev-occt.1717d008.wasm"
         },
         {
             "dir": "bitbybit-dev-occt-64-bit",
-            "file": "bitbybit-dev-occt-64-bit.c95276fc.wasm",
-            "bytes": 32808841,
-            "sha256": "f9fe8699a5dd02601e34791d64442be41a52e8326af542fad509ff443450a68c",
-            "url": "https://github.com/bitbybit-dev/bitbybit-assets/releases/download/kernel-bitbybit-dev-occt-64-bit.c95276fc/bitbybit-dev-occt-64-bit.c95276fc.wasm"
+            "file": "bitbybit-dev-occt-64-bit.276fe5a6.wasm",
+            "bytes": 33087225,
+            "sha256": "c7e3e5c806b02cc8f18bf5c4d315d2f6afc781cd01b6e6c4ea6443b79f58dd18",
+            "url": "https://github.com/bitbybit-dev/bitbybit-assets/releases/download/kernel-bitbybit-dev-occt-64-bit.276fe5a6/bitbybit-dev-occt-64-bit.276fe5a6.wasm"
         },
         {
             "dir": "bitbybit-dev-occt-64-bit-mt",
-            "file": "bitbybit-dev-occt-64-bit-mt.a10ebcd2.wasm",
-            "bytes": 31655354,
-            "sha256": "e8b614be19c6bc3e4ec7bb7ab6b93d99282a962f80c7276d0e4ee00ef2341897",
-            "url": "https://github.com/bitbybit-dev/bitbybit-assets/releases/download/kernel-bitbybit-dev-occt-64-bit-mt.a10ebcd2/bitbybit-dev-occt-64-bit-mt.a10ebcd2.wasm"
+            "file": "bitbybit-dev-occt-64-bit-mt.785e3b34.wasm",
+            "bytes": 31938064,
+            "sha256": "e79855f80e56cb96358dc9f332a2dad1fa0fdc671e7f5000815fdadc361952ec",
+            "url": "https://github.com/bitbybit-dev/bitbybit-assets/releases/download/kernel-bitbybit-dev-occt-64-bit-mt.785e3b34/bitbybit-dev-occt-64-bit-mt.785e3b34.wasm"
         }
     ]
 }

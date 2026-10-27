@@ -2,7 +2,7 @@ import { createRequire } from "node:module";
 import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
-import { OCCTService, OccHelper, VectorHelperService, ShapesHelperService } from "@bitbybit-dev/occt";
+import { OCCTService } from "@bitbybit-dev/occt";
 import { billOfMaterials, buildDocument, expectedPlacements, Z_UP } from "../src/assembly.ts";
 import type { Occt, Shape } from "../src/kernel.ts";
 import { buildModel, defaultParams, layout, maxPropDiameter, type ArmCount, type DroneParams } from "../src/model.ts";
@@ -28,10 +28,10 @@ function asShape(loaded: object): Shape {
 const require = createRequire(import.meta.url);
 const kernelDir = dirname(require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/index.js"));
 const wasmFile = readdirSync(kernelDir).find((file) => file.endsWith(".wasm"));
-if (!wasmFile) throw new Error(`no OCCT kernel (.wasm) found in ${kernelDir}`);
+if (!wasmFile) throw new Error(`no Bitbybit OCCT Kernel (.wasm) found in ${kernelDir}`);
 const kernelOptions = { locateFile: (file: string): string => (file.endsWith(".wasm") ? join(kernelDir, wasmFile) : file), print: (): void => undefined };
 const occ = await initOpenCascade(kernelOptions);
-const service = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
+const service = new OCCTService(occ);
 const occt = inProcess(service);
 
 const LOGO_URL = "https://git-cdn.bitbybit.dev/latest/assets/logo/logo-faces.stp";

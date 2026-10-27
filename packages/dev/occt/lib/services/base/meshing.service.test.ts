@@ -1,11 +1,10 @@
 import { describe, it, expect, beforeAll, vi, afterEach } from "vitest";
 import type { BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import type * as Inputs from "../../api/inputs";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
+import * as Inputs from "../../api/inputs";
 import { OCCTService } from "../../occ-service";
+import { OccHelper } from "../../occ-helper";
+import { meshBuffersFromLists } from "./mesh-arrays";
 
 describe("MeshingService.shapeToMesh", () => {
     let occt: BitbybitOcctModule;
@@ -14,7 +13,7 @@ describe("MeshingService.shapeToMesh", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        service = new OCCTService(occt, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt));
+        service = new OCCTService(occt);
     });
 
     afterEach(() => {
@@ -325,7 +324,7 @@ describe("MeshingService documents", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        service = new OCCTService(occt, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt));
+        service = new OCCTService(occt);
     });
 
     afterEach(() => {
@@ -489,5 +488,121 @@ describe("MeshingService documents", () => {
         // Assert
         expect(each).toHaveBeenCalledTimes(1);
         expect(meshes).toHaveLength(occt.DocumentFreeShapeCount(document.get()));
+    });
+});
+
+describe("MeshingService edges and buffers", () => {
+    let occt: BitbybitOcctModule;
+    let occHelper: OccHelper;
+    let service: OCCTService;
+
+    beforeAll(async () => {
+        occt = await createBitbybitOcct();
+        occHelper = new OccHelper(occt);
+        service = new OCCTService(occt, occHelper);
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    const cylinder = (): TopoDS_Shape => service.shapes.solid.createCylinder({ radius: 0.4, height: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+    const distanceFromAxis = (point: Inputs.Base.Point3): number => occHelper.base.point.distance({ startPoint: point, endPoint: [0, point[1], 0] });
+
+    it("traces a circle as finely as its faces are meshed, not one point per hundredth of a turn", () => {
+        // Act
+        const mesh = service.shapeToMesh({ shape: cylinder(), precision: 0.01 });
+
+        // Assert
+        const circles = mesh.edgeList.filter(edge => edge.vertexCoord.length > 2);
+        expect(circles).toHaveLength(2);
+        for (const circle of circles) {
+            expect(circle.vertexCoord.length).toBeGreaterThanOrEqual(10);
+            expect(circle.vertexCoord.length).toBeLessThanOrEqual(30);
+            expect(circle.vertexCoord.every(point => Math.abs(distanceFromAxis(point) - 0.4) < 1e-9)).toBe(true);
+        }
+    });
+
+    it("traces a finer circle where the precision is finer", () => {
+        // Act
+        const coarse = service.shapeToMesh({ shape: cylinder(), precision: 0.01 });
+        const fine = service.shapeToMesh({ shape: cylinder(), precision: 0.0005 });
+
+        // Assert
+        const longest = (mesh: Inputs.OCCT.DecomposedMeshDto): number => Math.max(...mesh.edgeList.map(edge => edge.vertexCoord.length));
+        expect(longest(fine)).toBeGreaterThan(longest(coarse) * 3);
+        expect(longest(fine)).toBeLessThan(200);
+    });
+
+    it("gives the numbers shapeToMesh gives as single-precision views of shared buffers, without the points again", () => {
+        // Arrange
+        const shape = cylinder();
+        const lists = service.shapeToMesh({ shape, precision: 0.01, surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.gaussian });
+
+        // Act
+        const buffers = occHelper.meshingService.shapeToMeshBuffers({ shape, precision: 0.01, surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.gaussian });
+
+        // Assert
+        expect(buffers.faceList).toHaveLength(lists.faceList.length);
+        buffers.faceList.forEach((face, at) => {
+            const listed = lists.faceList[at]!;
+            expect(face).not.toHaveProperty("vertexCoordVec");
+            expect(face.faceIndex).toBe(listed.faceIndex);
+            expect(face.centerPoint).toEqual(listed.centerPoint);
+            expect(Array.from(face.vertexCoord)).toEqual(listed.vertexCoord.map(Math.fround));
+            expect(Array.from(face.normalCoord)).toEqual(listed.normalCoord.map(Math.fround));
+            expect(Array.from(face.uvs)).toEqual(listed.uvs.map(Math.fround));
+            expect(Array.from(face.triIndexes)).toEqual(listed.triIndexes);
+            expect(Array.from(face.analysisValues!)).toEqual(listed.analysisValues!.map(Math.fround));
+        });
+        expect(new Set(buffers.faceList.map(face => face.vertexCoord.buffer)).size).toBe(1);
+        expect(new Set(buffers.faceList.map(face => face.triIndexes.buffer)).size).toBe(1);
+        expect(buffers.edgeList).toEqual(lists.edgeList);
+    });
+
+    it("draws the iso curves it is asked for, and nothing for an empty shape", () => {
+        // Act
+        const curved = occHelper.meshingService.shapeToMeshBuffers({ shape: cylinder(), precision: 0.01, isoCurvesU: 2, isoCurvesV: 2 });
+        const empty = occHelper.meshingService.shapeToMeshBuffers({ shape: new occt.TopoDS_Shape(), precision: 0.01 });
+
+        // Assert
+        expect(curved.isoCurveList!.length).toBeGreaterThan(0);
+        expect(empty).toEqual({ faceList: [], edgeList: [], pointsList: [] });
+    });
+
+    it("meshes a list of shapes with the defaults the call leaves out", () => {
+        // Act
+        const meshes = occHelper.meshingService.shapesToMeshBuffers({ shapes: [cylinder(), service.shapes.solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] })] });
+
+        // Assert
+        expect(meshes.map(mesh => mesh.faceList.length)).toEqual([3, 6]);
+        expect(meshes[0]!.faceList[0]!.vertexCoord.buffer).not.toBe(meshes[1]!.faceList[0]!.vertexCoord.buffer);
+    });
+
+    it("turns the kernel's JSON into buffers when the kernel cannot give them", () => {
+        // Arrange
+        const shape = cylinder();
+        const lists = service.shapeToMesh({ shape, precision: 0.01 });
+        const invalid: Pick<MeshBuffers, "IsValid" | "delete"> = { IsValid: false, delete: () => undefined };
+        vi.spyOn(occt, "ShapeToMeshBuffers").mockImplementation(() => invalid as MeshBuffers);
+
+        // Act
+        const buffers = occHelper.meshingService.shapeToMeshBuffers({ shape, precision: 0.01 });
+
+        // Assert
+        buffers.faceList.forEach((face, at) => {
+            expect(face.vertexCoord).toBeInstanceOf(Float32Array);
+            expect(Array.from(face.triIndexes)).toEqual(lists.faceList[at]!.triIndexes);
+        });
+        expect(new Set(buffers.faceList.map(face => face.normalCoord.buffer)).size).toBe(1);
+    });
+
+    it("refuses an answer that is not a mesh rather than drawing half of it", () => {
+        // Act
+        const answer: unknown = { error: "the kernel failed" };
+        const refusal = (): unknown => meshBuffersFromLists(answer as Inputs.OCCT.DecomposedMeshDto);
+
+        // Assert
+        expect(refusal).toThrow("the kernel did not answer with a mesh of faces and edges");
     });
 });

@@ -22,7 +22,9 @@ The numbers match the picture, which shows the robot arm from [the showcases](./
 5. **The view cube.** Click a face, an edge or a corner to look from there.
 6. **The <Ui>Properties</Ui> panel.** What you selected: a feature, a parameter, a part with its material and mass, a component or a joint.
 7. **The dock.** <Ui>Problems</Ui> lists what a build could not do and <Ui>History</Ui> the changes of this session. An assembly adds <Ui>Bill of materials</Ui> and <Ui>Clashes</Ui>, and <Ui>Review</Ui> appears when an agent has changed something.
-8. **The status bar.** What the pointer is over, whether a click picks faces, edges or both (keys <kbd>1</kbd>, <kbd>2</kbd> and <kbd>3</kbd>), the progress of a long build, and whether an agent is working.
+8. **The status bar.** What the pointer is over, whether a click picks faces, edges or both (keys <kbd>1</kbd>, <kbd>2</kbd> and <kbd>3</kbd>), whether the model is building, drawing or built, and whether an agent is working.
+
+A build that takes more than a moment shows a card at the top of the view: the document it builds, what it is doing now (checking it, loading its files, making its features one by one with the one being made named, then drawing its parts) and how long it has taken.
 
 Each panel can dock on either side or float: use its placement buttons, or drag it by its grip. Drag the edges between panels to resize them. The Designer remembers the layout in this browser.
 

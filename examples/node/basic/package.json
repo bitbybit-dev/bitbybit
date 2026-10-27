@@ -1,6 +1,6 @@
 {
   "name": "basic",
-  "version": "1.5.0",
+  "version": "1.6.0-rc.0",
   "description": "Example of how to use @bitbybit-dev/occt within node",
   "main": "index.js",
   "scripts": {
@@ -15,9 +15,10 @@
     "node": ">=20.19.4"
   },
   "dependencies": {
-    "@bitbybit-dev/occt": "1.5.0"
+    "@bitbybit-dev/occt": "1.6.0-rc.0"
   },
   "devDependencies": {
+    "@types/node": "^20.19.0",
     "extensionless": "1.9.9",
     "concurrently": "^7.6.0",
     "nodemon": "^3.1.14",

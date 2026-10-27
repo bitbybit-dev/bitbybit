@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
 import { describe, expect, it } from "vitest";
-import { signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
+import { signedArea2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
 import { modelOf } from "../api/services/service-support";
 import { CONTEXT_ROWS, withContext } from "../__test__/geometry-fixtures";
 import { readModel } from "../model/io";

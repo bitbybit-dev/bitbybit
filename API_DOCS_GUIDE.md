@@ -131,6 +131,9 @@ export class FilletDto<T> {
   "each shape" rather than "the shape". A pair whose shared properties mean different things (a
   fillet's `indexes`, counted from 0 on edges, from 1 on corners) stays two classes, and
   `pair-parity` holds such pairs to one type, default and bounds per shared property.
+- The editors label an enum's options by member key. An enum whose values are the names people
+  know (sizes and designations such as `"M8"`, `"1/4"`, `"608"`) carries `@optionLabels value` in
+  its own JSDoc, and the editors show the value instead; what is stored is the value either way.
 
 ## An API class
 

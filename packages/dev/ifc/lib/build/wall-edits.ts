@@ -1,15 +1,15 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, composeAxes, pointToWorld, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { length2, length3, subtract2, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { WORLD_AXES, composeAxes, pointToWorld, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { length2, length3, subtract2, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type { IfcTransaction } from "../model/transaction";
 import { isReference, ref } from "../step/values";
 import type { Frame3, WallChange, WallGeometry, WallOpeningPlace } from "./build-types";
 import { MATERIAL_ASSOCIATION, TYPE_DEFINITION } from "./constants";
 import { axisContext } from "./contexts";
 import type { EntityWriter } from "./entity-writer";
-import { requiredReference } from "./checks";
-import { associateNewMaterial, layerSetThickness, layerSetUsage, materialOf } from "./materials";
-import { normalize2 } from "./math";
+import { requiredReference, requireWithinRecipes } from "./checks";
+import { associateNewMaterial, layerSetFor, layerSetThickness, layerSetUsage, materialOf } from "./materials";
+import { direction2Of } from "./math";
 import { carriedWith, carryOpening, openingsOf, readWallOpening } from "./openings";
 import { absoluteFrame, axisPlacementFrame, movePlacement, objectPlacementOf } from "./placement";
 import { detach, relatingOf } from "./relationships";
@@ -23,7 +23,7 @@ function movesAny(from: Frame3, to: Frame3, points: readonly Base.Point3[], tole
 }
 
 function wallFrame(start: Base.Point2, end: Base.Point2, bottom: number): Frame3 {
-    const direction = normalize2(subtract2(end, start));
+    const direction = direction2Of(subtract2(end, start));
     return {
         origin: [start[0], start[1], bottom],
         x: [direction[0], direction[1], 0],
@@ -85,15 +85,17 @@ export function editWall(tx: IfcTransaction, writer: EntityWriter, wall: number,
     if (!(length > tolerance)) {
         throw new Error("A wall's start and end must be apart");
     }
+    requireWithinRecipes(length, "wall's length", "end");
     if (!(height > 0)) {
         throw new Error(`A wall's height must be more than zero, got ${height}`);
     }
-    const layerSet = change.layerSet ?? layerSetOf(tx, before);
-    const layersChange = layerSet !== layerSetOf(tx, before);
+    const current = layerSetOf(tx, before);
+    const layerSet = change.layerSet ?? (change.thickness !== undefined && current !== undefined ? layerSetFor(tx, writer, undefined, change.thickness, "Wall") : current);
+    const layersChange = layerSet !== current;
     if (layersChange) {
         refuseTypedLayers(tx, wall);
     }
-    const thickness = layerSetThickness(tx, layerSet);
+    const thickness = layerSet === undefined ? change.thickness ?? before.high - before.low : layerSetThickness(tx, layerSet);
     if (!(thickness > 0)) {
         throw new Error("A wall's layers must add up to more than zero thickness");
     }
@@ -104,7 +106,11 @@ export function editWall(tx: IfcTransaction, writer: EntityWriter, wall: number,
     const frame = composeAxes(target, relativeAxes(axis, WORLD_AXES));
     const after: WallGeometry = { ...before, frame, start, end, direction: [target.x[0], target.x[1]], length, low, high: low + thickness, height };
     for (const join of joinsOf(tx, wall)) {
-        if (!stillMeet(after, join.mine, readWall(tx, join.other), join.theirs, tolerance, parallelTolerance)) {
+        const other = readWall(tx, join.other);
+        if (!stillMeet(before, join.mine, other, join.theirs, tolerance, parallelTolerance)) {
+            throw new Error(`${describeObject(tx, wall)} is joined to ${describeObject(tx, join.other)} where this library does not see them meet, so it cannot keep the join through a change; disconnect them first with walls.disconnect`);
+        }
+        if (!stillMeet(after, join.mine, other, join.theirs, tolerance, parallelTolerance)) {
             throw new Error(`The change takes ${describeObject(tx, wall)} away from ${describeObject(tx, join.other)}, which it is joined to; disconnect them first with walls.disconnect`);
         }
     }
@@ -121,12 +127,12 @@ export function editWall(tx: IfcTransaction, writer: EntityWriter, wall: number,
     const axisEnd = pointToWorld(axis, [length, 0, 0]);
     const axisCurve = writer.polyCurve2([[axis.origin[0], axis.origin[1]], [axisEnd[0], axisEnd[1]]], false);
     replaceRepresentation(tx, wall, representationOf(tx, wall, "Axis"), writer.shapeRepresentation(axisContext(tx, writer), "Axis", "Curve2D", [axisCurve]));
-    if (layersChange || Math.abs(low - before.low) > tolerance) {
+    if (layerSet !== undefined && (layersChange || Math.abs(low - before.low) > tolerance)) {
         tx.dropIfUnused(detach(tx, MATERIAL_ASSOCIATION, wall));
         associateNewMaterial(tx, writer, [wall], layerSetUsage(writer, layerSet, "AXIS2", "POSITIVE", low));
     }
     places.forEach((place) => carryOpening(tx, writer, place, place, before, after));
-    regenerateWall(tx, writer, wall, tolerance, parallelTolerance, { height, base: before.base, halfSpaces });
+    regenerateWall(tx, writer, wall, tolerance, parallelTolerance, { height, base: before.base, low, high: low + thickness, halfSpaces });
     for (const join of joinsOf(tx, wall)) {
         if (join.theirs !== "ATPATH") {
             regenerateWall(tx, writer, join.other, tolerance, parallelTolerance);

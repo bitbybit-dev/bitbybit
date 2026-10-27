@@ -1,0 +1,9 @@
+export const SPRING_POINTS_PER_COIL = 24;
+export const MOST_ACTIVE_COILS = 1000;
+export const SPRING_END_COILS = 1;
+export const SPRING_EASE = 0.25;
+export const SMALLEST_SPRING_INDEX = 3;
+export const MIDPOINT = 0.5;
+export const SPRING_CLOSED_RISE = 1.05;
+export const SPRING_GRIND_OVERRUN = 0.75;
+export const SPRING_ROUNDING_PLACES = 9;

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { WithDefaults } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
-export type { Asset, CSV, JSON, JSCAD, Manifold, IFC, OCCT, Tag, Time, Verb, Color, Dates, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/core/lib/api/resolved-inputs";
+export type { Asset, CSV, JSON, JSCAD, Manifold, IFC, OCCT, Tag, Time, Verb, Color, Dates, Engineering, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Recipes, Text, Transforms, Vector } from "@bitbybit-dev/core/lib/api/resolved-inputs";
 
 /**
  * The BabylonCamera inputs DTOs as their defaults leave them: every property with a default is present,

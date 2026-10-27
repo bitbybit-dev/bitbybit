@@ -19,20 +19,21 @@ import { OCCTAnalysis } from "./analysis/analysis";
 import { OCCTIO } from "./io";
 import { OCCTPath } from "./path";
 import { OCCTSketch } from "./sketch/sketch";
+import { OCCTParts } from "./parts/parts";
 import { OCCTSVG } from "./svg";
 import { OCCTDesign } from "./design";
 import { OCCTRecipes } from "./recipes";
 
 /**
- * The entry point to the OpenCascade kernel: every OCCT feature is reached through one of its
+ * The entry point to the Bitbybit OCCT Kernel: every OCCT feature is reached through one of its
  * properties. `shapes` builds and reads vertices, edges, wires, faces, shells, solids and
  * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners`, `draft` and `features`
  * change shapes; `select` picks faces and edges by kind and place; `analysis` measures shapes;
  * `geom` handles curves and surfaces; `io` reads and writes STEP, IGES, STL and other files;
- * `sketch` draws flat outlines with a pen; `design` and `recipes` build models and solids kept as
- * data; `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations, topology
- * graphs, machining paths and SVG. The methods on the service itself turn shapes into triangle
- * meshes for drawing.
+ * `sketch` draws flat outlines with a pen; `parts` makes standard parts; `design` and `recipes`
+ * build models and solids kept as data; `assembly`, `dimensions`, `brepGraph`, `path` and `svg`
+ * cover documents, annotations, topology graphs, machining paths and SVG. Its own methods mesh
+ * shapes for drawing.
  */
 export class OCCT {
     public readonly shapes: OCCTShapes;
@@ -53,6 +54,7 @@ export class OCCT {
     public readonly io: OCCTIO;
     public readonly path: OCCTPath;
     public readonly sketch: OCCTSketch;
+    public readonly parts: OCCTParts;
     public readonly svg: OCCTSVG;
     public readonly design: OCCTDesign;
     public readonly recipes: OCCTRecipes;
@@ -78,6 +80,7 @@ export class OCCT {
         this.io = new OCCTIO(occWorkerManager);
         this.path = new OCCTPath(occWorkerManager);
         this.sketch = new OCCTSketch(occWorkerManager);
+        this.parts = new OCCTParts(occWorkerManager);
         this.svg = new OCCTSVG(occWorkerManager);
         this.design = new OCCTDesign(occWorkerManager);
         this.recipes = new OCCTRecipes(occWorkerManager);

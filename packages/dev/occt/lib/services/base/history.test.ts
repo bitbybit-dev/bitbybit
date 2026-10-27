@@ -2,12 +2,11 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
+import { withHistories, withHistory } from "./history";
 
 describe("OCCT operations with history", () => {
     let occt: OCCTService;
@@ -15,7 +14,7 @@ describe("OCCT operations with history", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel);
+        helper = new OccHelper(kernel);
         occt = new OCCTService(kernel, helper);
     }, 120_000);
 
@@ -301,5 +300,66 @@ describe("OCCT operations with history", () => {
         expect(occt.shapes.solid.getSolids({ shape })).toHaveLength(1);
         expect(reached(histories[0]!)).toBe(faceCount(shape));
         expect(histories[0]!.faces.flat().every(face => face < faceCount(shape))).toBe(true);
+    });
+
+    describe("a build that never reads what it made", () => {
+        const UNREAD = "The operation gave a shape without reading what it made of its input, so it has no history to give.";
+        const neverRead = (): never => {
+            throw new Error("the history of an unread build is never asked for");
+        };
+        const thrownBy = (action: () => unknown): unknown => {
+            try {
+                action();
+            } catch (error) {
+                return error;
+            }
+            return undefined;
+        };
+
+        it("should refuse to give a shape without a history, from one history or several", () => {
+            // Arrange
+            const input = box();
+
+            // Act
+            const one = thrownBy(() => withHistory(neverRead, () => box(), [input]));
+            const several = thrownBy(() => withHistories(neverRead, () => box(), [input]));
+
+            // Assert
+            expect([one, several]).toEqual([expect.objectContaining({ message: UNREAD }), expect.objectContaining({ message: UNREAD })]);
+        });
+
+        it("should release the shape such a build made when it is none of the inputs", () => {
+            // Arrange
+            const input = box();
+            const made: TopoDS_Shape[] = [];
+            const fresh = (): TopoDS_Shape => {
+                const shape = box();
+                made.push(shape);
+                return shape;
+            };
+
+            // Act
+            thrownBy(() => withHistory(neverRead, fresh, [input]));
+            thrownBy(() => withHistories(neverRead, fresh, [input]));
+
+            // Assert
+            expect(made.map(shape => shape.isDeleted())).toEqual([true, true]);
+            expect(input.isDeleted()).toBe(false);
+        });
+
+        it("should leave the shape alone when the build handed back one of the inputs, or when it was not told the inputs", () => {
+            // Arrange
+            const input = box();
+            const unnamed = box();
+
+            // Act
+            thrownBy(() => withHistory(neverRead, () => input, [box(), input]));
+            thrownBy(() => withHistories(neverRead, () => input, [input]));
+            thrownBy(() => withHistory(neverRead, () => unnamed));
+            thrownBy(() => withHistories(neverRead, () => unnamed));
+
+            // Assert
+            expect([input.isDeleted(), unnamed.isDeleted()]).toEqual([false, false]);
+        });
     });
 });

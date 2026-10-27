@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
 import { createDrawHelperMocks, flatOf } from "./__mocks__/test-helpers";
+import { meshBuffersOf } from "./__mocks__/mesh-buffers";
 import { DrawHelper } from "./draw-helper";
 import * as Inputs from "./inputs";
 import * as THREEJS from "three";
@@ -63,6 +64,18 @@ describe("DrawHelper iso curves and surface analysis", () => {
         return found;
     };
     const frontFaces = (drawn: THREEJS.Object3D): THREEJS.Mesh[] => meshes(drawn).filter(mesh => !mesh.name.includes("backFace"));
+    const backFaces = (drawn: THREEJS.Object3D): THREEJS.Mesh[] => meshes(drawn).filter(mesh => mesh.name.includes("backFace"));
+    const listOf = (mesh: THREEJS.Mesh, name: string): number[] | undefined => {
+        const attribute = mesh.geometry.getAttribute(name);
+        return attribute === undefined ? undefined : flatOf(attribute);
+    };
+    const numbersOf = (mesh: THREEJS.Mesh): { positions: number[] | undefined; normals: number[] | undefined; indices: number[]; uvs: number[] | undefined; colors: number[] | undefined } => ({
+        positions: listOf(mesh, "position"),
+        normals: listOf(mesh, "normal"),
+        indices: flatOf(mesh.geometry.getIndex()!),
+        uvs: listOf(mesh, "uv"),
+        colors: listOf(mesh, "color"),
+    });
     const lines = (drawn: THREEJS.Object3D): LineSegments2[] => drawn.children.filter((child): child is LineSegments2 => child instanceof LineSegments2);
     const materialOf = (mesh: THREEJS.Mesh): THREEJS.MeshPhysicalMaterial => {
         expect(mesh.material).toBeInstanceOf(THREEJS.MeshPhysicalMaterial);
@@ -80,7 +93,7 @@ describe("DrawHelper iso curves and surface analysis", () => {
         return byPosition;
     };
 
-    const draw = (mesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>>): Promise<THREEJS.Group> =>
+    const draw = (mesh: Inputs.OCCT.DecomposedMeshDto | Inputs.OCCT.DecomposedMeshBuffersDto, options: Partial<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>>): Promise<THREEJS.Group> =>
         drawHelper.handleDecomposedMesh({ drawEdges: false, drawTwoSided: false, ...options }, mesh, {});
 
     describe("what reaches the worker", () => {
@@ -122,7 +135,7 @@ describe("DrawHelper iso curves and surface analysis", () => {
 
             // Assert
             const [name, inputs] = occtWorkerCall.mock.calls[0]!;
-            expect(name).toBe("shapesToMeshes");
+            expect(name).toBe("shapesToMeshBuffers");
             expect([inputs.isoCurvesU, inputs.isoCurvesV, inputs.surfaceAnalysis]).toEqual([5, 2, Inputs.OCCT.surfaceAnalysisEnum.mean]);
             expect("faceMaterial" in inputs).toBe(false);
         });
@@ -162,6 +175,25 @@ describe("DrawHelper iso curves and surface analysis", () => {
     });
 
     describe("surface analysis", () => {
+        it("should draw the typed buffers the worker hands over exactly as it draws lists, analysis colors and back faces included", async () => {
+            // Arrange
+            const lists = meshOf([triangle(0, [0, 2, 4]), { ...triangle(1), uvs: [] }]);
+            const buffers = meshBuffersOf(lists, { withoutCenters: true });
+
+            // Act
+            const fromLists = await draw(lists, { drawTwoSided: true });
+            const fromBuffers = await draw(buffers, { drawTwoSided: true });
+
+            // Assert
+            expect(buffers.faceList[1]!.vertexCoord.byteOffset).toBeGreaterThan(0);
+            expect(buffers.faceList[1]!.uvs).toHaveLength(0);
+            expect(numbersOf(frontFaces(fromLists)[0]!).positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0, 0, 11, 0, 0, 10, 1, 0]);
+            expect(numbersOf(frontFaces(fromBuffers)[0]!)).toEqual(numbersOf(frontFaces(fromLists)[0]!));
+            expect(numbersOf(backFaces(fromLists)[0]!).indices).toEqual([0, 2, 1, 3, 5, 4]);
+            expect(numbersOf(backFaces(fromBuffers)[0]!)).toEqual(numbersOf(backFaces(fromLists)[0]!));
+            expect(meshes(fromBuffers)).toHaveLength(meshes(fromLists).length);
+        });
+
         it("should color each vertex through the ramp, from the lowest value found to the highest", async () => {
             // Act
             const drawn = await draw(meshOf([triangle(0, [0, 2, 4])]), {});

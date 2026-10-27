@@ -1,11 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
-import { VectorHelperService } from "../api/vector-helper.service";
-import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTService } from "../occ-service";
-import { readKernelException } from "../kernel-exception";
 import * as Inputs from "../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
 
@@ -15,7 +11,7 @@ describe("OCCT evolved and scaled sweeps", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const squareSpine = (): TopoDS_Shape => occt.shapes.wire.createSquareWire({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
@@ -26,15 +22,6 @@ describe("OCCT evolved and scaled sweeps", () => {
     const volumeOf = (shape: TopoDS_Shape): number => occt.shapes.solid.getSolids({ shape }).reduce((sum, solid) => sum + occt.shapes.solid.getSolidVolume({ shape: solid }), 0);
     const sectionAreasOf = (shape: TopoDS_Shape, heights: number[]): number[] =>
         occt.operations.sliceByFrames({ shape, frames: heights.map((y): Inputs.Base.Frame => ({ origin: [0, y, 0], normal: [0, 1, 0], direction: [1, 0, 0] })) }).map(areaOf);
-    const kernelMessage = (action: () => unknown): string => {
-        try {
-            action();
-        } catch (error) {
-            const read = readKernelException(kernel, error);
-            return read instanceof Error ? read.message : String(read);
-        }
-        return "nothing thrown";
-    };
     const thrownBy = (action: () => unknown): InputError => {
         try {
             action();
@@ -45,6 +32,15 @@ describe("OCCT evolved and scaled sweeps", () => {
         throw new Error("expected an InputError, but nothing was thrown");
     };
     const loose = <T>(value: unknown): T => value as T;
+    const point = (): TopoDS_Shape => occt.shapes.vertex.vertexFromXYZ({ x: 0, y: 0, z: 0 });
+    const refusalOf = (action: () => unknown): unknown => {
+        try {
+            action();
+        } catch (error) {
+            return error;
+        }
+        return undefined;
+    };
 
     describe("sweepEvolved", () => {
         it("should raise a wall on the spine, inside it or outside it by where the profile stands across it", () => {
@@ -103,21 +99,40 @@ describe("OCCT evolved and scaled sweeps", () => {
             expect(areaOf(wall)).toBeCloseTo(200, 6);
         });
 
-        it("should pass on the kernel's refusal of a spine out of plane, a curve as the spine and a face as the profile", () => {
+        it("should refuse a spine out of plane, a curve or a point as the spine, and a face or a point as the profile as input errors naming each", () => {
             // Arrange
             const bent = occt.shapes.wire.createPolygonWire({ points: [[0, 0, 0], [10, 0, 0], [10, 5, 10], [0, 0, 10]] });
             const circle = occt.shapes.edge.createCircleEdge({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
             const face = occt.shapes.face.createSquareFace({ size: 1, center: [0, 0, 0], direction: [1, 0, 0] });
 
             // Act
-            const outOfPlane = kernelMessage(() => occt.operations.sweepEvolved({ spine: bent, profile: post(0) }));
-            const notWire = kernelMessage(() => occt.operations.sweepEvolved({ spine: loose(circle), profile: post(0) }));
-            const faceProfile = kernelMessage(() => occt.operations.sweepEvolved({ spine: squareSpine(), profile: loose(face) }));
+            const refusals = [
+                refusalOf(() => occt.operations.sweepEvolved({ spine: bent, profile: post(0) })),
+                refusalOf(() => occt.operations.sweepEvolved({ spine: loose(circle), profile: post(0) })),
+                refusalOf(() => occt.operations.sweepEvolved({ spine: loose(point()), profile: post(0) })),
+                refusalOf(() => occt.operations.sweepEvolved({ spine: squareSpine(), profile: loose(face) })),
+                refusalOf(() => occt.operations.sweepEvolved({ spine: squareSpine(), profile: loose(point()) })),
+            ];
 
             // Assert
-            expect(outOfPlane).toBe("Standard_DomainError: SweepEvolved: the spine does not lie in a plane");
-            expect(notWire).toBe("Standard_DomainError: SweepEvolved: the spine is not a wire or a planar face");
-            expect(faceProfile).toBe("Standard_DomainError: SweepEvolved: the profile is not an edge or a wire");
+            expect(refusals).toEqual([
+                expect.objectContaining({ name: "InputError", property: "spine", message: "`spine` does not lie in a plane, and an evolved sweep follows a flat spine: give a wire or a face that lies in one plane." }),
+                expect.objectContaining({ name: "InputError", property: "spine", message: "`spine` is an edge, and an evolved sweep follows a wire or a planar face." }),
+                expect.objectContaining({ name: "InputError", property: "spine", message: "`spine` is a vertex, and an evolved sweep follows a wire or a planar face." }),
+                expect.objectContaining({ name: "InputError", property: "profile", message: "`profile` is a face, and an evolved sweep moves an edge or a wire along the spine." }),
+                expect.objectContaining({ name: "InputError", property: "profile", message: "`profile` is a vertex, and an evolved sweep moves an edge or a wire along the spine." }),
+            ]);
+        });
+
+        it("should refuse a curved face as the spine as an input error naming it, as it refuses a wire out of plane", () => {
+            // Arrange
+            const roundSide = occt.shapes.face.getFace({ shape: occt.shapes.solid.createCylinder({ radius: 5, height: 5, center: [0, 0, 0], direction: [0, 1, 0] }), index: 0 });
+
+            // Act
+            const refused = refusalOf(() => occt.operations.sweepEvolved({ spine: roundSide, profile: post(0) }));
+
+            // Assert
+            expect(refused).toEqual(expect.objectContaining({ name: "InputError", property: "spine", message: "`spine` does not lie in a plane, and an evolved sweep follows a flat spine: give a wire or a face that lies in one plane." }));
         });
 
         it("should refuse a missing spine or profile", () => {
@@ -192,32 +207,64 @@ describe("OCCT evolved and scaled sweeps", () => {
             expect(notList.message).toBe("`params` is not a list of numbers.");
         });
 
-        it("should pass on the kernel's refusal of places that do not run from 0 to 1 in order, of mismatched lists and of a scale that dips to 0", () => {
+        it("should refuse a scale nearer 0 than 1e-100, which shrinks the profile to a point, as an input error at its position", () => {
             // Arrange
             const spine = upright();
 
             // Act
-            const late = kernelMessage(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0.1, 1], scales: [1, 1] }));
-            const short = kernelMessage(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0, 1], scales: [1] }));
-            const back = kernelMessage(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0, 0.5, 0.4, 1], scales: [1, 1, 1, 1] }));
-            const dip = kernelMessage(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0, 0.1, 0.9, 1], scales: [1, 0.05, 0.05, 1] }));
+            const refused = refusalOf(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0, 1], scales: [1, 1e-300] }));
 
             // Assert
-            expect(late).toBe("Standard_DomainError: PipeWithScaling: the places run from 0 at the spine's start to 1 at its end");
-            expect(short).toBe("Standard_DomainError: PipeWithScaling: give at least two places along the spine, each with a scale");
-            expect(back).toBe("Standard_DomainError: PipeWithScaling: the places must increase along the spine");
-            expect(dip).toBe("Standard_DomainError: PipeWithScaling: the smooth scale through these places drops to 0 or below between them");
+            expect(refused).toEqual(expect.objectContaining({ name: "InputError", property: "scales[1]", message: "`scales[1]` is 1e-300, and a scale factor has to be a finite number at least 1e-100 away from 0; nearer 0 the shape shrinks to a point." }));
         });
 
-        it("should pass on the kernel's refusal of a solid from an open profile", () => {
+        it("should throw the kernel's refusal of places that do not run from 0 to 1 in order and of a scale that dips to 0 read into errors", () => {
+            // Arrange
+            const spine = upright();
+
+            // Act
+            const late = refusalOf(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0.1, 1], scales: [1, 1] }));
+            const back = refusalOf(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0, 0.5, 0.4, 1], scales: [1, 1, 1, 1] }));
+            const dip = refusalOf(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0, 0.1, 0.9, 1], scales: [1, 0.05, 0.05, 1] }));
+
+            // Assert
+            expect(late).toStrictEqual(new Error("Standard_DomainError: PipeWithScaling: the places run from 0 at the spine's start to 1 at its end"));
+            expect(back).toStrictEqual(new Error("Standard_DomainError: PipeWithScaling: the places must increase along the spine"));
+            expect(dip).toStrictEqual(new Error("Standard_DomainError: PipeWithScaling: the smooth scale through these places drops to 0 or below between them"));
+        });
+
+        it("should throw the kernel's refusal of a solid from an open profile read into an error", () => {
             // Arrange
             const line = occt.shapes.edge.line({ start: [1, 0, 0], end: [2, 0, 0] });
 
             // Act
-            const open = kernelMessage(() => occt.operations.pipeWithScaling({ spine: upright(), profile: line, makeSolid: true }));
+            const open = refusalOf(() => occt.operations.pipeWithScaling({ spine: upright(), profile: line, makeSolid: true }));
 
             // Assert
-            expect(open).toBe("Standard_DomainError: PipeWithScaling: the pipe cannot be closed into a solid; the profile must be closed");
+            expect(open).toStrictEqual(new Error("Standard_DomainError: PipeWithScaling: the pipe cannot be closed into a solid; the profile must be closed"));
+        });
+
+        it("should refuse places and scales of different lengths, fewer than two places, and a point as the spine or the profile as input errors naming each", () => {
+            // Arrange
+            const spine = upright();
+
+            // Act
+            const refusals = [
+                refusalOf(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0, 1], scales: [1] })),
+                refusalOf(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0, 0.5, 1], scales: [1, 2] })),
+                refusalOf(() => occt.operations.pipeWithScaling({ spine, profile: ring(), params: [0], scales: [1] })),
+                refusalOf(() => occt.operations.pipeWithScaling({ spine: loose(point()), profile: ring() })),
+                refusalOf(() => occt.operations.pipeWithScaling({ spine, profile: loose(point()) })),
+            ];
+
+            // Assert
+            expect(refusals).toEqual([
+                expect.objectContaining({ name: "InputError", property: "scales", message: "`scales` holds 1 and `params` 2: give one scale for each place along the spine." }),
+                expect.objectContaining({ name: "InputError", property: "scales", message: "`scales` holds 2 and `params` 3: give one scale for each place along the spine." }),
+                expect.objectContaining({ name: "InputError", property: "params", message: "`params` holds fewer than two places, and a scaled pipe needs at least two, the spine's start at 0 and its end at 1." }),
+                expect.objectContaining({ name: "InputError", property: "spine", message: "`spine` is a vertex, and a scaled pipe follows an edge or a wire." }),
+                expect.objectContaining({ name: "InputError", property: "profile", message: "`profile` is a vertex, and a scaled pipe moves an edge or a wire along the spine." }),
+            ]);
         });
     });
 });

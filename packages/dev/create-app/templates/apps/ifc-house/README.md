@@ -1,6 +1,6 @@
 # {{PROJECT_NAME}}
 
-A two-storey family house written as an IFC4 building model on the open-source [Bitbybit](https://bitbybit.dev) packages and Three.js. The house is plain data - storeys, layered walls, windows and doors, slabs, a flat roof behind a parapet, a carport, rooms, the garden's terrain and trees - and the IFC library turns it into a real BIM file in your browser: walls that keep their axis, layers and joins, doors and windows placed from shared types and cut into their walls, charred-larch cladding boards gathered into an assembly per facade, U-values and the base quantities of every element. Manifold builds the geometry the model describes and the viewer draws it in its materials; click any part to see its IFC type, name and GlobalId, turn storeys on and off, label the rooms, and download the model as `house.ifc` or, through OpenCascade, as `house.step` nested by site, building, storey and IFC class. Nothing runs on a server: every library runs in the browser, the IFC library as plain TypeScript and the kernels as WebAssembly.
+A two-storey family house written as an IFC4 building model on the free [Bitbybit](https://bitbybit.dev) packages and Three.js. The house is plain data - storeys, layered walls, windows and doors, slabs, a flat roof behind a parapet, a carport, rooms, the garden's terrain and trees - and the IFC library turns it into a real BIM file in your browser: walls that keep their axis, layers and joins, doors and windows placed from shared types and cut into their walls, charred-larch cladding boards gathered into an assembly per facade, U-values and the base quantities of every element. Manifold builds the geometry the model describes and the viewer draws it in its materials; click any part to see its IFC type, name and GlobalId, turn storeys on and off, label the rooms, and download the model as `house.ifc` or, through OpenCascade, as `house.step` nested by site, building, storey and IFC class. Nothing runs on a server: every library runs in the browser, the IFC library as plain TypeScript and the kernels as WebAssembly.
 
 ```bash
 npm install
@@ -27,7 +27,7 @@ npm run build    # typecheck and bundle for production
 
 ## Make it your house
 
-Move a wall in `WALL_RUNS`, add a window to `WINDOWS`, change a layer set's materials or thicknesses in `LAYER_SETS`, or add a room to `ROOMS` in `src/house/house-plan.ts`, then run `npm run smoke`: it writes the house again, checks that every element can be built and tells you what changed. Open the downloaded `house.ifc` in any BIM tool - BIMvision, Bonsai in Blender, Solibri, Archicad or Revit - to see the walls, rooms and properties as a BIM tool reads them.
+Move a wall in `WALL_RUNS`, add a window to `WINDOWS`, change a layer set's materials or thicknesses in `LAYER_SETS`, or add a room to `ROOMS` in `src/house/house-plan.ts`, then run `npm run smoke`: it writes the house again, checks that every element can be built and tells you what changed. Open the downloaded `house.ifc` in a BIM tool that reads IFC, such as BIMvision, Bonsai in Blender, Solibri, Archicad or Revit, to see the walls, rooms and properties as it reads them.
 
 ## Working with an AI agent
 

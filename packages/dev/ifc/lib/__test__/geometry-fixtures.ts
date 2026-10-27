@@ -6,10 +6,9 @@ const HEADER = [
     "HEADER;",
     "FILE_DESCRIPTION((''),'2;1');",
     "FILE_NAME('','',(''),(''),'','','');",
-    "FILE_SCHEMA(('IFC4'));",
-    "ENDSEC;",
-    "DATA;",
 ];
+
+const DATA_START = ["ENDSEC;", "DATA;"];
 
 export const CONTEXT_ROWS = [
     "#1=IFCCARTESIANPOINT((0.,0.,0.));",
@@ -19,12 +18,12 @@ export const CONTEXT_ROWS = [
     "#5=IFCLOCALPLACEMENT($,#2);",
 ];
 
-export function modelOfRows(rows: readonly string[]): IfcModel {
-    return readModel([...HEADER, ...rows, "ENDSEC;", "END-ISO-10303-21;", ""].join("\n"));
+export function modelOfRows(rows: readonly string[], schema = "IFC4"): IfcModel {
+    return readModel([...HEADER, `FILE_SCHEMA(('${schema}'));`, ...DATA_START, ...rows, "ENDSEC;", "END-ISO-10303-21;", ""].join("\n"));
 }
 
-export function withContext(rows: readonly string[]): IfcModel {
-    return modelOfRows([...CONTEXT_ROWS, ...rows]);
+export function withContext(rows: readonly string[], schema = "IFC4"): IfcModel {
+    return modelOfRows([...CONTEXT_ROWS, ...rows], schema);
 }
 
 export function productRows(id: number, globalId: string, items: string, placement = "#5", type = "IFCBUILDINGELEMENTPROXY"): string[] {

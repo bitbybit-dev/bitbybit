@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
-import { createSurfaceMock, createSurfaceMock2, mockOCCTBoxDecomposedMesh, mockJSCADBoxDecomposedMesh } from "../__mocks__/test-data";
+import { createSurfaceMock, createSurfaceMock2, mockOCCTBoxDecomposedMesh, mockOCCTBoxMeshBuffers, mockJSCADBoxDecomposedMesh } from "../__mocks__/test-data";
 import { Tag } from "@bitbybit-dev/core";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
 import { GeometryHelper, MathBitByBit, Vector } from "@bitbybit-dev/base";
@@ -646,7 +646,7 @@ describe("Draw unit tests", () => {
 
         it("should draw a cube mesh with default options", async () => {
             const options = new Inputs.Draw.DrawOcctShapeOptions();
-            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxMeshBuffers());
 
             const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
@@ -660,7 +660,7 @@ describe("Draw unit tests", () => {
             const customMaterial = new MeshPhongMaterial({ color: 0xff00ff });
             options.faceMaterial = customMaterial;
 
-            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxMeshBuffers());
 
             const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
@@ -677,19 +677,19 @@ describe("Draw unit tests", () => {
             options.drawVertices = true;
             options.drawEdgeIndexes = true;
             options.drawFaceIndexes = true;
-            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxMeshBuffers());
             vi.spyOn(solidText, "createVectorText").mockResolvedValue([[[0, 0], [0.5, 0], [0.5, 0.3], [0, 0.3]]]);
             vector.add = vi.fn().mockReturnValue([1, 2, 3]);
             const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
-            expect(res.children.length).toBe(5);
+            expect(res.children.length).toBe(6);
         });
 
         it("should draw multiple cubes mesh with default options", async () => {
             const options = new Inputs.Draw.DrawOcctShapeOptions();
-            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]);
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockOCCTBoxMeshBuffers(), mockOCCTBoxMeshBuffers()]);
 
             const res = await draw.drawAnyAsync({ entity: [{ type: "occ-shape", hash: 12314455 }, { type: "occ-shape", hash: 12314455 }], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occtShapes);
@@ -702,7 +702,7 @@ describe("Draw unit tests", () => {
             const options = new Inputs.Draw.DrawOcctShapeOptions();
             const customMaterial = new MeshPhongMaterial({ color: 0xff00ff });
             options.faceMaterial = customMaterial;
-            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]);
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockOCCTBoxMeshBuffers(), mockOCCTBoxMeshBuffers()]);
 
             const res = await draw.drawAnyAsync({ entity: [{ type: "occ-shape", hash: 12314455 }, { type: "occ-shape", hash: 12314455 }], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occtShapes);
@@ -1866,14 +1866,14 @@ describe("Draw unit tests", () => {
     describe("the options a shape is drawn with", () => {
         it("should mesh an OCCT shape at the default precision when the options hand it undefined", async () => {
             // Arrange
-            const callWorker = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            const callWorker = vi.fn().mockResolvedValue(mockOCCTBoxMeshBuffers());
             occtWorkerManager.genericCallToWorkerPromise = callWorker;
 
             // Act
             await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options: { precision: undefined, faceColour: "#00ff00" } });
 
             // Assert
-            expect(callWorker).toHaveBeenCalledWith("shapeToMesh", expect.objectContaining({ precision: 0.01, faceColour: "#00ff00" }));
+            expect(callWorker).toHaveBeenCalledWith("shapeToMeshBuffers", expect.objectContaining({ precision: 0.01, faceColour: "#00ff00" }));
         });
 
         it("should draw the manifold it is given even when the options it is redrawn with name another", async () => {
@@ -1897,7 +1897,7 @@ describe("Draw unit tests", () => {
     describe("what the draw layer leaves to the helpers' own defaults", () => {
         it("should draw the OCCT shape it is given even when the options it is redrawn with name another", async () => {
             // Arrange
-            const callWorker = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            const callWorker = vi.fn().mockResolvedValue(mockOCCTBoxMeshBuffers());
             occtWorkerManager.genericCallToWorkerPromise = callWorker;
             const previous: Inputs.OCCT.TopoDSShapePointer = { type: "occ-shape", hash: 1 };
             const current: Inputs.OCCT.TopoDSShapePointer = { type: "occ-shape", hash: 2 };
@@ -1908,7 +1908,7 @@ describe("Draw unit tests", () => {
             await draw.drawAnyAsync({ entity: current, group });
 
             // Assert
-            expect(callWorker).toHaveBeenCalledWith("shapeToMesh", expect.objectContaining({ shape: current, faceColour: "#00ff00" }));
+            expect(callWorker).toHaveBeenCalledWith("shapeToMeshBuffers", expect.objectContaining({ shape: current, faceColour: "#00ff00" }));
         });
 
         it("should draw a point whose options leave out the size as a sphere of the point default 0.1", async () => {

@@ -41,6 +41,10 @@ The frameworks `verify.config.json` marks as heavy install on every run and buil
 the results table is appended to the file it names. In `refresh`, the audit fix after the lockfile
 update is information rather than a gate: advisories it cannot fix are reported as a note.
 
+`audit` fails on a moderate or worse advisory, naming each one, unless
+`../../scripts/advisories.allow.json` records it - the list `check-advisories.mjs` reads, with the
+reason each entry is unreachable or unfixable.
+
 `audit` is npm's view and is not the whole picture. npm resolves advisories from its own feed, which
 has diverged from the advisory database the repository's dependency alerts read - `multer@1.4.5-lts.2`
 reported "found 0 vulnerabilities" here while fifteen advisories were held against it.

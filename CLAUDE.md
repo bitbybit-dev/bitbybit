@@ -1,8 +1,8 @@
 # CLAUDE.md - the bitbybit open-source monorepo
 
-MIT-licensed, and the source of truth for the CAD algorithms and the published `@bitbybit-dev/*` npm
-packages. It stands alone: everything here builds and tests from a bare clone with nothing
-above it. Start with `README.md` for the overview, `CONTRIBUTING.md` before opening a PR.
+MIT-licensed; the source of truth for the CAD algorithms and the `@bitbybit-dev/*` npm packages (the Bitbybit
+OCCT Kernel is MIT too but closed source, built elsewhere: `packages/dev/occt/NOTICE`). It stands alone: it builds
+and tests from a bare clone with nothing above it. Start with `README.md`, and `CONTRIBUTING.md` before a PR.
 
 ## Layout
 
@@ -122,8 +122,8 @@ version carries a provenance attestation naming this repository - which is why e
 failed run is re-run, never repaired by hand) and waits for a tier to resolve before its dependents
 publish. The default dispatch publishes under `next` as a rehearsal; a second with `latest` releases.
 
-The OCCT kernels the `occt` package ships are not tracked: `packages/dev/occt/kernels.json` names the
-three content-hashed wasm files with their SHA-256 and the url each is published at, and
+The builds of the Bitbybit OCCT Kernel that the `occt` package ships are not tracked: `packages/dev/occt/kernels.json`
+names the three content-hashed wasm files with their SHA-256 and the url each is published at, and
 `npm run kernels:fetch` (run by both workflows after the install, and by the package's `build-p`)
 downloads what is missing and verifies what is present. A kernel on disk that disagrees with the
 manifest is an error, never overwritten.
@@ -154,22 +154,22 @@ deliberately declares a type other than the mechanical mapping, `scripts/worker-
 holds the type and the reason; kernel methods the worker does not expose are the `kernelOnly` entries
 of `scripts/worker-parity.allow.json`, one list for the generator and the parity check.
 
-The four inputs namespaces - `occ-inputs.ts` (some 300 DTOs), `jscad-inputs.ts`,
-`manifold-inputs.ts`, `verb-inputs.ts` - are assembled the same way. Each has to stay one compilation
+The six inputs namespaces - `occ-inputs.ts` (some 300 DTOs), `jscad-inputs.ts`,
+`manifold-inputs.ts`, `ifc-inputs.ts`, `verb-inputs.ts` and base's `engineering-inputs.ts` - are assembled the same way. Each has to stay one compilation
 unit, because TypeScript does not merge a namespace across modules and tools that read the published
 declarations read each as a whole, so `scripts/gen-inputs.mjs` writes it from the
 fragments beside it, each a slice of the namespace body written as an ordinary module.
-`scripts/inputs.config.mjs` names the four and their fragment order - the order of the emitted
+`scripts/inputs.config.mjs` names the six and their fragment order - the order of the emitted
 declarations - and fails on a fragment nothing names. Edit a fragment and run `npm run gen:inputs`;
 `check:inputs` fails on a stale assembled file, which being generated is not linted.
 
-`npm test` at the root runs every package suite, after the `check:*` gates and `test:scripts` (the
-generators' and checkers' own `node --test` suites, `scripts/**/*.test.mjs`). Each worker package
-mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends a path the kernel lacks, when a kernel method
-has no mirror outside the allow-list, when signatures disagree, when the JSDoc on a mirrored method
-or class reads differently on the two sides, or when the worker's path set differs from the committed
-snapshot (those paths are persisted in users' scripts). A deliberate surface change is accepted
-with `--update`; a doc change is made on the kernel and regenerated into the worker.
+`npm test` at the root runs every package suite, after the `check:*` gates and `test:scripts` (the generators' and checkers'
+own `node --test` suites, `scripts/**/*.test.mjs`). The occt and manifold suites run a kernel ledger, and `check:kernel-ledger`
+fails a call that leaves a kernel object alive (`scripts/README.md`). Each worker package mirrors its kernel by dotted path,
+and `scripts/worker-parity.mjs` fails when a worker sends a path the kernel lacks, when a kernel method has no mirror
+outside the allow-list, when signatures disagree, when the JSDoc on a mirrored method or class reads differently on the two
+sides, or when the worker's path set differs from the committed snapshot (those paths are persisted in users' scripts). A
+deliberate surface change is accepted with `--update`; a doc change is made on the kernel and regenerated into the worker.
 
 Every runner writes its results as JSON into `test-results/` next to the code it tested
 (`test:coverage` in every package), and coverage leaves `coverage/coverage-summary.json` beside it.

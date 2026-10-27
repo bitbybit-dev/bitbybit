@@ -1,7 +1,16 @@
 export * from "./services";
 export * from "./kernel-calls";
-export * from "./recipes";
+export type { RecipeIssue, RecipeSource, RecipeSurfaceMesh } from "./recipes/recipe-types";
 export * from "./color-space";
+export type { AnsiSplinePitch, InvoluteSplineSizes } from "./splines/spline-types";
+export type { KnurlPattern, KnurlSizes } from "./knurls/knurl-types";
+export type { BevelGearSizes, GearMove, GearPairSizes, GearPart, GearSizes, HelicalGearSizes, InternalGearPairSizes, PlanetarySet, RackMove, RackPart, RackSizes, SpurGearSpec } from "./gears/gear-types";
+export type { AnsiThreadSeries, AnsiThreadSize, AnsiThreadSizes, IsoThreadSize, IsoThreadSizes, ThreadSizes } from "./threads/thread-types";
+export type { AnsiSetScrewPoint, AnsiWasherSeries, ChamferedWasherSizes, ClearanceFit, HexBoltSizes, HexNutSizes, IsoSetScrewPoint, SetScrewSizes, SocketHeadCapScrewSizes, WasherSizes } from "./fasteners/fastener-types";
+export type { AnsiBallBearingDesignation, BallBearingSizes, IsoBallBearingDesignation } from "./bearings/bearing-types";
+export type { ParallelKeySizes } from "./keys/key-types";
+export type { RetainingRingKind, RetainingRingSizes } from "./retaining-rings/retaining-ring-types";
+export type { CompressionSpringPath } from "./springs/spring-types";
 export * from "./GlobalCDNProvider";
 export * as Inputs from "./inputs";
 export * as Resolved from "./resolved-inputs";

@@ -1,13 +1,12 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
 import { sha256 } from "./digest";
+import { handlesIn, namesOf, openWindow } from "../../../../__test__/embind-ledger";
+import { releaseDesignCaches } from "../../release-design-caches";
 
 type Document = Models.OCCT.DesignPartDocument;
 
@@ -35,7 +34,7 @@ describe("design script features", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const statuses = (result: Models.OCCT.DesignBuildResult<TopoDS_Shape>): string[][] => result.report.map(entry => [entry.id, entry.status]);
@@ -45,6 +44,60 @@ describe("design script features", () => {
         const top = occt.analysis.signatures({ shape }).faces.findIndex(face => face.normal[2] > 0.99);
         return { shape, top };
     };
+
+    const keptAfter = <T>(act: () => T): { answer: T; kept: string[] } => {
+        const opened = openWindow();
+        let answer: T;
+        try {
+            answer = act();
+            handlesIn(answer).forEach(handle => { handle.delete(); });
+        } finally {
+            opened.close();
+        }
+        releaseDesignCaches(occt);
+        return { answer, kept: namesOf(opened.made().filter(handle => !handle.isDeleted())) };
+    };
+
+    it("should keep none of the shapes a waiting script was given once it has written a document's hints", () => {
+        // Arrange
+        const opened = openWindow();
+
+        // Act
+        try {
+            occt.design.withHints({ document: lugDocument(), assets: { lugScript: CODE } });
+        } finally {
+            opened.close();
+        }
+
+        // Assert
+        expect(namesOf(opened.made().filter(handle => !handle.isDeleted()))).toEqual([]);
+    });
+
+    it("should fail the feature on a reference among its params that finds the wrong count, keeping none of the shapes it was given before it", () => {
+        // Arrange
+        const base = lugDocument(CODE, 13);
+        const miscounted: Document = { ...base, features: base.features.map(feature => feature.type === "script" ? { ...feature, params: { plate: { body: "plate" }, top: { faces: { of: "plate", role: "end", count: 5 } } } } : feature) };
+
+        // Act
+        const { answer, kept } = keptAfter(() => occt.design.build({ document: miscounted, assets: { lugScript: CODE } }));
+
+        // Assert
+        expect(statuses(answer)).toEqual([["base", "ok"], ["plate", "ok"], ["lug", "failed"], ["round", "skipped"]]);
+        expect(answer.pending).toBeUndefined();
+        expect(kept).toEqual([]);
+    });
+
+    it("should say a part whose body waits for its script waits, rather than that the body failed", () => {
+        // Arrange
+        const document: Document = { ...lugDocument(), features: lugDocument().features.slice(0, 3), parts: [{ id: "lug", body: "lug" }] };
+
+        // Act
+        const result = occt.design.build({ document, assets: { lugScript: CODE } });
+
+        // Assert
+        expect(result.issues).toEqual([{ path: "/parts/0/body", message: "the body \"lug\" waits for the outcome of its script, so the part was not built yet" }]);
+        handlesIn(result).forEach(handle => handle.delete());
+    });
 
     it("should stop at a script feature, listing what the caller runs it on, and skip what reads its body", () => {
         // Arrange

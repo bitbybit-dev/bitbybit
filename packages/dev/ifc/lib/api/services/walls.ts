@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
-import { WORLD_AXES, pointToWorld, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES, pointToWorld, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import { requireFinite, requirePoint } from "../../build/checks";
 import { PARALLEL_TOLERANCE, POINT2_SIZE, POINT3_SIZE } from "../../build/constants";
 import { associateMaterial, layerSetFor, materialOf, requireLayerSet } from "../../build/materials";
@@ -67,6 +67,8 @@ export class IFCWalls {
         const predefinedType = oneOf(resolved.predefinedType, Inputs.IFC.wallPredefinedTypeEnum, "predefined type");
         const height = lengthIn(model, resolved.height, DEFAULT_MILLIMETRES.wallHeight);
         const thickness = lengthIn(model, resolved.thickness, DEFAULT_MILLIMETRES.wallThickness);
+        requireFinite(height, "wall's height");
+        requireFinite(resolved.baseOffset, "base offset");
         return editModel(model, (tx, writer) => {
             createWall(tx, writer, {
                 storey,
@@ -158,6 +160,9 @@ export class IFCWalls {
         if (resolved.baseOffset !== undefined) {
             requireFinite(resolved.baseOffset, "base offset");
         }
+        if (resolved.height !== undefined) {
+            requireFinite(resolved.height, "wall's height");
+        }
         const alignment = resolved.alignment === undefined ? undefined : oneOf(resolved.alignment, Inputs.IFC.wallAlignmentEnum, "wall alignment");
         const tolerance = lengthTolerance(model);
         const storey = containerOf(model, wall);
@@ -172,7 +177,8 @@ export class IFCWalls {
                 end: resolved.end === undefined ? undefined : inWorld(resolved.end),
                 bottom: resolved.baseOffset === undefined ? undefined : pointToWorld(plan, [0, 0, resolved.baseOffset])[2],
                 height: resolved.height,
-                layerSet: resolved.layerSet !== undefined ? requireLayerSet(tx, resolved.layerSet) : resolved.thickness !== undefined ? layerSetFor(tx, writer, undefined, resolved.thickness, "Wall") : undefined,
+                layerSet: resolved.layerSet !== undefined ? requireLayerSet(tx, resolved.layerSet) : undefined,
+                thickness: resolved.thickness,
                 alignment,
             }, tolerance, PARALLEL_TOLERANCE);
         });
@@ -181,7 +187,8 @@ export class IFCWalls {
     /**
      * Reads a wall's parameters back from the model: its axis, height, base, thickness, layers and
      * alignment, the walls it is joined to, its openings and its clippings. It reads walls other tools
-     * wrote too, when they keep an axis and a layer set usage as IFC's standard walls do.
+     * wrote too, when they keep an axis and either a layer set usage or a body extruded from a strip
+     * along that axis, as Revit writes one.
      * @param inputs - The model and the wall
      * @returns The wall's parameters, in the plan of its storey
      * @group query
@@ -198,11 +205,12 @@ export class IFCWalls {
     }
 
     /**
-     * Clips a wall with a plane, removing the part on the side the plane's normal points to, as a
-     * wall is cut under a sloping roof.
+     * Clips a wall with a plane, removing the part on the side its normal points to, as under a
+     * sloping roof.
      *
-     * The plane is given in the wall's storey, and a wall can be clipped by several planes. Clipping
-     * keeps the wall's full height in its data, so joins stay right.
+     * The plane is given in the wall's storey, and a wall can be clipped by several. Clipping keeps
+     * the wall's full height in its data, so joins stay right. Bonsai keeps the clipping too, through
+     * the wall's `BBIM_Boolean` set.
      * @param inputs - The model, the wall, a point on the plane and its normal
      * @returns A new model with the wall clipped
      * @group edit

@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import initOpenCascade from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "./occ-helper";
-import { VectorHelperService } from "./api/vector-helper.service";
-import { ShapesHelperService } from "./api/shapes-helper.service";
 
 const SERVICES = [
     "base", "iteratorService", "converterService", "entitiesService", "geomService",
@@ -18,7 +16,7 @@ describe("OccHelper", () => {
 
     beforeAll(async () => {
         occt = await initOpenCascade();
-        occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        occHelper = new OccHelper(occt);
     }, 120_000);
 
     it("should hand out every service, fully built", () => {

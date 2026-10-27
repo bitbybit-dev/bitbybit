@@ -2,6 +2,7 @@ import { IFCAssemblies } from "./services/assemblies";
 import { IFCBeams } from "./services/beams";
 import { IFCColumns } from "./services/columns";
 import { IFCDoors } from "./services/doors";
+import { IFCElements } from "./services/elements";
 import { IFCGeometry } from "./services/geometry";
 import { IFCMaterials } from "./services/materials";
 import { IFCMembers } from "./services/members";
@@ -19,14 +20,14 @@ import { IFCWindows } from "./services/windows";
 
 /**
  * The entry point to IFC, the open BIM exchange format: `model` creates, reads, writes and edits
- * models; `spatial`, `spaces`, `materials` and `site` add storeys, rooms, materials and the terrain;
+ * models; `spatial`, `spaces`, `materials` and `site` add storeys, rooms, materials and terrain;
  * `walls`, `openings`, `doors`, `windows`, `slabs`, `roofs`, `columns`, `beams` and `members` add
- * elements, `assemblies` groups them; `properties` attaches property sets, `quantities` measures, and `geometry` describes
- * elements as a recipe a kernel builds.
+ * standard elements and `elements` any other class; `assemblies` groups them, `properties` attaches
+ * property sets, `quantities` measures, and `geometry` describes elements as recipes.
  *
  * A model is a value: every method that changes one returns a new model and leaves the one it was
- * given as it was. Elements are parametric IFC4 that other BIM tools edit as walls, slabs and doors.
- * Experimental: names and inputs may still change before the first stable version.
+ * given as it was. Standard elements are parametric IFC4 that other BIM tools edit as walls, slabs
+ * and doors. Experimental: names and inputs may change before the first stable version.
  * @beta
  */
 export class IFCService {
@@ -71,6 +72,11 @@ export class IFCService {
      * Adds flat, mono-pitch, gable and hip roofs over rectangles.
      */
     readonly roofs: IFCRoofs;
+    /**
+     * Adds elements of any kind whose body is given as exact breps or triangle meshes.
+     */
+    readonly elements: IFCElements;
+
     /**
      * Adds the site's terrain and trees.
      */
@@ -119,6 +125,7 @@ export class IFCService {
         this.slabs = new IFCSlabs();
         this.roofs = new IFCRoofs();
         this.site = new IFCSite();
+        this.elements = new IFCElements();
         this.columns = new IFCColumns();
         this.beams = new IFCBeams();
         this.members = new IFCMembers();

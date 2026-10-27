@@ -1,5 +1,5 @@
-import { composeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { add2, scale2 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { composeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { add2, scale2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type * as Inputs from "../api/inputs";
 import type { ModelSnapshot } from "../model/snapshot";
 import type { IfcTransaction } from "../model/transaction";
@@ -17,7 +17,7 @@ import { firstItem, unwrapClippings } from "./representations";
 import { clippingPlanes } from "./roof-clipping";
 import { frameOf } from "./solids";
 import { describeObject } from "./spatial";
-import { readableWall, sideLine } from "./wall-geometry";
+import { inOwnFrame, readableWall, sideLine } from "./wall-geometry";
 import { placedOnPlan } from "./math";
 
 const QUANTITY_ENTITIES: Readonly<Record<QuantityKind, string>> = { length: "IfcQuantityLength", area: "IfcQuantityArea", volume: "IfcQuantityVolume" };
@@ -40,21 +40,22 @@ function quantity(name: string, kind: QuantityKind, value: number): MeasuredQuan
 }
 
 function wallSet(reader: ModelReader, wall: number, tolerance: number): MeasuredSet | undefined {
-    const geometry = readableWall(reader, wall);
-    const items = geometry?.body === undefined ? null : reader.attribute(geometry.body, "Items");
-    if (!geometry?.body || !isList(items) || items.length !== 1) {
+    const placed = readableWall(reader, wall);
+    const items = placed?.body === undefined ? null : reader.attribute(placed.body, "Items");
+    if (!placed?.body || !isList(items) || items.length !== 1) {
         return undefined;
     }
-    const [solid, halfSpaces] = unwrapClippings(reader, firstItem(reader, geometry.body));
+    const geometry = inOwnFrame(reader, placed);
+    const [solid, halfSpaces] = unwrapClippings(reader, firstItem(reader, placed.body));
     const profile = reader.entity(solid).type === "IfcExtrudedAreaSolid" ? reader.attribute(solid, "SweptArea") : null;
     const outline = isReference(profile) ? profileShape(reader, profile.ref)?.outline : undefined;
     if (!outline || halfSpaces.some((halfSpace) => reader.entity(halfSpace).type !== PLAIN_HALF_SPACE)) {
         return undefined;
     }
-    const solidFrame = composeAxes(geometry.frame, frameOf(reader, reader.attribute(solid, "Position")));
+    const solidFrame = frameOf(reader, reader.attribute(solid, "Position"));
     const footprint = outline.map((point) => placedOnPlan(solidFrame, point));
-    const base = geometry.frame.origin[2] + geometry.base;
-    const bounds = boundsOf(base, base + geometry.height, clippingPlanes(reader, geometry, geometry.body));
+    const base = geometry.base;
+    const bounds = boundsOf(base, base + geometry.height, clippingPlanes(reader, geometry, placed.body));
     const thickness = geometry.high - geometry.low;
     const middle = sideLine(geometry, (geometry.low + geometry.high) / 2);
     const along = (distance: number): [number, number] => add2(middle.point, scale2(middle.direction, distance));
@@ -137,7 +138,8 @@ function fillingSet(reader: ModelReader, filling: number, name: string): Measure
 
 function openingSet(reader: ModelReader, opening: number, tolerance: number): MeasuredSet | undefined {
     const host = relatingOf(reader, VOIDING, opening);
-    const wall = host === undefined ? undefined : readableWall(reader, host);
+    const placed = host === undefined ? undefined : readableWall(reader, host);
+    const wall = placed === undefined ? undefined : inOwnFrame(reader, placed);
     const place = wall === undefined || host === undefined ? undefined : readWallOpening(reader, wall, objectPlacementOf(reader, host), opening, tolerance);
     if (!wall || !place) {
         return undefined;

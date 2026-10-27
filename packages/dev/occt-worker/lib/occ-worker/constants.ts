@@ -32,6 +32,10 @@ export const ReservedFunctions = {
     SHAPE_TO_MESH: "shapeToMesh",
     /** Convert multiple shapes to mesh data for rendering */
     SHAPES_TO_MESHES: "shapesToMeshes",
+    /** Convert a single shape to mesh data for drawing, as typed arrays handed over without a copy */
+    SHAPE_TO_MESH_BUFFERS: "shapeToMeshBuffers",
+    /** Convert multiple shapes to mesh data for drawing, as typed arrays handed over without a copy */
+    SHAPES_TO_MESH_BUFFERS: "shapesToMeshBuffers",
     /** Convert a single document shape to mesh data including per-face colours */
     DOC_TO_MESH: "docToMesh",
     /** Convert multiple document shapes to mesh data including per-face colours */
@@ -40,6 +44,8 @@ export const ReservedFunctions = {
     DELETE_SHAPE: "deleteShape",
     /** Delete multiple shapes from cache */
     DELETE_SHAPES: "deleteShapes",
+    /** Delete each of the shapes given whose answers counted beside it are every answer that carried it in the epoch named, so no other caller holds it; answers with the current epoch */
+    DELETE_UNSHARED_SHAPES: "deleteUnsharedShapes",
     /** Delete an assembly document handle from cache */
     DELETE_DOCUMENT: "deleteDocument",
     /** Signal that a new run has started (used for cache cleanup) */
@@ -61,10 +67,13 @@ export const ReservedFunctions = {
 export const NON_CACHEABLE_FUNCTIONS = new Set<string>([
     ReservedFunctions.SHAPE_TO_MESH,
     ReservedFunctions.SHAPES_TO_MESHES,
+    ReservedFunctions.SHAPE_TO_MESH_BUFFERS,
+    ReservedFunctions.SHAPES_TO_MESH_BUFFERS,
     ReservedFunctions.DOC_TO_MESH,
     ReservedFunctions.DOC_TO_MESHES,
     ReservedFunctions.DELETE_SHAPE,
     ReservedFunctions.DELETE_SHAPES,
+    ReservedFunctions.DELETE_UNSHARED_SHAPES,
     ReservedFunctions.DELETE_DOCUMENT,
     ReservedFunctions.STARTED_THE_RUN,
     ReservedFunctions.CLEAN_ALL_CACHE,

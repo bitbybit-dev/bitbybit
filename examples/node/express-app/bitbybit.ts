@@ -27,7 +27,7 @@ import { Jscad } from "@bitbybit-dev/jscad";
 import { ManifoldService } from "@bitbybit-dev/manifold";
 
 // OCCT for Node.js
-import { OCCTService, OccHelper, VectorHelperService, ShapesHelperService } from "@bitbybit-dev/occt";
+import { OCCTService } from "@bitbybit-dev/occt";
 import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
 
 // Manifold WASM module
@@ -70,7 +70,7 @@ export class BitByBitBase {
         const kernelDir = dirname(require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/index.js"));
         const wasmFile = readdirSync(kernelDir).find((file) => file.endsWith(".wasm"));
         if (!wasmFile) {
-            throw new Error(`No OCCT kernel found in ${kernelDir}`);
+            throw new Error(`No Bitbybit OCCT Kernel found in ${kernelDir}`);
         }
         const wasmPath = join(kernelDir, wasmFile);
         const occ = await (initOpenCascade as (options?: { locateFile?: (path: string) => string }) => Promise<BitbybitOcctModule>)({
@@ -118,9 +118,6 @@ export class BitByBitBase {
         this.csv = new CSVBitByBit();
 
         // Initialize OCCT service
-        const vecHelper = new VectorHelperService();
-        const shapesHelper = new ShapesHelperService();
-        const occHelper = new OccHelper(vecHelper, shapesHelper, occ);
-        this.occt = new OCCTService(occ, occHelper);
+        this.occt = new OCCTService(occ);
     }
 }

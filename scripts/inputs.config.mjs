@@ -12,6 +12,7 @@ export const targets = [
             "/* eslint-disable @typescript-eslint/no-namespace */",
             "import { Base } from \"@bitbybit-dev/base\";",
             "import { IO } from \"@bitbybit-dev/base/lib/api/inputs/io-inputs\";",
+            "import { Engineering } from \"@bitbybit-dev/base/lib/api/inputs/engineering-inputs\";",
             "import * as Models from \"../models\";",
         ],
         order: [
@@ -41,6 +42,26 @@ export const targets = [
             "repair-and-files",
             "design-documents",
             "recipes",
+            "parts",
+            "parts-ansi",
+            "machining",
+            "machining-ansi",
+        ],
+    },
+    {
+        namespace: "Engineering",
+        dir: "packages/dev/base/lib/api/inputs/engineering",
+        out: "packages/dev/base/lib/api/inputs/engineering-inputs.ts",
+        header: [
+            "/* eslint-disable @typescript-eslint/no-namespace */",
+            "import { Base } from \"./base-inputs\";",
+        ],
+        order: [
+            "enums",
+            "gears",
+            "fasteners",
+            "machine-elements",
+            "springs",
         ],
     },
     {
@@ -102,6 +123,7 @@ export const targets = [
             "openings-doors-windows",
             "slabs-columns-beams",
             "site",
+            "elements",
             "properties",
             "geometry",
         ],

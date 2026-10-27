@@ -22,7 +22,7 @@ If your 3D logic should execute on the user's device, you have two options.
 
 ### NPM Packages (Recommended for production apps)
 
-Install our open-source packages into your existing frontend project. They run geometry kernels via WebAssembly and integrate directly with your rendering engine of choice. To start a new project with everything wired, run `npx @bitbybit-dev/create-app` ([create-app](../npm-packages/create-app)).
+Install our free packages into your existing frontend project. They run geometry kernels via WebAssembly and integrate directly with your rendering engine of choice. To start a new project with everything wired, run `npx @bitbybit-dev/create-app` ([create-app](../npm-packages/create-app)).
 
 - [NPM Packages Introduction](../npm-packages/intro)
 - Renderer guides: [Three.js](../npm-packages/threejs) · [Babylon.js](../npm-packages/babylonjs) · [PlayCanvas](../npm-packages/playcanvas)

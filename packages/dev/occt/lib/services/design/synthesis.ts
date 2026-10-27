@@ -5,6 +5,7 @@ import { nameParts } from "./names";
 import { nothing, unlessTrapped } from "./problems";
 import type { ResolveContext } from "./references";
 import { edgesBetween, facesFound } from "./references";
+import type { KernelExceptionReader } from "../../kernel-exception";
 
 type FaceReference = Models.OCCT.DesignFaceReference;
 
@@ -59,8 +60,8 @@ export function referenceOfName(name: string): FaceReference {
     };
 }
 
-function quietly(read: () => number[]): number[] | undefined {
-    return unlessTrapped<number[] | undefined>(read, nothing);
+function quietly(occ: KernelExceptionReader, read: () => number[]): number[] | undefined {
+    return unlessTrapped<number[] | undefined>(occ, read, nothing);
 }
 
 function sameSet(found: readonly number[], wanted: readonly number[]): boolean {
@@ -80,7 +81,7 @@ function byPreference(first: Pick<Candidate, "specificity" | "order" | "name">, 
 function candidatesOf(names: readonly string[], context: ResolveContext, order: ReadonlyMap<string, number>): Candidate[] {
     return names.flatMap(name => {
         const reference = referenceOfName(name);
-        const faces = quietly(() => facesFound(reference, context, ""));
+        const faces = quietly(context.occ, () => facesFound(reference, context, ""));
         if (faces === undefined) {
             return [];
         }
@@ -112,7 +113,7 @@ export function faceReferenceFor(faces: readonly number[], context: ResolveConte
     for (const superset of supersets) {
         for (const filter of FACE_FILTERS) {
             const reference: FaceReference = { ...superset.reference, filter: { select: filter.select, direction: [...filter.direction] } };
-            const found = quietly(() => facesFound(reference, context, ""));
+            const found = quietly(context.occ, () => facesFound(reference, context, ""));
             if (found !== undefined && sameSet(found, faces)) {
                 return { reference: { ...reference, count: faces.length } };
             }
@@ -122,9 +123,9 @@ export function faceReferenceFor(faces: readonly number[], context: ResolveConte
 }
 
 function edgesOf(reference: EdgeReference, context: ResolveContext): number[] | undefined {
-    const first = quietly(() => facesFound(reference.between[0], context, ""));
-    const second = quietly(() => facesFound(reference.between[1], context, ""));
-    return first === undefined || second === undefined ? undefined : quietly(() => edgesBetween(reference, first, second, context, ""));
+    const first = quietly(context.occ, () => facesFound(reference.between[0], context, ""));
+    const second = quietly(context.occ, () => facesFound(reference.between[1], context, ""));
+    return first === undefined || second === undefined ? undefined : quietly(context.occ, () => edgesBetween(reference, first, second, context, ""));
 }
 
 /**
@@ -133,7 +134,7 @@ function edgesOf(reference: EdgeReference, context: ResolveContext): number[] | 
  * hold them among others, narrowed by an `along` or `extreme` filter along an axis.
  */
 export function edgeReferenceFor(edges: readonly number[], context: ResolveContext, order: ReadonlyMap<string, number>): Synthesized<EdgeReference> {
-    const adjacent = unlessTrapped<number[] | string>(() => context.occt.select.faces.ofEdges({ shape: context.shape, indexes: [...edges] }), messageOf);
+    const adjacent = unlessTrapped<number[] | string>(context.occ, () => context.occt.select.faces.ofEdges({ shape: context.shape, indexes: [...edges] }), messageOf);
     if (typeof adjacent === "string") {
         return { refused: `the faces along the picked edges could not be read: ${adjacent}` };
     }

@@ -2,15 +2,16 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
 import { DesignCache } from "./cache";
 import { probeRounding } from "./probe";
-import { BaseBitByBit } from "../../base";
+import { BaseBitByBit } from "@bitbybit-dev/base";
+import { releaseDesignCaches } from "../../release-design-caches";
+import { handlesIn, namesOf, openWindow } from "../../../../__test__/embind-ledger";
+import { sha256 } from "./digest";
 
 const base = new BaseBitByBit();
 
@@ -35,15 +36,50 @@ const top: Models.OCCT.DesignFaceReference = { of: "plate", role: "end", filter:
 
 const topEdges = (count: number): Models.OCCT.DesignEdgeReference => ({ between: [top, { of: "plate", role: "side" }], count });
 
+const LUG_CODE = "return occt.shapes.solid.createBox(inputs);";
+
+const scripted = (rounding: Models.OCCT.DesignFeature): Document => {
+    const document = plate([{ id: "lug", type: "script", script: "lugScript", params: { plate: { body: "plate" }, list: [{ body: "plate" }, { expr: "height" }] } }, rounding]);
+    return { ...document, assets: [{ id: "lugScript", uri: "lug.js", sha256: sha256(new TextEncoder().encode(LUG_CODE)) }] };
+};
+
 describe("OCCT design fillet probe", () => {
     let kernel: BitbybitOcctModule;
     let occt: OCCTService;
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        const helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel);
+        const helper = new OccHelper(kernel);
         occt = new OCCTService(kernel, helper);
     }, 120_000);
+
+    const keptAfter = (act: () => unknown): string[] => {
+        const opened = openWindow();
+        try {
+            handlesIn(act()).forEach(handle => { handle.delete(); });
+        } catch (error) {
+            if (!(error instanceof InputError)) {
+                throw error;
+            }
+        } finally {
+            opened.close();
+        }
+        releaseDesignCaches(occt);
+        return namesOf(opened.made().filter(handle => !handle.isDeleted()));
+    };
+
+    it("should keep none of the shapes a waiting script was given, whether the body it probes built or waits for the script", () => {
+        // Arrange
+        const afterTheScript = scripted({ id: "round", type: "fillet", body: "plate", radius: 2, edges: topEdges(4) });
+        const onTheScript = scripted({ id: "round", type: "fillet", body: "lug", radius: 2, edges: { between: [{ of: "lug", role: "top" }, { of: "lug", role: "face" }], count: 4 } });
+
+        // Act
+        const keptProbing = keptAfter(() => occt.design.probeFillet({ document: afterTheScript, feature: "round", assets: { lugScript: LUG_CODE } }));
+        const keptRefusing = keptAfter(() => occt.design.probeFillet({ document: onTheScript, feature: "round", assets: { lugScript: LUG_CODE } }));
+
+        // Assert
+        expect([keptProbing, keptRefusing]).toEqual([[], []]);
+    });
 
     it("should find the edges a fillet rounds and the largest radius that builds", () => {
         // Arrange

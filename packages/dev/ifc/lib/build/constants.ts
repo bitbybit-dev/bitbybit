@@ -23,7 +23,6 @@ export const LENGTH_PREFIXES: Readonly<Record<string, number>> = {
 export const GEOMETRY_TOLERANCE_METRES = 1e-6;
 export const PARALLEL_TOLERANCE = 1e-9;
 export const OPENING_MARGIN_RATIO = 0.25;
-export const DEGREES_TO_RADIANS = Math.PI / 180;
 export const VERTICAL_COSINE = 1 - 1e-9;
 export const POINT2_SIZE = 2;
 export const POINT3_SIZE = 3;

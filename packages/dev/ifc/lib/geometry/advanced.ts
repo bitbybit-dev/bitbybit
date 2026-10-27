@@ -1,9 +1,10 @@
 import type { Base } from "@bitbybit-dev/base";
-import { squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { squareFrame, unitOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type { RefinedSurfaceMesh } from "@bitbybit-dev/base/lib/api/services/helpers/helper-types";
-import { refinedSurfaceMesh } from "@bitbybit-dev/base/lib/api/services/helpers/surface-triangulation";
-import { newellNormal } from "@bitbybit-dev/base/lib/api/services/helpers/triangulation";
-import { cross3, dot3, length3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { refinedSurfaceMesh } from "@bitbybit-dev/base/lib/api/services/helpers/curves/surface-triangulation";
+import { newellNormal } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/triangulation";
+import { between2, cross3, distance2, dot3, length3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { angleOfCosine } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 import type { ModelSnapshot } from "../model/snapshot";
 import type { IfcValue } from "../step/step-types";
 import { isList, isReference } from "../step/values";
@@ -11,7 +12,7 @@ import type { CurveSampler } from "./curves";
 import type { EdgeSampler } from "./edges";
 import { UnsupportedGeometryError } from "./errors";
 import type { AssembledFace, BoundLoop, CutEdge, FaceLoop, ParametricSurface, PolePoint } from "./geometry-types";
-import { CUT_SAMPLES, CUT_TURN, FIT_PROBES, FIT_TOLERANCE, MIN_LOOP_POINTS, NORMAL_STEP, TRIANGLE_CORNERS } from "./surfaces.constants";
+import { CUT_SAMPLES, CUT_SLACK, CUT_TURN, FIT_PROBES, FIT_TOLERANCE, MIN_LOOP_POINTS, NORMAL_STEP, TRIANGLE_CORNERS } from "./surfaces.constants";
 import { parametricSurface, plane } from "./surfaces";
 
 const OUTER_BOUND = "IfcFaceOuterBound";
@@ -213,7 +214,7 @@ export class AdvancedFaces {
         const closing = shift(start, first.winding[axis] * period);
         const distances = second.uv.map((point) => {
             const aligned = unwrapped(point[axis], closing[axis], period);
-            return Math.hypot(aligned - closing[axis], point[1 - axis]! - closing[1 - axis]!);
+            return distance2([aligned, point[1 - axis]!], [closing[axis], closing[1 - axis]!]);
         });
         const join = distances.indexOf(Math.min(...distances));
         const turned = [...second.uv.slice(join), ...second.uv.slice(0, join)];
@@ -260,22 +261,20 @@ export class AdvancedFaces {
     }
 
     private across(surface: ParametricSurface, from: Base.Point2, to: Base.Point2): CutEdge {
-        const at = (t: number): Base.Point2 => [from[0] + (to[0] - from[0]) * t, from[1] + (to[1] - from[1]) * t];
+        const at = (t: number): Base.Point2 => between2(from, to, t);
         let turned = 0;
         let previous: Base.Vector3 | undefined;
         for (let step = 0; step <= CUT_SAMPLES; step++) {
-            const normal = this.surfaceNormal(surface, at(step / CUT_SAMPLES));
-            const length = length3(normal);
-            if (!(length > 0)) {
+            const unit = unitOf(this.surfaceNormal(surface, at(step / CUT_SAMPLES)));
+            if (unit === undefined) {
                 continue;
             }
-            const unit: Base.Vector3 = [normal[0] / length, normal[1] / length, normal[2] / length];
             if (previous) {
-                turned += Math.acos(Math.max(-1, Math.min(1, dot3(previous, unit))));
+                turned += angleOfCosine(dot3(previous, unit));
             }
             previous = unit;
         }
-        const segments = Math.min(CUT_SAMPLES, Math.max(1, Math.ceil(turned / CUT_TURN)));
+        const segments = Math.min(CUT_SAMPLES, Math.max(1, Math.ceil(turned / CUT_TURN - CUT_SLACK)));
         const uv = Array.from({ length: segments - 1 }, (_, step) => at((step + 1) / segments));
         return { uv, points: uv.map(([u, v]) => surface.point(u, v)) };
     }

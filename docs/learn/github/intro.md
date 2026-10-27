@@ -71,7 +71,7 @@ Understanding this underlying principle is key to understanding the "why" behind
 
 ## What's NOT Inside the Monorepo?
 
-While this monorepo hosts all of the open-source components of Bitbybit, it does not include any proprietary source code. We do not open-source the source code for our higher-level visual programming editors, advanced algorithms, or the main website.
+While this monorepo hosts all of the open-source components of Bitbybit, it does not include any proprietary source code. We do not open-source the source code for our higher-level visual programming editors, advanced algorithms, or the main website, nor the C++ layer of the Bitbybit OCCT Kernel: the kernel is built elsewhere and published as MIT-licensed WebAssembly ([Open Source Approach](/learn/open-source-approach#the-occt-kernel)).
 
 The Bitbybit platform also includes proprietary 3D configurators and closed-source applications. Additionally, the 3D Bits application for Shopify is not open-sourced.
 
@@ -92,7 +92,7 @@ It's important to note that while the core libraries live in the main `bitbybit/
 
 ➡️ **[https://github.com/bitbybit-dev/bitbybit/examples](https://github.com/bitbybit-dev/bitbybit/examples)**
 
-App examples host various standalone applications and demos that showcase how the released Bitbybit NPM packages can be used in different contexts. It serves as a practical demonstration ground for the open-source libraries developed for Bitbybit.
+App examples host various standalone applications and demos that showcase how the released Bitbybit NPM packages can be used in different contexts. It serves as a practical demonstration ground for the libraries developed for Bitbybit.
 
 ## Summary
 

@@ -6,7 +6,7 @@ sidebar_label: 4. The wrist
 description: The fourth chapter of the desk arm - a knuckle that turns in the forearm's fork, with a tool flange raised on its face, rounded rims, the pin hole and two connectors.
 topic: designer.tutorials.desk-arm.wrist
 type: tutorial
-verified: 2026-10-12
+verified: 2026-10-19
 tags: [designer]
 ---
 
@@ -66,9 +66,9 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
     <Shot id="designer.tutorials.desk-arm/step-65" />
 
-66. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id pin, body wrist, on the end face of wrist, diameter 8.
+66. **[Hole](../../reference/commands.md#designer-part-hole)**, from <Ui>Insert</Ui> > <Ui>Hole</Ui>: id pin, body wrist, on the end face of wrist.
 
-    Drill the 8 mm pin hole through the heel.
+    Drill the pin hole through the heel, for the M8 bolt it turns on.
 
     <Shot id="designer.tutorials.desk-arm/step-66" />
 

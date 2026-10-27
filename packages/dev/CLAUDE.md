@@ -7,21 +7,19 @@ Sixteen packages, all published to npm: `base`, `occt`, `occt-worker`, `jscad`, 
 kernels, `ifc` and all four workers; `babylonjs`, `threejs` and `playcanvas` each sit on `core` and
 carry their engine as a peer or hard dependency. The build order is derived from these manifests - see
 "Building the packages" in the root CLAUDE.md; `npm run build-packages` at the repo root runs it.
+Most packages also carry a `CLAUDE.md` for what is true of that package alone; this file, all of them.
 
 ## Per-package commands (run from the package directory)
 
 ```bash
 npm run build       # tsc -b tsconfig.bitbybit.json - builds the siblings it references first
-npm run build-p     # build, then stage dist/ for publishing (package.json, README, LICENSE, assets)
+npm run build-p     # build, then stage dist/ for publishing (package.json, README, LICENSE, assets); plain build only compiles
 npm run api:update  # every package but occt-worker: rewrite etc/<pkg>.api.md after a deliberate public-surface change
 npm run typecheck:strict       # the strict typecheck (tsconfig.strict.json, generated with the build's references); must stay at zero
-npm test            # vitest, single run
+npm test            # vitest, single run (test:watch keeps it running)
 npm run test:coverage          # the same with coverage; writes test-results/vitest.json and coverage/coverage-summary.json for the root test:report
-npm run test:watch  # vitest in watch mode
 npm run lint
 ```
-
-`build-p` is what produces a publishable `dist/`. Plain `build` only compiles.
 
 ## Things that catch people out
 
@@ -66,16 +64,16 @@ npm run lint
   re-hydration, reserved commands) go into `lib/api-hand/<same path>.ts` with a marker line each; a
   `// replaces <path>` member without a JSDoc receives the kernel's. Every public kernel API method
   needs an explicit return type - the generator refuses an inferred one.
-- **The five assembled inputs namespaces are generated; do not edit them.** `occt/.../occ-inputs.ts`,
-  `jscad/.../jscad-inputs.ts`, `manifold/.../manifold-inputs.ts`, `ifc/.../ifc-inputs.ts` and
-  `core/.../verb-inputs.ts` are each written from the fragments in the sibling directory beside them.
-  Add or change a DTO in the fragment whose name fits (they are slices of the namespace in a fixed
-  order, so a new DTO lands where its fragment sits), import a sibling fragment's DTO when a property
-  refers to it, and run `npm run gen:inputs` at the repository root; `check:inputs` in `npm test`
-  fails on a stale file. A new fragment is added to its namespace's `order` in
-  `scripts/inputs.config.mjs` - the generator fails on a fragment nothing names rather than dropping
-  it. The fragments are excluded from the build - the assembled namespace is what compiles - and they
-  are what lint sees, the assembled file being ignored.
+- **The six assembled inputs namespaces are generated; do not edit them.** `occt/.../occ-inputs.ts`,
+  `jscad/.../jscad-inputs.ts`, `manifold/.../manifold-inputs.ts`, `ifc/.../ifc-inputs.ts`,
+  `core/.../verb-inputs.ts` and `base/.../engineering-inputs.ts` are each written from the fragments in
+  the sibling directory beside them. Add or change a DTO in the fragment whose name fits (they are
+  slices of the namespace in a fixed order, so a new DTO lands where its fragment sits), import a
+  sibling fragment's DTO when a property refers to it, and run `npm run gen:inputs` at the repository
+  root; `check:inputs` in `npm test` fails on a stale file. A new fragment is added to its namespace's
+  `order` in `scripts/inputs.config.mjs` - the generator fails on a fragment nothing names rather than
+  dropping it. The fragments are excluded from the build - the assembled namespace is what compiles -
+  and they are what lint sees, the assembled file being ignored.
 - **Method and class JSDoc is authored on the kernel and describes the API as users reach it** - the
   asynchronous, worker-backed one (`await` in examples, File/Blob accepted where the worker converts
   them, `deleteDocument()` for document lifetime) - with the generator tags (`@group`, `@shortname`,
@@ -92,8 +90,8 @@ npm run lint
   64-bit-mt variants), copied into `dist/` by `copy-occt`. The wasm is not tracked: `kernels.json`
   names each kernel with its SHA-256 and url, and `build-p` starts by fetching what is missing and
   verifying what is present (`npm run kernels:fetch` at the root does the same). A build that skips
-  it produces a package that resolves but cannot run. The tarball also carries `NOTICE` and the
-  OCCT and Draco license texts.
+  it produces a package that resolves but cannot run. Its MIT `LICENSE` also covers the closed-source
+  kernels, and the tarball carries `NOTICE` and the license texts of the third-party code inside them.
 - `cad-cloud-sdk`, `create-app` and `mcp` compile as **NodeNext at ES2022** where their siblings
   target a browser bundle - the only compiler settings any of them states on top of the shared base.
   Part of the SDK's `src/types/` is **generated** from the CAD Cloud API's schemas; do not edit
@@ -133,13 +131,19 @@ npm run lint
   which engine version to install, so the distinction is not cosmetic. Both also run a
   `delete-mocks` step during packaging.
 
-## Two rules that hold across every package
+## Three rules that hold across every package
 
-**Check a value where it arrives, not where it is used.** Data from a caller, from a file, or across
-the worker boundary is untrusted whatever the types say, and is checked there. Data produced a few
-lines earlier by our own code, in a function whose output shape is fixed, is not re-checked by its own
-consumer: a guard against a state the producer cannot emit protects nothing and tells the reader that
-case is possible.
+**Check a value where it arrives, not where it is used.** Data from a caller, from a file, or across the
+worker boundary is untrusted whatever the types say, and is checked there. Data produced a few lines
+earlier by our own code, in a function whose output shape is fixed, is not re-checked by its own consumer:
+a guard against a state the producer cannot emit protects nothing and tells the reader that case is
+possible.
+
+**Maths lives once, in base, reached through its public services.** Before writing vector, matrix,
+angle, curve, polygon or mesh arithmetic, look in base's services and `services/helpers/`; what is
+missing goes into base, as a helper with tests and a public method people building 3D apps can use,
+never as a local copy. Call what a user calls (`math.degToRad`); `base/CLAUDE.md` names the deep-import
+exceptions, and `bitbybit/no-local-maths` (`LINT.md`) fails the arithmetic it recognises.
 
 **Nothing consumes what it was given.** Helpers here are called repeatedly on the same data - a
 caller may redraw on every parameter change - so a function that appends to or pops from a
@@ -165,8 +169,9 @@ almost every rule here follows from that.
   thrown, for now), replaces the references in the inputs by the cached objects - a new structure, the
   posted inputs untouched - and calls the dotted path with `callByPath`. `describeKernelFailure` words a
   failure the same way for every worker; when even that cannot be posted, a fixed message is.
-- **Structured clone drops prototypes.** A DTO arrives as a plain object: no methods, no getters, no
-  `instanceof`. That is why worker-side types are plain records.
+- **Structured clone drops prototypes**: a DTO arrives as a plain object, so worker-side types are plain
+  records. Drawing meshes (`shapesToMeshBuffers`) cross as handed-over buffers, empty on the sending
+  side after, so only a result nothing caches may be handed over (`occt-worker/CLAUDE.md`).
 - **Materials cannot cross** - engine material objects are cyclic and throw `DataCloneError`, so
   `getSafeWorkerOptions` drops `faceMaterial`. **Typed arrays must cross untouched** - the recursive
   walkers short-circuit on `ArrayBuffer` and its views before their generic object branch, which would
@@ -193,8 +198,3 @@ declarations name it?". Remove one on the first question and the build and typec
 `api:check` fails. A package never maps its own name; that would let a stale build output satisfy a
 reference to current source. `check:references` compares the generated configs to each other and to
 the manifests' `references` - it never compares `paths` to `dependencies`.
-
-## Per-package `CLAUDE.md`
-
-Most packages carry one, for what is true of that package alone: the kernel quirks, the engine
-differences, the memory rules. This file holds what is true of all of them.

@@ -1,13 +1,14 @@
-import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Models from "../../api/models";
 import { callByPath, messageOf } from "@bitbybit-dev/base";
 import type { FaceNames } from "./names";
 import { facesCopied, nameOf } from "./names";
 import type { OCCTService } from "../../occ-service";
-import type { BaseBitByBit } from "../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type { Rebinding } from "./hints";
 import { candidatesOf, rebindOf, recordHint, referenceHintOf } from "./hints";
 import { DesignProblem, isKernelTrap, pointer } from "./problems";
+import { readKernelException } from "../../kernel-exception";
 
 /**
  * What a reference is resolved against: a body's shape and its face names, the package to filter
@@ -17,6 +18,7 @@ export interface ResolveContext {
     shape: TopoDS_Shape;
     names: FaceNames;
     occt: OCCTService;
+    occ: BitbybitOcctModule;
     base: BaseBitByBit;
     suppressed: ReadonlySet<string>;
     rebinding?: Rebinding | undefined;
@@ -33,7 +35,7 @@ function filtered(kind: "faces" | "edges", found: number[], filter: Models.OCCT.
         if (isKernelTrap(error)) {
             throw error;
         }
-        throw new DesignProblem(pointer(path, "filter"), `the filter failed: ${messageOf(error)}`);
+        throw new DesignProblem(pointer(path, "filter"), `the filter failed: ${messageOf(readKernelException(context.occ, error))}`);
     }
 }
 

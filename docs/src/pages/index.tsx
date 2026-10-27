@@ -186,7 +186,7 @@ function HeroSection() {
             <span className={styles.statLabel}>CAD Kernels</span>
           </div>
           <div className={styles.stat}>
-            <span className={styles.statNumber}>2017</span>
+            <span className={styles.statNumber}>2205</span>
             <span className={styles.statLabel}>API Functions</span>
           </div>
           <div className={styles.stat}>

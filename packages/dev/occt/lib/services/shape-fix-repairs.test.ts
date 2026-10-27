@@ -3,8 +3,6 @@ import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoD
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { OccHelper } from "../occ-helper";
-import { VectorHelperService } from "../api/vector-helper.service";
-import { ShapesHelperService } from "../api/shapes-helper.service";
 import { readKernelException } from "../kernel-exception";
 import { OCCTShapeFix } from "./shape-fix";
 import * as Inputs from "../api/inputs";
@@ -61,7 +59,7 @@ describe("OCCT shape fix repairs of shells and solids and sewing with a report",
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        occHelper = new OccHelper(occt);
         shapeFix = new OCCTShapeFix(occt, occHelper);
     });
 

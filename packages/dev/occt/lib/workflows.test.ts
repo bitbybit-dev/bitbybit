@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type { TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "./occ-helper";
-import { VectorHelperService } from "./api/vector-helper.service";
-import { ShapesHelperService } from "./api/shapes-helper.service";
 import { OCCTService } from "./occ-service";
 import type { Base } from "./api/inputs";
 
@@ -12,7 +9,7 @@ describe("workflows built from several operations", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     function volume(shape: TopoDS_Shape): number {

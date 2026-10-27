@@ -6,8 +6,10 @@ import type * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { framesFromNumbers } from "../base/frames";
-import { checkedChoice, checkedNumber, checkedNumberList, checkedPoint, checkedPoints, checkedShape, checkedShapes, checkedWhole, checkedWithin } from "../base/input-checks";
+import { checkedChoice, checkedDirection, checkedNumber, checkedNumberList, checkedPoint, checkedPoints, checkedShape, checkedShapes, checkedWhole, checkedWithin } from "../base/input-checks";
 import { checkedPointGrid } from "../base/surface-analysis";
+import { released } from "../base/release";
+import { readKernelException } from "../../kernel-exception";
 
 const FILLING_STYLES: readonly Inputs.OCCT.fillingStyleEnum[] = [
     Inputs.OCCT.fillingStyleEnum.stretch,
@@ -138,8 +140,7 @@ export class OCCTFace {
      * ```
      */
     fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto): TopoDS_Face {
-        const wire = this.och.wiresService.createPolygonWire({ points: inputs.triangle });
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createPolygonWire({ points: inputs.triangle }));
     }
 
     /**
@@ -164,7 +165,8 @@ export class OCCTFace {
         inputs.mesh.forEach((triangle) => {
             try {
                 faces.push(this.fromBaseTriangle({ triangle }));
-            } catch {
+            } catch (error) {
+                readKernelException(this.occ, error);
                 console.warn("Failed to make face for triangle", triangle);
             }
         });
@@ -237,11 +239,11 @@ export class OCCTFace {
     }
 
     /**
-     * Creates one face from several wires: the first wire is the outer boundary and every further
-     * wire cuts a hole in it.
+     * Creates one face from several wires: the first is the outer boundary and every further one a
+     * hole, whichever way it runs.
      *
-     * With `planar` true the wires must lie in one plane. The hole wires must sit inside the outer
-     * one without crossing it or each other.
+     * The outer wire's direction sets which way the face faces; `planar` keeps it flat. Holes must
+     * lie inside it, apart from it and from each other.
      * @param inputs - The wires, outer boundary first, and whether the face must be flat
      * @returns The face with holes
      * @group from
@@ -260,8 +262,8 @@ export class OCCTFace {
     }
 
     /**
-     * Creates one face from several wires on the surface of a guiding face: the first wire is the
-     * outer boundary and every further wire cuts a hole.
+     * Creates one face on the surface of a guiding face: the first wire is the outer boundary and
+     * every further one a hole, whichever way it runs.
      *
      * The face takes the curvature of the guiding surface. `inside` applies to the first wire: true
      * turns it so the face is the region it encloses; false lets its own direction decide.
@@ -278,6 +280,26 @@ export class OCCTFace {
     createFaceFromWiresOnFace(inputs: Inputs.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.FaceFromWiresOnFaceDto, inputs) as Resolved.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>;
         return this.och.facesService.createFaceFromWiresOnFace(resolved);
+    }
+
+    /**
+     * Creates the one face of a guiding face's surface that wires lying on it bound, given in 3D in
+     * any order: the outer boundary and holes, or two loops round a closed surface such as a cone.
+     *
+     * The edges get their curves on the surface, so wires built anywhere work if they lie on it.
+     * @param inputs - The wires and the guiding face
+     * @returns The bounded face
+     * @group from
+     * @shortname face bounded by wires on face
+     * @drawable true
+     * @example
+     * ```typescript
+     * const band = await bitbybit.occt.shapes.face.createFaceBoundedByWiresOnFace({ wires: [lowerCircle, upperCircle], face: coneFace });
+     * ```
+     */
+    createFaceBoundedByWiresOnFace(inputs: Inputs.OCCT.FaceBoundedByWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
+        const resolved = resolveDto(Inputs.OCCT.FaceBoundedByWiresOnFaceDto, inputs) as Resolved.OCCT.FaceBoundedByWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>;
+        return this.och.facesService.createFaceBoundedByWiresOnFace(resolved);
     }
 
     /**
@@ -462,8 +484,7 @@ export class OCCTFace {
     ruledBetween(inputs: Inputs.OCCT.TwoShapesDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.TwoShapesDto, inputs) as Resolved.OCCT.TwoShapesDto<TopoDS_Shape>;
         const ruled = this.occ.RuledBetween(checkedShape(resolved.shapeA, "shapeA"), checkedShape(resolved.shapeB, "shapeB"));
-        const result = this.och.converterService.getActualTypeOfShape(ruled);
-        ruled.delete();
+        const result = this.och.converterService.castAndRelease(ruled);
         return result;
     }
 
@@ -604,7 +625,7 @@ export class OCCTFace {
      */
     createCircleFace(inputs: Inputs.OCCT.CircleDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.CircleDto, inputs) as Resolved.OCCT.CircleDto;
-        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.face);
+        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, checkedDirection(resolved.direction, "direction"), Inputs.OCCT.typeSpecificityEnum.face);
     }
 
     /**
@@ -635,14 +656,14 @@ export class OCCTFace {
     hexagonsInGrid(inputs: Inputs.OCCT.HexagonsInGridDto): TopoDS_Face[] {
         const resolved = resolveDto(Inputs.OCCT.HexagonsInGridDto, inputs) as Resolved.OCCT.HexagonsInGridDto;
         const hexagonWires = this.och.wiresService.hexagonsInGrid(resolved);
-        return this.och.facesService.createFacesFromWires({ shapes: hexagonWires, planar: true });
+        return released(hexagonWires, () => this.och.facesService.createFacesFromWires({ shapes: hexagonWires, planar: true }));
     }
 
     /**
      * Creates a flat elliptical face.
      *
      * `direction` is the normal of its plane: the default `[0, 1, 0]` lays it flat on the ground.
-     * `radiusMajor` must be at least `radiusMinor`.
+     * Both radii must be above 0, and `radiusMajor` must be at least `radiusMinor`.
      * @param inputs - The two radii, the center and the plane normal
      * @returns The ellipse face
      * @group primitives
@@ -655,7 +676,7 @@ export class OCCTFace {
      */
     createEllipseFace(inputs: Inputs.OCCT.EllipseDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.EllipseDto, inputs) as Resolved.OCCT.EllipseDto;
-        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.face);
+        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, checkedDirection(resolved.direction, "direction"), Inputs.OCCT.typeSpecificityEnum.face);
     }
 
     /**
@@ -725,8 +746,7 @@ export class OCCTFace {
      */
     createLPolygonFace(inputs: Inputs.OCCT.LPolygonDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.LPolygonDto, inputs) as Resolved.OCCT.LPolygonDto;
-        const wire = this.och.wiresService.createLPolygonWire(resolved);
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createLPolygonWire(resolved));
     }
 
     /**
@@ -748,8 +768,7 @@ export class OCCTFace {
      */
     createStarFace(inputs: Inputs.OCCT.StarDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.StarDto, inputs) as Resolved.OCCT.StarDto;
-        const wire = this.och.wiresService.createStarWire(resolved);
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createStarWire(resolved));
     }
 
     /**
@@ -782,8 +801,7 @@ export class OCCTFace {
      */
     createChristmasTreeFace(inputs: Inputs.OCCT.ChristmasTreeDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.ChristmasTreeDto, inputs) as Resolved.OCCT.ChristmasTreeDto;
-        const wire = this.och.wiresService.createChristmasTreeWire(resolved);
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createChristmasTreeWire(resolved));
     }
 
     /**
@@ -805,8 +823,7 @@ export class OCCTFace {
      */
     createParallelogramFace(inputs: Inputs.OCCT.ParallelogramDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.ParallelogramDto, inputs) as Resolved.OCCT.ParallelogramDto;
-        const wire = this.och.wiresService.createParallelogramWire(resolved);
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createParallelogramWire(resolved));
     }
 
     /**
@@ -826,8 +843,7 @@ export class OCCTFace {
      */
     createHeartFace(inputs: Inputs.OCCT.Heart2DDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.Heart2DDto, inputs) as Resolved.OCCT.Heart2DDto;
-        const wire = this.och.wiresService.createHeartWire(resolved);
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createHeartWire(resolved));
     }
 
     /**
@@ -846,8 +862,7 @@ export class OCCTFace {
      */
     createNGonFace(inputs: Inputs.OCCT.NGonWireDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.NGonWireDto, inputs) as Resolved.OCCT.NGonWireDto;
-        const wire = this.och.wiresService.createNGonWire(resolved);
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createNGonWire(resolved));
     }
 
     /**
@@ -879,8 +894,7 @@ export class OCCTFace {
      */
     createIBeamProfileFace(inputs: Inputs.OCCT.IBeamProfileDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.IBeamProfileDto, inputs) as Resolved.OCCT.IBeamProfileDto;
-        const wire = this.och.wiresService.createIBeamProfileWire(resolved);
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createIBeamProfileWire(resolved));
     }
 
     /**
@@ -926,8 +940,7 @@ export class OCCTFace {
      */
     createHBeamProfileFace(inputs: Inputs.OCCT.HBeamProfileDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.HBeamProfileDto, inputs) as Resolved.OCCT.HBeamProfileDto;
-        const wire = this.och.wiresService.createHBeamProfileWire(resolved);
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createHBeamProfileWire(resolved));
     }
 
     /**
@@ -971,8 +984,7 @@ export class OCCTFace {
      */
     createTBeamProfileFace(inputs: Inputs.OCCT.TBeamProfileDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.TBeamProfileDto, inputs) as Resolved.OCCT.TBeamProfileDto;
-        const wire = this.och.wiresService.createTBeamProfileWire(resolved);
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createTBeamProfileWire(resolved));
     }
 
     /**
@@ -1004,8 +1016,7 @@ export class OCCTFace {
      */
     createUBeamProfileFace(inputs: Inputs.OCCT.UBeamProfileDto): TopoDS_Face {
         const resolved = resolveDto(Inputs.OCCT.UBeamProfileDto, inputs) as Resolved.OCCT.UBeamProfileDto;
-        const wire = this.och.wiresService.createUBeamProfileWire(resolved);
-        return this.createFaceFromWire({ shape: wire, planar: true });
+        return this.faceOfOutline(this.och.wiresService.createUBeamProfileWire(resolved));
     }
 
     /**
@@ -1063,8 +1074,7 @@ export class OCCTFace {
     reversedFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): TopoDS_Face {
         const face = inputs.shape;
         const reversed = face.Reversed();
-        const result = this.och.converterService.getActualTypeOfShape(reversed);
-        reversed.delete();
+        const result = this.och.converterService.castAndRelease(reversed);
         return result;
     }
 
@@ -1877,5 +1887,9 @@ export class OCCTFace {
         } catch {
             throw new InputError(`\`supports\` holds an empty shape or something other than a shape at position ${position}; an edge without a face beside it takes an undefined entry.`, "supports");
         }
+    }
+
+    private faceOfOutline(outline: TopoDS_Wire): TopoDS_Face {
+        return released([outline], () => this.createFaceFromWire({ shape: outline, planar: true }));
     }
 }

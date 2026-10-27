@@ -1,6 +1,6 @@
 import * as pc from "playcanvas";
 import type { Tag } from "@bitbybit-dev/core";
-import { DrawCore } from "@bitbybit-dev/core";
+import { DrawCore, checkDrawableMesh } from "@bitbybit-dev/core";
 import * as Inputs from "../inputs";
 import type { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
 import type { Context } from "../context";
@@ -151,6 +151,9 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), async (options) => {
             const decomposedMeshes = inputs.entity as Inputs.OCCT.DecomposedMeshDto[];
             const merged = this.drawHelper.withSurfaceAnalysisRange(this.occtOptions(options), decomposedMeshes);
+            if (merged.drawFaces) {
+                decomposedMeshes.forEach(checkDrawableMesh);
+            }
             const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
                 merged, dm, merged)));
             const container = new pc.Entity("decomposedMeshesContainer");
@@ -598,7 +601,7 @@ export class Draw extends DrawCore {
 
     private handleDesignBuild(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
-            return this.drawHelper.drawDesignBuild(inputs.entity as Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, this.occtOptions(options), inputs.group);
+            return this.drawHelper.drawDesignBuild(inputs.entity as Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>, this.occtOptions(options), inputs.group);
         }, Inputs.Draw.drawingTypes.occtShapes);
     }
 

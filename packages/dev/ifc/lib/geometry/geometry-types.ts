@@ -1,5 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
-import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type * as Inputs from "../api/inputs";
 
 export type ProfileRegion = PolygonRegion | CircleRegion | CompositeRegion;
@@ -46,6 +46,11 @@ export interface TriangleMesh {
 export interface CurveTrim {
     readonly point: Base.Point3 | undefined;
     readonly parameter: number | undefined;
+}
+
+export interface SweepBound {
+    readonly value: number;
+    readonly byLength: boolean;
 }
 
 export interface ParametricSurface {
@@ -124,4 +129,9 @@ export type PartEntry = ItemEntry | NodeEntry;
 export interface PartGroup {
     readonly rgba: readonly number[] | undefined;
     readonly entries: PartEntry[];
+}
+
+export interface BrepEdgeEnds {
+    readonly start: Base.Point3;
+    readonly end: Base.Point3;
 }

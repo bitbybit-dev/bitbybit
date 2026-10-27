@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTEdge, OCCTSolid } from "../shapes";
 import { OCCTCorners } from "./corners";
 import { OCCTBrepGraph } from "../brep-graph/brep-graph";
@@ -24,9 +22,7 @@ describe("OCCT corners unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         corners = new OCCTCorners(occt, occHelper);
         brepGraph = new OCCTBrepGraph(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);

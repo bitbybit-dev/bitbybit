@@ -1,9 +1,6 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import { readKernelException } from "../../kernel-exception";
 import { InputError } from "@bitbybit-dev/base";
@@ -14,7 +11,7 @@ describe("OCCT clashes", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const close = (values: number[], digits = 9): unknown[] => values.map(value => expect.closeTo(value, digits));
@@ -36,6 +33,14 @@ describe("OCCT clashes", () => {
             return read instanceof Error ? read.message : String(read);
         }
         return "nothing thrown";
+    };
+    const outcomeOf = (action: () => unknown): string => {
+        try {
+            return JSON.stringify(action());
+        } catch (error) {
+            const read = readKernelException(kernel, error);
+            return read instanceof Error ? read.message : String(read);
+        }
     };
     const boxFrom = (x: number, size = 10): TopoDS_Shape => occt.shapes.solid.createBox({ width: size, length: 10, height: 10, center: [x + size / 2, 5, 5], originOnCenter: true });
     const rowOfBoxes = (): TopoDS_Shape[] => [boxFrom(0), boxFrom(8), boxFrom(18), boxFrom(29), boxFrom(100)];
@@ -94,6 +99,140 @@ describe("OCCT clashes", () => {
             expect(clashes).toHaveLength(1);
             expect(clashes[0]!.distance).toBe(0);
             expect(clashes[0]!.volume).toBeCloseTo(8, 6);
+        });
+
+        it("should rule out by their meshes a box resting in a hollow one, and still find a box sunk into the hollow one's wall, as measuring every pair does", () => {
+            // Arrange
+            const outer = occt.shapes.solid.createBox({ width: 30, length: 30, height: 30, center: [0, 0, 0], originOnCenter: true });
+            const cavity = occt.shapes.solid.createBox({ width: 20, length: 20, height: 20, center: [0, 0, 0], originOnCenter: true });
+            const hollow = occt.booleans.difference({ shape: outer, shapes: [cavity], keepEdges: false });
+            const resting = occt.shapes.solid.createBox({ width: 4, length: 4, height: 4, center: [0, 0, -7.9], originOnCenter: true });
+            const sunk = occt.shapes.solid.createBox({ width: 4, length: 4, height: 4, center: [9, 0, 0], originOnCenter: true });
+            const gear = occt.parts.mechanical.gears.spurGear({ module: 2, teeth: 20, width: 6, bore: 8 });
+            const shapes = [hollow, resting, sunk, gear];
+
+            // Act
+            const filtered = occt.analysis.clashes.betweenShapes({ shapes, clearance: 0.05 });
+            const measured = occt.analysis.clashes.betweenShapes({ shapes, clearance: 0.05, prefilter: false });
+
+            // Assert
+            expect(filtered).toEqual(measured);
+            expect(filtered.some(clash => clash.indexA === 0 && clash.indexB === 1)).toBe(false);
+            expect(filtered.find(clash => clash.indexA === 0 && clash.indexB === 2)?.volume).toBeCloseTo(4 * 4 * 1, 6);
+            expect(filtered.some(clash => clash.indexB === 3)).toBe(true);
+        });
+
+        it.each([0.01, 1, 100])("should agree with measuring every pair at a scale of %s, turned, with compounds, a free edge and parts a hair from a wall", scale => {
+            // Arrange
+            const cube = (size: number, center: [number, number, number]): TopoDS_Shape => occt.shapes.solid.createBox({ width: size * scale, length: size * scale, height: size * scale, center: [center[0] * scale, center[1] * scale, center[2] * scale], originOnCenter: true });
+            const scene = [
+                cube(10, [0, 0, 0]),
+                cube(2, [3.999, 0, 0]),
+                occt.shapes.solid.createSphere({ radius: 1.5 * scale, center: [0, 6.6 * scale, 0] }),
+                occt.shapes.solid.createCylinder({ radius: 2 * scale, height: 4 * scale, center: [-7.002 * scale, 0, -2 * scale], direction: [0, 0, 1] }),
+                occt.shapes.solid.createCylinder({ radius: scale, height: 5 * scale, center: [-2 * scale, -2 * scale, 3 * scale], direction: [0, 0, 1] }),
+                occt.shapes.compound.makeCompound({ shapes: [cube(4, [20, 0, 0]), cube(4, [22, 0, 0]), cube(1, [21, 0, 0])] }),
+                cube(1, [21, 0, 0]),
+                occt.shapes.compound.makeCompound({ shapes: [cube(2, [40, 0, 0]), occt.shapes.edge.line({ start: [0, 0, -8 * scale], end: [0, 0, -4 * scale] })] }),
+            ];
+            const shapes = scene.map(shape => occt.transforms.rotate({ shape, axis: [1, 1, 1], angle: 37 }));
+            const facesWithin = vi.spyOn(kernel, "FacesWithin");
+            const classified = vi.spyOn(kernel, "ClassifyPointsInSolid");
+
+            // Act
+            const runs = [0, 0.05, 0.2].map(share => ({
+                filtered: occt.analysis.clashes.betweenShapes({ shapes, clearance: share * scale }),
+                measured: occt.analysis.clashes.betweenShapes({ shapes, clearance: share * scale, prefilter: false }),
+            }));
+
+            // Assert
+            runs.forEach(run => expect(run.filtered).toEqual(run.measured));
+            expect(runs[0]!.measured.map(clash => [clash.indexA, clash.indexB])).toEqual([[0, 1], [0, 4], [0, 7], [5, 6]]);
+            expect(facesWithin).toHaveBeenCalled();
+            expect(classified).toHaveBeenCalled();
+            facesWithin.mockRestore();
+            classified.mockRestore();
+        });
+
+        it("should still agree when the kernel cannot classify a point, telling a part a hair inside a wall by a point far from it, and measuring one with no point that far", () => {
+            // Arrange
+            const block = occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0], originOnCenter: true });
+            const inside = occt.shapes.solid.createBox({ width: 2, length: 2, height: 2, center: [3.999, 0, 0], originOnCenter: true });
+            const outside = occt.shapes.solid.createCylinder({ radius: 2, height: 4, center: [-7.002, 0, -2], direction: [0, 0, 1] });
+            const thin = occt.shapes.solid.createBox({ width: 0.002, length: 4, height: 4, center: [4.997, 0, 0], originOnCenter: true });
+            const speck = occt.shapes.solid.createBox({ width: 0.0005, length: 0.0005, height: 0.0005, center: [4.99875, 1.5, 0], originOnCenter: true });
+            const shapes = [block, inside, outside, thin, speck];
+            const unknown = vi.spyOn(kernel, "ClassifyPointsInSolid").mockImplementation((_shape, points) => new Int32Array(points.length / 3).fill(3));
+
+            // Act
+            const filtered = occt.analysis.clashes.betweenShapes({ shapes });
+            unknown.mockRestore();
+
+            // Assert
+            expect(filtered).toEqual(occt.analysis.clashes.betweenShapes({ shapes, prefilter: false }));
+            expect(filtered.map(clash => [clash.indexA, clash.indexB])).toEqual([[0, 1], [0, 3], [0, 4], [1, 3]]);
+        });
+
+        it("should rule out without measuring a piston a hair inside its bore and a block resting in a hollow, by finer meshes and a point classified or far from the wall", () => {
+            // Arrange
+            const outer = occt.shapes.solid.createBox({ width: 30, length: 30, height: 30, center: [0, 0, 0], originOnCenter: true });
+            const cavity = occt.shapes.solid.createBox({ width: 20, length: 20, height: 20, center: [0, 0, 0], originOnCenter: true });
+            const hollow = occt.booleans.difference({ shape: outer, shapes: [cavity], keepEdges: false });
+            const resting = occt.shapes.solid.createBox({ width: 4, length: 4, height: 4, center: [0, 0, -7.999], originOnCenter: true });
+            const barrel = occt.shapes.solid.createCylinder({ radius: 15, height: 20, center: [60, 0, 0], direction: [0, 0, 1] });
+            const bore = occt.shapes.solid.createCylinder({ radius: 10.02, height: 20, center: [60, 0, 0], direction: [0, 0, 1] });
+            const tube = occt.booleans.difference({ shape: barrel, shapes: [bore], keepEdges: false });
+            const piston = occt.shapes.solid.createCylinder({ radius: 10, height: 20, center: [60, 0, 0], direction: [0, 0, 1] });
+            const shapes = [hollow, resting, tube, piston];
+            const measured = vi.spyOn(kernel, "ClashesBetween");
+            const firstUnknown = vi.spyOn(kernel, "ClassifyPointsInSolid").mockImplementation((_shape, points) => Int32Array.from({ length: points.length / 3 }, (_, index) => index === 0 ? 3 : 1));
+
+            // Act
+            const partlyKnown = occt.analysis.clashes.betweenShapes({ shapes });
+            firstUnknown.mockImplementation((_shape, points) => new Int32Array(points.length / 3).fill(3));
+            const unknown = occt.analysis.clashes.betweenShapes({ shapes });
+            firstUnknown.mockRestore();
+
+            // Assert
+            expect([partlyKnown, unknown]).toEqual([[], []]);
+            expect(measured).not.toHaveBeenCalled();
+            measured.mockRestore();
+        });
+
+        it("should find ridges five micrometres apart on parts modelled in metres", () => {
+            // Arrange
+            const ridge = (y: number): TopoDS_Shape => occt.transforms.rotate({ shape: occt.shapes.solid.createBox({ width: 1e-3, length: 1e-3, height: 1e-3, center: [0, y, 0], originOnCenter: true }), axis: [0, 1, 0], angle: 45 });
+            const shapes = [ridge(0), occt.transforms.translate({ shape: ridge(0), translation: [0, 0, 1e-3 * Math.SQRT2 + 5e-6] })];
+
+            // Act
+            const filtered = occt.analysis.clashes.betweenShapes({ shapes, clearance: 1e-5 });
+
+            // Assert
+            expect(filtered).toEqual(occt.analysis.clashes.betweenShapes({ shapes, clearance: 1e-5, prefilter: false }));
+            expect(filtered[0]?.distance).toBeCloseTo(5e-6, 12);
+        });
+
+        it("should measure a part a hair inside a solid whose faces carry only a mesh as measuring every pair does, and name a pair it cannot measure by its own positions", () => {
+            // Arrange
+            const corners = [[0, 0, 0], [10, 0, 0], [0, 10, 0], [0, 0, 10]];
+            const facet = (...at: number[]): string => `facet normal 0 0 0\nouter loop\n${at.map(index => `vertex ${corners[index]!.join(" ")}`).join("\n")}\nendloop\nendfacet\n`;
+            const tetrahedron = kernel.ReadStlFromBytes(new TextEncoder().encode(`solid t\n${facet(0, 2, 1)}${facet(0, 1, 3)}${facet(0, 3, 2)}${facet(1, 2, 3)}endsolid t\n`), false);
+            const builder = new kernel.BRep_Builder();
+            const shell = builder.MakeShell();
+            builder.Add(shell, tetrahedron);
+            const meshOnly = builder.MakeSolid();
+            builder.Add(meshOnly, shell);
+            const near = [meshOnly, occt.shapes.solid.createBox({ width: 0.5, length: 0.5, height: 0.5, center: [0.252, 2, 2], originOnCenter: true })];
+            const unmeasurable = [boxFrom(20), boxFrom(100), meshTriangleAt(0), meshTriangleAt(1)];
+
+            // Act
+            const filtered = outcomeOf(() => occt.analysis.clashes.betweenShapes({ shapes: near }));
+            const named = messageOf(() => occt.analysis.clashes.betweenShapes({ shapes: unmeasurable, clearance: 2 }));
+
+            // Assert
+            expect(filtered).toBe(outcomeOf(() => occt.analysis.clashes.betweenShapes({ shapes: near, prefilter: false })));
+            expect(named).toBe("Standard_DomainError: ClashesBetween: the distance between shapes 2 and 3 could not be computed");
+            builder.delete();
         });
 
         it("should refuse a negative clearance, a list holding a missing shape, and meshes it cannot measure", () => {

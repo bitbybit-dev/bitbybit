@@ -5,7 +5,7 @@ import { CrossSectionOperations } from "./cross-section-operations";
 import { CrossSectionTransforms } from "./cross-section-transforms";
 import { CrossSectionBooleans } from "./cross-section-booleans";
 import { CrossSectionEvaluate } from "./cross-section-evaluate";
-import type { BaseBitByBit } from "../../../base";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../resolved-inputs";
 

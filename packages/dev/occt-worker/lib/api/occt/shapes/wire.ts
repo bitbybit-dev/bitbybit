@@ -721,11 +721,11 @@ export class OCCTWire {
 
     /**
      * Makes a smooth B-spline wire that approximates a list of points: it follows them closely but
-     * need not pass through each one exactly.
+     * need not pass through each one.
      *
-     * `closed` appends the first point again so the ends meet. The fit uses a degree between 3 and
-     * 8 and a tolerance of 0.001 model units; use `interpolatePoints` when the curve must go
-     * through the points.
+     * `closed` appends the first point so the ends meet. The fit has a degree of 3 to 8 and a
+     * tolerance of 0.001; use `interpolatePoints` to pass through the points. It needs two points
+     * or more.
      * @param inputs - The points and whether to close the curve
      * @returns The B-spline wire
      * @group via points
@@ -1550,7 +1550,7 @@ export class OCCTWire {
      * Makes a full ellipse as a closed single-edge wire, lying in the plane whose normal is
      * `direction`.
      *
-     * `radiusMajor` must not be smaller than `radiusMinor`, or the kernel refuses the ellipse; the
+     * Both radii must be above 0 and `radiusMajor` must not be smaller than `radiusMinor`; the
      * default direction `[0, 1, 0]` lays it flat on the ground.
      * @param inputs - The center, the plane normal and the two radii
      * @returns The ellipse wire
@@ -1572,7 +1572,7 @@ export class OCCTWire {
      *
      * It starts beside `center` and climbs along `direction`; `clockwise` reverses the winding. The
      * helix is approximated by a smooth curve within `tolerance`. A radius, pitch or height of 0 or
-     * less gives a null wire.
+     * less is refused.
      * @param inputs - The radius, the pitch, the height, the base center, the axis direction, the winding and the tolerance
      * @returns The helix wire
      * @group primitives
@@ -1589,7 +1589,8 @@ export class OCCTWire {
 
     /**
      * Makes a helix wire like `createHelixWire`, but sized by `numTurns` instead of a height: the
-     * coil climbs `pitch` model units per turn, `numTurns` times.
+     * coil climbs `pitch` model units per turn, `numTurns` times. A radius, pitch or number of turns
+     * of 0 or less is refused.
      * @param inputs - The radius, the pitch, the number of turns, the base center, the axis direction, the winding and the tolerance
      * @returns The helix wire
      * @group primitives
@@ -1608,8 +1609,8 @@ export class OCCTWire {
      * Makes a conical helix wire whose radius changes evenly from `startRadius` at the base to
      * `endRadius` at the top, climbing `pitch` model units per turn until it reaches `height`.
      *
-     * It starts beside `center` and climbs along `direction`; `clockwise` reverses the winding. The
-     * curve is approximated within `tolerance`.
+     * It starts beside `center`, climbs along `direction` and is approximated within `tolerance`;
+     * `clockwise` reverses the winding. A radius, pitch or height of 0 or less is refused.
      * @param inputs - The start and end radii, the pitch, the height, the base center, the axis direction, the winding and the tolerance
      * @returns The tapered helix wire
      * @group primitives
@@ -1629,7 +1630,8 @@ export class OCCTWire {
      * radius grows evenly from `startRadius` to `endRadius`.
      *
      * The default direction `[0, 1, 0]` lays it flat on the ground; `clockwise` reverses the
-     * winding, and the curve is approximated within `tolerance`.
+     * winding and `tolerance` bounds the fit. It may start at the center; an `endRadius` or
+     * `numTurns` of 0 or less is refused.
      * @param inputs - The start and end radii, the number of turns, the center, the plane normal, the winding and the tolerance
      * @returns The spiral wire
      * @group primitives
@@ -1952,8 +1954,8 @@ export class OCCTWire {
     /**
      * Projects a wire onto a shape along a direction, like casting its shadow onto the surface.
      *
-     * The result is a compound of the curves where the projection meets the shape's faces, which
-     * can be on both its near and far side. Cut a face with it through
+     * The result is a compound of the curves where the projection meets the shape's faces, near
+     * side and far side alike, and empty when it misses. Cut a face with it through
      * `shapes.face.createFaceFromWireOnFace` or use it as a path.
      * @param inputs - The wire, the shape to project onto and the direction
      * @returns A compound of the projected curves
@@ -1970,7 +1972,8 @@ export class OCCTWire {
     }
 
     /**
-     * Projects several wires onto a shape along one direction, as `project` does for one.
+     * Projects several wires onto a shape along one direction, as `project` does for one: a wire
+     * whose projection misses gives an empty compound.
      * @param inputs - The wires, the shape to project onto and the direction
      * @returns One compound of projected curves per wire, in the same order
      * @group place

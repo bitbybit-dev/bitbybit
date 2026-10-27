@@ -15,6 +15,10 @@ const isItemList = (entry: unknown): entry is ItemList => typeof entry === "obje
 
 const holdsNoObject = (list: readonly unknown[]): boolean => list.every((item) => item === null || typeof item !== "object");
 
+const isDeletedHandle = (handle: unknown): boolean => typeof handle === "object" && handle !== null && "isDeleted" in handle && typeof handle.isDeleted === "function" && handle.isDeleted() === true;
+
+const holdsDeletedHandle = (entry: unknown): boolean => (Array.isArray(entry) ? entry : [entry]).some(isDeletedHandle);
+
 function toHashable(value: unknown, digest: (bytes: Uint8Array) => number, ancestors = new Set<object>()): unknown {
     if (value === null || typeof value !== "object") {
         return value;
@@ -218,7 +222,7 @@ export class CacheHelper {
         }
         
         if (this.manifoldObjectHashes.has(hash)) {
-            const isStillValid = this.isManifoldObject(cachedManifold);
+            const isStillValid = this.isManifoldObject(cachedManifold) && !holdsDeletedHandle(cachedManifold);
             if (!isStillValid) {
                 delete this.argCache[hash];
                 this.manifoldObjectHashes.delete(hash);

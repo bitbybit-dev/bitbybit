@@ -1,6 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
-import { knotDomain, nurbsCurvePoint } from "@bitbybit-dev/base/lib/api/services/helpers/nurbs";
-import { add3, dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { knotDomain, nurbsCurvePoint } from "@bitbybit-dev/base/lib/api/services/helpers/curves/nurbs";
+import { add3, distance3, dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { numbersOf } from "../build/placement";
 import type { ModelSnapshot } from "../model/snapshot";
 import type { IfcValue } from "../step/step-types";
@@ -14,12 +14,8 @@ import { CLOSED_EDGE_RATIO, GOLDEN_SECTION, PARAMETER_SEARCH_STEPS, PARAMETER_SE
 const CURVE_ON_SURFACE: ReadonlySet<string> = new Set(["IfcSurfaceCurve", "IfcIntersectionCurve", "IfcSeamCurve"]);
 const SPLINES: ReadonlySet<string> = new Set(["IfcBSplineCurveWithKnots", "IfcRationalBSplineCurveWithKnots"]);
 
-function distance(a: Base.Point3, b: Base.Point3): number {
-    return length3(subtract3(a, b));
-}
-
 function nearestParameter(spline: BSplineCurve, point: Base.Point3, from: number, to: number): number {
-    const at = (t: number): number => distance(nurbsCurvePoint(spline.degree, spline.points, spline.weights, spline.knots, t), point);
+    const at = (t: number): number => distance3(nurbsCurvePoint(spline.degree, spline.points, spline.weights, spline.knots, t), point);
     let best = from;
     let bestDistance = Infinity;
     for (let step = 0; step <= PARAMETER_SEARCH_STEPS; step++) {
@@ -114,7 +110,7 @@ export class EdgeSampler {
             return this.spline(curve, start, end, sameSense);
         }
         const path = this.curves.path(curve);
-        const forward = distance(path[0]!, start) + distance(path[path.length - 1]!, end) <= distance(path[0]!, end) + distance(path[path.length - 1]!, start);
+        const forward = distance3(path[0]!, start) + distance3(path[path.length - 1]!, end) <= distance3(path[0]!, end) + distance3(path[path.length - 1]!, start);
         return forward ? path : [...path].reverse();
     }
 
@@ -136,7 +132,7 @@ export class EdgeSampler {
     private spline(curve: number, start: Base.Point3, end: Base.Point3, sameSense: boolean): Base.Point3[] {
         const spline = this.meetingVertices(this.curves.bspline(curve), start, end);
         const [from, to] = knotDomain(spline.degree, spline.knots);
-        const closed = distance(start, end) <= CLOSED_EDGE_RATIO * Math.max(1, length3(start));
+        const closed = distance3(start, end) <= CLOSED_EDGE_RATIO * Math.max(1, length3(start));
         if (closed) {
             return this.curves.splinePoints(spline, sameSense ? from : to, sameSense ? to : from);
         }
@@ -151,7 +147,7 @@ export class EdgeSampler {
         const misses = (candidate: BSplineCurve): number => {
             const [from, to] = knotDomain(candidate.degree, candidate.knots);
             const [first, last] = [from, to].map((t) => nurbsCurvePoint(candidate.degree, candidate.points, candidate.weights, candidate.knots, t));
-            return Math.min(distance(first!, start) + distance(last!, end), distance(first!, end) + distance(last!, start));
+            return Math.min(distance3(first!, start) + distance3(last!, end), distance3(first!, end) + distance3(last!, start));
         };
         if (misses(spline) <= reach) {
             return spline;

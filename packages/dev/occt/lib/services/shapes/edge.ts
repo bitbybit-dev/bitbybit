@@ -5,8 +5,10 @@ import type * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { framesOnCurve, numbersOfFrames } from "../base/frames";
-import { checkedFlag, checkedFrame, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
-import { RADIANS_PER_DEGREE, checkedShapeCount, tangentEdges } from "../base/curve-analysis";
+import { checkedDirection, checkedFlag, checkedFrame, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
+import { checkedShapeCount, tangentEdges } from "../base/curve-analysis";
+import { withKernelErrorsRead } from "../base/kernel-refusals";
+import { releasedOnError } from "../base/release";
 
 const checkedEdge = (occ: BitbybitOcctModule, shape: unknown, property: string): TopoDS_Shape => {
     const edge = checkedShape(shape, property);
@@ -139,7 +141,7 @@ export class OCCTEdge {
      * ```
      */
     fromBaseLines(inputs: Inputs.OCCT.LinesBaseDto): TopoDS_Edge[] {
-        return inputs.lines.map(line => this.line(line));
+        return this.linesBetween(inputs.lines);
     }
 
     /**
@@ -171,7 +173,7 @@ export class OCCTEdge {
      * ```
      */
     fromBaseSegments(inputs: Inputs.OCCT.SegmentsBaseDto): TopoDS_Edge[] {
-        return inputs.segments.map(segment => this.line({ start: segment[0], end: segment[1] }));
+        return this.linesBetween(inputs.segments.map(segment => ({ start: segment[0], end: segment[1] })));
     }
 
     /**
@@ -191,13 +193,15 @@ export class OCCTEdge {
      * ```
      */
     fromPoints(inputs: Inputs.OCCT.PointsDto): TopoDS_Edge[] {
-        const edges = [];
-        for (let i = 0; i < inputs.points.length - 1; i++) {
-            const start = inputs.points[i]!;
-            const end = inputs.points[i + 1]!;
-            edges.push(this.line({ start, end }));
-        }
-        return edges;
+        return this.linesBetween(inputs.points.slice(1).map((end, i) => ({ start: inputs.points[i]!, end })));
+    }
+
+    private linesBetween(lines: readonly Inputs.Base.Line3[]): TopoDS_Edge[] {
+        const edges: TopoDS_Edge[] = [];
+        return withKernelErrorsRead(this.occ, () => releasedOnError(edges, () => {
+            lines.forEach(line => edges.push(this.line(line)));
+            return edges;
+        }));
     }
 
     /**
@@ -214,10 +218,8 @@ export class OCCTEdge {
      * ```
      */
     fromBasePolyline(inputs: Inputs.OCCT.PolylineBaseDto): TopoDS_Edge[] {
-        const points = inputs.polyline.points;
-        if (inputs.polyline.isClosed) {
-            points.push(points[0]!);
-        }
+        const given = inputs.polyline.points;
+        const points = inputs.polyline.isClosed && given.length > 0 ? [...given, given[0]!] : given;
         return this.fromPoints({ points });
     }
 
@@ -285,6 +287,8 @@ export class OCCTEdge {
     /**
      * Makes a circular arc that starts at the first point, passes through the middle one and ends
      * at the last.
+     *
+     * No arc passes through three points on one line or two at the same place, so those are refused.
      * @param inputs - The three points
      * @returns The arc edge
      * @group primitives
@@ -304,7 +308,8 @@ export class OCCTEdge {
      * Makes a circular arc from one point to another that leaves the first point in a given
      * direction.
      *
-     * The tangent fixes the plane and the radius of the arc.
+     * The tangent fixes the plane and the radius of the arc, so it must not run along the line from
+     * the start to the end, and the two points must differ.
      * @param inputs - The start point, the tangent direction there and the end point
      * @returns The arc edge
      * @group primitives
@@ -360,8 +365,8 @@ export class OCCTEdge {
     }
 
     /**
-     * Cuts an arc out of a circle edge that starts at a point on the circle and spans a given
-     * angle, in degrees.
+     * Cuts an arc out of a circle edge from a point on the circle to an angle on it, in degrees,
+     * measured from the circle's own start rather than from the point.
      *
      * `sense` picks which way round the circle the arc runs.
      * @param inputs - The circle edge, the start point, the angle in degrees and the direction of travel
@@ -393,13 +398,13 @@ export class OCCTEdge {
      */
     createCircleEdge(inputs: Inputs.OCCT.CircleDto): TopoDS_Edge {
         const resolved = resolveDto(Inputs.OCCT.CircleDto, inputs) as Resolved.OCCT.CircleDto;
-        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.edge);
+        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, checkedDirection(resolved.direction, "direction"), Inputs.OCCT.typeSpecificityEnum.edge);
     }
 
     /**
      * Makes a full ellipse as one closed edge, lying in the plane whose normal is `direction`.
      *
-     * `radiusMajor` must not be smaller than `radiusMinor`, or the kernel refuses the ellipse.
+     * Both radii must be above 0, and `radiusMajor` must not be smaller than `radiusMinor`.
      * @param inputs - The center, the plane normal and the two radii
      * @returns The ellipse edge
      * @group primitives
@@ -412,7 +417,7 @@ export class OCCTEdge {
      */
     createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): TopoDS_Edge {
         const resolved = resolveDto(Inputs.OCCT.EllipseDto, inputs) as Resolved.OCCT.EllipseDto;
-        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.edge);
+        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, checkedDirection(resolved.direction, "direction"), Inputs.OCCT.typeSpecificityEnum.edge);
     }
 
     /**
@@ -777,8 +782,7 @@ export class OCCTEdge {
     reversedEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): TopoDS_Edge {
         const edge: TopoDS_Edge = inputs.shape;
         const reversed = edge.Reversed();
-        const result = this.och.converterService.getActualTypeOfShape(reversed);
-        reversed.delete();
+        const result = this.och.converterService.castAndRelease(reversed);
         return result;
     }
 
@@ -967,6 +971,8 @@ export class OCCTEdge {
 
     /**
      * Reads the point where an edge starts, in the edge's own direction.
+     *
+     * A degenerate edge, such as the pole of a ball, is a single point, and that point is its start.
      * @param inputs - The edge
      * @returns The start point
      * @group extract
@@ -978,7 +984,7 @@ export class OCCTEdge {
      * ```
      */
     startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Inputs.Base.Point3 {
-        return this.och.edgesService.startPointOnEdge(inputs);
+        return this.och.edgesService.startPointOnEdge({ shape: checkedShape(inputs.shape) });
     }
 
     /**
@@ -1000,6 +1006,8 @@ export class OCCTEdge {
 
     /**
      * Reads the point where an edge ends, in the edge's own direction.
+     *
+     * A degenerate edge, such as the pole of a ball, is a single point, and that point is its end.
      * @param inputs - The edge
      * @returns The end point
      * @group extract
@@ -1011,7 +1019,7 @@ export class OCCTEdge {
      * ```
      */
     endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Inputs.Base.Point3 {
-        return this.och.edgesService.endPointOnEdge(inputs);
+        return this.och.edgesService.endPointOnEdge({ shape: checkedShape(inputs.shape) });
     }
 
     /**
@@ -1310,6 +1318,7 @@ export class OCCTEdge {
      */
     constraintTanCirclesOnTwoCircles(inputs: Inputs.OCCT.ConstraintTanCirclesOnTwoCirclesDto<TopoDS_Edge>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.ConstraintTanCirclesOnTwoCirclesDto, inputs) as Resolved.OCCT.ConstraintTanCirclesOnTwoCirclesDto<TopoDS_Edge>;
+        checkedWithin(resolved.radius, "radius", { above: 0 });
         return this.och.edgesService.constraintTanCirclesOnTwoCircles(resolved);
     }
 
@@ -1332,6 +1341,7 @@ export class OCCTEdge {
      */
     constraintTanCirclesOnCircleAndPnt(inputs: Inputs.OCCT.ConstraintTanCirclesOnCircleAndPntDto<TopoDS_Edge>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.ConstraintTanCirclesOnCircleAndPntDto, inputs) as Resolved.OCCT.ConstraintTanCirclesOnCircleAndPntDto<TopoDS_Edge>;
+        checkedWithin(resolved.radius, "radius", { above: 0 });
         return this.och.edgesService.constraintTanCirclesOnCircleAndPnt(resolved);
     }
 
@@ -1493,7 +1503,7 @@ export class OCCTEdge {
         const angle = checkedNumber(resolved.angle, "angle");
         const angularTolerance = checkedWithin(resolved.angularTolerance, "angularTolerance", { above: 0 });
         const onArgumentsOnly = checkedFlag(resolved.onArgumentsOnly, "onArgumentsOnly");
-        return tangentEdges(this.occ.LinesTangentAtAngle(numbersOfFrames([frame]), curve, reference, angle * RADIANS_PER_DEGREE, angularTolerance), onArgumentsOnly);
+        return tangentEdges(this.occ.LinesTangentAtAngle(numbersOfFrames([frame]), curve, reference, this.och.base.math.degToRad({ number: angle }), angularTolerance), onArgumentsOnly);
     }
 
     /**

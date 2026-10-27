@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTEdge, OCCTWire } from "../shapes";
 import type * as Inputs from "../../api/inputs";
 
@@ -15,7 +13,7 @@ describe("OCCT geom service unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        occHelper = new OccHelper(occt);
         edge = new OCCTEdge(occt, occHelper);
         wire = new OCCTWire(occt, occHelper);
     });

@@ -2,10 +2,11 @@ import * as Inputs from "../../inputs/manifold-inputs";
 import type * as Manifold3D from "manifold-3d";
 import type { Base } from "@bitbybit-dev/base";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import { isTransformMatrix, linearDeterminant } from "@bitbybit-dev/base/lib/api/services/helpers/matrices";
-import { pathTangents, roundedPath3, sweepMatrices, transportedAxes } from "@bitbybit-dev/base/lib/api/services/helpers/paths";
+import { isTransformMatrix, linearDeterminant } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
+import { pathTangents, roundedPath3, sweepMatrices, transportedAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/paths";
 import type * as Resolved from "../../resolved-inputs";
 import { loftMesh } from "../recipes/recipe-loft";
+import { manifoldOfMesh } from "../manifold-of-mesh";
 import type { ProfileRings } from "../recipes/recipe-types";
 import { DEGENERATE_DETERMINANT, FULL_TURN, MIN_CIRCLE_SIDES, MIN_LOFT_FRAMES, NO_DIRECTION } from "./cross-section.constants";
 
@@ -67,7 +68,13 @@ export class CrossSectionOperations {
      */
     extrude(inputs: Inputs.Manifold.ExtrudeDto<Manifold3D.CrossSection>): Manifold3D.Manifold {
         const resolved = resolveDto(Inputs.Manifold.ExtrudeDto, inputs) as Resolved.Manifold.ExtrudeDto<Manifold3D.CrossSection>;
-        return resolved.crossSection.extrude(resolved.height, resolved.nDivisions, resolved.twistDegrees, [resolved.scaleTopX, resolved.scaleTopY], resolved.center);
+        const extruded = resolved.crossSection.extrude(resolved.height, resolved.nDivisions, resolved.twistDegrees, [resolved.scaleTopX, resolved.scaleTopY], false);
+        if (!resolved.center) {
+            return extruded;
+        }
+        const centred = extruded.translate([0, 0, -resolved.height / 2]);
+        extruded.delete();
+        return centred;
     }
 
     /**
@@ -90,11 +97,12 @@ export class CrossSectionOperations {
     revolve(inputs: Inputs.Manifold.RevolveDto<Manifold3D.CrossSection>): Manifold3D.Manifold {
         const resolved = resolveDto(Inputs.Manifold.RevolveDto, inputs) as Resolved.Manifold.RevolveDto<Manifold3D.CrossSection>;
         const res = resolved.crossSection.revolve(resolved.circularSegments, resolved.revolveDegrees);
-        if (resolved.matchProfile) {
-            return res.rotate([-90, 0, 0]);
-        } else {
+        if (!resolved.matchProfile) {
             return res;
         }
+        const matched = res.rotate([-90, 0, 0]);
+        res.delete();
+        return matched;
     }
 
     /**
@@ -133,7 +141,7 @@ export class CrossSectionOperations {
             throw new InputError(`A loft needs one cross-section, or one for each of its ${frames.length} frames`, "crossSections");
         }
         const sections: ProfileRings[] = crossSections.map((crossSection) => crossSection.toPolygons());
-        return this.manifold.Manifold.ofMesh(loftMesh(this.manifold, sections, Float64Array.from(frames.flat()), undefined, "The loft"));
+        return manifoldOfMesh(this.manifold, loftMesh(this.manifold, sections, Float64Array.from(frames.flat()), undefined, "The loft"));
     }
 
     /**
@@ -227,7 +235,20 @@ export class CrossSectionOperations {
      */
     compose(inputs: Inputs.Manifold.ComposeDto<(Manifold3D.CrossSection | Manifold3D.Polygons)[]>): Manifold3D.CrossSection {
         const { CrossSection } = this.manifold;
-        return CrossSection.compose(inputs.polygons);
+        const builtFromPolygons: Manifold3D.CrossSection[] = [];
+        try {
+            const sections = inputs.polygons.map((item) => {
+                if (item instanceof CrossSection) {
+                    return item;
+                }
+                const section = new CrossSection(item);
+                builtFromPolygons.push(section);
+                return section;
+            });
+            return CrossSection.compose(sections);
+        } finally {
+            builtFromPolygons.forEach((section) => section.delete());
+        }
     }
 
     /**

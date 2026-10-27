@@ -3,8 +3,6 @@ import type { BitbybitOcctModule, Handle_Geom_Surface, TopoDS_Face, TopoDS_Wire 
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTFace } from "./face";
 import { OCCTSolid } from "./solid";
 import { OCCTGeom } from "../geom/geom";
@@ -20,14 +18,21 @@ describe("OCCT face unit tests", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        const vec = new VectorHelperService();
-        const s = new ShapesHelperService();
-        occHelper = new OccHelper(vec, s, occt);
+        occHelper = new OccHelper(occt);
         wire = new OCCTWire(occt, occHelper);
         face = new OCCTFace(occt, occHelper);
         geom = new OCCTGeom(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);
     });
+
+    const refusalOf = (act: () => unknown): unknown => {
+        try {
+            act();
+        } catch (failure) {
+            return failure;
+        }
+        return undefined;
+    };
 
     it("should create a face from closed planar wire", () => {
         const w = wire.createCircleWire({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
@@ -39,12 +44,13 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should create a face from closed non-planar wire", () => {
+    it("should create a face from closed non-planar wire, bounded by the C2 periodic spline through the corners of a unit square", () => {
         const w = wire.interpolatePoints({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], periodic: true, tolerance: 1e-7 });
         const f = face.createFaceFromWire({ shape: w, planar: false });
         const area = face.getFaceArea({ shape: f });
+        const bulgeOfEachSide = 0.75 * (1.5 / 30 + 0.75 / 6);
         expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.FACE);
-        expect(area).toBeCloseTo(1.5999655130076433);
+        expect(area).toBeCloseTo(1 + 4 * bulgeOfEachSide, 10);
         w.delete();
         f.delete();
     });
@@ -967,11 +973,12 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should not create ellipse face when radius major is smaller then minor", () => {
-        const f = face.createEllipseFace({ center: [0, 0, 0], radiusMinor: 2, radiusMajor: 1, direction: [0, 1, 0] });
-        if (f && !f.IsNull()) {
-            f.delete();
-        }
+    it("should refuse an ellipse face whose major radius is smaller than its minor radius, naming the minor one", () => {
+        // Act
+        const refusal = refusalOf(() => face.createEllipseFace({ center: [0, 0, 0], radiusMinor: 2, radiusMajor: 1, direction: [0, 1, 0] }));
+
+        // Assert
+        expect(refusal).toMatchObject({ name: "InputError", property: "radiusMinor", message: "`radiusMinor` must not exceed `radiusMajor`; it is 2 and `radiusMajor` is 1." });
     });
 
     it("should create square face", () => {
@@ -1235,6 +1242,37 @@ describe("OCCT face unit tests", () => {
         reverse2.delete();
         reverse3.delete();
         f1.delete();
+    });
+
+    it("should cut every further wire as a hole whichever way it runs, and refuse one outside the outline", () => {
+        // Arrange
+        const outline = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+        const sameWay = wire.createCircleWire({ radius: 0.2, center: [0, 0, 0.3], direction: [0, 1, 0] });
+        const otherWay = wire.reversedWire({ shape: wire.createCircleWire({ radius: 0.1, center: [0, 0, -0.15], direction: [0, 1, 0] }) });
+        const outside = wire.createCircleWire({ radius: 0.2, center: [0, 0, 3], direction: [0, 1, 0] });
+
+        // Act
+        const ring = face.createFaceFromWires({ shapes: [outline, sameWay, otherWay], planar: true });
+        const act = (): TopoDS_Face => face.createFaceFromWires({ shapes: [outline, outside], planar: true });
+
+        // Assert
+        expect(face.getFaceArea({ shape: ring })).toBeCloseTo(Math.PI * (1 - 0.04 - 0.01), 9);
+        expect(act).toThrow(expect.objectContaining({ name: "InputError", property: "shapes", message: "`shapes` cannot bound one face: wire 1 lies outside the outline (wire 0)." }));
+    });
+
+    it("should bound a face on another face's surface by wires drawn on it, and refuse wires off that surface", () => {
+        // Arrange
+        const square = face.createSquareFace({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+        const onIt = wire.createCircleWire({ radius: 2, center: [1, 0, 1], direction: [0, 1, 0] });
+        const above = wire.createCircleWire({ radius: 2, center: [1, 3, 1], direction: [0, 1, 0] });
+
+        // Act
+        const disc = face.createFaceBoundedByWiresOnFace({ face: square, wires: [onIt] });
+        const act = (): TopoDS_Face => face.createFaceBoundedByWiresOnFace({ face: square, wires: [above] });
+
+        // Assert
+        expect(face.getFaceArea({ shape: disc })).toBeCloseTo(4 * Math.PI, 9);
+        expect(act).toThrow(expect.objectContaining({ name: "InputError", property: "wires", message: "`wires` cannot bound one face: the wires do not lie on the face's surface." }));
     });
 
     describe("Face from multiple circle tan wires", () => {
@@ -1950,7 +1988,7 @@ describe("OCCT face unit tests", () => {
             const f = face.createFaceFromWiresOnFace(dto);
             const area = face.getFaceArea({ shape: f });
             expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.FACE);
-            expect(area).toBeCloseTo(Math.PI * 10);
+            expect(area).toBeCloseTo(Math.PI * (9 - 1));
             baseFace.delete();
             outerWire.delete();
             innerWire.delete();
@@ -2561,6 +2599,64 @@ describe("OCCT face unit tests", () => {
 
             // Assert
             expect(act).toThrow("Face has no surface");
+        });
+    });
+
+    describe("faces and wires on faces that inputs cannot make", () => {
+        const rectangle = (): TopoDS_Face => face.createRectangleFace({ width: 8, length: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        it.each([
+            ["a circle face of radius 0", (): unknown => face.createCircleFace({ radius: 0, center: [0, 0, 0], direction: [0, 1, 0] }), "radius", "`radius` must be a finite number above 0; it is 0."],
+            ["a circle face of radius -1", (): unknown => face.createCircleFace({ radius: -1, center: [0, 0, 0], direction: [0, 1, 0] }), "radius", "`radius` must be a finite number above 0; it is -1."],
+            ["an ellipse face of minor radius 0", (): unknown => face.createEllipseFace({ radiusMinor: 0, radiusMajor: 2, center: [0, 0, 0], direction: [0, 1, 0] }), "radiusMinor", "`radiusMinor` must be a finite number above 0; it is 0."],
+            ["a wire along a parameter that is not a number", (): unknown => face.wireAlongParam({ shape: rectangle(), isU: true, param: Number.NaN }), "param", "`param` must be a finite number; it is NaN."],
+            ["wires along parameters the second of which is not a number", (): unknown => face.wiresAlongParams({ shape: rectangle(), isU: true, params: [0.5, Number.NaN] }), "params", "`params` holds NaN at position 1; each is a finite number."],
+            ["wires subdividing a face by no divisions", (): unknown => face.subdivideToWires({ shape: rectangle(), nrDivisions: 0, isU: true, shiftHalfStep: false, removeStart: false, removeEnd: false }), "nrDivisions", "`nrDivisions` must be a finite number 1 or more; it is 0."],
+        ])("should refuse %s, naming the input it was given", (_name, act, property, message) => {
+            // Act
+            const refusal = refusalOf(act);
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property, message });
+        });
+
+        it.each([
+            ["a face", (shape: TopoDS_Wire): unknown => face.createFaceFromWire({ shape, planar: false })],
+            ["faces", (shape: TopoDS_Wire): unknown => face.createFacesFromWires({ shapes: [shape], planar: false })],
+        ])("should hand on the kernel's refusal to fill %s that is not planar from a single straight line as a read error, not a raw C++ exception", (_name, fill) => {
+            // Arrange
+            const line = wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] });
+
+            // Act
+            const refusal = refusalOf(() => fill(line));
+
+            // Assert
+            expect(refusal).toEqual(new Error("Standard_ConstructionError: Geom_RectangularTrimmedSurface::V1==V2"));
+        });
+
+        it.each([
+            ["in order", OCCT.combinationCirclesForFaceEnum.inOrder],
+            ["all with all", OCCT.combinationCirclesForFaceEnum.allWithAll],
+        ])("should name the circles by their positions when, joined %s, one touches another from inside", (_name, combination) => {
+            // Arrange
+            const circles = [wire.createCircleWire({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] }), wire.createCircleWire({ radius: 1, center: [1, 0, 0], direction: [0, 1, 0] })];
+
+            // Act
+            const refusal = refusalOf(() => face.createFaceFromMultipleCircleTanWires({ circles, combination, unify: false, tolerance: 1e-7 }));
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property: "circles", message: "`circles` at position 1 touches `circles` at position 0 from inside, so the lines tangent to both have no length." });
+        });
+
+        it("should name the circles by their lists and positions when, joined in order, one touches another from inside", () => {
+            // Arrange
+            const listsOfCircles = [[wire.createCircleWire({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] })], [wire.createCircleWire({ radius: 1, center: [1, 0, 0], direction: [0, 1, 0] })]];
+
+            // Act
+            const refusal = refusalOf(() => face.createFaceFromMultipleCircleTanWireCollections({ listsOfCircles, combination: OCCT.combinationCirclesForFaceEnum.inOrder, unify: false, tolerance: 1e-7 }));
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property: "listsOfCircles", message: "`listsOfCircles` at list 1, position 0 touches `listsOfCircles` at list 0, position 0 from inside, so the lines tangent to both have no length." });
         });
     });
 });

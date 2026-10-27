@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: Our NPM Packages
 sidebar_label: Intro
-description: Discover the open-source NPM packages that power Bitbybit, allowing you to integrate our 3D CAD algorithms into your own applications.
+description: Discover the free NPM packages that power Bitbybit, allowing you to integrate our 3D CAD algorithms into your own applications.
 tags: [npm-packages, threejs, babylonjs, playcanvas, occt, manifold, jscad]
 topic: npm.intro
 type: landing
@@ -10,7 +10,7 @@ type: landing
 
 # Our NPM Packages
 
-When developing standalone applications in TypeScript or JavaScript, you often use third-party libraries and frameworks. We've developed several open-source NPM packages (MIT Licensed) to help you integrate our powerful 3D CAD algorithms directly into your applications.
+When developing standalone applications in TypeScript or JavaScript, you often use third-party libraries and frameworks. We've developed several MIT-licensed NPM packages to help you integrate our powerful 3D CAD algorithms directly into your applications.
 
 ---
 

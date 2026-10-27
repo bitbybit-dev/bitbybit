@@ -1,4 +1,4 @@
-import type { Base } from "@bitbybit-dev/base";
+import { Base } from "@bitbybit-dev/base";
 import type { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum, surfaceAnalysisEnum } from "./enums";
 
@@ -447,11 +447,12 @@ export class DocToMeshesDto<U> {
  * file.
  */
 export class SaveStepDto<T> {
-    constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean) {
+    constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean, unit?: Base.unitOfLengthEnum) {
         if (shape !== undefined) { this.shape = shape; }
         if (fileName !== undefined) { this.fileName = fileName; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        if (unit !== undefined) { this.unit = unit; }
     }
     /**
      * The shape written to the file.
@@ -481,6 +482,12 @@ export class SaveStepDto<T> {
      * @default true
      */
     tryDownload?: boolean | undefined = true;
+    /**
+     * The unit the shape's numbers are in. The file is written in millimetres, the shape scaled
+     * from this unit, so any CAD tool opens it at its true size.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
 }
 /**
  * A shape, a file name and meshing options for `io.saveShapeStl`, which triangulates the shape and
@@ -624,11 +631,12 @@ export class DxfPathsWithLayerDto {
  * Layered DXF parts and file options for `io.dxfCreate`, which writes them into one DXF file.
  */
 export class DxfPathsPartsListDto {
-    constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean) {
+    constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean, unit?: Base.unitOfLengthEnum) {
         if (pathsParts !== undefined) { this.pathsParts = pathsParts; }
         if (colorFormat !== undefined) { this.colorFormat = colorFormat; }
         if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        if (unit !== undefined) { this.unit = unit; }
     }
     /**
      * The parts from `io.dxfPathsWithLayer`, each with its own layer and color.
@@ -646,6 +654,13 @@ export class DxfPathsPartsListDto {
      */
     acadVersion?: dxfAcadVersionEnum | undefined = dxfAcadVersionEnum.AC1009;
     /**
+     * The unit the drawing is in, written into its header so CAD programs open it at true size;
+     * `AC1015` only. Left out, no unit is stated.
+     * @default undefined
+     * @optional true
+     */
+    unit?: Base.unitOfLengthEnum | undefined;
+    /**
      * The name the downloaded file gets.
      * @default bitbybit-dev.dxf
      */
@@ -662,10 +677,11 @@ export class DxfPathsPartsListDto {
  * a shape.
  */
 export class ImportStepIgesFromTextDto {
-    constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean) {
+    constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
         if (text !== undefined) { this.text = text; }
         if (fileType !== undefined) { this.fileType = fileType; }
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+        if (unit !== undefined) { this.unit = unit; }
     }
     /**
      * The full text of the STEP or IGES file.
@@ -682,14 +698,20 @@ export class ImportStepIgesFromTextDto {
      * @default true
      */
     adjustZtoY?: boolean | undefined = true;
+    /**
+     * The unit the shape comes back in, scaled from whatever unit the file is written in.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
 }
 /**
  * A STEP or IGES file for the core `occt.io.loadSTEPorIGES`, which reads it into a shape.
  */
 export class ImportStepIgesDto {
-    constructor(assetFile?: File, adjustZtoY?: boolean) {
+    constructor(assetFile?: File, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
         if (assetFile !== undefined) { this.assetFile = assetFile; }
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+        if (unit !== undefined) { this.unit = unit; }
     }
     /**
      * The file to read; its extension decides whether it is STEP or IGES.
@@ -701,6 +723,11 @@ export class ImportStepIgesDto {
      * @default true
      */
     adjustZtoY?: boolean | undefined = true;
+    /**
+     * The unit the shape comes back in, scaled from whatever unit the file is written in.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
 }
 
 /**
@@ -708,10 +735,11 @@ export class ImportStepIgesDto {
  * into a shape.
  */
 export class LoadStepOrIgesDto {
-    constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean) {
+    constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
         if (filetext !== undefined) { this.filetext = filetext; }
         if (fileName !== undefined) { this.fileName = fileName; }
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+        if (unit !== undefined) { this.unit = unit; }
     }
     /**
      * The file's text for `.step`, `.stp`, `.iges` and `.igs`, or an ArrayBuffer for the compressed
@@ -730,6 +758,32 @@ export class LoadStepOrIgesDto {
      * @default true
      */
     adjustZtoY?: boolean | undefined = true;
+    /**
+     * The unit the shape comes back in, scaled from whatever unit the file is written in.
+     * `io.fileLengthUnit` tells which that is.
+     * @default millimetre
+     */
+    unit?: Base.unitOfLengthEnum | undefined = Base.unitOfLengthEnum.millimetre;
+}
+/**
+ * A STEP or IGES file for `io.fileLengthUnit`, which reads the unit its lengths are written in.
+ */
+export class FileLengthUnitDto {
+    constructor(filetext?: string | ArrayBuffer, fileName?: string) {
+        if (filetext !== undefined) { this.filetext = filetext; }
+        if (fileName !== undefined) { this.fileName = fileName; }
+    }
+    /**
+     * The file's text, or an ArrayBuffer of its bytes, the compressed `.stpz` and `.igz` forms
+     * included.
+     * @default undefined
+     */
+    filetext!: string | ArrayBuffer;
+    /**
+     * The file name; its extension decides whether it is read as STEP or IGES.
+     * @default shape.step
+     */
+    fileName?: string | undefined = "shape.step";
 }
 
 /**

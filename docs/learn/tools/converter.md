@@ -11,7 +11,7 @@ tags: [getting-started, step, gltf]
 
 # STEP to glTF converter
 
-The converter turns a CAD model saved as STEP into a GLB file, the binary glTF that web pages, AR viewers and 3D programs read. It runs the OpenCascade kernel in your browser: the file never leaves your computer and nothing is stored.
+The converter turns a CAD model saved as STEP into a GLB file, the binary glTF that web pages, AR viewers and 3D programs read. It runs the Bitbybit OCCT Kernel in your browser: the file never leaves your computer and nothing is stored.
 
 It is part of the Silver and Gold plans. Signed in on one of them, open it from the bitbybit.dev menu, or go to [bitbybit.dev/converter](https://bitbybit.dev/converter). Members of other plans see a page that offers to upgrade.
 

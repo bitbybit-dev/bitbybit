@@ -46,7 +46,7 @@ Every execution is metered on the key's CAD Cloud plan exactly as a REST call wo
 
 | Situation | Use |
 |---|---|
-| The agent writes code for your app, and the users' browsers or your Node servers can run the kernels | The [npm packages](../../npm-packages/intro), with the free [docs server](./bitbybit-mcp) for lookups. Free, and nothing of ours in the loop. |
+| The agent writes code for your app, and the users' browsers or your Node servers can run the kernels | The [npm packages](../../npm-packages/intro), with the free [docs server](./bitbybit-mcp) for lookups. Free, and no service of ours in the loop. |
 | The agent has to produce geometry or an answer right now, for you, in the conversation | This server. |
 | A Pro algorithm, or file conversion at volume, or a backend that cannot host a kernel (edge functions, serverless) | This server for the agent, and the [REST API](/api/cloud-api) for your own backend. |
 

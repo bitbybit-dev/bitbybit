@@ -25,6 +25,9 @@ Keys run their command while the Designer has the focus and you are not typing i
 | <kbd>2</kbd> | <kbd>2</kbd> | [Pick faces only](./commands.md#designer-selection-pick-faces) | Lets a click in the view pick only faces, passing over the edges near the pointer. |
 | <kbd>3</kbd> | <kbd>3</kbd> | [Pick edges only](./commands.md#designer-selection-pick-edges) | Lets a click in the view pick only edges, so faces are never picked by mistake. |
 | <kbd>Enter</kbd> | <kbd>Enter</kbd> | [OK](./commands.md#designer-dialog-ok) | Applies the open dialog: adds the feature or solid, or keeps the edit. |
+| <kbd>Ctrl+C</kbd> | <kbd>⌘C</kbd> | [Copy](./commands.md#designer-assembly-copy) | Copies the selected components with their sizes, where they stand, to paste into this or another assembly. |
+| <kbd>Ctrl+V</kbd> | <kbd>⌘V</kbd> | [Paste](./commands.md#designer-assembly-paste) | Places the copied components again beside where they stood, each with its sizes and its pattern, under new ids. |
+| <kbd>Ctrl+D</kbd> | <kbd>⌘D</kbd> | [Duplicate](./commands.md#designer-assembly-duplicate) | Places a copy of each selected component beside it, with its sizes and its pattern, under a new id. |
 | <kbd>Shift+F</kbd> | <kbd>⇧F</kbd> | [Zoom to selection](./commands.md#designer-view-focus) | Zooms onto a component, sub-assembly or part, glowing it until the next click; with none named, onto the selected one, else the part the last pick lies on. |
 | <kbd>F</kbd> | <kbd>F</kbd> | [Fit all](./commands.md#designer-view-fit) | Frames the whole model. |
 | <kbd>Shift+7</kbd> | <kbd>⇧7</kbd> | [Iso view](./commands.md#designer-view-iso) | Turns the camera to the iso view. |
@@ -36,6 +39,9 @@ Keys run their command while the Designer has the focus and you are not typing i
 | <kbd>Shift+6</kbd> | <kbd>⇧6</kbd> | [Bottom view](./commands.md#designer-view-bottom) | Turns the camera to the bottom view. |
 | <kbd>N</kbd> | <kbd>N</kbd> | [Look at](./commands.md#designer-view-look-at) | Turns the camera square onto the picked face. |
 | <kbd>G</kbd> | <kbd>G</kbd> | [Show or hide the grid](./commands.md#designer-view-grid) | The ground grid, scaled to the model. |
+| <kbd>Ctrl+.</kbd> | <kbd>⌘.</kbd> | [Stop building](./commands.md#designer-view-stop-build) | Stops the build the kernel is making now; what was drawn before stays, and a change or Build again builds it anew. |
+| <kbd>H</kbd> | <kbd>H</kbd> | [Hide](./commands.md#designer-view-hide) | Hides the selected components or sub-assemblies in the view, or the ones the picks lie on, until Show all or another document opens; the tree marks them hidden and the design is unchanged. |
+| <kbd>Shift+H</kbd> | <kbd>⇧H</kbd> | [Show all](./commands.md#designer-view-show-all) | Shows every hidden component again. |
 | <kbd>L</kbd> | <kbd>L</kbd> | [Line](./commands.md#designer-sketch-line) | Draws straight segments point by point; click the start again to close the outline, Enter to stop. |
 | <kbd>A</kbd> | <kbd>A</kbd> | [Arc](./commands.md#designer-sketch-arc) | Draws an arc on from the pen: click where it ends, then a point it passes through. |
 | <kbd>T</kbd> | <kbd>T</kbd> | [Tangent arc](./commands.md#designer-sketch-tangent-arc) | Draws an arc that leaves the last segment smoothly: click where it ends. |
@@ -45,4 +51,7 @@ Keys run their command while the Designer has the focus and you are not typing i
 | <kbd>Enter</kbd> | <kbd>Enter</kbd> | [Finish the outline](./commands.md#designer-sketch-finish) | Stops drawing the current outline and leaves it open. |
 | <kbd>Esc</kbd> | <kbd>Esc</kbd> | [Stop drawing](./commands.md#designer-sketch-cancel-step) | Drops the point just placed, then stops the outline, then puts the tool down. |
 | <kbd>E</kbd> | <kbd>E</kbd> | [Extrude](./commands.md#designer-part-extrude) | Sweeps a sketch's face straight along its normal, or along a direction. |
+| <kbd>Del</kbd> | <kbd>Del</kbd> | [Remove component](./commands.md#designer-assembly-remove) | Takes a component out of the assembly with the joints that hold it: the one selected in the tree, or picked in the view. |
+| <kbd>Del</kbd> | <kbd>Del</kbd> | [Remove joint](./commands.md#designer-assembly-remove-joint) | Takes a joint out; its component stays where its frame puts it. |
+| <kbd>X</kbd> | <kbd>X</kbd> | [Section view](./commands.md#designer-view-section) | Cuts the view with a plane across X, Y or Z, hiding what lies on the side it faces and filling the faces it cuts; alone it turns on facing the camera, or off again. |
 | <kbd>Ctrl+K</kbd> | <kbd>⌘K</kbd> | [Find a command](./commands.md#designer-help-commands) | Searches every command by name. |

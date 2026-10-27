@@ -1,20 +1,21 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { cross3, length3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
-import { isInsidePolygon2, wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
+import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { add3, cross3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
 import type { IfcTransaction } from "../model/transaction";
 import { enumValue, ref } from "../step/values";
 import type { MemberSpec, SlabSpec } from "./build-types";
-import { DEGREES_TO_RADIANS, VERTICAL_COSINE } from "./constants";
+import { VERTICAL_COSINE } from "./constants";
 import { bodyContext } from "./contexts";
 import type { EntityWriter } from "./entity-writer";
 import { associateMaterial, associateNewMaterial, layerSetThickness, layerSetUsage } from "./materials";
 import type { Frame3 } from "./build-types";
-import { frameFrom, normalize3 } from "./math";
+import { frameFrom, direction3Of } from "./math";
 import { objectPlacementOf } from "./placement";
 import { writeProfile } from "./profiles";
 import { containIn } from "./spatial";
-import { cleanOutline } from "./outlines";
+import { cleanHoles, cleanOutline, measuredFrom } from "./outlines";
+import { radiansOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 export function createSlab(tx: IfcTransaction, writer: EntityWriter, spec: SlabSpec, tolerance: number): number {
     const thickness = layerSetThickness(tx, spec.layerSet);
@@ -22,15 +23,11 @@ export function createSlab(tx: IfcTransaction, writer: EntityWriter, spec: SlabS
         throw new Error("A slab's layers must add up to more than zero thickness");
     }
     const outer = wound2(cleanOutline(spec.outline, tolerance, "outline"), true);
-    const holes = spec.holes.map((hole, index) => {
-        const cleaned = cleanOutline(hole, tolerance, `hole ${index}`);
-        if (!cleaned.every((point) => isInsidePolygon2(point, outer))) {
-            throw new Error(`Hole ${index} reaches outside the slab's outline`);
-        }
-        return wound2(cleaned, false);
-    });
-    const placement = writer.localPlacement(objectPlacementOf(tx, spec.storey), { ...WORLD_AXES, origin: [0, 0, spec.topOffset] });
-    const solid = writer.extrusion(writer.profile({ outer, holes }), WORLD_AXES, thickness, [0, 0, -1]);
+    const holes = cleanHoles(outer, spec.holes, tolerance, "slab");
+    const anchor = outer[0]!;
+    const placement = writer.localPlacement(objectPlacementOf(tx, spec.storey), { ...WORLD_AXES, origin: [anchor[0], anchor[1], spec.topOffset] });
+    const profile = writer.profile({ outer: measuredFrom(outer, anchor), holes: holes.map((hole) => measuredFrom(hole, anchor)) });
+    const solid = writer.extrusion(profile, WORLD_AXES, thickness, [0, 0, -1]);
     const body = writer.shapeRepresentation(bodyContext(tx, writer), "Body", "SweptSolid", [solid]);
     const slab = writer.create("IfcSlab", {
         GlobalId: tx.globalId(spec.id),
@@ -49,13 +46,13 @@ export function memberFrame(start: Base.Point3, end: Base.Point3, rotationDegree
     if (!(length3(along) > 0)) {
         throw new Error("A member's start and end must be apart");
     }
-    const z = normalize3(along);
-    const horizontal: Base.Vector3 = Math.abs(z[2]) >= VERTICAL_COSINE ? [1, 0, 0] : normalize3(cross3([0, 0, 1], z));
+    const z = direction3Of(along);
+    const horizontal: Base.Vector3 = Math.abs(z[2]) >= VERTICAL_COSINE ? [1, 0, 0] : direction3Of(cross3([0, 0, 1], z));
     const base = frameFrom(start, z, horizontal);
-    const angle = rotationDegrees * DEGREES_TO_RADIANS;
+    const angle = radiansOf(rotationDegrees);
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
-    const x: Base.Vector3 = [base.x[0] * cos + base.y[0] * sin, base.x[1] * cos + base.y[1] * sin, base.x[2] * cos + base.y[2] * sin];
+    const x = add3(scale3(base.x, cos), scale3(base.y, sin));
     return frameFrom(start, z, x);
 }
 

@@ -1,4 +1,4 @@
-import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import { describe, expect, it } from "vitest";
 import type { Fixture } from "../../__test__/fixture-types";
 import { addRightWall, errorFrom, expressIdOf, groundFloor, oneWall, writingInto } from "../../__test__/build-setup";

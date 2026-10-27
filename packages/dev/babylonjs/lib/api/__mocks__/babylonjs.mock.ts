@@ -225,9 +225,19 @@ export class MockMaterial {
     zOffset = 0;
     sideOrientation = 0;
     onDispose: (() => void) | null = null;
+    private readonly scene: MockScene;
     
-    constructor(name: string, _scene?: MockScene) {
+    constructor(name: string, scene?: MockScene) {
         this.name = name;
+        this.scene = scene ?? new MockScene();
+    }
+
+    getScene(): MockScene {
+        return this.scene;
+    }
+
+    getBindedMeshes(): MockMesh[] {
+        return [];
     }
     
     dispose() {
@@ -310,6 +320,18 @@ export class MockStandardMaterial extends MockMaterial {
     disableLighting = false;
 }
 
+export class MockObservable<T> {
+    private readonly once: ((eventData: T) => void)[] = [];
+
+    addOnce(callback: (eventData: T) => void): void {
+        this.once.push(callback);
+    }
+
+    notifyObservers(eventData: T): void {
+        this.once.splice(0).forEach(callback => callback(eventData));
+    }
+}
+
 export class MockTransformNode {
     name: string;
     id: string;
@@ -336,6 +358,7 @@ export class MockMesh extends MockTransformNode {
     edgesColor: MockColor4 | null = null;
     color: MockColor3 | null = null;
     _edgesRendering = false;
+    readonly onDisposeObservable = new MockObservable<MockMesh>();
     
     constructor(name: string, scene?: MockScene | null) {
         super(name);
@@ -395,6 +418,7 @@ export class MockMesh extends MockTransformNode {
                 scene._meshes.splice(index, 1);
             }
         }
+        this.onDisposeObservable.notifyObservers(this);
     }
     
     addChild(child: MockMesh) {
@@ -500,6 +524,7 @@ export class MockGreasedLineMesh extends MockMesh {
 
 export class MockScene {
     _meshes: MockMesh[] = [];
+    multiMaterials: MockMaterial[] = [];
     useRightHandedSystem = false;
     
     addMesh(mesh: MockMesh) {

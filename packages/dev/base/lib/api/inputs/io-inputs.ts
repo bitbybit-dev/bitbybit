@@ -183,10 +183,11 @@ export namespace IO {
      * write.
      */
     export class DxfModelDto {
-        constructor(dxfPathsParts?: DxfPathsPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015") {
+        constructor(dxfPathsParts?: DxfPathsPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base.unitOfLengthEnum) {
             if (dxfPathsParts !== undefined) { this.dxfPathsParts = dxfPathsParts; }
             if (colorFormat !== undefined) { this.colorFormat = colorFormat; }
             if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
+            if (unit !== undefined) { this.unit = unit; }
         }
         /**
          * Array of path parts, each containing paths with segments
@@ -205,6 +206,13 @@ export namespace IO {
          * @default AC1009
          */
         acadVersion?: "AC1009" | "AC1015" | undefined = "AC1009";
+        /**
+         * The unit the drawing is in, written into its header so CAD programs open it at true size;
+         * `AC1015` only. Left out, no unit is stated.
+         * @default undefined
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
     }
 
 }

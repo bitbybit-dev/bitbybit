@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
+import fc from "fast-check";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
@@ -13,7 +11,7 @@ describe("OCCT selectors", () => {
 
     beforeAll(async () => {
         const kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const box = (): TopoDS_Shape => occt.shapes.solid.createBox({ width: 10, length: 30, height: 20, center: [0, 0, 0], originOnCenter: true });
@@ -451,6 +449,108 @@ describe("OCCT selectors", () => {
             // Assert
             expect(missing.property).toBe("shape");
             expect(nulled.property).toBe("shape");
+        });
+    });
+    describe("ties on a symmetric part turned any way", () => {
+        const SEED = 20261018;
+        const HEIGHT = 6;
+        const turnedPrism = (corners: number, axis: Inputs.Base.Vector3, angle: number): { shape: TopoDS_Shape; up: Inputs.Base.Vector3 } => {
+            const outline = occt.shapes.wire.createNGonWire({ nrCorners: corners, radius: 5, center: [0, 0, 0], direction: [0, 0, 1] });
+            const face = occt.shapes.face.createFaceFromWire({ shape: outline, planar: true });
+            const prism = occt.operations.extrude({ shape: face, direction: [0, 0, HEIGHT] });
+            const shape = occt.transforms.rotate({ shape: prism, axis, angle });
+            const top = occt.transforms.rotate({ shape: occt.shapes.vertex.vertexFromXYZ({ x: 0, y: 0, z: 1 }), axis, angle });
+            [outline, face, prism].forEach(made => made.delete());
+            return { shape, up: occt.shapes.vertex.vertexToPoint({ shape: top }) };
+        };
+        const turns = fc.record({
+            corners: fc.integer({ min: 3, max: 12 }),
+            axis: fc.tuple(fc.integer({ min: -3, max: 3 }), fc.integer({ min: -3, max: 3 }), fc.integer({ min: 1, max: 3 })),
+            angle: fc.integer({ min: -3599, max: 3599 }).map(tenths => tenths / 10),
+        });
+        const dot = (a: Inputs.Base.Point3, b: Inputs.Base.Point3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+        const sidesOf = (centres: Inputs.Base.Point3[], up: Inputs.Base.Vector3, middle: number): number[] => onlyWhere(centres, centre => Math.abs(dot(centre, up) - middle) < 1e-6);
+
+        it("should choose both of two sides a direction between them meets alike, however the part is turned", () => {
+            // Act & Assert
+            fc.assert(fc.property(turns, ({ corners, axis, angle }) => {
+                const { shape, up } = turnedPrism(corners, axis, angle);
+                const centres = faceCentres(shape);
+                const middle = HEIGHT / 2;
+                const centreOfPart: Inputs.Base.Point3 = [up[0] * middle, up[1] * middle, up[2] * middle];
+                const sides = sidesOf(centres, up, middle);
+                const outward = (index: number): Inputs.Base.Point3 => {
+                    const centre = centres[index]!;
+                    return [centre[0] - centreOfPart[0], centre[1] - centreOfPart[1], centre[2] - centreOfPart[2]];
+                };
+                const first = sides[0]!;
+                const neighbour = [...sides.slice(1)].sort((a, b) => dot(outward(b), outward(first)) - dot(outward(a), outward(first)))[0]!;
+                const between: Inputs.Base.Vector3 = [outward(first)[0] + outward(neighbour)[0], outward(first)[1] + outward(neighbour)[1], outward(first)[2] + outward(neighbour)[2]];
+                const chosen = occt.select.faces.extreme({ shape, direction: between, tolerance: 1e-7 });
+                shape.delete();
+                expect(sides).toHaveLength(corners);
+                expect([...chosen].sort((a, b) => a - b)).toEqual([first, neighbour].sort((a, b) => a - b));
+            }), { seed: SEED, numRuns: 25 });
+        });
+
+        it("should group the sides of a turned prism as one level between its two ends along its axis, and sort them in their own order", () => {
+            // Act & Assert
+            fc.assert(fc.property(turns, ({ corners, axis, angle }) => {
+                const { shape, up } = turnedPrism(corners, axis, angle);
+                const levels = occt.select.faces.groupAlong({ shape, direction: up, tolerance: 1e-7 });
+                const wide = occt.select.faces.groupAlong({ shape, direction: up, tolerance: 1 });
+                const lowerTwo = occt.select.faces.groupAlong({ shape, direction: up, tolerance: HEIGHT / 2 + 0.5 });
+                const sorted = occt.select.faces.sortAlong({ shape, direction: up });
+                const centres = faceCentres(shape);
+                shape.delete();
+                expect(levels.map(level => level.length)).toEqual([1, corners, 1]);
+                expect(levels[1]).toEqual([...levels[1]!].sort((a, b) => a - b));
+                expect(wide).toEqual(levels);
+                expect(lowerTwo).toEqual([[...levels[0]!, ...levels[1]!], levels[2]]);
+                expect(sorted.slice(1, -1)).toEqual([...sorted.slice(1, -1)].sort((a, b) => a - b));
+                expect(sorted.map(index => Math.round(dot(centres[index]!, up) * 1e6) / 1e6 + 0)).toEqual([0, ...Array.from({ length: corners }, () => HEIGHT / 2), HEIGHT]);
+            }), { seed: SEED, numRuns: 25 });
+        });
+
+        it("should give the first of a triangular prism's three sides as the face nearest its axis, the three being as near as each other", () => {
+            // Arrange
+            const { shape } = turnedPrism(3, [0, 0, 1], 0);
+
+            // Act
+            const nearest = occt.select.faces.nearest({ shape, point: [0, 0, HEIGHT / 2], count: 3 });
+            shape.delete();
+
+            // Assert
+            expect(nearest).toEqual([0, 1, 2]);
+        });
+
+        it("should give the side edges of a triangular prism, all as near its axis as each other, in their own order", () => {
+            // Arrange
+            const { shape } = turnedPrism(3, [0, 0, 1], 0);
+            const centres = edgeCentres(shape);
+            const sideEdges = onlyWhere(centres, centre => Math.abs(centre[2] - HEIGHT / 2) < 1e-9);
+
+            // Act
+            const nearest = occt.select.edges.nearest({ shape, point: [0, 0, HEIGHT / 2], count: 3, indexes: sideEdges });
+            const reversed = occt.select.edges.nearest({ shape, point: [0, 0, HEIGHT / 2], count: 3, indexes: [...sideEdges].reverse() });
+            shape.delete();
+
+            // Assert
+            expect(sideEdges).toHaveLength(3);
+            expect(nearest).toEqual(sideEdges);
+            expect(reversed).toEqual([...sideEdges].reverse());
+        });
+
+        it("should give the first of the sides all as near to the prism's centre as each other, however the part is turned", () => {
+            // Act & Assert
+            fc.assert(fc.property(turns, ({ corners, axis, angle }) => {
+                const { shape, up } = turnedPrism(corners, axis, angle);
+                const middle = HEIGHT / 2;
+                const sides = sidesOf(faceCentres(shape), up, middle);
+                const nearest = occt.select.faces.nearest({ shape, point: [up[0] * middle, up[1] * middle, up[2] * middle], count: 1, indexes: sides });
+                shape.delete();
+                expect(nearest).toEqual([sides[0]]);
+            }), { seed: SEED, numRuns: 25 });
         });
     });
 });

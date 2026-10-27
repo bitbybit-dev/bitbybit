@@ -1,6 +1,7 @@
+import { MathBitByBit } from "@bitbybit-dev/base";
 import { FULL_TURN, HALF_TURN, QUARTER_SINES, RIGHT_ANGLE } from "./constants";
 
-const RADIANS_PER_DEGREE = Math.PI / HALF_TURN;
+const math = new MathBitByBit();
 
 const EXACT_SINES = new Map<number, number>([...QUARTER_SINES].flatMap(([angle, sine]) => [
     [angle, sine], [HALF_TURN - angle, sine], [HALF_TURN + angle, sine === 0 ? 0 : -sine], [(FULL_TURN - angle) % FULL_TURN, sine === 0 ? 0 : -sine],
@@ -12,7 +13,7 @@ function folded(degrees: number): number {
 
 function sine(degrees: number): number {
     const angle = folded(degrees);
-    return EXACT_SINES.get(angle) ?? Math.sin(angle * RADIANS_PER_DEGREE);
+    return EXACT_SINES.get(angle) ?? Math.sin(math.degToRad({ number: angle }));
 }
 
 function cosine(degrees: number): number {
@@ -20,7 +21,7 @@ function cosine(degrees: number): number {
 }
 
 function inverse(value: number, exact: ReadonlyMap<number, number>, fallback: (value: number) => number): number {
-    return exact.get(value) ?? fallback(value) / RADIANS_PER_DEGREE;
+    return exact.get(value) ?? math.radToDeg({ number: fallback(value) });
 }
 
 const EXACT_ARCSINES = new Map<number, number>([...QUARTER_SINES].flatMap(([angle, value]) => [[value, angle], [-value, angle === 0 ? 0 : -angle]]));
@@ -39,7 +40,17 @@ interface LeastArity {
 
 interface ExpressionFunction {
     arity: number | LeastArity;
-    apply: (...values: number[]) => number;
+    apply: (...values: number[]) => number | string;
+}
+
+function fraction(value: number, denominator: number): string {
+    if (!Number.isInteger(denominator) || denominator < 1) {
+        throw new ExpressionError(`fraction() rounds to a whole denominator of at least 1, such as 64, not ${String(denominator)}`, 0);
+    }
+    if (!(Math.abs(value) * denominator <= Number.MAX_SAFE_INTEGER)) {
+        throw new ExpressionError(`fraction() cannot write ${String(value)} in parts of ${String(denominator)}: it is too large`, 0);
+    }
+    return math.toFractionText({ number: value, denominator });
 }
 
 const FUNCTIONS = new Map<string, ExpressionFunction>(Object.entries({
@@ -52,11 +63,12 @@ const FUNCTIONS = new Map<string, ExpressionFunction>(Object.entries({
     tan: { arity: 1, apply: value => sine(value) / cosine(value) },
     asin: { arity: 1, apply: value => inverse(value, EXACT_ARCSINES, Math.asin) },
     acos: { arity: 1, apply: value => inverse(value, EXACT_ARCCOSINES, Math.acos) },
-    atan: { arity: 1, apply: value => Math.atan(value) / RADIANS_PER_DEGREE },
-    atan2: { arity: 2, apply: (y, x) => Math.atan2(y, x) / RADIANS_PER_DEGREE },
+    atan: { arity: 1, apply: value => math.radToDeg({ number: Math.atan(value) }) },
+    atan2: { arity: 2, apply: (y, x) => math.radToDeg({ number: Math.atan2(y, x) }) },
     round: { arity: 1, apply: rounded },
     floor: { arity: 1, apply: Math.floor },
     ceil: { arity: 1, apply: Math.ceil },
+    fraction: { arity: 2, apply: fraction },
 }));
 
 const CONSTANTS = new Map<string, number>([["pi", Math.PI], ["tau", 2 * Math.PI], ["e", Math.E], ["true", 1], ["false", 0]]);
@@ -380,7 +392,8 @@ function evaluate(node: ExpressionNode, values: ReadonlyMap<string, ExpressionVa
                 const condition = numeric(evaluate(node.args[0]!, values), "a condition");
                 return evaluate(node.args[condition === 0 ? 2 : 1]!, values);
             }
-            return finite(FUNCTIONS.get(node.name)!.apply(...node.args.map(arg => numeric(evaluate(arg, values), "arithmetic"))), `${node.name}()`);
+            const result = FUNCTIONS.get(node.name)!.apply(...node.args.map(arg => numeric(evaluate(arg, values), "arithmetic")));
+            return typeof result === "number" ? finite(result, `${node.name}()`) : result;
         }
     }
 }

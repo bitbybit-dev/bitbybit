@@ -104,7 +104,7 @@ The word has three uses:
 - In JavaScript tooling, an **ES module** an npm package ships as.
 
 ### npm packages {#npm-packages}
-Bitbybit's open-source libraries, `@bitbybit-dev/*`, for your own web app or Node service. [npm packages](/learn/npm-packages/intro).
+Bitbybit's free libraries, `@bitbybit-dev/*`, with open-source TypeScript, for your own web app or Node service. [npm packages](/learn/npm-packages/intro).
 
 ### OCCT, OpenCascade {#occt}
 The exact CAD kernel under most of Bitbybit's modelling: solids, fillets, booleans, STEP and IGES. [What is OCCT](/learn/code/common/occt/what-is-occt).

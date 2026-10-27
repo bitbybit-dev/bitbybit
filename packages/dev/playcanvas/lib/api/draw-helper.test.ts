@@ -5,6 +5,8 @@ vi.mock("playcanvas", async () => {
 });
 
 import { createDrawHelperMocks } from "./__mocks__/test-helpers";
+import { meshBuffersOf, triangleFaceLists, twoTrianglesBuffers } from "./__mocks__/mesh-buffers";
+import type { MeshPart } from "@bitbybit-dev/core";
 
 import { DrawHelper } from "./draw-helper";
 import type { Context } from "./context";
@@ -22,6 +24,9 @@ const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
     0, 0, 1, 0,
     0, 0, 0, 1,
 ];
+let nextShapeHash = 1;
+const occtShape = (): Inputs.OCCT.TopoDSShapePointer => ({ hash: nextShapeHash++, type: "occ-shape" });
+
 const jscadSolid = (color?: Inputs.JSCAD.JSCADColor): Inputs.JSCAD.JSCADGeom3 =>
     color === undefined
         ? { polygons: [], transforms: IDENTITY_TRANSFORM }
@@ -153,12 +158,8 @@ describe("DrawHelper unit tests", () => {
             }
         });
 
-        it("should update existing point mesh when updatable is true", () => {
-            const existingMesh = new pc.Entity();
-            existingMesh.name = "existingPointMesh";
-            const childEntity = new pc.Entity(`point-0-${Math.random()}`);
-            childEntity.setLocalPosition(0, 0, 0);
-            existingMesh.addChild(childEntity);
+        it("should update existing point mesh when updatable is true and its look is the same", () => {
+            const existingMesh = drawHelper.drawPoint(new Inputs.Point.DrawPointDto<pc.Entity>([0, 0, 0], 1, 0.5, "#0000ff", true));
 
             const inputs = new Inputs.Point.DrawPointDto<pc.Entity>(
                 [5, 5, 5],
@@ -630,7 +631,7 @@ describe("DrawHelper unit tests", () => {
             expect(lineEntity.render).toBeDefined();
             
             if (lineEntity.render!.meshInstances && lineEntity.render!.meshInstances.length > 0) {
-                const mesh = lineEntity.render!.meshInstances[0]!.mesh;
+                const mesh = lineEntity.render!.meshInstances[0]!.mesh!;
                 if (mesh.vertexBuffer && mesh.vertexBuffer.storage) {
                     expect(mesh.vertexBuffer.storage.byteLength).toBe(0);
                 }
@@ -1493,7 +1494,7 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
-            expect(occtWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapeToMeshBuffers", expect.anything());
         });
 
         it("should draw OCCT shape with edges", async () => {
@@ -1695,7 +1696,7 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
-            expect(occtWorkerCall).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapesToMeshBuffers", expect.anything());
         });
     });
 
@@ -2283,7 +2284,7 @@ describe("DrawHelper unit tests", () => {
             await drawHelper.drawShape(inputs);
 
             expect(occtWorkerCall).toHaveBeenCalledWith(
-                "shapeToMesh",
+                "shapeToMeshBuffers",
                 expect.objectContaining({
                     shape: inputs.shape
                 })
@@ -3322,6 +3323,90 @@ describe("DrawHelper unit tests", () => {
             expect(plain).toEqual([0, 255, 0]);
             expect(contrasted).toEqual([153, 153, 153]);
             expect(individually).toEqual([255, 255, 255]);
+        });
+    });
+
+    describe("a shape mesh with a face that cannot be drawn", () => {
+        const withLooseFace = (): Inputs.OCCT.DecomposedMeshDto => ({
+            faceList: [triangleFaceLists(4, true), { ...triangleFaceLists(9, false), vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0, 5] }],
+            edgeList: [],
+            pointsList: [],
+        });
+
+        it("should refuse it naming the face by its index and add nothing to the scene", async () => {
+            // Arrange
+            const before = mockContext.scene.children.length;
+
+            // Act
+            const drawing = drawHelper.handleDecomposedMesh({ drawEdges: false }, withLooseFace(), {});
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Face 9 cannot be drawn: it holds 10 position values and 3 indexes; both must be whole points and triangles, three values each.");
+            expect(mockContext.scene.children).toHaveLength(before);
+        });
+
+        it("should refuse it when drawing each face on its own as well, before adding anything", async () => {
+            // Arrange
+            const before = mockContext.scene.children.length;
+
+            // Act
+            const drawing = drawHelper.handleDecomposedMeshIndividually({ drawEdges: false }, withLooseFace(), {});
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Face 9 cannot be drawn");
+            expect(mockContext.scene.children).toHaveLength(before);
+        });
+
+        it("should refuse a list of shapes before drawing any of them", async () => {
+            // Arrange
+            occtWorkerCall.mockResolvedValue([twoTrianglesBuffers(), withLooseFace()]);
+            const before = mockContext.scene.children.length;
+
+            // Act
+            const drawing = drawHelper.drawShapes({ shapes: [occtShape(), occtShape()], drawEdges: false });
+
+            // Assert
+            await expect(drawing).rejects.toThrow("Failed to draw OCCT shapes: Face 9 cannot be drawn");
+            expect(mockContext.scene.children).toHaveLength(before);
+        });
+    });
+
+    describe("a part of a surface missing its numbers", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it("should leave out a part with null positions with a warning and draw the rest", () => {
+            // Arrange
+            const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+            const setPositions = vi.spyOn(pc.Mesh.prototype, "setPositions");
+            const whole: MeshPart = { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] };
+            const withNullPositions: unknown = { positions: null, indices: [0, 1, 2] };
+            const material = new pc.StandardMaterial();
+
+            // Act
+            drawHelper.createOrUpdateSurfacesMesh([whole, withNullPositions as MeshPart], undefined, false, material, false, false);
+
+            // Assert
+            expect(Array.from(setPositions.mock.calls[0]![0])).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+            expect(warn).toHaveBeenCalledWith("Skipping corrupted mesh item");
+        });
+    });
+
+    describe("the index of a face the worker sends without a center point", () => {
+        it("should be placed at the middle of the face's vertices", async () => {
+            // Arrange
+            const withoutCenter = meshBuffersOf({ faceList: [{ ...triangleFaceLists(0, true), vertexCoord: [0, 0, 0, 2, 0, 0, 1, 2, 0] }], edgeList: [], pointsList: [] }, { withoutCenters: true });
+            occtWorkerCall.mockResolvedValue(withoutCenter);
+            (mockSolidText.createVectorText as Mock).mockResolvedValue([[[0, 0]]]);
+            const add = vi.spyOn(mockVector, "add");
+
+            // Act
+            await drawHelper.drawShape({ shape: occtShape(), drawEdges: false, drawTwoSided: false, drawFaceIndexes: true });
+
+            // Assert
+            expect(withoutCenter.faceList[0]!.centerPoint).toBeNull();
+            expect(add).toHaveBeenCalledWith({ first: [0, 0.05, 0], second: [1, 2 / 3, 0] });
         });
     });
 });

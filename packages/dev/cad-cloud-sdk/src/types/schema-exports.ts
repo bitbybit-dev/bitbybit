@@ -78,6 +78,8 @@ export type HealthResponse = components["schemas"]["HealthResponse"];
 export type HealthStatus = components["schemas"]["HealthStatus"];
 /** Reference to an uploaded file to be used as input */
 export type InputFileItem = components["schemas"]["InputFileItem"];
+/** A unit of length: 'mm' (millimetres), 'cm' (centimetres), 'm' (metres) or 'in' (inches). */
+export type LengthUnit = components["schemas"]["LengthUnit"];
 /** Iterate over an array, executing sub-steps for each element. Produces an array of results (or a reduced value). */
 export type MapStep = components["schemas"]["MapStep"];
 /** Mesh angular deflection in radians. Range: [0.01, π] */

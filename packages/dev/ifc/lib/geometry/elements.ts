@@ -1,7 +1,9 @@
-import { axesToMatrix, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import type { Base } from "@bitbybit-dev/base";
+import { axesToMatrix, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type * as Inputs from "../api/inputs";
 import type { Frame3 } from "../build/build-types";
 import { absoluteFrame, objectPlacementOf } from "../build/placement";
+import { propertySetsOf } from "../build/properties";
 import type { ModelSnapshot } from "../model/snapshot";
 import type { IfcEntity } from "../step/step-types";
 import { isList, isReference } from "../step/values";
@@ -17,6 +19,8 @@ const VOIDS = "IfcRelVoidsElement";
 const MODEL_CONTEXT = "Model";
 const SUB_CONTEXT = "IfcGeometricRepresentationSubContext";
 const REACH_MILLIMETRES = 1e6;
+const FINEST_PRECISION_MILLIMETRES = 0.01;
+const COARSEST_PRECISION_MILLIMETRES = 1;
 const NO_BODY = `The element has no '${BODY}' representation in a '${MODEL_CONTEXT}' context`;
 const SKIPPED: Readonly<Record<string, string>> = {
     IfcOpeningElement: "is cut from the element it voids, not described on its own",
@@ -99,7 +103,7 @@ function frameOf(model: ModelSnapshot, product: number, known: Map<number, Frame
     return absoluteFrame(model, objectPlacementOf(model, product), known);
 }
 
-function precisionOf(model: ModelSnapshot, fallback: number): number {
+function declaredPrecision(model: ModelSnapshot, fallback: number): number {
     for (const context of model.byType("IfcGeometricRepresentationContext", false)) {
         const precision = model.attribute(context.id, "Precision");
         if (model.attribute(context.id, "ContextType") === MODEL_CONTEXT && typeof precision === "number" && precision > 0) {
@@ -109,7 +113,22 @@ function precisionOf(model: ModelSnapshot, fallback: number): number {
     return fallback;
 }
 
-export function modelRecipe(model: ModelSnapshot, globalIds: readonly string[] | undefined, millimetresPerUnit: number, fallbackTolerance: number, isGroupedByClass = true): ModelRecipe {
+function precisionOf(model: ModelSnapshot, fallback: number, millimetresPerUnit: number): number {
+    const declared = declaredPrecision(model, fallback);
+    return Math.min(Math.max(declared, FINEST_PRECISION_MILLIMETRES / millimetresPerUnit), COARSEST_PRECISION_MILLIMETRES / millimetresPerUnit);
+}
+
+function propertyTags(model: ModelSnapshot, product: number): Record<string, Base.RecipeTagValue> {
+    const tags: Record<string, Base.RecipeTagValue> = {};
+    for (const set of propertySetsOf(model, product)) {
+        for (const [property, value] of Object.entries(set.properties)) {
+            tags[`${set.name}.${property}`] = value;
+        }
+    }
+    return tags;
+}
+
+export function modelRecipe(model: ModelSnapshot, globalIds: readonly string[] | undefined, millimetresPerUnit: number, fallbackTolerance: number, isGroupedByClass = true, withPropertySets = false): ModelRecipe {
     const builder = new RecipeBuilder();
     const groups = new RecipeGroups(model, isGroupedByClass);
     const converter = new ItemConverter(model, builder, REACH_MILLIMETRES / millimetresPerUnit);
@@ -152,12 +171,13 @@ export function modelRecipe(model: ModelSnapshot, globalIds: readonly string[] |
             const name = model.attribute(product.id, "Name");
             const material = parts.some((part) => !part.rgba) ? colourOf(model, colours, product.id) : undefined;
             const group = groups.groupOf(product.id);
+            const properties = withPropertySets ? propertyTags(model, product.id) : {};
             for (const part of parts) {
                 const rgba = part.rgba ?? material;
                 builder.root({
                     node: cuts.length ? builder.node({ op: "voids", host: part.node, openings: cuts }) : part.node,
                     matrix: axesToMatrix(frame),
-                    tag: { globalId, type: product.type, name: typeof name === "string" ? name : "", ...(rgba ? { rgba: [...rgba] } : {}) },
+                    tag: { ...properties, globalId, type: product.type, name: typeof name === "string" ? name : "", ...(rgba ? { rgba: [...rgba] } : {}) },
                     ...(group === undefined ? {} : { group }),
                 });
             }
@@ -165,5 +185,5 @@ export function modelRecipe(model: ModelSnapshot, globalIds: readonly string[] |
             problems.push({ globalId, type: product.type, message: error instanceof Error ? error.message : String(error) });
         }
     }
-    return { recipe: builder.build(millimetresPerUnit, precisionOf(model, fallbackTolerance), groups.list()), problems };
+    return { recipe: builder.build(millimetresPerUnit, precisionOf(model, fallbackTolerance, millimetresPerUnit), groups.list()), problems };
 }

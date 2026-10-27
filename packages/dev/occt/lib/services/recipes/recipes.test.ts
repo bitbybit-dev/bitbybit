@@ -4,8 +4,6 @@ import type { Base } from "@bitbybit-dev/base";
 import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTAssemblyManager } from "../assembly/manager";
 import { OCCTAssemblyQuery } from "../assembly/query";
 import { OCCTService } from "../../occ-service";
@@ -51,7 +49,7 @@ describe("OCCTRecipes", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        occHelper = new OccHelper(occt);
         manager = new OCCTAssemblyManager(occt, occHelper);
         query = new OCCTAssemblyQuery(occt, occHelper);
         recipes = new OCCTRecipes(occt, occHelper, manager);
@@ -381,7 +379,7 @@ describe("OCCTRecipes", () => {
             const act = (): TopoDS_Shape[] => onOlder.build({ recipe: recipeOf(BOX, [rootOf(1)]) });
 
             // Assert
-            expect(act).toThrow("This OpenCascade kernel cannot build recipes; a newer kernel can.");
+            expect(act).toThrow("This build of the Bitbybit OCCT Kernel cannot build recipes; a newer one can.");
         });
 
         it("should pass on what the kernel throws that is not a C++ exception as it was", () => {

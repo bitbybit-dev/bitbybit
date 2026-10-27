@@ -1,20 +1,21 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { add2, cross2, length2, scale2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
-import { wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/polygons";
+import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { add2, cross2, dot2, length2, scale2, subtract2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { wound2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/polygons";
 import * as Inputs from "../api/inputs";
 import type { IfcTransaction } from "../model/transaction";
 import { enumValue, ref } from "../step/values";
 import type { Frame3, RoofPlane, RoofSpec } from "./build-types";
-import { AGGREGATION, DEGREES_TO_RADIANS } from "./constants";
+import { AGGREGATION } from "./constants";
 import { bodyContext } from "./contexts";
 import type { EntityWriter } from "./entity-writer";
 import { associateNewMaterial, layerSetThickness, layerSetUsage } from "./materials";
-import { normalize2 } from "./math";
+import { direction2Of } from "./math";
 import { cleanOutline } from "./outlines";
 import { objectPlacementOf } from "./placement";
 import { relate } from "./relationships";
 import { containIn } from "./spatial";
+import { radiansOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 const RECTANGLE_CORNERS = 4;
 const RIGHT_ANGLE_COSINE = 1e-6;
@@ -32,9 +33,9 @@ function rectangle(points: readonly Base.Point2[], tolerance: number): Base.Poin
         throw new Error(`A roof's outline is a rectangle of ${RECTANGLE_CORNERS} corners, got ${corners.length}`);
     }
     corners.forEach((corner, index) => {
-        const before = normalize2(subtract2(corner, corners[(index + RECTANGLE_CORNERS - 1) % RECTANGLE_CORNERS]!));
-        const after = normalize2(subtract2(corners[(index + 1) % RECTANGLE_CORNERS]!, corner));
-        if (Math.abs(before[0] * after[0] + before[1] * after[1]) > RIGHT_ANGLE_COSINE) {
+        const before = direction2Of(subtract2(corner, corners[(index + RECTANGLE_CORNERS - 1) % RECTANGLE_CORNERS]!));
+        const after = direction2Of(subtract2(corners[(index + 1) % RECTANGLE_CORNERS]!, corner));
+        if (Math.abs(dot2(before, after)) > RIGHT_ANGLE_COSINE) {
             throw new Error(`A roof's outline is a rectangle, and its corner ${index} is not a right angle`);
         }
     });
@@ -42,16 +43,16 @@ function rectangle(points: readonly Base.Point2[], tolerance: number): Base.Poin
 }
 
 function expanded(corners: readonly Base.Point2[], overhang: number): Base.Point2[] {
-    const along = normalize2(subtract2(corners[1]!, corners[0]!));
-    const across = normalize2(subtract2(corners[3]!, corners[0]!));
+    const along = direction2Of(subtract2(corners[1]!, corners[0]!));
+    const across = direction2Of(subtract2(corners[3]!, corners[0]!));
     const out = (point: Base.Point2, alongSign: number, acrossSign: number): Base.Point2 => add2(point, add2(scale2(along, alongSign * overhang), scale2(across, acrossSign * overhang)));
     return [out(corners[0]!, -1, -1), out(corners[1]!, 1, -1), out(corners[2]!, 1, 1), out(corners[3]!, -1, 1)];
 }
 
 function eavesPlane(corners: readonly Base.Point2[], from: number, outline: readonly Base.Point2[]): RoofPlane {
     const start = corners[from]!;
-    const along = normalize2(subtract2(corners[(from + 1) % RECTANGLE_CORNERS]!, start));
-    const across = normalize2(subtract2(corners[(from + RECTANGLE_CORNERS - 1) % RECTANGLE_CORNERS]!, start));
+    const along = direction2Of(subtract2(corners[(from + 1) % RECTANGLE_CORNERS]!, start));
+    const across = direction2Of(subtract2(corners[(from + RECTANGLE_CORNERS - 1) % RECTANGLE_CORNERS]!, start));
     return { origin: start, along, inward: across, outline };
 }
 
@@ -64,8 +65,8 @@ function gablePlanes(q: readonly Base.Point2[]): RoofPlane[] {
 
 function hipPlanes(q: readonly Base.Point2[], tolerance: number): RoofPlane[] {
     const corners = length2(subtract2(q[1]!, q[0]!)) >= length2(subtract2(q[2]!, q[1]!)) ? q : [q[1]!, q[2]!, q[3]!, q[0]!];
-    const along = normalize2(subtract2(corners[1]!, corners[0]!));
-    const across = normalize2(subtract2(corners[3]!, corners[0]!));
+    const along = direction2Of(subtract2(corners[1]!, corners[0]!));
+    const across = direction2Of(subtract2(corners[3]!, corners[0]!));
     const half = length2(subtract2(corners[3]!, corners[0]!)) / 2;
     const ridgeStart = add2(corners[0]!, add2(scale2(along, half), scale2(across, half)));
     const ridgeEnd = add2(corners[1]!, add2(scale2(along, -half), scale2(across, half)));
@@ -98,7 +99,7 @@ function planeFrame(plane: RoofPlane, height: number, slope: number): Frame3 {
 
 function inPlane(plane: RoofPlane, frame: Frame3, slope: number, point: Base.Point2): Base.Point2 {
     const offset = subtract2(point, plane.origin);
-    return [offset[0] * frame.x[0] + offset[1] * frame.x[1], (offset[0] * plane.inward[0] + offset[1] * plane.inward[1]) / Math.cos(slope)];
+    return [dot2(offset, [frame.x[0], frame.x[1]]), dot2(offset, [plane.inward[0], plane.inward[1]]) / Math.cos(slope)];
 }
 
 export function createRoof(tx: IfcTransaction, writer: EntityWriter, spec: RoofSpec, tolerance: number): number {
@@ -113,7 +114,7 @@ export function createRoof(tx: IfcTransaction, writer: EntityWriter, spec: RoofS
     if (!(spec.overhang >= 0)) {
         throw new Error(`A roof's overhang is zero or more, got ${spec.overhang}`);
     }
-    const slope = flat ? 0 : spec.pitch * DEGREES_TO_RADIANS;
+    const slope = flat ? 0 : radiansOf(spec.pitch);
     const outer = expanded(rectangle(spec.outline, tolerance), spec.overhang);
     const eaves = spec.baseOffset - spec.overhang * Math.tan(slope);
     const placement = writer.localPlacement(objectPlacementOf(tx, spec.storey), WORLD_AXES);

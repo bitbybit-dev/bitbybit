@@ -1,9 +1,10 @@
-import { srgbToLinear } from "@bitbybit-dev/base";
-import { isRigidMatrix, linearDeterminant } from "@bitbybit-dev/base/lib/api/services/helpers/matrices";
-import { creasedMesh } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
+import { srgbToLinear } from "@bitbybit-dev/base/lib/api/services/helpers/color/color-space";
+import { isRigidMatrix, linearDeterminant, movedCoordinate } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
+import { creasedMesh } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-normals";
 import type * as Inputs from "./inputs";
 import type { Base } from "@bitbybit-dev/base";
 import type { RecipeDrawBatch, RecipeDrawElement, RecipeDrawInstances, RecipeDrawMesh, RecipeDrawOptions, RecipeDrawPlan, RecipeDrawRange } from "./draw-recipe-types";
+import { add3, length3, scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
 const POSITION_SIZE = 3;
 const NORMALS_AT = 3;
@@ -13,7 +14,6 @@ const MATRIX_SIZE = 16;
 const TRIANGLE_CORNERS = 3;
 const FALLBACK_SHARP_ANGLE = 40;
 const CORNERS = 8;
-const COLUMN = 4;
 const TRANSLATION_AT = 12;
 const Z_CORNER_BIT = 4;
 
@@ -92,10 +92,6 @@ function boxOf(positions: Float32Array): MeshBox {
     return { min, max };
 }
 
-function placedPoint(matrix: readonly number[], x: number, y: number, z: number, axis: number): number {
-    return matrix[axis]! * x + matrix[COLUMN + axis]! * y + matrix[2 * COLUMN + axis]! * z + matrix[TRANSLATION_AT + axis]!;
-}
-
 function centreOf(boxes: readonly MeshBox[]): Base.Point3 {
     const min = [Infinity, Infinity, Infinity];
     const max = [-Infinity, -Infinity, -Infinity];
@@ -105,7 +101,7 @@ function centreOf(boxes: readonly MeshBox[]): Base.Point3 {
             max[axis] = Math.max(max[axis]!, box.max[axis]!);
         }
     }
-    return [(min[0]! + max[0]!) / 2, (min[1]! + max[1]!) / 2, (min[2]! + max[2]!) / 2];
+    return scale3(add3([min[0]!, min[1]!, min[2]!], [max[0]!, max[1]!, max[2]!]), 1 / 2);
 }
 
 function placedBox(box: MeshBox, matrix: readonly number[]): MeshBox {
@@ -116,7 +112,7 @@ function placedBox(box: MeshBox, matrix: readonly number[]): MeshBox {
         const y = corner & 2 ? box.max[1] : box.min[1];
         const z = corner & Z_CORNER_BIT ? box.max[2] : box.min[2];
         for (let axis = 0; axis < POSITION_SIZE; axis++) {
-            const value = placedPoint(matrix, x, y, z, axis);
+            const value = movedCoordinate(matrix, x, y, z, axis);
             min[axis] = Math.min(min[axis]!, value);
             max[axis] = Math.max(max[axis]!, value);
         }
@@ -142,9 +138,9 @@ function bake(batch: RecipeDrawBatch, placed: PlacedRoot, mesh: RecipeDrawMesh, 
         const [x, y, z] = [mesh.positions[at * POSITION_SIZE]!, mesh.positions[at * POSITION_SIZE + 1]!, mesh.positions[at * POSITION_SIZE + 2]!];
         const [nx, ny, nz] = [mesh.normals[at * POSITION_SIZE]!, mesh.normals[at * POSITION_SIZE + 1]!, mesh.normals[at * POSITION_SIZE + 2]!];
         const turned = [normal[0]! * nx + normal[3]! * ny + normal[6]! * nz, normal[1]! * nx + normal[4]! * ny + normal[7]! * nz, normal[2]! * nx + normal[5]! * ny + normal[8]! * nz];
-        const length = Math.hypot(turned[0]!, turned[1]!, turned[2]!) || 1;
+        const length = length3([turned[0]!, turned[1]!, turned[2]!]) || 1;
         for (let axis = 0; axis < POSITION_SIZE; axis++) {
-            batch.positions[(vertex + at) * POSITION_SIZE + axis] = placedPoint(matrix, x, y, z, axis) - batch.origin[axis]!;
+            batch.positions[(vertex + at) * POSITION_SIZE + axis] = movedCoordinate(matrix, x, y, z, axis) - batch.origin[axis]!;
             batch.normals[(vertex + at) * POSITION_SIZE + axis] = turned[axis]! / length;
         }
         batch.colors.set(color, (vertex + at) * RGBA_SIZE);

@@ -15,6 +15,7 @@ export type SuiteOptions = {
     coverage: string[];
     environment?: "node" | "jsdom";
     pool?: "forks" | "threads";
+    setupFiles?: string[];
     siblingsFromDist?: string[];
     testTimeout?: number;
     hookTimeout?: number;
@@ -39,6 +40,7 @@ export const packageSuite = (options: SuiteOptions) => defineConfig({
         testTimeout: options.testTimeout ?? 10_000,
         ...(options.hookTimeout === undefined ? {} : { hookTimeout: options.hookTimeout }),
         ...(options.pool === undefined ? {} : { pool: options.pool }),
+        ...(options.setupFiles === undefined ? {} : { setupFiles: options.setupFiles }),
         reporters: process.env["GITHUB_ACTIONS"] === "true"
             ? ["default", "json", ["github-actions", { jobSummary: { enabled: false } }]]
             : ["default", "json"],

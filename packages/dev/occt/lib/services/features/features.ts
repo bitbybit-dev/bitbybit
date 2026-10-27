@@ -1,15 +1,13 @@
 import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import { resolveDto } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import type * as Models from "../../api/models";
 import type { KernelHistory } from "../base/history";
 import { historiesFromKernel } from "../base/history";
 import { numbersOfFrames } from "../base/frames";
 import { checkedChoice, checkedDirection, checkedFrame, checkedFrames, checkedIndexes, checkedNumber, checkedNumberList, checkedPoint, checkedShape, checkedWhole, checkedWithin } from "../base/input-checks";
-
-const RADIANS_PER_DEGREE = Math.PI / 180;
 
 const EXTENTS: readonly Inputs.OCCT.featureExtentEnum[] = [
     Inputs.OCCT.featureExtentEnum.length,
@@ -24,6 +22,15 @@ type DrillArguments = [shape: TopoDS_Shape, frames: number[], diameter: number, 
 
 type PrismArguments = [shape: TopoDS_Shape, profile: TopoDS_Shape, sketchFace: number, direction: Inputs.Base.Vector3,
     length: number, untilFace: number, throughAll: boolean];
+
+type TaperedArguments = [shape: TopoDS_Shape, profile: TopoDS_Shape, sketchFace: number, angle: number, isAdding: boolean,
+    length: number, untilFace: number, throughAll: boolean];
+
+type RevolvedArguments = [shape: TopoDS_Shape, profile: TopoDS_Shape, sketchFace: number, axisOrigin: Inputs.Base.Point3,
+    axisDirection: Inputs.Base.Vector3, isAdding: boolean, angle: number];
+
+type LinearFormArguments = [shape: TopoDS_Shape, wire: TopoDS_Shape, plane: number[], thickness: Inputs.Base.Vector3,
+    otherSide: Inputs.Base.Vector3];
 
 interface KernelShapeWithHistories {
     shape: TopoDS_Shape;
@@ -48,8 +55,8 @@ export class OCCTFeatures {
      * Drills plain holes into a shape, one at each frame: its origin is where the hole enters and its
      * normal points out of the material.
      *
-     * `depth` 0 drills through the whole shape; `tipAngle` 0 leaves a flat bottom and 118 the point of
-     * a twist drill, in degrees. Holes that meet are cut as one.
+     * `depth` 0 drills through the shape; `tipAngle`, in degrees, is 0 for a flat bottom and 118 for
+     * a drill point. Holes that meet are cut as one; give at least one frame.
      * @param inputs - The shape, the frames and the size of the holes
      * @returns The drilled shape
      * @group holes
@@ -200,7 +207,7 @@ export class OCCTFeatures {
             0,
             0,
             checkedWithin(resolved.countersinkDiameter, "countersinkDiameter", { above: 0 }),
-            checkedWithin(resolved.countersinkAngle, "countersinkAngle", { above: 0, below: 180 }) * RADIANS_PER_DEGREE,
+            this.och.base.math.degToRad({ number: checkedWithin(resolved.countersinkAngle, "countersinkAngle", { above: 0, below: 180 }) }),
         ]);
     }
 
@@ -234,7 +241,7 @@ export class OCCTFeatures {
             0,
             0,
             checkedWithin(resolved.countersinkDiameter, "countersinkDiameter", { above: 0 }),
-            checkedWithin(resolved.countersinkAngle, "countersinkAngle", { above: 0, below: 180 }) * RADIANS_PER_DEGREE,
+            this.och.base.math.degToRad({ number: checkedWithin(resolved.countersinkAngle, "countersinkAngle", { above: 0, below: 180 }) }),
         ]);
     }
 
@@ -443,6 +450,26 @@ export class OCCTFeatures {
     }
 
     /**
+     * Grows a tapered boss as `taperedBoss` does, and reports two histories: the base's, then the
+     * profile's, whose `facesFromEdges` holds the leaning side each profile edge swept and
+     * `lastFaces` the top.
+     * @param inputs - The base, the profile, its sketch face, the draft angle in degrees and how far to go
+     * @returns The base with the tapered boss, and the histories of the base and of the profile
+     * @group forms
+     * @shortname tapered boss with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.taperedBossWithHistory({ shape: block, profile, sketchFaceIndex: top, angle: 10, length: 3 });
+     * const bossTop = histories[1].lastFaces;
+     * ```
+     */
+    taperedBossWithHistory(inputs: Inputs.OCCT.TaperedPrismFeatureDto<TopoDS_Shape, TopoDS_Face>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.TaperedPrismFeatureDto, inputs) as Resolved.OCCT.TaperedPrismFeatureDto<TopoDS_Shape, TopoDS_Face>;
+        return this.withHistories(this.occ.FeatureTaperedPrismWithHistory(...this.taperedArguments(resolved, true)));
+    }
+
+    /**
      * Cuts a pocket into a base as `pocket` does, straight in from the sketch face, with its sides
      * leaning by `angle` degrees.
      *
@@ -463,6 +490,26 @@ export class OCCTFeatures {
     taperedPocket(inputs: Inputs.OCCT.TaperedPrismFeatureDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.TaperedPrismFeatureDto, inputs) as Resolved.OCCT.TaperedPrismFeatureDto<TopoDS_Shape, TopoDS_Face>;
         return this.taperedPrism(resolved, false);
+    }
+
+    /**
+     * Cuts a tapered pocket as `taperedPocket` does, and reports two histories: the base's, then the
+     * profile's, whose `facesFromEdges` holds the leaning wall each profile edge swept and
+     * `lastFaces` the floor.
+     * @param inputs - The base, the profile, its sketch face, the draft angle in degrees and how far to go
+     * @returns The base with the tapered pocket, and the histories of the base and of the profile
+     * @group forms
+     * @shortname tapered pocket with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.taperedPocketWithHistory({ shape: block, profile, sketchFaceIndex: top, angle: 5, length: 3 });
+     * const floor = histories[1].lastFaces;
+     * ```
+     */
+    taperedPocketWithHistory(inputs: Inputs.OCCT.TaperedPrismFeatureDto<TopoDS_Shape, TopoDS_Face>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.TaperedPrismFeatureDto, inputs) as Resolved.OCCT.TaperedPrismFeatureDto<TopoDS_Shape, TopoDS_Face>;
+        return this.withHistories(this.occ.FeatureTaperedPrismWithHistory(...this.taperedArguments(resolved, false)));
     }
 
     /**
@@ -490,6 +537,26 @@ export class OCCTFeatures {
     }
 
     /**
+     * Adds a ring as `revolvedBoss` does, and reports two histories: the base's, then the profile's,
+     * whose `facesFromEdges` holds the face each profile edge turned into, such as the ring's outer
+     * wall and its two sides.
+     * @param inputs - The base, the profile, its sketch face, the axis and the angle in degrees
+     * @returns The base with the ring, and the histories of the base and of the profile
+     * @group forms
+     * @shortname revolved boss with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.revolvedBossWithHistory({ shape: shaft, profile, sketchFaceIndex: side, axisOrigin: [0, 0, 0], axisDirection: [0, 1, 0], angle: 360 });
+     * const collarFaces = histories[1].facesFromEdges.flat();
+     * ```
+     */
+    revolvedBossWithHistory(inputs: Inputs.OCCT.RevolvedFeatureDto<TopoDS_Shape, TopoDS_Face>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.RevolvedFeatureDto, inputs) as Resolved.OCCT.RevolvedFeatureDto<TopoDS_Shape, TopoDS_Face>;
+        return this.withHistories(this.occ.FeatureRevolvedWithHistory(...this.revolvedArguments(resolved, true)));
+    }
+
+    /**
      * Cuts a groove round a base by turning a profile face about an axis, such as the seat of a
      * circlip on a shaft: the profile lies on a face of the base, in a plane through the axis.
      *
@@ -510,6 +577,26 @@ export class OCCTFeatures {
     revolvedPocket(inputs: Inputs.OCCT.RevolvedFeatureDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.RevolvedFeatureDto, inputs) as Resolved.OCCT.RevolvedFeatureDto<TopoDS_Shape, TopoDS_Face>;
         return this.revolved(resolved, false);
+    }
+
+    /**
+     * Cuts a groove round a base as `revolvedPocket` does, and reports two histories: the base's,
+     * whose side splits into the pieces on either side of the groove, then the profile's, whose
+     * `facesFromEdges` holds the groove's floor and walls.
+     * @param inputs - The base, the profile, its sketch face, the axis and the angle in degrees
+     * @returns The base with the groove, and the histories of the base and of the profile
+     * @group forms
+     * @shortname revolved pocket with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.revolvedPocketWithHistory({ shape: shaft, profile, sketchFaceIndex: side, axisOrigin: [0, 0, 0], axisDirection: [0, 1, 0], angle: 360 });
+     * const grooveFaces = histories[1].facesFromEdges.flat();
+     * ```
+     */
+    revolvedPocketWithHistory(inputs: Inputs.OCCT.RevolvedFeatureDto<TopoDS_Shape, TopoDS_Face>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.RevolvedFeatureDto, inputs) as Resolved.OCCT.RevolvedFeatureDto<TopoDS_Shape, TopoDS_Face>;
+        return this.withHistories(this.occ.FeatureRevolvedWithHistory(...this.revolvedArguments(resolved, false)));
     }
 
     /**
@@ -540,6 +627,26 @@ export class OCCTFeatures {
     }
 
     /**
+     * Adds a rib as `rib` does, and reports two histories: the base's, then the wire's, whose
+     * `facesFromEdges` holds the face each wire edge made and `firstFaces` and `lastFaces` the rib's
+     * two flat sides.
+     * @param inputs - The base, the wire, the plane it lies in and the thickness on each side
+     * @returns The base with the rib, and the histories of the base and of the wire
+     * @group forms
+     * @shortname rib with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.ribWithHistory({ shape: bracket, wire, frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] }, thickness: 0.5, otherSideThickness: 0.5 });
+     * const slantedTop = histories[1].facesFromEdges[0];
+     * ```
+     */
+    ribWithHistory(inputs: Inputs.OCCT.RibFeatureDto<TopoDS_Shape, TopoDS_Wire | TopoDS_Edge>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.RibFeatureDto, inputs) as Resolved.OCCT.RibFeatureDto<TopoDS_Shape, TopoDS_Wire | TopoDS_Edge>;
+        return this.linearFormWithHistory(resolved, true);
+    }
+
+    /**
      * Cuts a groove into a base: the part of the base's section on the left of a wire as it runs,
      * seen from the side the frame's normal points to, removed across the plane.
      *
@@ -567,6 +674,26 @@ export class OCCTFeatures {
         return this.linearForm(resolved, false);
     }
 
+    /**
+     * Cuts a groove as `groove` does, and reports two histories: the base's, then the wire's, whose
+     * `facesFromEdges` holds the wall each wire edge cut and `firstFaces` and `lastFaces` the
+     * groove's two flat sides.
+     * @param inputs - The base, the wire, the plane it lies in and the thickness on each side
+     * @returns The base with the groove, and the histories of the base and of the wire
+     * @group forms
+     * @shortname groove with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.features.grooveWithHistory({ shape: block, wire, frame: { origin: [0, 0, 0], normal: [0, 0, -1], direction: [1, 0, 0] }, thickness: 0.5, otherSideThickness: 0.5 });
+     * const walls = histories[1].facesFromEdges.flat();
+     * ```
+     */
+    grooveWithHistory(inputs: Inputs.OCCT.RibFeatureDto<TopoDS_Shape, TopoDS_Wire | TopoDS_Edge>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.RibFeatureDto, inputs) as Resolved.OCCT.RibFeatureDto<TopoDS_Shape, TopoDS_Wire | TopoDS_Edge>;
+        return this.linearFormWithHistory(resolved, false);
+    }
+
     private pushPullArguments(inputs: Resolved.OCCT.PushPullFacesDto<TopoDS_Shape>): [TopoDS_Shape, number[], number[]] {
         const shape = checkedShape(inputs.shape);
         const indexes = checkedIndexes(inputs.indexes, "indexes");
@@ -592,12 +719,15 @@ export class OCCTFeatures {
     private drillArguments(inputs: Resolved.OCCT.HolesDto<TopoDS_Shape>, mouth: () => [number, number, number, number]): DrillArguments {
         const shape = checkedShape(inputs.shape);
         const frames = checkedFrames(inputs.frames, "frames");
+        if (frames.length === 0) {
+            throw new InputError("`frames` is empty, and a hole is drilled at each frame: give at least one.", "frames");
+        }
         const diameter = checkedWithin(inputs.diameter, "diameter", { above: 0 });
         const depth = checkedNumber(inputs.depth, "depth", 0);
         const tipAngle = checkedWithin(inputs.tipAngle, "tipAngle", { atLeast: 0, below: 180 });
         const [counterboreDiameter, counterboreDepth, countersinkDiameter, countersinkAngle] = mouth();
         return [shape, numbersOfFrames(frames), diameter, depth,
-            counterboreDiameter, counterboreDepth, countersinkDiameter, countersinkAngle, tipAngle * RADIANS_PER_DEGREE];
+            counterboreDiameter, counterboreDepth, countersinkDiameter, countersinkAngle, this.och.base.math.degToRad({ number: tipAngle })];
     }
 
     private prism(inputs: Resolved.OCCT.PrismFeatureDto<TopoDS_Shape, TopoDS_Face>, isAdding: boolean): TopoDS_Shape {
@@ -620,25 +750,41 @@ export class OCCTFeatures {
     }
 
     private taperedPrism(inputs: Resolved.OCCT.TaperedPrismFeatureDto<TopoDS_Shape, TopoDS_Face>, isAdding: boolean): TopoDS_Shape {
+        return this.actual(this.occ.FeatureTaperedPrism(...this.taperedArguments(inputs, isAdding)));
+    }
+
+    private taperedArguments(inputs: Resolved.OCCT.TaperedPrismFeatureDto<TopoDS_Shape, TopoDS_Face>, isAdding: boolean): TaperedArguments {
         const shape = checkedShape(inputs.shape);
         const profile = checkedShape(inputs.profile, "profile");
         const sketchFace = checkedWhole(inputs.sketchFaceIndex, "sketchFaceIndex", 0);
         const angle = checkedWithin(inputs.angle, "angle", { above: -90, below: 90 });
         const [length, untilFace, throughAll] = this.extentOf(inputs);
-        return this.actual(this.occ.FeatureTaperedPrism(shape, profile, sketchFace, angle * RADIANS_PER_DEGREE, isAdding, length, untilFace, throughAll));
+        return [shape, profile, sketchFace, this.och.base.math.degToRad({ number: angle }), isAdding, length, untilFace, throughAll];
     }
 
     private revolved(inputs: Resolved.OCCT.RevolvedFeatureDto<TopoDS_Shape, TopoDS_Face>, isAdding: boolean): TopoDS_Shape {
+        return this.actual(this.occ.FeatureRevolved(...this.revolvedArguments(inputs, isAdding)));
+    }
+
+    private revolvedArguments(inputs: Resolved.OCCT.RevolvedFeatureDto<TopoDS_Shape, TopoDS_Face>, isAdding: boolean): RevolvedArguments {
         const shape = checkedShape(inputs.shape);
         const profile = checkedShape(inputs.profile, "profile");
         const sketchFace = checkedWhole(inputs.sketchFaceIndex, "sketchFaceIndex", 0);
         const axisOrigin = checkedPoint(inputs.axisOrigin, "axisOrigin");
         const axisDirection = checkedDirection(inputs.axisDirection, "axisDirection");
         const angle = checkedWithin(inputs.angle, "angle", { above: 0, atMost: 360 });
-        return this.actual(this.occ.FeatureRevolved(shape, profile, sketchFace, axisOrigin, axisDirection, isAdding, angle * RADIANS_PER_DEGREE));
+        return [shape, profile, sketchFace, axisOrigin, axisDirection, isAdding, this.och.base.math.degToRad({ number: angle })];
     }
 
     private linearForm(inputs: Resolved.OCCT.RibFeatureDto<TopoDS_Shape, TopoDS_Wire | TopoDS_Edge>, isAdding: boolean): TopoDS_Shape {
+        return this.formedAlongWire(inputs, (...args) => this.actual(isAdding ? this.occ.FeatureRib(...args) : this.occ.FeatureGroove(...args)));
+    }
+
+    private linearFormWithHistory(inputs: Resolved.OCCT.RibFeatureDto<TopoDS_Shape, TopoDS_Wire | TopoDS_Edge>, isAdding: boolean): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        return this.formedAlongWire(inputs, (...args) => this.withHistories(isAdding ? this.occ.FeatureRibWithHistory(...args) : this.occ.FeatureGrooveWithHistory(...args)));
+    }
+
+    private formedAlongWire<T>(inputs: Resolved.OCCT.RibFeatureDto<TopoDS_Shape, TopoDS_Wire | TopoDS_Edge>, form: (...args: LinearFormArguments) => T): T {
         const shape = checkedShape(inputs.shape);
         const outline = checkedShape(inputs.wire, "wire");
         const frame = checkedFrame(inputs.frame, "frame");
@@ -650,11 +796,7 @@ export class OCCTFeatures {
         const isEdge = outline.ShapeType() === this.occ.TopAbs_ShapeEnum.EDGE;
         const wire = isEdge ? this.och.entitiesService.bRepBuilderAPIMakeWire(outline) : outline;
         try {
-            const plane = numbersOfFrames([frame]);
-            const made = isAdding
-                ? this.occ.FeatureRib(shape, wire, plane, along(thickness), along(-otherSideThickness))
-                : this.occ.FeatureGroove(shape, wire, plane, along(thickness), along(-otherSideThickness));
-            return this.actual(made);
+            return form(shape, wire, numbersOfFrames([frame]), along(thickness), along(-otherSideThickness));
         } finally {
             if (isEdge) {
                 wire.delete();
@@ -675,10 +817,10 @@ export class OCCTFeatures {
 
     private actual(made: TopoDS_Shape): TopoDS_Shape {
         const solid = this.loneSolidOf(made);
-        const shape = this.och.converterService.getActualTypeOfShape(solid ?? made);
-        solid?.delete();
-        made.delete();
-        return shape;
+        if (solid !== undefined) {
+            made.delete();
+        }
+        return this.och.converterService.castAndRelease(solid ?? made);
     }
 
     private loneSolidOf(made: TopoDS_Shape): TopoDS_Shape | undefined {

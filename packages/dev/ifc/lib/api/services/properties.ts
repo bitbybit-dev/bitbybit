@@ -1,4 +1,4 @@
-import { resolveDto } from "@bitbybit-dev/base";
+import { isRecord, resolveDto } from "@bitbybit-dev/base";
 import type { PropertySpec } from "../../build/build-types";
 import { addPropertySet, propertySetsOf, removePropertySet, removePropertyValues, setPropertyValues } from "../../build/properties";
 import type { IfcModel } from "../../model/model-types";
@@ -10,12 +10,13 @@ function propertySpecs(properties: unknown): PropertySpec[] {
     if (!Array.isArray(properties)) {
         throw new TypeError("Expected the properties as a list");
     }
-    return properties.map((property: Inputs.IFC.PropertyDto) => {
+    return properties.map((property: unknown) => {
         const full = resolveDto(Inputs.IFC.PropertyDto, property) as Resolved.IFC.PropertyDto;
-        if (typeof full.value !== "string" && typeof full.value !== "boolean" && !(typeof full.value === "number" && Number.isFinite(full.value))) {
+        const value: unknown = isRecord(property) && property["value"] === "" ? "" : full.value;
+        if (typeof value !== "string" && typeof value !== "boolean" && !(typeof value === "number" && Number.isFinite(value))) {
             throw new TypeError(`The property '${full.name}' needs a text, a finite number, or true or false`);
         }
-        return { name: full.name, value: full.value, type: full.type };
+        return { name: full.name, value, type: full.type };
     });
 }
 

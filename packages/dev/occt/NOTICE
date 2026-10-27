@@ -1,34 +1,58 @@
-NOTICE - third-party components in @bitbybit-dev/occt
-=====================================================
+NOTICE - the licenses of @bitbybit-dev/occt
+===========================================
 
-The TypeScript and JavaScript in this package are MIT-licensed (see LICENSE). The WebAssembly
-kernels it ships (bitbybit-dev-occt/*.wasm, bitbybit-dev-occt-64-bit/*.wasm,
-bitbybit-dev-occt-64-bit-mt/*.wasm, with their emscripten glue) are compiled from the following
-open-source software. Each component is governed by its own license, reproduced in licenses/;
-your rights under those licenses are not restricted by this package's license.
+This package is MIT-licensed (see LICENSE; on the CDN it is bitbybit-dev-occt.LICENSE.txt beside
+this file): its TypeScript and JavaScript, and the Bitbybit OCCT Kernel it ships in three builds,
+the WebAssembly files bitbybit-dev-occt/*.wasm, bitbybit-dev-occt-64-bit/*.wasm and
+bitbybit-dev-occt-64-bit-mt/*.wasm. The kernel is closed source. Each build is one file compiled
+from two parts:
+
+- the Bitbybit kernel layer, C++ written by MB "Bit by bit developers", whose source code is not
+  published. The MIT License covers the compiled kernel, not that source code;
+- the open-source components below, each governed by its own license, reproduced in licenses/.
+  This package's license does not restrict your rights under them.
 
 1. Open CASCADE Technology (OCCT)
    License: GNU Lesser General Public License v2.1 with the Open CASCADE exception (version 1.0)
-   Source:  https://dev.opencascade.org/ (the exact sources are the OCCT fork at
-            https://github.com/bitbybit-dev/OCCT plus the bindings layer compiled with it)
+   Source:  https://github.com/bitbybit-dev/OCCT (branch bitbybit-main), the OCCT source the
+            kernel is compiled from; a fork of https://github.com/Open-Cascade-SAS/OCCT
    Text:    licenses/LGPL-2.1.txt, licenses/OCCT-LGPL-exception.txt
-   Usage:   compiled to WebAssembly and shipped as the three kernel binaries above.
+   Usage:   compiled to WebAssembly and statically linked with the Bitbybit kernel layer in each of
+            the three builds above.
 
-   LGPL-2.1 compliance: the kernel is a separately replaceable component. It is loaded at
-   runtime through the emscripten glue's locateFile hook (and, in the worker packages and the
-   runners, as a separate Web Worker plus wasm file), so a modified OCCT can be substituted by
-   compiling it to WebAssembly and pointing locateFile - or the cdn.js entry's url - at the
-   replacement, without relinking anything in this package.
+   Relinking with a modified OCCT: because OCCT and the kernel layer are linked into one
+   WebAssembly file, using a modified OCCT means relinking that file. Each build's relinking kit
+   holds the materials to do so - the kernel layer as compiled object files, the Draco build the
+   kernel links, the script that builds OCCT for WebAssembly from the source above, the link
+   command and the toolchain version - and is published free of charge beside the build, as the
+   release relink-kit-<kernel file name without .wasm> of
+   https://github.com/bitbybit-dev/bitbybit-assets/releases. Each kit names the exact OCCT commit
+   its build was compiled from. For any build of this package whose kit is not there, write to
+   info@bitbybit.dev and we will provide it; this offer is valid for at least three years after we
+   last distribute that build. The kernel layer in a kit is MIT-licensed, like the kernel.
 
 2. Draco 3D data compression
    License: Apache License 2.0
    Source:  https://github.com/google/draco
    Text:    licenses/Draco-Apache-2.0.txt
-   Usage:   linked into the kernels for glTF geometry compression.
+   Usage:   linked into the kernel for glTF geometry compression.
 
-3. Emscripten runtime support code
+3. RapidJSON
+   License: MIT License
+   Source:  https://github.com/Tencent/rapidjson
+   Text:    licenses/RapidJSON-MIT.txt
+   Usage:   compiled into the kernel for reading and writing JSON.
+
+4. mimalloc
+   License: MIT License
+   Source:  https://github.com/microsoft/mimalloc, as shipped with emscripten
+   Text:    licenses/mimalloc-MIT.txt
+   Usage:   the memory allocator of the multithreaded build (bitbybit-dev-occt-64-bit-mt).
+
+5. Emscripten runtime support code
    License: MIT / University of Illinois-NCSA (https://github.com/emscripten-core/emscripten)
+   Text:    licenses/Emscripten-MIT-NCSA.txt
    Usage:   the JavaScript glue files bitbybit-dev-occt*/bitbybit-dev-occt*.js are emscripten
             output; the compiler's runtime library is embedded in them and in the wasm.
 
-For questions about third-party licensing, contact info@bitbybit.dev.
+For questions about licensing, contact info@bitbybit.dev.

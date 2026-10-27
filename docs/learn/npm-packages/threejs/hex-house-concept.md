@@ -196,7 +196,7 @@ async function start() {
 
 **Core Logic in `main.ts`:**
 1.  Initializes the ThreeJS scene using `initThreeJS()` and adds lighting/ground via `createDirLightsAndGround()`.
-2.  Initializes `BitByBitBase` for ThreeJS and then the OCCT kernel using `initBitByBit()` from `@bitbybit-dev/threejs`, which automatically creates workers from CDN.
+2.  Initializes `BitByBitBase` for ThreeJS and then the Bitbybit OCCT Kernel using `initBitByBit()` from `@bitbybit-dev/threejs`, which automatically creates workers from CDN.
 3.  Sets up download functions and the `lil-gui` interface through `createGui()`. Changes in the GUI trigger `updateShape`.
 4.  A simple `rotateGroup` animation is tied to ThreeJS's `scene.onBeforeRender`.
 5.  The `updateShape` function is central to interactivity:

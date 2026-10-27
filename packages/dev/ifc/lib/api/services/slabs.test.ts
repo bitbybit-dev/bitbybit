@@ -3,6 +3,8 @@ import { modelOf } from "./service-support";
 import { expressIdOf, groundFloor, notAModel } from "../../__test__/build-setup";
 import { countOf, enumOf, extrusionOf, innerCurvesOf, materialOf, objectPlacementOf, outerCurveOf, placementOf, refOf, rounded, sweptAreaOf } from "../../__test__/build-geometry";
 import { findLayerSet } from "../../build/materials";
+import { placedOnPlan } from "../../build/math";
+import { absoluteFrame } from "../../build/placement";
 import type { IfcModel } from "../../model/model-types";
 import * as Inputs from "../inputs";
 import type { Base } from "@bitbybit-dev/base";
@@ -10,6 +12,11 @@ import type { Base } from "@bitbybit-dev/base";
 const SQUARE: Base.Point2[] = [[0, 0], [10000, 0], [10000, 8000], [0, 8000]];
 const CLOCKWISE_SQUARE: Base.Point2[] = [[0, 0], [0, 8000], [10000, 8000], [10000, 0]];
 const STAIR_HOLE: Base.Point2[] = [[2000, 2000], [3000, 2000], [3000, 4000], [2000, 4000]];
+
+function inPlan(model: IfcModel, slab: number, points: readonly number[][]): Base.Point2[] {
+    const frame = absoluteFrame(modelOf(model), objectPlacementOf(model, slab));
+    return points.map((point) => placedOnPlan(frame, [point[0]!, point[1]!]));
+}
 
 function layerSetNamed(model: IfcModel, name: string): number {
     const layerSet = findLayerSet(modelOf(model), name);
@@ -41,7 +48,23 @@ describe("IFCSlabs.add", () => {
         const changed = ifc.slabs.add({ model, storey: "ground", id: "floor", outline: CLOCKWISE_SQUARE });
 
         // Assert
-        expect(outerCurveOf(changed, sweptAreaOf(changed, expressIdOf(changed, "floor")))).toEqual([[10000, 0], [10000, 8000], [0, 8000], [0, 0]]);
+        const floor = expressIdOf(changed, "floor");
+        expect(inPlan(changed, floor, outerCurveOf(changed, sweptAreaOf(changed, floor)))).toEqual([[10000, 0], [10000, 8000], [0, 8000], [0, 0]]);
+    });
+
+    it("should place a slab at its outline's first point, once wound, and measure its profile from there", () => {
+        // Arrange
+        const { ifc, model } = groundFloor();
+
+        // Act
+        const changed = ifc.slabs.add({ model, storey: "ground", id: "floor", outline: CLOCKWISE_SQUARE, holes: [STAIR_HOLE], topOffset: 30 });
+
+        // Assert
+        const floor = expressIdOf(changed, "floor");
+        const profile = sweptAreaOf(changed, floor);
+        expect(absoluteFrame(modelOf(changed), objectPlacementOf(changed, floor)).origin).toEqual([10000, 0, 30]);
+        expect(outerCurveOf(changed, profile)).toEqual([[0, 0], [0, 8000], [-10000, 8000], [-10000, 0]]);
+        expect(innerCurvesOf(changed, profile)).toEqual([[[-8000, 4000], [-7000, 4000], [-7000, 2000], [-8000, 2000]]]);
     });
 
     it("should wind a hole clockwise, the other way from the outline", () => {
@@ -67,7 +90,8 @@ describe("IFCSlabs.add", () => {
         const changed = ifc.slabs.add({ model, storey: "ground", id: "floor", outline: CLOCKWISE_SQUARE, holes: [clockwiseHole] });
 
         // Assert
-        expect(innerCurvesOf(changed, sweptAreaOf(changed, expressIdOf(changed, "floor")))).toEqual([clockwiseHole]);
+        const floor = expressIdOf(changed, "floor");
+        expect(innerCurvesOf(changed, sweptAreaOf(changed, floor)).map((hole) => inPlan(changed, floor, hole))).toEqual([clockwiseHole]);
     });
 
     it("should close the outline's curve back to its first point", () => {

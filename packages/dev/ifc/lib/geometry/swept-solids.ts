@@ -1,19 +1,20 @@
 import type { Base } from "@bitbybit-dev/base";
-import { axesToMatrix, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { pathTangents, roundedPath3, sweepMatrices, transportedAxes } from "@bitbybit-dev/base/lib/api/services/helpers/paths";
-import { cross3, dot3, length3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { axesToMatrix, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { pathTangents, roundedPath3, sweepMatrices, transportedAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/paths";
+import { cross3, dot3, length3, scale2, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { PARALLEL_TOLERANCE } from "../build/constants";
 import { axisPlacementFrame, directionOf, pointOf } from "../build/placement";
 import { radiansPerUnit } from "../build/project";
 import type { ModelSnapshot } from "../model/snapshot";
-import { isReference } from "../step/values";
+import type { IfcValue } from "../step/step-types";
+import { isReference, isTyped } from "../step/values";
 import { arcSegments, type CurveSampler } from "./curves";
 import { UnsupportedGeometryError } from "./errors";
-import type { CircleRegion, PolygonRegion, ProfileRegion } from "./geometry-types";
+import type { CircleRegion, PolygonRegion, ProfileRegion, SweepBound } from "./geometry-types";
 import { profileRegion } from "./profiles";
 import { profileNode, regionSolid } from "./regions";
 import type { RecipeBuilder } from "./recipe-builder";
-import { FULL_TURN, IDENTITY_MATRIX, PARAMETER_RATIO, PYRAMID_TRIANGLES, TURN_SLACK, Y_TO_Z } from "./swept-solids.constants";
+import { FULL_TURN, IDENTITY_MATRIX, LENGTH_MEASURE, PARAMETER_RATIO, PYRAMID_TRIANGLES, TURN_SLACK, Y_TO_Z } from "./swept-solids.constants";
 
 const Z_AXIS: Base.Vector3 = [0, 0, 1];
 const NO_AXIS: Base.Vector3 = [0, 0, 0];
@@ -22,6 +23,13 @@ function squared(vector: Base.Vector3, to: Base.Vector3): Base.Vector3 | undefin
     const across = subtract3(vector, scale3(to, dot3(vector, to)));
     const length = length3(across);
     return length > PARALLEL_TOLERANCE ? scale3(across, 1 / length) : undefined;
+}
+
+function boundOf(value: IfcValue): SweepBound | undefined {
+    if (typeof value === "number") {
+        return { value, byLength: false };
+    }
+    return isTyped(value) && typeof value.value === "number" ? { value: value.value, byLength: value.type.toUpperCase() === LENGTH_MEASURE } : undefined;
 }
 
 function moved(offset: Base.Vector3): Base.TransformMatrix {
@@ -58,7 +66,7 @@ export class SweptSolids {
             throw new UnsupportedGeometryError(`#${item} turns by an angle that is not above zero and at most a whole turn`);
         }
         const solid = regionSolid(this.builder, region, this.flat(item, (profile) => this.builder.node({
-            op: "revolve", profile, origin: [origin[0], origin[1]], direction: [sign * direction[0], sign * direction[1]], angle,
+            op: "revolve", profile, origin: [origin[0], origin[1]], direction: scale2([direction[0], direction[1]], sign), angle,
         })));
         return this.placed(item, solid);
     }
@@ -222,14 +230,17 @@ export class SweptSolids {
         if (points.length < 2) {
             throw new UnsupportedGeometryError(`#${item} sweeps along a directrix of no length`);
         }
-        const start = this.model.attribute(item, "StartParam");
-        const end = this.model.attribute(item, "EndParam");
-        if (start === null && end === null) {
+        const start = boundOf(this.model.attribute(item, "StartParam"));
+        const end = boundOf(this.model.attribute(item, "EndParam"));
+        if (start === undefined && end === undefined) {
             return points;
         }
-        const span = this.curves.parameterSpan(directrix.ref);
-        const from = typeof start === "number" ? start : 0;
-        const to = typeof end === "number" ? end : span;
+        const byLength = start?.byLength ?? end!.byLength;
+        const span = start !== undefined && end !== undefined && start.byLength !== end.byLength
+            ? undefined
+            : byLength ? this.curves.lengthSpan(directrix.ref) : this.curves.parameterSpan(directrix.ref);
+        const from = start?.value ?? 0;
+        const to = end?.value ?? span;
         if (span !== undefined && to !== undefined && Math.abs(to - from - span) <= PARAMETER_RATIO * Math.max(1, span)) {
             return points;
         }

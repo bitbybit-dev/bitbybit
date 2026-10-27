@@ -826,6 +826,101 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
+    describe("a manifold deleted outside the cache, as embind leaves it", () => {
+        const embindHandleOf = (ptr: number): { $$: { ptr: number | undefined }; isDeleted: () => boolean; delete: () => void } => {
+            const handle = {
+                $$: { ptr: ptr as number | undefined },
+                isDeleted: (): boolean => handle.$$.ptr === undefined,
+                delete: (): void => { handle.$$.ptr = undefined; },
+            };
+            return handle;
+        };
+        const args = { functionName: "manifold.shapes.cube", inputs: { size: 1, center: false } };
+
+        it("should report a miss rather than hand back the deleted manifold", () => {
+            // Arrange
+            const handle = embindHandleOf(123);
+            cacheHelper.addToCache("deleted", handle);
+            handle.delete();
+
+            // Act
+            const cached = cacheHelper.checkCache("deleted");
+
+            // Assert
+            expect(cached).toBeNull();
+        });
+
+        it("should forget the deleted manifold once it reported the miss", () => {
+            // Arrange
+            const handle = embindHandleOf(123);
+            cacheHelper.addToCache("deleted", handle);
+            handle.delete();
+
+            // Act
+            cacheHelper.checkCache("deleted");
+
+            // Assert
+            expect(cacheHelper.argCache["deleted"]).toBeUndefined();
+            expect(cacheHelper.manifoldObjectHashes.has("deleted")).toBe(false);
+        });
+
+        it("should still hand back a manifold that is alive", () => {
+            // Arrange
+            const handle = embindHandleOf(123);
+            cacheHelper.addToCache("alive", handle);
+
+            // Act
+            const cached = cacheHelper.checkCache("alive");
+
+            // Assert
+            expect(cached).toBe(handle);
+        });
+
+        it("should run the kernel again for a call whose manifold was deleted outside the cache", () => {
+            // Arrange
+            const deleted = embindHandleOf(1);
+            const fresh = embindHandleOf(2);
+            const cube = vi.fn().mockReturnValueOnce(deleted).mockReturnValueOnce(fresh);
+            cacheHelper.cacheOp(args, cube);
+            deleted.delete();
+
+            // Act
+            const second = cacheHelper.cacheOp(args, cube);
+
+            // Assert
+            expect(cube).toHaveBeenCalledTimes(2);
+            expect(second).toBe(fresh);
+        });
+
+        it("should compute a list again once one of its manifolds was deleted outside the cache", () => {
+            // Arrange
+            const old = [embindHandleOf(1), embindHandleOf(2)];
+            cacheHelper.cacheOp(args, () => old);
+            old[1]!.delete();
+            const split = vi.fn(() => [embindHandleOf(3), embindHandleOf(4)]);
+
+            // Act
+            cacheHelper.cacheOp(args, split);
+
+            // Assert
+            expect(split).toHaveBeenCalledTimes(1);
+            expect(old[0]!.isDeleted()).toBe(true);
+        });
+
+        it("should report a miss for a cached list of manifolds one of which was deleted outside the cache", () => {
+            // Arrange
+            const handles = [embindHandleOf(1), embindHandleOf(2)];
+            cacheHelper.addToCache("list", handles);
+            handles[0]!.delete();
+
+            // Act
+            const cached = cacheHelper.checkCache("list");
+
+            // Assert
+            expect(cached).toBeNull();
+        });
+    });
+
     describe("binary data in the arguments", () => {
         const meshOf = (values: number[]): { numProp: number; vertProperties: Float32Array; triVerts: Uint32Array } => ({ numProp: 3, vertProperties: new Float32Array(values), triVerts: new Uint32Array([0, 1, 2]) });
 

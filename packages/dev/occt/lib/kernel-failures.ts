@@ -1,7 +1,7 @@
 import { KernelOperationError, fillFailureMessage } from "@bitbybit-dev/base";
-import type { DesignCrashDetails, RecipeFailureDetails } from "./kernel-failure-details";
+import type { CornerFailureDetails, DesignCrashDetails, EdgeFailureDetails, RecipeFailureDetails, TrihedronFailureDetails } from "./kernel-failure-details";
 
-export type { DesignCrashDetails, RecipeFailureDetails } from "./kernel-failure-details";
+export type { CornerFailureDetails, DesignCrashDetails, EdgeFailureDetails, RecipeFailureDetails, TrihedronFailureDetails } from "./kernel-failure-details";
 
 /**
  * Every failure an OCCT operation names, by its stable code, with the values its message names: a
@@ -12,16 +12,20 @@ export type OcctFailureDetails = {
     "occt.boolean.failed": undefined;
     "occt.boolean.mixedDimensions": undefined;
     "occt.boolean.tessellated": undefined;
+    "occt.boolean.inconsistent": undefined;
     "occt.fillet.failed": undefined;
-    "occt.fillet.failedOnEdges": { readonly edges: readonly number[] };
-    "occt.fillet.failedAtCorners": { readonly corners: readonly number[] };
+    "occt.fillet.failedOnEdges": EdgeFailureDetails;
+    "occt.fillet.failedAtCorners": CornerFailureDetails;
     "occt.chamfer.failed": undefined;
     "occt.offset.failed": undefined;
     "occt.thickSolid.failed": undefined;
     "occt.loft.failed": undefined;
     "occt.revolve.failed": undefined;
+    "occt.draft.failed": undefined;
     "occt.pipe.failed": undefined;
-    "occt.pipe.notValid": { readonly trihedron: string };
+    "occt.pipe.notValid": TrihedronFailureDetails;
+    "occt.pipe.tooTight": undefined;
+    "occt.pipe.bendDoesNotFit": CornerFailureDetails;
     "occt.design.crashed": DesignCrashDetails;
     "occt.recipe.failed": RecipeFailureDetails;
 };
@@ -39,6 +43,7 @@ export const OCCT_FAILURES: Readonly<Record<OcctFailureCode, string>> = {
     "occt.boolean.failed": "The boolean operation could not be computed. One of the shapes may be broken, open or passing through itself.",
     "occt.boolean.mixedDimensions": "The boolean operation cannot combine shapes of different dimensions, such as a solid and an edge. Give it shapes of one kind; to divide a solid by a wire or an edge, split it instead.",
     "occt.boolean.tessellated": "The boolean operation cannot use a shape that holds only triangles, such as a mesh a recipe kept as it is. Build the recipe with facetedMeshes to cut or join its meshes.",
+    "occt.boolean.inconsistent": "The boolean operation gave a result that cannot be right, a shape lost or a solid left broken, and rebuilding it did not mend it. Surfaces that touch tangentially or lie almost on each other cause it: move one shape by a small amount, or leave a clearance between them.",
     "occt.fillet.failed": "The fillet could not be built. A radius may be too large for the faces beside an edge, or the edges may meet at a corner the fillet cannot round.",
     "occt.fillet.failedOnEdges": "The fillet could not be built at these edges of the shape, counted from 0: {edges}. A radius may be too large for the faces beside them, or the edges may meet at a corner the fillet cannot round.",
     "occt.fillet.failedAtCorners": "The fillet could not round these corners, counted from 1: {corners}. The radius may be too large for the edges that meet there.",
@@ -47,8 +52,11 @@ export const OCCT_FAILURES: Readonly<Record<OcctFailureCode, string>> = {
     "occt.thickSolid.failed": "The thick solid could not be built. The thickness may be larger than the shape allows, or a corner may be too sharp for the join type.",
     "occt.loft.failed": "The loft could not be built. The sections may not fit together, such as open and closed wires mixed, or may lie so that the surface through them crosses itself.",
     "occt.revolve.failed": "The revolve could not be built. The profile may cross or touch the axis, which makes the swept shape pass through itself; keep the whole profile on one side of the axis.",
+    "occt.draft.failed": "The draft could not be built. The angle may be too steep for the faces it tilts, the neutral plane may not cross them, the profile may not reach the stop shape, or OCCT cannot sample a profile of this exact length, which one a hair longer or shorter avoids.",
     "occt.pipe.failed": "The pipe could not be built. The profile may be too large for the bends of the path, or the path may turn a corner the profile cannot follow.",
     "occt.pipe.notValid": "The pipe came out as a shape that is not valid, part of its side missing. With the {trihedron} trihedron OCCT can do that on a path that is straight or nearly so; the discrete trihedron (isDiscreteTrihedron) builds such paths.",
+    "occt.pipe.tooTight": "The path bends more tightly than the pipe's radius, so the pipe would fold through itself on the inside of the bend. Widen the path's bends beyond the radius, or make the pipe thinner.",
+    "occt.pipe.bendDoesNotFit": "The bend radius does not fit the path at these corners, counted from 1: {corners}. The edges that meet there are too short to bend round it; use a smaller bend radius or longer edges.",
     "occt.design.crashed": "The kernel crashed while a design build made the feature {feature} ({path}), and every shape made before it is gone. Leave that feature out, or change it, to build the rest.",
     "occt.recipe.failed": "The recipe could not build node {node}, which root {root} places: {reason}.",
 };

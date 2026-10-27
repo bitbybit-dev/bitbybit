@@ -3,9 +3,6 @@ import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from 
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { readKernelException } from "../../kernel-exception";
-import { OccHelper } from "../../occ-helper";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
 
@@ -15,7 +12,7 @@ describe("OCCT wires projected and wrapped onto shapes", () => {
 
     beforeAll(async () => {
         kernel = await createBitbybitOcct();
-        occt = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+        occt = new OCCTService(kernel);
     }, 120_000);
 
     const close = (values: readonly number[], digits = 9): unknown[] => values.map(value => expect.closeTo(value, digits));
@@ -233,6 +230,44 @@ describe("OCCT wires projected and wrapped onto shapes", () => {
             expect(noTolerance.message).toBe("`tolerance` must be a finite number above 0; it is 0.");
             expect(notAList.message).toBe("`wires` is not a list of shapes.");
             expect(sphere).toBe("Standard_DomainError: WrapOnFace: the face is not a plane, a cylinder or a cone, which unroll without stretching");
+        });
+    });
+
+    describe("project and projectWires", () => {
+        const box = (): TopoDS_Shape => occt.shapes.solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] });
+
+        it("should give an empty compound, not a null one, when the projection misses the shape", () => {
+            // Arrange
+            const beside = circleAbove(1, [100, 5, 0]);
+
+            // Act
+            const projected = occt.shapes.wire.project({ wire: beside, shape: box(), direction: [0, -1, 0] });
+
+            // Assert
+            expect([projected.IsNull(), wiresIn(projected)]).toEqual([false, []]);
+        });
+
+        it("should give an empty compound, not a null one, for each wire whose projection misses the shape", () => {
+            // Arrange
+            const wires = [circleAbove(0.5, [0, 5, 0]), circleAbove(1, [100, 5, 0])];
+
+            // Act
+            const projected = occt.shapes.wire.projectWires({ wires, shape: box(), direction: [0, -1, 0] });
+
+            // Assert
+            expect(projected.map(compound => [compound.IsNull(), wiresIn(compound).length])).toEqual([[false, 2], [false, 0]]);
+        });
+
+        it("should refuse a direction with no length for one wire and for a list of them, naming the direction", () => {
+            // Arrange
+            const wire = circleAbove(0.5, [0, 5, 0]);
+
+            // Act
+            const one = thrownBy(() => occt.shapes.wire.project({ wire, shape: box(), direction: [0, 0, 0] }));
+            const many = thrownBy(() => occt.shapes.wire.projectWires({ wires: [wire], shape: box(), direction: [0, 0, 0] }));
+
+            // Assert
+            expect([one.property, one.message, many.property, many.message]).toEqual(["direction", "`direction` is [0, 0, 0], which points nowhere.", "direction", "`direction` is [0, 0, 0], which points nowhere."]);
         });
     });
 });

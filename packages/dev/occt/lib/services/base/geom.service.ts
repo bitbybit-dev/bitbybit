@@ -1,18 +1,19 @@
 import type { BRepAdaptor_CompCurve, Geom_Curve, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Inputs from "../../api/inputs";
 import type { Base } from "../../api/inputs";
-import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { BaseBitByBit } from "@bitbybit-dev/base";
 import type { EntitiesService } from "./entities.service";
 import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import type { MassAndCentre } from "./kernel-arrays";
 import { massesAndCentres, pointsFromCoordinates } from "./kernel-arrays";
+import { released } from "./release";
 
 export class GeomService {
 
     constructor(
         public readonly occ: BitbybitOcctModule,
-        private readonly vecHelper: VectorHelperService,
+        private readonly base: BaseBitByBit,
         private readonly entitiesService: EntitiesService
     ) { }
 
@@ -82,7 +83,7 @@ export class GeomService {
     pointOnCurveAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<Geom_Curve | BRepAdaptor_CompCurve>): Base.Point3 {
         const curve = inputs.shape;
         const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
-        const param = this.vecHelper.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
+        const param = this.base.math.remap({ number: inputs.param, fromLow: 0, fromHigh: 1, toLow: curve.FirstParameter(), toHigh: curve.LastParameter() });
         curve.D0(param, gpPnt);
         const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
         gpPnt.delete();
@@ -91,17 +92,13 @@ export class GeomService {
 
     tangentOnCurveAtLengthCompCurve(inputs: Resolved.OCCT.DataOnGeometryAtLengthDto<BRepAdaptor_CompCurve>): Base.Point3 {
         const absc = this.occ.GCPnts_AbscissaPoint_FromCompCurve(inputs.shape, inputs.length, inputs.shape.FirstParameter());
-        const param = absc.Parameter();
-        const vec = this.occ.BRepAdaptor_CompCurve_DN(inputs.shape, param, 1);
-        const pt: Base.Point3 = [vec.X(), vec.Y(), vec.Z()];
-        vec.delete();
-        absc.delete();
-        return pt;
+        const vec = released([absc], () => this.occ.BRepAdaptor_CompCurve_DN(inputs.shape, absc.Parameter(), 1));
+        return released([vec], (): Base.Point3 => [vec.X(), vec.Y(), vec.Z()]);
     }
 
     tangentOnCurveAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<BRepAdaptor_CompCurve>): Base.Point3 {
         const curve = inputs.shape;
-        const param = this.vecHelper.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
+        const param = this.base.math.remap({ number: inputs.param, fromLow: 0, fromHigh: 1, toLow: curve.FirstParameter(), toHigh: curve.LastParameter() });
         const vec = this.occ.BRepAdaptor_CompCurve_DN(curve, param, 1);
         const pt: Base.Point3 = [vec.X(), vec.Y(), vec.Z()];
         vec.delete();

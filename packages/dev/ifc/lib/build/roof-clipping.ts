@@ -1,12 +1,12 @@
 import type { Base } from "@bitbybit-dev/base";
-import { composeAxes, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { add2, dot3, scale2, scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/vectors";
+import { composeAxes, vectorToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { add2, add3, dot3, scale2, scale3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type { IfcTransaction } from "../model/transaction";
 import { isReference } from "../step/values";
 import type { ModelReader, Plane3, WallGeometry } from "./build-types";
 import { AGGREGATION, VERTICAL_COSINE } from "./constants";
 import type { EntityWriter } from "./entity-writer";
-import { normalize3 } from "./math";
+import { direction3Of } from "./math";
 import { absoluteFrame, axisPlacementFrame, directionOf, objectPlacementOf } from "./placement";
 import { relatedOf } from "./relationships";
 import { firstItem, representationOf, unwrapClippings } from "./representations";
@@ -27,9 +27,9 @@ function undersideOf(reader: ModelReader, part: number): Plane3 {
     }
     const up = frame.z[2] > 0 ? frame.z : scale3(frame.z, -1);
     const depth = reader.attribute(solid, "Depth");
-    const through = vectorToWorld(frame, normalize3(directionOf(reader, reader.attribute(solid, "ExtrudedDirection"), [0, 0, 1])));
+    const through = vectorToWorld(frame, direction3Of(directionOf(reader, reader.attribute(solid, "ExtrudedDirection"), [0, 0, 1])));
     const far = scale3(through, typeof depth === "number" ? depth : 0);
-    const farPoint: Base.Point3 = [frame.origin[0] + far[0], frame.origin[1] + far[1], frame.origin[2] + far[2]];
+    const farPoint = add3(frame.origin, far);
     return { origin: dot3(farPoint, up) < dot3(frame.origin, up) ? farPoint : frame.origin, normal: up };
 }
 

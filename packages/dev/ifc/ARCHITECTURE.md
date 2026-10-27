@@ -39,9 +39,21 @@ over typed arrays, counting and then filling (offsets per row and the ids that r
 millions of rows costs two arrays rather than a map of sets. Each row's `#` signs are counted first
 with the native byte search: a row with none, such as a coordinate list that can run to tens of
 megabytes, is passed over without walking its bytes, and the scratch for a row's references is sized
-by that count rather than by the row's length. A 677 MB file of 10.9 million rows reads
+by that count rather than by the row's length. A synthetic file of 677 MB and 10.9 million rows, one block of entities repeated, reads
 in under 4 s and builds both lookups in about 4 s more, with half a gigabyte of JavaScript heap beside
 its bytes.
+
+An IFC4X3 ADD2 file is read and changed through its own table: every verb creates and updates
+entities by their names, and IFC4X3 kept every entity and attribute the verbs write (the profile of a
+property renamed its `Description` to `Specification`, which no verb writes). The validation fixture
+`ifc4x3-edits` runs the authoring verbs on one, and the corpus lane edits every IFC4X3 ADD2 file, both
+through IfcOpenShell's validator with IFC4X3's rules; a storey is refused in an infrastructure file,
+which has no building. A file naming the bare IFC4X3 is read through the ADD2 table and refuses
+changes, as an IFC2X3 one does: its rows would be written in ADD2's shape into a file that says
+otherwise. New models are IFC4. IFC4X3 also measures where a sweep starts and ends on its directrix
+either as a parameter or as a length along it, typed in the file: a length is compared with the
+directrix's exact length (a polyline, a trimmed line or circle), and ends that cannot be measured that
+way, or are measured both ways, are refused rather than swept along the whole curve.
 
 An IFC2X3 file is read through the IFC4 table. IFC4 kept almost every IFC2X3 entity, renamed few
 attributes in place and appended most new ones, so a row decodes by IFC4's positions and a missing
@@ -51,9 +63,36 @@ schema (`schemaName` is `IFC2X3`) and is not `editable`: a change would be writt
 a file that says IFC2X3, so `IfcTransaction` refuses to start. `upgradeToIfc4` makes it an IFC4 model:
 every row is checked against IFC4, attributes IFC4 added are left unset, a newly required enumeration
 takes `NOTDEFINED`, a set loses repeated members, and an entity IFC4 merged into its parent
-(`IfcRelOccupiesSpaces`) becomes that parent. Only the rows a rule changed go into the overlay - 16
-thousand of the 10.4 million - so the others are still written as read; anything no rule covers stops
-the upgrade, naming the entity. The writer copies the file's header only when it is the one the file was
+(`IfcRelOccupiesSpaces`) becomes that parent. The rest of what IFC4 writes differently is in
+`lib/model/upgrade-rows.ts`, each rule found by upgrading the corpus's IFC2X3 files:
+- IFC2X3's date and time entities (`IfcCalendarDate`, `IfcLocalTime`, `IfcDateAndTime` and the UTC
+  offset) become the ISO 8601 text IFC4's `IfcDate` and `IfcDateTime` take, where an attribute takes
+  one, and their rows are dropped; one referred to anywhere else stops the upgrade.
+- An enumeration value IFC4 no longer lists becomes `USERDEFINED`, its old token written into
+  `ElementType` or `ObjectType` when that is unset, as IFC4's rules want for a user-defined type, or
+  `NOTDEFINED` when there is no `USERDEFINED`; one where IFC4 takes text (`IfcMonetaryUnit.Currency`)
+  becomes that text.
+- The trailing attributes IFC4 removed are dropped: the centres of gravity of the L, T, U and C
+  profiles, a control element's `ControlElementId`, a transport element's capacities.
+- A virtual space boundary without an element gets an `IfcVirtualElement` of its own, which IFC4
+  requires; a physical one without an element stops the upgrade.
+- An empty list IFC4 wants at least one member in is left out where it is optional, and a required
+  list that may be empty, left out by the file, is written empty.
+- A door style becomes a door type (`DOOR`) and a window style a window type (`WINDOW`), keeping the
+  operation, the partitioning and the precedence, since IFC4's rules want a door or window typed by
+  those; the construction kind and `Sizeable`, which the types do not hold, are dropped.
+- A context's true north given in space becomes a new direction in the plan, as IFC4's rule wants, and
+  one pointing straight up is left out; the direction itself is kept for whatever else uses it.
+- A faceted brep only 'SurfaceModel' representations show (and styles and layers name) becomes, in
+  place, the `IfcShellBasedSurfaceModel` of its shells, since IFC4 no longer lets a surface model hold a
+  brep; one a solid representation or a boolean uses is left alone.
+- A `USERDEFINED` predefined type that names no type, which IFC4's rules refuse, becomes `NOTDEFINED`,
+  which says as much, and an owner history recording a change without its date takes its creation date.
+
+Each rule was found by IfcOpenShell's validator on an upgraded corpus file, comparing it with the file it
+came from: the rules IFC4 added are what an upgrade has to satisfy, not only its attribute lists.
+Only the rows a rule changed go into the overlay - a small fraction of a large file's - so the others
+are still written as read; anything no rule covers stops the upgrade, naming the entity. The writer copies the file's header only when it is the one the file was
 read with, so an upgraded model's header says IFC4.
 
 The scan never builds the file as one string. Text is decoded per value, or per run of rows when
@@ -146,6 +185,27 @@ is checked to name an entity of an accepted type, a deleted entity must have no 
 GlobalIds are checked for uniqueness only where an entity's GlobalId is new or changed, so two objects
 of a file that already share one can still be edited.
 
+### Owner histories
+
+IFC4 makes `OwnerHistory` optional, and a model this library creates carries none. A file from a tool
+that keeps them is kept up to date instead (`lib/model/owner-history.ts`, run by every commit): when the
+file holds an `IfcOwnerHistory` and an `IfcPersonAndOrganization`, the first of those is the user
+every change is recorded as made by, since the library has no other knowledge of who is editing.
+- Every object the commit adds, unless the change set its history itself, shares one history whose
+  `ChangeAction` is `ADDED`, created now by that user and this library.
+- An existing object the commit changed is `MODIFIED`: it gets a new history that keeps the old one's
+  owning user, application, state and `CreationDate`, with the time, the user and this library as its
+  last modification. Objects that shared a history share the new one, and the old one stays for the
+  objects the commit left alone. An object that had none is given one created now.
+- An object counts as changed when its own row is, or a row that is part of it: the walk goes from
+  every changed row that is not an object through the rows that refer to it, up to the first objects
+  it meets, so a wall whose 'Body' representation or placement was rewritten is modified. It never
+  walks from one placement to the placements relative to it: an opening placed on a moved wall moved
+  with it but did not change.
+- `LastModifiedDate` is always written, because IFC4's `CorrectChangeAction` rule allows `ADDED` and
+  `MODIFIED` only beside it. The application is the one `IfcApplication` whose identifier is
+  `@bitbybit-dev/ifc`, created once per file with the version the CDN url names.
+
 ## GlobalIds
 
 A GlobalId is 128 bits in IFC's 22-character alphabet, stamped with the version and variant bits of a
@@ -217,6 +277,16 @@ IFC offsets the layers along the placement's Y, which lies across the wall only 
 not upright, whose axis runs another way, or whose body is not an `IfcExtrudedAreaSolid` (under any
 clippings) rising straight up from a plan outline, is refused before anything is changed.
 
+A wall without a layer set usage, as Revit writes most of its walls (a plain material or a constituent
+set instead), is read from its body: when the body's plan outline, placed by the extrusion's
+position, is a strip whose every corner lies on one of two lines along the axis, the lower line is
+its offset and the distance between them its thickness. Its edits rebuild the body alone and keep the
+material it has, since a plain material says nothing of thickness; a layer set given to it explicitly
+replaces the material with a usage. An outline with holes or one that is not such a strip is refused,
+and so is the elevation Revit extrudes through a wall's thickness where a door reaches the floor:
+rebuilt as a plan outline it would lose the door's notch. Over the corpus this reads 43 of 78 walls
+of one Revit file and 143 of 212 of another that read none before.
+
 The footprint is the two side lines of the layers cut at each end. An end without a connection is cut
 square. A connection between two ends (`ATSTART`/`ATEND` on both) is a mitre: the cut runs through the
 two points where the walls' corresponding sides meet, pairing left with left when the walls run on from
@@ -241,7 +311,9 @@ and whatever is placed relative to the wall moves with it. The Axis is written a
 coordinates, the layer set usage too when the layers or their offset change, and the body from the new
 footprint and joins. The joins are kept, and each is checked first with the reach
 `walls.connect` uses: a change that takes the wall out of reach of a wall it is joined to is refused,
-since the join would no longer describe the walls. The walls whose ends it trims are rebuilt after it.
+since the join would no longer describe the walls. A join another tool wrote between walls this test
+does not see meet (the edit lane found 444 of 784 in one authoring tool's file) is refused before any
+change, saying so, since the library could not keep it. The walls whose ends it trims are rebuilt after it.
 Clippings stay where they were in the building: each half-space is carried from the old wall frame to
 the new one. An opening is read back as an offset along the axis, a sill, a width and a height when its
 body is one rectangle extruded through the wall's thickness and it is placed relative to the wall. The
@@ -305,6 +377,26 @@ placed at that structure's origin. The parts keep their own placements, so nothi
 nested wholes included, so a board still lists under its storey; `storeyOf` already looked through
 aggregates. Removing an assembly removes its parts, as removing any aggregate does.
 
+## Elements from shapes
+
+`elements.add` writes an element of any non-abstract subtype of `IfcElement` whose body is given as a
+recipe of brep or triangles steps, such as an OpenCascade shape `occt.recipes.describe` turned into
+one. A closed brep step's solids become `IfcAdvancedBrep` items, an open one's faces an
+`IfcShellBasedSurfaceModel`, and triangles an `IfcTriangulatedFaceSet` marked closed when every edge
+is run once each way. Curves and surfaces are written once however many edges and faces lie on them.
+Advanced faces take planes, cylinders, spheres, tori and B-spline surfaces; IFC4 has no conical
+surface, and its swept surfaces sweep a profile definition rather than a curve, so a cone or a swept
+surface is refused and `ifcSurfaces` on `describe` writes them as B-splines instead. Roots may move
+and turn their steps, never scale or mirror them, and are written in the element's own frame, the body
+scaled from its units to the model's.
+
+A solid with cavities is written as an `IfcCsgSolid` of its outside less each cavity
+(`IfcBooleanResult` DIFFERENCE of `IfcAdvancedBrep` operands, the cavities wound outward), not as an
+`IfcAdvancedBrepWithVoids`. The schema's own rule on that entity (`VoidsHaveAdvancedFaces`, the same in
+IFC4X3) counts the voids made only of advanced faces and requires there to be none, so every valid
+instance fails it, and IfcOpenShell 0.9 builds no brep with voids at all, faceted ones included. The
+reader still reads `IfcAdvancedBrepWithVoids` other tools write.
+
 ## Moving
 
 `model.move` turns an element's absolute frame about the vertical through its origin, moves it, and
@@ -324,7 +416,11 @@ out of every relationship that names it: a relationship that names it in a singl
 an empty list, is deleted; one that lists other objects too keeps them. Only relationships are changed,
 so anything else that refers to the object makes the commit refuse the removal. Layer sets, materials and
 types stay as the library items they are; a material usage, a property set or geometry that nothing uses
-any more is pruned. The walls a removed wall trimmed are rebuilt with square ends, when this library
+any more is pruned. An `IfcShapeAspect`, which Revit and Archicad write for the parts of a product's
+shape, is part of the product shape or representation map it describes: one only its whole refers to
+goes when that whole is pruned, with the representations only it held, as a styled item goes with its
+item; an aspect a door or window's panel or lining properties refer to keeps its whole. The edit lane
+found the shape left behind without it, which IFC4 refuses. The walls a removed wall trimmed are rebuilt with square ends, when this library
 can read them as walls; a wall another tool wrote in a form it cannot read keeps the footprint it had.
 
 ## Site
@@ -374,6 +470,18 @@ gable wall its triangle and leaves an eaves wall level. A plane the wall is alre
 added again, nor is one plane added twice when two parts lie in it. Each part's plane clips the whole
 wall, so a part whose plane is below the wall's bottom at every corner of its footprint is refused
 rather than clipping the wall away.
+
+Bonsai, the authoring tool built on IfcOpenShell, rebuilds a wall's body from its axis, layers and
+joins, and keeps only the clippings its own `BBIM_Boolean` property set lists: a property `Data`, an
+`IfcLabel` holding a JSON list of the step ids of the element's boolean results (learnt from files
+IfcOpenShell writes). So every clipping this library adds is listed there, or Bonsai would drop a roof
+clipping the first time it regenerated the wall. A body is rebuilt with new rows whenever a wall is
+joined, edited or clipped again (`lib/build/clipping-registry.ts`, at both places a wall's body is
+replaced): a clipping keeps its place in the chain across a rebuild, so the new chain's clipping at a
+place the old one listed is listed, one beyond the old chain is new and listed, and one the file had
+not listed stays unlisted, since Bonsai makes some of its own. A listed boolean outside the chain is
+kept while it exists. The set is written only for a wall that has had one or had a clipping listed,
+and only when its list changes.
 
 ## Property sets
 
@@ -503,8 +611,10 @@ face (`AdvancedFaces`, `lib/geometry/advanced.ts`).
 - The loops go into parameter space, angles unwrapped along each loop. A face whose two loops wrap
   around its surface (a band of a cylinder without a seam edge) is cut open along a seam between them,
   and one whose single loop wraps (half a sphere) is closed over the pole; the cut and the pole's edge
-  are sampled along the surface as finely as its normal turns, the same points on both sides of the
-  cut. `refinedSurfaceMesh` (base) then meshes the face, and its triangles are turned to face along
+  are sampled along the surface as finely as its normal turns, a step every 1/32 of a turn, the same
+  points on both sides of the cut. A turn within a billionth of a step of a whole number of steps takes
+  no extra step: half a sphere's normals turn a quarter turn, eight steps, give or take their
+  rounding, and without that slack the rounding decided between eight and nine. `refinedSurfaceMesh` (base) then meshes the face, and its triangles are turned to face along
   the surface's normal, or against it when `SameSense` is false.
 - A rational spline whose ends meet their vertices only once its control points are divided by their
   weights is read divided, and a rational surface its boundary misses is tried the same way: one
@@ -596,13 +706,21 @@ runs on every file it writes. For each file it reports:
 - what IfcOpenShell's validator finds, with the schema's `WHERE` rules and functions;
 - every product IfcOpenShell cannot make a shape for, from its 'Body' representation as viewers do;
 - every wall IfcOpenShell's own wall regeneration (the logic of its authoring add-on) rebuilds to a
-  different volume from the axis, the layer set usage and the joins. A wall under a clipping is left
-  out: the regeneration knows nothing of clippings it did not make.
+  different volume from the axis, the layer set usage and the joins. The regeneration keeps only the
+  clippings `BBIM_Boolean` lists, so a wall with a clipping it does not list is left out and counted,
+  and every fixture must have none: a roof-clipped wall is regenerated with its clippings.
 - every net volume `quantities.compute` writes that differs from the volume IfcOpenShell measures from
   the element's geometry with its openings cut. A circular section is measured by IfcOpenShell as a
   polygon, so it agrees to 1 % rather than exactly.
 
-The suite runs only on request, since it needs a Python with IfcOpenShell 0.9 (`IFC_PYTHON`, or
+- every volume an element's `Validation_Expected` property set states as `NetVolume` that differs from
+  the one IfcOpenShell measures, so a fixture can state the volume of a body no quantity set covers.
+  Advanced breps on curved surfaces are measured from IfcOpenShell's tessellation, to 1 %.
+
+IfcOpenShell 0.9's rule executor fails with a Python error on `IfcSurfaceWeightsPositive` for every
+rational B-spline surface, buildingSMART's own samples included, so `check.py` evaluates that one rule
+itself when the executor fails on it. The executor needs pytest, which `requirements.txt` pins beside
+IfcOpenShell. The suite runs only on request, since it needs a Python with both (`IFC_PYTHON`, or
 `python3`). A new verb adds the fixture that uses it.
 
 ## Measured against real files
@@ -614,5 +732,7 @@ downloaded on request and never committed. For each file it times reading, query
 builds every element with Manifold (and with `--exact`, as OpenCascade shapes), counts the elements the
 recipe reports unsupported and the roots that build empty, checks that writing the model back leaves its
 DATA section byte for byte the same, and compares every element's volume and bounding box to the ones
-IfcOpenShell measures (`corpus/oracle.py`). A change to reading or to the recipes is measured
-before and after it.
+IfcOpenShell measures (`corpus/oracle.py`). With `--edits` it also edits every IFC4 and IFC2X3 file
+up to 20 MB through the public API, upgrading an IFC2X3 one first, and has IfcOpenShell's validator
+check that the edits added no error to the ones the file already had. A change to reading or to the
+recipes is measured before and after it.

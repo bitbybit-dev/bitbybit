@@ -103,3 +103,35 @@ export class BuildRecipeDocumentDto {
      */
     maxTriangles?: number | undefined = 100000;
 }
+/**
+ * A shape for `recipes.describe`, and how many millimetres one unit of its coordinates is.
+ * Experimental: the recipe format may still change.
+ * @beta
+ */
+export class DescribeRecipeDto<T> {
+    constructor(shape?: T, millimetresPerUnit?: number, ifcSurfaces?: boolean) {
+        if (shape !== undefined) { this.shape = shape; }
+        if (millimetresPerUnit !== undefined) { this.millimetresPerUnit = millimetresPerUnit; }
+        if (ifcSurfaces !== undefined) { this.ifcSurfaces = ifcSurfaces; }
+    }
+    /**
+     * The shape to describe: a solid, several, a shell, faces or a compound of them.
+     * @default undefined
+     */
+    shape!: T;
+    /**
+     * How many millimetres one unit of the shape's coordinates is, recorded in the recipe for
+     * whoever reads it.
+     * @default 1
+     * @minimum 0
+     * @maximum Infinity
+     * @step 1
+     */
+    millimetresPerUnit?: number | undefined = 1;
+    /**
+     * Writes cones and swept surfaces as B-splines, so the recipe holds only the surfaces an IFC4
+     * advanced face takes: planes, cylinders, spheres, tori and B-splines.
+     * @default false
+     */
+    ifcSurfaces?: boolean | undefined = false;
+}

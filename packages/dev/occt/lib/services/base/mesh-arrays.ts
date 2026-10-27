@@ -1,4 +1,5 @@
 import type * as Inputs from "../../api/inputs";
+import type { AnalysisOf, DecodedMeshOf, FaceLayout, FaceSpan } from "./mesh-arrays-types";
 
 /**
  * The triangulated mesh of a shape as the kernel lays it out: every face's nodes, normals, UVs and
@@ -43,7 +44,12 @@ type DecodedFace = Omit<Inputs.OCCT.DecomposedFaceDto, "centerPoint" | "centerNo
     centerNormal: Inputs.Base.Vector3 | null;
 };
 
-type DecodedMesh = Omit<Inputs.OCCT.DecomposedMeshDto, "faceList"> & { faceList: DecodedFace[] };
+type FaceFacts = Pick<DecodedFace, "faceIndex" | "numberOfTriangles" | "centerPoint" | "centerNormal" | "area" | "centerOfMass" | "surfaceType" | "tolerance" | "adjacentFaces" | "faceUid">;
+
+const XYZ = 3;
+const UV = 2;
+const CENTRE_POINT_AT = 1;
+const CENTRE_NORMAL_AT = 4;
 
 export const FACE_RECORD = 4;
 export const FACE_CENTRE_RECORD = 7;
@@ -75,7 +81,7 @@ function point(source: Float64Array, at: number): Inputs.Base.Point3 {
 function points(source: Float64Array, first: number, count: number): Inputs.Base.Point3[] {
     const result = new Array<Inputs.Base.Point3>(count);
     for (let i = 0; i < count; i++) {
-        result[i] = point(source, 3 * (first + i));
+        result[i] = point(source, XYZ * (first + i));
     }
     return result;
 }
@@ -142,7 +148,7 @@ function hex(value: number): string {
     return value.toString(16).padStart(2, "0");
 }
 
-function colorGroups(arrays: MeshArrays): { [color: string]: number[] } {
+function colorGroups(arrays: MeshArrays): Inputs.OCCT.FaceColorGroups {
     const colors = required("faceColors", arrays.faceColors);
     const byColor = new Map<string, number[]>();
     for (let f = 0; f * FACE_RECORD < arrays.faces.length; f++) {
@@ -158,7 +164,7 @@ function colorGroups(arrays: MeshArrays): { [color: string]: number[] } {
             byColor.set(color, [arrays.faces[f * FACE_RECORD]!]);
         }
     }
-    const groups: { [color: string]: number[] } = {};
+    const groups: Inputs.OCCT.FaceColorGroups = {};
     for (const color of [...byColor.keys()].sort()) {
         groups[color] = byColor.get(color)!;
     }
@@ -191,38 +197,25 @@ function checkLengths(arrays: MeshArrays): void {
     expectLength("edgeMiddles", arrays.edgeMiddles.length, 3 * (arrays.edges.length / EDGE_RECORD));
 }
 
-/**
- * Builds the decomposed mesh the kernel's JSON describes from its flat arrays: the same objects, the
- * same keys in the same order and the same numbers, including a null centre for a face without a
- * surface, the metadata of every face and edge when `contents` asks for it and a document's colour
- * groups. The values of a surface analysis, which the JSON cannot carry, follow each face's other keys.
- * @throws Error when an array holds more or fewer numbers than the records describe
- */
-export function decodeMeshArrays(arrays: MeshArrays, contents: MeshContents = { colors: false, metadata: false }): Inputs.OCCT.DecomposedMeshDto {
+function decodeWith<G extends object, A>(arrays: MeshArrays, contents: MeshContents, layout: FaceLayout<G, A>): DecodedMeshOf<G & FaceFacts & AnalysisOf<A>> {
     checkLengths(arrays);
     checkContents(arrays, contents);
-    const faceList: DecodedFace[] = [];
+    const faceList: (G & FaceFacts & AnalysisOf<A>)[] = [];
     let node = 0;
     let uvNode = 0;
     let triangle = 0;
     let adjacent = 0;
     for (let f = 0; f * FACE_RECORD < arrays.faces.length; f++) {
         const record = f * FACE_RECORD;
-        const nodes = arrays.faces[record + 1]!;
-        const triangles = arrays.faces[record + 2]!;
-        const hasUvs = arrays.faces[record + 3] === 1;
+        const span: FaceSpan = { node, nodes: arrays.faces[record + 1]!, uvNode, hasUvs: arrays.faces[record + 3] === 1, triangle, triangles: arrays.faces[record + 2]! };
         const centre = f * FACE_CENTRE_RECORD;
         const hasCentre = arrays.faceCentres[centre] === 1;
-        const face: DecodedFace = {
+        const face: G & FaceFacts & AnalysisOf<A> = {
             faceIndex: arrays.faces[record]!,
-            vertexCoord: numbers(arrays.positions, 3 * node, 3 * (node + nodes)),
-            vertexCoordVec: points(arrays.positions, node, nodes),
-            uvs: hasUvs ? numbers(arrays.uvs, 2 * uvNode, 2 * (uvNode + nodes)) : [],
-            normalCoord: numbers(arrays.normals, 3 * node, 3 * (node + nodes)),
-            triIndexes: numbers(arrays.triangles, 3 * triangle, 3 * (triangle + triangles)),
-            numberOfTriangles: triangles,
-            centerPoint: hasCentre ? point(arrays.faceCentres, centre + 1) : null,
-            centerNormal: hasCentre ? point(arrays.faceCentres, centre + 4) : null,
+            ...layout.geometry(span),
+            numberOfTriangles: span.triangles,
+            centerPoint: hasCentre ? point(arrays.faceCentres, centre + CENTRE_POINT_AT) : null,
+            centerNormal: hasCentre ? point(arrays.faceCentres, centre + CENTRE_NORMAL_AT) : null,
         };
         if (contents.metadata) {
             const metadata = arrays.faceMetadata!;
@@ -238,12 +231,12 @@ export function decodeMeshArrays(arrays: MeshArrays, contents: MeshContents = { 
             adjacent += count;
         }
         if (contents.analysis) {
-            face.analysisValues = numbers(arrays.analysis!, node, node + nodes);
+            face.analysisValues = layout.analysis(span);
         }
         faceList.push(face);
-        node += nodes;
-        uvNode += hasUvs ? nodes : 0;
-        triangle += triangles;
+        node += span.nodes;
+        uvNode += span.hasUvs ? span.nodes : 0;
+        triangle += span.triangles;
     }
 
     const edgeList: Inputs.OCCT.DecomposedEdgeDto[] = [];
@@ -253,7 +246,7 @@ export function decodeMeshArrays(arrays: MeshArrays, contents: MeshContents = { 
         const samples = arrays.edges[e * EDGE_RECORD + 1]!;
         const edge: Inputs.OCCT.DecomposedEdgeDto = {
             edgeIndex: arrays.edges[e * EDGE_RECORD]!,
-            middlePoint: point(arrays.edgeMiddles, 3 * e),
+            middlePoint: point(arrays.edgeMiddles, XYZ * e),
             vertexCoord: points(arrays.edgePoints, sample, samples),
         };
         if (contents.metadata) {
@@ -273,11 +266,116 @@ export function decodeMeshArrays(arrays: MeshArrays, contents: MeshContents = { 
         sample += samples;
     }
 
-    const mesh: DecodedMesh = { faceList, edgeList, pointsList: points(arrays.vertices, 0, arrays.vertices.length / 3) };
+    const mesh: DecodedMeshOf<G & FaceFacts & AnalysisOf<A>> = { faceList, edgeList, pointsList: points(arrays.vertices, 0, arrays.vertices.length / XYZ) };
     if (contents.colors) {
         mesh.colorGroups = colorGroups(arrays);
     }
-    return mesh as Inputs.OCCT.DecomposedMeshDto;
+    return mesh;
+}
+
+/**
+ * Builds the decomposed mesh the kernel's JSON describes from its flat arrays: the same objects, the
+ * same keys in the same order and the same numbers, including a null centre for a face without a
+ * surface, the metadata of every face and edge when `contents` asks for it and a document's colour
+ * groups. The values of a surface analysis, which the JSON cannot carry, follow each face's other keys.
+ * @throws Error when an array holds more or fewer numbers than the records describe
+ */
+export function decodeMeshArrays(arrays: MeshArrays, contents: MeshContents = { colors: false, metadata: false }): Inputs.OCCT.DecomposedMeshDto {
+    return decodeWith(arrays, contents, {
+        geometry: span => ({
+            vertexCoord: numbers(arrays.positions, XYZ * span.node, XYZ * (span.node + span.nodes)),
+            vertexCoordVec: points(arrays.positions, span.node, span.nodes),
+            uvs: span.hasUvs ? numbers(arrays.uvs, UV * span.uvNode, UV * (span.uvNode + span.nodes)) : [],
+            normalCoord: numbers(arrays.normals, XYZ * span.node, XYZ * (span.node + span.nodes)),
+            triIndexes: numbers(arrays.triangles, XYZ * span.triangle, XYZ * (span.triangle + span.triangles)),
+        }),
+        analysis: span => numbers(arrays.analysis!, span.node, span.node + span.nodes),
+    }) as Inputs.OCCT.DecomposedMeshDto;
+}
+
+/**
+ * Builds the same mesh as `decodeMeshArrays` for drawing: each face's positions, normals, uvs,
+ * triangles and analysis values are single-precision views into one typed array per kind, made in
+ * one pass over the kernel's arrays, and no face repeats its positions as points.
+ * @throws Error when an array holds more or fewer numbers than the records describe
+ */
+export function decodeMeshBuffers(arrays: MeshArrays, contents: MeshContents = { colors: false, metadata: false }): Inputs.OCCT.DecomposedMeshBuffersDto {
+    const positions = new Float32Array(arrays.positions);
+    const normals = new Float32Array(arrays.normals);
+    const uvs = new Float32Array(arrays.uvs);
+    const triangles = new Uint32Array(arrays.triangles.buffer, arrays.triangles.byteOffset, arrays.triangles.length);
+    const analysis = arrays.analysis === undefined ? undefined : new Float32Array(arrays.analysis);
+    const mesh = decodeWith(arrays, contents, {
+        geometry: span => ({
+            vertexCoord: positions.subarray(XYZ * span.node, XYZ * (span.node + span.nodes)),
+            uvs: span.hasUvs ? uvs.subarray(UV * span.uvNode, UV * (span.uvNode + span.nodes)) : uvs.subarray(0, 0),
+            normalCoord: normals.subarray(XYZ * span.node, XYZ * (span.node + span.nodes)),
+            triIndexes: triangles.subarray(XYZ * span.triangle, XYZ * (span.triangle + span.triangles)),
+        }),
+        analysis: span => analysis!.subarray(span.node, span.node + span.nodes),
+    });
+    return mesh;
+}
+
+/**
+ * The buffers form of a mesh decoded into lists, for a kernel that answered as JSON: every face's
+ * numbers copied once into shared single-precision arrays, each face a view into them.
+ * @throws Error when what the kernel answered is not a mesh of faces and edges
+ */
+export function meshBuffersFromLists(mesh: Inputs.OCCT.DecomposedMeshDto): Inputs.OCCT.DecomposedMeshBuffersDto {
+    if (!Array.isArray(mesh.faceList) || !Array.isArray(mesh.edgeList)) {
+        throw new Error("the kernel did not answer with a mesh of faces and edges");
+    }
+    let coordinates = 0;
+    let uvCount = 0;
+    let indexCount = 0;
+    let analysisCount = 0;
+    for (const face of mesh.faceList) {
+        coordinates += face.vertexCoord.length;
+        uvCount += face.uvs.length;
+        indexCount += face.triIndexes.length;
+        analysisCount += face.analysisValues?.length ?? 0;
+    }
+    const positions = new Float32Array(coordinates);
+    const normals = new Float32Array(coordinates);
+    const uvs = new Float32Array(uvCount);
+    const triangles = new Uint32Array(indexCount);
+    const analysis = new Float32Array(analysisCount);
+    let coordinate = 0;
+    let uv = 0;
+    let index = 0;
+    let value = 0;
+    const faceList = mesh.faceList.map((face): Inputs.OCCT.DecomposedFaceBuffersDto => {
+        const { vertexCoordVec: _points, analysisValues, ...facts } = face;
+        positions.set(face.vertexCoord, coordinate);
+        normals.set(face.normalCoord, coordinate);
+        uvs.set(face.uvs, uv);
+        triangles.set(face.triIndexes, index);
+        const buffered: Inputs.OCCT.DecomposedFaceBuffersDto = {
+            ...facts,
+            vertexCoord: positions.subarray(coordinate, coordinate + face.vertexCoord.length),
+            normalCoord: normals.subarray(coordinate, coordinate + face.normalCoord.length),
+            uvs: uvs.subarray(uv, uv + face.uvs.length),
+            triIndexes: triangles.subarray(index, index + face.triIndexes.length),
+        };
+        if (analysisValues !== undefined) {
+            analysis.set(analysisValues, value);
+            buffered.analysisValues = analysis.subarray(value, value + analysisValues.length);
+            value += analysisValues.length;
+        }
+        coordinate += face.vertexCoord.length;
+        uv += face.uvs.length;
+        index += face.triIndexes.length;
+        return buffered;
+    });
+    const buffers: Inputs.OCCT.DecomposedMeshBuffersDto = { faceList, edgeList: mesh.edgeList, pointsList: mesh.pointsList ?? [] };
+    if (mesh.colorGroups !== undefined) {
+        buffers.colorGroups = mesh.colorGroups;
+    }
+    if (mesh.isoCurveList !== undefined) {
+        buffers.isoCurveList = mesh.isoCurveList;
+    }
+    return buffers;
 }
 
 /**

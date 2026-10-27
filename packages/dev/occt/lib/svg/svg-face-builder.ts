@@ -2,6 +2,7 @@ import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from 
 import type { OccHelper } from "../occ-helper";
 import type * as Inputs from "../api/inputs";
 import { deleteQuietly } from "./path-builder";
+import { add2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
 /** Concrete rule resolved from the public strategy (auto is resolved per element earlier). */
 export type SvgFaceRule = "nonzero" | "evenOdd" | "perSubpath";
@@ -146,9 +147,9 @@ export class SvgFaceBuilder {
     private centroidXY(pts: Inputs.Base.Point3[], area: number): Inputs.Base.Point3 {
         const z = pts.length > 0 ? pts[0]![2] : 0;
         if (Math.abs(area) < 1e-12 || pts.length === 0) {
-            const mean = pts.reduce((acc, p) => [acc[0]! + p[0], acc[1]! + p[1]], [0, 0]);
+            const mean = pts.reduce<Inputs.Base.Point2>((acc, p) => add2(acc, [p[0], p[1]]), [0, 0]);
             const k = Math.max(pts.length, 1);
-            return [mean[0]! / k, mean[1]! / k, z];
+            return [mean[0] / k, mean[1] / k, z];
         }
         let cx = 0;
         let cy = 0;

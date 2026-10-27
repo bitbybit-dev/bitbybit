@@ -1,25 +1,26 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import type * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
-import { callByPath, isRecord, resolveInputs, validateInputs } from "@bitbybit-dev/base";
-import { occtDtoRegistry } from "../../api/dto-registry";
-import { occtDtoRules } from "../../api/validation";
-import { isShape } from "../base/input-checks";
+import { isRecord } from "@bitbybit-dev/base";
+import type { RackPart } from "@bitbybit-dev/base";
+import * as Inputs from "../../api/inputs";
+import { faceOfLoops } from "./loop-face";
 import type { DesignOutcome } from "./cache";
-import { release, releasedOnError } from "./cache";
+import { release, releasedOnError } from "../base/release";
 import type { FaceNames, NamedSource } from "./names";
 import { carryNames, copyNames, give, nameOf } from "./names";
 import { resolveEdges } from "./references";
 import type { BodyState, DesignPlan, DesignRun, SketchState } from "./state";
 import { bodyKey, sketchKey } from "./state";
-import { operationPathOf } from "./format";
-import { DesignProblem, pointer } from "./problems";
+import { cleanedUp, cleanedUpOnError, DesignProblem, pointer } from "./problems";
 import type { DesignValues } from "./values";
 import { MAX_PATTERN_COUNT, countOf, directionOf, numberOf, pointOf } from "./values";
 import type { ProfileHistory } from "./helpers";
 import { bodyOf, contextOf, faceCount, faceFrame, ownerOf, profileNames } from "./helpers";
 import { squaredFrame, tripleOf, unitVector } from "./placement";
 import { FULL_TURN } from "./constants";
+import { drawnGear, drawnRack, isGear, isRack } from "./gear-loop";
+import type { DrawnLoop } from "./loop-types";
+import type { Outline, PlaneAxes } from "./steps-types";
 
 type Join = Models.OCCT.DesignJoin;
 
@@ -39,11 +40,6 @@ function evaluatedIn(value: unknown, path: string, parameters: DesignValues): un
 function commandOf(command: Models.OCCT.DesignPenCommand, path: string, parameters: DesignValues): Models.OCCT.SketchCommand {
     const { type, id, ...rest } = command;
     return { type, ...(id === undefined ? {} : { id }), ...(evaluatedIn(rest, path, parameters) as Record<string, unknown>) } as Models.OCCT.SketchCommand;
-}
-
-interface PlaneAxes {
-    normal: Inputs.Base.Vector3;
-    direction: Inputs.Base.Vector3;
 }
 
 const PLANES: Record<"XY" | "XZ" | "YZ", PlaneAxes> = {
@@ -75,11 +71,8 @@ function isCircle(command: Models.OCCT.DesignPenCommand): command is Models.OCCT
     return command.type === "circle";
 }
 
-type LoopSegment = Pick<Models.OCCT.SketchSegment, "command" | "edges">;
-
-interface DrawnLoop {
-    wire: TopoDS_Shape;
-    segments: LoopSegment[];
+function isLoopByItself(command: Models.OCCT.DesignPenCommand): boolean {
+    return isCircle(command) || isGear(command) || isRack(command);
 }
 
 function drawnLoop(loop: Loop, frame: Inputs.Base.Frame, path: string, run: DesignRun): DrawnLoop {
@@ -98,6 +91,12 @@ function drawnLoop(loop: Loop, frame: Inputs.Base.Frame, path: string, run: Desi
         const y = numberOf(first.centre[1], run.parameters, pointer(at, "centre", 1));
         const center = run.base.frame.pointToWorld({ frame: squared, point: [x, y, 0] });
         return { wire: run.occt.shapes.wire.createCircleWire({ radius, center, direction: squared.normal }), segments: [{ command: 0, edges: [0] }] };
+    }
+    if (isGear(first)) {
+        return drawnGear(first, frame, pointer(path, "pen", 0), run);
+    }
+    if (isRack(first)) {
+        return drawnRack(first, frame, pointer(path, "pen", 0), run);
     }
     const commands = loop.pen.map((command, index) => commandOf(command, pointer(path, "pen", index), run.parameters));
     const start: Inputs.Base.Point2 | undefined = loop.start === undefined ? undefined : [numberOf(loop.start[0], run.parameters, pointer(path, "start", 0)), numberOf(loop.start[1], run.parameters, pointer(path, "start", 1))];
@@ -126,16 +125,16 @@ function loopsSketch(feature: Models.OCCT.DesignSketchFeature, loops: readonly L
             drawn.push(made);
             owned.push(made.wire);
         });
-        const nameOfCommand = (loop: number, command: number): string | undefined => {
+        const nameOfCommand = (loop: number, command: number, part?: RackPart): string | undefined => {
             const id = loops[loop]!.pen[command]?.id;
-            return id === undefined || id === "" ? undefined : `${feature.id}.${id}`;
+            return id === undefined || id === "" ? undefined : `${feature.id}.${id}${part === undefined ? "" : `.${part}`}`;
         };
         if (feature.face === false) {
             const wire = drawn[0]!.wire;
             owned.splice(0, 1);
             const commands: (string | undefined)[] = [];
             drawn[0]!.segments.forEach(segment => segment.edges.forEach(edge => {
-                commands[edge] = nameOfCommand(0, segment.command);
+                commands[edge] = nameOfCommand(0, segment.command, segment.part);
             }));
             return { kind: "sketch", shape: wire, commands, normal, frame };
         }
@@ -147,7 +146,7 @@ function loopsSketch(feature: Models.OCCT.DesignSketchFeature, loops: readonly L
             owned.push(reversed);
             return reversed;
         });
-        const face = run.occt.shapes.face.createFaceFromWires({ shapes: oriented, planar: true });
+        const face = faceOfLoops(oriented, path, run);
         if (!run.occt.shapeFix.isValid({ shape: face })) {
             release(face);
             throw new DesignProblem(pointer(path, "loops"), "the loops make no valid face: they cross, or a hole lies outside the first loop");
@@ -161,7 +160,7 @@ function loopsSketch(feature: Models.OCCT.DesignSketchFeature, loops: readonly L
             loop.segments.forEach(segment => segment.edges.forEach(edge => {
                 const found = faceEdges.findIndex(faceEdge => faceEdge.IsSame(wireEdges[edge]!));
                 if (found >= 0) {
-                    commands[found] = nameOfCommand(index, segment.command);
+                    commands[found] = nameOfCommand(index, segment.command, segment.part);
                 }
             }));
         });
@@ -185,7 +184,7 @@ export function sketchPlan(feature: Models.OCCT.DesignSketchFeature, path: strin
                 run.trace?.set(path, { frame, face: false });
                 return { kind: "sketch", shape: run.occt.shapes.compound.makeCompound({ shapes: [] }), commands: [], normal: unitVector(frame.normal, path, run.base), frame };
             }
-            if (feature.loops !== undefined || pen.some(isCircle)) {
+            if (feature.loops !== undefined || pen.some(isLoopByItself)) {
                 run.trace?.set(path, { frame, face: feature.face !== false });
                 return loopsSketch(feature, feature.loops ?? [{ ...(feature.start === undefined ? {} : { start: feature.start }), pen }], frame, path, run);
             }
@@ -194,11 +193,8 @@ export function sketchPlan(feature: Models.OCCT.DesignSketchFeature, path: strin
                 ? undefined
                 : [numberOf(feature.start[0], run.parameters, pointer(path, "start", 0)), numberOf(feature.start[1], run.parameters, pointer(path, "start", 1))];
             const outline = run.occt.sketch.penWithSegments({ commands, start, frame, makeFace: false });
-            const face = feature.face !== false && run.occt.shapes.wire.isWireClosed({ shape: outline.shape });
-            const drawn = face ? run.occt.sketch.penWithSegments({ commands, start, frame, makeFace: true }) : outline;
-            if (face) {
-                release(outline.shape);
-            }
+            const face = cleanedUpOnError(() => feature.face !== false && run.occt.shapes.wire.isWireClosed({ shape: outline.shape }), () => release(outline.shape));
+            const drawn = face ? cleanedUp(() => run.occt.sketch.penWithSegments({ commands, start, frame, makeFace: true }), () => release(outline.shape)) : outline;
             run.trace?.set(path, { frame, face });
             const byEdge: (string | undefined)[] = Array.from({ length: Math.max(0, ...drawn.segments.flatMap(segment => segment.edges.map(edge => edge + 1))) }, () => undefined);
             drawn.segments.forEach(segment => {
@@ -214,11 +210,6 @@ export function sketchPlan(feature: Models.OCCT.DesignSketchFeature, path: strin
 
 function sweptNames(feature: string, shape: TopoDS_Shape, history: Models.OCCT.ShapeHistory, commands: readonly (string | undefined)[], run: DesignRun): FaceNames {
     return carryNames(faceCount(shape, run), [], profileNames(feature, [{ history, commands }]));
-}
-
-interface Outline {
-    wire: TopoDS_Shape;
-    owned: boolean;
 }
 
 function outlineOf(sketch: SketchState, run: DesignRun): Outline {
@@ -240,11 +231,11 @@ export function withOutlines<T>(sketches: SketchState[], run: DesignRun, use: (w
 export function combined(join: Join, shape: TopoDS_Shape, tools: TopoDS_Shape[], run: DesignRun): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
     switch (join) {
         case "cut":
-            return run.occt.booleans.differenceWithHistory({ shape, shapes: tools });
+            return run.occt.booleans.differenceWithHistory({ shape, shapes: tools, strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
         case "intersect":
             return run.occt.booleans.intersectionWithHistory({ shapes: [shape, ...tools] });
         default:
-            return run.occt.booleans.unionWithHistory({ shapes: [shape, ...tools] });
+            return run.occt.booleans.unionWithHistory({ shapes: [shape, ...tools], strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
     }
 }
 
@@ -258,7 +249,7 @@ function joined(feature: Sweeping, tool: TopoDS_Shape, toolNames: FaceNames, run
     try {
         const result = combined(feature.join ?? "add", body.shape, [tool], run);
         const sources: NamedSource[] = [{ names: body.names, history: result.histories[0]! }, { names: toolNames, history: result.histories[1]! }];
-        return releasedOnError(result.shape, () => ({ kind: "body", shape: result.shape, names: carryNames(faceCount(result.shape, run), sources, new Map()) }));
+        return releasedOnError([result.shape], () => ({ kind: "body", shape: result.shape, names: carryNames(faceCount(result.shape, run), sources, new Map()) }));
     } finally {
         release(tool);
     }
@@ -272,7 +263,7 @@ function extruded(feature: Models.OCCT.DesignExtrudeFeature, path: string, run: 
     }
     const along = feature.direction === undefined ? sketch.normal : unitVector(directionOf(feature.direction, run.parameters, pointer(path, "direction")), pointer(path, "direction"), run.base);
     const made = run.occt.operations.extrudeWithHistory({ shape: sketch.shape, direction: tripleOf(run.base.vector.mul({ vector: along, scalar: distance })) });
-    const names = releasedOnError(made.shape, () => sweptNames(feature.id, made.shape, made.history, sketch.commands, run));
+    const names = releasedOnError([made.shape], () => sweptNames(feature.id, made.shape, made.history, sketch.commands, run));
     return joined(feature, made.shape, names, run);
 }
 
@@ -296,7 +287,7 @@ function revolved(feature: Models.OCCT.DesignRevolveFeature, path: string, run: 
                 release(made.shape);
             }
         }
-        const names = releasedOnError(shape, () => sweptNames(feature.id, shape, made.history, sketch.commands, run));
+        const names = releasedOnError([shape], () => sweptNames(feature.id, shape, made.history, sketch.commands, run));
         return joined(feature, shape, names, run);
     } finally {
         if (!atOrigin) {
@@ -380,12 +371,12 @@ function copiesOf(count: number, copy: (index: number) => TopoDS_Shape): TopoDS_
 
 function fusedWithCopies(feature: string, body: BodyState, copies: TopoDS_Shape[], run: DesignRun): DesignOutcome {
     try {
-        const result = run.occt.booleans.unionWithHistory({ shapes: [body.shape, ...copies] });
+        const result = run.occt.booleans.unionWithHistory({ shapes: [body.shape, ...copies], strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
         const sources: NamedSource[] = [
             { names: body.names, history: result.histories[0]! },
             ...copies.map((_, index): NamedSource => ({ names: copyNames(body.names, feature, index + 1), history: result.histories[index + 1]! })),
         ];
-        return releasedOnError(result.shape, () => ({ kind: "body", shape: result.shape, names: carryNames(faceCount(result.shape, run), sources, new Map()) }));
+        return releasedOnError([result.shape], () => ({ kind: "body", shape: result.shape, names: carryNames(faceCount(result.shape, run), sources, new Map()) }));
     } finally {
         copies.forEach(release);
     }
@@ -462,162 +453,4 @@ export function bodyPlan(feature: BodyChange, path: string, run: DesignRun): Des
         case "transform":
             return { reads: [bodyKey(feature.body)], make: () => transformed(feature, path, run) };
     }
-}
-
-interface BodyValue {
-    body: string;
-}
-
-interface UncheckedExpression {
-    expr: unknown;
-}
-
-function isBodyValue(value: unknown): value is BodyValue {
-    return isRecord(value) && Object.keys(value).length === 1 && typeof value["body"] === "string";
-}
-
-function isExpressionValue(value: unknown): value is UncheckedExpression {
-    return isRecord(value) && Object.keys(value).length === 1 && "expr" in value;
-}
-
-function bodiesIn(value: unknown): string[] {
-    if (isBodyValue(value)) {
-        return [value.body];
-    }
-    if (Array.isArray(value)) {
-        return value.flatMap(bodiesIn);
-    }
-    return isRecord(value) ? Object.values(value).flatMap(bodiesIn) : [];
-}
-
-function substituted(value: unknown, path: string, run: DesignRun, shapes: TopoDS_Shape[]): unknown {
-    if (isBodyValue(value)) {
-        const shape = bodyOf(value.body, run).shape;
-        shapes.push(shape);
-        return shape;
-    }
-    if (isExpressionValue(value)) {
-        return numberOf(value.expr, run.parameters, pointer(path, "expr"));
-    }
-    if (Array.isArray(value)) {
-        return value.map((inner, index) => substituted(inner, pointer(path, index), run, shapes));
-    }
-    if (isRecord(value)) {
-        return Object.fromEntries(Object.entries(value).map(([key, inner]) => [key, substituted(inner, pointer(path, key), run, shapes)]));
-    }
-    return value;
-}
-
-function releaseShapesIn(value: unknown, keep: readonly TopoDS_Shape[]): void {
-    if (isShape(value)) {
-        if (!keep.includes(value)) {
-            release(value);
-        }
-    } else if (Array.isArray(value)) {
-        value.forEach(inner => releaseShapesIn(inner, keep));
-    } else if (isRecord(value)) {
-        Object.values(value).forEach(inner => releaseShapesIn(inner, keep));
-    }
-}
-
-function madeShape(result: unknown, inputs: readonly TopoDS_Shape[], run: DesignRun): TopoDS_Shape | undefined {
-    if (isShape(result)) {
-        return inputs.includes(result) ? result.clone() : result;
-    }
-    if (!Array.isArray(result) || result.length === 0 || !result.every(isShape)) {
-        return undefined;
-    }
-    const compound = run.occt.shapes.compound.makeCompound({ shapes: result });
-    result.forEach(item => {
-        if (!inputs.includes(item)) {
-            release(item);
-        }
-    });
-    return compound;
-}
-
-const EDGE_FACE_ROLES: Readonly<Record<string, string>> = { "fillets.filletEdges": "round", "fillets.chamferEdges": "bevel" };
-
-const FACE_KEEPING: ReadonlySet<string> = new Set([
-    "transforms.transform", "transforms.rotate", "transforms.rotateAroundCenter", "transforms.rotateByQuaternion",
-    "transforms.align", "transforms.alignNormAndAxis", "transforms.alignAndTranslate", "transforms.orient",
-    "transforms.translate", "transforms.scale", "transforms.scale3d", "transforms.scaleFromCenter",
-    "transforms.mirror", "transforms.mirrorAlongNormal", "transforms.mirrorAboutPoint", "transforms.transformByMatrix",
-]);
-
-function keptNames(operation: string, inputs: unknown, shape: TopoDS_Shape, run: DesignRun): FaceNames | undefined {
-    const given = isRecord(inputs) ? inputs["shape"] : undefined;
-    if (!FACE_KEEPING.has(operation) || !isShape(given)) {
-        return undefined;
-    }
-    const names = [...run.bodies.values()].find(body => body.shape === given)?.names;
-    return names !== undefined && names.length === faceCount(shape, run) ? names.map(list => [...list]) : undefined;
-}
-
-function isHistoried(result: unknown): result is Models.OCCT.ShapeWithHistory<TopoDS_Shape> | Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
-    return isRecord(result) && isShape(result["shape"]) && (isRecord(result["history"]) || Array.isArray(result["histories"]));
-}
-
-function operatedWithHistory(feature: Models.OCCT.DesignOperationFeature, operation: string, inputs: unknown, shapes: readonly TopoDS_Shape[], run: DesignRun): DesignOutcome | undefined {
-    const twin = `${operation}WithHistory`;
-    if (shapes.length === 0 || occtDtoRegistry[twin] === undefined || !isRecord(inputs)) {
-        return undefined;
-    }
-    const result: unknown = callByPath(run.occt, twin, inputs);
-    if (!isHistoried(result)) {
-        releaseShapesIn(result, shapes);
-        return undefined;
-    }
-    const histories = "histories" in result ? result.histories : [result.history];
-    const single = [inputs["shape"]].filter(isShape);
-    const listed = (Array.isArray(inputs["shapes"]) ? inputs["shapes"] : []).filter(isShape);
-    const given = histories.length === single.length + listed.length ? [...single, ...listed] : histories.length === listed.length ? listed : single;
-    const named = new Map([...run.bodies.values()].map(body => [body.shape, body.names] as const));
-    const sources: NamedSource[] = [];
-    const made = new Map<number, string[]>();
-    given.forEach((shape, index) => {
-        const history = histories[index];
-        const names = named.get(shape);
-        if (history === undefined) {
-            return;
-        }
-        if (names !== undefined) {
-            sources.push({ names, history });
-        }
-        history.facesFromEdges.forEach(faces => give(made, faces, nameOf(feature.id, EDGE_FACE_ROLES[operation] ?? "side")));
-        give(made, history.firstFaces, nameOf(feature.id, "start"));
-        give(made, history.lastFaces, nameOf(feature.id, "end"));
-    });
-    const shape = shapes.includes(result.shape) ? result.shape.clone() : result.shape;
-    return { kind: "body", shape, names: carryNames(faceCount(shape, run), sources, made, nameOf(feature.id, "face")) };
-}
-
-function operated(feature: Models.OCCT.DesignOperationFeature, path: string, run: DesignRun): DesignOutcome {
-    const shapes: TopoDS_Shape[] = [];
-    const inputs = substituted(feature.params, pointer(path, "params"), run, shapes);
-    const operation = operationPathOf(feature.operation)!;
-    const issue = validateInputs(occtDtoRegistry, operation, resolveInputs(occtDtoRegistry, operation, inputs), occtDtoRules)[0];
-    if (issue !== undefined) {
-        throw new DesignProblem(pointer(path, "params", issue.property), issue.message);
-    }
-    const historied = operatedWithHistory(feature, operation, inputs, shapes, run);
-    if (historied !== undefined) {
-        return historied;
-    }
-    const result = callByPath(run.occt, operation, inputs);
-    const shape = madeShape(result, shapes, run);
-    if (shape === undefined) {
-        releaseShapesIn(result, shapes);
-        throw new DesignProblem(pointer(path, "operation"), `${feature.operation} makes neither a shape nor a list of shapes`);
-    }
-    const names = releasedOnError(shape, () => keptNames(operation, inputs, shape, run) ?? Array.from({ length: faceCount(shape, run) }, () => [nameOf(feature.id, "face")]));
-    return { kind: "body", shape, names };
-}
-
-/** Runs an operation of the package by its dotted path, with bodies and expressions in its inputs. */
-export function operationPlan(feature: Models.OCCT.DesignOperationFeature, path: string, run: DesignRun): DesignPlan {
-    return {
-        reads: [...new Set(bodiesIn(feature.params))].map(bodyKey),
-        make: () => operated(feature, path, run),
-    };
 }

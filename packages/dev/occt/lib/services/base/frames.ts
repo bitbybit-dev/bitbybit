@@ -1,7 +1,7 @@
 import { InputError } from "@bitbybit-dev/base";
 import type { BitbybitFrame_CurveFrame, BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { readKernelException } from "../../kernel-exception";
+import { withKernelRefusals } from "./kernel-refusals";
 import { checkedChoice, checkedDirection, checkedNumber, checkedShape } from "./input-checks";
 
 const CURVE_FRAME_KINDS: readonly Inputs.OCCT.curveFrameEnum[] = [
@@ -58,14 +58,8 @@ export function framesOnCurve(
         throw new InputError(`\`${property}\` is not a list of numbers.`, property);
     }
     values.forEach(value => checkedNumber(value, property, 0, isLength ? Infinity : 1));
-    try {
-        return framesFromNumbers(occ.FramesOnCurve(curve, values, isLength, curveFrameKind(occ, frameKind), upVector));
-    } catch (thrown) {
-        const read = readKernelException(occ, thrown);
-        const off = read instanceof Error ? /value (\d+) lies off the curve, which runs from 0 to (\S+)/.exec(read.message) : null;
-        if (off === null) {
-            throw read;
-        }
-        throw new InputError(`\`${property}\` holds ${values[Number(off[1])]}, past the end of the curve, which is ${Number(off[2])} long.`, property);
-    }
+    return withKernelRefusals(occ, () => framesFromNumbers(occ.FramesOnCurve(curve, values, isLength, curveFrameKind(occ, frameKind), upVector)), message => {
+        const off = /value (\d+) lies off the curve, which runs from 0 to (\S+)/.exec(message);
+        return off === null ? undefined : new InputError(`\`${property}\` holds ${values[Number(off[1])]}, past the end of the curve, which is ${Number(off[2])} long.`, property);
+    });
 }

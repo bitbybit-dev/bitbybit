@@ -1,15 +1,17 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES, relativeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import type { IfcTransaction } from "../model/transaction";
 import { isReference } from "../step/values";
 import type { Frame3, ModelReader } from "./build-types";
-import { DEGREES_TO_RADIANS, FILLING } from "./constants";
+import { FILLING } from "./constants";
 import type { EntityWriter } from "./entity-writer";
 import { absoluteFrame, movePlacement, objectPlacementOf, productsPlacedBy } from "./placement";
 import { firstItem, representationOf, unwrapClippings } from "./representations";
 import { relatingOf } from "./relationships";
 import { describeObject } from "./spatial";
 import { joinsOf } from "./walls";
+import { radiansOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
+import { add3, rotated2 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
 const OPENING = "IfcOpeningElement";
 const WALL = "IfcWall";
@@ -48,8 +50,9 @@ function clippingsOf(reader: ModelReader, wall: number): number[] {
     return body === undefined ? [] : unwrapClippings(reader, firstItem(reader, body))[1];
 }
 
-function turned(vector: Base.Vector3, cos: number, sin: number): Base.Vector3 {
-    return [vector[0] * cos - vector[1] * sin, vector[0] * sin + vector[1] * cos, vector[2]];
+function turnedAboutVertical(vector: Base.Vector3, angle: number): Base.Vector3 {
+    const [x, y] = rotated2([vector[0], vector[1]], angle);
+    return [x, y, vector[2]];
 }
 
 export function moveElement(tx: IfcTransaction, writer: EntityWriter, element: number, translation: Base.Vector3, turnDegrees: number): void {
@@ -57,14 +60,12 @@ export function moveElement(tx: IfcTransaction, writer: EntityWriter, element: n
     refuseUnmovable(tx, element, placement);
     const parent = tx.attribute(placement, "PlacementRelTo");
     const world = absoluteFrame(tx, placement);
-    const angle = turnDegrees * DEGREES_TO_RADIANS;
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
+    const angle = radiansOf(turnDegrees);
     const moved: Frame3 = {
-        origin: [world.origin[0] + translation[0], world.origin[1] + translation[1], world.origin[2] + translation[2]],
-        x: turned(world.x, cos, sin),
-        y: turned(world.y, cos, sin),
-        z: turned(world.z, cos, sin),
+        origin: add3(world.origin, translation),
+        x: turnedAboutVertical(world.x, angle),
+        y: turnedAboutVertical(world.y, angle),
+        z: turnedAboutVertical(world.z, angle),
     };
     movePlacement(tx, writer, placement, relativeAxes(isReference(parent) ? absoluteFrame(tx, parent.ref) : WORLD_AXES, moved));
 }

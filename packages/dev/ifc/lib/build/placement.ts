@@ -1,12 +1,13 @@
 import type { Base } from "@bitbybit-dev/base";
-import { WORLD_AXES, composeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { PARALLEL_SINE, WORLD_AXES, composeAxes } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
+import { cross3, length3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import type { IfcTransaction } from "../model/transaction";
 import type { IfcValue } from "../step/step-types";
 import type { EntityReader, ModelReader } from "./build-types";
 import type { EntityWriter } from "./entity-writer";
 import { isList, isReference, ref } from "../step/values";
 import type { Frame3 } from "./build-types";
-import { frameFrom } from "./math";
+import { direction3Of, frameFrom } from "./math";
 
 const MAX_PLACEMENT_DEPTH = 256;
 const PRODUCT = "IfcProduct";
@@ -46,7 +47,7 @@ export function axisPlacementFrame(reader: EntityReader, placement: number): Fra
         return frameFrom(origin, [0, 0, 1], [x[0], x[1], 0]);
     }
     const z = directionOf(reader, reader.attribute(placement, "Axis"), [0, 0, 1]);
-    const alongX = Math.abs(z[1]) + Math.abs(z[2]) === 0;
+    const alongX = length3(cross3(direction3Of(z), [1, 0, 0])) <= PARALLEL_SINE;
     const x = directionOf(reader, reader.attribute(placement, "RefDirection"), alongX ? [0, 1, 0] : [1, 0, 0]);
     return frameFrom(origin, z, x);
 }

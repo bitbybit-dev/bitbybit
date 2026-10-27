@@ -3,8 +3,6 @@ import type { BitbybitOcctModule, ClassHandle, TopoDS_Shape } from "../../bitbyb
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { OccHelper } from "../occ-helper";
-import { VectorHelperService } from "../api/vector-helper.service";
-import { ShapesHelperService } from "../api/shapes-helper.service";
 import { readKernelException } from "../kernel-exception";
 import { OCCTSolid } from "./shapes";
 import { OCCTIO } from "./io";
@@ -89,7 +87,7 @@ describe("OCCT io reading and writing STL and BREP", () => {
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        occHelper = new OccHelper(occt);
         io = new OCCTIO(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);
     });
@@ -180,6 +178,28 @@ describe("OCCT io reading and writing STL and BREP", () => {
             expect(() => io.saveShapeStl({ shape: edge, binary: true })).toThrow("Failed when writing stl file.");
             expect(created.filter(made => !made.isDeleted())).toEqual([]);
             expect(occt.FS.analyzePath("/x", false).exists).toBe(false);
+        });
+    });
+
+    describe("saveShapeStl refusing what it cannot write", () => {
+        it.each([0, -1, Number.NaN])("should refuse a precision of %s before it copies or meshes anything", precision => {
+            // Arrange
+            const shape = brick();
+
+            // Act
+            const created = tracked(occt, ["StlAPI_Writer", "BRepMesh_IncrementalMesh"], () => io.saveShapeStl({ shape, precision }));
+
+            // Assert
+            expect(() => io.saveShapeStl({ shape, precision })).toThrow(new InputError(`\`precision\` must be a finite number 1e-7 or more; it is ${precision}.`, "precision"));
+            expect(created).toEqual([]);
+        });
+
+        it("should refuse a missing shape as the other mesh writers do", () => {
+            // Act
+            const act = (): unknown => io.saveShapeStl({ shape: MISSING as TopoDS_Shape });
+
+            // Assert
+            expect(act).toThrow(new InputError("`shape` is missing or empty, as an operation that failed can leave it.", "shape"));
         });
     });
 

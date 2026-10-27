@@ -1,10 +1,12 @@
 import type { Base } from "../inputs/base-inputs";
 import { InputError } from "../kernel-calls/errors";
 import { isRecord } from "../kernel-calls/unknown-values";
-import { linearDeterminant } from "../services/helpers/matrices";
+import { linearDeterminant } from "../services/helpers/geometry/matrices";
 import type { Checker, Kind, NodeSummary } from "./checker-types";
+import { checkBrep } from "./validate-brep";
+import { COORDINATE_RANGE, coordinates, extent, isCoordinate, isCount, positive, range, reference, references, report, vector } from "./checks";
 import {
-    DEGENERATE_DETERMINANT, FULL_TURN, INT32_HIGHEST, INT32_LOWEST, ISSUES_IN_MESSAGE, MATRIX_SIZE, MAX_BUFFER_LENGTH, MAX_ISSUES, MAX_RECIPE_COORDINATE, MAX_RECIPE_DEPTH, MAX_RECIPE_NODES, MAX_RECIPE_PLACEMENT,
+    DEGENERATE_DETERMINANT, FULL_TURN, INT32_HIGHEST, INT32_LOWEST, ISSUES_IN_MESSAGE, MATRIX_SIZE, MAX_BUFFER_LENGTH, MAX_RECIPE_DEPTH, MAX_RECIPE_NODES, MAX_RECIPE_PLACEMENT,
     MAX_RECIPE_GROUPS, MAX_RECIPE_ROOTS, MAX_REFERENCED_NUMBERS, MIN_INTERSECTED, MIN_LOFT_FRAMES, MIN_POLYGON_NUMBERS, POINT2_SIZE, POINT3_SIZE, RECIPE_FORMAT, RECIPE_VERSION, TRIANGLE_CORNERS,
 } from "./limits.constants";
 import type { RecipeIssue } from "./recipe-types";
@@ -12,7 +14,6 @@ import type { RecipeIssue } from "./recipe-types";
 const PROFILE: readonly Kind[] = ["profile"];
 const SOLID: readonly Kind[] = ["solid"];
 const CUTTING_TOOL: readonly Kind[] = ["solid", "halfSpace"];
-const COORDINATE_RANGE = `from -${MAX_RECIPE_COORDINATE} to ${MAX_RECIPE_COORDINATE}`;
 const PLACEMENT_RANGE = `from -${MAX_RECIPE_PLACEMENT} to ${MAX_RECIPE_PLACEMENT}`;
 const UNKNOWN_NODE: NodeSummary = { kind: undefined, depth: 0 };
 
@@ -28,52 +29,6 @@ function isFloat64Array(value: unknown): value is Float64Array {
 
 function isInt32Array(value: unknown): value is Int32Array {
     return value instanceof Int32Array || typedArrayNameOf(value) === "Int32Array";
-}
-
-function report(issues: RecipeIssue[], path: string, message: string): void {
-    if (issues.length < MAX_ISSUES) {
-        issues.push({ path, message });
-    }
-}
-
-function isCoordinate(value: unknown, limit = MAX_RECIPE_COORDINATE): value is number {
-    return typeof value === "number" && Math.abs(value) <= limit;
-}
-
-function coordinates(value: unknown, size: number, limit = MAX_RECIPE_COORDINATE): value is number[] {
-    if (!Array.isArray(value) || value.length !== size) {
-        return false;
-    }
-    for (let index = 0; index < size; index++) {
-        if (!isCoordinate(value[index], limit)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function isCount(value: unknown): value is number {
-    return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
-}
-
-function positive(issues: RecipeIssue[], value: unknown, path: string): void {
-    if (typeof value !== "number" || !Number.isFinite(value) || !(value > 0)) {
-        report(issues, path, "must be a finite number above zero");
-    }
-}
-
-function extent(issues: RecipeIssue[], value: unknown, path: string): void {
-    if (!isCoordinate(value) || !(value > 0)) {
-        report(issues, path, `must be a number above zero and at most ${MAX_RECIPE_COORDINATE}`);
-    }
-}
-
-function vector(issues: RecipeIssue[], value: unknown, path: string, nonZero: boolean): void {
-    if (!coordinates(value, POINT3_SIZE)) {
-        report(issues, path, `must be three numbers, each ${COORDINATE_RANGE}`);
-    } else if (nonZero && value.every((item) => item === 0)) {
-        report(issues, path, "must not be a zero vector");
-    }
 }
 
 function isAffine(matrix: readonly number[]): boolean {
@@ -153,49 +108,6 @@ function checkCoordinates(issues: RecipeIssue[], f64: Float64Array): void {
             return;
         }
     }
-}
-
-function range(checker: Checker, value: unknown, length: number, multiple: number, minimum: number, path: string): Base.RecipeRange | undefined {
-    if (!Array.isArray(value) || value.length !== 2 || !isCount(value[0]) || !isCount(value[1])) {
-        report(checker.issues, path, "must be a range of two whole numbers, a start and a count");
-        return undefined;
-    }
-    const checked = value as Base.RecipeRange;
-    const [start, count] = checked;
-    if (start + count > length) {
-        report(checker.issues, path, `runs past the end of its buffer, which holds ${length} numbers`);
-        return undefined;
-    }
-    if (count % multiple !== 0 || count < minimum) {
-        report(checker.issues, path, `must hold a multiple of ${multiple} numbers, at least ${minimum}`);
-        return undefined;
-    }
-    checker.referenced += count;
-    return checked;
-}
-
-function reference(checker: Checker, value: unknown, at: number, accepted: readonly Kind[], path: string): number {
-    if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0 || value >= at) {
-        report(checker.issues, path, at === 0 ? "must be the index of an earlier node, and none comes before it" : `must be the index of an earlier node, from 0 to ${at - 1}`);
-        return 0;
-    }
-    const kind = checker.kinds[value];
-    if (kind !== undefined && !accepted.includes(kind)) {
-        report(checker.issues, path, `refers to a ${kind} node where ${accepted.join(" or ")} is needed`);
-    }
-    return checker.depths[value]!;
-}
-
-function references(checker: Checker, value: unknown, at: number, accepted: readonly Kind[], path: string, allowEmpty: boolean): number {
-    if (!Array.isArray(value) || (!allowEmpty && value.length === 0)) {
-        report(checker.issues, path, allowEmpty ? "must be a list of node indices" : "must be a list of at least one node index");
-        return 0;
-    }
-    let deepest = 0;
-    for (let index = 0; index < value.length; index++) {
-        deepest = Math.max(deepest, reference(checker, value[index], at, accepted, `${path}[${index}]`));
-    }
-    return deepest;
 }
 
 function checkCorners(checker: Checker, positions: Base.RecipeRange, indices: Base.RecipeRange, path: string): void {
@@ -295,6 +207,8 @@ function checkNode(checker: Checker, node: unknown, at: number): NodeSummary {
             return summary("solid", checkRevolve(checker, node, at, path));
         case "loft":
             return summary("solid", checkLoft(checker, node, at, path));
+        case "brep":
+            return summary("solid", checkBrep(checker, node, at, path));
         default:
             report(issues, `${path}.op`, `'${String(node["op"])}' is not an operation recipes know`);
             return UNKNOWN_NODE;
@@ -358,19 +272,6 @@ function checkGroups(issues: RecipeIssue[], groups: readonly unknown[]): void {
     }
 }
 
-/**
- * Checks that a value is a recipe an executor can safely run: every index refers to an earlier
- * node of the right kind, every range lies inside its buffer, every coordinate of a profile or an
- * extrusion is finite and between minus and plus one billion, every placement (a matrix or a
- * half-space's origin) between minus and plus ten trillion, every matrix moves, turns, mirrors and
- * scales without flattening, and no list, total or nesting exceeds its limit. A recipe that comes from another thread, a file or a caller is
- * checked before any kernel touches it.
- *
- * Experimental: the recipe format may still change before it is declared stable.
- * @param recipe - The value to check
- * @returns What is wrong with it, at most a hundred issues, empty when nothing is
- * @beta
- */
 export function checkRecipe(recipe: unknown): RecipeIssue[] {
     const issues: RecipeIssue[] = [];
     if (!isRecord(recipe)) {
@@ -381,7 +282,7 @@ export function checkRecipe(recipe: unknown): RecipeIssue[] {
         report(issues, "format", `must be ${RECIPE_FORMAT} version ${RECIPE_VERSION}`);
     }
     positive(issues, recipe["millimetresPerUnit"], "millimetresPerUnit");
-    positive(issues, recipe["tolerance"], "tolerance");
+    extent(issues, recipe["tolerance"], "tolerance");
     const buffers = recipe["buffers"];
     const f64 = isRecord(buffers) ? buffers["f64"] : undefined;
     const i32 = isRecord(buffers) ? buffers["i32"] : undefined;
@@ -416,14 +317,6 @@ export function checkRecipe(recipe: unknown): RecipeIssue[] {
     return issues;
 }
 
-/**
- * Throws an `InputError` when a value is not a recipe an executor can safely run, naming the first
- * three problems `checkRecipe` finds.
- *
- * Experimental: the recipe format may still change before it is declared stable.
- * @param recipe - The value to check
- * @beta
- */
 export function assertRecipe(recipe: unknown): asserts recipe is Base.Recipe {
     const issues = checkRecipe(recipe);
     if (issues.length) {
@@ -439,16 +332,6 @@ function isInt32List(value: unknown): value is number[] {
     return isNumberList(value) && value.every((item) => Number.isInteger(item) && item >= INT32_LOWEST && item <= INT32_HIGHEST);
 }
 
-/**
- * Reads a value as a recipe an executor can run, taking its buffers as lists of numbers too, as JSON
- * carries them: such lists become the typed arrays the format holds, and the result is checked as
- * `assertRecipe` checks it. The value it is given is left as it was.
- *
- * Experimental: the recipe format may still change before it is declared stable.
- * @param value - The recipe, its buffers typed arrays or lists of numbers
- * @returns The recipe with typed buffers
- * @beta
- */
 export function toRecipe(value: unknown): Base.Recipe {
     const buffers = isRecord(value) ? value["buffers"] : undefined;
     if (isRecord(value) && isRecord(buffers) && (isNumberList(buffers["f64"]) || isInt32List(buffers["i32"]))) {

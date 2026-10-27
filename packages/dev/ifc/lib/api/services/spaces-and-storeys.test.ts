@@ -1,9 +1,9 @@
-import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { WORLD_AXES } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/frame-axes";
 import { describe, expect, it } from "vitest";
 import type { Fixture } from "../../__test__/fixture-types";
 import { modelOf } from "./service-support";
 import { addRightWall, errorFrom, expressIdOf, groundFloor, writingInto } from "../../__test__/build-setup";
-import { countOf, enumOf, extrusionOf, objectPlacementOf, refOf, relatedBy } from "../../__test__/build-geometry";
+import { countOf, enumOf, extrusionOf, objectPlacementOf, outerCurveOf, refOf, relatedBy, sweptAreaOf } from "../../__test__/build-geometry";
 import { bodyContext } from "../../build/contexts";
 import type { EntityWriter } from "../../build/entity-writer";
 import { OTHER_TOOL_FILE, STOREY_ROW, WALL_A } from "../../__test__/other-tool-file";
@@ -110,6 +110,21 @@ describe("IFCSpatial.setElevation", () => {
 });
 
 describe("IFCSpaces.add", () => {
+    it("should place a space at its outline's first point, once wound, and measure its profile from there", () => {
+        // Arrange
+        const { ifc, model } = groundFloor();
+        const clockwise: Inputs.Base.Point2[] = [[1000, 2000], [1000, 5000], [5000, 5000], [5000, 2000]];
+
+        // Act
+        const changed = ifc.spaces.add({ model, storey: "ground", id: "kitchen", outline: clockwise, baseOffset: 50 });
+
+        // Assert
+        const space = expressIdOf(changed, "kitchen");
+        expect(absoluteFrame(modelOf(changed), objectPlacementOf(changed, space)).origin).toEqual([5000, 2000, 50]);
+        expect(outerCurveOf(changed, sweptAreaOf(changed, space))).toEqual([[0, 0], [0, 3000], [-4000, 3000], [-4000, 0]]);
+        expect(ifc.spaces.list({ model: changed })[0]!.area).toBe(12_000_000);
+    });
+
     it("should make a space part of its storey, its outline extruded up to its height", () => {
         // Arrange
         const { ifc, model } = groundFloor();

@@ -1,5 +1,7 @@
-import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-measures";
-import { newellNormal, triangulateFace } from "@bitbybit-dev/base/lib/api/services/helpers/triangulation";
+import { signedVolumeOf } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-measures";
+import { windingRepairs } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-orientation";
+import { newellNormal, triangulateFace } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/triangulation";
+import { length3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 import { POINT3_SIZE } from "../build/constants";
 import { numbersOf } from "../build/placement";
 import type { ModelSnapshot } from "../model/snapshot";
@@ -159,7 +161,7 @@ export class MeshCollector {
             loops.push(vertices);
         }
         if (outer < 0) {
-            const spans = loops.map((loop) => Math.hypot(...newellNormal(this.positions, loop)));
+            const spans = loops.map((loop) => length3(newellNormal(this.positions, loop)));
             outer = spans.indexOf(Math.max(...spans));
         }
         this.add(triangulateFace(this.positions, [loops[outer] ?? [], ...loops.filter((_, at) => at !== outer)]));
@@ -226,13 +228,24 @@ export class MeshCollector {
     }
 
     private orient(first: number, sense: number): void {
-        if (sense === UNORIENTED || signedVolumeOf(this.positions, this.indices, first) * sense >= 0) {
+        if (sense === UNORIENTED) {
             return;
         }
-        for (let at = first; at < this.indices.length; at += POINT3_SIZE) {
-            const second = this.indices[at + 1]!;
-            this.indices[at + 1] = this.indices[at + 2]!;
-            this.indices[at + 2] = second;
+        windingRepairs(this.positions, this.indices, first).forEach((flip, triangle) => {
+            if (flip === 1) {
+                this.turnOver(first + triangle * POINT3_SIZE);
+            }
+        });
+        if (signedVolumeOf(this.positions, this.indices, first) * sense < 0) {
+            for (let at = first; at < this.indices.length; at += POINT3_SIZE) {
+                this.turnOver(at);
+            }
         }
+    }
+
+    private turnOver(at: number): void {
+        const second = this.indices[at + 1]!;
+        this.indices[at + 1] = this.indices[at + 2]!;
+        this.indices[at + 2] = second;
     }
 }

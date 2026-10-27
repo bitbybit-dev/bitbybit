@@ -1,5 +1,5 @@
 import { isRecord } from "@bitbybit-dev/base";
-import type * as Inputs from "../../api/inputs";
+import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import type { ExpressionNode } from "./expressions";
 import { namesIn, parseExpression } from "./expressions";
@@ -8,21 +8,17 @@ import { pointer } from "./problems";
 import type { DesignRun, DesignTrace } from "./state";
 import { ownValue } from "./structure";
 import type { ParameterChoice } from "./values";
-import { directionOf, isExpressionObject, numberOf, pointOf, templatePieces } from "./values";
+import { directionOf, hasOnlyKey, isExpressionObject, numberOf, pointOf, templatePieces } from "./values";
 import { FULL_TURN } from "./constants";
-import { DELETE, FIRST_PRINTABLE, LAST_CONTROL, LINE_SEPARATOR, NEGLIGIBLE, PARAGRAPH_SEPARATOR, WRITTEN_DIGITS } from "./typescript-export.constants";
+import { holeSizeOf } from "./hole-fastener";
+import { takesLengthUnit } from "./helpers";
+import { operationPathOf } from "./format";
+import { occtDtoRegistry } from "../../api/dto-registry";
+import type { MachiningFeature } from "./machining-types";
+import { CONSTANT_CODE, DELETE, FIRST_PRINTABLE, FROM_FEATURE, IN_GROUPS, LAST_CONTROL, LINE_SEPARATOR, MACHINING_ENUMS, PARAGRAPH_SEPARATOR, RESERVED } from "./typescript-export.constants";
 import type { MathHelper } from "./typescript-math";
-import { DEGREES, MATH_HELPERS, mathHelperDeclarations } from "./typescript-math";
+import { IN_DEGREES, MATH_HELPERS, mathHelperDeclarations } from "./typescript-math";
 
-const RESERVED = new Set([
-    "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally",
-    "for", "function", "if", "import", "in", "instanceof", "new", "null", "return", "super", "switch", "this", "throw", "true", "try", "typeof", "var",
-    "void", "while", "with", "yield", "let", "static", "implements", "interface", "package", "private", "protected", "public", "await", "async",
-    "occt", "bitbybit", "Bit", "Math", "Promise", "assets", "parts", "part", "configuration", "copy", "undefined", "NaN", "Infinity",
-    "eval", "arguments", "String", "Number",
-]);
-
-const CONSTANT_CODE = new Map<string, string>([["pi", "Math.PI"], ["tau", "(2 * Math.PI)"], ["e", "Math.E"], ["true", "1"], ["false", "0"]]);
 
 /** TypeScript text and how tightly it binds, so it is wrapped in parentheses only where needed. */
 export type Code = { text: string; level: number };
@@ -111,7 +107,9 @@ export function expressionCode(node: ExpressionNode, names: ReadonlyMap<string, 
                     return { text: `${helper(node.name)}(${args[0]!.text})`, level: LEVEL.atom };
                 case "atan":
                 case "atan2":
-                    return { text: `Math.${node.name}(${args.map(arg => arg.text).join(", ")}) / (${DEGREES})`, level: LEVEL.product };
+                    return { text: `Math.${node.name}(${args.map(arg => arg.text).join(", ")})${IN_DEGREES}`, level: LEVEL.product };
+                case "fraction":
+                    return { text: `bitbybit.math.toFractionText({ number: ${args[0]!.text}, denominator: ${args[1]!.text} })`, level: LEVEL.atom };
                 default:
                     return { text: `Math.${node.name}(${args.map(arg => arg.text).join(", ")})`, level: LEVEL.atom };
             }
@@ -220,8 +218,7 @@ class Exporter {
     }
 
     private scaledCode(direction: readonly number[], factor: string): string {
-        const tidy = direction.map(component => Math.abs(component) < NEGLIGIBLE ? 0 : Number(component.toPrecision(WRITTEN_DIGITS)));
-        return `[${tidy.map(component => component === 0 ? "0" : component === 1 ? factor : component === -1 ? this.negated(factor) : `${component} * ${this.grouped(factor)}`).join(", ")}]`;
+        return `[${direction.map(component => component === 0 ? "0" : component === 1 ? factor : component === -1 ? this.negated(factor) : `${component} * ${this.grouped(factor)}`).join(", ")}]`;
     }
 
     private frameCode(frame: Inputs.Base.Frame): string {
@@ -294,9 +291,9 @@ class Exporter {
         const toolName = this.fresh(feature.id, "Tool");
         this.line(`const ${toolName} = await ${tool};`);
         const join = feature.join ?? "add";
-        const call = join === "cut" ? `occt.booleans.difference({ shape: ${body}, shapes: [${toolName}] })`
+        const call = join === "cut" ? `occt.booleans.difference({ shape: ${body}, shapes: [${toolName}]${IN_GROUPS} })`
             : join === "intersect" ? `occt.booleans.intersection({ shapes: [${body}, ${toolName}] })`
-                : `occt.booleans.union({ shapes: [${body}, ${toolName}] })`;
+                : `occt.booleans.union({ shapes: [${body}, ${toolName}]${IN_GROUPS} })`;
         this.line(`${body} = await ${call};`);
     }
 
@@ -383,14 +380,14 @@ class Exporter {
             this.line(`    ${list}.push(await occt.transforms.rotateAroundCenter({ shape: ${body}, angle: ${step} * copy, center: ${this.code(feature.axis.origin)}, axis: ${this.code(feature.axis.direction)} }));`);
         }
         this.line("}");
-        this.line(`${body} = await occt.booleans.union({ shapes: [${body}, ...${list}] });`);
+        this.line(`${body} = await occt.booleans.union({ shapes: [${body}, ...${list}]${IN_GROUPS} });`);
     }
 
     private cutShell(feature: Models.OCCT.DesignShellFeature, trace: DesignTrace, body: string): void {
         const inner = this.fresh(feature.id, "Inner");
         const lids = (trace.lids ?? []).map(lid => `await occt.operations.extrude({ shape: await occt.shapes.face.getFace({ shape: ${inner}, index: ${lid.face} }), direction: ${this.numbers(lid.direction)} })`);
         this.line(`const ${inner} = await occt.shapes.solid.fromClosedShell({ shape: await occt.operations.offsetAdv({ shape: ${body}, distance: ${this.negated(this.code(feature.thickness))}, tolerance: 1e-7, joinType: Bit.Inputs.OCCT.joinTypeEnum.intersection, removeIntEdges: false }) });`);
-        this.line(`${body} = await occt.booleans.difference({ shape: await occt.booleans.difference({ shape: ${body}, shapes: [${inner}], keepEdges: false }), shapes: [${lids.join(", ")}], keepEdges: false });`);
+        this.line(`${body} = await occt.booleans.difference({ shape: await occt.booleans.difference({ shape: ${body}, shapes: [${inner}], keepEdges: false }), shapes: [${lids.join(", ")}], keepEdges: false${IN_GROUPS} });`);
     }
 
     private holes(feature: Models.OCCT.DesignHoleFeature, trace: DesignTrace): void {
@@ -404,8 +401,12 @@ class Exporter {
             const origin = [0, 1, 2].map(axis => `${frame.origin[axis]}${term(frame.direction[axis]!, x)}${term(across[axis]!, y)}`);
             return `{ origin: [${origin.join(", ")}], normal: ${this.numbers(frame.normal)}, direction: ${this.numbers(frame.direction)} }`;
         });
-        const common = `shape: ${body}, frames: [${frames.join(", ")}], diameter: ${this.code(feature.diameter)}, depth: ${feature.depth === undefined ? "0" : this.code(feature.depth)}, tipAngle: ${feature.tipAngle === undefined ? "0" : this.code(feature.tipAngle)}`;
-        if (feature.counterbore !== undefined) {
+        const sized = feature.fastener === undefined ? undefined : holeSizeOf(feature.fastener, this.run.parameters, "", this.run.unit);
+        const diameter = sized === undefined ? this.code(feature.diameter) : String(sized.diameter);
+        const common = `shape: ${body}, frames: [${frames.join(", ")}], diameter: ${diameter}, depth: ${feature.depth === undefined ? "0" : this.code(feature.depth)}, tipAngle: ${feature.tipAngle === undefined ? "0" : this.code(feature.tipAngle)}`;
+        if (sized?.counterbore !== undefined) {
+            this.line(`${body} = await occt.features.counterboredHoles({ ${common}, counterboreDiameter: ${sized.counterbore.diameter}, counterboreDepth: ${sized.counterbore.depth} });`);
+        } else if (feature.counterbore !== undefined) {
             this.line(`${body} = await occt.features.counterboredHoles({ ${common}, counterboreDiameter: ${this.code(feature.counterbore.diameter)}, counterboreDepth: ${this.code(feature.counterbore.depth)} });`);
         } else if (feature.countersink !== undefined) {
             this.line(`${body} = await occt.features.countersunkHoles({ ${common}, countersinkDiameter: ${this.code(feature.countersink.diameter)}, countersinkAngle: ${this.code(feature.countersink.angle)} });`);
@@ -424,14 +425,32 @@ class Exporter {
         this.line(`${body} = await occt.features.${feature.type}({ shape: ${body}, profile: ${this.variable(feature.profile)}, sketchFaceIndex: ${trace.sketchFace}, direction: ${this.numbers(direction)}, ${extent} });`);
     }
 
+    private machined(feature: MachiningFeature, trace: DesignTrace): void {
+        const body = this.variable(feature.body);
+        const cut = trace.machining!;
+        const given = new Map<string, unknown>(Object.entries(feature));
+        const fields = Object.entries(cut.inputs).map(([key, value]) => {
+            const named = (MACHINING_ENUMS.get(key) ?? []).flatMap(known => Object.entries(known.members).filter(([, member]) => member === value).map(([enumKey]) => `Bit.Inputs.${known.namespace}.${known.name}.${enumKey}`))[0];
+            const code = key === "frame" ? this.frameCode(trace.frame!)
+                : named !== undefined ? named
+                    : FROM_FEATURE.includes(key) && given.get(key) !== undefined ? this.code(given.get(key)) : this.code(value);
+            return `${key}: ${code}`;
+        });
+        this.line(`${body} = await occt.parts.mechanical.machining.${cut.operation}({ shape: ${body}, ${fields.join(", ")} });`);
+    }
+
     private imported(feature: Models.OCCT.DesignImportFeature, trace: DesignTrace): void {
         const name = this.fresh(feature.id);
         this.variables.set(feature.id, name);
         const data = `assets[${JSON.stringify(feature.asset)}]`;
         const call = trace.format === "brep" ? `occt.io.loadBrep({ brepData: ${data} as string })`
             : trace.format === "brep-binary" ? `occt.io.loadBrepBinary({ brepData: ${data} as Uint8Array })`
-                : `occt.io.loadSTEPorIGES({ filetext: ${data} as string | ArrayBuffer, fileName: "asset.${trace.format}", adjustZtoY: false })`;
-        this.line(`let ${name} = await ${call};`);
+                : `occt.io.loadSTEPorIGES({ filetext: ${data} as string | ArrayBuffer, fileName: "asset.${trace.format}", adjustZtoY: false${this.run.unit === Inputs.Base.unitOfLengthEnum.millimetre ? "" : `, unit: ${this.unitCode()}`} })`;
+        if (feature.child === undefined) {
+            this.line(`let ${name} = await ${call};`);
+            return;
+        }
+        this.line(`let ${name} = (await occt.shapes.compound.getShapesOfCompound({ shape: await ${call} }))[${feature.child}]!;`);
     }
 
     private operationValue(value: unknown): string {
@@ -439,16 +458,24 @@ class Exporter {
             return `[${value.map(inner => this.operationValue(inner)).join(", ")}]`;
         }
         if (isRecord(value)) {
-            const keys = Object.keys(value);
-            if (keys.length === 1 && keys[0] === "body" && typeof value["body"] === "string") {
+            if (hasOnlyKey(value, "body") && typeof value["body"] === "string") {
                 return this.variable(value["body"]);
             }
-            if (keys.length === 1 && keys[0] === "expr") {
+            if (hasOnlyKey(value, "expr")) {
                 return this.code(value["expr"]);
             }
-            return `{ ${Object.entries(value).map(([key, inner]) => `${/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) ? key : JSON.stringify(key)}: ${this.operationValue(inner)}`).join(", ")} }`;
+            return `{ ${Object.entries(value).map(([key, inner]) => `${this.propertyKey(key)}: ${this.operationValue(inner)}`).join(", ")} }`;
         }
         return JSON.stringify(value);
+    }
+
+    private propertyKey(key: string): string {
+        return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) ? key : JSON.stringify(key);
+    }
+
+    private unitCode(): string {
+        const key = Object.entries(Inputs.Base.unitOfLengthEnum).find(([, member]) => member === this.run.unit)?.[0] ?? "millimetre";
+        return `Bit.Inputs.Base.unitOfLengthEnum.${key}`;
     }
 
     private feature(feature: Models.OCCT.DesignFeature, path: string): void {
@@ -468,7 +495,9 @@ class Exporter {
             case "boolean": {
                 const body = this.variable(feature.body);
                 const tools = feature.tools.map(tool => this.variable(tool)).join(", ");
-                this.line(feature.operation === "difference" ? `${body} = await occt.booleans.difference({ shape: ${body}, shapes: [${tools}] });` : `${body} = await occt.booleans.${feature.operation}({ shapes: [${body}, ${tools}] });`);
+                this.line(feature.operation === "difference" ? `${body} = await occt.booleans.difference({ shape: ${body}, shapes: [${tools}]${IN_GROUPS} });`
+                    : feature.operation === "union" ? `${body} = await occt.booleans.union({ shapes: [${body}, ${tools}]${IN_GROUPS} });`
+                        : `${body} = await occt.booleans.${feature.operation}({ shapes: [${body}, ${tools}] });`);
                 return;
             }
             case "fillet":
@@ -485,7 +514,7 @@ class Exporter {
                 const body = this.variable(feature.body);
                 const image = this.fresh(feature.id, "Image");
                 this.line(`const ${image} = await occt.transforms.mirrorAlongNormal({ shape: ${body}, origin: ${this.code(feature.plane.origin)}, normal: ${this.code(feature.plane.normal)} });`);
-                this.line(feature.keepOriginal === false ? `${body} = ${image};` : `${body} = await occt.booleans.union({ shapes: [${body}, ${image}] });`);
+                this.line(feature.keepOriginal === false ? `${body} = ${image};` : `${body} = await occt.booleans.union({ shapes: [${body}, ${image}]${IN_GROUPS} });`);
                 return;
             }
             case "pushPull":
@@ -529,8 +558,19 @@ class Exporter {
                 return this.prism(feature, trace);
             case "import":
                 return this.imported(feature, trace);
+            case "keyway":
+            case "flat":
+            case "ringGroove":
+            case "knurl":
+            case "spline":
+            case "thread":
+                return this.machined(feature, trace);
             case "operation": {
-                const call = `${feature.operation}(${this.operationValue(feature.params)})`;
+                const operation = operationPathOf(feature.operation);
+                const unitOfDocument = operation !== undefined && (feature.params["unit"] === undefined || feature.params["unit"] === this.run.unit) && takesLengthUnit(occtDtoRegistry, operation);
+                const call = unitOfDocument
+                    ? `${feature.operation}({ ${[...Object.entries(feature.params).filter(([key]) => key !== "unit").map(([key, inner]) => `${this.propertyKey(key)}: ${this.operationValue(inner)}`), `unit: ${this.unitCode()}`].join(", ")} })`
+                    : `${feature.operation}(${this.operationValue(feature.params)})`;
                 if (feature.body === undefined) {
                     const name = this.fresh(feature.id);
                     this.variables.set(feature.id, name);

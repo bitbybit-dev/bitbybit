@@ -30,8 +30,8 @@ OCCT is our choice for advanced geometric modeling for several key reasons:
 
 ## What is OCCT 3D?
 
-Bitbybit utilizes a **custom build of OCCT** that is compiled from the main [GitHub repo](https://github.com/Open-Cascade-SAS/OCCT). This allows us to:
-*   **Selectively Include Modules:** We carefully pick and choose which parts of the vast OCCT library are included in our WASM bundle. Some of our algorithms are directly written in C++ on top of OCCT layer.
+Bitbybit utilizes a **custom build of OCCT** that is compiled from our fork of the main [GitHub repo](https://github.com/Open-Cascade-SAS/OCCT), [bitbybit-dev/OCCT](https://github.com/bitbybit-dev/OCCT) (branch `bitbybit-main`). This allows us to:
+*   **Selectively Include Modules:** We carefully pick and choose which parts of the vast OCCT library are included in our WASM bundle. Some of our algorithms are written directly in C++ on top of OCCT, in our own kernel layer, whose source is not published.
 *   **Optimized for Web:** Using the full OCCT build directly on the web is often impractical due to its very large size, which would significantly slow down the loading times of our platform and user applications. Our custom builds are optimized for web delivery, but provide 64 bit and multi-threaded builds for the power users.
 
 ## NPM Package: `@bitbybit-dev/occt`
@@ -42,6 +42,6 @@ This package:
 *   **Wraps the OCCT WASM code:** It provides a higher-level, more JavaScript/TypeScript-friendly API over the underlying WASM functionalities.
 *   **Simplifies Interaction:** It makes it much easier for our users and other JavaScript developers to leverage OCCT's power without needing to delve into the intricacies of WASM interoperation.
 *   **Core of Bitbybit:** This package is used extensively within our own editors (TypeScript, Blockly, Rete).
-*   **Open-Source and Available:** `@bitbybit-dev/occt` is open-source and readily available on the NPM package registry for you to use in your own web projects.
+*   **Free and Available:** `@bitbybit-dev/occt` is readily available on the NPM package registry for you to use in your own web projects. It is MIT-licensed, the Bitbybit OCCT Kernel it ships included; its TypeScript is open source, and the kernel's C++ layer is closed source ([what that means](/learn/open-source-approach#the-occt-kernel)).
 
 The OCCT category in our editors directly exposes the functionalities made accessible through this `@bitbybit-dev/occt` wrapper, allowing you to perform advanced CAD modeling operations visually or programmatically.
