@@ -1,6 +1,7 @@
 const path = require('path');
 const version = "1.5.0";
 const CopyPlugin = require("copy-webpack-plugin");
+const { NormalModuleReplacementPlugin } = require("webpack");
 
 module.exports = {
     mode: "development",
@@ -26,6 +27,9 @@ module.exports = {
         }
     },
     plugins: [
+        new NormalModuleReplacementPlugin(/^node:/, (resource) => {
+            resource.request = resource.request.replace(/^node:/, "");
+        }),
         new CopyPlugin({
             patterns: [
                 { from: "./src/html", to: "./" },
