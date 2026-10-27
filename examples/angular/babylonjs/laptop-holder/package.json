@@ -26,5 +26,10 @@
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.0",
     "typescript": "5.9.3"
+  },
+  "overrides": {
+    "@angular/build": {
+      "undici": "^7.30.1"
+    }
   }
 }
