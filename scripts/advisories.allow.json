@@ -1,5 +1,5 @@
 {
-    "//": "Advisories that check-advisories.mjs must not fail on, each with the reason it does not apply here. An entry that stops matching anything fails the check, so this list cannot rot: remove it when the dependency moves. Record only advisories that are unreachable or unfixable - never one that is merely inconvenient to fix.",
+    "//": "Advisories that check-advisories.mjs and the examples' npm audit (examples/scripts/examples.mjs audit) must not fail on, each with the reason it does not apply here. An entry that stops matching anything fails the check, so this list cannot rot: remove it when the dependency moves. Record only advisories that are unreachable or unfixable - never one that is merely inconvenient to fix.",
     "allow": [
         {
             "ghsa": "GHSA-px8p-9vwx-vf98",

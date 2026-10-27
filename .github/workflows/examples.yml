@@ -37,8 +37,10 @@ jobs:
         run: node scripts/examples.mjs verify ${{ (inputs.heavy || github.event_name == 'push') && '--heavy' || '' }}
 
       # The lockfiles are what Dependabot reads for this repository: a moderate or worse advisory
-      # in any of them fails here, and `npm run refresh-lockfiles` in examples/ is the fix. This is
-      # npm's view of the advisory database only - the step below is the other half.
+      # in any of them fails here, and `npm run refresh-lockfiles` in examples/ is the fix. The
+      # advisories scripts/advisories.allow.json records are not failures here either, so the two
+      # steps judge one list. This is npm's view of the advisory database only - the step below is
+      # the other half.
       - name: No moderate or worse advisories in the example lockfiles
         if: always()
         working-directory: examples

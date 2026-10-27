@@ -63,7 +63,7 @@ every directory here with a `package.json` and runs each on its own, reporting p
 npm run list               # every example, and any that verify.config.json skips (with the reason)
 npm run verify             # npm ci, then npm run build, in each - Angular, Next.js and Nuxt install only
 npm run verify:heavy       # the same, building those three too
-npm run audit:all          # npm audit at the high level over every lockfile
+npm run audit:all          # npm audit at the moderate level over every lockfile
 npm run refresh-lockfiles  # regenerate every lockfile and apply the audit fixes it can
 ```
 

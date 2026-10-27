@@ -507,7 +507,9 @@ instead of discovering them.
   parse or a changed API shape would otherwise pass silently. Withdrawn advisories still come back from
   the API and are skipped.
 - `advisories.allow.json` lists advisories that are knowingly unreachable or unfixable, each with the
-  reason; never one that is merely inconvenient to fix.
+  reason; never one that is merely inconvenient to fix. The examples' `npm audit` step
+  (`examples/scripts/examples.mjs audit`) reads the same list, so an advisory recorded here fails
+  neither step; only this check reports an entry that went stale.
 
 ## coverage-baseline.mjs
 
