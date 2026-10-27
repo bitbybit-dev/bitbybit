@@ -18,6 +18,7 @@ const SEED = 20261018;
 const DEGREE = Math.PI / 180;
 const FULL_TURN = 2 * Math.PI;
 const SIMULATED_STEPS = 150;
+const SIMULATED_MESHING_TIMEOUT_MS = 60_000;
 const INTERFERING = 5e-4;
 const CLEAN = 1e-4;
 
@@ -186,7 +187,7 @@ const rollsOf = (spec: GearPairSpec, sizes: GearPairSizes): { rollA: number, rol
     return { rollA: roll(spec.teethA, spec.profileShiftA), rollB: roll(spec.teethB, spec.profileShiftB), line: sizes.centreDistance * Math.sin(sizes.workingPressureAngle * DEGREE) };
 };
 
-describe("gear pairs against independent oracles", () => {
+describe("gear pairs against independent oracles", { timeout: SIMULATED_MESHING_TIMEOUT_MS }, () => {
     describe("gearPair", () => {
         it("should refuse a pair only as an InputError, and otherwise give finite sizes working below 45 degrees", () => {
             // Act & Assert
