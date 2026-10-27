@@ -82,7 +82,11 @@ The free **[Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bit
 
 ## Licence
 
-The package is MIT-licensed. Its schema tables are translations of buildingSMART International's IFC4 ADD2 TC1 and IFC4X3 ADD2 EXPRESS schemas, used with attribution under the notice and licence each carries; see `NOTICE`. IFC and Industry Foundation Classes are names of buildingSMART International; this package is not certified by or affiliated with it.
+The package is MIT-licensed. Its schema tables are translations of buildingSMART International's IFC4 ADD2 TC1 and IFC4X3 ADD2 EXPRESS schemas, used with attribution under the notice and licence each carries; see `NOTICE`.
+
+## Trademarks
+
+IFC and Industry Foundation Classes are names of buildingSMART International; this package is not certified by or affiliated with it. Revit, Archicad, Tekla Structures, SketchUp, Solibri, BIMvision, Bentley OpenBuildings Designer, Bentley OpenRoads Designer, Edificius, Grasshopper, Geometry Gym, Constructivity, RDF IFC Engine, FreeCAD, Blender, Bonsai (formerly BlenderBIM) and IfcOpenShell are trademarks or names of their respective owners. This package and its documentation name them only to identify the tools whose files it reads, or that open and check the files it writes. None of their owners sponsors, endorses or certifies this package.
 
 ## Links
 

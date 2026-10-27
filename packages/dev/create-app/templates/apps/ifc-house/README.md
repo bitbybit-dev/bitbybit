@@ -27,7 +27,7 @@ npm run build    # typecheck and bundle for production
 
 ## Make it your house
 
-Move a wall in `WALL_RUNS`, add a window to `WINDOWS`, change a layer set's materials or thicknesses in `LAYER_SETS`, or add a room to `ROOMS` in `src/house/house-plan.ts`, then run `npm run smoke`: it writes the house again, checks that every element can be built and tells you what changed. Open the downloaded `house.ifc` in any BIM tool - BIMvision, Bonsai in Blender, Solibri, Archicad or Revit - to see the walls, rooms and properties as a BIM tool reads them.
+Move a wall in `WALL_RUNS`, add a window to `WINDOWS`, change a layer set's materials or thicknesses in `LAYER_SETS`, or add a room to `ROOMS` in `src/house/house-plan.ts`, then run `npm run smoke`: it writes the house again, checks that every element can be built and tells you what changed. Open the downloaded `house.ifc` in a BIM tool that reads IFC, such as BIMvision, Bonsai in Blender, Solibri, Archicad or Revit, to see the walls, rooms and properties as it reads them.
 
 ## Working with an AI agent
 
