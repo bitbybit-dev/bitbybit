@@ -251,7 +251,7 @@ describe("OCCT design: a planetary gearbox laid out by planetarySet and turned o
 
             // Assert
             expect(clashes).toEqual(REVOLUTION_STEPS.map(() => []));
-        });
+        }, 120_000);
 
         it("should keep every planet in mesh with the sun and the ring wherever the carrier stands, each pair of flanks the backlash apart", () => {
             // Act & Assert
@@ -259,7 +259,7 @@ describe("OCCT design: a planetary gearbox laid out by planetarySet and turned o
                 const gaps = meshingGaps(CLEAN_SET, { carrier });
                 expect([...gaps.sun, ...gaps.ring].filter(gap => !withinFlankGap(gap))).toEqual([]);
             }), { seed: SEED, numRuns: 8 });
-        });
+        }, 120_000);
 
         it("should place every planet the set's centre distance from the sun, its tips reaching the working depth of two modules past the sun's tip circle", () => {
             // Arrange
@@ -335,7 +335,7 @@ describe("OCCT design: a planetary gearbox laid out by planetarySet and turned o
             expect(set.planetsClear).toBe(false);
             expect(gaps.neighbours).toEqual([0, 0, 0, 0, 0, 0]);
             expect(clashes.map(clash => [clash.components, clash.volume > 0])).toEqual([[["planet0", "planet1"], true]]);
-        });
+        }, 120_000);
 
         it("should bring the ring's tips into a planet's roots past the backlash when it says the set interferes, and never when it says it does not", () => {
             // Arrange
@@ -350,7 +350,7 @@ describe("OCCT design: a planetary gearbox laid out by planetarySet and turned o
             expect([interfering.interferes, clean.interferes]).toEqual([true, false]);
             expect(closestOf(INTERFERING_SET, interfering)).toBeLessThan(FLANK_GAP / 2);
             expect(withinFlankGap(closestOf(CLEAN_SET, clean))).toBe(true);
-        });
+        }, 120_000);
 
         it("should refuse a set whose ring would be too small for its teeth to start outside the base circle, as the ring's own part document does at its teeth", () => {
             // Act

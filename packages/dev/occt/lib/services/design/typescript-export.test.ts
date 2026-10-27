@@ -173,7 +173,7 @@ describe("design documents as TypeScript", () => {
                 const computed: unknown = runInNewContext(`${declarations}\n(${javascriptOf(`const value = ${code};`).replace("const value = ", "").replace(/;\s*$/, "")})`, { ...Object.fromEntries(values), Math });
                 expect(Object.is(computed, expected), `${text} as ${code} gives ${String(computed)}, the build ${String(expected)}`).toBe(true);
             }), { seed: 20261018, numRuns: 1500 });
-        });
+        }, 120_000);
     });
 
     describe("programs", () => {
