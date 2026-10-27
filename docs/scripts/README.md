@@ -67,13 +67,31 @@ the last full check of the page against the product, written `yyyy-mm-dd`; the d
 - `src/data/topics.json`: every topic's id, title, type, address, source file and `verified` date.
   The address is derived the way the docs plugin routes a page (an absolute `slug`, a relative one,
   an index page, an `id`), so it is the page's live URL.
-- the `/help/<topic>` block of `static/_redirects`, between its two marker lines: one 301 per topic
-  to its page. `learn.bitbybit.dev/help/<topic>` is the address an app or another site links to;
-  the page behind it can move, and a `#anchor` on the link survives the redirect.
+- the two blocks at the end of `static/_redirects`, each between its marker lines, below every
+  hand-written rule:
+  - **moved pages**: a 301 from every address a page has left to where it is now. The script reads
+    the committed `topics.json` before it rewrites it, so a topic whose address changed adds its old
+    address here; an earlier entry for the same page is pointed at the new address too, so no redirect
+    ever leads to another. An address a page lives at again, or a hand-written rule already takes,
+    drops out. Nobody writes a redirect for a moved page by hand.
+  - **`/help/<topic>`**: a 302 per topic to its page. `learn.bitbybit.dev/help/<topic>` is the address
+    an app or another site links to; the page behind it can move, and a `#anchor` on the link survives
+    the redirect. It is a 302 because browsers keep a 301 indefinitely: after a move, a reader who had
+    followed the link before would be sent to the old address.
+
+A topic that disappears (its page deleted, or its id renamed, which the rules forbid for a published
+page) needs a decision the script cannot make: `npm run topics` refuses to run until the hand-written
+part of `static/_redirects` takes `/help/<topic>` (a 302) and the page's last address (a 301), each
+pointing at the page that replaces it. Moved-page entries that pointed at it then follow that rule.
 
 `npm run check-topics` (`topics.js --check`, the first step of `npm run build`) reads only the
 sources, so it needs no build: it lists every page without a valid topic or type, every id or address
-taken twice, and fails when either generated file differs from what `npm run topics` would write.
+taken twice, and fails when either generated file differs from what `npm run topics` would write. Both
+commands also read every rule of `static/_redirects`, because Cloudflare applies the first rule that
+matches and a rule wins over a page at the same address. They fail on a rule that sends a live page or
+section away, one a rule above it already takes, a redirect to an address another rule redirects (a
+chain), a target under `/learn` that is no page or section, and a `/help/` rule that is not a 302.
+`topics.test.mjs` holds those rules; the repository's `npm run test:scripts` runs it.
 
 ## The search index (`index-search`) and check-search-index.js
 

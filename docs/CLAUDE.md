@@ -26,10 +26,12 @@ Anything removed is a broken inbound link. `onBrokenLinks: "throw"` and `onBroke
 already cover internal ones.
 
 Every learn page carries a `topic` id and a `type` (`scripts/README.md`, `topics.js`). The id is the
-stable name of the page: `learn.bitbybit.dev/help/<topic>` redirects to it wherever it moves, so an
-app links to `/help/...` and never to a path. After adding, moving or renaming a page run
+stable name of the page: `learn.bitbybit.dev/help/<topic>` redirects to it (a 302) wherever it moves,
+so an app links to `/help/...` and never to a path. After adding, moving or renaming a page run
 `npm run topics` and commit `src/data/topics.json` and `static/_redirects`; `npm run check-topics`,
-the first step of the build, fails until you do. Never change a published id.
+the first step of the build, fails until you do. That run also writes the 301 from a moved page's old
+address, so never hand-write one; only a deleted page needs hand-written rules (for its `/help/` and its
+address), and the script says so. Never change a published id.
 
 Two sidebar categories may not share a label within one sidebar - Docusaurus derives an i18n key
 from the label and refuses the duplicate. The `npm-packages/*` and `runners/engines/*` trees both
