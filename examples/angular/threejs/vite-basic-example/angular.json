@@ -42,6 +42,7 @@
                         "externalDependencies": [
                             "fs",
                             "module",
+                            "node:module",
                             "path",
                             "crypto"
                         ]
