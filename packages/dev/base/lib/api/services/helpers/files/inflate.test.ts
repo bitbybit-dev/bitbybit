@@ -167,7 +167,8 @@ describe("huffmanTable", () => {
         const refused = (): Uint8Array => inflateRaw(packed, 4_000_000_000);
 
         // Assert
-        expect(inflated).toEqual(zeros);
+        expect(inflated.length).toBe(zeros.length);
+        expect(inflated.some((byte) => byte !== 0)).toBe(false);
         expect(refused).toThrow("The deflate stream holds 3000000 bytes, not the 4000000000 expected");
     });
 });
