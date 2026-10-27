@@ -6,7 +6,7 @@ import Module from "manifold-3d";
 const init = async () => {
     const wasm = await Module({
         locateFile: () => {
-            return "static/js/manifold-3.5.3.wasm";
+            return "static/js/manifold-3.5.4.wasm";
         },
     });
     wasm.setup();

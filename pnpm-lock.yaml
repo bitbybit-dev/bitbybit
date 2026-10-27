@@ -204,8 +204,8 @@ importers:
         specifier: 29.0.1
         version: 29.0.1(canvas@3.2.3)
       manifold-3d:
-        specifier: 3.5.3
-        version: 3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7)
+        specifier: 3.5.4
+        version: 3.5.4(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7)
       shx:
         specifier: 0.4.0
         version: 0.4.0
@@ -380,8 +380,8 @@ importers:
         specifier: 1.5.0
         version: link:../base
       manifold-3d:
-        specifier: 3.5.3
-        version: 3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7)
+        specifier: 3.5.4
+        version: 3.5.4(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7)
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
@@ -2310,8 +2310,8 @@ packages:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
     engines: {node: '>=10'}
 
-  manifold-3d@3.5.3:
-    resolution: {integrity: sha512-u00Dc4IKm6W6VyVCAs6eFWNOW9V1w9/QM+xdwS/0TQKXLDtMIauxH5RXUwhOGDnvXa9uciKKYMUD2At76ffsaA==}
+  manifold-3d@3.5.4:
+    resolution: {integrity: sha512-WWsme5HabwLHVcWPHT9m+s7mdmDVSEvCny+uXH1E7jEc8FbFUgM75C3Dh6NVw57Eeh3Ow7+xHCuXfxDMOemi9A==}
     hasBin: true
     peerDependencies:
       '@gltf-transform/core': ^4.2.0
@@ -4595,7 +4595,7 @@ snapshots:
     dependencies:
       semver: 7.8.5
 
-  manifold-3d@3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7):
+  manifold-3d@3.5.4(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7):
     dependencies:
       '@gltf-transform/core': 4.5.0
       '@gltf-transform/extensions': 4.5.0

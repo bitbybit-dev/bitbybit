@@ -48,7 +48,7 @@ module.exports = {
                 type: "javascript/auto",
                 loader: "file-loader",
                 options: {
-                    name: "static/js/[name]-3.5.3.wasm",
+                    name: "static/js/[name]-3.5.4.wasm",
                 },
             },
             {

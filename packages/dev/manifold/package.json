@@ -107,7 +107,7 @@
     },
     "type": "module",
     "dependencies": {
-        "manifold-3d": "3.5.3",
+        "manifold-3d": "3.5.4",
         "@bitbybit-dev/base": "1.5.0"
     },
     "devDependencies": {

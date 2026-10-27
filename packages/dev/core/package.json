@@ -151,7 +151,7 @@
         "@vitest/coverage-v8": "4.1.12",
         "fast-check": "4.10.2",
         "jsdom": "29.0.1",
-        "manifold-3d": "3.5.3",
+        "manifold-3d": "3.5.4",
         "shx": "0.4.0",
         "typescript": "5.9.3",
         "vitest": "4.1.12"
