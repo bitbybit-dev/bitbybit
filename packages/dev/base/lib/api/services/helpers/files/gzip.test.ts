@@ -56,6 +56,14 @@ describe("gzip", () => {
         expect(() => gunzipped(new Uint8Array([...endless, ...new Uint8Array(8).fill(1)]))).toThrow("never ends");
     });
 
+    it("should refuse an extra field that claims more bytes than the data holds", () => {
+        // Arrange
+        const overlong = withHeader(4, [0xff, 0xff]);
+
+        // Act & Assert
+        expect(() => gunzipped(overlong)).toThrow("The gzip header runs past the end of the data");
+    });
+
     it("should refuse a trailer that claims more than the data can inflate to, without setting that much aside first", () => {
         // Arrange
         const lying = new Uint8Array(gzipSync(new TextEncoder().encode("abc")));

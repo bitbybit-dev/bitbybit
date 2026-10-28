@@ -271,6 +271,15 @@ describe("zipStoredParts limits", () => {
         expect(() => zipStoredParts(tooBig)).toThrow("4 GB");
         expect(() => zipStoredParts(tooMany)).toThrow("entries");
     });
+
+    it("should refuse a name longer than the 16-bit length field a header gives it", () => {
+        // Arrange
+        const records = [{ name: "a.bin", size: 0, crc32: 0, data: "" }, { name: "a".repeat(0x10000), size: 0, crc32: 0, data: "" }];
+
+        // Act & Assert
+        expect(() => zipStoredParts(records)).toThrow("Zip entry 1 has a name longer than 65535 bytes");
+        expect(zipEntries(zipStored([{ name: "a".repeat(0xffff), data: new Uint8Array(1) }]))[0]?.name).toHaveLength(0xffff);
+    });
 });
 
 describe("dosDateTime", () => {
