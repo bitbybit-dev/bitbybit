@@ -34,9 +34,11 @@ The title bar carries the project's status, an **Edit** button that opens Compos
 
 Where you link products and publish. Publishing takes the current state of the project and sends it to every linked product, and until you do, changes you save in Composer stay private to you.
 
-A project can be linked to more than one product, which is how you reuse one configurator across a range that shares a design. Each linked product is listed with a badge saying whether it is **Live**, a **Draft** or **Not on storefront**, and an **Out of stock** badge if it cannot currently be bought.
+A project can be linked to more than one product, up to 100, which is how you reuse one configurator across a range that shares a design. Choosing more than 100 is refused with *"Too many products are selected - link at most 100 products to one project."*, and the products already linked stay as they were. Each linked product is listed with a badge saying whether it is **Live**, a **Draft** or **Not on storefront**, and an **Out of stock** badge if it cannot currently be bought.
 
 You can also unpublish, which removes the configurator from its products and leaves the products themselves untouched.
+
+Unpublishing, deleting the project and changing its linked products all wait while the project is being published, and say so: try again once the publish has finished. If Shopify does not confirm that the pricing rules came off every product, the project is left as it is and the message asks you to try again in a moment.
 
 ### Storefront settings
 
@@ -71,7 +73,7 @@ Everything that carries this configurator's prices, in two labelled groups.
 | Badge | What it means |
 |---|---|
 | Up to date | Nothing to do. |
-| Price changed | The product costs something different from what the configurator was published with. Until you republish, the price shown and the price collected disagree, and checkout refuses the order. |
+| Price changed | The product costs something different from what the configurator was published with. With Product lines charging, shoppers already pay the new price, and republishing only brings the configurator's saved copy up to date. With Bundled parts charging, you are selling at the old price until you republish. A Product lines project marked **Republish needed** refuses carts with the product at its new price until you republish. |
 | Out of stock | Inventory has run out and the product is set to stop selling when out of stock. |
 | Not purchasable | The product is not active, or not published to the Online Store. |
 | Link broken | The product no longer exists, or the app can no longer see it. |
@@ -103,18 +105,14 @@ Warnings stack above the cards, worst first. These are the ones you will meet.
 
 **Helper products were edited in Shopify**, or **Helper products are not on the Online Store.** The app owns these products and your Composer prices are the source of truth, so there is nothing to choose here, only to restore. Edit prices in Composer, not in Shopify, and republish.
 
-**A linked product is not available / out of stock / its price changed.** One of your own products, linked to an option, has moved underneath the published configurator. The banner offers **Pause this configurator** while you sort it out, and for a price change it can offer **Update prices and publish** to take the new prices and republish in one go.
+**A linked product is not available / out of stock / its price changed.** One of your own products, linked to an option, has moved underneath the published configurator. The banner offers **Pause this configurator** while you sort it out, and for a price change it says what the change does - with Product lines charging, shoppers already pay Shopify's current price - and can offer **Update prices and publish** to save the new prices and republish in one go.
 
-**A warning about your product's own price.** This one sits inside the Publishing card, next to your linked products, and it only appears when the project charges through Product lines. With that method the product's own price is added to every configured order, so it acts as a floor - a configuration priced below it cannot be added to the cart at all. The banner compares your product's price against the configurator's base price and says one of three things:
-
-- The product **costs more** than the base price. Publishing is refused until it comes down.
-- The product **costs less**. The difference is collected somewhere other than the product's own line, and the banner offers a one-click button that writes the figure it computed onto the product for you - with a confirmation first, because anything else selling that product at its own price is affected too.
-- The app **cannot work the figure out** from the configuration, in which case it says so, and publishing names the exact amount instead.
+**A warning about your product's own price.** This one sits inside the Publishing card, next to your linked products, and it only appears when the project charges through Product lines. With that method the configurator's base price is the product's price in Shopify, and a shopper who picks a variant pays that variant's price as the base. The banner appears when a linked product has no variant priced at the base price, and says publishing is refused until they match. Its button, **Set the product price to** the base price, writes that price onto the product for you - with a confirmation first, because anything else selling that product at its own price is affected too. When the product's variants have several prices, only the cheapest ones get the base price, and the others keep theirs. Or set the base price to the product's price in the Composer instead.
 
 [Setting up pricing](/learn/3d-bits/pricing/setting-up-pricing) is the full explanation, and it is worth reading before your first publish rather than after it.
 
 :::danger Do not set the product's price to zero
-Older guidance said to zero the product's price to keep it out of the way. Do not. It pushes the whole base price onto a hidden line instead of the product's own line, which is not what you want on an order or in your reports - and publishing now refuses a configuration that cannot compose rather than letting it reach a shopper.
+Older guidance said to zero the product's price to keep it out of the way. Do not. With Product lines charging the product's price is the base price, so publishing refuses a product priced at zero while the configurator's base price is not.
 :::
 
 ## Saving and publishing are different
@@ -126,3 +124,9 @@ Publishing from this page asks you to confirm whenever the project charges throu
 ## Deleting a project
 
 Deleting removes the configurator from its products, clears their 3D Bits metafields and cleans up the files it published. Helper products it created are archived rather than deleted, because past orders refer to them and those orders must keep making sense.
+
+### What stays on your variants {#what-stays-on-your-variants}
+
+When a part picks one of your variants, publishing writes a small note on each variant it can pick, which checkout reads to recognise the variant. One note serves every configurator that picks the variant. Unpublishing or deleting a project takes the note off a variant no other published project picks. If Shopify does not answer at that moment, the note can stay, and it does nothing while no configurator picks that variant. You cannot edit these notes in the Shopify admin.
+
+If you uninstall the app, the notes stay on your variants, like the app's other data on your products, and do nothing once the app is gone. Unpublishing the projects that use such parts before you uninstall takes them off - see [Your data and uninstalling](/learn/3d-bits/admin/storefront-display#your-data-and-uninstalling).

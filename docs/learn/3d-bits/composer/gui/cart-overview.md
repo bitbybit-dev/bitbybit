@@ -51,7 +51,7 @@ add up to the total the shopper sees:
 - **Base price** - the starting price before any choices.
 - **Price formulas** - anything computed from the configuration, such as a length or an area.
 - **Priced parts** - the individual parts a configuration is made of.
-- **Total** - the sum.
+- **Total** - what the cart charges for the configured item, for every item on that cart line. When the line holds several, a row such as **x 3** gives the price of one.
 
 :::tip Leave the base price on
 Without it, the listed options will not add up to the total, and a shopper who checks the

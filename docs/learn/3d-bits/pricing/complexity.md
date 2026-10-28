@@ -10,10 +10,10 @@ type: explanation
 
 # Managing complexity
 
-Every configured item in a cart is priced again at checkout, by Shopify. Checkout will not accept a
-cart it cannot finish verifying, so a project that asks for more checking than it can complete is
-refused rather than waved through. How much checking your project asks for depends far more on
-**how you write your pricing rules** than on how many parts you have.
+Every configured item in a cart is priced again at checkout, by Shopify, and checkout has only so
+much time to do it. Publishing works out how much checking your project asks for and refuses one
+that asks for more than checkout can complete, rather than let it go live. How much checking it asks
+for depends far more on **how you write your pricing rules** than on how many parts you have.
 
 This page tells you which choices are cheap, which are expensive, and what happens when you go too
 far.
@@ -22,7 +22,7 @@ far.
 
 - **Parts that carry a typed price are cheap.** A hundred of those is not a problem.
 - **Parts linked to a real product are the expensive kind.** Each one ships as its own cart line
-  for checkout to verify, and the whole cart may carry about 118 of those lines, so they run out long
+  for checkout to verify, and the whole cart may carry about 117 of those lines, so they run out long
   before typed-price parts do - around thirty is where it starts to bite.
 - **Nesting is cheap** - far cheaper than one more formula.
 - **Quantity formulas are the expensive thing** - and specifically, how many *different* ones you
@@ -104,7 +104,9 @@ given a switch each can all be on together, and post twenty. Roughly:
 | around 35 | 3 |
 | around 50 | 2 |
 | around 100 | 1 |
-| 119 or more | refused - will not publish |
+| 118 or more | refused - will not publish |
+
+A part picked from your variants takes a little more room than an option's line, so it lowers these numbers a little more - see [How many configured items fit in one cart](./charging-methods#cart-capacity).
 
 If you have a great many, consider:
 
@@ -126,13 +128,17 @@ publish rather than by a shopper at checkout. The message names what is binding:
   parts, or replace formulas with fixed numbers where the quantity never varies.
 - **Too many cart lines** - a single configuration would add more lines than checkout can verify.
   Combine option lines, or switch charging method. **Bundled parts** is usually the answer here: a
-  bundle's parts do not count against the roughly 118 lines the whole cart may carry, so one
+  bundle's parts do not count against the roughly 117 lines the whole cart may carry, so one
   configured item can nest about 130 of them under its one line - counted as the parts a
   configuration can charge at once, not every part authored.
 
 A project that publishes with a **lower cart limit** has not failed. It simply means shoppers can
 buy fewer of that configured product at once, and 3D Bits tells the shopper clearly if they try to
 exceed it.
+
+The limit can also move at a publish where you changed nothing. When an update to 3D Bits checks more
+of each configuration, the next publish can show a lower cart limit, or ask you to simplify a project
+that sat right at the edge.
 
 ## If you need more headroom
 

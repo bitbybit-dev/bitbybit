@@ -40,23 +40,36 @@ Where the configuration is built from [parts](/learn/3d-bits/composer/gui/parts)
 
 Everything here is read against the version of the configurator the order was actually sold under, not against what you have published since.
 
+On a Product lines order, your own products - the product the configurator sits on, the products it links and the variants its parts pick - are checked at the price Shopify charged for them. Order review judges only the amounts 3D Bits worked out.
+
 If your project generates a PDF for orders, on the Pro plan, it is linked here as well.
 
 There is a link straight through to the same order in your Shopify admin for the usual fulfilment work.
 
 ## What a review flag means
 
-Every configured order gets one of five verdicts. Only under-collection is ever flagged - collecting *more* than expected is never reported.
+Every configured order gets one of six verdicts. Only an order that collected too little, or holds the wrong products, is flagged - collecting *more* than expected is never reported.
 
 | Verdict | What it means | What to do |
 |---|---|---|
 | **Verified** | The order collected what its configuration should cost | Fulfil as normal |
 | **Earlier version** | It was placed before you last published this configurator, so today's rules are not the ones it was sold under | Nothing is wrong. This is the "I repriced afterwards" case |
 | **Underpaid** | It collected less, before discounts, than its configuration should have cost | Look before fulfilling, and collect any genuine difference by hand |
-| **Paid in another currency** | The shopper paid in a currency other than your store's, through Shopify Markets, so the comparison cannot be redone here | Nothing is wrong. Checkout verified the price when the order was placed, in the currency the shopper paid |
+| **Doesn't match** | The order collected enough, but its products are not the ones its configuration needs - an extra is missing, or another product stands in its place | Check what was paid for before you fulfil it. Your storefront never builds such a cart, so it was most likely changed by hand |
+| **Paid in another currency** | The shopper paid in a currency other than your store's, through Shopify Markets, and the configuration charges amounts your configurator works out (fees, formulas or the price unit), so the comparison cannot be redone here. A configuration made only of your own products is checked in the shopper's currency instead | Nothing is wrong. Checkout verified the price when the order was placed, in the currency the shopper paid |
 | **Can't verify** | The check could not be completed for that line | Compare against your price list by hand |
 
 **Paid in another currency** appears once you sell through Shopify Markets in more than one currency, and it is not a problem to solve. It is left out of the review count on the app's home page for that reason.
+
+**Can't verify** also marks a line whose configuration holds a value your configurator does not offer. Your storefront never produces one, so the configuration was most likely changed by hand: check what was ordered before you fulfil it.
+
+**Parts picked from your variants.** For a configuration whose [parts pick one of your variants](/learn/3d-bits/composer/gui/parts#parts-from-your-variants), order review checks that the order carries exactly the variants the configuration picks, in the quantities it needs. Another variant, a missing one or a different quantity is **Doesn't match**. Three more reasons can show as **Can't verify**:
+
+**"Can't verify - checkout's record of the parts picked from your variants could not be read."** Checkout keeps a record of which variants it took for such parts, and the key that reads it could not be read just now, so the variants on this order could not be matched to the configuration. Nothing points at a problem - open the order again in a moment, or check its parts against the configuration before you fulfil it.
+
+**"Can't verify - a variant on this order has since been deleted."** The order carries a product variant you have since deleted from your catalog, so its lines can no longer be matched to checkout's record of the parts picked from your variants. The money it collected is unaffected - check its parts against the configuration before you fulfil it.
+
+**"Can't verify - the key checkout records joined lines with could not be read."** This configured product sits on a cart line of its own. Checkout tells such a line from one it joined with its extras by a key 3D Bits keeps, and that key could not be read just now, so the order could not be judged either way. Nothing points at a problem - open the order again in a moment.
 
 :::warning A later price change does not explain an Underpaid order
 Each order is measured against the pricing rules **it was sold under**, or where those are no longer on file, against the price quoted when the order was placed. Orders placed before your last publish are identified separately, as **Earlier version**, rather than compared against today's prices.

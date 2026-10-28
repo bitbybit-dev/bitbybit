@@ -62,6 +62,8 @@ The distinction matters most for conditions. On a rendered control, a visibility
 
 For both, the fixed minimum, maximum and step can be replaced by an **expression** over your other controls, so a depth can be capped at half the width. When a recomputed bound excludes the current value, the value is pulled back inside it.
 
+A number typed above the maximum or below the minimum shows an error, and Add to cart waits until it is fixed. If another choice then hides the control, the value is pulled back inside its range, since the shopper can no longer see the error. A typed number counts as the number itself, so `3.0` and `03` both match a condition such as **equals 3**.
+
 **Text** collects a line of words, most often a name or a short message for engraving or printing.
 
 **Textarea** is the same for longer text, such as delivery notes or a message on a plaque.

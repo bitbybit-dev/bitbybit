@@ -81,7 +81,7 @@ The numbers come from Shopify. While the shopper configures, the storefront asks
 - discounts limited to logged-in customers or B2B buyers show at checkout;
 - discounts limited to once per order or once per customer can show here and still be refused at checkout, for example when another item in the cart already used them;
 - a subscription (selling plan) price is usually not the total shown, so the rows stay hidden for it;
-- in a currency other than your store's, conversion rounding usually leaves Shopify's price a few cents away from the total, so the rows stay hidden there - see [Other currencies](/learn/3d-bits/pricing/other-currencies).
+- in a currency other than your store's, conversion rounding can leave Shopify's price a few cents away from the total, and then the rows stay hidden - see [Other currencies](/learn/3d-bits/pricing/other-currencies).
 
 Untick **Show the store's discounts** to never show them on that element.
 

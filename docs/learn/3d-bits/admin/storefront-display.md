@@ -58,6 +58,8 @@ The page carries a short note about what happens if you remove the app, and it i
 If you want those gone, do it while the app is still installed. Delete the files from Content, then Files, and clear the metafields from the [Metafields](/learn/3d-bits/admin/metafields) page - or simply unpublish your projects, which clears them as it goes. Once the app is uninstalled, that tidying is a manual job in Shopify admin.
 :::
 
+**The notes on your variants stay too.** When a part picks one of your variants, publishing leaves a small note on each variant it can pick. The notes stay after an uninstall and do nothing once the app is gone, but you cannot edit or remove them in the Shopify admin. To take them off, unpublish the projects that use such parts before you uninstall - see [What stays on your variants](/learn/3d-bits/admin/projects#what-stays-on-your-variants).
+
 If you are about to uninstall and want to keep your configurations, download them from each project first. The project page's **Download JSON** saves a project to a file that can be loaded back later.
 
 ## Per-project settings are elsewhere

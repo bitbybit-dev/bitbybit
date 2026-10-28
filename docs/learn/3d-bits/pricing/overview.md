@@ -40,7 +40,7 @@ If they switch back to pine, the model changes, the total drops to 635.00, and c
 - **How many of an option** - let the shopper choose a number of one option with a `+/-` stepper. Its amount then becomes a price per unit.
 - **Your own products, linked to an option** - point an option at real products in your catalogue and it is charged at their price, and they appear on the order so your team knows to pick them. One option can carry up to ten of them, each with its own quantity. *Pro plan.*
 - **Formulas** - an expression over a slider or number field, like `width * 2.5` or `round(area * 45)`. This is what makes continuous choices (size, length, area) priceable.
-- **[Parts](/learn/3d-bits/composer/gui/parts)** - the things the configured product is made of. A part can be a real product you charge for and ship, or simply a line on the works order. *Pro plan.*
+- **[Parts](/learn/3d-bits/composer/gui/parts)** - the things the configured product is made of. A part can be a real product you charge for and ship, one of your variants picked by the shopper's choices, or simply a line on the works order. *Pro plan.*
 - **A set multiplier** - nominate one of your controls to multiply the whole configured price, which is how you price by area or by running metre. This is **not** the purchase quantity.
 - **A purchase quantity** - a **Quantity** element you place in the panel, for a shopper buying several of the configuration they just built.
 
@@ -63,13 +63,13 @@ You can also have the configurator grey out choices it cannot currently sell, by
 
 The price element updates live as they change options, and can show an itemised breakdown - base, each chosen option, each formula, each part - so nothing about the total is a mystery. You can also show a **parts list** of what the configuration is made of.
 
-At checkout the configured product normally appears as a single line at the price they were shown. A configuration that posts more than 2,000 units on one of its lines is the exception: Shopify will not combine a group that large, so the shopper sees its parts listed separately, and publishing warns you when yours will. Their choices travel with the order, so your team can see exactly what to make.
+At checkout the configured product normally appears as a single line at the price they were shown. A configuration that posts more than 2,000 units on one of its lines is the exception: Shopify will not combine a group that large, so the shopper sees its parts listed separately, and publishing warns you when yours will - or stops, for a configuration with a part picked from your variants, which checks out only combined. Their choices travel with the order, so your team can see exactly what to make.
 
 ## What stays with Shopify
 
 Configurator pricing decides **what the product costs**. Everything around that stays where it already is:
 
-- ✅ Taxes, shipping rates and discounts - Shopify. One exception: a market that includes tax based on the shopper's country does not re-price a configured product for that country - see [Other currencies](./other-currencies#per-country-tax). The Price element can show the shopper the discounts Shopify gives their configuration before they add it - see [Layout](/learn/3d-bits/composer/gui/layout)
+- ✅ Taxes, shipping rates and discounts - Shopify. One exception: a market that includes tax based on the shopper's country re-prices your own products in a Product lines configuration, but not option charges, formulas or typed part prices - see [Other currencies](./other-currencies#per-country-tax). The Price element can show the shopper the discounts Shopify gives their configuration before they add it - see [Layout](/learn/3d-bits/composer/gui/layout)
 - ✅ Payment, fraud analysis and refunds - Shopify
 - ✅ Your existing variants for anything you do not configure - Shopify
 - ❌ 3D Bits never processes payments and never holds money

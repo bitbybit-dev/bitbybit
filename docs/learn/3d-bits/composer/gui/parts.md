@@ -22,7 +22,7 @@ This is the difference between parts and priced options. An option is a question
 
 Every part is one of two things, and the difference is simply whether money is involved.
 
-**Charged.** Either you link it to a real product in your store, or you type a price on it. A linked part is charged at that product's price, ships as its own line on the order, and decrements your stock. A part with a typed price but no product is charged too, but nothing ships for it - use it for a cost that is real but has no item behind it.
+**Charged.** You link it to a real product in your store, let the shopper's choices [pick one of your variants](#parts-from-your-variants), or type a price on it. A linked part is charged at that product's price, ships as its own line on the order, and decrements your stock. A part with a typed price but no product is charged too, but nothing ships for it - use it for a cost that is real but has no item behind it.
 
 **Recorded.** No link and no price. It never costs anything and it never reaches the cart. It exists so that the order, the parts list and the export say what the thing is made of. A part that is only written down is how you get a works order that a person can build from.
 
@@ -43,7 +43,7 @@ The tab shows which is which: each part is labelled *charged* or *recorded* besi
 | **Price each** | A price when there is no product to link. Offered only while the part is unlinked. |
 | **Quantity** | How many, when it is always the same number. |
 | **Quantity expression** | How many, when it depends on what the shopper chose. |
-| **Already part of the base price** | The part still ships and still decrements stock, but adds nothing on top of your base price. |
+| **Already part of the base price** | With Bundled parts charging, the part still ships and still decrements stock, but adds nothing on top of your base price. Product lines refuses it on a linked part - see [below](#already-part-of-the-base-price). |
 | **Included when** | The condition that decides whether the part is in this configuration at all. |
 | **When it runs out** | Which shopper choices to cross out while this part cannot be sold. |
 | **Only while** | The same, for a part that exists only under a combination of choices. |
@@ -57,6 +57,64 @@ If you have typed a price and then link a product, the typed price is removed - 
 ### Creating a product from a part
 
 If a recorded part turns out to be something you actually sell, **Create product** adds it to your store and links it in one step. The product is yours: editable, sellable on its own, and reusable in other configurators. Its stock is left untracked so this configurator is never blocked by inventory you did not mean to manage - turn tracking on in Shopify when you are ready.
+
+## A part that picks one of your variants {#parts-from-your-variants}
+
+A part can be **one of the variants of a product you sell, chosen by the configuration**. A cabinet's body comes in sizes and finishes, and you already sell each combination as a variant of one product. Point the part at that product, tell 3D Bits which of your controls picks each of its options, and the configurator puts the matching variant in the cart.
+
+The variant is charged at the price Shopify sets for it, and it reaches the order as your own product, so your stock counts stay right. It needs **Product lines** charging - see [Charging methods](/learn/3d-bits/pricing/charging-methods).
+
+### Setting one up
+
+1. On a part, choose **Pick a variant**. On a part with a price typed on it, the Composer asks first: the typed price is removed and the variant is charged at its own price.
+2. Pick the product. 3D Bits reads its options and variants.
+3. For each of the product's options, choose what picks it: one of your dropdowns or radio groups, or **Always** and one value.
+4. Match each choice of that control to one of the option's values. Names that already match are filled in for you. Set a choice you do not sell to **Not sold**.
+
+The part keeps everything else a part has: its condition, its quantity or quantity expression, and its place in an assembly. Several parts can pick from the same product - a left and a right door, say. A part cannot pick from a product that is itself a configured product, or from the product this configurator sits on.
+
+The **Refresh** button beside the product's name reads its variants from Shopify again and keeps the matches that still fit. The unlink button beside it stops the part picking from that product, and asks first.
+
+### Reading the summary under the part
+
+A line under the part counts the combinations your choices can reach that have a variant, the ones that have none - shoppers see those crossed out - and any variant of the product no choice reaches. It also names what publishing waits on:
+
+- **An option nothing picks.** Publishing waits until each of the product's options has a control or an **Always** value.
+- **A choice its control no longer offers.** If you matched a choice to a value and then removed that choice from its control, the match stays in the list as a row such as *Walnut - no longer offered by the control*, with a remove button that asks first. Publishing waits until you remove it.
+- **An optional control.** A radio group a shopper may leave empty is named too: leaving it empty picks no variant, so the shopper cannot add the configuration to the cart until they choose.
+
+A choice set to **Not sold** never stops publishing.
+
+### What shoppers see
+
+- The part is priced at the variant's price in Shopify, in the shopper's currency.
+- With **Disable options that cannot currently be sold** switched on in the [Pricing](/learn/3d-bits/composer/gui/pricing) tab, a combination you do not sell - no variant in Shopify, or set to **Not sold** - is treated like a sold-out part, and so is a variant that sells out: the configurator crosses it out, or changes another choice to reach a combination you sell, as described under [When it runs out](#when-it-runs-out).
+- With it off, the combination stays selectable, and Add to cart tells the shopper *"This combination of options is not sold - please choose different options and add it to your cart again."*
+- When your parts can pick more than 500 variants between them, the configurator checks stock only for the variants the shopper's choices pick, so a sold-out variant shows once the shopper's choices reach it.
+
+### When you change the product in Shopify
+
+| Change | What happens |
+|---|---|
+| A variant's price | Followed at once: the configurator shows it and checkout charges it |
+| A new variant | Not sold until you **Refresh** the part and publish. Publishing warns about it |
+| A variant deleted | That choice is treated as not sold. Publishing warns, and **Refresh** clears it |
+| An option value renamed or removed | It no longer matches - publishing stops and names it. **Refresh** the part, match it again and publish |
+| An option added or removed | Publishing stops and names it. **Refresh** the part, then match its options again |
+| The product set to draft or archived, or taken off the Online Store | Publishing stops and names it. Make it active and sold on the Online Store, or remove the part |
+| The product deleted | Publishing stops. Pick the part's product again |
+
+### Limits
+
+- Product lines only. Bundled parts refuses such a part, and Single line moves the project to Product lines.
+- Each such part takes a little more room in the cart than other lines, so many of them lower how many configured items one cart can hold - see [How many configured items fit in one cart](/learn/3d-bits/pricing/charging-methods#cart-capacity). Publishing tells you the number, and refuses a configuration that could not fit even once.
+- Very many choices matched to variants, beside many products the configurator charges, can take more room than checkout reads for one product. Publishing stops and says so: match fewer choices, or charge fewer products.
+- A configuration with such a part checks out only as one combined line, and Shopify combines a line of at most 2,000 units. Publishing stops when one line of the group could carry more, and names the configuration.
+- A part cannot pick a variant this configurator also charges another way, through an option or another part's link.
+- Such a part cannot be **Already part of the base price** - the Composer says so under the part if it is ticked.
+- Any number of configurators can pick the same variant.
+
+[Pricing troubleshooting](/learn/3d-bits/pricing/troubleshooting#parts-picked-from-your-variants) lists what each publish message about these parts means.
 
 ## Assemblies
 
@@ -116,11 +174,13 @@ Units never touch the price. The price comes from the linked product or from wha
 
 If you want a measurement in front of people, put it in **Unit shown to people**. It is your own wording and it is only ever displayed.
 
-## Already part of the base price
+## Already part of the base price {#already-part-of-the-base-price}
 
 Tick this when the base price you typed already covers the part.
 
-The part still ships as its own order line and still decrements stock. It simply adds nothing on top. Use it when your base price is the price of the whole default configuration rather than of a bare product.
+With **Bundled parts** charging, the part still ships as its own order line and still decrements stock. It simply adds nothing on top. Use it when your base price is the price of the whole default configuration rather than of a bare product.
+
+With **Product lines** charging, publishing refuses it on a part that links a product or picks one of your variants. There the base price is your product's own price in Shopify, and a linked part reaches the cart at its own price, so it cannot also be inside the base price. Untick it and lower the base price by what the part costs, so shoppers pay the same as before.
 
 ## When it runs out
 
@@ -187,7 +247,7 @@ If any part has a SKU, Composer asks before it hands you the file, and you choos
 
 Checkout works out every part and every condition on it for each configured item, and that work is
 budgeted. Publishing measures it and refuses a project that would not finish: as a guide, Bundled
-parts holds about 120 linked parts charged at once for one configured item (parts that exclude
+parts holds about 130 linked parts charged at once for one configured item (parts that exclude
 each other on the same choice do not count together; fewer as a shopper buys more of it in one cart), and Single line about 300 parts, or about 200 when each carries a few conditions. When a
 project is over, the message names what is costing the most - conditions, expressions, or the parts
 a bundle has to nest.
@@ -198,7 +258,13 @@ Publishing stops rather than going live with parts that could not be charged cor
 - a **fractional quantity** on a part you charge for;
 - a **negative** price;
 - a priced, unlinked part marked as **already part of the base price**, since that would quietly discard the price;
-- a part that is **inside itself**, directly or through a chain.
+- with Product lines charging, a part that links a product or picks one of your variants and is marked **already part of the base price**;
+- a part that is **inside itself**, directly or through a chain;
+- a part that [picks one of your variants](#parts-from-your-variants) with Bundled parts charging, or from a product that is itself configured, or from this configurator's own product;
+- a part that picks one of your variants while one of the product's options has no control and no **Always** value, or while it matches a choice its control no longer offers;
+- a part that picks a variant this configurator also charges through an option or another part.
+
+The other refusals for parts picked from your variants - a product that changed in Shopify, a cart that could not hold one configuration - are listed in [Pricing troubleshooting](/learn/3d-bits/pricing/troubleshooting#parts-picked-from-your-variants).
 
 ## Where to go next
 

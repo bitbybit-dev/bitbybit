@@ -54,8 +54,9 @@ Open **Order review** in the 3D Bits admin. Each configured order is re-checked 
 |---|---|---|
 | **Verified** | The order collected what its configuration should cost | Fulfil as normal |
 | **Underpaid** | It collected less than its configuration should cost | Check before fulfilling, and collect the difference if it is real |
-| **Can't verify** | The pricing rules could not be read, or the cart carried too many configured lines | Check the project is still published with pricing on |
-| **Paid in another currency** | The order was paid in a currency other than your store's, so the check could not be made like for like | Nothing to do - see [Other currencies](./other-currencies#reviewing-orders-from-other-markets) |
+| **Doesn't match** | It collected enough, but its products are not the ones its configuration needs | Check what was paid for before you fulfil it - see [Order review](/learn/3d-bits/admin/order-review) |
+| **Can't verify** | The pricing rules could not be read, the cart carried too many configured lines, the configuration holds a value your configurator does not offer, or the parts picked from your variants could not be matched | Check the project is still published with pricing on, and check what was ordered before you fulfil it |
+| **Paid in another currency** | The order was paid in a currency other than your store's, and its configuration charges amounts the configurator works out, so the check could not be made like for like | Nothing to do - see [Other currencies](./other-currencies#reviewing-orders-from-other-markets) |
 | **Earlier version** | Placed before you last published this configurator | Nothing is wrong - it was sold under earlier rules |
 
 Your home dashboard flags orders needing attention, so this is a glance rather than a chore.
@@ -76,7 +77,7 @@ Run a shortened version of the checklist whenever you:
 - Change whether a market includes tax based on the shopper's country
 - Switch charging method
 
-Most of these need a publish before they take effect. The ones people forget are the two that happen in Shopify rather than in Composer: **a linked product's price changing**, and **the price of the product the configurator sits on changing**. Both are checked when you publish, and publishing is refused if the result could not be charged. See [Linked products](./linked-products#which-changes-need-a-publish).
+Most of these need a publish before they take effect. The ones people forget are the two that happen in Shopify rather than in Composer: **a linked product's price changing**, and **the price of the product the configurator sits on changing**. With Product lines charging, both are followed at once - shoppers pay Shopify's new price. After a change to the product's own price, the next publish is refused until a variant of the product costs the base price again, so change the base price in the Composer to match. With Bundled parts charging, you keep selling at the published prices until you publish. See [Linked products](./linked-products#which-changes-need-a-publish).
 
 ## If something is wrong
 
