@@ -80,3 +80,14 @@ The following examples in TypeScript, Rete, and Blockly demonstrate creating a s
 </Tabs>
 
 Chamfering is another essential tool in the CAD modeler's toolkit, providing a distinct way to treat edges compared to fillets, and is widely used in mechanical design and manufacturing.
+
+## Finding the bevels afterwards
+
+The chamfers that take edges each have a twin that bevels the same edges and also returns a history of what became of every face, edge and vertex: `facesFromEdges` holds the bevel made along each edge and `faces` what each face of the shape was trimmed to, so a later step finds the bevels without counting faces.
+
+- `chamferEdgesListWithHistory` bevels the edges given by a distance each.
+- `chamferEdgesTwoDistancesWithHistory` bevels edges unevenly, by one distance measured on a face you pair with each edge and another on the face across from it, and `chamferEdgesTwoDistancesListsWithHistory` each edge by its own two distances.
+- `chamferEdgesDistAngleWithHistory` bevels edges by a distance and an angle, and `chamferEdgesDistsAnglesWithHistory` each edge by its own distance and angle.
+- `chamferEdgeTwoDistancesWithHistory` and `chamferEdgeDistAngleWithHistory` do the same for one edge.
+
+[Picking faces and edges](../../concepts/picking-faces-and-edges#by-history) explains what a history holds and shows one in use.

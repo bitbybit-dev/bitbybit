@@ -2,7 +2,7 @@
 sidebar_position: 8
 title: STEP & IGES Import
 sidebar_label: STEP & IGES Import
-description: Read STEP and IGES files into OCCT shapes - the compressed variants, passing file data from a browser, and how a file that cannot be read reports itself.
+description: Read STEP and IGES files into OCCT shapes - the compressed variants, passing file data from a browser, the unit lengths arrive in, and how a file that cannot be read reports itself.
 topic: code.occt.io.step-and-iges
 type: how-to
 tags: [code, occt, rete, blockly, typescript]
@@ -56,6 +56,22 @@ therefore arrives lying on its side.
 
 The `adjustZtoY` option corrects that as part of the import. Turn it on for a file that came out of a
 CAD package, and leave it off for one that was written by Bitbybit.
+
+## Lengths arrive in your unit
+
+A STEP or IGES file states the unit its lengths are in, and programs differ: millimetres are the most
+common, inches the next. `bitbybit.occt.io.loadSTEPorIGES` and `loadSTEPorIGESFromText` scale whatever
+the file holds into the `unit` you ask for, millimetres by default, so a part drawn in inches arrives
+at its true size in a model built in millimetres. Choose inches as the `unit` to work in inches
+instead; the choices are millimetres, centimetres, metres and inches.
+
+To know what a file is written in before you build anything, `bitbybit.occt.io.fileLengthUnit` reads
+its unit without building its geometry. It takes the file's text or its bytes, the compressed forms
+included, and a `fileName` whose extension says whether it is STEP or IGES. It tells millimetres,
+centimetres, metres and inches apart, and gives `undefined` for a file in another unit, one whose
+parts disagree, or one that states none.
+
+Writing a shape back out works the other way round: see [Getting a model out](../../concepts/getting-a-model-out#units).
 
 ## A file that cannot be read gives you nothing
 

@@ -173,6 +173,10 @@ This operation works by:
 </TabItem>
 </Tabs>
 
+## Following the offset faces
+
+`bitbybit.occt.operations.offsetWithHistory` and `offsetAdvWithHistory` offset a face, shell or solid as `offset` and `offsetAdv` do, and report what each face became: the face offset from it, so a later step finds the new outer wall without counting faces. With `offsetAdvWithHistory`, the corner faces a join adds are listed under the edges they were made from. A wire or edge has no faces to follow, so both refuse one. [Picking faces and edges](../../concepts/picking-faces-and-edges#by-history) explains what a history holds.
+
 ## Practical Applications and Tips
 
 Offset operations are incredibly versatile and have numerous practical applications:

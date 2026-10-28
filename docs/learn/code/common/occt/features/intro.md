@@ -82,7 +82,10 @@ Choose the faces by rule with [`bitbybit.occt.select`](../select/intro), so the 
 
 ## History
 
-Every feature has a `...WithHistory` twin that also reports what became of each face, so a later step can find the faces a feature made: the wall of a hole, the top of a boss.
+Every feature has a `...WithHistory` twin that also reports what became of each face, so a later step can find the faces a feature made: the wall of a hole, the top of a boss. [Picking faces and edges](../../concepts/picking-faces-and-edges#by-history) explains what a history holds.
+
+- The features built from a profile or a wire report two histories, the base's and then the profile's: in the profile's, `facesFromEdges` holds the face each of its edges made. For `ribWithHistory` that is the rib's walls, with `firstFaces` and `lastFaces` its two flat sides, and `grooveWithHistory` the same for a groove. `taperedBossWithHistory` and `taperedPocketWithHistory` give the leaning walls and, in `lastFaces`, the top of the boss or the floor of the pocket; `revolvedBossWithHistory` and `revolvedPocketWithHistory` give the faces each profile edge turned into, such as a ring's outer wall and its two sides.
+- `draftAngleWithHistory` reports a drafted face as its tilted successor in `faces`. `makeDraftWithHistory` and `makeDraftToShapeWithHistory` grow a skirt from a wire or a shape, freely or up to a stop shape, and report in `facesFromEdges` the skirt faces each edge grew.
 
 ## Every feature
 

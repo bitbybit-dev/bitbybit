@@ -276,19 +276,19 @@ This example demonstrates creating an arc by specifying a base circle and two an
 
 ## Arc From Circle, Point and Angle
 
-This example shows how to create an arc starting from a specific point on a circle and extending through a specified angular distance. This method combines point-based positioning with angular measurement.
+This example shows how `arcFromCirclePointAndAngle` cuts an arc out of a circle from a point on it to an angle on it. The point says where the arc begins; the angle says where it ends, measured round the circle from the circle's own start, not from the point.
 
 **What's happening:**
-- We create a base circle (radius 5, centered at origin)
-- A starting point is defined at `[8, 0, 8]` which gets projected onto the circle
-- An angle of 360° is specified, creating a complete circular arc (full circle)
-- The arc begins at the projected point location and sweeps through the specified angle
+- We create a base circle (radius 5, centered at the origin, lying flat). Every circle has its own start, here `[0, 0, 5]`, and its angles count round from there
+- A point at `[8, 0, 8]` is projected onto the circle and lands at `[3.536, 0, 3.536]`, 45° round from the circle's start
+- `alphaAngle` 360 puts the end of the arc 360° round from the circle's start, which is the start itself
+- The arc runs from the projected point to that end: a 315° arc
 - Helper elements show the center point, the reference point, and connecting lines
 
 **Key concepts:**
-- **Point Projection**: The specified point is projected onto the circle to find the actual start position
-- **Angular Sweep**: The angle determines how far around the circle the arc extends
-- **Complete Circle**: A 360° angle creates a full circular arc, essentially recreating the original circle
+- **Point Projection**: The specified point is projected onto the circle to find where the arc begins
+- **The end is an angle on the circle**: Measured from the circle's own start, so with the same point an `alphaAngle` of 90 ends the arc at `[5, 0, 0]`, 45° along, and 180 at `[0, 0, -5]`
+- **No arc of nothing**: An angle that lands on the point itself is refused
 - **Starting Position**: Unlike other methods, this gives you control over exactly where on the circle the arc begins
 
 
@@ -330,7 +330,7 @@ This example demonstrates creating a complete circular edge, which is one of the
 - **Radius**: Determines the size of the circle (distance from center to edge)
 - **Center Point**: The position in 3D space where the circle is located
 - **Direction Vector**: Defines the orientation of the plane containing the circle
-- **Closed Curve**: A circle is a closed curve, meaning it has no start or end points
+- **Closed Curve**: A circle closes on itself, so its start and its end are the same point; the angles of an arc cut from it count round from there
 
 
 <Tabs groupId="edge-ellipse">
@@ -372,5 +372,5 @@ This example demonstrates creating an elliptical edge, which is an oval-shaped c
 - **Major Radius**: The longer radius that defines the ellipse's widest dimension
 - **Minor Radius**: The shorter radius that defines the ellipse's narrower dimension
 - **Aspect Ratio**: The relationship between major and minor radii determines how "stretched" the ellipse appears
-- **Closed Curve**: Like a circle, an ellipse is a closed curve with no endpoints
+- **Closed Curve**: Like a circle, an ellipse closes on itself, its start and its end the same point
 - **Geometric Relationship**: When major and minor radii are equal, the ellipse becomes a perfect circle

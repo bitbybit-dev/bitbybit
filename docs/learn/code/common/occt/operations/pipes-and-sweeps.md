@@ -62,6 +62,8 @@ Here a circle swept along a helix makes a coil spring, and the same circle swept
 
 Both take `makeSolid` (true for a solid, false for an open shell) and `trihedronEnum`, which decides how the profile turns as it travels. The default, `isConstantNormal`, keeps it steady; the Frenet modes turn it with the curve's bending, which can twist a profile along a path that bends one way and then the other.
 
+To find the faces of a tube afterwards, `pipeWireCylindricalWithHistory` and `pipePolylineWireNGonWithHistory` sweep the same profile and report the path's [history](../../concepts/picking-faces-and-edges#by-history): `facesFromEdges` holds the tube's faces running along each edge of the path, `edgesFromVertices` the circle or polygon at each of its vertices, and `firstFaces` and `lastFaces` the end caps of a solid. A corner bent round `bendRadius` gives its bend under `facesFromVertices` of that corner.
+
 ## Your own profile
 
 `bitbybit.occt.operations.pipe` takes the path as `shape` and one or more profiles as `shapes`. A profile is swept from where it stands and is not moved, so draw it across the start of the path, at a right angle to it. Several profiles, each placed where it belongs along the path, make the sweep blend from one shape into the next; the result is closed into a solid. `pipeWithHistory` does the same and reports which face each profile edge became, for selecting the caps or the sides afterwards.

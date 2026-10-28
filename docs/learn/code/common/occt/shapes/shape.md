@@ -18,7 +18,7 @@ The functions in `bitbybit.occt.shapes.shape` work on a shape of any kind, a ver
 
 ## Merging seams
 
-A boolean leaves the faces of its inputs as they were cut, so two boxes fused into one keep a seam wherever their faces now lie on one plane. `unifySameDomain` merges faces that lie on the same surface into one face, and edges that continue each other on one curve into one edge. `booleans.union` does it for you unless `keepEdges` is true; after a difference, a fillet or an import with many small faces, calling it yourself gives a clean shape whose faces are easier to select and to fillet.
+A boolean leaves the faces of its inputs as they were cut, so two boxes fused into one keep a seam wherever their faces now lie on one plane. `unifySameDomain` merges faces that lie on the same surface into one face, and edges that continue each other on one curve into one edge. `booleans.union` does it for you unless `keepEdges` is true; after a difference, a fillet or an import with many small faces, calling it yourself gives a clean shape whose faces are easier to select and to fillet. `unifySameDomainWithHistory` merges the same way and also reports what each face, edge and vertex became, as a [history](../../concepts/picking-faces-and-edges#by-history): both halves of a face the fuse split name the one face they merge into, so a step that found a face before the merge still finds it after.
 
 Here two crossing boxes are fused with their edges kept, so seams run across the top. Beside them is the same union after `unifySameDomain`, with one face per flat side:
 

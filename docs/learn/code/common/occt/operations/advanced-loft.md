@@ -35,7 +35,7 @@ Here's a breakdown of the process described:
 *   `periodic`: Useful for creating smooth, continuous surfaces when the input profiles form a repeating pattern.
 *   `straight`: When true, the loft creates ruled surfaces, meaning it uses straight lines to connect corresponding points on adjacent profiles.
 *   `useSmoothing`: Applies a smoothing algorithm to the generated surface for a more organic look.
-*   `maxUDegree`: Controls the maximum degree of the resulting BSpline surface in the U direction.
+*   `maxUDegree`: Controls the maximum degree of the resulting BSpline surface in the U direction, across the sections: a whole number up to 25, 3 by default, or 0 to leave the limit to the kernel.
 *   `tolerance`: Defines the geometric precision for the lofting operation.
 *   `parType`: Specifies the method used for parameterizing the surface along the path of the loft (e.g., `approxCentripetal`, `approxChordLength`).
 

@@ -34,6 +34,8 @@ The process of creating shells involves "sewing" faces together by identifying a
 When creating shells, the **first face in the collection often dictates how other face normals and orientations behave** during the sewing process. OCCT uses the orientation of the first face as a reference to determine the consistent orientation for the entire shell. This is particularly important when creating closed shells that will be converted to solids, as inconsistent face orientations can prevent successful solid creation.
 :::
 
+To know which face of the sewn shell came from which face you gave, `sewFacesWithHistory` sews as `sewFaces` does and returns one [history](../../../concepts/picking-faces-and-edges#by-history) per face or shell given: `histories[i].faces[j]` lists the faces of the result that face `j` of shape `i` became, both numbered as `shapes.face.getFaces` numbers them.
+
 ## Simple Shell Example: Two Square Faces
 
 This first example demonstrates the fundamental concept of shell creation by sewing two square faces together. We create two identical square faces, position one of them to share an edge with the first, and then sew them together to form a simple shell.

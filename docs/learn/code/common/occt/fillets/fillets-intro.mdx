@@ -75,3 +75,12 @@ The following examples in TypeScript, Rete, and Blockly demonstrate creating a s
 </Tabs>
 
 Filleting operations are a powerful tool in CAD modeling for refining designs and achieving desired aesthetics and functional properties. In subsequent sections or advanced tutorials, we might explore how to fillet specific edges using their indexes and apply other types of fillets.
+
+## Finding the rounds afterwards
+
+A later step often needs the faces a fillet made, to color them, measure them or build on them. The fillets that take a list of edges each have a twin that rounds the same edges and also returns a history of what became of every face, edge and vertex: `facesFromEdges` holds the round made along each edge, `facesFromVertices` the blend where rounds meet at a corner, and `faces` what each face of the shape was trimmed to.
+
+- `filletEdgesListOneRadiusWithHistory` rounds the edges given with one radius, and `filletEdgesListWithHistory` with a radius each.
+- `filletEdgeVariableRadiusWithHistory` rounds one edge with a radius that changes along it, `filletEdgesSameVariableRadiusWithHistory` several edges with one such changing radius, and `filletEdgesVariableRadiusWithHistory` several edges, each with its own.
+
+[Picking faces and edges](../../concepts/picking-faces-and-edges#by-history) explains what a history holds and finds the rounds of a box with one.

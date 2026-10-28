@@ -64,7 +64,7 @@ Each slice is a face: extrude it by the thickness of your sheet and you have the
 ## Splitting
 
 - `splitByFrame` cuts a shape in two with the plane of a frame and gives both halves.
-- `splitShapeWithShapes` cuts a shape into pieces with other shapes, without removing material, as a knife would.
+- `splitShapeWithShapes` cuts a shape into pieces with other shapes, without removing material, as a knife would. `splitShapeWithShapesWithHistory` gives the pieces as one compound with a [history](../../concepts/picking-faces-and-edges#by-history) for each shape given, the shape being split first, whose `faces` names the pieces each face was cut into. With `nonDestructive` false, cutting shapes that take nothing off the shape leave no pieces to follow, and the call is refused.
 - `splitFaceByWires` scores a face along wires that lie on it, so each region can be coloured or extruded on its own.
 
 ## Section views

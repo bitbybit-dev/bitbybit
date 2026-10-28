@@ -71,7 +71,29 @@ Mind an empty choice. A rule that matches nothing returns an empty list, and `fi
 
 ## By history
 
-Some operations can report what became of each face, edge and vertex: the `*WithHistory` booleans and features, such as `bitbybit.occt.booleans.differenceWithHistory`, return beside the new shape which of its faces came from which of the old ones, so a drill's side is known to be the wall of its hole. A step built on such a face keeps finding it even after the steps before it change.
+Some operations can report what became of each face, edge and vertex: the `*WithHistory` twins of the booleans, the features and drafts, the fillets and chamfers, the offsets, the sweeps and the splits, such as `bitbybit.occt.booleans.differenceWithHistory`, return beside the new shape which of its faces came from which of the old ones, so a drill's side is known to be the wall of its hole. A step built on such a face keeps finding it even after the steps before it change.
+
+A twin takes what the plain function takes and returns `{ shape, history }`. A history is lists of indexes, numbered as `shapes.face.getFaces`, `shapes.edge.getEdges` and `shapes.vertex.getVertices` number the faces, edges and vertices of the shape given and of the result alike:
+
+- `faces[i]` is what face `i` became: itself where it is unchanged, its pieces where it was cut, nothing where it is gone. `edges[i]` does the same for edge `i`.
+- `facesFromEdges[i]` holds the faces made from edge `i`, such as the round a fillet puts along it or the side a sweep makes of it; `facesFromVertices` and `edgesFromVertices` hold what was made from a vertex, such as the blend where three rounds meet at a corner.
+- `facesFromFaces[i]` holds the faces made from face `i`, such as the inner wall a thick solid offsets from it, and `edgesFromFaces[i]` the edges made on it, such as where a boolean cut it.
+- `firstFaces` and `lastFaces` are where a sweep, a loft or a feature starts and ends, such as the two flat sides of a rib.
+
+An operation that takes more than one shape returns `{ shape, histories }`, one history for each shape it was given, in the order given: a groove reports the base's history, then the history of the wire that outlined it.
+
+Here every edge of a box is rounded, and the history finds the faces the fillet made. The rounded box has 26 faces: the six of the box, trimmed, a round along each of its twelve edges and a blend at each of its eight corners.
+
+```typescript
+const box = await bitbybit.occt.shapes.solid.createBox({ width: 4, length: 4, height: 2, center: [0, 1, 0] });
+const edges = await bitbybit.occt.shapes.edge.getEdges({ shape: box });
+const rounded = await bitbybit.occt.fillets.filletEdgesListOneRadiusWithHistory({ shape: box, edges, radius: 0.3 });
+const faces = await bitbybit.occt.shapes.face.getFaces({ shape: rounded.shape });
+const rounds = rounded.history.facesFromEdges.flat().map((index) => faces[index]);
+const corners = rounded.history.facesFromVertices.flat().map((index) => faces[index]);
+```
+
+Each page says which of its functions keep a history: [fillets](../occt/fillets/fillets-intro), [chamfers](../occt/fillets/chamfers-intro), [features and drafts](../occt/features/intro), [offsets](../occt/operations/offset-operations), [pipes and sweeps](../occt/operations/pipes-and-sweeps), [rotated extrusions](../occt/operations/rotated-extrusions) and [sections and splits](../occt/operations/sections-and-slices).
 
 ## Corners by a point
 

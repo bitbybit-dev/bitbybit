@@ -68,10 +68,10 @@ The view is a frame (see [Frames](/learn/code/common/base/frame/intro)). The eye
 
 ## SVG
 
-`bitbybit.occt.io.saveShapeSvg` draws the same view straight into an SVG file and downloads it, with the hidden edges dashed when `drawHidden` is true. `saveShapeSvgAndReturn` returns the SVG text as well, to show on a page or send elsewhere. Both take the shape and the frame, not the result of `hiddenLines`.
+`bitbybit.occt.io.saveShapeSvg` draws the same view straight into an SVG file and downloads it, with the hidden edges dashed when `drawHidden` is true. `saveShapeSvgAndReturn` returns the SVG text as well, to show on a page or send elsewhere. Both take the shape and the frame, not the result of `hiddenLines`. Given the shape's `unit`, the drawing states its true width and height, so it prints and imports at size; left out, it has only a view box.
 
 ## DXF
 
-The drawing lies flat on the ground plane, which is what the DXF export needs. Turn each compound into paths with `bitbybit.occt.io.shapeToDxfPaths`, put each on its own layer with `dxfPathsWithLayer` (the visible edges on one layer in black, the hidden ones on another in grey) and write the file with `dxfCreate`. CAD programs then show, hide or restyle each layer. [DXF drawings](./dxf-file-format-for-2d-drawings) walks through the DXF steps on text and patterns.
+The drawing lies flat on the ground plane, which is what the DXF export needs. Turn each compound into paths with `bitbybit.occt.io.shapeToDxfPaths`, put each on its own layer with `dxfPathsWithLayer` (the visible edges on one layer in black, the hidden ones on another in grey) and write the file with `dxfCreate`. CAD programs then show, hide or restyle each layer. Written as `acadVersion` AC1015 with a `unit`, the file states its unit in its header, so a CAD program opens it at true size. [DXF drawings](./dxf-file-format-for-2d-drawings) walks through the DXF steps on text and patterns.
 
 Sections through a part, which drawings often show beside the views, are on [Sections and slices](../operations/sections-and-slices).
