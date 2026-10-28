@@ -9,12 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bitbybit-dev/ifc": "1.6.0-rc.0",
-    "@bitbybit-dev/ifc-worker": "1.6.0-rc.0",
-    "@bitbybit-dev/manifold-worker": "1.6.0-rc.0",
-    "@bitbybit-dev/occt": "1.6.0-rc.0",
-    "@bitbybit-dev/occt-worker": "1.6.0-rc.0",
-    "@bitbybit-dev/threejs": "1.6.0-rc.0",
+    "@bitbybit-dev/ifc": "1.6.0",
+    "@bitbybit-dev/ifc-worker": "1.6.0",
+    "@bitbybit-dev/manifold-worker": "1.6.0",
+    "@bitbybit-dev/occt": "1.6.0",
+    "@bitbybit-dev/occt-worker": "1.6.0",
+    "@bitbybit-dev/threejs": "1.6.0",
     "manifold-3d": "3.5.4",
     "three": "0.186.1"
   },
