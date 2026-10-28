@@ -143,7 +143,7 @@
     "type": "module",
     "dependencies": {},
     "devDependencies": {
-        "@microsoft/api-extractor": "7.59.1",
+        "@microsoft/api-extractor": "7.59.4",
         "@vitest/coverage-v8": "4.1.12",
         "fast-check": "4.10.2",
         "shx": "0.4.0",

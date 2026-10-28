@@ -182,8 +182,8 @@
         "earcut": "3.0.2"
     },
     "devDependencies": {
-        "@microsoft/api-extractor": "7.59.1",
-        "@types/earcut": "3.0.0",
+        "@microsoft/api-extractor": "7.59.4",
+        "@types/earcut": "3.2.4",
         "@vitest/coverage-v8": "4.1.12",
         "fast-check": "4.10.2",
         "jsdom": "29.0.1",
