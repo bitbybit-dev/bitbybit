@@ -1117,7 +1117,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.children.length).toBe(1);
-            expect(jscadWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(jscadWorkerCall).toHaveBeenCalledWith("shapeToMesh", { mesh: mockMesh });
 
             const meshEntity = result.children[0]!;
             const material = getMaterialFromEntity(meshEntity);
@@ -1372,6 +1372,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
 
+            expect(jscadWorkerCall).toHaveBeenCalledWith("shapesToMeshes", { meshes: mockMeshes });
             expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
@@ -1716,8 +1717,8 @@ describe("DrawHelper unit tests", () => {
             await drawHelper.drawManifoldOrCrossSection(inputs);
             await drawHelper.drawManifoldOrCrossSection({ ...inputs, computeNormals: false });
 
-            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(1, "decomposeManifoldOrCrossSection", expect.objectContaining({ minSharpAngle: 40 }));
-            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(2, "decomposeManifoldOrCrossSection", expect.objectContaining({ minSharpAngle: 0 }));
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(1, "decomposeManifoldOrCrossSection", { manifoldOrCrossSection: inputs.manifoldOrCrossSection, minSharpAngle: 40 });
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(2, "decomposeManifoldOrCrossSection", { manifoldOrCrossSection: inputs.manifoldOrCrossSection, minSharpAngle: 0 });
             expect(Array.from(setPositions.mock.calls[0]![0] as number[])).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
             expect(Array.from(setNormals.mock.calls[0]![0] as number[])).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 1]);
         });
@@ -1891,8 +1892,8 @@ describe("DrawHelper unit tests", () => {
             await drawHelper.drawManifoldsOrCrossSections({ ...inputs, computeNormals: false });
 
             // Assert
-            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(1, "decomposeManifoldsOrCrossSections", expect.objectContaining({ minSharpAngle: 40 }));
-            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(2, "decomposeManifoldsOrCrossSections", expect.objectContaining({ minSharpAngle: 0 }));
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(1, "decomposeManifoldsOrCrossSections", { manifoldsOrCrossSections: inputs.manifoldsOrCrossSections, minSharpAngle: 40 });
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(2, "decomposeManifoldsOrCrossSections", { manifoldsOrCrossSections: inputs.manifoldsOrCrossSections, minSharpAngle: 0 });
         });
 
         it("should draw multiple manifolds", async () => {
