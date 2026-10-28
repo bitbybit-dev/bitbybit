@@ -1,5 +1,6 @@
 import { crc32 } from "./crc32";
 import { inflateRaw } from "./inflate";
+import { MOST_INFLATED_BYTES } from "./inflate.constants";
 import { BYTE_BITS, UINT16_BYTES, UINT32_BYTES } from "./zip.constants";
 import {
     GZIP_COMMENT_FLAG,
@@ -31,7 +32,7 @@ export function isGzip(bytes: Uint8Array): boolean {
     return bytes.length >= 2 && bytes[0] === GZIP_MAGIC_FIRST && bytes[1] === GZIP_MAGIC_SECOND;
 }
 
-export function gunzipped(bytes: Uint8Array): Uint8Array {
+export function gunzipped(bytes: Uint8Array, limit: number = MOST_INFLATED_BYTES): Uint8Array {
     if (!isGzip(bytes) || bytes.length < GZIP_HEADER_SIZE + GZIP_TRAILER_SIZE) {
         throw new Error("The data is not gzip: it does not start with the gzip signature or is too short to hold its header");
     }
@@ -57,7 +58,7 @@ export function gunzipped(bytes: Uint8Array): Uint8Array {
         throw new Error("The gzip header runs past the end of the data");
     }
     const size = uint32(bytes, end + UINT32_BYTES);
-    const data = inflateRaw(bytes.subarray(start, end), size);
+    const data = inflateRaw(bytes.subarray(start, end), size, limit);
     if (data.length !== size) {
         throw new Error(`The gzip data holds ${data.length} bytes, not the ${size} its trailer records`);
     }

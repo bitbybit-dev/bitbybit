@@ -1,6 +1,7 @@
 import { crc32 } from "./crc32";
 import type { DosDateTime, ZipEntry, ZipFile, ZipHeaderWriter, ZipStoredRecord } from "../helper-types";
 import { inflateRaw } from "./inflate";
+import { MOST_INFLATED_BYTES } from "./inflate.constants";
 import {
     BYTE_BITS,
     CENTRAL_COMMENT_LENGTH,
@@ -101,10 +102,26 @@ export function zipEntries(bytes: Uint8Array): ZipEntry[] {
         });
         at += CENTRAL_HEADER_SIZE + nameLength + uint16(bytes, at + CENTRAL_EXTRA_LENGTH) + uint16(bytes, at + CENTRAL_COMMENT_LENGTH);
     }
+    refuseOverlappingEntries(entries, directory);
     return entries;
 }
 
-export function zipEntryData(bytes: Uint8Array, entry: ZipEntry): Uint8Array {
+function refuseOverlappingEntries(entries: readonly ZipEntry[], directory: number): void {
+    const byOffset = [...entries].sort((first, second) => first.localOffset - second.localOffset);
+    for (let index = 0; index < byOffset.length; index++) {
+        const entry = byOffset[index]!;
+        const end = entry.localOffset + LOCAL_HEADER_SIZE + entry.compressedSize;
+        const next = byOffset[index + 1];
+        if (next !== undefined && end > next.localOffset) {
+            throw new Error(`The zip archive's entries ${entry.name} and ${next.name} share their data, which a zip bomb does and an archive never needs`);
+        }
+        if (end > directory) {
+            throw new Error(`${entry.name} runs into the zip archive's central directory`);
+        }
+    }
+}
+
+export function zipEntryData(bytes: Uint8Array, entry: ZipEntry, limit: number = MOST_INFLATED_BYTES): Uint8Array {
     if (entry.encrypted) {
         throw new Error(`${entry.name} in the zip archive is encrypted`);
     }
@@ -120,7 +137,7 @@ export function zipEntryData(bytes: Uint8Array, entry: ZipEntry): Uint8Array {
     if (entry.method === STORED_METHOD) {
         data = stored;
     } else if (entry.method === DEFLATED_METHOD) {
-        data = inflateRaw(stored, entry.size);
+        data = inflateRaw(stored, entry.size, limit);
     } else {
         throw new Error(`${entry.name} is compressed with zip method ${entry.method}; only stored and deflated entries are read`);
     }

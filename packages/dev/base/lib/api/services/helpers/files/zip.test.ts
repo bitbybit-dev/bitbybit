@@ -110,6 +110,52 @@ describe("zipEntryData and archives cut short", () => {
     });
 });
 
+describe("zip bombs", () => {
+    const view = (bytes: Uint8Array): DataView => new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+
+    function centralRecordTwice(archive: Uint8Array): Uint8Array {
+        const end = archive.length - 22;
+        const directory = view(archive).getUint32(end + 16, true);
+        const record = Array.from(archive.subarray(directory, end));
+        const tail = Array.from(archive.subarray(end));
+        tail.splice(8, 4, ...uint16(2), ...uint16(2));
+        tail.splice(12, 4, ...uint32(record.length * 2));
+        return Uint8Array.from([...archive.subarray(0, directory), ...record, ...record, ...tail]);
+    }
+
+    it("should refuse two entries that share their data, so one deflate stream cannot be inflated once per entry", () => {
+        // Arrange
+        const shared = centralRecordTwice(archiveOf([{ name: "house.ifc", data: HOUSE }]));
+
+        // Act & Assert
+        expect(() => zipEntries(shared)).toThrow("The zip archive's entries house.ifc and house.ifc share their data, which a zip bomb does and an archive never needs");
+    });
+
+    it("should refuse an entry whose data would run into the central directory", () => {
+        // Arrange
+        const archive = archiveOf([{ name: "house.ifc", data: HOUSE }]);
+        const directory = view(archive).getUint32(archive.length - 22 + 16, true);
+        view(archive).setUint32(directory + 20, directory, true);
+
+        // Act & Assert
+        expect(() => zipEntries(archive)).toThrow("house.ifc runs into the zip archive's central directory");
+    });
+
+    it("should read entries that sit one after another, and inflate an entry only within the limit it is given", () => {
+        // Arrange
+        const archive = archiveOf([{ name: "house.ifc", data: HOUSE }, { name: "notes.txt", data: encoder.encode("level 2") }]);
+        const [house] = zipEntries(archive);
+
+        // Act
+        const read = zipEntryData(archive, house!, HOUSE.length);
+        const refused = (): Uint8Array => zipEntryData(archive, house!, HOUSE.length - 1);
+
+        // Assert
+        expect(read).toStrictEqual(HOUSE);
+        expect(refused).toThrow(`The deflate stream is said to hold ${HOUSE.length} bytes, more than the ${HOUSE.length - 1} this reader inflates`);
+    });
+});
+
 describe("isZip", () => {
     it("should know an archive by its first local header", () => {
         // Assert

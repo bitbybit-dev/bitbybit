@@ -62,6 +62,16 @@ describe("gzip", () => {
         lying.set([0xff, 0xff, 0xff, 0xff], lying.length - 4);
 
         // Act & Assert
-        expect(() => gunzipped(lying)).toThrow("The deflate stream holds 3 bytes, not the 4294967295");
+        expect(() => gunzipped(lying, 2 ** 32)).toThrow("The deflate stream holds 3 bytes, not the 4294967295");
+        expect(() => gunzipped(lying)).toThrow("The deflate stream is said to hold 4294967295 bytes, more than the 1073741824 this reader inflates");
+    });
+
+    it("should inflate no more than the limit it is given", () => {
+        // Arrange
+        const packed = new Uint8Array(gzipSync(new Uint8Array(100_000)));
+
+        // Act & Assert
+        expect(gunzipped(packed, 100_000).length).toBe(100_000);
+        expect(() => gunzipped(packed, 99_999)).toThrow("more than the 99999 this reader inflates");
     });
 });
