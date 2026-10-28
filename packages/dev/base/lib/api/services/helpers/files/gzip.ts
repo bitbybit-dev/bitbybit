@@ -59,9 +59,6 @@ export function gunzipped(bytes: Uint8Array, limit: number = MOST_INFLATED_BYTES
     }
     const size = uint32(bytes, end + UINT32_BYTES);
     const data = inflateRaw(bytes.subarray(start, end), size, limit);
-    if (data.length !== size) {
-        throw new Error(`The gzip data holds ${data.length} bytes, not the ${size} its trailer records`);
-    }
     if (crc32(data) !== uint32(bytes, end)) {
         throw new Error("The gzip data fails its CRC-32 check");
     }
