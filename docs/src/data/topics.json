@@ -1222,6 +1222,13 @@
     "path": "learn/3d-bits/composer/gui/pricing.md"
   },
   {
+    "id": "composer.gui.screenshot",
+    "title": "Screenshot",
+    "type": "how-to",
+    "url": "/learn/3d-bits/composer/gui/screenshot",
+    "path": "learn/3d-bits/composer/gui/screenshot.md"
+  },
+  {
     "id": "composer.gui.settings",
     "title": "Settings: Remembering a Configuration",
     "type": "how-to",

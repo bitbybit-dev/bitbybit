@@ -265,4 +265,10 @@ Buttons and sliders that zoom and turn the view, for shoppers who would rather n
 
 <Shot id="composer.gui.elements/camera-controls" />
 
+### Screenshot {#screenshot}
+
+A button that saves a picture of the 3D view - as the shopper sees it, or from a view you name.
+
+{/* shot: composer.gui.elements/screenshot */}
+
 {/* catalogue:end */}

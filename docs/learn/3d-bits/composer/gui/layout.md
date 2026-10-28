@@ -123,6 +123,8 @@ It reacts to an **Add to cart** element, so without one in the panel it never ap
 
 **Camera controls** lets shoppers move the camera without dragging: zoom buttons, a slider that turns the view and one that tilts it, and an axis gizmo that looks at the model from the side you click. Each part can be switched off, and the element pairs with the pointer switches under Scene > Camera that turn the default drag and wheel navigation off. [Camera controls](/learn/3d-bits/composer/gui/camera-controls) has the details. Standard or Pro plan.
 
+**Screenshot** lets shoppers save a picture of the 3D view, as they see it or from views you name, each pointing at a focal the camera flies to first. Shoppers can choose the size and shape of the picture. [Screenshot](/learn/3d-bits/composer/gui/screenshot) has the details. Standard or Pro plan.
+
 Sections, rows and accordions can hold other elements, and each tab of a Tabs element holds its own, so you can nest as deeply as the product needs. Every element also offers **Clone Element**, **Move To** for shifting it into another container or back out to the top level, and - for sections, rows, accordions and tabs - **Convert To**, which turns one into another without rebuilding its contents. A section that has grown into two short things sitting awkwardly on top of each other becomes a row in one click.
 
 ## Width and grow
@@ -151,15 +153,30 @@ Neither costs the shopper money. Nothing inside a greyed element is charged, exa
 Place a control here and you will see its Visibility section point you back at the Controls tab. That is deliberate: one condition, in one place, and the same one that decides whether the control is charged. If a placement from an older edit still carries a condition of its own, Composer says so and offers to clear it - the two are combined, so the control appears only when both match, which is rarely what anyone meant.
 :::
 
+### Only for visitors from a link
+
+**Page address** shows an element only when the address of the product page carries a query parameter you name, such as `?preview=staff` or `?trade` - for a panel part meant for visitors who arrive from a campaign, a staff link or a trade portal. Give a **Value** to require that exact value, or leave it empty to accept any. Both compare exactly, capital letters included. It works together with **Visible when**: the element shows only when both hold. Bare control placements take it from a section around them.
+
+Three things set it apart from the other conditions:
+
+- **It tailors, it does not protect.** Anyone can type the parameter into the address, so never use it to hide a price or a choice someone must not get.
+- **Choices inside are charged either way.** Checkout cannot see the page address, so a control inside keeps its default whether the element shows or not, and that default counts toward the price. Give any priced choice in such an element a default that costs nothing.
+- **Required fields inside are required only for those visitors.** Everyone else never sees them, so they can add to cart without filling them in.
+
+Publishing warns you about a required or priced control inside such an element. An **Add to cart** inside one is likewise for those visitors only: everyone else keeps your theme's own buy button, even when you chose to hide it in favour of the panel's.
+
+In Play, the link button in the toolbar appears once an element uses a page address. It lists every parameter your panel uses, so you can switch each on and see the panel as those visitors will. The Layout tab preview always shows these elements, so you can design them.
+
 ## Areas: putting panel parts elsewhere
 
 By default the whole panel sits together beside the 3D view. Areas let you break that up.
 
-Each top-level element carries an **Area** field, and there are eleven built-in choices:
+Each top-level element carries an **Area** field, and there are thirteen built-in choices:
 
 | Area | Where it lands |
 |---|---|
 | **Main panel** | The default. The panel beside the 3D view. |
+| **Main panel - pinned to the top, pinned to the bottom** | Inside the main panel, staying in view at its top or bottom while the controls between them scroll. |
 | **3D canvas - top left, top right, bottom left, bottom right** | Overlaid on the corners of the 3D view. |
 | **3D canvas - top center, bottom center, left center, right center** | Overlaid on the middle of that edge of the 3D view. |
 | **3D canvas - center** | Overlaid in the middle of the 3D view. |
@@ -174,6 +191,18 @@ While you are in Play in the Composer, its own buttons share those two edges wit
 :::warning The Area field is honoured on top-level elements only
 An element nested inside a section, an accordion or a tab renders where it sits, whatever its area says. The field is typed on every element, so nothing stops you setting it deeper in the tree - it simply has no effect there, and Composer only shows it where it will work. If you want a control in a canvas corner, it has to be a top-level element in the panel.
 :::
+
+### Pinned to the top or bottom of the panel
+
+The two pinned zones keep part of the main panel in view while the shopper scrolls through the controls - typically the price, the breakdown and Add to cart at the bottom, and perhaps a title or a lead-time note at the top. They share the panel's background and are separated from the controls by a thin line.
+
+Beside the 3D view the panel has a fixed height, and the zones take what they need from it:
+
+- A zone is as tall as its content by default. **Tallest it may grow**, in its row of the areas list, caps it in pixels or as a percentage of the panel; beyond the cap the zone scrolls inside.
+- The controls between the zones always keep at least 40% of the panel. **Controls keep at least**, on the main panel's row, changes that. When the zones would take more, they shrink and scroll instead - the top zone first, since the bottom one usually holds the price and Add to cart.
+- A price breakdown or parts list placed directly in a zone is limited to 30% of the screen's height and scrolls inside, so the Total and Add to cart stay in view when the shopper opens a long breakdown. A max height set under the element's Style overrides that.
+
+On phones, and on tablets that stack the 3D view above the controls, the page scrolls instead of the panel, so the zones simply sit at the top and bottom of the controls. **Keep on screen on phones**, on the bottom zone, turns it into a bar along the bottom of the screen; it is held short enough that the 3D view and some of the controls stay visible. The same flow applies wherever the panel is not ours to size: when your theme's product information joins the panel, and when a GUI Controls theme block hosts the GUI.
 
 ### The areas list: how wide an area is, and folding it away
 
