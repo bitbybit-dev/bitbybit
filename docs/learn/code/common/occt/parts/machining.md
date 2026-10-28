@@ -8,31 +8,64 @@ type: explanation
 tags: [code, occt]
 ---
 
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Machining
 
 `bitbybit.occt.parts.mechanical.machining` cuts the features a part needs to take standard parts: a thread for a screw, a keyway for a key, a groove for a retaining ring, a spline or a knurl, a flat for a set screw. [Standard parts](./intro) explains the standards, units and frames they share.
 
 ## A cut, or the tool that makes it
 
-Each feature comes in two forms. `keyway` cuts a keyway into the shaft you give it and returns a new solid, leaving the one you gave as it was; `keywayTool` makes the solid a keyway removes, without cutting anything. Subtracting the tool with `bitbybit.occt.booleans.difference` gives the same result as the cut, so use the tool to cut several bodies at once, to show the material a feature takes away, or to cut through a boolean of your own.
-
-Here an M8 thread is tapped into a block, its hole drilled at the tap drill size the thread table gives, and a keyway is cut into a shaft with its tool:
+Each feature comes in two forms. `keyway` cuts a keyway into the shaft you give it and returns a new solid, leaving the one you gave as it was; `keywayTool` makes the solid a keyway removes, without cutting anything. Subtracting the tool with `bitbybit.occt.booleans.difference` gives the same result as the cut, so use the tool to cut several bodies at once, to show the material a feature takes away, or to cut through a boolean of your own:
 
 ```typescript
-const M8 = Bit.Inputs.Engineering.isoThreadSizeEnum.m8;
-const top: Bit.Inputs.Base.Frame = { origin: [0, 12, 0], normal: [0, 1, 0], direction: [1, 0, 0] };
-const { tapDrill } = bitbybit.engineering.mechanical.threads.iso.thread({ size: M8 });
-
-const block = await bitbybit.occt.shapes.solid.createBox({ width: 20, length: 20, height: 12, center: [0, 6, 0] });
-const drilled = await bitbybit.occt.features.holes({ shape: block, frames: [top], diameter: tapDrill, depth: 0 });
-const tapped = await bitbybit.occt.parts.mechanical.machining.iso.thread({ shape: drilled, size: M8, length: 12, internal: true, frame: top });
-
 const shaft = await bitbybit.occt.shapes.solid.createCylinder({ radius: 10, height: 60, center: [0, 0, 0], direction: [0, 1, 0] });
 const tool = await bitbybit.occt.parts.mechanical.machining.din.keywayTool({ diameter: 20, length: 20, frame: { origin: [0, 30, 0], normal: [0, 1, 0], direction: [1, 0, 0] } });
 const cut = await bitbybit.occt.booleans.difference({ shape: shaft, shapes: [tool], keepEdges: false });
-
-await bitbybit.draw.drawAnyAsync({ entity: [tapped, cut] });
 ```
+
+## A tapped hole
+
+Here an M8 thread is tapped into a block, its hole drilled through at the tap drill size the thread table gives; in Rete and Blockly, `bitbybit.json.getValueOnProp` reads the `tapDrill` out of the table's answer:
+
+{/* example:tapped-hole:start - generated from the example's steps for each editor; edits between these markers are overwritten */}
+
+<Tabs groupId="editor" queryString>
+<TabItem value="rete" label="Rete">
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"{\"id\":\"rete-v2-json\",\"nodes\":{\"mouth\":{\"id\":\"mouth\",\"name\":\"bitbybit.frame.create\",\"customName\":\"frame\",\"async\":false,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":true,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"origin\":[0,12,0],\"normal\":[0,1,0],\"direction\":[1,0,0]},\"inputs\":{},\"position\":[40,40]},\"mouths\":{\"id\":\"mouths\",\"name\":\"bitbybit.lists.createList\",\"customName\":\"create list\",\"async\":false,\"drawable\":false,\"data\":{},\"inputs\":{\"listElements\":{\"connections\":[{\"node\":\"mouth\",\"output\":\"result\",\"data\":{}}]}},\"position\":[460,40]},\"threadSizes\":{\"id\":\"threadSizes\",\"name\":\"bitbybit.engineering.mechanical.threads.iso.thread\",\"customName\":\"thread\",\"async\":false,\"drawable\":false,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"size\":\"M8\",\"unit\":\"mm\"},\"inputs\":{},\"position\":[40,460]},\"tapDrill\":{\"id\":\"tapDrill\",\"name\":\"bitbybit.json.getValueOnProp\",\"customName\":\"get value on prop\",\"async\":false,\"drawable\":false,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"property\":\"tapDrill\"},\"inputs\":{\"json\":{\"connections\":[{\"node\":\"threadSizes\",\"output\":\"result\",\"data\":{}}]}},\"position\":[460,460]},\"block\":{\"id\":\"block\",\"name\":\"bitbybit.occt.shapes.solid.createBox\",\"customName\":\"box\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":true,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"width\":20,\"length\":20,\"height\":12,\"center\":[0,6,0],\"originOnCenter\":true},\"inputs\":{},\"position\":[40,860]},\"drilled\":{\"id\":\"drilled\",\"name\":\"bitbybit.occt.features.holes\",\"customName\":\"holes\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":true,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"diameter\":1,\"depth\":0,\"tipAngle\":0},\"inputs\":{\"shape\":{\"connections\":[{\"node\":\"block\",\"output\":\"result\",\"data\":{}}]},\"frames\":{\"connections\":[{\"node\":\"mouths\",\"output\":\"list\",\"data\":{}}]},\"diameter\":{\"connections\":[{\"node\":\"tapDrill\",\"output\":\"result\",\"data\":{}}]}},\"position\":[880,460]},\"tapped\":{\"id\":\"tapped\",\"name\":\"bitbybit.occt.parts.mechanical.machining.iso.thread\",\"customName\":\"thread\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"size\":\"M8\",\"length\":12,\"internal\":true,\"unit\":\"mm\"},\"inputs\":{\"shape\":{\"connections\":[{\"node\":\"drilled\",\"output\":\"result\",\"data\":{}}]},\"frame\":{\"connections\":[{\"node\":\"mouth\",\"output\":\"result\",\"data\":{}}]}},\"position\":[1300,40]}},\"modules\":{}}","type":"rete"}}
+  title="A tapped M8 hole in Rete"
+  description="A block drilled through at the tap drill size the M8 thread table gives, then threaded inside with a modelled ISO thread."
+/>
+
+</TabItem>
+<TabItem value="blockly" label="Blockly">
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"math_number\" x=\"0\" y=\"0\"><field name=\"NUM\">1</field></block><block type=\"bitbybit.draw.drawAnyAsyncNoReturn\" x=\"40\" y=\"40\"><value name=\"Entity\"><block type=\"bitbybit.occt.parts.mechanical.machining.iso.thread\"><value name=\"Size\"><block type=\"bitbybit.engineering.enums.isoThreadSizeEnum\"><field name=\"bitbybit.engineering.enums.isoThreadSizeEnum\">'M8'</field></block></value><value name=\"Length\"><block type=\"math_number\"><field name=\"NUM\">12</field></block></value><value name=\"Internal\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value><value name=\"Unit\"><block type=\"bitbybit.base.enums.unitOfLengthEnum\"><field name=\"bitbybit.base.enums.unitOfLengthEnum\">'mm'</field></block></value><value name=\"Frame\"><block type=\"bitbybit.frame.create\"><value name=\"Origin\"><block type=\"bitbybit.point.pointXYZ\"><value name=\"X\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\"><field name=\"NUM\">12</field></block></value><value name=\"Z\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></value><value name=\"Normal\"><block type=\"bitbybit.vector.vectorXYZ\"><value name=\"X\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value><value name=\"Z\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></value><value name=\"Direction\"><block type=\"bitbybit.vector.vectorXYZ\"><value name=\"X\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value><value name=\"Y\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Z\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></value></block></value><value name=\"Shape\"><block type=\"bitbybit.occt.features.holes\"><value name=\"Shape\"><block type=\"bitbybit.occt.shapes.solid.createBox\"><value name=\"Width\"><block type=\"math_number\"><field name=\"NUM\">20</field></block></value><value name=\"Length\"><block type=\"math_number\"><field name=\"NUM\">20</field></block></value><value name=\"Height\"><block type=\"math_number\"><field name=\"NUM\">12</field></block></value><value name=\"Center\"><block type=\"bitbybit.point.pointXYZ\"><value name=\"X\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\"><field name=\"NUM\">6</field></block></value><value name=\"Z\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></value><value name=\"OriginOnCenter\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value></block></value><value name=\"Frames\"><block type=\"bitbybit.lists.addItem\"><value name=\"List\"><block type=\"bitbybit.lists.createEmptyList\"></block></value><value name=\"Item\"><block type=\"bitbybit.frame.create\"><value name=\"Origin\"><block type=\"bitbybit.point.pointXYZ\"><value name=\"X\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\"><field name=\"NUM\">12</field></block></value><value name=\"Z\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></value><value name=\"Normal\"><block type=\"bitbybit.vector.vectorXYZ\"><value name=\"X\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value><value name=\"Z\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></value><value name=\"Direction\"><block type=\"bitbybit.vector.vectorXYZ\"><value name=\"X\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value><value name=\"Y\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"Z\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></value></block></value><value name=\"Clone\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value></block></value><value name=\"Diameter\"><block type=\"bitbybit.json.getValueOnProp\"><value name=\"Json\"><block type=\"bitbybit.engineering.mechanical.threads.iso.thread\"><value name=\"Size\"><block type=\"bitbybit.engineering.enums.isoThreadSizeEnum\"><field name=\"bitbybit.engineering.enums.isoThreadSizeEnum\">'M8'</field></block></value><value name=\"Unit\"><block type=\"bitbybit.base.enums.unitOfLengthEnum\"><field name=\"bitbybit.base.enums.unitOfLengthEnum\">'mm'</field></block></value></block></value><value name=\"Property\"><block type=\"text\"><field name=\"TEXT\">tapDrill</field></block></value></block></value><value name=\"Depth\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value><value name=\"TipAngle\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></value></block></value></block></xml>","type":"blockly"}}
+  title="A tapped M8 hole in Blockly"
+  description="A block drilled through at the tap drill size the M8 thread table gives, then threaded inside with a modelled ISO thread."
+/>
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"const M8 = Bit.Inputs.Engineering.isoThreadSizeEnum.m8;\nconst top: Bit.Inputs.Base.Frame = { origin: [0, 12, 0], normal: [0, 1, 0], direction: [1, 0, 0] };\nconst { tapDrill } = bitbybit.engineering.mechanical.threads.iso.thread({ size: M8 });\n\nconst block = await bitbybit.occt.shapes.solid.createBox({ width: 20, length: 20, height: 12, center: [0, 6, 0] });\nconst drilled = await bitbybit.occt.features.holes({ shape: block, frames: [top], diameter: tapDrill, depth: 0 });\nconst tapped = await bitbybit.occt.parts.mechanical.machining.iso.thread({ shape: drilled, size: M8, length: 12, internal: true, frame: top });\n\nawait bitbybit.draw.drawAnyAsync({ entity: tapped });","type":"typescript"}}
+  title="A tapped M8 hole in TypeScript"
+  description="A block drilled through at the tap drill size the M8 thread table gives, then threaded inside with a modelled ISO thread."
+/>
+
+</TabItem>
+</Tabs>
+
+{/* example:tapped-hole:end */}
 
 An M8 thread has a coarse pitch of 1.25 millimetres and a tap drill of 6.8. The thread's frame sits at the hole's mouth with its normal pointing out of the part, and the thread runs into the part against it.
 
