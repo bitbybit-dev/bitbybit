@@ -184,7 +184,7 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
      Insert a hex bolt from the standard parts library as the shoulder bolt, M8 and 55 mm long. The library adds a Hex bolt part document, which the other bolts reuse at their own lengths.
 
-     {/* shot: designer.tutorials.desk-arm/where-file-standard-part */}
+     <Shot id="designer.tutorials.desk-arm/where-file-standard-part" />
 
      <Shot id="designer.tutorials.desk-arm/step-123" />
 
@@ -260,7 +260,7 @@ Each step shows the Designer as you make it: a feature's dialog filled in with t
 
      Fasten the base to the desk: Fasten reads M5 from the holes on the base's bolts connector and puts a socket head cap screw, 10 mm long, in each of the four, its head down in the counterbore.
 
-     {/* shot: designer.tutorials.desk-arm/where-assembly-fasten */}
+     <Shot id="designer.tutorials.desk-arm/where-assembly-fasten" />
 
      <Shot id="designer.tutorials.desk-arm/step-135" />
 

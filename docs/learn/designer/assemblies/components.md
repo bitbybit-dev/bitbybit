@@ -37,7 +37,7 @@ Choose part documents in the documents list with <kbd>Ctrl</kbd> or <kbd>Shift</
 
 ## Standard parts
 
-{/* shot: designer.assemblies.components/library */}
+<Shot id="designer.assemblies.components/library" />
 
 [<Ui>Insert</Ui> > <Ui>Standard part</Ui>](../reference/commands.md#designer-file-standard-part), or <Ui>Standard part</Ui> in the start view, opens the library in <Ui>Properties</Ui>: <Ui>Fasteners</Ui>, <Ui>Gears</Ui>, <Ui>Bearings and springs</Ui> and <Ui>Keys and rings</Ui>. Choose a part, then its <Ui>Standard</Ui> where it has more than one: fasteners and ball bearings are ISO or ANSI, keys and retaining rings DIN or ANSI, and an inch design starts on ANSI ([Units and inches](../modelling/units.md#standard-parts-in-inches)). Set its sizes, every length in the design's unit. The view shows it as it will be made, and every size is checked the way the kernel checks it, so one it would refuse is named before anything is added. In a part document, <Ui>Add as a part document</Ui> makes a new part document of it and opens it; in an assembly, the button inserts it beside what is already there.
 
@@ -100,12 +100,12 @@ In the view, a click picks the top-level component; <Ui>Select one level deeper<
 
 ## Remove a component {#remove-a-component}
 
-{/* shot: designer.assemblies.components/menu */}
+<Shot id="designer.assemblies.components/menu" />
 
 Select the component in the tree or pick it in the view and press <kbd>Delete</kbd>, or right-click it and choose [<Ui>Remove component</Ui>](../reference/commands.md#designer-assembly-remove); <Ui>Remove</Ui> at the foot of its <Ui>Properties</Ui> does the same. The joints that hold it go with it, and <kbd>Ctrl</kbd>+<kbd>Z</kbd> brings both back. The right-click menu on a component also copies, duplicates, opens its document, patterns and replicates it, and on two selected gears offers [<Ui>Mesh gears</Ui>](./joints.md#mesh-gears); a selected joint is removed the same way.
 
 ## Hide a component {#hide-a-component}
 
-{/* shot: designer.assemblies.components/hidden */}
+<Shot id="designer.assemblies.components/hidden" />
 
 To see past a component, select it (or pick it in the view) and press <kbd>H</kbd>, or right-click it and choose [<Ui>Hide</Ui>](../reference/commands.md#designer-view-hide); it leaves the view with everything inside it, and its row in the tree turns grey and says it is hidden. Right-click a hidden component's row in the tree and its menu offers [<Ui>Show</Ui>](../reference/commands.md#designer-view-show) in place of <Ui>Hide</Ui>. [<Ui>Show only these</Ui>](../reference/commands.md#designer-view-show-only) hides every other component instead; right-click the ones left showing and the same place in the menu reads <Ui>Show all</Ui>. While anything is hidden, the status bar at the foot of the window counts it beside a [<Ui>Show all</Ui>](../reference/commands.md#designer-view-show-all) button, which, like <kbd>Shift</kbd>+<kbd>H</kbd>, brings every hidden component back. Hiding only changes what the view shows: the design, its clashes and its exports keep every component, and opening another document shows everything again.

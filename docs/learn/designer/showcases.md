@@ -49,7 +49,7 @@ Imported from its file, a model this size takes a while to open, since each diff
 
 ## Single-cylinder engine
 
-{/* shot: designer.showcases/engine-cover */}
+<Shot id="designer.showcases/engine-cover" />
 
 A small air-cooled engine: a crankcase and a finned cylinder, the piston on its connecting rod and crankshaft, the valves and their cam, a flywheel, a carburettor and an exhaust.
 
@@ -58,7 +58,7 @@ A small air-cooled engine: a crankcase and a finned cylinder, the piston on its 
 - **Standard parts** from the library: socket head cap screws, ball bearings, a parallel key and retaining rings.
 - **Four configurations**, one for each stroke, *Intake*, *Compression*, *Power* and *Exhaust*, and a crank parameter that turns the whole engine with its valves, clash-free through two full turns.
 
-{/* shot: designer.showcases/engine-project */}
+<Download id="designer.showcases/engine-project" />
 
 ## Desk arm
 
