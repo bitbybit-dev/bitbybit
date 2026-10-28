@@ -144,8 +144,8 @@ export class DrawHelper extends DrawHelperCore {
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>): Promise<THREEJS.Group> {
         const resolved = resolveDto(Inputs.Manifold.DrawManifoldsOrCrossSectionsDto, inputs) as Resolved.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>;
         try {
-            const safeWorkerOptions = { ...this.getSafeWorkerOptions(resolved), minSharpAngle: this.manifoldSharpAngle(resolved) };
-            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", safeWorkerOptions);
+            const decomposeInputs = { manifoldsOrCrossSections: resolved.manifoldsOrCrossSections, minSharpAngle: this.manifoldSharpAngle(resolved) };
+            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", decomposeInputs);
             return this.manifoldMeshContainer(decomposedMesh.map(dec => this.handleDecomposedManifold(dec, resolved)));
         } catch (error) {
             console.error("Error drawing manifolds or cross sections:", error);
@@ -159,8 +159,8 @@ export class DrawHelper extends DrawHelperCore {
             if (!resolved.manifoldOrCrossSection) {
                 throw new Error("Manifold or cross section parameter is required");
             }
-            const safeWorkerOptions = { ...this.getSafeWorkerOptions(resolved), minSharpAngle: this.manifoldSharpAngle(resolved) };
-            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", safeWorkerOptions);
+            const decomposeInputs = { manifoldOrCrossSection: resolved.manifoldOrCrossSection, minSharpAngle: this.manifoldSharpAngle(resolved) };
+            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", decomposeInputs);
             return this.handleDecomposedManifold(decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing manifold or cross section:", error);
@@ -622,7 +622,7 @@ export class DrawHelper extends DrawHelperCore {
                 normals: number[],
                 indices: number[],
                 transforms: [],
-            } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", resolved);
+            } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", { mesh: resolved.mesh });
 
             if (!res || !res.positions || !res.indices || !res.transforms) {
                 console.warn("Corrupted worker response, returning empty mesh");
@@ -673,7 +673,7 @@ export class DrawHelper extends DrawHelperCore {
                 indices: number[],
                 transforms: [],
                 color?: number[]
-            }[] = await this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", resolved);
+            }[] = await this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", { meshes: resolved.meshes });
 
             let localOrigin: THREEJS.Group;
             if (resolved.jscadMesh && resolved.updatable) {

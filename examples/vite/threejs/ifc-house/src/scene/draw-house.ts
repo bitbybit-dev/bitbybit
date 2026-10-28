@@ -77,7 +77,7 @@ export async function drawHouse(bitbybit: BitByBitBase, house: HouseModel): Prom
     for (const [look, roots] of rootsByLook) {
         const entity: Inputs.Manifold.RecipeMeshesDto = {
             meshes: built.meshes,
-            placements: built.placements.map((placement, root) => roots.has(root) ? placement : { ...placement, mesh: -1 }),
+            placements: built.placements.map((placement, root) => roots.has(root) ? placement : { mesh: -1, matrix: placement.matrix, tag: placement.tag, group: placement.group }),
         };
         const options = bitbybit.draw.optionsRecipeMeshes({ defaultColour: FALLBACK_COLOUR, metallic: look.metalness, roughness: look.roughness });
         const group = await bitbybit.draw.drawAnyAsync({ entity, options });

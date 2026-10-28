@@ -324,7 +324,7 @@ export async function logoFaces(occt: Occt, logo: Shape, width: number): Promise
     const { size } = await occt.analysis.measure.tightBoundingBox({ shape: mirrored });
     const scaled = await occt.transforms.scale({ shape: mirrored, factor: width / Math.max(size[0], size[2]) });
     const box = await occt.analysis.measure.tightBoundingBox({ shape: scaled });
-    return occt.transforms.translate({ shape: scaled, translation: [-box.center[0], -box.min[1], -box.center[2]] });
+    return occt.transforms.translate({ shape: scaled, translation: [-box.center[0], -box.center[1], -box.center[2]] });
 }
 
 export async function hatch(occt: Occt, logo?: Shape): Promise<Shape> {
