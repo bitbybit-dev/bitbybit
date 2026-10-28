@@ -78,6 +78,11 @@ mesh:
   permalink: /mesh
   description: Triangle-based 3D geometry for fast rendering and game-engine compatibility.
 
+recipes:
+  label: Recipes
+  permalink: /recipes
+  description: Solids described as data - steps such as polygons, extrusions, cuts and unions - that any kernel can build.
+
 lists:
   label: Lists
   permalink: /lists

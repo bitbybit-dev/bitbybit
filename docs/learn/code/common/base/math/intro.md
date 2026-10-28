@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: Math in Bitbybit
 sidebar_label: Math in Bitbybit
-description: How bitbybit.math does arithmetic, rounding, trigonometry in radians, random numbers, safe evaluation of typed expressions, and the blending, easing and wrapping helpers used for animation and parametric variation.
+description: How bitbybit.math does arithmetic, rounding, trigonometry in radians, lengths in other units and inch fractions, random numbers, safe evaluation of typed expressions, and the blending, easing and wrapping helpers used for animation and parametric variation.
 topic: code.base.math
 type: explanation
 tags: [code, math]
@@ -41,6 +41,14 @@ import TabItem from '@theme/TabItem';
 - `roundToDecimals` rounds to `decimalPlaces` digits after the point. `roundAndRemoveTrailingZeros` does the same and also cleans floating-point noise, so 1.320000001 becomes 1.32.
 - `fract` keeps the part after the decimal point, measured up from the whole number below, so -2.3 gives 0.7.
 - `toFixed` gives text, not a number, with exactly `decimalPlaces` digits and trailing zeros kept: 5 with 3 places is `"5.000"`.
+
+## Lengths in other units
+
+A model's numbers carry no unit of their own. These help when a size arrives in one unit and the model works in another, or when a length has to be written the way a drawing or a catalogue writes it. The units are millimetres, centimetres, metres and inches.
+
+- `convertLength` converts `value` from the unit `from` to the unit `to`. The factors are exact, an inch being 25.4 millimetres: 1 inch gives 25.4 millimetres and 250 millimetres gives 0.25 metres.
+- `millimetresPerUnit` gives how many millimetres one of a unit holds: 25.4 for an inch, 10 for a centimetre, 1000 for a metre. It is the figure a file or a recipe records to say what its numbers are measured in.
+- `toFractionText` writes a number as inch sizes are written, a whole number and a reduced fraction, rounded to the nearest `1/denominator`. With the default `denominator` of 64, sixty-fourths of an inch, 1.25 gives `"1-1/4"`, 0.375 gives `"3/8"`, 2 gives `"2"` and -0.5 gives `"-1/2"`; with `denominator` 8, 0.3 rounds to the nearest eighth and gives `"1/4"`.
 
 ## Numbers to start from
 
@@ -112,6 +120,7 @@ Here a fraction, as a slider gives it, is remapped to a height between 1 and 6 a
 | [`atan`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#atan) | Finds the angle, in radians, whose tangent is the given number. |
 | [`ceil`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#ceil) | Rounds a number up to the whole number above it. |
 | [`clamp`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#clamp) | Keeps a number within a range: below `min` becomes `min`, above `max` becomes `max`. |
+| [`convertLength`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#convertLength) | Converts a length from one unit to another. |
 | [`cos`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#cos) | Finds the cosine of an angle given in radians. |
 | [`degToRad`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#degToRad) | Converts an angle from degrees to radians. |
 | [`divide`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#divide) | Divides the first number by the second. |
@@ -124,6 +133,7 @@ Here a fraction, as a slider gives it, is remapped to a height between 1 and 6 a
 | [`lerp`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#lerp) | Blends from a start value to an end value by a fraction `t`: 0 gives the start, 1 the end, 0.5 the midpoint. |
 | [`ln`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#ln) | Finds the natural logarithm of a number: the power e must be raised to for that number. |
 | [`log10`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#log10) | Finds the base-10 logarithm of a number: the power 10 must be raised to for that number. |
+| [`millimetresPerUnit`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#millimetresPerUnit) | Gives how many millimetres one of a unit of length holds. |
 | [`modulus`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#modulus) | Finds the remainder after dividing one number by another. |
 | [`moveTowards`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#moveTowards) | Moves a value toward a target by at most `maxDelta`, without overshooting it. |
 | [`multiply`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#multiply) | Multiplies two numbers. |
@@ -149,6 +159,7 @@ Here a fraction, as a slider gives it, is remapped to a height between 1 and 6 a
 | [`tan`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#tan) | Finds the tangent of an angle given in radians. |
 | [`tenPow`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#tenPow) | Raises 10 to the power of a number. |
 | [`toFixed`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#toFixed) | Formats a number as text with a fixed number of decimal places, keeping trailing zeros. |
+| [`toFractionText`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#toFractionText) | Writes a number as a whole number and a reduced fraction, rounded to the nearest `1/denominator`, as inch sizes are written. |
 | [`twoNrOperation`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#twoNrOperation) | Applies one arithmetic operation to two numbers: add, subtract, multiply, divide, power or modulus. |
 | [`wrap`](https://docs.bitbybit.dev/classes/Bit.MathBitByBit#wrap) | Wraps a number into a range so it cycles round: past `max` it comes back in at `min`, and below `min` it comes back in at `max`. |
 

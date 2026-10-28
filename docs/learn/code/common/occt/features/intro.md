@@ -97,6 +97,7 @@ Every feature has a `...WithHistory` twin that also reports what became of each 
 | [`countersunkHoles`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#countersunkHoles) | Drills holes as `holes` does, each with a cone-shaped countersink at its mouth that sinks a flat screw head flush with the surface. |
 | [`countersunkHolesWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#countersunkHolesWithHistory) | Drills holes as `countersunkHoles` does, and reports a history for the shape, then one per hole in the order of `frames`. |
 | [`groove`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#groove) | Cuts a groove into a base: the part of the base's section on the left of a wire as it runs, seen from the side the frame's normal points to, removed across the plane. |
+| [`grooveWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#grooveWithHistory) | Cuts a groove as `groove` does, and reports two histories: the base's, then the wire's, whose `facesFromEdges` holds the wall each wire edge cut and `firstFaces` and `lastFaces` the groove's two flat sides. |
 | [`holes`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#holes) | Drills plain holes into a shape, one at each frame: its origin is where the hole enters and its normal points out of the material. |
 | [`holesWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#holesWithHistory) | Drills holes as `holes` does, and reports a history for the shape, then one per hole in the order of `frames`. |
 | [`pocket`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#pocket) | Cuts a pocket into a base by sweeping a profile face that lies on one of its faces along `direction`, which points into the base. |
@@ -106,10 +107,15 @@ Every feature has a `...WithHistory` twin that also reports what became of each 
 | [`removeFaces`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#removeFaces) | Removes faces from a solid and closes the gap by extending the faces around them, as when a hole or a rounded edge is deleted from a part. |
 | [`removeFacesWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#removeFacesWithHistory) | Removes faces as `removeFaces` does, and reports one history, the shape's: a removed face's `faces` entry is empty, and each face that stays lists the face it became, grown over the gap. |
 | [`revolvedBoss`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#revolvedBoss) | Adds a ring to a base by turning a profile face about an axis, such as a collar round a shaft: the profile lies on a face of the base, in a plane through the axis. |
+| [`revolvedBossWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#revolvedBossWithHistory) | Adds a ring as `revolvedBoss` does, and reports two histories: the base's, then the profile's, whose `facesFromEdges` holds the face each profile edge turned into, such as the ring's outer wall and its two sides. |
 | [`revolvedPocket`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#revolvedPocket) | Cuts a groove round a base by turning a profile face about an axis, such as the seat of a circlip on a shaft: the profile lies on a face of the base, in a plane through the axis. |
+| [`revolvedPocketWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#revolvedPocketWithHistory) | Cuts a groove round a base as `revolvedPocket` does, and reports two histories: the base's, whose side splits into the pieces on either side of the groove, then the profile's, whose `facesFromEdges` holds the groove's floor and walls. |
 | [`rib`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#rib) | Adds a rib to a base: the region between a wire and the base's faces, on the wire's left as it runs seen from the side the frame's normal points to, filled and thickened across the plane. |
+| [`ribWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#ribWithHistory) | Adds a rib as `rib` does, and reports two histories: the base's, then the wire's, whose `facesFromEdges` holds the face each wire edge made and `firstFaces` and `lastFaces` the rib's two flat sides. |
 | [`taperedBoss`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#taperedBoss) | Grows a boss out of a base as `boss` does, straight out of the sketch face, with its sides leaning by `angle` degrees. |
+| [`taperedBossWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#taperedBossWithHistory) | Grows a tapered boss as `taperedBoss` does, and reports two histories: the base's, then the profile's, whose `facesFromEdges` holds the leaning side each profile edge swept and `lastFaces` the top. |
 | [`taperedPocket`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#taperedPocket) | Cuts a pocket into a base as `pocket` does, straight in from the sketch face, with its sides leaning by `angle` degrees. |
+| [`taperedPocketWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTFeatures#taperedPocketWithHistory) | Cuts a tapered pocket as `taperedPocket` does, and reports two histories: the base's, then the profile's, whose `facesFromEdges` holds the leaning wall each profile edge swept and `lastFaces` the floor. |
 
 {/* api:occt.features:end */}
 
@@ -118,8 +124,11 @@ Every feature has a `...WithHistory` twin that also reports what became of each 
 | Function | What it does |
 |---|---|
 | [`draftAngle`](https://docs.bitbybit.dev/classes/Bit.OCCTDraft#draftAngle) | Tilts the selected faces of a shape by a draft angle so the part can be pulled out of a mold along `direction`. |
-| [`makeDraft`](https://docs.bitbybit.dev/classes/Bit.OCCTDraft#makeDraft) | Grows a tapered skirt from a wire, or the edges of a shape, along a direction: each edge is swept along `direction`, leaning outward or inward by `angle` degrees, until the skirt is `lengthMax` long. |
-| [`makeDraftToShape`](https://docs.bitbybit.dev/classes/Bit.OCCTDraft#makeDraftToShape) | Grows a tapered skirt from a wire, or the edges of a shape, along a direction like `makeDraft`, but stops it where it meets `stopShape` instead of at a fixed length. |
+| [`draftAngleWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTDraft#draftAngleWithHistory) | Drafts faces as `draftAngle` does, and reports what each face, edge and vertex of the shape became: a drafted face becomes its tilted successor in `faces`. |
+| [`makeDraft`](https://docs.bitbybit.dev/classes/Bit.OCCTDraft#makeDraft) | Grows a tapered skirt from a wire, or the edges of a shape: each edge is swept along `direction`, leaning outward by `angle` degrees, until the skirt is `lengthMax` long. |
+| [`makeDraftToShape`](https://docs.bitbybit.dev/classes/Bit.OCCTDraft#makeDraftToShape) | Grows a tapered skirt from a wire or the edges of a shape like `makeDraft`, stopping it where it meets `stopShape`. |
+| [`makeDraftToShapeWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTDraft#makeDraftToShapeWithHistory) | Grows a skirt up to a stop shape as `makeDraftToShape` does, and reports what each edge of the wire or shape swept, as `makeDraftWithHistory` does. |
+| [`makeDraftWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTDraft#makeDraftWithHistory) | Grows a skirt as `makeDraft` does, and reports what each edge of the wire or shape swept: `facesFromEdges[i]` holds the skirt faces edge `i` grew. |
 
 {/* api:occt.draft:end */}
 

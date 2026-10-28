@@ -46,7 +46,7 @@ Every function gives a new array or a number and leaves its input unchanged. Ang
 ## Lengths, directions and distances
 
 - `length` gives the length of a 3D vector and `norm` of a vector of any size. `lengthSq` and `normSquared` give the squared length, which avoids a square root when you only compare.
-- `normalized` scales a vector to length 1, keeping its direction. A vector shorter than `1e-8` has no direction, and the result is `undefined`.
+- `normalized` scales a vector to length 1, keeping its direction: `[3,4,0]` gives `[0.6,0.8,0]`. A vector shorter than `1e-8`, or one with a component that is not a finite number, has no direction to keep, and the result is `undefined`; a very long vector is scaled without overflowing.
 - `dist` and `distSquared` measure between two vectors read as points.
 - `onRay` gives the point `distance` along `vector` from `point`. The direction is used as given, so with a direction of length 2 the point lands twice as far; normalize it first to measure in model units.
 - `lerp` blends two vectors by `fraction`, which is the share of `first`: 1 gives `first`, 0 gives `second` and 0.5 the midpoint. This is the opposite order to `bitbybit.math.lerp`.
@@ -96,7 +96,7 @@ Every function gives a new array or a number and leaves its input unchanged. Ang
 | [`mul`](https://docs.bitbybit.dev/classes/Bit.Vector#mul) | Multiplies every entry of a vector by one number. |
 | [`neg`](https://docs.bitbybit.dev/classes/Bit.Vector#neg) | Flips the sign of every entry, so the vector points the opposite way. |
 | [`norm`](https://docs.bitbybit.dev/classes/Bit.Vector#norm) | Computes the length of a vector. |
-| [`normalized`](https://docs.bitbybit.dev/classes/Bit.Vector#normalized) | Scales a 3D vector to length 1 while keeping its direction. |
+| [`normalized`](https://docs.bitbybit.dev/classes/Bit.Vector#normalized) | Scales a vector to length 1 while keeping its direction. |
 | [`normSquared`](https://docs.bitbybit.dev/classes/Bit.Vector#normSquared) | Computes the squared length of a vector, which avoids the square root when only comparing lengths. |
 | [`onRay`](https://docs.bitbybit.dev/classes/Bit.Vector#onRay) | Finds the point at a given distance from a start point along a direction. |
 | [`parseNumbers`](https://docs.bitbybit.dev/classes/Bit.Vector#parseNumbers) | Turns a list of number strings into numbers. |

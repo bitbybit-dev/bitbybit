@@ -136,5 +136,6 @@ Here a box is split by a short segment lying on its top, which leaves the segmen
 | [`isSame`](https://docs.bitbybit.dev/classes/Bit.OCCTShape#isSame) | Tells whether two handles share the same geometry and placement, ignoring orientation. |
 | [`purgeInternalEdges`](https://docs.bitbybit.dev/classes/Bit.OCCTShape#purgeInternalEdges) | Removes the edges that lie inside a face without bounding it, such as the segment a split leaves on a face, and rebuilds the faces around them. |
 | [`unifySameDomain`](https://docs.bitbybit.dev/classes/Bit.OCCTShape#unifySameDomain) | Merges faces that lie on the same surface and edges that lie on the same curve into single faces and edges, which cleans up the seams a boolean or a fuse leaves behind. |
+| [`unifySameDomainWithHistory`](https://docs.bitbybit.dev/classes/Bit.OCCTShape#unifySameDomainWithHistory) | Merges faces and edges as `unifySameDomain` does, and reports what each face, edge and vertex of the shape became: both halves of a face a fuse split name the one face they merge into. |
 
 {/* api:occt.shapes.shape:end */}

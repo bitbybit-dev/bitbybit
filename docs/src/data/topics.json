@@ -388,6 +388,13 @@
     "path": "learn/code/common/base/polyline/intro.md"
   },
   {
+    "id": "code.base.recipes",
+    "title": "Recipes in Bitbybit",
+    "type": "explanation",
+    "url": "/learn/code/common/base/recipes/intro",
+    "path": "learn/code/common/base/recipes/intro.md"
+  },
+  {
     "id": "code.base.text",
     "title": "Text in Bitbybit",
     "type": "explanation",

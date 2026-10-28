@@ -28,7 +28,7 @@ Exact CAD formats such as STEP come from the kernels, not from the scene: [getti
 |---|---|
 | [`exportBabylon`](https://docs.bitbybit.dev/classes/Bit.BabylonIO#exportBabylon) | Downloads the whole scene as a `.babylon` file, the engine's own JSON format that its editors and loaders read back; the extension is added when missing. |
 | [`exportGLB`](https://docs.bitbybit.dev/classes/Bit.BabylonIO#exportGLB) | Downloads the whole scene as a glb file, the binary glTF that most 3D tools and web viewers read; `discardSkyboxAndGrid` leaves out the skybox and ground this library adds. |
-| [`exportGLBBytes`](https://docs.bitbybit.dev/classes/Bit.BabylonIO#exportGLBBytes) | Writes the whole scene, or chosen nodes with their ancestors, as glb bytes without downloading anything, so they can be saved, sent on or loaded back with `loadGlbFromArrayBuffer`. |
+| [`exportGLBBytes`](https://docs.bitbybit.dev/classes/Bit.BabylonIO#exportGLBBytes) | Writes the whole scene, or chosen nodes, as glb bytes without downloading anything, to save, send on or load back with `loadGlbFromArrayBuffer`. |
 | [`exportMeshesToStl`](https://docs.bitbybit.dev/classes/Bit.BabylonIO#exportMeshesToStl) | Downloads several meshes, with their child meshes, as one STL file; lines are left out. |
 | [`exportMeshToStl`](https://docs.bitbybit.dev/classes/Bit.BabylonIO#exportMeshToStl) | Downloads a mesh and its visible child meshes as one STL file, the plain triangle format 3D printers take; lines are left out. |
 | [`loadAssetIntoScene`](https://docs.bitbybit.dev/classes/Bit.BabylonIO#loadAssetIntoScene) | Loads a glTF, glb, STL or OBJ model from a File into the scene and gives back a container mesh with the model's meshes as its children; any other extension throws an error. |
