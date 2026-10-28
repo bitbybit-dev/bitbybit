@@ -78,9 +78,20 @@ What the shopper sees and pays in a country whose tax rate differs from yours de
 | **Product lines** | Your own products at Shopify's price for the country, the rest at your own country's amounts | Your own products at Shopify's price for the country. With option charges, formulas or typed part prices in the configuration, the cart can charge a little more than shown, or be refused at checkout, where the rate is higher than yours, and is refused where it is lower |
 | **Variant matrix** | Your own country's total | Shopify's price for the shopper's country, so it differs from the price shown |
 
-When you publish, 3D Bits checks your markets and warns you when one of them includes tax based on the shopper's country and covers a country other than your own - unless the project charges through Product lines and is made only of your own products, which follow Shopify's price there.
+When you publish, 3D Bits checks your markets and warns you when one of them includes tax based on the shopper's country and covers a country other than your own, and when your store is in the United States in the case [below](#us-stores-including-tax) - unless the project charges through Product lines and is made only of your own products, which follow Shopify's price everywhere.
 
 A market that includes tax at **one price for every country** does not re-price anything, so configured products and your other products agree there. Switching to it changes what you keep on your other products too, so it is a business decision rather than a fix. Whatever you choose, place a test order from a country whose rate differs from yours before you sell there.
+
+### Stores in the United States that include tax in prices {#us-stores-including-tax}
+
+Shopify never includes tax in prices for shoppers in the United States: sales tax is added at checkout. So when your store is in the United States, **Include sales tax in product price and shipping rate** is on under **Settings > Taxes and duties** in Shopify, and the United States is in a market that includes tax based on the shopper's country, Shopify takes that tax out of every price for shoppers in the United States. Your own country is then priced like a country whose tax rate is lower than yours:
+
+- Your own products follow it, in the configurator, the cart and checkout alike.
+- With **Product lines**, a configuration with option charges, formulas or part prices typed in the Composer is refused at checkout there, because the configurator shows those amounts at your full prices.
+- **Single line** and **Bundled parts** still charge your full price there, while your other products cost shoppers there less.
+- The **Variant matrix** charges less than the configurator shows.
+
+Stores in the United States rarely include tax in their prices. Turning that setting off makes shoppers in the United States pay your prices again. Then place a test order from the United States.
 
 ## Markets where the shopper chooses the currency
 
@@ -112,7 +123,7 @@ If you want certainty on one, compare it against your price list by hand.
 - [ ] Check the configurator total, the cart total and the checkout total against each other
 - [ ] Test a configuration with **several priced options**, not just one
 - [ ] Test a configuration driven by a **slider, number field or formula**, if your configurator has one
-- [ ] If the market includes tax **based on the shopper's country**, test from a country whose tax rate differs from yours - see [above](#per-country-tax)
+- [ ] If the market includes tax **based on the shopper's country**, test from a country whose tax rate differs from yours - see [above](#per-country-tax). A store in the United States tests from the United States too
 - [ ] Repeat after any change to that market in Shopify
 
 :::info Related

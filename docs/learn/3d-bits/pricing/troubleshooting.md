@@ -34,8 +34,9 @@ type: how-to
 **What to do.**
 
 1. Open the project and check the **Pricing catalog** card for a **Price changed** badge. If there is one, click **Update prices and publish** - see [Linked products](./linked-products).
-2. If everything looks healthy, the cart is simply older than your last publish. Ask the shopper to reconfigure.
+2. If everything looks healthy, the cart is simply older than your last publish. Ask the shopper to remove the item and configure it again. Until it is removed, Shopify refuses every other item added to that cart too, with the same message naming that product.
 3. If it happens only to shoppers in one country, that country may be in a market that includes tax based on the shopper's country, with a tax rate lower than yours - see [Tax that depends on the shopper's country](./other-currencies#per-country-tax).
+4. If your store is in the United States and it happens to shoppers there, check **Include sales tax in product price and shipping rate** under **Settings > Taxes and duties** in Shopify - see [Stores in the United States that include tax in prices](./other-currencies#us-stores-including-tax).
 
 ### "The extras for … no longer match its quantity"
 
