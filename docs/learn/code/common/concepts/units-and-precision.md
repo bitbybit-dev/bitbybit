@@ -18,7 +18,7 @@ import TabItem from '@theme/TabItem';
 
 A length in Bitbybit is a plain number. The kernels do not know millimetres from metres: a box of width 4 is 4 of whatever unit you decide on. Pick one for a model and keep to it, and say which one when you export: a STEP file or a 3D printer will read the numbers in a unit of its own, often millimetres. Angles, wherever a function takes one, are in **degrees**.
 
-The scene does not care either, but its camera, lights and shadows are set up for models of a few units to a few hundred. A model in millimetres of a whole building may need the camera moved further out and the shadows told how large the scene is.
+The scene does not care either, but the editors' camera starts about 22 units from the origin, which suits a model a few units across. A model in millimetres, even a single bolt through a plate, is tens of units across and stands around the camera: move the camera out with `bitbybit.babylon.scene.adjustActiveArcRotateCamera`, as the [standard parts](../occt/parts/intro) examples do. A scene that large also needs its shadows told how large it is.
 
 ## Tolerance and precision are different things
 

@@ -23,6 +23,8 @@ The tables size what goes around a part: the clearance hole a bolt passes throug
 
 Each family is split by standard: `iso` for metric parts, `ansi` for inch parts to the ASME and ANSI standards, and `din` where a German standard is the usual one, for keys, retaining rings, splines and knurls. A size names its standard's thread or designation whatever unit you build in, and `unit` sets the unit every length is given and returned in: millimetres unless you choose otherwise for `iso` and `din`, inches for `ansi`. An inch screw in a model built in millimetres takes `unit` set to millimetres and comes out at its true size.
 
+The examples on these pages are in millimetres, so a part is tens of units across, and the editors' camera, which starts about 22 units from the origin, would stand inside it. Each example therefore ends by moving the camera out with `bitbybit.babylon.scene.adjustActiveArcRotateCamera`: `position` is where the camera stands and `lookAt` the point it looks at.
+
 The tables also list what each standard holds, for a dropdown or a loop over sizes:
 
 - `bitbybit.engineering.mechanical.threads.iso.sizes` lists the metric thread sizes, from M1.6 to M24, and `bitbybit.engineering.mechanical.threads.ansi.sizes` the Unified inch sizes, from #0 to 1 inch.
