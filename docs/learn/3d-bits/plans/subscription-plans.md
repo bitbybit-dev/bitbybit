@@ -63,7 +63,7 @@ Configurator pricing works on every plan. What differs is how the charge is asse
 | Product lines, the default | <PlanIncludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Bundled parts | <PlanIncludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Variant matrix | <PlanIncludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
-| Single line | <PlanExcludedIcon /> | <PlanConditionalIcon /><br />Shopify Plus or a development store | <PlanConditionalIcon /><br />Shopify Plus or a development store |
+| Single line | <PlanExcludedIcon /> | <PlanConditionalIcon /><br />Shopify Plus or a development store not on a lower plan | <PlanConditionalIcon /><br />Shopify Plus or a development store not on a lower plan |
 
 ## Which plan do you need?
 
@@ -105,7 +105,7 @@ Standard is about showing a product properly, and about products whose shape is 
 
 **Camera controls** is a layout element with zoom buttons, orbit and tilt sliders and an axis gizmo, so shoppers can move the camera without dragging; it pairs with the switches that turn the default drag and wheel navigation off, which are on every plan. [Camera controls](/learn/3d-bits/composer/gui/camera-controls) describes both.
 
-**Single line charging** shows a configured product as one clean line at its exact price. It needs Standard or Pro, and it also needs your store to be on Shopify Plus or to be a partner development store, which is a Shopify restriction rather than ours. Everything works without it, and [Charging methods](/learn/3d-bits/pricing/charging-methods) explains the alternatives.
+**Single line charging** shows a configured product as one clean line at its exact price. It needs Standard or Pro, and it also needs your store to be on Shopify Plus, or to be a development store that is not set to try a lower plan, which is a Shopify restriction rather than ours. Everything works without it, and [Charging methods](/learn/3d-bits/pricing/charging-methods) explains the alternatives.
 
 ## What Pro adds
 

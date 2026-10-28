@@ -55,3 +55,7 @@ This example demonstrates the creation of the most common primitive solid types:
 </Tabs>
 
 These primitive solids serve as the foundation for more complex 3D modeling operations. They can be combined using boolean operations (union, intersection, difference), transformed, and modified to create sophisticated geometries for engineering and design applications.
+
+## A solid from its faces
+
+A body can also be built face by face, without a boolean: make the faces that close it, then let `bitbybit.occt.shapes.solid.fromFaces` sew them and the shells among them into one solid, turned so its material is inside. Their shared edges must line up within `tolerance`; faces that leave a wider gap, or that close more than one volume, are refused. `fromFacesWithHistory` makes the same solid and reports, as a [history](../../../concepts/picking-faces-and-edges#by-history) per shape given, which faces of the solid each of its faces became. [Shells](../shells/intro-shells) shows the sewing step on its own.

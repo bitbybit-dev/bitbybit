@@ -23,6 +23,7 @@ import {
     HLIT_BITS,
     INITIAL_OUTPUT,
     MOST_DEFLATE_RATIO,
+    MOST_INFLATED_BYTES,
     LENGTH_BASE,
     LENGTH_EXTRA,
     LENGTH_MASK,
@@ -106,8 +107,11 @@ class Inflater {
     private output: Uint8Array;
     private size = 0;
 
-    constructor(private readonly data: Uint8Array, private readonly expected: number | undefined) {
-        this.output = new Uint8Array(Math.min(expected ?? Math.max(INITIAL_OUTPUT, data.length * 2), data.length * MOST_DEFLATE_RATIO + INITIAL_OUTPUT));
+    constructor(private readonly data: Uint8Array, private readonly expected: number | undefined, private readonly limit: number) {
+        if (expected !== undefined && expected > limit) {
+            throw new Error(`The deflate stream is said to hold ${expected} bytes, more than the ${limit} this reader inflates`);
+        }
+        this.output = new Uint8Array(Math.min(expected ?? Math.max(INITIAL_OUTPUT, data.length * 2), data.length * MOST_DEFLATE_RATIO + INITIAL_OUTPUT, limit));
     }
 
     run(): Uint8Array {
@@ -176,8 +180,11 @@ class Inflater {
         if (this.expected !== undefined && this.size + count > this.expected) {
             throw new Error(`The deflate stream holds more than the ${this.expected} bytes expected`);
         }
+        if (this.size + count > this.limit) {
+            throw new Error(`The deflate stream inflates past the ${this.limit} bytes this reader inflates`);
+        }
         const wanted = Math.max(this.output.length * 2, this.size + count);
-        const grown = new Uint8Array(this.expected === undefined ? wanted : Math.min(wanted, this.expected));
+        const grown = new Uint8Array(Math.min(wanted, this.expected ?? this.limit));
         grown.set(this.output.subarray(0, this.size));
         this.output = grown;
     }
@@ -281,6 +288,6 @@ class Inflater {
     }
 }
 
-export function inflateRaw(data: Uint8Array, expectedSize?: number): Uint8Array {
-    return new Inflater(data, expectedSize).run();
+export function inflateRaw(data: Uint8Array, expectedSize?: number, limit: number = MOST_INFLATED_BYTES): Uint8Array {
+    return new Inflater(data, expectedSize, limit).run();
 }

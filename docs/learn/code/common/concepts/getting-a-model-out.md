@@ -46,6 +46,17 @@ A download from a script runs every time the script runs, which in Rete is every
 
 CAD programs usually treat Z as up, where Bitbybit treats Y as up. `adjustYtoZ` on the save functions turns the model for them, but it mirrors the part as it does; to keep a part as it is, turn it a quarter turn about X with `bitbybit.occt.transforms.rotate` before saving instead.
 
+## Units
+
+A model's numbers carry no unit of their own, but a file says what its lengths mean, and a program opening it reads them that way. Tell the save functions the `unit` the model is built in, and the file opens at its true size:
+
+- **STEP** is always written in millimetres. `saveShapeSTEP` and `saveShapeSTEPAndReturn` scale a shape built in another `unit` to them; the `unit` is millimetres when left out.
+- **GLB** is in metres, glTF's own unit, when `bitbybit.babylon.io.exportGLB` is given the `unit` the scene is modelled in; left out, the numbers are written as they are. `bitbybit.occt.assembly.manager.exportDocumentToGltf` takes the assembly's `unit` the same way.
+- **SVG** from `saveShapeSvg` and `saveShapeSvgAndReturn` states its true width and height when given the shape's `unit`; left out, the drawing has only a view box.
+- **DXF** states its unit in the header when `dxfCreate` writes `acadVersion` AC1015 with a `unit`; the older AC1009 (R12) has no place for it.
+
+Reading a file goes the other way: [STEP and IGES](../occt/io/step-and-iges#lengths-arrive-in-your-unit) arrive in the unit you ask for.
+
 ## A picture
 
 <Ui>More</Ui> > <Ui>Export model</Ui> > <Ui>Picture of the 3D view (PNG)</Ui> saves the view as it is. From code, `bitbybit.babylon.tools.createScreenshotAndDownload` does the same, at a size and through a camera you choose.

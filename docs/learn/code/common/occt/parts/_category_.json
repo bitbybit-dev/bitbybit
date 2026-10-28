@@ -1,0 +1,9 @@
+{
+    "label": "Standard Parts",
+    "link": {
+        "type": "generated-index",
+        "title": "Standard Parts",
+        "description": "The parts a mechanism is made of, built to the standards a supplier sells them by: ISO, ANSI and DIN bolts, nuts, screws, washers and pins, spur, helical, bevel and ring gears and racks, ball bearings, keys, retaining rings and springs, and the threads, keyways, grooves, splines, knurls and flats machined to take them. Each comes with the table of sizes behind it, is placed by a frame and can name the role of every face.",
+        "slug": "/code/common/occt/parts"
+    }
+}

@@ -24,14 +24,14 @@ Nothing is charged yet. Until you publish, everything here is a draft.
 
 Enter the amount every configuration starts from - for a made-to-order table, the price of the plainest table you sell.
 
-:::warning Your product's own price is a floor
-With **Product lines** charging, the Shopify product's own price is posted on every configured order and is never rewritten, so no configuration can cost less than it.
+:::warning In Product lines, the base price is your product's price
+With **Product lines** charging, Shopify charges the product the configurator sits on at its own price, so the base price is that price. Set one to match the other.
 
-If a configuration a shopper could reach falls below that floor, **publishing is refused**. It does not go live and warn you afterwards. The message names the selections that breach it and the exact price the product should carry, and the project page can often set it for you in one click. It cannot when the cheapest configuration is not simply the base price - when you price with a formula, for instance - and then the message still names the figure for you to type in yourself.
+If no variant of the product costs the base price you set, **publishing is refused** and names the product. The project page offers to set the product's price to the base price in one click, or you can change the base price in the Composer to the product's price. Variants at other prices still publish, with a warning naming what a shopper choosing each one pays.
 
-Take the number it gives you. Set the product's price to the figure the message names rather than dropping it to nothing - we have seen a product priced at nothing coincide with a cart that stops bundling the configuration into a single item.
+Change the product's price in Shopify later, and checkout follows it at once. Change the base price to match before you next publish.
 
-**Bundled parts**, **Variant matrix** and **Single line** charging do not have this floor, so switching method is the other way out. Bundled parts is the closest change to make: it charges through exactly the same products, and prices the cart entirely from them, so your product's own price stops reaching the order at all.
+**Bundled parts** charging prices the cart entirely from its parts, so your product's own price does not reach the order there.
 :::
 
 ## 3. Price an option
@@ -74,7 +74,8 @@ If something about the setup cannot be charged correctly, **publishing stops and
 | A linked product has no price | Open that option in Composer and re-link it, or give it a plain amount instead |
 | A linked product costs more than the option charges | Raise the option's amount, or unlink it |
 | A linked product is a draft, or not in the Online Store channel | Set it Active and publish it to Online Store |
-| The configured total is below what the cart can collect | Raise your base price, or set the product's price to the amount the message names |
+| The product has no variant priced at the base price | Set the product's price to the base price on the project page, or the base price to the product's price in the Composer |
+| The configured total is below what the cart would collect | The options chosen there charge less than the products they add. Raise their prices by at least the amount the message names |
 
 ## 7. Place a real test order
 

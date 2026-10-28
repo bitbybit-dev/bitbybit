@@ -79,6 +79,10 @@ As with the camera, focusing a light's direction field gives you a handle in the
 
 Direction, intensity and the diffuse colour are required for every light. Turning on **Enable Shadows** opens the shadow settings for that light: map size, refresh rate, darkness, softer filtering, bias and the shadow depth range. There is also a **Transparency shadows** toggle for the case where semi-transparent materials should cast a shadow too. **Clone Light** copies a light with its settings, which is the quick way to build a matching pair.
 
+### The default light
+
+On top of your directional lights, every 3D Bits scene has a soft light from above, so an imported model never looks flat or black where no directional light reaches it. The **Default Light** panel, above the directional lights, switches it off with **Soft light from above** or changes its **Intensity** (1 when empty). Turn it down when the shadow sides of your product look washed out, and off when your directional lights, the skybox's environment or the models' own materials should light the scene alone. Changes show in the 3D view straight away.
+
 ### Lights that only appear for some choices
 
 Each light has a **Visibility** block of its own. Leave it empty and the light is always on. Fill it in and the light is only enabled while the shopper's selections match, exactly the way a model or a part is gated.

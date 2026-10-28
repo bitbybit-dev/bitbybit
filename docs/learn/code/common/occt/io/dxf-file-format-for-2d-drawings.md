@@ -90,7 +90,7 @@ The layer organization is crucial when the DXF file is opened in other CAD softw
 
 ### Generating the Final File
 
-The final step brings everything together using the `dxfCreate` function. It takes all your layer definitions, combines them into a proper DXF structure, and generates the file. The `tryDownload` parameter automatically triggers a download in your browser, making it easy to immediately save and use the file. The resulting DXF can be opened in virtually any CAD program, where you'll see your three layers properly organized with their assigned colors and names.
+The final step brings everything together using the `dxfCreate` function. It takes all your layer definitions, combines them into a proper DXF structure, and generates the file. The `tryDownload` parameter automatically triggers a download in your browser, making it easy to immediately save and use the file. The resulting DXF can be opened in virtually any CAD program, where you'll see your three layers properly organized with their assigned colors and names. `acadVersion` picks the DXF version: AC1009 (R12) is the most widely readable, while AC1015 (AutoCAD 2000) can also state the drawing's `unit` in its header, so a CAD program opens it at true size instead of guessing.
 
 ## Practical Applications and Considerations
 

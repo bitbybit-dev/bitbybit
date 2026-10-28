@@ -64,9 +64,9 @@ Go back to **GUI** and open the **Pricing** tab, then turn pricing on.
 
 Set a base price, which is what the product costs before any choices.
 
-Now look at the small table Composer draws underneath that field. It lists **the product's own price**, your **base price**, what **the shopper sees**, and **the cheapest cart can collect**. Your Shopify product keeps its own price whatever you do here, and that price is a floor: the total a shopper sees has to cover the product's own price plus anything the configuration adds from your catalogue, or the cheapest configuration cannot be added to a cart at all. If it does not, Composer puts an error under the table naming the figure that would clear it, and publishing is **refused** rather than warned.
+Now look at the small table Composer draws underneath that field. It lists **the product's own price**, your **base price**, what **the shopper sees**, and **the cheapest cart can collect**. With Product lines charging, the default, Shopify charges your product at its own price, so the base price is the product's price: make the first two rows the same. If no variant of the product costs the base price, publishing is **refused** rather than warned.
 
-If you ticked the checkbox in step 1, the draft product the app created is priced at 0.00, so anything you set as a base price is above the floor and you can carry on. If you linked a real product with a real price, set your base price at or above that price - or open the project's page in the app, which offers to set the product price to a figure that fits and will do it for you. Either way, come back and check this table whenever you change the product's price in Shopify.
+If you ticked the checkbox in step 1, the draft product the app created is priced at 0.00. Open the project's page in the app once you have saved a base price: it offers to set the product's price to the base price and will do it for you. If you linked a real product with a real price, set your base price to that price, or let the project page set the product's price to your base price. Either way, come back and check this table whenever you change the product's price in Shopify.
 
 Then go back to your control in the Controls tab and give one of its options an amount, in the field labelled **Price +/-** - for example walnut adding 120 to the price.
 

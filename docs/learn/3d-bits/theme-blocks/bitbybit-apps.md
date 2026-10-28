@@ -149,7 +149,7 @@ The BITBYBIT APPS block utilizes Shopify metafields to manage its behavior, part
 
 | Metafield           | Purpose                                      | Example Value(s)                                                                                                                               | Behavior Notes                                                                 |
 |---------------------|----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| `Public Script URL` | Points to your app's main JavaScript file. | **Development (Preview Mode):** `https://localhost:4242/assets/index-stable.js`<br/>**Production:** `https://cdn.shopify.com/s/files/1/xxx/index-<hash>.js?version=<version>` | If this metafield is empty, the block defaults to attempting to embed from `https://localhost:4242` (Local Development Mode). |
+| `Public Script URL` | Points to your app's main JavaScript file. | **Development (Preview Mode):** `https://localhost:4242/assets/index-stable.js`<br/>**Production:** `https://cdn.shopify.com/s/files/1/xxx/index-<hash>.js?version=<version>` | If this metafield is empty, the block defaults to attempting to embed from `https://localhost:4242` (Local Development Mode). Any other value must start with `https://`: otherwise nothing is loaded, and the block shows a notice saying so. |
 
 ## Important Note: Pricing and Backend Logic
 

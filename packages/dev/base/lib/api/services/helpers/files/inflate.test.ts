@@ -164,11 +164,36 @@ describe("huffmanTable", () => {
 
         // Act
         const inflated = inflateRaw(packed, zeros.length);
-        const refused = (): Uint8Array => inflateRaw(packed, 4_000_000_000);
+        const refused = (): Uint8Array => inflateRaw(packed, 4_000_000_000, 5_000_000_000);
 
         // Assert
         expect(inflated.length).toBe(zeros.length);
         expect(inflated.some((byte) => byte !== 0)).toBe(false);
         expect(refused).toThrow("The deflate stream holds 3000000 bytes, not the 4000000000 expected");
+    });
+});
+
+describe("inflateRaw limits", () => {
+    const zeros = new Uint8Array(3_000_000);
+    const packed = new Uint8Array(deflateRawSync(zeros, { level: constants.Z_BEST_COMPRESSION }));
+
+    it("should refuse a size past its limit before setting anything aside, 1 GiB unless the caller says otherwise", () => {
+        // Act
+        const pastDefault = (): Uint8Array => inflateRaw(packed, 4_000_000_000);
+        const pastGiven = (): Uint8Array => inflateRaw(packed, zeros.length, 1_000_000);
+
+        // Assert
+        expect(pastDefault).toThrow("The deflate stream is said to hold 4000000000 bytes, more than the 1073741824 this reader inflates");
+        expect(pastGiven).toThrow("The deflate stream is said to hold 3000000 bytes, more than the 1000000 this reader inflates");
+    });
+
+    it("should stop a stream that really inflates past its limit when no size is given, the shape of a zip bomb", () => {
+        // Act
+        const unbounded = (): Uint8Array => inflateRaw(packed, undefined, 1_000_000);
+        const withinLimit = inflateRaw(packed, undefined, zeros.length);
+
+        // Assert
+        expect(unbounded).toThrow("The deflate stream inflates past the 1000000 bytes this reader inflates");
+        expect(withinLimit.length).toBe(zeros.length);
     });
 });

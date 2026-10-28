@@ -12,7 +12,7 @@ type: reference
 
 A design document is a parametric CAD model kept as plain JSON: named parameters, an ordered list of features, and the parts they make. `bitbybit.occt.design.build` turns it into shapes with the Bitbybit OCCT Kernel, in the browser or in Node, and on CAD Cloud as one pipeline step that returns the parts as one STEP or glTF file, with the build's report. This page is written for agents as much as for people: the [Bitbybit CAD MCP](./mcp/bitbybit-mcp) returns its sections through `get_guide`, and the JSON Schema below lets an editor or an agent check a document before it is built.
 
-The format is experimental: each release publishes its own schema, for this one at `https://git-cdn.bitbybit.dev/v1.6.0-rc.0/schemas/design-document/experimental.json` (also in the `@bitbybit-dev/occt` package, under `schemas/design-document/`). Documents carry `"schemaVersion": 1`, and a document written today is not migrated when the format is released.
+The format is experimental: each release publishes its own schema, for this one at `https://git-cdn.bitbybit.dev/v1.6.0/schemas/design-document/experimental.json` (also in the `@bitbybit-dev/occt` package, under `schemas/design-document/`). Documents carry `"schemaVersion": 1`, and a document written today is not migrated when the format is released.
 
 ## What a design document is
 
@@ -27,7 +27,7 @@ The format is experimental: each release publishes its own schema, for this one 
 
 1. **Write the document** against the schema. Name it in `$schema` so editors validate it as you type.
 2. **Validate it**: `await bitbybit.occt.design.validate({ document })` returns every problem with a JSON pointer to it, such as `/features/3/edges/count`. It builds nothing, so it is cheap. Fix every issue before building.
-3. **Build it**: `await bitbybit.occt.design.build({ document })` returns the `parts` with their shapes, a `report` with one entry per feature (`ok`, `failed` with messages, `skipped` because something it used failed, `suppressed`), and `issues` for parts, looks and connectors.
+3. **Build it**: `await bitbybit.occt.design.build({ document })` returns the `parts` with their shapes, a `report` with one entry per feature (`ok`, `failed` with messages, `skipped` because something it used failed, `suppressed`), and `issues` for parts, looks and connectors. The shapes are yours to delete when you are done with them; an identical build while they live returns the same shapes, so one delete frees both answers.
 4. **Read the report.** A failed feature names why: a reference that found 3 faces where it expects 4, a fillet radius the faces cannot take, an expression that divides by 0. Change the document and build again; features that did not change are reused, so the next build is fast.
 5. **Draw the result**: `await bitbybit.draw.drawAnyAsync({ entity: result })` draws every part with its looks, each placement an instance.
 6. **Try other values** with `parameters` or a `configuration` on the same call, without editing the document: `build({ document, parameters: { width: 80 } })`.
@@ -40,7 +40,7 @@ A plate with two holes and rounded top edges, made of aluminium, with a part num
 
 ```json title="bracket.design.json"
 {
-  "$schema": "https://git-cdn.bitbybit.dev/v1.6.0-rc.0/schemas/design-document/experimental.json",
+  "$schema": "https://git-cdn.bitbybit.dev/v1.6.0/schemas/design-document/experimental.json",
   "schemaVersion": 1,
   "id": "3f1c2a7e-8b4d-4c1a-9e2f-5d6b7a8c9e01",
   "meta": { "name": "Bracket" },
@@ -177,7 +177,7 @@ An assembly places parts of other documents. The documents are given to the buil
 
 ```json title="hinge.design.json"
 {
-  "$schema": "https://git-cdn.bitbybit.dev/v1.6.0-rc.0/schemas/design-document/experimental.json",
+  "$schema": "https://git-cdn.bitbybit.dev/v1.6.0/schemas/design-document/experimental.json",
   "schemaVersion": 1,
   "kind": "assembly",
   "meta": { "name": "Swivel pair" },
@@ -206,7 +206,7 @@ An assembly places parts of other documents. The documents are given to the buil
 - **A gear pair** is one gear part document placed twice: its `module`, `teeth`, `width`, `bore` and `backlash` parameters feed a `gear` loop and a `circle` bore, an extrude, and a connector `{ "id": "axis", "on": { "of": "gear", "role": "start" } }`. Each component sets its `teeth` in `source.parameters`, and a revolute joint per gear holds its `axis` against a frame or a plate, `module * (teeth + otherTeeth) / 2` apart. Drive both angles from one parameter: `"turn"` on the first, `"180 / 30 - turn * 20 / 30"` on a 30-tooth second for a 20-tooth first, so the teeth fall into each other's gaps; `design.clashes` at a few values of `turn` through one tooth of the first proves they mesh.
 - **A standard part document** is one `operation` feature of `occt.parts` sized by its parameters, such as `{ "id": "screw", "type": "operation", "operation": "occt.parts.mechanical.fasteners.iso.socketHeadCapScrew", "params": { "size": { "expr": "size" }, "length": { "expr": "length" } } }` with `size` a choice parameter of `"M3"`, `"M4"` and so on (`fasteners.ansi` takes `"#10"`, `"1/4"` and a `series`), built in the document's unit, and connectors on the roles it names: a screw's `{ "on": { "of": "screw", "role": "seat" }, "axis": { "of": "screw", "role": "thread" } }`, a nut's or a washer's `seat` and `top`, a bearing's `innerStart` or `outerStart` with the `bore` or `outside` axis, a spring's `bottom` and `top`. Each component sets its own size, so one document places every screw of an assembly, and `replicate` puts one in every hole of a set.
 - An assembly may publish `connectors` of its components, so a larger assembly can join it as one unit.
-- **From a STEP file:** `occt.design.fromStep({ step, name })` writes an assembly document per assembly and a part document per part, placed `at` the file's frames, with names and colours, every part importing one shapes file by `child`. Store `assets[0].data` at its `uri`, then build the `root` document with `documents` and `assets: { [assets[0].id]: assets[0].data }`; `report.notes` says what changed on the way, such as a mirrored placement built into a part of its own.
+- **From a STEP file:** `occt.design.fromStep({ step, name })` writes an assembly document per assembly and a part document per part, placed `at` the file's frames, with names and colours, every part importing one shapes file by `child`. The documents are in `unit`, millimetres unless you choose centimetres, metres or inches, the shapes and placements scaled from the file's own. Store `assets[0].data` at its `uri`, then build the `root` document with `documents` and `assets: { [assets[0].id]: assets[0].data }`; `report.notes` says what changed on the way, such as a mirrored placement built into a part of its own.
 - **Section a build:** `occt.design.section({ build, frame })` cuts what `build` returned with the plane of a frame, taking away what lies on the side its normal points to, and gives a cap for each part the plane passes through, the faces it cuts with their `area`. With `cut: true` the pieces behind the plane and the parts wholly behind it come too, each with its `volume`. The result is placed like the build's parts, so `draw.drawAnyAsync({ entity: section })` draws it, and the same frame given to `operations.hiddenLines` looks at the cut.
 
 ## Mistakes to avoid

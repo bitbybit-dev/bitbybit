@@ -35,7 +35,16 @@ package that needs it on a hot path, in one folder per domain:
 | `mesh/` | measures (signed volume), normals (smooth and creased), orientation and winding repair, primitives (icosphere, frustum) and proximity trees; the normals and the winding work on indexed meshes, `Base.IndexedMesh` in public |
 | `curves/` | `nurbs` (B-spline curve and surface evaluation) and `surface-triangulation` (adaptive meshing of a curved face) |
 | `color/` | the sRGB conversions |
-| `files/` | the zip and inflate readers, crc32 and the DXF writer |
+| `files/` | the zip and gzip readers over one inflater, the stored zip writer, crc32 and the DXF writer |
+
+**The readers take untrusted files, so they bound what a file can cost.** An archive's sizes are
+claims, and deflate can legitimately expand about a thousand times, so `inflateRaw` refuses a claimed
+size above its limit before setting anything aside and stops a stream that inflates past it; the limit
+is 1 GiB (`MOST_INFLATED_BYTES`) unless the caller of `zipEntryData`, `gunzipped` or `inflateRaw`
+passes another. `zipEntries` refuses entries whose data overlaps, the trick that lets one compressed
+stream be inflated once per entry, and an entry that runs into the central directory. The writer
+refuses names that would leave the folder they are extracted into and anything past the classic ZIP
+limits rather than writing ZIP64.
 
 A helper never sits loose beside the folders (`exposure.test.ts` fails one that does). They take and
 return tuples and flat arrays, never DTOs: a service call builds an object per call and `mul` resolves

@@ -1,0 +1,9 @@
+{
+    "label": "Recipes",
+    "link": {
+        "type": "generated-index",
+        "title": "Recipes in Bitbybit",
+        "description": "Solids described as data rather than built: a list of steps such as polygons, extrusions, cuts and unions, and the results to build from them. A recipe holds no variables or expressions, so any kernel can build it and it travels well as JSON, between threads, files and CAD Cloud. These pages cover how a recipe is written and how bitbybit.recipes checks one, reads one from JSON, follows a node to the step it places and draws the triangle meshes it holds.",
+        "slug": "/code/common/base/recipes"
+    }
+}

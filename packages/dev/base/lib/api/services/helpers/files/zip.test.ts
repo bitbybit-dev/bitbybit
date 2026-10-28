@@ -1,7 +1,7 @@
 import { crc32 as zlibCrc32, deflateRawSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
 import { crc32 } from "./crc32";
-import { isZip, zipEntries, zipEntryData } from "./zip";
+import { dosDateTime, isZip, zipEntries, zipEntryData, zipStored, zipStoredBlob, zipStoredParts } from "./zip";
 
 interface ArchivedFile {
     readonly name: string;
@@ -110,6 +110,52 @@ describe("zipEntryData and archives cut short", () => {
     });
 });
 
+describe("zip bombs", () => {
+    const view = (bytes: Uint8Array): DataView => new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+
+    function centralRecordTwice(archive: Uint8Array): Uint8Array {
+        const end = archive.length - 22;
+        const directory = view(archive).getUint32(end + 16, true);
+        const record = Array.from(archive.subarray(directory, end));
+        const tail = Array.from(archive.subarray(end));
+        tail.splice(8, 4, ...uint16(2), ...uint16(2));
+        tail.splice(12, 4, ...uint32(record.length * 2));
+        return Uint8Array.from([...archive.subarray(0, directory), ...record, ...record, ...tail]);
+    }
+
+    it("should refuse two entries that share their data, so one deflate stream cannot be inflated once per entry", () => {
+        // Arrange
+        const shared = centralRecordTwice(archiveOf([{ name: "house.ifc", data: HOUSE }]));
+
+        // Act & Assert
+        expect(() => zipEntries(shared)).toThrow("The zip archive's entries house.ifc and house.ifc share their data, which a zip bomb does and an archive never needs");
+    });
+
+    it("should refuse an entry whose data would run into the central directory", () => {
+        // Arrange
+        const archive = archiveOf([{ name: "house.ifc", data: HOUSE }]);
+        const directory = view(archive).getUint32(archive.length - 22 + 16, true);
+        view(archive).setUint32(directory + 20, directory, true);
+
+        // Act & Assert
+        expect(() => zipEntries(archive)).toThrow("house.ifc runs into the zip archive's central directory");
+    });
+
+    it("should read entries that sit one after another, and inflate an entry only within the limit it is given", () => {
+        // Arrange
+        const archive = archiveOf([{ name: "house.ifc", data: HOUSE }, { name: "notes.txt", data: encoder.encode("level 2") }]);
+        const [house] = zipEntries(archive);
+
+        // Act
+        const read = zipEntryData(archive, house!, HOUSE.length);
+        const refused = (): Uint8Array => zipEntryData(archive, house!, HOUSE.length - 1);
+
+        // Assert
+        expect(read).toStrictEqual(HOUSE);
+        expect(refused).toThrow(`The deflate stream is said to hold ${HOUSE.length} bytes, more than the ${HOUSE.length - 1} this reader inflates`);
+    });
+});
+
 describe("isZip", () => {
     it("should know an archive by its first local header", () => {
         // Assert
@@ -121,5 +167,120 @@ describe("crc32", () => {
     it("should give zlib's CRC-32", () => {
         // Assert
         expect([crc32(HOUSE), crc32(new Uint8Array(0))]).toEqual([zlibCrc32(HOUSE), 0]);
+    });
+});
+
+describe("zipStored", () => {
+    it("should write an archive the reader takes back whole, every entry passing its CRC-32", () => {
+        // Arrange
+        const files = [
+            { name: "screenshot-front.jpg", data: Uint8Array.from([0xff, 0xd8, 0xff, 0x00]) },
+            { name: "model/house.ifc", data: HOUSE },
+            { name: "empty.txt", data: new Uint8Array(0) },
+        ];
+
+        // Act
+        const archive = zipStored(files);
+        const entries = zipEntries(archive);
+
+        // Assert
+        expect(isZip(archive)).toBe(true);
+        expect(entries.map((entry) => [entry.name, entry.method, entry.size, entry.compressedSize])).toEqual([
+            ["screenshot-front.jpg", 0, 4, 4],
+            ["model/house.ifc", 0, HOUSE.length, HOUSE.length],
+            ["empty.txt", 0, 0, 0],
+        ]);
+        expect(entries.map((entry) => Array.from(zipEntryData(archive, entry)))).toEqual(files.map((file) => Array.from(file.data)));
+    });
+
+    it("should mark its names as UTF-8 so a name in any alphabet survives", () => {
+        // Act
+        const entries = zipEntries(zipStored([{ name: "nuotrauka-\u0161onas.png", data: HOUSE }]));
+
+        // Assert
+        expect(entries.map((entry) => entry.name)).toEqual(["nuotrauka-\u0161onas.png"]);
+    });
+
+    it("should write a valid empty archive", () => {
+        // Act
+        const archive = zipStored([]);
+
+        // Assert
+        expect(archive.length).toBe(22);
+        expect(zipEntries(archive)).toEqual([]);
+    });
+
+    it("should give the same bytes from its parts as whole, so a caller may hold the data in any container", () => {
+        // Arrange
+        const modified = new Date(2026, 9, 28, 17, 45, 31);
+        const data = HOUSE.subarray(0, 64);
+
+        // Act
+        const whole = zipStored([{ name: "a.bin", data }], modified);
+        const parts = zipStoredParts([{ name: "a.bin", size: data.length, crc32: crc32(data), data }], modified);
+        const joined = Uint8Array.from(parts.flatMap((part) => Array.from(part)));
+
+        // Assert
+        expect(Array.from(joined)).toEqual(Array.from(whole));
+    });
+});
+
+describe("zipStoredBlob", () => {
+    it("should hand over the same archive as a Blob, so a browser can download it without another copy in memory", async () => {
+        // Arrange
+        const modified = new Date(2026, 9, 28, 17, 45, 31);
+        const files = [{ name: "front.jpg", data: Uint8Array.from([0xff, 0xd8, 0xff, 0x00]) }, { name: "side.png", data: HOUSE.subarray(0, 32) }];
+
+        // Act
+        const blob = zipStoredBlob(files, modified);
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+
+        // Assert
+        expect(blob.type).toBe("application/zip");
+        expect(Array.from(bytes)).toEqual(Array.from(zipStored(files, modified)));
+    });
+});
+
+describe("zipStoredParts limits", () => {
+    it("should refuse an entry name that would climb out of the folder it is extracted to, or be read as a different path", () => {
+        // Arrange
+        const data = new Uint8Array(1);
+        const unsafe = ["../evil.png", "a/../../evil.png", "/etc/passwd", "C:/x.png", "a\\b.png", "", "bad\u0007name.png"];
+
+        // Act
+        const refusals = unsafe.map((name) => {
+            try {
+                zipStored([{ name, data }]);
+                return "written";
+            } catch {
+                return "refused";
+            }
+        });
+
+        // Assert
+        expect(refusals).toEqual(unsafe.map(() => "refused"));
+        expect(zipEntries(zipStored([{ name: "views/front..side.png", data }])).map((entry) => entry.name)).toEqual(["views/front..side.png"]);
+    });
+
+    it("should refuse what only ZIP64 can hold, instead of writing an archive that lies about its sizes", () => {
+        // Arrange
+        const tooBig = [{ name: "a.bin", size: 0xffffffff, crc32: 0, data: "" }];
+        const tooMany = Array.from({ length: 0xffff }, (_, index) => ({ name: `${index}.bin`, size: 0, crc32: 0, data: "" }));
+
+        // Act & Assert
+        expect(() => zipStoredParts(tooBig)).toThrow("4 GB");
+        expect(() => zipStoredParts(tooMany)).toThrow("entries");
+    });
+});
+
+describe("dosDateTime", () => {
+    it("should pack the local date and time the way zip tools read them, and hold dates before 1980 at 1980", () => {
+        // Act
+        const stamp = dosDateTime(new Date(2026, 9, 28, 17, 45, 31));
+        const early = dosDateTime(new Date(1970, 0, 1, 0, 0, 0));
+
+        // Assert
+        expect(stamp).toEqual({ date: ((2026 - 1980) << 9) | (10 << 5) | 28, time: (17 << 11) | (45 << 5) | 15 });
+        expect(early.date >> 9).toBe(0);
     });
 });

@@ -1,7 +1,7 @@
 ---
 title: Polylines in Bitbybit
 sidebar_label: Polylines in Bitbybit
-description: How bitbybit.polyline builds open and closed polylines, measures their length, area and normal, splits them into segments, finds where they cross, joins loose segments into chains and sizes fillets for their corners.
+description: How bitbybit.polyline builds open and closed polylines, measures their length, area and normal, splits them into segments, finds where they cross, joins loose segments into chains, works with flat outlines, follows a path with tangents and sweep frames, and sizes and rounds the fillets at their corners.
 topic: code.base.polyline
 type: explanation
 tags: [code, polyline]
@@ -55,10 +55,29 @@ Both use `tolerance` (default `1e-5`): crossings closer together than it are rep
 
 `sortSegmentsIntoPolylines` takes segments in any order and joins those whose ends meet within `tolerance` into polylines. A chain that comes back to where it started becomes a closed polyline, without its first point repeated at the end. A segment that touches nothing becomes a polyline of its own. `bitbybit.mesh` uses it to turn the segments where two meshes cut each other into curves.
 
+## Flat outlines
+
+These work on an outline in the plane, given as a list of 2D points `[[x, y], ...]`: its corners in order, the last joining back to the first without being repeated.
+
+- `signedArea2d` measures the area, positive when the outline runs counter-clockwise and negative when it runs clockwise, so its sign says which way the outline turns: the square `[[0,0], [4,0], [4,4], [0,4]]` gives 16, and the same corners reversed give -16.
+- `orient2d` makes the outline run counter-clockwise, or clockwise with `counterClockwise` set to false. An outline already running that way comes back as it was; any other has its corners reversed. Profiles and holes often need a known winding, and this is the way to give it.
+- `perimeter2d` measures the length around the outline, its closing side included, so `[[0,0], [3,0], [3,4]]` gives 12. `length` leaves that side out.
+- `isPointInside2d` tells whether a point lies inside the outline by counting the sides a ray from the point crosses, so it holds for outlines that are not convex; a point exactly on a side may fall either way.
+- `roundCorners2d` rounds every corner with an arc of `radius`, or with its own entry of `radiusList`, drawn as short straight pieces, `segments` of them to a quarter turn (8 by default). A radius of 0 leaves a corner sharp, and one too large for the sides beside its corner is refused.
+
+## Following a path
+
+These take an open polyline, a path, and refuse a closed one.
+
+- `tangents` gives the direction the path heads in at each of its points, every one of length 1. At an inner point it bisects the segments either side; at the ends it follows the end segments, unless `startTangent` or `endTangent` gives the direction there. `[[0,0,0], [1,0,0], [1,1,0]]` gives `[1,0,0]`, `[0.707,0.707,0]` and `[0,1,0]`.
+- `sweepFrames` places a frame at each point, its normal along the path, and turns the frame's direction, the X axis of a profile drawn on it, by the smallest angle from one point to the next, so a profile carried along the path does not spin about it. `firstDirection` says roughly where that X axis points at the start, and is turned square to the path.
+- `sweepPlacements` gives a matrix per point that puts a flat profile drawn in the XY plane on that point's frame, with Z along the path, and stretches it across a bend so the pieces either side meet. Applying each matrix to a copy of the profile lays out the sections of a sweep.
+
 ## Fillets at corners
 
 - `maxFilletsHalfLine` gives the largest fillet radius for every corner, each limited to the nearer half of its two segments so the fillets never overlap. A closed polyline also gets the corners at its first and last points.
 - `safestFilletRadius` gives the smallest of those: one radius that fits every corner. A polyline with fewer than three points, or any corner that allows no fillet, gives 0.
+- `roundCorners` rounds the corners of an open path in space itself, with arcs drawn as short straight pieces, `segments` of them to a quarter turn (8 by default). Where the segments beside a corner are too short for `radius`, that corner gets the largest arc that fits half of each, and the two ends stay where they are: `[[0,0,0], [10,0,0], [10,10,0]]` with `radius` 2 gives one quarter arc at the corner. A closed polyline is refused; for a flat closed outline, use `roundCorners2d`.
 
 The same calculations for loose points are in `bitbybit.point`.
 
@@ -110,16 +129,25 @@ Here the corners of an OpenCascade star are read into a closed polyline. `safest
 | [`countPoints`](https://docs.bitbybit.dev/classes/Bit.Polyline#countPoints) | Counts the points of the polyline. |
 | [`create`](https://docs.bitbybit.dev/classes/Bit.Polyline#create) | Builds a polyline object from points, open or closed. |
 | [`getPoints`](https://docs.bitbybit.dev/classes/Bit.Polyline#getPoints) | Reads the list of points out of the polyline. |
+| [`isPointInside2d`](https://docs.bitbybit.dev/classes/Bit.Polyline#isPointInside2d) | Tells whether a point lies inside a flat outline. |
 | [`length`](https://docs.bitbybit.dev/classes/Bit.Polyline#length) | Measures the polyline by adding up the straight distances between neighboring points. |
 | [`maxFilletsHalfLine`](https://docs.bitbybit.dev/classes/Bit.Polyline#maxFilletsHalfLine) | Finds the largest fillet for every corner of the polyline, each limited to the nearer half of its segments so the fillets never overlap. |
+| [`orient2d`](https://docs.bitbybit.dev/classes/Bit.Polyline#orient2d) | Makes a flat outline run counter-clockwise, or clockwise. |
+| [`perimeter2d`](https://docs.bitbybit.dev/classes/Bit.Polyline#perimeter2d) | Measures the length around a flat outline, its closing side included. |
 | [`polygonArea`](https://docs.bitbybit.dev/classes/Bit.Polyline#polygonArea) | Measures the area a polyline encloses, read as a closed outline in its own plane. |
 | [`polygonNormal`](https://docs.bitbybit.dev/classes/Bit.Polyline#polygonNormal) | Finds the unit normal of the plane a polyline encloses, read as a closed outline. |
 | [`polylineSelfIntersection`](https://docs.bitbybit.dev/classes/Bit.Polyline#polylineSelfIntersection) | Finds the points where the polyline crosses itself. |
 | [`polylineToLines`](https://docs.bitbybit.dev/classes/Bit.Polyline#polylineToLines) | Splits the polyline into line objects, one per segment, each with a start and an end point. |
 | [`polylineToSegments`](https://docs.bitbybit.dev/classes/Bit.Polyline#polylineToSegments) | Splits the polyline into segments, each a pair of points. |
 | [`reverse`](https://docs.bitbybit.dev/classes/Bit.Polyline#reverse) | Reverses the order of the points, so the polyline runs the other way. |
+| [`roundCorners`](https://docs.bitbybit.dev/classes/Bit.Polyline#roundCorners) | Rounds the corners of a path in space with arcs, drawn as short straight pieces. |
+| [`roundCorners2d`](https://docs.bitbybit.dev/classes/Bit.Polyline#roundCorners2d) | Rounds the corners of a flat outline with arcs, drawn as short straight pieces. |
 | [`safestFilletRadius`](https://docs.bitbybit.dev/classes/Bit.Polyline#safestFilletRadius) | Finds one fillet radius that fits every corner of the polyline: the smallest of the per-corner maximums under the half-segment rule. |
+| [`signedArea2d`](https://docs.bitbybit.dev/classes/Bit.Polyline#signedArea2d) | Measures the area of a flat outline, signed by the way it runs. |
 | [`sortSegmentsIntoPolylines`](https://docs.bitbybit.dev/classes/Bit.Polyline#sortSegmentsIntoPolylines) | Joins loose segments into polylines by matching up ends that meet within the tolerance. |
+| [`sweepFrames`](https://docs.bitbybit.dev/classes/Bit.Polyline#sweepFrames) | Places a frame at each point of a path, facing along it without twisting. |
+| [`sweepPlacements`](https://docs.bitbybit.dev/classes/Bit.Polyline#sweepPlacements) | Builds a matrix per point of a path that places a flat profile there, for sweeping it. |
+| [`tangents`](https://docs.bitbybit.dev/classes/Bit.Polyline#tangents) | Finds the direction a path heads in at each of its points. |
 | [`transformPolyline`](https://docs.bitbybit.dev/classes/Bit.Polyline#transformPolyline) | Applies a transformation matrix, or a list of them in order, to every point of the polyline. |
 | [`twoPolylineIntersection`](https://docs.bitbybit.dev/classes/Bit.Polyline#twoPolylineIntersection) | Finds the points where two polylines cross each other, testing every segment of one against every segment of the other. |
 

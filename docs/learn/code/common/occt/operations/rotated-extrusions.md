@@ -25,10 +25,11 @@ Rotated extrusion is a powerful 3D modeling technique used to create spiral-like
 ## How Rotated Extrusion Works
 The process of creating a shape through rotated extrusion involves several key elements:
 
-1.  **The Profile Shape (Wire)**: This is the initial 2D wire (which can be open, like a line or an arc, or closed, like a rectangle or a circle) that will be extruded and rotated. The geometry of this profile dictates the cross-section of the resulting spiral or helical 3D object.
+1.  **The Profile Shape**: This is the flat shape that will be extruded and rotated: a wire or an edge (open, like a line or an arc, or closed, like a rectangle or a circle), or a face without holes, whose outline is swept from its own plane. The geometry of this profile dictates the cross-section of the resulting spiral or helical 3D object.
 3.  **The Extrusion Height (or Length)**: This scalar value specifies the distance the profile travels along the [0, 1, 0] vector.
 4.  **The Total Angle of Rotation (Twist)**: This defines how much the profile rotates around the [0, 1, 0] axis as it travels the full **Extrusion Height**. For example, a 360-degree angle means the profile completes one full twist.
-5.  **Make Solid Option**: If the input profile is a closed wire, setting the `makeSolid` option to `true` (as seen in the Rete example's `rotatedExtrude` node and TypeScript's `rotatedExtrudeOpt.makeSolid = true`) will attempt to create a volumetric, solid helical shape. If the wire is open, or if `makeSolid` is `false`, the result will typically be a helical shell or ribbon-like surface.
+5.  **Make Solid Option**: With a closed wire or a face as the profile, `makeSolid` set to `true`, the default (as seen in the Rete example's `rotatedExtrude` node and TypeScript's `rotatedExtrudeOpt.makeSolid = true`), gives a solid helical shape. An open wire encloses nothing, so it gives a helical shell, a ribbon-like surface, whatever `makeSolid` says, and with `makeSolid` set to `false` every profile gives a shell. A `height` of 0 leaves nothing to twist along.
+6.  **Following the Faces**: `rotatedExtrudeWithHistory` twists the same profile and reports what each part of it became, as a [history](../../concepts/picking-faces-and-edges#by-history): `facesFromEdges` holds the twisted side each profile edge swept, and `firstFaces` and `lastFaces` the bottom and top of a solid. A face used as the profile becomes the bottom, under `faces`.
 
 In the examples below, we will demonstrate how to create a simple solid 3D helical shape by taking a 2D rectangular wire, defining an extrusion height, a rotation angle, and performing a rotated extrusion.
 

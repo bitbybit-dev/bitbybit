@@ -24,6 +24,30 @@ export interface HuffmanTable {
     readonly bits: number;
 }
 
+export interface ZipFile {
+    readonly name: string;
+    readonly data: Uint8Array;
+}
+
+export interface ZipStoredRecord<T> {
+    readonly name: string;
+    readonly size: number;
+    readonly crc32: number;
+    readonly data: T;
+}
+
+export interface ZipHeaderWriter {
+    readonly bytes: Uint8Array<ArrayBuffer>;
+    readonly u16: (value: number) => void;
+    readonly u32: (value: number) => void;
+    readonly raw: (value: Uint8Array) => void;
+}
+
+export interface DosDateTime {
+    readonly time: number;
+    readonly date: number;
+}
+
 export interface ZipEntry {
     readonly name: string;
     readonly method: number;

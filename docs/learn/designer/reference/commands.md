@@ -278,7 +278,7 @@ Adds one of the showcase designs learn.bitbybit.dev publishes, such as the robot
 - **Works in:** part documents and assembly documents
 - **For agents:** `file.openExample`, through [`designer-run-command`](./agent-tools.md#designer-run-command)
 - **Values:**
-  - `example` (one of `"desk-arm"`, `"jet-engine"`, `"robot-arm"`): Which example: desk-arm (Desk arm), jet-engine (Jet engine), robot-arm (Robot arm).
+  - `example` (one of `"desk-arm"`, `"engine"`, `"jet-engine"`, `"robot-arm"`): Which example: desk-arm (Desk arm), engine (Single-cylinder engine), jet-engine (Jet engine), robot-arm (Robot arm).
 
 ### Units {#designer-file-set-units}
 

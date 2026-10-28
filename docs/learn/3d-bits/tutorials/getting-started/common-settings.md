@@ -226,6 +226,8 @@ This field accepts two types of value:
 - **Base URL** (recommended): a URL pointing to the root of the assets folder, for example <b>{'https://git-cdn.bitbybit.dev/v'}<Version /></b> or <b>{'https://cdn.yourcompany.com/bitbybit/v'}<Version />{'/'}</b>. The runner script path (`runner/bitbybit-runner-babylonjs.js`) is appended automatically. A trailing slash is optional.
 - **Full JS URL** (legacy, backward-compatible): a direct URL to the runner JavaScript file, for example <b>{'https://git-cdn.bitbybit.dev/v'}<Version />{'/runner/bitbybit-runner-babylonjs.js'}</b>. This format is still supported for existing configurations.
 
+Either way the link must start with `https://` or `http://`. Anything else - a link starting with `//`, for example - is ignored, and the default above is used.
+
 **Why Base URL is Preferred:**
 
 When you provide a base URL, the system uses it for **all** assets - not just the runner script, but also the web workers (OCCT, JSCAD, Manifold), WASM binaries, BabylonJS engine files, physics engine and fonts. If you host assets on your own CDN, everything then loads from your infrastructure consistently.

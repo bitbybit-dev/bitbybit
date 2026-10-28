@@ -62,6 +62,7 @@ The workflow is simple:
 | `forceUVExport` | true | Include texture coordinates for future texturing |
 | `fileName` | "assembly.glb" | Output filename with `.glb` extension for binary format |
 | `tryDownload` | true | Automatically trigger browser download when complete |
+| `unit` | left out | The unit the document is modelled in. Given, `exportDocumentToGltf` writes the file in metres, glTF's own unit, so engines show it at true size; left out, the numbers are written as they are |
 
 :::tip Mesh Quality vs. File Size
 Lower `meshDeflection` values create smoother, more accurate meshes but result in larger files. For web use, values between 0.01 and 0.1 usually provide a good balance. Start with 0.05 and adjust based on your needs.

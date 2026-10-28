@@ -72,7 +72,7 @@ A hole shows a marker for each position. Click the face to move the last hole th
 
 ## Machining shafts and bores
 
-{/* shot: designer.modelling.features/keyway */}
+<Shot id="designer.modelling.features/keyway" />
 
 Six features in the <Ui>Insert</Ui> menu cut standard machining into a round face: pick a shaft's side or a bore's wall as the <Ui>Face</Ui>, and each sizes itself for that face's diameter.
 

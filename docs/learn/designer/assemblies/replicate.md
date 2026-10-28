@@ -26,7 +26,7 @@ The component now stands on every hole. The <Ui>Components</Ui> group shows it o
 
 ## Fasten: a screw in every hole at once
 
-{/* shot: designer.assemblies.components/fasten */}
+<Shot id="designer.assemblies.components/fasten" />
 
 [<Ui>Insert</Ui> > <Ui>Fasten</Ui>](../reference/commands.md#designer-assembly-fasten) does the steps above for a standard screw or bolt. Select the component whose holes take the screws, or name it and its connector set, and it places a [standard screw part](./components.md#standard-parts) replicated onto the set. The size comes from the holes: a hole made by its fastener, such as `M8` with a normal fit, gives the screw its `M8`, also when a parameter gives the size. The length is the screw part's own unless you name one, and a size you name wins over the holes'. Holes drilled for a socket head (the fastener's `head` set to `socket`) have the counterbore DIN 974-1 gives it, and Fasten sinks each screw into it, its head half a millimetre below the face, when the connector set is on the face the holes open from. A component with several hole sets needs the set named. One <Ui>Undo</Ui> takes the fastening back. The first fasten adds the screw's part document; every one after places the same document again with its own size and length, so the bill of materials counts each size apart. Agents run it as `assembly.fasten` with `to`, and `kind` `bolt` for a hex bolt.
 

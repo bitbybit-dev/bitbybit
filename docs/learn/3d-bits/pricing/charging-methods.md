@@ -12,7 +12,7 @@ type: explanation
 
 Shopify charges the price of real things in a cart. A configured price therefore has to become real cart contents somehow, and there are four ways to do that. You pick one per project, in **Storefront settings**.
 
-If you are not sure, use **Product lines**. It works on every Shopify plan and handles every kind of pricing.
+If you are not sure, use **Product lines**. It is the recommended method for new projects: it works on every Shopify plan, handles every kind of pricing, and charges your own products at the price Shopify sets for them.
 
 ```mermaid
 flowchart TD
@@ -30,9 +30,11 @@ flowchart TD
 
 ## Product lines
 
-The configured price is assembled from real cart lines: your product, plus a hidden line for each priced choice.
+The configured price is assembled from real cart lines: your product, the products the configuration links, the variants its parts pick, and a hidden line for each amount 3D Bits works out - priced options, formulas, typed part prices.
 
-**At checkout the shopper normally sees one line** at the full configured price - the extra lines are combined into it. The exception is a configuration that posts more than 2,000 units on one of those lines: Shopify will not combine a group that large, so the parts stay listed separately. Publishing warns you when a configuration of yours will do that.
+**Shopify prices your own products.** Your product, every product linked to an option or a part, and every variant a part picks are charged at the price Shopify sets for them - in your currency, in other currencies and in every country. Change a price in Shopify and the configurator and checkout follow it, with no publish needed. 3D Bits works out only the rest: the amounts you set in the Composer. A project published before 3D Bits worked this way needs one more publish first - see [Projects published before this change](#moving-a-project-over) below.
+
+**At checkout the shopper normally sees one line** at the full configured price - the extra lines are combined into it. The exception is a configuration that posts more than 2,000 units on one of those lines: Shopify will not combine a group that large, so the parts stay listed separately. Publishing warns you when a configuration of yours will do that. A configuration with a part picked from your variants checks out only as one combined line, so for it publishing stops instead and names the configuration.
 
 In the **cart**, that combining has already happened too, but the combined row carries none of the
 chosen options: Shopify keeps only 3D Bits' own bookkeeping on it. So the cart row would show a
@@ -41,15 +43,28 @@ under the row - collapsed to a count, expanding to every choice with its swatch 
 full list is on the order either way.
 
 - ✅ Works on **every Shopify plan**
-- ✅ Handles everything: options, formulas, sliders, parts, linked products, quantity
-- ✅ Every part appears on the order, so your team can see what to pick and make
-- ⚠️ Creates hidden helper products in your catalogue ([what they are](./helper-products))
+- ✅ Handles everything: options, formulas, sliders, parts, linked products, [parts picked from your variants](/learn/3d-bits/composer/gui/parts#parts-from-your-variants), quantity
+- ✅ Every part appears on the order as your own product, so your team can see what to pick and make
+- ✅ Your own products always cost what Shopify says
+- ⚠️ Creates hidden helper products in your catalogue for the amounts 3D Bits works out ([what they are](./helper-products))
 
 **Pick this if** you are starting out, you price with formulas or sliders, or the configuration is made of real products you also ship.
 
-:::warning Your product's own price sets a floor
-In this method the product's own Shopify price is posted on every configured order and is never rewritten, so no configuration can come to less than it. Publishing is refused if one could, and names the price the product should carry. See [Setting up pricing](./setting-up-pricing).
+:::note Your product's price is the base price
+In this method the base price of the configurator is your product's own price in Shopify. Publishing stops if no variant of the product the configurator sits on costs the base price you set, and the project page can set the price for you. Other variants of the product may cost something else: the project still publishes, with a warning naming what a shopper choosing each one pays. See [Setting up pricing](./setting-up-pricing).
 :::
+
+### Projects published before this change {#moving-a-project-over}
+
+A Product lines project you last published before 3D Bits began charging your own products at Shopify's price keeps working the old way until you publish it once more: it charges the prices you published, and checkout refuses a cart when a linked product's price has moved since. The projects list marks such a project **Republish needed**.
+
+That publish can stop for three reasons, each named in the message:
+
+- No variant of your product costs the base price. Set one to match the other.
+- A part that links a product is marked **Already part of the base price**. Untick it and lower the base price by what the part costs.
+- A linked product is saved at two different prices. Sync the prices.
+
+A Single line project with a linked option or part, or with a part that picks one of your variants, is charged through Product lines, so the same rules apply to it.
 
 ### One line per option, or one combined charge
 
@@ -59,24 +74,26 @@ Product lines has a second setting, in the project's Storefront settings: **How 
 
 **One combined charge** collects the priced options together instead, so a configuration adds one extra line however many options were chosen.
 
-The trade-off is capacity. Checkout re-verifies every line a configuration posts, and refuses a cart it cannot finish verifying, so a configurator with many priced options lowers how many configured items one cart can hold. Publishing tells you the number. If shoppers are hitting that limit, switching to the combined charge is the fix.
+The trade-off is capacity. Checkout re-verifies every line a configuration posts and can check only so many lines in one cart, so a configurator with many priced options lowers how many configured items one cart can hold. Publishing tells you the number. If shoppers are hitting that limit, switching to the combined charge is the fix.
 
 Either way, options linked to your own products still ship as their own lines, and the order still carries the full breakdown of what was chosen.
 
 ## Bundled parts
 
-The same real parts as Product lines, reaching the cart a different way. The shopper adds **one line**, and Shopify nests the parts underneath it as a bundle.
+For parts lists longer than a cart can hold. The same real parts as Product lines, reaching the cart a different way: the shopper adds **one line**, and Shopify nests the parts underneath it as a bundle. Bundled parts keeps working as it always has.
 
 Two things follow from that, and they are the reasons to choose it:
 
 - **A shopper cannot delete one part.** Shopify enforces the tie: the whole configuration goes from the cart or none of it does. Nobody receives an assembly missing its fixings because they tidied their cart.
-- **It holds more parts per item.** Checkout re-verifies every line a configuration posts, and the whole cart may carry about 118 of those lines, shared by every configured item in it - which is what limits Product lines. A bundle is one line at checkout however many parts it holds, so its parts do not count against that. What limits a bundle instead is how much checkout may write when it nests the parts, counted as the parts one configuration can charge **at once** - parts that exclude each other on the same choice do not count together: about **120** of them for one configured item, fewer as a shopper buys more of it in one cart. Single line charging, which nests nothing, is limited by the size of the rules themselves - about 300 parts, or about 200 when each carries a few conditions. Publishing tells you when a project is over, and what is costing the most.
+- **It holds more parts per item.** Checkout re-verifies every line a configuration posts, and the whole cart may carry about 117 of those lines, shared by every configured item in it - which is what limits Product lines. A bundle is one line at checkout however many parts it holds, so its parts do not count against that. What limits a bundle instead is how much checkout may write when it nests the parts, counted as the parts one configuration can charge **at once** - parts that exclude each other on the same choice do not count together: about **130** of them for one configured item, fewer as a shopper buys more of it in one cart. Single line charging, which nests nothing, is limited by the size of the rules themselves - about 300 parts, or about 200 when each carries a few conditions. Publishing tells you when a project is over, and what is costing the most.
 
 - ✅ Works on **every Shopify plan**
 - ✅ Handles everything Product lines handles: options, formulas, sliders, parts, linked products, quantity
 - ✅ Every part appears on the order with its own price, inventory and fulfilment row
-- ✅ Your product's own price is **not** a floor - the bundle is priced entirely by its parts
+- ✅ The bundle is priced entirely by its parts
+- ⚠️ Charges every part at the price you published - after a price change in Shopify, publish again to sell at the new one
 - ⚠️ Creates the same hidden helper products in your catalogue ([what they are](./helper-products))
+- ⚠️ A part that picks one of your variants needs Product lines - publishing says so
 - ⚠️ The configured product is a **grouping**, not a pickable line: your team picks the parts listed under it
 - ⚠️ Not available for subscription or pre-order purchases (a Shopify restriction, shared with Product lines)
 
@@ -117,9 +134,11 @@ Choosing this method rebuilds the product's option space. 3D Bits will refuse if
 The configured product is charged as one line whose price is set to the configured total.
 
 - ✅ The cleanest cart: one line, no helper products at all
-- ⚠️ Requires **Shopify Plus** (or a development store)
+- ⚠️ Requires **Shopify Plus** (or a development store not set to try a lower plan)
 - ⚠️ Requires the **Standard or Pro** 3D Bits plan
 - ⚠️ Overrides per-market price adjustments and per-country tax, so it suits single-currency, single-country stores better
+
+Single line keeps working as it always has. A project with an option or a part linked to one of your products, or a part that picks one of your variants, is charged through Product lines instead, and publishing tells you so.
 
 **Pick this if** you are on Plus, sell in one currency, and want the tidiest possible cart.
 
@@ -142,11 +161,12 @@ The limits differ sharply, and they are the main reason a method may not be avai
 | **Total combinations** | Not enumerated - no limit | Not enumerated - no limit | **At most 2,048** | Not enumerated - no limit |
 | **Formulas and sliders** | ✅ | ✅ | ❌ not possible | ✅ |
 | **Parts** | ✅ | ✅ | ❌ not possible | ⚠️ a *linked* part moves it to Product lines |
+| **A part picked from your variants** | ✅ | ❌ publishing refuses | ❌ not possible | ⚠️ moves it to Product lines |
 | **An option linking several products** | ✅ | ⚠️ the extras list at 0.00 | ❌ not possible | ⚠️ moves it to Product lines |
 | **A shopper-chosen quantity on an option** | ✅ | ✅ | ❌ not possible | ✅ |
 | **Quantity control** | ✅ | ✅ | ❌ not possible | ✅ |
 | **Multi-select checkboxes** | ✅ | ✅ | ❌ not as a dimension | ✅ |
-| **Parts one configuration can carry** | about 118, shared by every configured item in the cart | **about 130** | not applicable | not applicable |
+| **Parts one configuration can carry** | about 117, shared by every configured item in the cart | **about 130** | not applicable | not applicable |
 
 **Why the matrix is the strict one.** It generates a real Shopify variant for every combination, so it inherits Shopify's own product limits: **3 option dimensions** and **2,048 variants** per product. Four priced controls, or 3 controls whose options multiply past 2,048, cannot be expressed as variants at all.
 
@@ -154,22 +174,46 @@ Multiply your options to check: 8 woods × 5 sizes × 6 finishes = 240 combinati
 
 **Why Product lines has no fixed limit.** It creates one hidden product per priced control and one variant per option, and splits a control across several products when it exceeds 250 options. So a control with 400 colours is fine.
 
-There is still an overall ceiling: a configuration with a very large number of priced options and conditions can grow past what checkout will verify, and a cart checkout cannot verify is refused rather than waved through. Publishing tells you if you reach it, and names the size - see [Troubleshooting](./troubleshooting). In practice this is far beyond what a shopper would sensibly navigate.
+There is still an overall ceiling: a configuration with a very large number of priced options and conditions can grow past what checkout can verify. Publishing refuses such a project and names the size - see [Troubleshooting](./troubleshooting). In practice this is far beyond what a shopper would sensibly navigate.
 
-**Why Bundled parts holds more.** Checkout verifies each configured cart line, and a bundle is one line however many parts it holds. What limits it instead is how much the app may write when it nests the parts, counted as the parts one configuration can charge at once - parts that exclude each other on the same choice do not count together: about **130 parts** for one configured item in the cart, about **65** each when a shopper buys two of them, about **32** each for four. Publishing works that out for your configurator and tells you the number. Product lines shares its roughly 118 lines across the whole cart, so a 60-part configurator holds one item through Product lines and four through Bundled parts - if you need more parts than Product lines allows, this is the method that gives them to you.
+**Why Bundled parts holds more.** Checkout verifies each configured cart line, and a bundle is one line however many parts it holds. What limits it instead is how much the app may write when it nests the parts, counted as the parts one configuration can charge at once - parts that exclude each other on the same choice do not count together: about **130 parts** for one configured item in the cart, about **65** each when a shopper buys two of them, about **32** each for four. Publishing works that out for your configurator and tells you the number. Product lines shares its roughly 117 lines across the whole cart, so a 60-part configurator holds one item through Product lines and four through Bundled parts - if you need more parts than Product lines allows, this is the method that gives them to you.
 
 **If the matrix is not possible**, publishing says exactly why and uses Product lines instead rather than failing. It checks these in order, and names the first one it meets:
 
 1. A **set multiplier** control, which multiplies the whole configuration.
 2. An option that lets the **shopper choose a quantity**.
 3. A **priced control that cannot be a variant dimension** - only dropdowns, radio buttons and checkboxes can be.
-4. An option that **links several products**, since they must reach the order as their own lines.
+4. An option that **links your own products** - one or several - since they must reach the order as their own lines.
 5. Any **part** - a linked one is a real item needing its own line, and a priced unlinked one is an amount rather than a variant.
 6. Any **formula**, which produces amounts that cannot be enumerated.
 7. A **multi-select** control, since a variant holds one value per option.
 8. **No priced option controls at all** to build a matrix from.
 9. More than **3 option dimensions**, which is Shopify's limit.
 10. More than **2,048 combinations**, which is also Shopify's limit.
+
+### How many configured items fit in one cart (Product lines) {#cart-capacity}
+
+With Product lines charging, every product, part and option charge a configuration adds is a cart line of its own, and checkout can check only so many lines in one cart, shared by every configured item in it. Publishing counts the most lines one configuration can add beside your product, and that sets how many configured items one cart holds:
+
+| Lines one configuration adds | Configured items one cart holds |
+|---|---|
+| up to 29 | 4 |
+| 30 to 39 | 3 |
+| 40 to 58 | 2 |
+| 59 to 117 | 1 |
+| more than 117 | none - publishing stops |
+
+A part picked from your variants takes a little more room than other lines - about 1.15 lines each - because checkout also reads which options its variant has. A configuration made only of such parts holds:
+
+| Parts picked from your variants in one configuration | Configured items one cart holds |
+|---|---|
+| up to 25 | 4 |
+| 26 to 33 | 3 |
+| 34 to 50 | 2 |
+| 51 to 101 | 1 |
+| more than 101 | none - publishing stops |
+
+Very many choices or text fields, long price formulas, long lists of parts, or product names longer than about 200 characters can hold a cart to fewer, since checkout reads the name of every product in the cart. Publishing always tells you the number, and a shopper who tries to add more is told how many fit - see [Troubleshooting](./troubleshooting).
 
 ## Choosing
 
@@ -179,6 +223,7 @@ There is still an overall ceiling: a configuration with a very large number of p
 | You price with a slider, a formula, or by area or length | Product lines |
 | The configuration is made of parts you also ship | Product lines |
 | One choice adds several of your own products | Product lines |
+| A part is one of your variants, picked by the shopper's choices | Product lines |
 | The configuration has more parts than Product lines will publish | Bundled parts |
 | The parts must stay together, so nobody orders half an assembly | Bundled parts |
 | All options are discrete, and you sell in several currencies | Variant matrix |

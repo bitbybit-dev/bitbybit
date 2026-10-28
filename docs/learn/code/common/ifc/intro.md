@@ -114,8 +114,10 @@ Building needs the Bitbybit OCCT Kernel beside the IFC one; the editors on bitby
 | [`columns.add`](https://docs.bitbybit.dev/classes/Bit.IFCColumns#add) | Adds a column standing on `position` in a storey's plan, its section centred on that point and extruded `height` up from `baseOffset` above the floor. |
 | [`doors.add`](https://docs.bitbybit.dev/classes/Bit.IFCDoors#add) | Places a door of a door type in a wall, `offset` along the wall's axis from its start, cutting an opening as wide and high as the type. |
 | [`doors.addType`](https://docs.bitbybit.dev/classes/Bit.IFCDoors#addType) | Adds a door type: a lining around one panel, `width` by `height`, which doors are then placed from. |
+| [`elements.add`](https://docs.bitbybit.dev/classes/Bit.IFCElements#add) | Adds an element of any class to a storey, its body written from a recipe: brep steps as advanced breps less their cavities, triangle steps as triangulated face sets. |
+| [`elements.addShape`](https://docs.bitbybit.dev/classes/Bit.IFCWElements#addShape) | Adds an element of any class whose body is an OpenCascade shape, standing on a storey. |
 | [`geometry.recipe`](https://docs.bitbybit.dev/classes/Bit.IFCGeometry#recipe) | Describes the geometry of a model's elements as a recipe, ready for a kernel to build. |
-| [`geometry.toDocument`](https://docs.bitbybit.dev/classes/Bit.IFCWGeometry#toDocument) | Builds a model's elements into an OpenCascade assembly document for STEP or glTF: a product per element with its GlobalId and IFC type as properties, nested in its site, building and storey, by IFC class unless `groupByClass` is false, one part per type placed many times. |
+| [`geometry.toDocument`](https://docs.bitbybit.dev/classes/Bit.IFCWGeometry#toDocument) | Builds a model's elements into an OpenCascade assembly document for STEP or glTF: a product per element, its GlobalId, IFC type and property sets as properties, nested by site, building, storey and IFC class, one part per type placed many times. |
 | [`geometry.toShapes`](https://docs.bitbybit.dev/classes/Bit.IFCWGeometry#toShapes) | Builds a model's elements as OpenCascade shapes, one per element in the order `geometry.recipe` lists them, each placed where the model puts it, in the model's units. |
 | [`geometry.toStep`](https://docs.bitbybit.dev/classes/Bit.IFCWGeometry#toStep) | Writes a model's elements as a STEP file of OpenCascade shapes, as `toDocument` builds them, and gives back its bytes. |
 | [`geometry.unsupported`](https://docs.bitbybit.dev/classes/Bit.IFCGeometry#unsupported) | Lists the elements whose geometry `geometry.recipe` leaves out, each with what it could not describe, such as a profile type that is not supported yet. |
@@ -157,7 +159,7 @@ Building needs the Bitbybit OCCT Kernel beside the IFC one; the editors on bitby
 | [`spatial.storeys`](https://docs.bitbybit.dev/classes/Bit.IFCSpatial#storeys) | Lists the storeys of the model's buildings, lowest first, with their GlobalIds, names and elevations. |
 | [`walls.add`](https://docs.bitbybit.dev/classes/Bit.IFCWalls#add) | Adds a straight wall on a storey, from `start` to `end` in the storey's plan, `height` high. |
 | [`walls.addType`](https://docs.bitbybit.dev/classes/Bit.IFCWalls#addType) | Adds a wall type: a named kind of wall made of a layer set. |
-| [`walls.clipByPlane`](https://docs.bitbybit.dev/classes/Bit.IFCWalls#clipByPlane) | Clips a wall with a plane, removing the part on the side the plane's normal points to, as a wall is cut under a sloping roof. |
+| [`walls.clipByPlane`](https://docs.bitbybit.dev/classes/Bit.IFCWalls#clipByPlane) | Clips a wall with a plane, removing the part on the side its normal points to, as under a sloping roof. |
 | [`walls.clipByRoof`](https://docs.bitbybit.dev/classes/Bit.IFCWalls#clipByRoof) | Clips a wall under a roof by each of the roof's planes that cuts it: under the eaves level or along the slope, under a gable to the gable's triangle. |
 | [`walls.connect`](https://docs.bitbybit.dev/classes/Bit.IFCWalls#connect) | Joins two walls where they meet, trimming both: two walls meeting at their ends are mitred into a corner, and a wall ending against another's side is cut back to that side. |
 | [`walls.disconnect`](https://docs.bitbybit.dev/classes/Bit.IFCWalls#disconnect) | Takes away the join between two walls, so the ends it trimmed are square again. |
@@ -176,5 +178,6 @@ Building needs the Bitbybit OCCT Kernel beside the IFC one; the editors on bitby
 |---|---|
 | [`build`](https://docs.bitbybit.dev/classes/Bit.OCCTRecipes#build) | Builds each root of a recipe as a shape placed by its matrix, in root order. |
 | [`buildDocument`](https://docs.bitbybit.dev/classes/Bit.OCCTRecipes#buildDocument) | Builds the roots of a recipe into an assembly document, ready to export to STEP. |
+| [`describe`](https://docs.bitbybit.dev/classes/Bit.OCCTRecipes#describe) | Describes a shape exactly as a recipe: a brep step for its solids and their cavities, and one for the faces outside any solid. |
 
 {/* api:occt.recipes:end */}

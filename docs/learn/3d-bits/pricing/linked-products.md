@@ -44,9 +44,11 @@ The linked goods have to reach the order as their own lines, so a configuration 
 
 ## What a price snapshot is
 
-When you link, 3D Bits records the product's price **at that moment**. That recorded price is what the configurator shows shoppers.
+When you link, 3D Bits records the product's price **at that moment** - its snapshot - so the Composer can show prices while you build.
 
-It does not follow the product afterwards. This is deliberate - your configurator's prices should not silently change because someone edited a product in another tab - but it means **the two can drift apart**, and you have to close the gap when they do. A snapshot that no longer matches your catalogue is not a cosmetic problem: it is what turns into a refused order.
+**With Product lines charging, shoppers pay Shopify's current price**, in your currency and in every other currency you sell in, and the configurator shows it to them. Change a price in Shopify and the configurator and checkout follow it without a publish; publishing again only brings the snapshot up to date. The exception is a project marked **Republish needed**, published before 3D Bits worked this way: it follows only after one more publish, and until then checkout refuses carts with the moved product at its new price - see [Charging methods](./charging-methods#moving-a-project-over).
+
+**With Bundled parts charging, every part is charged at the price you published.** The snapshot does not follow the product afterwards, so until you publish again you are selling at the old price.
 
 ## When a linked product changes
 
@@ -55,7 +57,7 @@ Open the project and look at the **Pricing catalog** card. Every link shows its 
 | State | Meaning | What to do |
 |---|---|---|
 | *(no badge)* | The link matches your catalogue | Nothing |
-| **Price changed** | The product now costs something different | Click **Update prices and publish** |
+| **Price changed** | The product now costs something different | In Product lines, shoppers already pay the new price, and **Update prices and publish** saves it in the configurator. In Bundled parts, publish to stop selling at the old price |
 | **Out of stock** | The product cannot be bought right now | Restock it, or unlink the option |
 | **Not purchasable** | The product is a draft, archived, or not in the Online Store channel | Fix it in Shopify admin - no republish needed |
 | **Link broken** | The variant no longer exists | Re-link the option in Composer, then publish |
@@ -69,7 +71,7 @@ If a linked variant has been deleted, shoppers cannot add that product to their 
 
 ## Which changes need a publish
 
-- ✅ **A linked product's price changed** - publish
+- ✅ **A linked product's price changed** - with Bundled parts only; with Product lines shoppers already pay the new price
 - ✅ **A linked variant was deleted** - re-link, then publish
 - ✅ **Your own product's price changed** - see below
 
@@ -78,11 +80,14 @@ These do **not** need one:
 - ❌ Renaming the product, or changing its image
 - ❌ Making it Active again after it was archived - fix it in Shopify admin and the configurator carries on
 
-:::warning Your own product's price is the one people forget
-With **Product lines** charging, the price of the product the configurator sits on is posted on every configured order and acts as a floor. Raising it in Shopify without republishing can put configurations below that floor, and a shopper meets it as an add to cart that will not complete. **Bundled parts** has no such floor - the bundle is priced from its parts alone.
-
-Whenever you change that price, publish the project again. Publishing checks the whole range of configurations and stops with an explanation if any of them no longer works. See [Setting up pricing](./setting-up-pricing).
+:::warning Your own product's price is the base price
+With **Product lines** charging, the configurator's base price is the price of the product it sits on, and checkout follows that price at once. If you change it in Shopify, change the base price in the Composer to match before you next publish - publishing stops while no variant of the product costs the base price, and the project page can set the product's price for you. See [Setting up pricing](./setting-up-pricing).
 :::
+
+Publishing checks every linked product's price:
+
+- **Product lines:** publishing goes through, tells you which prices moved, and offers **Sync prices and publish** to save what your catalogue says.
+- **Bundled parts:** publishing stops until the prices are synced, and the same button does it in one click.
 
 Stock level changes do not need a publish, but they are not nothing either: a linked product that has run out stops the choices that need it from being bought. Switching on the live catalogue check below is how you make that visible rather than surprising.
 
@@ -90,11 +95,11 @@ Stock level changes do not need a publish, but they are not nothing either: a li
 
 In the **Pricing** tab there is a switch called **Disable options that cannot currently be sold**.
 
-With it on, the configurator checks the real products behind your priced options and parts when the page loads, again while the shopper configures, and right before Add to cart. When something the shopper's configuration needs is out of stock, it keeps the choice they just clicked and changes as few other choices as it can to reach one you can sell, telling the shopper what changed - the choices each part may change are set under [When it runs out](/learn/3d-bits/composer/gui/parts#when-it-runs-out). A choice nothing can make sellable, or whose price no longer matches what you published, is crossed out with a short message instead of the shopper discovering the problem at checkout. When nothing may change, the shopper keeps their configuration and Add to cart tells them what is out of stock.
+With it on, the configurator checks the real products behind your priced options and parts when the page loads, again while the shopper configures, and right before Add to cart. When something the shopper's configuration needs is out of stock, it keeps the choice they just clicked and changes as few other choices as it can to reach one you can sell, telling the shopper what changed - the choices each part may change are set under [When it runs out](/learn/3d-bits/composer/gui/parts#when-it-runs-out). A choice nothing can make sellable - or, where checkout still charges the price you published, one whose price no longer matches it - is crossed out with a short message instead of the shopper discovering the problem at checkout. When nothing may change, the shopper keeps their configuration and Add to cart tells them what is out of stock.
 
 Three things worth knowing:
 
-- **It never changes what anyone is charged.** It can take a choice away or move the shopper to another choice they could have picked themselves, never add a paid extra or alter a price. To change prices you still publish.
+- **It never changes what anyone is charged.** It can take a choice away or move the shopper to another choice they could have picked themselves, never add a paid extra or alter a price. To change the prices you set in the Composer you still publish.
 - **If the check cannot run, nothing changes.** A slow or failed lookup leaves the configurator behaving exactly as it does without the switch.
 - **You can write the message.** It defaults to "Out of stock", or "Temporarily unavailable" when it is the price that has moved.
 
@@ -120,7 +125,7 @@ If you would rather not pause, you can set the Shopify product to **Draft** whil
 
 ## Refreshing every link at once
 
-**Refresh linked products**, in the project page's action menu, re-reads every product this configurator links - options and parts alike - and saves anything that has moved: the **price**, the product's **name**, and its **picture**. It backs the project up first, then publishes, because a price only reaches shoppers when you publish.
+**Refresh linked products**, in the project page's action menu, re-reads every product this configurator links - options and parts alike - and saves anything that has moved: the **price**, the product's **name**, and its **picture**. It backs the project up first, then publishes, so the configurator carries what your catalogue says - and, with Bundled parts charging, so shoppers are charged it.
 
 It is the same action the health banner offers as **Update prices and publish**. The difference is that the banner appears only once a price has already drifted, while this one is always there - so you can re-pull after a sale ends without waiting to be told, and on a configurator built product by product it is the fastest way to fill in every picture at once.
 
@@ -130,7 +135,7 @@ It is the same action the health banner offers as **Update prices and publish**.
 
 ## Parts are linked the same way
 
-The things a configured product is **made of** are linked from their own tab, not from an option. A part can link a product exactly as an option does, and the same health states apply to it.
+The things a configured product is **made of** are linked from their own tab, not from an option. A part can link a product exactly as an option does, and the same health states apply to it. With Product lines charging, a part can also pick one of a product's variants from the shopper's choices - see [A part that picks one of your variants](/learn/3d-bits/composer/gui/parts#parts-from-your-variants).
 
 :::warning Link a part to a variant, not just a product
 A part has to be linked to a specific **variant**, not just to a product. A product on its own has no variant to put on the order, and the cart line would carry the product where a variant is required - so nobody could add the product to their cart at all. **Publishing refuses it** and names the part. Open it and pick a variant, or clear the link and give the part its own price instead.

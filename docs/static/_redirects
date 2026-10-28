@@ -116,6 +116,7 @@
 /help/code.base.point.hex-grid-example                           /learn/code/common/base/point/point-hex-grid-example  302
 /help/code.base.point.spiral-examples                            /learn/code/common/base/point/point-spiral-examples  302
 /help/code.base.polyline                                         /learn/code/common/base/polyline/intro  302
+/help/code.base.recipes                                          /learn/code/common/base/recipes/intro  302
 /help/code.base.text                                             /learn/code/common/base/text/intro  302
 /help/code.base.text.usage-examples                              /learn/code/common/base/text/text-usage-examples  302
 /help/code.base.vector                                           /learn/code/common/base/vector/intro  302
@@ -184,6 +185,11 @@
 /help/code.occt.operations.simple-loft                           /learn/code/common/occt/operations/simple-loft  302
 /help/code.occt.operations.thick-solids                          /learn/code/common/occt/operations/thick-solids  302
 /help/code.occt.operations.wire-offset-multiple                  /learn/code/common/occt/operations/wire-offset-multiple  302
+/help/code.occt.parts                                            /learn/code/common/occt/parts/intro  302
+/help/code.occt.parts.bearings-keys-rings-springs                /learn/code/common/occt/parts/bearings-keys-rings-springs  302
+/help/code.occt.parts.fasteners                                  /learn/code/common/occt/parts/fasteners  302
+/help/code.occt.parts.gears                                      /learn/code/common/occt/parts/gears  302
+/help/code.occt.parts.machining                                  /learn/code/common/occt/parts/machining  302
 /help/code.occt.select                                           /learn/code/common/occt/select/intro  302
 /help/code.occt.shapes                                           /learn/code/common/occt/shapes/intro  302
 /help/code.occt.shapes.compound                                  /learn/code/common/occt/shapes/compound/intro  302
@@ -229,6 +235,7 @@
 /help/composer.gui.parts                                         /learn/3d-bits/composer/gui/parts  302
 /help/composer.gui.pdf                                           /learn/3d-bits/composer/gui/pdf-reports  302
 /help/composer.gui.pricing                                       /learn/3d-bits/composer/gui/pricing  302
+/help/composer.gui.screenshot                                    /learn/3d-bits/composer/gui/screenshot  302
 /help/composer.gui.settings                                      /learn/3d-bits/composer/gui/settings  302
 /help/composer.gui.style                                         /learn/3d-bits/composer/gui/style-and-translations  302
 /help/composer.interface                                         /learn/3d-bits/composer/interface  302

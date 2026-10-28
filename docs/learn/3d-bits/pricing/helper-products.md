@@ -18,7 +18,7 @@ When you publish with **Product lines** or **Bundled parts** charging, 3D Bits c
 
 ## Why they exist
 
-Shopify charges for real things in a cart. An option worth +90 has to *be* something before it can be charged, so 3D Bits creates a hidden product to represent it. Your shopper does not normally see these as separate items - the cart and checkout both show one line at the configured price, with the choices summarised beneath it. The exception is a configuration that posts more than 2,000 units on one of those lines: Shopify will not combine a group that large, so the parts stay listed separately. Publishing warns you when a configuration of yours will do that.
+Shopify charges for real things in a cart. An option worth +90 has to *be* something before it can be charged, so 3D Bits creates a hidden product to represent it. Your shopper does not normally see these as separate items - the cart and checkout both show one line at the configured price, with the choices summarised beneath it. The exception is a configuration that posts more than 2,000 units on one of those lines: Shopify will not combine a group that large, so the parts stay listed separately. Publishing warns you when a configuration of yours will do that, and stops when the configuration has a part picked from your variants, which checks out only combined.
 
 ## What you will see
 

@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/ifc",
-    "version": "1.6.0-rc.0",
+    "version": "1.6.0",
     "description": "Bit By Bit Developers IFC library to write, read and author BIM models in TypeScript",
     "homepage": "https://docs.bitbybit.dev/classes/Bit.IFC",
     "main": "index.js",
@@ -106,7 +106,7 @@
     },
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/base": "1.6.0-rc.0"
+        "@bitbybit-dev/base": "1.6.0"
     },
     "devDependencies": {
         "@microsoft/api-extractor": "7.59.1",

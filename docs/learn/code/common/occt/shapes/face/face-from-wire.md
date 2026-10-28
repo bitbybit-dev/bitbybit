@@ -65,3 +65,7 @@ This example demonstrates creating a star-shaped face from a reversed wire to co
 **Planar Faces**: Setting `planar: true` ensures that the face lies entirely in a single plane. This is essential for most 2D shapes and guarantees predictable behavior in subsequent 3D operations.
 
 **Face Orientation**: The orientation of the created face affects lighting, material rendering, and boolean operations. Wire reversal gives you control over which side of the face is considered the "front" or "outside" surface.
+
+## A face on a curved surface
+
+A face need not be flat. `bitbybit.occt.shapes.face.createFaceBoundedByWiresOnFace` cuts the one face of another face's surface that wires lying on it enclose: an outer boundary and its holes, or two loops that go round a closed surface, such as the band between two circles on a cone. The wires are given in 3D, in any order and either way round, and the new edges get their curves on the surface, so wires built anywhere work as long as they lie on it.

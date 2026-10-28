@@ -53,6 +53,9 @@
         }
     },
     "files/zip.ts": {
+        "dosDateTime": {
+            "internal": "file-format plumbing behind io's readers and the apps' archive downloads, not geometry"
+        },
         "isZip": {
             "internal": "file-format plumbing behind io's readers, not geometry"
         },
@@ -61,6 +64,15 @@
         },
         "zipEntryData": {
             "internal": "file-format plumbing behind io's readers, not geometry"
+        },
+        "zipStored": {
+            "internal": "file-format plumbing behind io's readers and the apps' archive downloads, not geometry"
+        },
+        "zipStoredBlob": {
+            "internal": "file-format plumbing behind io's readers and the apps' archive downloads, not geometry"
+        },
+        "zipStoredParts": {
+            "internal": "file-format plumbing behind io's readers and the apps' archive downloads, not geometry"
         }
     },
     "geometry/arcs.ts": {

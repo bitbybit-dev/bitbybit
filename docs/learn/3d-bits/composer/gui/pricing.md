@@ -2,7 +2,7 @@
 sidebar_position: 6
 title: "Pricing in the Panel"
 sidebar_label: Pricing
-description: The Pricing tab in Composer - the base price, formulas, the floor your product's own price sets, and where to read about charging properly.
+description: The Pricing tab in Composer - the base price, formulas, your product's own price as the base price, and where to read about charging properly.
 tags: [3d-bits, composer, gui, pricing]
 topic: composer.gui.pricing
 type: how-to
@@ -26,7 +26,7 @@ Pricing is the part of 3D Bits where a mistake costs real money, and it has its 
 
 **[Pricing](/learn/3d-bits/pricing)** is the place to go, and [Setting up pricing](/learn/3d-bits/pricing/setting-up-pricing) is the walkthrough.
 
-## Your product's own price, and the floor it sets
+## Your product's own price, and the base price
 
 Under the base price the tab draws a short table. It is the most useful thing on the page, and it is worth learning to read:
 
@@ -34,13 +34,13 @@ Under the base price the tab draws a short table. It is the most useful thing on
 |---|---|
 | **The product's own price** | What the Shopify product the configurator sits on costs. |
 | **Base price** | What you typed above. |
-| **Products already in the base price** | Any parts you marked as already covered by the base price. |
+| **Products already in the base price** | Any linked parts you marked as already covered by the base price - Bundled parts charging only, since Product lines refuses them. |
 | **The shopper sees** | The total for the cheapest configuration. |
 | **The cheapest cart can collect** | The least the cart could actually charge for it. |
 
-With **Product lines** charging, the product's own price is posted on every configured order and is never rewritten. So the last row is a floor: if what the shopper sees is below it, the cheapest configuration could not be added to a cart at all, and the tab says so in red.
+With **Product lines** charging, Shopify charges your product at its own price, so the base price is the product's price: the first two rows should be the same. When the base price is below the last row, the cheapest configuration could not be added to a cart at all, and the tab says so in red.
 
-Publishing enforces the same rule across every configuration a shopper can reach, and refuses rather than going live. The message names the figure your product should carry, and the project page can set it for you.
+Publishing refuses while no variant of the product costs the base price, and names the product. The project page can set the product's price to the base price for you, or you can change the base price here to the product's price. Variants at other prices still publish, with a warning naming what a shopper choosing each one pays.
 
 ## What sits in this tab
 
@@ -52,7 +52,7 @@ Publishing enforces the same rule across every configuration a shopper can reach
 A quantity control multiplies the **price** of one configured set. It does not change how many you ship. If you want a shopper to buy six of what they configured, add a **Quantity** element in the [Layout](/learn/3d-bits/composer/gui/layout) tab instead.
 :::
 
-**Disable options that cannot currently be sold** checks the real products behind your priced options and parts when the page loads and while the shopper configures. When something is out of stock it moves the shopper to the nearest configuration you can sell and says what changed, and it greys out any choice nothing can make sellable or whose price no longer matches what you published. It never changes what anyone is charged. You can write the message a shopper sees. See [Linked products](/learn/3d-bits/pricing/linked-products#showing-what-cannot-be-bought-right-now).
+**Disable options that cannot currently be sold** checks the real products behind your priced options and parts when the page loads and while the shopper configures. When something is out of stock it moves the shopper to the nearest configuration you can sell and says what changed, and it greys out any choice nothing can make sellable - or, where checkout still charges the price you published, whose price no longer matches it. It never changes what anyone is charged. You can write the message a shopper sees. See [Linked products](/learn/3d-bits/pricing/linked-products#showing-what-cannot-be-bought-right-now).
 
 **Save the configuration on the order** writes the shopper's choices onto the order as line item properties, so your team can read what to make.
 
