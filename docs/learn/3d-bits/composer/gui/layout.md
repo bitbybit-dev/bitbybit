@@ -163,7 +163,7 @@ Three things set it apart from the other conditions:
 - **Choices inside are charged either way.** Checkout cannot see the page address, so a control inside keeps its default whether the element shows or not, and that default counts toward the price. Give any priced choice in such an element a default that costs nothing.
 - **Required fields inside are required only for those visitors.** Everyone else never sees them, so they can add to cart without filling them in.
 
-Publishing warns you about a required or priced control inside such an element. An **Add to cart** inside one is likewise for those visitors only: everyone else keeps your theme's own buy button, even when you chose to hide it in favour of the panel's.
+Don't use the parameter your shared configuration links carry (`bb-config`, unless you renamed it under [The URL parameter](./settings.md#the-url-parameter)): everyone opening a shared configuration would then see the element. The Composer lists that as a setup issue. Publishing warns you about a required or priced control inside such an element. An **Add to cart** inside one is likewise for those visitors only: everyone else keeps your theme's own buy button, even when you chose to hide it in favour of the panel's.
 
 In Play, the link button in the toolbar appears once an element uses a page address. It lists every parameter your panel uses, so you can switch each on and see the panel as those visitors will. The Layout tab preview always shows these elements, so you can design them.
 
