@@ -871,6 +871,41 @@
     "path": "learn/code/common/occt/operations/wire-offset-multiple.md"
   },
   {
+    "id": "code.occt.parts",
+    "title": "Standard Parts: Sizes, Solids, Frames and Roles",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/parts/intro",
+    "path": "learn/code/common/occt/parts/intro.md"
+  },
+  {
+    "id": "code.occt.parts.bearings-keys-rings-springs",
+    "title": "Bearings, Keys, Retaining Rings and Springs",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/parts/bearings-keys-rings-springs",
+    "path": "learn/code/common/occt/parts/bearings-keys-rings-springs.md"
+  },
+  {
+    "id": "code.occt.parts.fasteners",
+    "title": "Fasteners: Bolts, Screws, Nuts, Washers and Pins",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/parts/fasteners",
+    "path": "learn/code/common/occt/parts/fasteners.md"
+  },
+  {
+    "id": "code.occt.parts.gears",
+    "title": "Gears: Spur, Helical, Bevel, Ring and Rack",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/parts/gears",
+    "path": "learn/code/common/occt/parts/gears.md"
+  },
+  {
+    "id": "code.occt.parts.machining",
+    "title": "Machining: Threads, Keyways, Grooves, Splines, Knurls and Flats",
+    "type": "explanation",
+    "url": "/learn/code/common/occt/parts/machining",
+    "path": "learn/code/common/occt/parts/machining.md"
+  },
+  {
     "id": "code.occt.select",
     "title": "Selecting Faces and Edges by Rule",
     "type": "explanation",

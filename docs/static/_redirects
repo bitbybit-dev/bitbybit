@@ -185,6 +185,11 @@
 /help/code.occt.operations.simple-loft                           /learn/code/common/occt/operations/simple-loft  302
 /help/code.occt.operations.thick-solids                          /learn/code/common/occt/operations/thick-solids  302
 /help/code.occt.operations.wire-offset-multiple                  /learn/code/common/occt/operations/wire-offset-multiple  302
+/help/code.occt.parts                                            /learn/code/common/occt/parts/intro  302
+/help/code.occt.parts.bearings-keys-rings-springs                /learn/code/common/occt/parts/bearings-keys-rings-springs  302
+/help/code.occt.parts.fasteners                                  /learn/code/common/occt/parts/fasteners  302
+/help/code.occt.parts.gears                                      /learn/code/common/occt/parts/gears  302
+/help/code.occt.parts.machining                                  /learn/code/common/occt/parts/machining  302
 /help/code.occt.select                                           /learn/code/common/occt/select/intro  302
 /help/code.occt.shapes                                           /learn/code/common/occt/shapes/intro  302
 /help/code.occt.shapes.compound                                  /learn/code/common/occt/shapes/compound/intro  302
