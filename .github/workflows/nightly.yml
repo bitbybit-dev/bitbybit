@@ -33,7 +33,7 @@ jobs:
       - run: npm test
       # The three packages the aggregate leaves out, run here too: the report below expects every
       # package that has a suite to have left results, and calls the run red when one has not.
-      - run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run test:coverage
+      - run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run test:coverage && pnpm --filter @bitbybit-dev/cad-cloud-sdk run build
       # The MCP server's suite, with its network test on: it fetches the published index of this
       # package's version and skips itself while that version has none.
       - run: pnpm --filter @bitbybit-dev/mcp run test:coverage

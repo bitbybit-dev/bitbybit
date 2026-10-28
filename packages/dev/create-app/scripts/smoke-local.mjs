@@ -63,6 +63,8 @@ function replaceWithWorkspace(projectDir) {
     for (const entry of readdirSync(scope)) {
         const source = publishedDir(entry);
         if (!source || !existsSync(path.join(source, "package.json"))) { console.log(`skip  ${entry}: no built package at ${source ?? "?"} - build the packages first`); continue; }
+        const { main } = JSON.parse(readFileSync(path.join(source, "package.json"), "utf8"));
+        if (typeof main === "string" && !existsSync(path.join(source, main))) { console.log(`FAIL  link ${entry}: ${path.join(source, main)} is missing - build the package first`); failures.push(`link ${entry}`); continue; }
         const target = path.join(scope, entry);
         rmSync(target, { recursive: true, force: true });
         cpSync(source, target, { recursive: true, filter: (p) => !p.includes(`${path.sep}node_modules${path.sep}`) && !p.endsWith(`${path.sep}node_modules`) });
