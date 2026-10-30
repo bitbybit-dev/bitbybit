@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "O número a escrever, como um comprimento em polegadas.",
     "Inputs.Math.FractionTextDto.denominator_description": "A fração mais fina a que arredondar: um número inteiro como 64 para sessenta e quatro avos de polegada.",
     "Inputs.Color.ChannelDto_description": "Um canal de cor para `color.srgbToLinear` e `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "O canal, de 0 a 1."
+    "Inputs.Color.ChannelDto.channel_description": "O canal, de 0 a 1.",
+    "precisionShare": "fração de precisão",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Eleva `precision` a esta fração do lado mais comprido da caixa delimitadora de cada forma, de modo que\nas formas grandes recebem uma malha mais grosseira e as pequenas mantêm `precision`. Ignorado com `relativeDeflection`.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Eleva `precision` a esta fração do lado mais comprido da caixa delimitadora da forma, de modo que\nas formas grandes recebem uma malha mais grosseira e as pequenas mantêm `precision`. Ignorado com `relativeDeflection`.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Eleva `precision` a esta fração do lado mais comprido da caixa delimitadora de cada forma, de modo que\nas formas grandes recebem uma malha mais grosseira e as pequenas mantêm `precision`. Ignorado com `relativeDeflection`."
 }

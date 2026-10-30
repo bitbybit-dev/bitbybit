@@ -288,7 +288,7 @@ export namespace Draw {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean) {
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
@@ -326,6 +326,7 @@ export namespace Draw {
             if (edgeContrast !== undefined) { this.edgeContrast = edgeContrast; }
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+            if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
         }
         /**
          * How opaque the faces are, from 0 to 1, multiplied into each look's own opacity. This renderer
@@ -438,6 +439,15 @@ export namespace Draw {
          * @default false
          */
         relativeDeflection?: boolean | undefined = false;
+        /**
+         * Raises `precision` to this share of the longest side of each shape's bounding box, so large
+         * shapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.
+         * @default 0
+         * @minimum 0
+         * @maximum 1
+         * @step 0.00001
+         */
+        precisionShare?: number | undefined = 0;
         /**
          * When true, each edge's index is written beside the middle of the edge, handy for picking
          * edges to fillet.

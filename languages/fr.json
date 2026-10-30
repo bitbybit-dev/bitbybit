@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "Le nombre à écrire, comme une longueur en pouces.",
     "Inputs.Math.FractionTextDto.denominator_description": "La fraction la plus fine d'arrondi : un nombre entier comme 64 pour des soixante-quatrièmes de pouce.",
     "Inputs.Color.ChannelDto_description": "Un canal de couleur pour `color.srgbToLinear` et `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "Le canal, de 0 à 1."
+    "Inputs.Color.ChannelDto.channel_description": "Le canal, de 0 à 1.",
+    "precisionShare": "part de précision",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Porte `precision` à cette part du côté le plus long de la boîte englobante de chaque forme, de sorte que\nles grandes formes sont maillées plus grossièrement et les petites gardent `precision`. Ignoré avec `relativeDeflection`.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Porte `precision` à cette part du côté le plus long de la boîte englobante de la forme, de sorte que\nles grandes formes sont maillées plus grossièrement et les petites gardent `precision`. Ignoré avec `relativeDeflection`.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Porte `precision` à cette part du côté le plus long de la boîte englobante de chaque forme, de sorte que\nles grandes formes sont maillées plus grossièrement et les petites gardent `precision`. Ignoré avec `relativeDeflection`."
 }

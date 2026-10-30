@@ -18754,5 +18754,9 @@
     "Inputs.Math.UnitOfLengthDto.unit_description": "The unit to measure in millimetres.",
     "Inputs.Math.FractionTextDto_description": "A number and the denominator to write it to, for `math.toFractionText`, which gives it as a\nwhole number and a reduced fraction such as `1-1/4`.",
     "Inputs.Math.FractionTextDto.number_description": "The number to write, such as a length in inches.",
-    "Inputs.Math.FractionTextDto.denominator_description": "The finest fraction to round to: a whole number such as 64 for sixty-fourths of an inch."
+    "Inputs.Math.FractionTextDto.denominator_description": "The finest fraction to round to: a whole number such as 64 for sixty-fourths of an inch.",
+    "precisionShare": "precision share",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Raises `precision` to this share of the longest side of each shape's bounding box, so large\nshapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Raises `precision` to this share of the longest side of the shape's bounding box, so large\nshapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Raises `precision` to this share of the longest side of each shape's bounding box, so large\nshapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`."
 }

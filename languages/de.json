@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "Die zu schreibende Zahl, etwa eine Länge in Zoll.",
     "Inputs.Math.FractionTextDto.denominator_description": "Der feinste Bruch, auf den gerundet wird: eine ganze Zahl wie 64 für Vierundsechzigstel eines Zolls.",
     "Inputs.Color.ChannelDto_description": "Ein Farbkanal für `color.srgbToLinear` und `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "Der Kanal, von 0 bis 1."
+    "Inputs.Color.ChannelDto.channel_description": "Der Kanal, von 0 bis 1.",
+    "precisionShare": "Präzisionsanteil",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Hebt `precision` auf diesen Anteil der längsten Seite der Begrenzungsbox jeder Form an, sodass große\nFormen gröber vernetzt werden und kleine `precision` behalten. Mit `relativeDeflection` wird es ignoriert.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Hebt `precision` auf diesen Anteil der längsten Seite der Begrenzungsbox der Form an, sodass große\nFormen gröber vernetzt werden und kleine `precision` behalten. Mit `relativeDeflection` wird es ignoriert.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Hebt `precision` auf diesen Anteil der längsten Seite der Begrenzungsbox jeder Form an, sodass große\nFormen gröber vernetzt werden und kleine `precision` behalten. Mit `relativeDeflection` wird es ignoriert."
 }

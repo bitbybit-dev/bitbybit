@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "যে সংখ্যা লিখতে হবে, যেমন ইঞ্চিতে একটি দৈর্ঘ্য।",
     "Inputs.Math.FractionTextDto.denominator_description": "সূক্ষ্মতম ভগ্নাংশ যেখানে গোল করতে হবে: একটি পূর্ণসংখ্যা যেমন 64 ইঞ্চির চৌষট্টি ভাগের জন্য।",
     "Inputs.Color.ChannelDto_description": "`color.srgbToLinear` ও `color.linearToSrgb`-এর জন্য একটি রঙের চ্যানেল।",
-    "Inputs.Color.ChannelDto.channel_description": "চ্যানেল, 0 থেকে 1।"
+    "Inputs.Color.ChannelDto.channel_description": "চ্যানেল, 0 থেকে 1।",
+    "precisionShare": "নির্ভুলতা অংশ",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "`precision`-কে প্রতিটি আকৃতির বাউন্ডিং বক্সের সবচেয়ে লম্বা বাহুর এই অংশ পর্যন্ত বাড়ায়, তাই বড়\nআকৃতিগুলিকে আরও মোটাভাবে মেশ করা হয় এবং ছোটগুলি `precision` বজায় রাখে। `relativeDeflection` সহ এটি উপেক্ষা করা হয়।",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "`precision`-কে আকৃতিটির বাউন্ডিং বক্সের সবচেয়ে লম্বা বাহুর এই অংশ পর্যন্ত বাড়ায়, তাই বড়\nআকৃতিগুলিকে আরও মোটাভাবে মেশ করা হয় এবং ছোটগুলি `precision` বজায় রাখে। `relativeDeflection` সহ এটি উপেক্ষা করা হয়।",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "`precision`-কে প্রতিটি আকৃতির বাউন্ডিং বক্সের সবচেয়ে লম্বা বাহুর এই অংশ পর্যন্ত বাড়ায়, তাই বড়\nআকৃতিগুলিকে আরও মোটাভাবে মেশ করা হয় এবং ছোটগুলি `precision` বজায় রাখে। `relativeDeflection` সহ এটি উপেক্ষা করা হয়।"
 }

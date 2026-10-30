@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "Kirjutatav arv, näiteks pikkus tollides.",
     "Inputs.Math.FractionTextDto.denominator_description": "Kõige peenem murd, milleni ümardada: täisarv, näiteks 64 tolli kuuekümne neljandikeks.",
     "Inputs.Color.ChannelDto_description": "Üks värvikanal funktsioonidele `color.srgbToLinear` ja `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "Kanal vahemikus 0 kuni 1."
+    "Inputs.Color.ChannelDto.channel_description": "Kanal vahemikus 0 kuni 1.",
+    "precisionShare": "täpsuse osakaal",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Tõstab täpsuse `precision` selle osakaaluni iga kuju piirdekasti pikimast küljest, nii et suured\nkujud võrgustatakse jämedamalt ja väikesed säilitavad täpsuse `precision`. Seda ignoreeritakse, kui `relativeDeflection` on sees.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Tõstab täpsuse `precision` selle osakaaluni kuju piirdekasti pikimast küljest, nii et suured\nkujud võrgustatakse jämedamalt ja väikesed säilitavad täpsuse `precision`. Seda ignoreeritakse, kui `relativeDeflection` on sees.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Tõstab täpsuse `precision` selle osakaaluni iga kuju piirdekasti pikimast küljest, nii et suured\nkujud võrgustatakse jämedamalt ja väikesed säilitavad täpsuse `precision`. Seda ignoreeritakse, kui `relativeDeflection` on sees."
 }

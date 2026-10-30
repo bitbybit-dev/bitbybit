@@ -606,3 +606,217 @@ describe("MeshingService edges and buffers", () => {
         expect(refusal).toThrow("the kernel did not answer with a mesh of faces and edges");
     });
 });
+
+describe("MeshingService precision share", () => {
+    let occt: BitbybitOcctModule;
+    let occHelper: OccHelper;
+    let service: OCCTService;
+    const restores: (() => void)[] = [];
+
+    beforeAll(async () => {
+        occt = await createBitbybitOcct();
+        occHelper = new OccHelper(occt);
+        service = new OCCTService(occt, occHelper);
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+        while (restores.length) {
+            restores.pop()!();
+        }
+    });
+
+    const large = (): TopoDS_Shape => service.shapes.solid.createBox({ width: 2000, length: 500, height: 100, center: [0, 0, 0] });
+    const small = (): TopoDS_Shape => service.shapes.solid.createBox({ width: 10, length: 6, height: 4, center: [0, 0, 0] });
+    const precisionsOf = (calls: unknown[][]): unknown[] => calls.map(call => call[1]);
+
+    it("meshes exactly as without a share at a share of 0, and measures nothing", () => {
+        // Arrange
+        const buffers = vi.spyOn(occt, "ShapeToMeshBuffers");
+        const boxes = vi.spyOn(occt, "BoundingBoxOf");
+        const shape = large();
+
+        // Act
+        service.shapeToMesh({ shape, precision: 0.05 });
+        service.shapeToMesh({ shape, precision: 0.05, precisionShare: 0 });
+
+        // Assert
+        expect(buffers.mock.calls[1]).toEqual(buffers.mock.calls[0]);
+        expect(precisionsOf(buffers.mock.calls)).toEqual([0.05, 0.05]);
+        expect(boxes).not.toHaveBeenCalled();
+    });
+
+    it("raises a large shape's precision to its share of the longest side, and keeps a small one's", () => {
+        // Arrange
+        const buffers = vi.spyOn(occt, "ShapeToMeshBuffers");
+
+        // Act
+        service.shapeToMesh({ shape: large(), precision: 0.01, precisionShare: 0.0001 });
+        service.shapeToMesh({ shape: small(), precision: 0.01, precisionShare: 0.0001 });
+
+        // Assert
+        const [raised, kept] = precisionsOf(buffers.mock.calls) as number[];
+        expect(raised).toBeCloseTo(0.2, 6);
+        expect(kept).toBe(0.01);
+    });
+
+    it("sizes each shape of a list by its own box", () => {
+        // Arrange
+        const buffers = vi.spyOn(occt, "ShapeToMeshBuffers");
+
+        // Act
+        service.shapesToMeshes({ shapes: [small(), large()], precision: 0.01, precisionShare: 0.0001 });
+        occHelper.meshingService.shapesToMeshBuffers({ shapes: [small(), large()], precision: 0.01, precisionShare: 0.0001 });
+
+        // Assert
+        const precisions = precisionsOf(buffers.mock.calls) as number[];
+        expect(precisions).toHaveLength(4);
+        expect(precisions[0]).toBe(0.01);
+        expect(precisions[1]).toBeCloseTo(0.2, 6);
+        expect(precisions[2]).toBe(0.01);
+        expect(precisions[3]).toBeCloseTo(0.2, 6);
+    });
+
+    it("ignores the share when the precision is relative, and measures nothing", () => {
+        // Arrange
+        const buffers = vi.spyOn(occt, "ShapeToMeshBuffers");
+        const boxes = vi.spyOn(occt, "BoundingBoxOf");
+
+        // Act
+        service.shapeToMesh({ shape: large(), precision: 0.01, relativeDeflection: true, precisionShare: 0.0001 });
+
+        // Assert
+        expect(precisionsOf(buffers.mock.calls)).toEqual([0.01]);
+        expect(boxes).not.toHaveBeenCalled();
+    });
+
+    it.each([-0.1, 1.5, Number.NaN])("refuses a precision share of %s before meshing", (precisionShare) => {
+        // Arrange
+        const buffers = vi.spyOn(occt, "ShapeToMeshBuffers");
+
+        // Act
+        const act = (): Inputs.OCCT.DecomposedMeshDto => service.shapeToMesh({ shape: small(), precision: 0.1, precisionShare });
+
+        // Assert
+        expect(act).toThrow(`\`precisionShare\` must be a finite number from 0 to 1; it is ${String(precisionShare)}.`);
+        expect(buffers).not.toHaveBeenCalled();
+    });
+
+    it("draws the iso curves at the raised precision", () => {
+        // Arrange
+        const curves = vi.spyOn(occt, "IsoCurvePolylines");
+        const shape = service.shapes.solid.createCylinder({ radius: 1000, height: 2000, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        // Act
+        occHelper.meshingService.shapeToMeshBuffers({ shape, precision: 0.01, precisionShare: 0.0001, isoCurvesU: 2, isoCurvesV: 2 });
+
+        // Assert
+        expect(curves).toHaveBeenCalledTimes(1);
+        expect(curves.mock.calls[0]![3]).toBeCloseTo(0.2, 6);
+    });
+
+    it("traces a large circle with fewer points at a share", () => {
+        // Arrange
+        const shape = service.shapes.solid.createCylinder({ radius: 5000, height: 1000, center: [0, 0, 0], direction: [0, 1, 0] });
+        const longest = (mesh: Inputs.OCCT.DecomposedMeshDto): number => Math.max(...mesh.edgeList.map(edge => edge.vertexCoord.length));
+
+        // Act
+        const plain = service.shapeToMesh({ shape, precision: 0.01 });
+        const shared = service.shapeToMesh({ shape, precision: 0.01, precisionShare: 0.0001 });
+
+        // Assert
+        expect(longest(shared) * 5).toBeLessThan(longest(plain));
+    });
+
+    it("meshes through the kernel's JSON at the raised precision when the kernel has no buffers", () => {
+        // Arrange
+        const original: unknown = Reflect.get(occt, "DocumentToMeshBuffers");
+        Reflect.set(occt, "DocumentToMeshBuffers", undefined);
+        restores.push(() => Reflect.set(occt, "DocumentToMeshBuffers", original));
+        const json = vi.spyOn(occt, "ShapeToMeshJson");
+
+        // Act
+        service.shapeToMesh({ shape: large(), precision: 0.01, precisionShare: 0.0001 });
+
+        // Assert
+        expect(json).toHaveBeenCalledTimes(1);
+        expect(json.mock.calls[0]![1]).toBeCloseTo(0.2, 6);
+    });
+
+    it.each([
+        ["empty", []],
+        ["open", [-1e100, -1e100, -1e100, 1e100, 1e100, 1e100]],
+        ["infinite", [0, 0, 0, Infinity, 0, 0]],
+    ] as [string, number[]][])("keeps the precision of a shape whose box is %s", (_name, box) => {
+        // Arrange
+        vi.spyOn(occt, "BoundingBoxOf").mockReturnValue(new Float64Array(box));
+        const buffers = vi.spyOn(occt, "ShapeToMeshBuffers");
+
+        // Act
+        service.shapeToMesh({ shape: small(), precision: 0.01, precisionShare: 0.0001 });
+
+        // Assert
+        expect(precisionsOf(buffers.mock.calls)).toEqual([0.01]);
+    });
+
+    it("keeps the precision of a point too far out to measure", () => {
+        // Arrange
+        const scale = new occt.gp_Trsf();
+        const origin = new occt.gp_Pnt(0, 0, 0);
+        scale.SetScale(origin, 10);
+        const location = new occt.TopLoc_Location(scale);
+        const vertex = service.shapes.vertex.vertexFromXYZ({ x: 1e308, y: 0, z: 0 }).Located(location);
+        const buffers = vi.spyOn(occt, "ShapeToMeshBuffers");
+
+        // Act
+        const mesh = service.shapeToMesh({ shape: vertex, precision: 0.1, precisionShare: 0.0001 });
+
+        // Assert
+        expect(precisionsOf(buffers.mock.calls)).toEqual([0.1]);
+        expect(mesh.pointsList).toEqual([[Infinity, 0, 0]]);
+    });
+
+    it("still refuses a precision of 0 with a share", () => {
+        // Act
+        const mesh = service.shapeToMesh({ shape: small(), precision: 0, precisionShare: 0.0001 });
+
+        // Assert
+        expect(mesh).toEqual({ error: "ShapeToMeshJson: the precision must be a finite number of at least 1e-7" });
+    });
+
+    it("measures a shape alike whether or not it keeps an earlier mesh", () => {
+        // Arrange
+        const shape = service.shapes.solid.createSphere({ radius: 5000, center: [0, 0, 0] });
+        const buffers = vi.spyOn(occt, "ShapeToMeshBuffers");
+
+        // Act
+        service.shapeToMesh({ shape, precision: 0.05, precisionShare: 0.0001 });
+        service.shapeToMesh({ shape, precision: 50, keepMeshData: true });
+        service.shapeToMesh({ shape, precision: 0.05, precisionShare: 0.0001 });
+
+        // Assert
+        const [first, , again] = precisionsOf(buffers.mock.calls);
+        expect(again).toBe(first);
+        expect(first).toBeCloseTo(1, 6);
+    });
+
+    it("takes the precision share last in the mesh and draw inputs, 0 by default", () => {
+        // Act
+        const one = new Inputs.OCCT.ShapeToMeshDto(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0.2, true, 0.00005);
+        const many = new Inputs.OCCT.ShapesToMeshesDto(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0.2, true, 0.00005);
+        const drawn = new Inputs.OCCT.DrawShapeDto(
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0.2, true, 0.00005
+        );
+        const drawnMany = new Inputs.OCCT.DrawShapesDto(
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0.2, true, 0.00005
+        );
+
+        // Assert
+        expect([one, many, drawn, drawnMany].map(dto => [dto.relativeDeflection, dto.precisionShare])).toEqual([[true, 0.00005], [true, 0.00005], [true, 0.00005], [true, 0.00005]]);
+        expect([new Inputs.OCCT.ShapeToMeshDto(), new Inputs.OCCT.ShapesToMeshesDto(), new Inputs.OCCT.DrawShapeDto(), new Inputs.OCCT.DrawShapesDto()].map(dto => dto.precisionShare)).toEqual([0, 0, 0, 0]);
+    });
+});

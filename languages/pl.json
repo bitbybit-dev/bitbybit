@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "Liczba do zapisania, na przykład długość w calach.",
     "Inputs.Math.FractionTextDto.denominator_description": "Najdrobniejszy ułamek, do którego zaokrąglić: liczba całkowita, taka jak 64, dla sześćdziesiątych czwartych cala.",
     "Inputs.Color.ChannelDto_description": "Jeden kanał koloru dla `color.srgbToLinear` i `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "Kanał, od 0 do 1."
+    "Inputs.Color.ChannelDto.channel_description": "Kanał, od 0 do 1.",
+    "precisionShare": "udział precyzji",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Zwiększa `precision` do tego ułamka najdłuższego boku prostopadłościanu otaczającego każdy kształt,\nwięc duże kształty dostają grubszą siatkę, a małe zachowują `precision`. Przy `relativeDeflection` jest ignorowany.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Zwiększa `precision` do tego ułamka najdłuższego boku prostopadłościanu otaczającego kształt,\nwięc duże kształty dostają grubszą siatkę, a małe zachowują `precision`. Przy `relativeDeflection` jest ignorowany.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Zwiększa `precision` do tego ułamka najdłuższego boku prostopadłościanu otaczającego każdy kształt,\nwięc duże kształty dostają grubszą siatkę, a małe zachowują `precision`. Przy `relativeDeflection` jest ignorowany."
 }

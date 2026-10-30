@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "Число для запису, наприклад довжина в дюймах.",
     "Inputs.Math.FractionTextDto.denominator_description": "Найдрібніший дріб для округлення: ціле число, наприклад 64 для шістдесят четвертих частин дюйма.",
     "Inputs.Color.ChannelDto_description": "Один канал кольору для `color.srgbToLinear` і `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "Канал, від 0 до 1."
+    "Inputs.Color.ChannelDto.channel_description": "Канал, від 0 до 1.",
+    "precisionShare": "частка точності",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Підвищує `precision` до цієї частки найдовшої сторони обмежувальної коробки кожної форми, тож\nвеликі форми триангулюються грубіше, а малі зберігають `precision`. З `relativeDeflection` ігнорується.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Підвищує `precision` до цієї частки найдовшої сторони обмежувальної коробки форми, тож\nвеликі форми триангулюються грубіше, а малі зберігають `precision`. З `relativeDeflection` ігнорується.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Підвищує `precision` до цієї частки найдовшої сторони обмежувальної коробки кожної форми, тож\nвеликі форми триангулюються грубіше, а малі зберігають `precision`. З `relativeDeflection` ігнорується."
 }

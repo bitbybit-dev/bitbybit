@@ -25,6 +25,19 @@ build - so it detects what the loaded kernel has instead of assuming it.
 - The angular deflection is checked to lie from 0.001 to pi radians before any call: a kernel
   refuses an angle outside that range, and the JSON path it would fall back to meshes at 0.5 rad, so
   a wrong angle would otherwise pass unnoticed.
+- **A precision share sizes the precision per shape** (`sizedFor`): a shape meshes at the larger of
+  `precision` and `precisionShare` times the longest side of its box, so a 20 m hull and a 10 mm
+  bolt drawn at a share of 0.00005 and 0.05 mm mesh at 1 mm and 0.05 mm, each as fine as it looks.
+  This is how OCCT's own viewer sizes its deflection (`Prs3d::GetDeflection`, the longest side
+  times its coefficient). The box is `BoundingBoxOf`, which reads no triangulation, so a shape
+  measures the same with or without a kept mesh. The faces, the edges, the iso curves and the JSON
+  path all take the sized value. Nothing is measured at a share of 0, under `relativeDeflection`
+  (OCCT then sizes every edge and face by its own size, which meshes small features far finer), or
+  when `precision` is not above 0, so the kernel's refusal of 0 stands. A box that is empty, open
+  or not finite keeps `precision`. Documents are meshed by the kernel one free shape after another,
+  so they take no share. The clash meshes size their error from the box diagonal instead
+  (`meshErrorFrom`): theirs bounds how far two meshes may stray from each other, not how a shape
+  looks.
 - The kernel refuses a zero pull direction whatever surface analysis it measures, so the analyses
   that read none are handed `[0, 1, 0]` (`UNREAD_PULL`). Draft angles come back in degrees.
 - The buffer path copies the mesh out of wasm memory and frees the kernel's copy. Every array is

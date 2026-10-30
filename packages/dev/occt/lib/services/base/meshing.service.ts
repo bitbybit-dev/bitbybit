@@ -9,6 +9,7 @@ import { decodeMeshArrays, decodeMeshBuffers, decodePolylines, meshBuffersFromLi
 import type { WithIsoCurves } from "./mesh-arrays-types";
 import { checkedChoice, checkedDirection, checkedNumber, checkedShapes, checkedWhole } from "./input-checks";
 import { degreesOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
+import { subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
 const SURFACE_ANALYSES: readonly Inputs.OCCT.surfaceAnalysisEnum[] = [
     Inputs.OCCT.surfaceAnalysisEnum.none,
@@ -24,6 +25,10 @@ const MOST_ISO_CURVES = 1000;
 
 
 const LEAST_ANGULAR_DEFLECTION = 0.001;
+
+const BOX_VALUES = 6;
+
+const UNBOUNDED_SIDE = 1e100;
 
 interface Fineness {
     angularDeflection: number;
@@ -106,6 +111,7 @@ export class MeshingService {
             precision: inputs.precision,
             angularDeflection: inputs.angularDeflection,
             relativeDeflection: inputs.relativeDeflection,
+            precisionShare: inputs.precisionShare,
             adjustYtoZ: inputs.adjustYtoZ,
             computeMetadata: inputs.computeMetadata,
             keepMeshData: inputs.keepMeshData,
@@ -131,7 +137,8 @@ export class MeshingService {
         if (!resolved.shape || resolved.shape.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
-        return this.bufferedMesh(resolved, decodeMeshArrays) ?? this.jsonMesh(resolved);
+        const sized = this.sizedFor(resolved);
+        return this.bufferedMesh(sized, decodeMeshArrays) ?? this.jsonMesh(sized);
     }
 
     shapeToMeshBuffers(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshBuffersDto {
@@ -139,7 +146,8 @@ export class MeshingService {
         if (!resolved.shape || resolved.shape.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
-        return this.bufferedMesh(resolved, decodeMeshBuffers) ?? meshBuffersFromLists(this.jsonMesh(resolved));
+        const sized = this.sizedFor(resolved);
+        return this.bufferedMesh(sized, decodeMeshBuffers) ?? meshBuffersFromLists(this.jsonMesh(sized));
     }
 
     shapesToMeshBuffers(inputs: Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshBuffersDto[] {
@@ -189,6 +197,24 @@ export class MeshingService {
             resolved.forceFaceDeflection,
         );
         return JSON.parse(json) as Inputs.OCCT.DecomposedMeshDto;
+    }
+
+    private sizedFor(resolved: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>): Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape> {
+        const share = checkedNumber(resolved.precisionShare, "precisionShare", 0, 1);
+        if (share === 0 || resolved.relativeDeflection === true || !(resolved.precision > 0)) {
+            return resolved;
+        }
+        const side = this.longestSideOf(resolved.shape);
+        return side === undefined ? resolved : { ...resolved, precision: Math.max(resolved.precision, share * side) };
+    }
+
+    private longestSideOf(shape: TopoDS_Shape): number | undefined {
+        const box = this.occ.BoundingBoxOf(shape);
+        if (box.length < BOX_VALUES) {
+            return undefined;
+        }
+        const side = Math.max(...subtract3([box[3]!, box[4]!, box[5]!], [box[0]!, box[1]!, box[2]!]));
+        return Number.isFinite(side) && side < UNBOUNDED_SIDE ? side : undefined;
     }
 
     private checkedFineness(inputs: Fineness): Fineness {

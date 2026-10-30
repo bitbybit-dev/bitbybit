@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "Rakstāmais skaitlis, piemēram, garums collās.",
     "Inputs.Math.FractionTextDto.denominator_description": "Smalkākais daļskaitlis, līdz kuram noapaļot: vesels skaitlis, piemēram, 64 collas sešdesmit ceturtdaļām.",
     "Inputs.Color.ChannelDto_description": "Viens krāsas kanāls metodēm `color.srgbToLinear` un `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "Kanāls no 0 līdz 1."
+    "Inputs.Color.ChannelDto.channel_description": "Kanāls no 0 līdz 1.",
+    "precisionShare": "precizitātes daļa",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Palielina `precision` līdz šai daļai no katras formas ierobežojošās kastes garākās malas,\ntāpēc lielas formas tiek tīklotas rupjāk, bet mazās saglabā `precision`. Ar `relativeDeflection` tas tiek ignorēts.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Palielina `precision` līdz šai daļai no formas ierobežojošās kastes garākās malas,\ntāpēc lielas formas tiek tīklotas rupjāk, bet mazās saglabā `precision`. Ar `relativeDeflection` tas tiek ignorēts.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Palielina `precision` līdz šai daļai no katras formas ierobežojošās kastes garākās malas,\ntāpēc lielas formas tiek tīklotas rupjāk, bet mazās saglabā `precision`. Ar `relativeDeflection` tas tiek ignorēts."
 }

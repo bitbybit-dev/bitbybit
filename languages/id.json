@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "Angka yang ditulis, seperti panjang dalam inci.",
     "Inputs.Math.FractionTextDto.denominator_description": "Pecahan terhalus untuk pembulatan: bilangan bulat seperti 64 untuk enam puluh empat bagian inci.",
     "Inputs.Color.ChannelDto_description": "Satu kanal warna untuk `color.srgbToLinear` dan `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "Kanal, dari 0 sampai 1."
+    "Inputs.Color.ChannelDto.channel_description": "Kanal, dari 0 sampai 1.",
+    "precisionShare": "porsi presisi",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Menaikkan `precision` ke porsi ini dari sisi terpanjang kotak pembatas setiap bentuk, sehingga\nbentuk besar di-mesh lebih kasar dan yang kecil tetap memakai `precision`. Diabaikan dengan `relativeDeflection`.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Menaikkan `precision` ke porsi ini dari sisi terpanjang kotak pembatas bentuk, sehingga\nbentuk besar di-mesh lebih kasar dan yang kecil tetap memakai `precision`. Diabaikan dengan `relativeDeflection`.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Menaikkan `precision` ke porsi ini dari sisi terpanjang kotak pembatas setiap bentuk, sehingga\nbentuk besar di-mesh lebih kasar dan yang kecil tetap memakai `precision`. Diabaikan dengan `relativeDeflection`."
 }

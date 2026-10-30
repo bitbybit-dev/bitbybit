@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "Kirjoitettava luku, kuten pituus tuumina.",
     "Inputs.Math.FractionTextDto.denominator_description": "Hienoin murtoluku, johon pyöristetään: kokonaisluku, kuten 64 kuudennellekymmenennelleneljännelle tuumaa.",
     "Inputs.Color.ChannelDto_description": "Yksi värikanava funktioille `color.srgbToLinear` ja `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "Kanava väliltä 0-1."
+    "Inputs.Color.ChannelDto.channel_description": "Kanava väliltä 0-1.",
+    "precisionShare": "tarkkuuden osuus",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Nostaa tarkkuuden `precision` tähän osuuteen kunkin muodon rajauslaatikon pisimmästä sivusta, joten\nsuuret muodot verkotetaan karkeammin ja pienet säilyttävät tarkkuuden `precision`. Se ohitetaan, kun `relativeDeflection` on päällä.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Nostaa tarkkuuden `precision` tähän osuuteen muodon rajauslaatikon pisimmästä sivusta, joten\nsuuret muodot verkotetaan karkeammin ja pienet säilyttävät tarkkuuden `precision`. Se ohitetaan, kun `relativeDeflection` on päällä.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Nostaa tarkkuuden `precision` tähän osuuteen kunkin muodon rajauslaatikon pisimmästä sivusta, joten\nsuuret muodot verkotetaan karkeammin ja pienet säilyttävät tarkkuuden `precision`. Se ohitetaan, kun `relativeDeflection` on päällä."
 }

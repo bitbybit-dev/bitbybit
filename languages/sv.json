@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "Talet som ska skrivas, till exempel en längd i tum.",
     "Inputs.Math.FractionTextDto.denominator_description": "Det finaste bråk det avrundas till: ett heltal som 64 för sextiofjärdedels tum.",
     "Inputs.Color.ChannelDto_description": "En färgkanal för `color.srgbToLinear` och `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "Kanalen, från 0 till 1."
+    "Inputs.Color.ChannelDto.channel_description": "Kanalen, från 0 till 1.",
+    "precisionShare": "precisionsandel",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Höjer `precision` till denna andel av den längsta sidan på varje forms begränsningsram, så att\nstora former meshas grövre och små behåller `precision`. Ignoreras med `relativeDeflection`.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Höjer `precision` till denna andel av den längsta sidan på formens begränsningsram, så att\nstora former meshas grövre och små behåller `precision`. Ignoreras med `relativeDeflection`.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Höjer `precision` till denna andel av den längsta sidan på varje forms begränsningsram, så att\nstora former meshas grövre och små behåller `precision`. Ignoreras med `relativeDeflection`."
 }

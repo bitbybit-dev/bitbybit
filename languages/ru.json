@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "Число для записи, например длина в дюймах.",
     "Inputs.Math.FractionTextDto.denominator_description": "Самая мелкая дробь для округления: целое число, например 64 для шестьдесят четвертых долей дюйма.",
     "Inputs.Color.ChannelDto_description": "Один канал цвета для `color.srgbToLinear` и `color.linearToSrgb`.",
-    "Inputs.Color.ChannelDto.channel_description": "Канал, от 0 до 1."
+    "Inputs.Color.ChannelDto.channel_description": "Канал, от 0 до 1.",
+    "precisionShare": "доля точности",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "Повышает `precision` до этой доли самой длинной стороны ограничивающего бокса каждой формы, поэтому\nкрупные формы получают более грубый меш, а мелкие сохраняют `precision`. Игнорируется при `relativeDeflection`.",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "Повышает `precision` до этой доли самой длинной стороны ограничивающего бокса формы, поэтому\nкрупные формы получают более грубый меш, а мелкие сохраняют `precision`. Игнорируется при `relativeDeflection`.",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "Повышает `precision` до этой доли самой длинной стороны ограничивающего бокса каждой формы, поэтому\nкрупные формы получают более грубый меш, а мелкие сохраняют `precision`. Игнорируется при `relativeDeflection`."
 }

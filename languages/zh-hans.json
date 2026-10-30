@@ -18754,5 +18754,9 @@
     "Inputs.Math.FractionTextDto.number_description": "要写出的数字，如以英寸表示的长度。",
     "Inputs.Math.FractionTextDto.denominator_description": "要舍入到的最细分数：整数，如 64 表示六十四分之一英寸。",
     "Inputs.Color.ChannelDto_description": "一个颜色通道，用于 `color.srgbToLinear` 和 `color.linearToSrgb`。",
-    "Inputs.Color.ChannelDto.channel_description": "通道，范围 0 到 1。"
+    "Inputs.Color.ChannelDto.channel_description": "通道，范围 0 到 1。",
+    "precisionShare": "精度份额",
+    "Inputs.Draw.DrawOcctShapeOptions.precisionShare_description": "把 `precision` 提高到每个形状边界框最长边的这一份额，因此大形状网格化得更粗，而小形状保持 `precision`。使用 `relativeDeflection` 时忽略。",
+    "Inputs.OCCT.ShapeToMeshDto.precisionShare_description": "把 `precision` 提高到该形状边界框最长边的这一份额，因此大形状网格化得更粗，而小形状保持 `precision`。使用 `relativeDeflection` 时忽略。",
+    "Inputs.OCCT.ShapesToMeshesDto.precisionShare_description": "把 `precision` 提高到每个形状边界框最长边的这一份额，因此大形状网格化得更粗，而小形状保持 `precision`。使用 `relativeDeflection` 时忽略。"
 }

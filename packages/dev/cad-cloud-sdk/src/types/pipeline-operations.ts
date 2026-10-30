@@ -19219,6 +19219,11 @@ export interface OperationParams {
          */
         relativeDeflection?: boolean | PipelineRef;
         /**
+         * Raises `precision` to this share of the longest side of each shape's bounding box, so large
+         * shapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.
+         */
+        precisionShare?: number | PipelineRef;
+        /**
          * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
          * as up.
          */
@@ -19304,6 +19309,11 @@ export interface OperationParams {
          * small and large parts get triangles in proportion to their size.
          */
         relativeDeflection?: boolean | PipelineRef;
+        /**
+         * Raises `precision` to this share of the longest side of the shape's bounding box, so large
+         * shapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.
+         */
+        precisionShare?: number | PipelineRef;
         /**
          * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
          * up.

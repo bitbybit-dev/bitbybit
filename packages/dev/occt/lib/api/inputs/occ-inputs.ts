@@ -1458,6 +1458,15 @@ export namespace OCCT {
          */
         relativeDeflection?: boolean | undefined = false;
         /**
+         * Raises `precision` to this share of the longest side of each shape's bounding box, so large
+         * shapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.
+         * @default 0
+         * @minimum 0
+         * @maximum 1
+         * @step 0.00001
+         */
+        precisionShare?: number | undefined = 0;
+        /**
          * When true, each edge's index is written next to it, handy for picking edges to fillet.
          * @default false
          */
@@ -1593,7 +1602,7 @@ export namespace OCCT {
         /**
          * Provide options without default values
          */
-        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean) {
+        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
             super();
             if (shape !== undefined) { this.shape = shape; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
@@ -1630,6 +1639,7 @@ export namespace OCCT {
             if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+            if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
         }
         /**
          * The shape to draw; it is meshed at `precision` first.
@@ -1647,7 +1657,7 @@ export namespace OCCT {
         /**
          * Provide options without default values
          */
-        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean) {
+        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
             super();
             if (shapes !== undefined) { this.shapes = shapes; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
@@ -1684,6 +1694,7 @@ export namespace OCCT {
             if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+            if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
         }
         /**
          * The shapes to draw with the same options.
@@ -8349,7 +8360,7 @@ export namespace OCCT {
      * add each face's iso curves and a surface analysis value at every vertex.
      */
     export class ShapeToMeshDto<T> {
-        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean) {
+        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
             if (shape !== undefined) { this.shape = shape; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8363,6 +8374,7 @@ export namespace OCCT {
             if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+            if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
         }
         /**
          * The shape to triangulate.
@@ -8394,6 +8406,15 @@ export namespace OCCT {
          * @default false
          */
         relativeDeflection?: boolean | undefined = false;
+        /**
+         * Raises `precision` to this share of the longest side of the shape's bounding box, so large
+         * shapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.
+         * @default 0
+         * @minimum 0
+         * @maximum 1
+         * @step 0.00001
+         */
+        precisionShare?: number | undefined = 0;
         /**
          * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
          * up.
@@ -8523,7 +8544,7 @@ export namespace OCCT {
      * settings, iso curves and surface analysis included.
      */
     export class ShapesToMeshesDto<T> {
-        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean) {
+        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8537,6 +8558,7 @@ export namespace OCCT {
             if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+            if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
         }
         /**
          * The shapes to triangulate, one mesh per shape.
@@ -8568,6 +8590,15 @@ export namespace OCCT {
          * @default false
          */
         relativeDeflection?: boolean | undefined = false;
+        /**
+         * Raises `precision` to this share of the longest side of each shape's bounding box, so large
+         * shapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.
+         * @default 0
+         * @minimum 0
+         * @maximum 1
+         * @step 0.00001
+         */
+        precisionShare?: number | undefined = 0;
         /**
          * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
          * as up.

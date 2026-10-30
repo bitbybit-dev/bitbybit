@@ -646,6 +646,7 @@ export interface DesignMeshingOptions {
     relativeDeflection: boolean;
     allowQualityDecrease: boolean;
     forceFaceDeflection: boolean;
+    precisionShare?: number | undefined;
 }
 
 /**
@@ -656,7 +657,7 @@ export interface DesignMeshingOptions {
  * @returns The text, the same for every set of options that meshes a shape the same way
  */
 export function designMeshingTextOf(options: DesignMeshingOptions): string {
-    return JSON.stringify([options.precision, options.angularDeflection, options.relativeDeflection, options.allowQualityDecrease, options.forceFaceDeflection]);
+    return JSON.stringify([options.precision, options.angularDeflection, options.relativeDeflection, options.allowQualityDecrease, options.forceFaceDeflection, options.precisionShare ?? 0]);
 }
 
 /** The drawing options a design build's plan reads: the look, and the precision and the meshing options its parts are meshed with. */

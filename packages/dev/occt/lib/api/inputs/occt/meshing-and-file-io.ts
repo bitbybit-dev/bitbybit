@@ -7,7 +7,7 @@ import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum, surfaceAnalysisEn
  * add each face's iso curves and a surface analysis value at every vertex.
  */
 export class ShapeToMeshDto<T> {
-    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean) {
+    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
         if (shape !== undefined) { this.shape = shape; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -21,6 +21,7 @@ export class ShapeToMeshDto<T> {
         if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
         if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
         if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+        if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
     }
     /**
      * The shape to triangulate.
@@ -52,6 +53,15 @@ export class ShapeToMeshDto<T> {
      * @default false
      */
     relativeDeflection?: boolean | undefined = false;
+    /**
+     * Raises `precision` to this share of the longest side of the shape's bounding box, so large
+     * shapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.
+     * @default 0
+     * @minimum 0
+     * @maximum 1
+     * @step 0.00001
+     */
+    precisionShare?: number | undefined = 0;
     /**
      * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
      * up.
@@ -181,7 +191,7 @@ export class ShapeToManifoldMeshDto<T> {
  * settings, iso curves and surface analysis included.
  */
 export class ShapesToMeshesDto<T> {
-    constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean) {
+    constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
         if (shapes !== undefined) { this.shapes = shapes; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -195,6 +205,7 @@ export class ShapesToMeshesDto<T> {
         if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
         if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
         if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+        if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
     }
     /**
      * The shapes to triangulate, one mesh per shape.
@@ -226,6 +237,15 @@ export class ShapesToMeshesDto<T> {
      * @default false
      */
     relativeDeflection?: boolean | undefined = false;
+    /**
+     * Raises `precision` to this share of the longest side of each shape's bounding box, so large
+     * shapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.
+     * @default 0
+     * @minimum 0
+     * @maximum 1
+     * @step 0.00001
+     */
+    precisionShare?: number | undefined = 0;
     /**
      * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
      * as up.
