@@ -16114,7 +16114,7 @@
     "cornerRadius": "stūra rādiuss",
     "xDirection": "x virziens",
     "bitbybit.manifold.recipes.build": "būvēt recepti",
-    "bitbybit.manifold.recipes.build_description": "Būvē katru receptes sakni kā ķermeni, ko novieto tās matrica, saknes secībā.\n\nKoplietotie mezgli tiek būvēti vienreiz. Nederīga recepte izmet kļūdu, pirms kas tiek būvēts; sakne, ko kodols nevar uzbūvēt, piemēram, atvērts tīkls, izmet kļūdu, nosaucot savu mezglu, ja vien nav iestatīts `emptyWhenFailed`. Apļiem tiek doti `circularSegments` sāni; `tolerance` un `millimetresPerUnit` netiek piemēroti.",
+    "bitbybit.manifold.recipes.build_description": "Būvē katru receptes sakni kā ķermeni, ko novieto tās matrica, saknes secībā.\n\nKoplietotie mezgli tiek būvēti vienreiz. Nederīga recepte izmet kļūdu; sakne, ko kodols nevar uzbūvēt, piemēram, atvērts tīkls, izmet kļūdu, ja vien nav iestatīts `emptyWhenFailed`. Griezums, kas atrodas `tolerance` robežās no griežamā objekta ierobežojošās kastes malas, iziet cauri šai malai.",
     "bitbybit.manifold.recipes.build_returns": "Viens ķermenis katrai saknei saknes secībā",
     "bitbybit.manifold.recipes.build_param_inputs": "Recepte, cik smalki apļi tiek dalīti un vai Z pārvēršas par Y",
     "bitbybit.manifold.recipes.meshes": "receptes tīkli",

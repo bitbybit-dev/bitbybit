@@ -315,11 +315,24 @@ the Manifold kernel builds one is in `packages/dev/manifold/ARCHITECTURE.md`.
   since a transferred buffer is detached on the sending side and the caller, or a cache, may still
   hold the recipe.
 - **What the numbers mean is fixed; how finely they are built is not.** A circle's faceting is the
-  executor's choice, so two kernels build close solids, not identical ones. `tolerance` and
-  `millimetresPerUnit` describe the data for whoever reads the results; an executor builds in the
-  recipe's own units and need not apply either. A compound is the space its parts fill together, so
+  executor's choice, so two kernels build close solids, not identical ones. `millimetresPerUnit`
+  describes the data for whoever reads the results; an executor builds in the recipe's own units and
+  need not apply it. A compound is the space its parts fill together, so
   an overlap counts once, though an exact kernel may keep its parts apart; a `union` joins them into
   one solid in every kernel, and an `intersection` keeps the space all its solids share.
+- **A cut reaches through within the tolerance.** `tolerance` is where two positions count as the
+  same, and every executor applies it to cuts: an opening, or a difference's solid tool, that ends
+  within it of a face passes through that face. Exporters write openings exactly as deep as their
+  walls, and composing an opening's placement with its wall's leaves it short of a face by rounding,
+  around 1e-11 of a unit; cut exactly, that leaves a skin as thin as the rounding over every window,
+  which a mesh kernel then tears into slivers. The same happens beside an opening whose sill, head or
+  side lies on a face of its host - a door standing on the wall's bottom, a window at the wall's end.
+  The exact kernel cuts fuzzily at the tolerance and takes an opening within it of both faces as cut
+  through; the Manifold kernel moves the near side of a tool out by the tolerance wherever it stops
+  short of, or overshoots, a side of its host's bounding box by no more than the tolerance (its
+  `ARCHITECTURE.md`). What lies inside the host is cut as drawn: a niche keeps its depth and an
+  opening its outline, and only ends that meet the host's outside move, by the tolerance, which is
+  what the tolerance says - positions closer than it are the same.
 - **Turns and lofts are generic.** A `revolve` turns a profile about an axis in its plane by the
   right-hand rule, and the profile must lie on one side of the axis. A `loft` places profiles by
   frames held in `f64`, sixteen numbers each, and joins each section to the next by straight sides:

@@ -16114,7 +16114,7 @@
     "cornerRadius": "promień narożnika",
     "xDirection": "kierunek x",
     "bitbybit.manifold.recipes.build": "zbuduj recepturę",
-    "bitbybit.manifold.recipes.build_description": "Buduje każdy korzeń receptury jako bryłę umieszczoną przez jego macierz, w kolejności korzeni.\n\nWspółdzielone węzły są budowane raz. Nieprawidłowa receptura zgłasza błąd, zanim cokolwiek zostanie\nzbudowane; korzeń, którego jądro nie potrafi zbudować, taki jak otwarta siatka, zgłasza błąd z nazwą swojego\nwęzła, chyba że ustawiono `emptyWhenFailed`. Okręgi dostają `circularSegments` boków; `tolerance` i\n`millimetresPerUnit` nie są stosowane.",
+    "bitbybit.manifold.recipes.build_description": "Buduje każdy korzeń receptury jako bryłę umieszczoną przez jego macierz, w kolejności korzeni.\n\nWspółdzielone węzły są budowane raz. Nieprawidłowa receptura zgłasza błąd; korzeń, którego jądro nie potrafi zbudować, taki jak otwarta siatka, zgłasza błąd, chyba że ustawiono `emptyWhenFailed`. Cięcie, które kończy się w odległości do `tolerance` od boku prostopadłościanu otaczającego to, co tnie, przechodzi przez ten bok.",
     "bitbybit.manifold.recipes.build_returns": "Jedna bryła na korzeń, w kolejności korzeni",
     "bitbybit.manifold.recipes.build_param_inputs": "Receptura, jak drobno dzielone są okręgi i czy Z zamienia się w Y",
     "bitbybit.manifold.recipes.meshes": "siatki receptury",

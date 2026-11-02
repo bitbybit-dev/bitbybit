@@ -15983,7 +15983,7 @@
     "bitbybit.occt.features.pushPullFacesWithHistory_param_inputs": "The shape, the faces and how far to move them",
     "bitbybit.manifold.recipes.build": "build recipe",
     "recipes": "recipes",
-    "bitbybit.manifold.recipes.build_description": "Builds each root of a recipe as a solid placed by its matrix, in root order.\n\nShared nodes are built once. An invalid recipe throws before anything is built; a root the\nkernel cannot build, such as an open mesh, throws naming its node unless `emptyWhenFailed` is\nset. Circles get `circularSegments` sides; `tolerance` and `millimetresPerUnit` are not applied.",
+    "bitbybit.manifold.recipes.build_description": "Builds each root of a recipe as a solid placed by its matrix, in root order.\n\nShared nodes are built once. An invalid recipe throws; a root the kernel cannot build, such as\nan open mesh, throws unless `emptyWhenFailed` is set. A cut within `tolerance` of a side of the\nbox of what it cuts goes through it.",
     "bitbybit.manifold.recipes.build_returns": "One solid per root, in root order",
     "bitbybit.manifold.recipes.build_param_inputs": "The recipe, how finely circles are divided, and whether Z turns into Y",
     "recipe": "recipe",

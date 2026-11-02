@@ -1,0 +1,418 @@
+{
+    "bonsai-basic-ifczip": {
+        "volumes": 3,
+        "areas": 3,
+        "boxes": 3,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 3
+    },
+    "bonsai-ifc4-us-steel-library": {
+        "volumes": 0,
+        "areas": 0,
+        "boxes": 0,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 0
+    },
+    "bonsai-ifc4x3-demo-library": {
+        "volumes": 0,
+        "areas": 0,
+        "boxes": 0,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 0
+    },
+    "bonsai-project0-openings": {
+        "volumes": 5,
+        "areas": 5,
+        "boxes": 9,
+        "exactVolumes": 5,
+        "exactAreas": 5,
+        "exactBoxes": 9
+    },
+    "bsc-bsdd-references-sketchup-large": {
+        "volumes": 10968,
+        "areas": 10968,
+        "boxes": 16372,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 16372
+    },
+    "bsc-clinic-architectural": {
+        "volumes": 1839,
+        "areas": 1845,
+        "boxes": 2586,
+        "exactVolumes": 1839,
+        "exactAreas": 1849,
+        "exactBoxes": 2586
+    },
+    "bsc-clinic-plumbing": {
+        "volumes": 3101,
+        "areas": 3100,
+        "boxes": 6587,
+        "exactVolumes": 2884,
+        "exactAreas": 2884,
+        "exactBoxes": 6587
+    },
+    "bsc-duplex-architecture": {
+        "volumes": 98,
+        "areas": 97,
+        "boxes": 215,
+        "exactVolumes": 98,
+        "exactAreas": 98,
+        "exactBoxes": 215
+    },
+    "bsc-duplex-mep": {
+        "volumes": 85,
+        "areas": 84,
+        "boxes": 926,
+        "exactVolumes": 71,
+        "exactAreas": 71,
+        "exactBoxes": 926
+    },
+    "bsc-esplanades-archicad22": {
+        "volumes": 1260,
+        "areas": 1231,
+        "boxes": 1489,
+        "exactVolumes": 874,
+        "exactAreas": 878,
+        "exactBoxes": 1946
+    },
+    "bsc-gymzaal-amersfoort-revit2020": {
+        "volumes": 373,
+        "areas": 373,
+        "boxes": 464,
+        "exactVolumes": 339,
+        "exactAreas": 339,
+        "exactBoxes": 464
+    },
+    "bsc-iso-basin-advanced-brep": {
+        "volumes": 0,
+        "areas": 1,
+        "boxes": 1,
+        "exactVolumes": 0,
+        "exactAreas": 1,
+        "exactBoxes": 1
+    },
+    "bsc-iso-beam-curved-tessellated": {
+        "volumes": 1,
+        "areas": 1,
+        "boxes": 1,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 1
+    },
+    "bsc-iso-construction-scheduling-task": {
+        "volumes": 5,
+        "areas": 5,
+        "boxes": 5,
+        "exactVolumes": 5,
+        "exactAreas": 5,
+        "exactBoxes": 5
+    },
+    "bsc-iso-csg-primitive": {
+        "volumes": 1,
+        "areas": 1,
+        "boxes": 1,
+        "exactVolumes": 1,
+        "exactAreas": 1,
+        "exactBoxes": 1
+    },
+    "bsc-iso-cube-advanced-brep": {
+        "volumes": 1,
+        "areas": 1,
+        "boxes": 1,
+        "exactVolumes": 1,
+        "exactAreas": 1,
+        "exactBoxes": 1
+    },
+    "bsc-iso-mapped-shape-with-multiple-items": {
+        "volumes": 1,
+        "areas": 1,
+        "boxes": 1,
+        "exactVolumes": 1,
+        "exactAreas": 1,
+        "exactBoxes": 1
+    },
+    "bsc-iso-reinforcing-stirrup": {
+        "volumes": 0,
+        "areas": 0,
+        "boxes": 0,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 0
+    },
+    "bsc-iso-slab-openings": {
+        "volumes": 0,
+        "areas": 0,
+        "boxes": 1,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 1
+    },
+    "bsc-iso-tessellation-pixel-texture": {
+        "volumes": 0,
+        "areas": 0,
+        "boxes": 0,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 0
+    },
+    "bsc-molio-archicad25": {
+        "volumes": 3173,
+        "areas": 3173,
+        "boxes": 3497,
+        "exactVolumes": 35,
+        "exactAreas": 35,
+        "exactBoxes": 3497
+    },
+    "bsc-nurbs-bentley-bspline-surface": {
+        "volumes": 0,
+        "areas": 0,
+        "boxes": 6,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 6
+    },
+    "bsc-nurbs-bentley-jar-split": {
+        "volumes": 0,
+        "areas": 0,
+        "boxes": 1,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 1
+    },
+    "bsi-cert-building-architecture-ifc2x3": {
+        "volumes": 12,
+        "areas": 12,
+        "boxes": 12,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 12
+    },
+    "bsi-cert-building-architecture-ifc4": {
+        "volumes": 10,
+        "areas": 10,
+        "boxes": 11,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 11
+    },
+    "bsi-cert-building-architecture-ifc4x3": {
+        "volumes": 10,
+        "areas": 10,
+        "boxes": 11,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 11
+    },
+    "bsi-cert-infra-bridge-ifc4x3": {
+        "volumes": 44,
+        "areas": 44,
+        "boxes": 48,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 48
+    },
+    "bsi-cert-infra-road-ifc4x3": {
+        "volumes": 31,
+        "areas": 31,
+        "boxes": 53,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 53
+    },
+    "bsi-cert-rv-wall-with-opening-and-window": {
+        "volumes": 2,
+        "areas": 2,
+        "boxes": 2,
+        "exactVolumes": 2,
+        "exactAreas": 2,
+        "exactBoxes": 2
+    },
+    "freecad-manual-house": {
+        "volumes": 5,
+        "areas": 5,
+        "boxes": 6,
+        "exactVolumes": 2,
+        "exactAreas": 2,
+        "exactBoxes": 6
+    },
+    "gherkin-alignment-cant-rail": {
+        "volumes": 0,
+        "areas": 0,
+        "boxes": 0,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 0
+    },
+    "ifcopenshell-advanced-brep-through-hole": {
+        "volumes": 1,
+        "areas": 1,
+        "boxes": 1,
+        "exactVolumes": 1,
+        "exactAreas": 1,
+        "exactBoxes": 1
+    },
+    "ifcopenshell-fixed-reference-sweep-ifc4x3": {
+        "volumes": 1,
+        "areas": 1,
+        "boxes": 1,
+        "exactVolumes": 1,
+        "exactAreas": 1,
+        "exactBoxes": 1
+    },
+    "infra-sectioned-surface-openroads": {
+        "volumes": 114,
+        "areas": 154,
+        "boxes": 368,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 368
+    },
+    "kit-ac20-fzk-haus": {
+        "volumes": 66,
+        "areas": 66,
+        "boxes": 82,
+        "exactVolumes": 18,
+        "exactAreas": 18,
+        "exactBoxes": 82
+    },
+    "kit-ac20-institute-var-2": {
+        "volumes": 414,
+        "areas": 414,
+        "boxes": 701,
+        "exactVolumes": 128,
+        "exactAreas": 128,
+        "exactBoxes": 701
+    },
+    "webifc-sectioned-solid-horizontal-ifc4x3": {
+        "volumes": 0,
+        "areas": 0,
+        "boxes": 0,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 0
+    },
+    "webifc-swept-disk-hollow": {
+        "volumes": 1,
+        "areas": 1,
+        "boxes": 1,
+        "exactVolumes": 1,
+        "exactAreas": 1,
+        "exactBoxes": 1
+    },
+    "webifc-tapered-extrusion-hole": {
+        "volumes": 0,
+        "areas": 0,
+        "boxes": 1,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 1
+    },
+    "zen-balconies-a6-large": {
+        "volumes": 22781,
+        "areas": 22600,
+        "boxes": 26544,
+        "exactVolumes": 18183,
+        "exactAreas": 18151,
+        "exactBoxes": 26544
+    },
+    "zen-balconies-archicad17": {
+        "volumes": 7074,
+        "areas": 7071,
+        "boxes": 8316,
+        "exactVolumes": 6590,
+        "exactAreas": 6592,
+        "exactBoxes": 8316
+    },
+    "zen-balconies-tekla2016": {
+        "volumes": 937,
+        "areas": 934,
+        "boxes": 937,
+        "exactVolumes": 907,
+        "exactAreas": 907,
+        "exactBoxes": 937
+    },
+    "zen-bridge-girder-ifc4x3-noadd": {
+        "volumes": 823,
+        "areas": 497,
+        "boxes": 841,
+        "exactVolumes": 759,
+        "exactAreas": 761,
+        "exactBoxes": 941
+    },
+    "zen-carpark-ifc4x3-generator": {
+        "volumes": 7,
+        "areas": 7,
+        "boxes": 9,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 10
+    },
+    "zen-chek-lisbon-revit2025-signed": {
+        "volumes": 361,
+        "areas": 340,
+        "boxes": 550,
+        "exactVolumes": 257,
+        "exactAreas": 257,
+        "exactBoxes": 550
+    },
+    "zen-craslab-revit2023": {
+        "volumes": 100,
+        "areas": 100,
+        "boxes": 202,
+        "exactVolumes": 100,
+        "exactAreas": 100,
+        "exactBoxes": 202
+    },
+    "zen-kit-smiley-west-corrected": {
+        "volumes": 540,
+        "areas": 540,
+        "boxes": 831,
+        "exactVolumes": 420,
+        "exactAreas": 420,
+        "exactBoxes": 831
+    },
+    "zen-parking-house-ifc4x3": {
+        "volumes": 3955,
+        "areas": 3955,
+        "boxes": 4012,
+        "exactVolumes": 1363,
+        "exactAreas": 1363,
+        "exactBoxes": 4012
+    },
+    "zen-prehealing-archicad27": {
+        "volumes": 642,
+        "areas": 642,
+        "boxes": 701,
+        "exactVolumes": 0,
+        "exactAreas": 0,
+        "exactBoxes": 701
+    },
+    "zen-rame-tower-edificius": {
+        "volumes": 1013,
+        "areas": 960,
+        "boxes": 1089,
+        "exactVolumes": 987,
+        "exactAreas": 961,
+        "exactBoxes": 1084
+    },
+    "zen-restage-bonsai-large": {
+        "volumes": 3243,
+        "areas": 3231,
+        "boxes": 3826,
+        "exactVolumes": 1541,
+        "exactAreas": 1541,
+        "exactBoxes": 3826
+    },
+    "zen-taltech-revit2023-ifc4": {
+        "volumes": 2455,
+        "areas": 2469,
+        "boxes": 2771,
+        "exactVolumes": 2475,
+        "exactAreas": 2604,
+        "exactBoxes": 2773
+    }
+}

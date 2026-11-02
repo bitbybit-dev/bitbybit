@@ -5268,9 +5268,9 @@ export interface OperationParams {
     /**
      * Builds each root of a recipe as a solid placed by its matrix, in root order.
      *
-     * Shared nodes are built once. An invalid recipe throws before anything is built; a root the
-     * kernel cannot build, such as an open mesh, throws naming its node unless `emptyWhenFailed` is
-     * set. Circles get `circularSegments` sides; `tolerance` and `millimetresPerUnit` are not applied.
+     * Shared nodes are built once. An invalid recipe throws; a root the kernel cannot build, such as
+     * an open mesh, throws unless `emptyWhenFailed` is set. A cut within `tolerance` of a side of the
+     * box of what it cuts goes through it.
      */
     "manifold.recipes.build": {
         /**

@@ -16114,7 +16114,7 @@
     "cornerRadius": "nurgaraadius",
     "xDirection": "x-suund",
     "bitbybit.manifold.recipes.build": "ehita retsept",
-    "bitbybit.manifold.recipes.build_description": "Ehitab retsepti iga juure kehana, mis on paigutatud selle maatriksiga, juurte järjekorras.\n\nJagatud sõlmed ehitatakse üks kord. Kehtetu retsept viskab vea enne, kui midagi ehitatakse; juur, mida kernel ei suuda ehitada, näiteks lahtine võrk, viskab vea oma sõlme nimega, kui just `emptyWhenFailed` pole seatud. Ringid saavad `circularSegments` külge; `tolerance` ja `millimetresPerUnit` ei rakendata.",
+    "bitbybit.manifold.recipes.build_description": "Ehitab retsepti iga juure kehana, mis on paigutatud selle maatriksiga, juurte järjekorras.\n\nJagatud sõlmed ehitatakse üks kord. Kehtetu retsept viskab vea; juur, mida kernel ei suuda ehitada, näiteks lahtine võrk, viskab vea, kui just `emptyWhenFailed` pole seatud. Lõige, mis ulatub `tolerance` piiresse lõigatava kuju piirdekasti mõnest küljest, läheb sellest küljest läbi.",
     "bitbybit.manifold.recipes.build_returns": "Üks keha juure kohta, juurte järjekorras",
     "bitbybit.manifold.recipes.build_param_inputs": "Retsept, kui peenelt ringid jagatakse, ja kas Z muutub Y-ks",
     "bitbybit.manifold.recipes.meshes": "retsepti võrgud",

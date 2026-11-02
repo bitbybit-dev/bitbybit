@@ -16114,7 +16114,7 @@
     "cornerRadius": "kulmasäde",
     "xDirection": "x-suunta",
     "bitbybit.manifold.recipes.build": "rakenna resepti",
-    "bitbybit.manifold.recipes.build_description": "Rakentaa reseptin jokaisen juuren kappaleena, joka sijoitetaan sen matriisilla, juurijärjestyksessä.\n\nJaetut solmut rakennetaan kerran. Virheellinen resepti heittää virheen ennen kuin mitään rakennetaan; juuri, jota ydin ei voi rakentaa, kuten avoin verkko, heittää virheen nimeten solmunsa, ellei `emptyWhenFailed` ole asetettu. Ympyröille tulee `circularSegments` sivua; `tolerance` ja `millimetresPerUnit` eivät ole käytössä.",
+    "bitbybit.manifold.recipes.build_description": "Rakentaa reseptin jokaisen juuren kappaleena, joka sijoitetaan sen matriisilla, juurijärjestyksessä.\n\nJaetut solmut rakennetaan kerran. Virheellinen resepti heittää virheen; juuri, jota ydin ei voi rakentaa, kuten avoin verkko, heittää virheen, ellei `emptyWhenFailed` ole asetettu. Leikkaus, joka on enintään `tolerance` päässä leikattavan kohteen rajauslaatikon sivusta, menee kyseisen sivun läpi.",
     "bitbybit.manifold.recipes.build_returns": "Yksi kappale juurta kohden, juurijärjestyksessä",
     "bitbybit.manifold.recipes.build_param_inputs": "Resepti, kuinka tarkasti ympyrät jaetaan ja muuttuuko Z Y:ksi",
     "bitbybit.manifold.recipes.meshes": "reseptiverkot",

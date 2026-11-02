@@ -16114,7 +16114,7 @@
     "cornerRadius": "Eckenradius",
     "xDirection": "X-Richtung",
     "bitbybit.manifold.recipes.build": "Rezept bauen",
-    "bitbybit.manifold.recipes.build_description": "Baut jede Wurzel eines Rezepts als Volumenkörper, platziert durch ihre Matrix, in Wurzelreihenfolge.\n\nGemeinsame Knoten werden einmal gebaut. Ein ungültiges Rezept löst einen Fehler aus, bevor etwas gebaut wird; eine Wurzel, die der\nKernel nicht bauen kann, etwa ein offenes Mesh, löst einen Fehler aus, der ihren Knoten nennt, sofern nicht `emptyWhenFailed`\ngesetzt ist. Kreise erhalten `circularSegments` Seiten; `tolerance` und `millimetresPerUnit` werden nicht angewendet.",
+    "bitbybit.manifold.recipes.build_description": "Baut jede Wurzel eines Rezepts als Volumenkörper, platziert durch ihre Matrix, in Wurzelreihenfolge.\n\nGemeinsame Knoten werden einmal gebaut. Ein ungültiges Rezept löst einen Fehler aus; eine Wurzel, die der Kernel nicht bauen kann, etwa ein offenes Mesh, löst einen Fehler aus, sofern nicht `emptyWhenFailed` gesetzt ist. Ein Schnitt, der innerhalb von `tolerance` an einer Seite der Begrenzungsbox dessen liegt, was er schneidet, geht durch diese Seite hindurch.",
     "bitbybit.manifold.recipes.build_returns": "Ein Volumenkörper pro Wurzel, in Wurzelreihenfolge",
     "bitbybit.manifold.recipes.build_param_inputs": "Das Rezept, wie fein Kreise geteilt werden und ob Z zu Y wird",
     "bitbybit.manifold.recipes.meshes": "Rezept-Meshes",

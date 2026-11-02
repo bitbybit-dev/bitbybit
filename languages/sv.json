@@ -16114,7 +16114,7 @@
     "cornerRadius": "hörnradie",
     "xDirection": "x-riktning",
     "bitbybit.manifold.recipes.build": "bygg recept",
-    "bitbybit.manifold.recipes.build_description": "Bygger varje rot i ett recept som en solid placerad av sin matris, i rotordning.\n\nDelade noder byggs en gång. Ett ogiltigt recept kastar ett fel innan något byggs; en rot som\nkärnan inte kan bygga, till exempel en öppen mesh, kastar ett fel som namnger dess nod såvida inte `emptyWhenFailed`\när satt. Cirklar får `circularSegments` sidor; `tolerance` och `millimetresPerUnit` tillämpas inte.",
+    "bitbybit.manifold.recipes.build_description": "Bygger varje rot i ett recept som en solid placerad av sin matris, i rotordning.\n\nDelade noder byggs en gång. Ett ogiltigt recept kastar ett fel; en rot som kärnan inte kan bygga, till exempel en öppen mesh, kastar ett fel såvida inte `emptyWhenFailed` är satt. Ett snitt som ligger inom `tolerance` från en sida av begränsningsramen för det som det skär går igenom den sidan.",
     "bitbybit.manifold.recipes.build_returns": "En solid per rot, i rotordning",
     "bitbybit.manifold.recipes.build_param_inputs": "Receptet, hur finfördelade cirklarna är, och om Z vänds till Y",
     "bitbybit.manifold.recipes.meshes": "receptmeshes",

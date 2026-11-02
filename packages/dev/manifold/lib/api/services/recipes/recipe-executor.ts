@@ -10,6 +10,8 @@ const FULL_TURN = 2 * Math.PI;
 const MIN_REVOLVE_SEGMENTS = 3;
 const POSITION_PROPERTIES = 3;
 const FILL_RULE: Manifold3D.FillRule = "NonZero";
+const AXES = 3;
+const MAX_TOOL_PARTS = 64;
 
 function isHalfSpace(value: Built | undefined): value is Base.RecipeHalfSpaceNode {
     return typeof value === "object" && value !== null && "op" in value;
@@ -308,27 +310,133 @@ class RecipeExecutor {
         }
     }
 
-    private cut(solid: Manifold3D.Manifold, tool: Built | undefined): Manifold3D.Manifold {
+    private reaching(tool: Manifold3D.Manifold, outside: Manifold3D.Box): Manifold3D.Manifold {
+        const reach = this.recipe.tolerance;
+        const ofTool = tool.boundingBox();
+        const below = ofTool.min.map((side, axis) => Math.abs(side - outside.min[axis]!) <= reach);
+        const above = ofTool.max.map((side, axis) => Math.abs(side - outside.max[axis]!) <= reach);
+        if (!below.includes(true) && !above.includes(true)) {
+            return tool.translate([0, 0, 0]);
+        }
+        return tool.warp((vertex) => {
+            for (let axis = 0; axis < AXES; axis++) {
+                const drawn = vertex[axis]!;
+                const fromBelow = drawn - ofTool.min[axis]!;
+                const fromAbove = ofTool.max[axis]! - drawn;
+                const down = below[axis]! && fromBelow <= reach;
+                const up = above[axis]! && fromAbove <= reach;
+                if (down && (!up || fromBelow <= fromAbove)) {
+                    vertex[axis] = drawn - reach;
+                } else if (up) {
+                    vertex[axis] = drawn + reach;
+                }
+            }
+        });
+    }
+
+    private joinsParts(index: number): boolean {
+        const node = this.recipe.nodes[index]!;
+        return node.op === "compound" || node.op === "union" || (node.op === "transform" && this.joinsParts(node.of));
+    }
+
+    private partCount(index: number, counted: Map<number, number>): number {
+        const known = counted.get(index);
+        if (known !== undefined) {
+            return known;
+        }
+        const node = this.recipe.nodes[index]!;
+        const count = node.op === "compound" || node.op === "union"
+            ? node.of.reduce((sum, child) => sum + this.partCount(child, counted), 0)
+            : node.op === "transform" ? this.partCount(node.of, counted) : 1;
+        counted.set(index, count);
+        return count;
+    }
+
+    private toolParts(index: number): Manifold3D.Manifold[] {
+        const parts: Manifold3D.Manifold[] = [];
+        try {
+            if (this.partCount(index, new Map()) > MAX_TOOL_PARTS) {
+                parts.push(this.solid(index).translate([0, 0, 0]));
+            } else {
+                this.collectParts(index, [], parts);
+            }
+            return parts;
+        } catch (thrown) {
+            parts.forEach(release);
+            throw thrown;
+        }
+    }
+
+    private collectParts(index: number, above: readonly Base.TransformMatrix[], into: Manifold3D.Manifold[]): void {
+        const node = this.recipe.nodes[index]!;
+        if (node.op === "compound" || node.op === "union") {
+            node.of.forEach((child) => this.collectParts(child, above, into));
+            return;
+        }
+        if (node.op === "transform" && this.joinsParts(node.of)) {
+            this.collectParts(node.of, [node.matrix, ...above], into);
+            return;
+        }
+        let part = this.solid(index).translate([0, 0, 0]);
+        try {
+            for (const matrix of above) {
+                const moved = part.transform(matrix);
+                part.delete();
+                part = moved;
+            }
+        } catch (thrown) {
+            part.delete();
+            throw thrown;
+        }
+        into.push(part);
+    }
+
+    private reachedParts(index: number, outside: Manifold3D.Box, into: Manifold3D.Manifold[]): void {
+        const parts = this.toolParts(index);
+        try {
+            for (const part of parts) {
+                into.push(this.reaching(part, outside));
+            }
+        } finally {
+            parts.forEach(release);
+        }
+    }
+
+    private cut(solid: Manifold3D.Manifold, toolIndex: number, outside: Manifold3D.Box): Manifold3D.Manifold {
+        const tool = this.built[toolIndex];
         if (isHalfSpace(tool)) {
             const [nx, ny, nz] = tool.normal;
             const length = Math.hypot(nx, ny, nz);
             const offset = (nx * tool.origin[0] + ny * tool.origin[1] + nz * tool.origin[2]) / length;
             return solid.trimByPlane([-nx / length, -ny / length, -nz / length], -offset);
         }
-        return solid.subtract(tool as Manifold3D.Manifold);
+        const tools: Manifold3D.Manifold[] = [];
+        let reaching: Manifold3D.Manifold | undefined;
+        try {
+            this.reachedParts(toolIndex, outside, tools);
+            reaching = this.wasm.Manifold.union(tools);
+            return solid.subtract(reaching);
+        } finally {
+            tools.forEach(release);
+            release(reaching);
+        }
     }
 
     private difference(node: Base.RecipeDifferenceNode): Manifold3D.Manifold {
-        let current = this.cut(this.solid(node.of), this.built[node.tools[0]!]);
-        for (let at = 1; at < node.tools.length; at++) {
+        let outside = this.solid(node.of).boundingBox();
+        let current: Manifold3D.Manifold | undefined;
+        for (const toolIndex of node.tools) {
             const previous = current;
             try {
-                current = this.cut(previous, this.built[node.tools[at]!]);
+                current = this.cut(previous ?? this.solid(node.of), toolIndex, outside);
             } finally {
-                previous.delete();
+                release(previous);
+            }
+            if (isHalfSpace(this.built[toolIndex])) {
+                outside = current.boundingBox();
             }
         }
-        return current;
+        return current!;
     }
 
     private voids(node: Base.RecipeVoidsNode): Manifold3D.Manifold {
@@ -337,11 +445,18 @@ class RecipeExecutor {
         if (built.length === 0) {
             return host.translate([0, 0, 0]);
         }
-        const openings = this.wasm.Manifold.union(built.map((opening) => this.solid(opening)));
+        const outside = host.boundingBox();
+        const tools: Manifold3D.Manifold[] = [];
+        let openings: Manifold3D.Manifold | undefined;
         try {
+            for (const opening of built) {
+                this.reachedParts(opening, outside, tools);
+            }
+            openings = this.wasm.Manifold.union(tools);
             return host.subtract(openings);
         } finally {
-            openings.delete();
+            tools.forEach(release);
+            release(openings);
         }
     }
 

@@ -16114,7 +16114,7 @@
     "cornerRadius": "radio de esquina",
     "xDirection": "dirección x",
     "bitbybit.manifold.recipes.build": "construir receta",
-    "bitbybit.manifold.recipes.build_description": "Construye cada raíz de una receta como un sólido colocado por su matriz, en el orden de las raíces.\n\nLos nodos compartidos se construyen una sola vez. Una receta no válida lanza un error antes de construir nada; una raíz que el\nnúcleo no puede construir, como una malla abierta, lanza un error con el nombre de su nodo a menos que se active `emptyWhenFailed`.\nLos círculos reciben `circularSegments` lados; `tolerance` y `millimetresPerUnit` no se aplican.",
+    "bitbybit.manifold.recipes.build_description": "Construye cada raíz de una receta como un sólido colocado por su matriz, en el orden de las raíces.\n\nLos nodos compartidos se construyen una sola vez. Una receta no válida lanza un error; una raíz que el núcleo no puede construir, como una malla abierta, lanza un error a menos que se active `emptyWhenFailed`. Un corte que queda a menos de `tolerance` de un lado de la caja delimitadora de lo que corta atraviesa ese lado.",
     "bitbybit.manifold.recipes.build_returns": "Un sólido por raíz, en el orden de las raíces",
     "bitbybit.manifold.recipes.build_param_inputs": "La receta, con qué finura se dividen los círculos y si Z pasa a Y",
     "bitbybit.manifold.recipes.meshes": "mallas de receta",

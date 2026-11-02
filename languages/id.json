@@ -16114,7 +16114,7 @@
     "cornerRadius": "radius sudut",
     "xDirection": "arah x",
     "bitbybit.manifold.recipes.build": "bangun resep",
-    "bitbybit.manifold.recipes.build_description": "Membangun setiap akar sebuah resep sebagai solid yang ditempatkan oleh matriksnya, dalam urutan akar.\n\nNode bersama dibangun sekali. Resep yang tidak valid memicu error sebelum apa pun dibangun; akar yang tidak dapat dibangun kernel, seperti mesh terbuka, memicu error dengan menyebut node-nya kecuali `emptyWhenFailed` diatur. Lingkaran mendapat `circularSegments` sisi; `tolerance` dan `millimetresPerUnit` tidak diterapkan.",
+    "bitbybit.manifold.recipes.build_description": "Membangun setiap akar sebuah resep sebagai solid yang ditempatkan oleh matriksnya, dalam urutan akar.\n\nNode bersama dibangun sekali. Resep yang tidak valid memicu error; akar yang tidak dapat dibangun kernel, seperti mesh terbuka, memicu error kecuali `emptyWhenFailed` diatur. Potongan yang berada dalam `tolerance` dari sebuah sisi kotak pembatas dari apa yang dipotongnya akan menembus sisi tersebut.",
     "bitbybit.manifold.recipes.build_returns": "Satu solid per akar, dalam urutan akar",
     "bitbybit.manifold.recipes.build_param_inputs": "Resep, seberapa halus lingkaran dibagi, dan apakah Z berubah menjadi Y",
     "bitbybit.manifold.recipes.meshes": "mesh resep",

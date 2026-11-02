@@ -16114,7 +16114,7 @@
     "cornerRadius": "rayon des coins",
     "xDirection": "direction x",
     "bitbybit.manifold.recipes.build": "construire recette",
-    "bitbybit.manifold.recipes.build_description": "Construit chaque racine d'une recette comme un solide placé par sa matrice, dans l'ordre des racines.\n\nLes nœuds partagés sont construits une seule fois. Une recette invalide lève une erreur avant que rien ne soit construit ; une racine que le\nnoyau ne peut pas construire, comme un maillage ouvert, lève une erreur nommant son nœud sauf si `emptyWhenFailed` est\ndéfini. Les cercles reçoivent `circularSegments` côtés ; `tolerance` et `millimetresPerUnit` ne sont pas appliqués.",
+    "bitbybit.manifold.recipes.build_description": "Construit chaque racine d'une recette comme un solide placé par sa matrice, dans l'ordre des racines.\n\nLes nœuds partagés sont construits une seule fois. Une recette invalide lève une erreur ; une racine que le noyau ne peut pas construire, comme un maillage ouvert, lève une erreur sauf si `emptyWhenFailed` est défini. Une découpe à moins de `tolerance` d'un côté de la boîte englobante de ce qu'elle découpe traverse ce côté.",
     "bitbybit.manifold.recipes.build_returns": "Un solide par racine, dans l'ordre des racines",
     "bitbybit.manifold.recipes.build_param_inputs": "La recette, la finesse de division des cercles, et si Z devient Y",
     "bitbybit.manifold.recipes.meshes": "maillages de recette",

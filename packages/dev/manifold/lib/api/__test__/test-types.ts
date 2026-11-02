@@ -6,6 +6,7 @@ export interface ManifoldPrototype {
     subtract: (this: Manifold3D.Manifold, other: Manifold3D.Manifold) => Manifold3D.Manifold;
     delete: (this: Manifold3D.Manifold) => void;
     status: (this: Manifold3D.Manifold) => Manifold3D.ErrorStatus;
+    warp: (this: Manifold3D.Manifold, warpFunc: (vert: Manifold3D.Vec3) => void) => Manifold3D.Manifold;
 }
 
 export interface CrossSectionPrototype {

@@ -16114,7 +16114,7 @@
     "cornerRadius": "kampo spindulys",
     "xDirection": "x kryptis",
     "bitbybit.manifold.recipes.build": "sukurti receptą",
-    "bitbybit.manifold.recipes.build_description": "Kuria kiekvieną recepto šaknį kaip kūną, išdėstytą pagal jo matricą, šaknų tvarka.\n\nBendri mazgai kuriami vieną kartą. Netinkamas receptas meta klaidą, kol dar niekas nesukurta; šaknis, kurios branduolys negali sukurti, pavyzdžiui, atviras tinklelis, meta klaidą, nurodančią jos mazgą, nebent nustatytas `emptyWhenFailed`. Apskritimai gauna `circularSegments` kraštinių; `tolerance` ir `millimetresPerUnit` netaikomi.",
+    "bitbybit.manifold.recipes.build_description": "Kuria kiekvieną recepto šaknį kaip kūną, išdėstytą pagal jo matricą, šaknų tvarka.\n\nBendri mazgai kuriami vieną kartą. Netinkamas receptas meta klaidą; šaknis, kurios branduolys negali sukurti, pavyzdžiui, atviras tinklelis, meta klaidą, nebent nustatytas `emptyWhenFailed`. Pjūvis, esantis ne toliau kaip `tolerance` nuo pjaunamo objekto gaubiančios dėžės šono, pereina kiaurai per tą šoną.",
     "bitbybit.manifold.recipes.build_returns": "Vienas kūnas kiekvienai šakniai, šaknų tvarka",
     "bitbybit.manifold.recipes.build_param_inputs": "Receptas, kaip smulkiai dalijami apskritimai ir ar Z paverčiamas Y",
     "bitbybit.manifold.recipes.meshes": "recepto tinkleliai",

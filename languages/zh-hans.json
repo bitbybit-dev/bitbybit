@@ -16114,7 +16114,7 @@
     "cornerRadius": "角半径",
     "xDirection": "X 方向",
     "bitbybit.manifold.recipes.build": "构建配方",
-    "bitbybit.manifold.recipes.build_description": "把配方的每个根构建为由其矩阵放置的实体，按根的顺序。\n\n共享节点只构建一次。无效的配方在构建任何内容之前就抛出错误；内核无法构建的根（例如开放网格）会抛出错误并指明其节点，除非设置了 `emptyWhenFailed`。圆有 `circularSegments` 条边；不应用 `tolerance` 和 `millimetresPerUnit`。",
+    "bitbybit.manifold.recipes.build_description": "把配方的每个根构建为由其矩阵放置的实体，按根的顺序。\n\n共享节点只构建一次。无效的配方会抛出错误；内核无法构建的根（例如开放网格）会抛出错误，除非设置了 `emptyWhenFailed`。如果切割距被切对象边界框的某个侧面在 `tolerance` 以内，就会穿透该侧面。",
     "bitbybit.manifold.recipes.build_returns": "每个根一个实体，按根的顺序",
     "bitbybit.manifold.recipes.build_param_inputs": "配方、圆的划分精细程度，以及 Z 是否转为 Y",
     "bitbybit.manifold.recipes.meshes": "配方网格",

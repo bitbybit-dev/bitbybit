@@ -16114,7 +16114,7 @@
     "cornerRadius": "نصف قطر الزاوية",
     "xDirection": "اتجاه x",
     "bitbybit.manifold.recipes.build": "بناء الوصفة",
-    "bitbybit.manifold.recipes.build_description": "يبني كل جذر في وصفة كمجسم صلب توضعه مصفوفته، بترتيب الجذور.\n\nتُبنى العقد المشتركة مرة واحدة. الوصفة غير الصالحة ترمي خطأ قبل بناء أي شيء؛ والجذر الذي\nلا تستطيع النواة بناءه، مثل شبكة مفتوحة، يرمي خطأ يسمي عقدته ما لم تُضبط `emptyWhenFailed`.\nتحصل الدوائر على `circularSegments` من الأضلاع؛ ولا تُطبق `tolerance` و`millimetresPerUnit`.",
+    "bitbybit.manifold.recipes.build_description": "يبني كل جذر في وصفة كمجسم صلب توضعه مصفوفته، بترتيب الجذور.\n\nتُبنى العقد المشتركة مرة واحدة. الوصفة غير الصالحة ترمي خطأ؛ والجذر الذي لا تستطيع النواة بناءه، مثل شبكة مفتوحة، يرمي خطأ ما لم تُضبط `emptyWhenFailed`. القطع الذي يقع ضمن `tolerance` من أحد جوانب صندوق حدود ما يقطعه ينفذ عبر ذلك الجانب.",
     "bitbybit.manifold.recipes.build_returns": "مجسم صلب واحد لكل جذر، بترتيب الجذور",
     "bitbybit.manifold.recipes.build_param_inputs": "الوصفة ودرجة تقسيم الدوائر وما إذا كان Z يتحول إلى Y",
     "bitbybit.manifold.recipes.meshes": "شبكات الوصفة",
