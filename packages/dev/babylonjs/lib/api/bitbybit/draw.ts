@@ -122,11 +122,18 @@ export class Draw extends DrawCore {
     }
 
     private mergedOcctShapeOptions(inputs: Inputs.Draw.DrawAny): Resolved.Draw.DrawOcctShapeOptions {
-        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawOcctShapeOptions();
+        let options = this.withDefaults(inputs.options as Inputs.Draw.DrawOcctShapeOptions | undefined, new Inputs.Draw.DrawOcctShapeOptions(), this.context.drawDefaults?.occt);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.occtOptions(options);
+    }
+
+    private withDefaults<T extends object>(given: T | null | undefined, builtIn: T, defaults: Partial<T> | undefined): T {
+        if (given !== undefined && given !== null) {
+            return given;
+        }
+        return defaults === undefined ? builtIn : { ...builtIn, ...defaults };
     }
 
     private basicOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawBasicGeometryOptions {
@@ -147,10 +154,11 @@ export class Draw extends DrawCore {
 
     private handleDecomposedMeshShape(inputs: Inputs.Draw.DrawAny) {
         const options = this.mergedOcctShapeOptions(inputs);
+        const sized = this.drawHelper.withEdgeWidthSized(options, [inputs.entity as Inputs.OCCT.DecomposedMeshDto]);
         return this.drawHelper.handleDecomposedMesh(
-            options,
+            sized,
             inputs.entity as Inputs.OCCT.DecomposedMeshDto,
-            options
+            sized
         ).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
             return r;
@@ -163,7 +171,7 @@ export class Draw extends DrawCore {
         if (options.drawFaces) {
             decomposedMeshes.forEach(checkDrawableMesh);
         }
-        const pooled = this.drawHelper.withSurfaceAnalysisRange(options, decomposedMeshes);
+        const pooled = this.drawHelper.withEdgeWidthSized(this.drawHelper.withSurfaceAnalysisRange(options, decomposedMeshes), decomposedMeshes);
         const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
             pooled, dm, pooled)));
         const container = new BABYLON.Mesh(`decomposedMeshesContainer-${++this.decomposedMeshesContainerCounter}`, this.context.scene);
@@ -784,7 +792,7 @@ export class Draw extends DrawCore {
     }
 
     private handleVerbCurves(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
+        let options = this.withDefaults(inputs.options, this.defaultPolylineOptions, this.context.drawDefaults?.lines);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -832,7 +840,7 @@ export class Draw extends DrawCore {
     }
 
     private handleLines(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
+        let options = this.withDefaults(inputs.options, this.defaultPolylineOptions, this.context.drawDefaults?.lines);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -886,7 +894,7 @@ export class Draw extends DrawCore {
     }
 
     private handlePolylines(inputs: Inputs.Draw.DrawAny, type = Inputs.Draw.drawingTypes.polylines) {
-        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
+        let options = this.withDefaults(inputs.options, this.defaultPolylineOptions, this.context.drawDefaults?.lines);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -914,7 +922,7 @@ export class Draw extends DrawCore {
     }
 
     private handleVerbCurve(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
+        let options = this.withDefaults(inputs.options, this.defaultPolylineOptions, this.context.drawDefaults?.lines);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -955,7 +963,7 @@ export class Draw extends DrawCore {
     }
 
     private handlePolyline(inputs: Inputs.Draw.DrawAny, type = Inputs.Draw.drawingTypes.polyline) {
-        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
+        let options = this.withDefaults(inputs.options, this.defaultPolylineOptions, this.context.drawDefaults?.lines);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -983,7 +991,7 @@ export class Draw extends DrawCore {
     }
 
     private handleLine(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
+        let options = this.withDefaults(inputs.options, this.defaultPolylineOptions, this.context.drawDefaults?.lines);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -1004,7 +1012,7 @@ export class Draw extends DrawCore {
     }
 
     private handleJscadMeshes(inputs: Inputs.Draw.DrawAny, meshes: (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[]) {
-        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
+        let options = this.withDefaults(inputs.options, this.defaultPolylineOptions, this.context.drawDefaults?.jscad);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -1019,7 +1027,7 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldShape(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
+        let options = this.withDefaults(inputs.options as Inputs.Draw.DrawManifoldOrCrossSectionOptions | undefined, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), this.context.drawDefaults?.manifold);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -1033,7 +1041,7 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldShapes(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
+        let options = this.withDefaults(inputs.options as Inputs.Draw.DrawManifoldOrCrossSectionOptions | undefined, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), this.context.drawDefaults?.manifold);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -1047,7 +1055,7 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldMesh(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh | undefined> {
-        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
+        let options = this.withDefaults(inputs.options as Inputs.Draw.DrawManifoldOrCrossSectionOptions | undefined, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), this.context.drawDefaults?.manifold);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -1057,7 +1065,7 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldMeshes(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
-        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
+        let options = this.withDefaults(inputs.options as Inputs.Draw.DrawManifoldOrCrossSectionOptions | undefined, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), this.context.drawDefaults?.manifold);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -1075,7 +1083,7 @@ export class Draw extends DrawCore {
     }
 
     private handleOcctShape(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawOcctShapeOptions();
+        let options = this.withDefaults(inputs.options as Inputs.Draw.DrawOcctShapeOptions | undefined, new Inputs.Draw.DrawOcctShapeOptions(), this.context.drawDefaults?.occt);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -1089,7 +1097,7 @@ export class Draw extends DrawCore {
     }
 
     private handleOcctShapes(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawOcctShapeOptions();
+        let options = this.withDefaults(inputs.options as Inputs.Draw.DrawOcctShapeOptions | undefined, new Inputs.Draw.DrawOcctShapeOptions(), this.context.drawDefaults?.occt);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -1127,7 +1135,7 @@ export class Draw extends DrawCore {
     }
 
     private handleJscadMesh(inputs: Inputs.Draw.DrawAny, mesh: Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3) {
-        let options = inputs.options ? inputs.options : this.defaultBasicOptions;
+        let options = this.withDefaults(inputs.options, this.defaultBasicOptions, this.context.drawDefaults?.jscad);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }

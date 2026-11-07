@@ -3032,11 +3032,29 @@ namespace Base_3 {
         // (undocumented)
         city = "city",
         // (undocumented)
+        clearDay = "clearDay",
+        // (undocumented)
         clearSky = "clearSky",
         // (undocumented)
         default = "default",
         // (undocumented)
-        greyGradient = "greyGradient"
+        dusk = "dusk",
+        // (undocumented)
+        fairWeather = "fairWeather",
+        // (undocumented)
+        greyGradient = "greyGradient",
+        // (undocumented)
+        morning = "morning",
+        // (undocumented)
+        night = "night",
+        // (undocumented)
+        overcast = "overcast",
+        // (undocumented)
+        partlyCloudy = "partlyCloudy",
+        // (undocumented)
+        studio = "studio",
+        // (undocumented)
+        sunset = "sunset"
     }
     const // Warning: (ae-forgotten-export) The symbol "Base" needs to be exported by the entry point index.d.ts
     //
@@ -3320,6 +3338,7 @@ namespace Color_2 {
 //
 // @public (undocumented)
 export class Context extends ContextBase {
+    drawDefaults?: Inputs.Draw.DrawDefaults | undefined;
     // (undocumented)
     engine: BABYLON_2.Engine | BABYLON_2.WebGPUEngine;
     // (undocumented)
@@ -3633,6 +3652,14 @@ namespace Draw_2 {
         size?: number | undefined;
         updatable?: boolean | undefined;
     }
+    interface DrawDefaults {
+        jscad?: Partial<DrawBasicGeometryOptions> | undefined;
+        lines?: Partial<DrawBasicGeometryOptions> | undefined;
+        manifold?: Partial<DrawManifoldOrCrossSectionOptions> | undefined;
+        metallic?: number | undefined;
+        occt?: Partial<DrawOcctShapeOptions> | undefined;
+        roughness?: number | undefined;
+    }
     class DrawFrameOptions {
         constructor(size?: number, colorX?: Base_3.Color, colorY?: Base_3.Color, colorZ?: Base_3.Color, drawPlane?: boolean, colorPlane?: Base_3.Color, lineWidth?: number, updatable?: boolean);
         colorPlane?: Base_3.Color | undefined;
@@ -3744,7 +3771,7 @@ namespace Draw_2 {
         precision?: number | undefined;
     }
     class DrawOcctShapeOptions {
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base_3.Color, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base_3.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base_3.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base_3.Color, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base_3.Color, surfaceAnalysis?: Inputs_2.OCCT.surfaceAnalysisEnum, draftDirection?: Base_3.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number);
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base_3.Color, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base_3.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base_3.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base_3.Color, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base_3.Color, surfaceAnalysis?: Inputs_2.OCCT.surfaceAnalysisEnum, draftDirection?: Base_3.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number, edgeWidthBySize?: boolean, wireColour?: Base_3.Color);
         allowQualityDecrease?: boolean | undefined;
         analysisMax?: number | undefined;
         analysisMin?: number | undefined;
@@ -3767,6 +3794,7 @@ namespace Draw_2 {
         edgeIndexHeight?: number | undefined;
         edgeOpacity?: number | undefined;
         edgeWidth?: number | undefined;
+        edgeWidthBySize?: boolean | undefined;
         faceColour?: Base_3.Color | undefined;
         faceIndexColour?: Base_3.Color | undefined;
         faceIndexHeight?: number | undefined;
@@ -3783,6 +3811,7 @@ namespace Draw_2 {
         surfaceAnalysis?: Inputs_2.OCCT.surfaceAnalysisEnum | undefined;
         vertexColour?: Base_3.Color | undefined;
         vertexSize?: number | undefined;
+        wireColour?: Base_3.Color | undefined;
     }
     class DrawOcctShapeSimpleOptions {
         constructor(precision?: number, drawFaces?: boolean, faceColour?: Base_3.Color, drawEdges?: boolean, edgeColour?: Base_3.Color, edgeWidth?: number, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number);
@@ -3907,7 +3936,7 @@ namespace Draw_3 {
     // (undocumented)
     type DrawOcctShapeMaterialOptions = WithDefaults<Inputs_2.Draw.DrawOcctShapeMaterialOptions, "precision" | "drawEdges" | "edgeColour" | "edgeWidth">;
     // (undocumented)
-    type DrawOcctShapeOptions = WithDefaults<Inputs_2.Draw.DrawOcctShapeOptions, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "vertexColour" | "edgeWidth" | "vertexSize" | "drawEdges" | "drawFaces" | "drawVertices" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "edgeArrowSize" | "edgeArrowAngle" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DrawOcctShapeOptions = WithDefaults<Inputs_2.Draw.DrawOcctShapeOptions, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "vertexColour" | "edgeWidth" | "edgeWidthBySize" | "vertexSize" | "drawEdges" | "drawFaces" | "drawVertices" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "edgeArrowSize" | "edgeArrowAngle" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
     type DrawOcctShapeSimpleOptions = WithDefaults<Inputs_2.Draw.DrawOcctShapeSimpleOptions, "precision" | "drawFaces" | "faceColour" | "drawEdges" | "edgeColour" | "edgeWidth" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     // (undocumented)
@@ -4000,13 +4029,14 @@ export class DrawHelper extends DrawHelperCore {
     // (undocumented)
     edgesRendering(mesh: BABYLON_2.LinesMesh, size: number, opacity: number, colours: string | string[]): void;
     // (undocumented)
+    protected getMaterialKey(hex: string, alpha: number, zOffset: number, unlit?: boolean): string;
+    // (undocumented)
     handleDecomposedMesh(inputs: Omit<Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: DrawableShapeMesh, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<BABYLON_2.Mesh>;
     // (undocumented)
     handleDecomposedMeshIndividually(inputs: Omit<Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: DrawableShapeMesh, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<BABYLON_2.Mesh>;
     isDisposed(): boolean;
     keepDesignMeshes(meshes: readonly KeptDesignMesh<unknown>[], drawOptions: Inputs_2.Draw.DrawOcctShapeOptions): void;
     // Warning: (ae-forgotten-export) The symbol "KeptDesignMesh" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "DrawableShapeMesh" needs to be exported by the entry point index.d.ts
     keptDesignMeshes(shapeHashes: readonly string[], drawOptions: Inputs_2.Draw.DrawOcctShapeOptions): KeptDesignMesh<DrawableShapeMesh>[];
     // (undocumented)
     localAxes(size: number, scene: BABYLON_2.Scene, colorXHex: string, colorYHex: string, colorZHex: string): BABYLON_2.Mesh;
@@ -4014,14 +4044,15 @@ export class DrawHelper extends DrawHelperCore {
     recipeElementOfPick(inputs: Inputs_2.Draw.RecipeElementPickDto<BABYLON_2.Mesh, BABYLON_2.AbstractMesh>): string | undefined;
     // (undocumented)
     setRecipeElementsColour(resolved: Resolved_2.Draw.RecipeElementsColourDto<BABYLON_2.Mesh>): void;
-    // Warning: (ae-forgotten-export) The symbol "Resolved_2" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     setRecipeElementsVisible(resolved: Resolved_2.Draw.RecipeElementsVisibilityDto<BABYLON_2.Mesh>): void;
     // (undocumented)
     updatePointsInstances(mesh: BABYLON_2.Mesh, positions: Inputs_2.Base.Point3[]): void;
     // (undocumented)
     readonly vector: Vector_3;
+    // Warning: (ae-forgotten-export) The symbol "Resolved_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "DrawableShapeMesh" needs to be exported by the entry point index.d.ts
+    withEdgeWidthSized<T extends Pick<Resolved_2.Draw.DrawOcctShapeOptions, "edgeWidth"> & Pick<Inputs_2.Draw.DrawOcctShapeOptions, "edgeWidthBySize">>(options: T, meshes: readonly DrawableShapeMesh[]): T;
 }
 
 // @public

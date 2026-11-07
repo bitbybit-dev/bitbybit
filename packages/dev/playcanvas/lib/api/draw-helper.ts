@@ -863,7 +863,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private partEdges(mesh: DrawableShapeMesh, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): pc.Entity | undefined {
-        const fallback = defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
+        const fallback = defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast, options.wireColour, options.drawFaces && mesh.faceList.length > 0);
         const colors = edgeColorsOf(appearance, mesh.edgeList.map(edge => edge.edgeIndex), fallback);
         return this.drawPolylines(undefined, mesh.edgeList.map(edge => edge.vertexCoord.filter(point => point !== undefined)), false, options.edgeWidth, options.edgeOpacity, colors);
     }
@@ -1062,7 +1062,7 @@ export class DrawHelper extends DrawHelperCore {
                 false, 
                 resolved.edgeWidth, 
                 resolved.edgeOpacity, 
-                defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast),
+                defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast, resolvedOptions.wireColour, resolved.drawFaces && decomposedMesh.faceList.length > 0),
                 Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
                 resolvedOptions.edgeArrowSize,
                 resolvedOptions.edgeArrowAngle
@@ -1214,7 +1214,7 @@ export class DrawHelper extends DrawHelperCore {
         }
 
         if (resolved.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
-            const edgeColour = defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast);
+            const edgeColour = defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast, resolvedOptions.wireColour, resolved.drawFaces && decomposedMesh.faceList.length > 0);
             decomposedMesh.edgeList.forEach(edge => {
                 const ev = edge.vertexCoord.filter(s => s !== undefined);
                 const line = this.drawPolylines(

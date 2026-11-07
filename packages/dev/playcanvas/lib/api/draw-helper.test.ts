@@ -3325,6 +3325,40 @@ describe("DrawHelper unit tests", () => {
             expect(contrasted).toEqual([153, 153, 153]);
             expect(individually).toEqual([255, 255, 255]);
         });
+
+        it("should draw edges with no faces beside them in the wire color when one is given", async () => {
+            // Act
+            const wire = await firstVertexColor(() => drawHelper.handleDecomposedMesh({ drawFaces: false, edgeColour: "#00ff00" }, oneEdge(), { wireColour: "#ffffff" }));
+            const wireIndividually = await firstVertexColor(() => drawHelper.handleDecomposedMeshIndividually({ drawFaces: true, edgeColour: "#00ff00" }, oneEdge(), { wireColour: "#ffffff" }));
+            const unset = await firstVertexColor(() => drawHelper.handleDecomposedMesh({ drawFaces: false, edgeColour: "#00ff00" }, oneEdge(), {}));
+
+            // Assert
+            expect(wire).toEqual([255, 255, 255]);
+            expect(wireIndividually).toEqual([255, 255, 255]);
+            expect(unset).toEqual([0, 255, 0]);
+        });
+
+        it("should give the wire color to a shape that has no faces even with faces asked for, and keep the edge color beside faces", async () => {
+            // Arrange
+            const withFace = (): Inputs.OCCT.DecomposedMeshDto => {
+                const face = new Inputs.OCCT.DecomposedFaceDto();
+                face.faceIndex = 0;
+                face.vertexCoord = [0, 0, 0, 1, 0, 0, 0, 1, 0];
+                face.normalCoord = [0, 0, 1, 0, 0, 1, 0, 0, 1];
+                face.triIndexes = [0, 1, 2];
+                return { ...oneEdge(), faceList: [face] };
+            };
+
+            // Act
+            const alone = await firstVertexColor(() => drawHelper.handleDecomposedMesh({ drawFaces: true, edgeColour: "#00ff00" }, oneEdge(), { wireColour: "#ffffff" }));
+            const besideFaces = await firstVertexColor(() => drawHelper.handleDecomposedMesh({ drawFaces: true, edgeColour: "#00ff00" }, withFace(), { wireColour: "#ffffff" }));
+            const eachBesideFaces = await firstVertexColor(() => drawHelper.handleDecomposedMeshIndividually({ drawFaces: true, edgeColour: "#00ff00" }, withFace(), { wireColour: "#ffffff" }));
+
+            // Assert
+            expect(alone).toEqual([255, 255, 255]);
+            expect(besideFaces).toEqual([0, 255, 0]);
+            expect(eachBesideFaces).toEqual([0, 255, 0]);
+        });
     });
 
     describe("a shape mesh with a face that cannot be drawn", () => {

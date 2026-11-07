@@ -532,6 +532,43 @@ describe("what PlayCanvas draws, pushed to the edges of real-world use", () => {
         });
     });
 
+    describe("the wire color of a shape in its appearance", () => {
+        it("should give the edges of a shape drawn without faces the wire color, under the appearance's own edge colors", async () => {
+            // Arrange
+            const mesh: Inputs.OCCT.DecomposedMeshDto = {
+                faceList: [],
+                edgeList: [0, 1].map(edgeIndex => ({ edgeIndex, vertexCoord: [[edgeIndex, 0, 0], [edgeIndex, 1, 0]] as Inputs.Base.Point3[], middlePoint: [edgeIndex, 0.5, 0] as Inputs.Base.Point3 })),
+                pointsList: [],
+            };
+            workers.occtWorkerCall.mockResolvedValueOnce([meshBuffersOf(mesh)]);
+            const appearance: Models.OCCT.DesignBuiltAppearance = { faces: [], edges: [{ indexes: [1], color: "#ff0000" }] };
+
+            // Act
+            const drawn = await drawHelper.drawShapeWithAppearance({ shape: { hash: 1, type: "occ-shape" }, appearance }, { drawFaces: false, edgeColour: "#123456", wireColour: "#ffffff" });
+
+            // Assert
+            expect(lineColoursOf(linesIn(drawn)[0]!)).toEqual(["ffffff", "ffffff", "ff0000", "ff0000"]);
+            drawn.destroy();
+        });
+        it("should keep the edge color for the edges of a shape drawn with its faces", async () => {
+            // Arrange
+            const mesh: Inputs.OCCT.DecomposedMeshDto = {
+                faceList: [square(0, 1)],
+                edgeList: [0, 1].map(edgeIndex => ({ edgeIndex, vertexCoord: [[edgeIndex, 0, 0], [edgeIndex, 1, 0]] as Inputs.Base.Point3[], middlePoint: [edgeIndex, 0.5, 0] as Inputs.Base.Point3 })),
+                pointsList: [],
+            };
+            workers.occtWorkerCall.mockResolvedValueOnce([meshBuffersOf(mesh)]);
+            const appearance: Models.OCCT.DesignBuiltAppearance = { faces: [], edges: [{ indexes: [1], color: "#ff0000" }] };
+
+            // Act
+            const drawn = await drawHelper.drawShapeWithAppearance({ shape: { hash: 2, type: "occ-shape" }, appearance }, { drawFaces: true, edgeColour: "#123456", wireColour: "#ffffff" });
+
+            // Assert
+            expect(lineColoursOf(linesIn(drawn)[0]!)).toEqual(["123456", "123456", "ff0000", "ff0000"]);
+            drawn.destroy();
+        });
+    });
+
     describe("the index of a face whose mesh holds no middle point", () => {
         const labelOptions = (): Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer> => occtOptions({ drawFaces: false, drawFaceIndexes: true });
 

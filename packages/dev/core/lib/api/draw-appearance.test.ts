@@ -203,6 +203,18 @@ describe("an edge color that stands out from the faces", () => {
         expect(plain).toBe("#123456");
         expect(contrasted).toBe("#999999");
     });
+
+    it("should give edges drawn without faces the wire color when one is given, and leave edges beside faces alone", () => {
+        // Act
+        const alone = defaultEdgeColor("#ffffff", "#123456", 0.4, "#abcdef", false);
+        const besideFaces = defaultEdgeColor("#ffffff", "#123456", undefined, "#abcdef", true);
+        const unset = defaultEdgeColor("#ffffff", "#123456", undefined, undefined, false);
+
+        // Assert
+        expect(alone).toBe("#abcdef");
+        expect(besideFaces).toBe("#123456");
+        expect(unset).toBe("#123456");
+    });
 });
 
 describe("the faces of each look merged into flat arrays", () => {
@@ -396,7 +408,7 @@ describe("what decides how a design build looks", () => {
         const first = designSignatureOf(parts, ["a", "b"], options);
         const again = designSignatureOf(new Map(parts), ["a", "b"], { ...options });
         const otherLook = designSignatureOf(new Map([["a", { appearance: { color: "#654321", faces: [] } }], ["b", {}]]), ["a", "b"], options);
-        const otherOptions = (["drawFaces", "drawEdges", "faceColour", "faceOpacity", "edgeColour", "edgeContrast", "edgeWidth", "edgeOpacity"] as const)
+        const otherOptions = (["drawFaces", "drawEdges", "faceColour", "faceOpacity", "edgeColour", "edgeContrast", "wireColour", "edgeWidth", "edgeOpacity"] as const)
             .map(key => designSignatureOf(parts, ["a", "b"], { ...options, [key]: key === "edgeContrast" ? 0.5 : typeof options[key] === "boolean" ? !options[key] : typeof options[key] === "number" ? 0.25 : "#000000" }));
 
         // Assert
@@ -425,7 +437,7 @@ describe("what decides how a design build looks", () => {
             designPartKeyOf({ appearance: { color: "#123456", faces: [] }, shapeHash: "two" }),
         ];
         const lookOptions = designOptionsKeyOf(options);
-        const otherOptions = (["drawFaces", "drawEdges", "faceColour", "faceOpacity", "edgeColour", "edgeContrast", "edgeWidth", "edgeOpacity"] as const)
+        const otherOptions = (["drawFaces", "drawEdges", "faceColour", "faceOpacity", "edgeColour", "edgeContrast", "wireColour", "edgeWidth", "edgeOpacity"] as const)
             .map(key => designOptionsKeyOf({ ...options, [key]: key === "edgeContrast" ? 0.5 : typeof options[key] === "boolean" ? !options[key] : typeof options[key] === "number" ? 0.25 : "#000000" }));
 
         // Assert

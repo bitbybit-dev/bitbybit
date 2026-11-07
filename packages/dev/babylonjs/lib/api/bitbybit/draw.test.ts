@@ -89,6 +89,10 @@ type DrawPrivateMethods = {
     
     handleOcctShapes: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
     
+    handleDecomposedMeshShape: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
+    
+    handleDecomposedMeshes: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
+    
     handleManifoldShape: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
     
     handleManifoldShapes: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
@@ -144,6 +148,8 @@ const drawPrivateMethodNames: Record<keyof DrawPrivateMethods, true> = {
     handleJscadMeshes: true,
     handleOcctShape: true,
     handleOcctShapes: true,
+    handleDecomposedMeshShape: true,
+    handleDecomposedMeshes: true,
     handleManifoldShape: true,
     handleManifoldShapes: true,
     handleManifoldMesh: true,
@@ -165,6 +171,7 @@ const privateMethodsOf = (value: unknown): DrawPrivateMethods => {
 };
 
 const passThroughRange: DrawHelper["withSurfaceAnalysisRange"] = options => options;
+const passThroughWidth: DrawHelper["withEdgeWidthSized"] = options => options;
 
 const createDrawHelperDouble = () => ({
     drawPoints: vi.fn(),
@@ -193,6 +200,7 @@ const createDrawHelperDouble = () => ({
     drawShapes: vi.fn(),
     handleDecomposedMesh: vi.fn(),
     withSurfaceAnalysisRange: passThroughRange,
+    withEdgeWidthSized: passThroughWidth,
     dispose: vi.fn(),
 });
 
@@ -560,6 +568,51 @@ describe("Draw unit tests", () => {
                 expect.objectContaining({ faceColour: "#123456" }),
                 expect.anything(),
                 expect.objectContaining({ faceColour: "#123456" }));
+        });
+    });
+
+    describe("drawing with the context's draw defaults", () => {
+        const shape: Inputs.OCCT.TopoDSShapePointer = { type: "occ-shape", hash: 7 };
+
+        beforeEach(() => {
+            spyManager.setupDetectors("OcctShape");
+            mockDrawHelper.drawShape.mockResolvedValue(createMockMesh("occt"));
+        });
+
+        it("should draw a shape given no options in the look the defaults give", async () => {
+            // Arrange
+            mockContext.drawDefaults = { occt: { faceColour: "#ffffff", drawTwoSided: false } };
+
+            // Act
+            await draw.drawAnyAsync({ entity: shape });
+
+            // Assert
+            expect(mockDrawHelper.drawShape).toHaveBeenCalledWith(expect.objectContaining({ faceColour: "#ffffff", drawTwoSided: false, edgeColour: "#ffffff" }));
+        });
+
+        it("should draw with the script's own options as they are, even where they hold the built-in values", async () => {
+            // Arrange
+            mockContext.drawDefaults = { occt: { faceColour: "#ffffff", drawTwoSided: false, edgeWidthBySize: true } };
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+            options.faceColour = "#ff6a00";
+
+            // Act
+            await draw.drawAnyAsync({ entity: shape, options });
+
+            // Assert
+            expect(mockDrawHelper.drawShape).toHaveBeenCalledWith(expect.objectContaining({ faceColour: "#ff6a00", drawTwoSided: true, edgeWidthBySize: false }));
+        });
+
+        it("should draw with the script's options as they are when no defaults are set", async () => {
+            // Arrange
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+            options.faceColour = "#ff6a00";
+
+            // Act
+            await draw.drawAnyAsync({ entity: shape, options });
+
+            // Assert
+            expect(mockDrawHelper.drawShape).toHaveBeenCalledWith(expect.objectContaining({ faceColour: "#ff6a00", drawTwoSided: true, edgeWidthBySize: false }));
         });
     });
 
@@ -1686,6 +1739,142 @@ describe("Draw unit tests", () => {
                 polyline: mockPolyline
             }));
             expect(result).toBeDefined();
+        });
+
+        it("should draw a polyline given no options in the look the line defaults give, and one with options as they are", () => {
+            // Arrange
+            const polyline = { points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] };
+            const mockMesh = createMockMesh("polyline");
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylineClose = vi.fn().mockReturnValue(mockMesh);
+            mockContext.drawDefaults = { lines: { colours: "#ffffff" } };
+            const own = new Inputs.Draw.DrawBasicGeometryOptions();
+            own.colours = "#00ff00";
+
+            // Act
+            drawPrivate.handlePolyline({ entity: polyline });
+            drawPrivate.handlePolyline({ entity: polyline, options: own });
+
+            // Assert
+            expect(mockDrawHelper.drawPolylineClose).toHaveBeenNthCalledWith(1, expect.objectContaining({ colours: "#ffffff", size: 2 }));
+            expect(mockDrawHelper.drawPolylineClose).toHaveBeenNthCalledWith(2, expect.objectContaining({ colours: "#00ff00" }));
+        });
+
+        it("should draw every kind of line given no options in the line defaults", () => {
+            // Arrange
+            const drawnLike = (name: string): BABYLON.Mesh => {
+                const mesh = createMockMesh(name);
+                mesh.getChildMeshes = vi.fn().mockReturnValue([]);
+                return mesh;
+            };
+            mockContext.drawDefaults = { lines: { colours: "#ffffff" } };
+            mockDrawHelper.drawPolylinesWithColours = vi.fn(() => drawnLike("lines"));
+            mockDrawHelper.drawCurve = vi.fn(() => drawnLike("curve"));
+            mockDrawHelper.drawCurves = vi.fn(() => drawnLike("curves"));
+            const curve = { tessellate: () => [[0, 0, 0], [1, 0, 0]] };
+
+            // Act
+            const drawn = [
+                drawPrivate.handleLines({ entity: [{ start: [0, 0, 0], end: [1, 0, 0] }] }),
+                drawPrivate.handleLine({ entity: { start: [0, 0, 0], end: [1, 0, 0] } }),
+                drawPrivate.handlePolylines({ entity: [{ points: [[0, 0, 0], [1, 0, 0]] }] }),
+                drawPrivate.handleVerbCurve({ entity: curve }),
+                drawPrivate.handleVerbCurves({ entity: [curve] }),
+            ];
+
+            // Assert
+            expect(drawn.map(mesh => (mesh?.metadata as { options: { colours: string } }).options.colours)).toEqual(["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"]);
+        });
+
+        it("should draw Manifold and JSCAD solids given no options in their own defaults", async () => {
+            // Arrange
+            mockContext.drawDefaults = { manifold: { faceColour: "#00ff00" }, jscad: { colours: "#0000ff" } };
+            mockDrawHelper.drawManifoldOrCrossSection = vi.fn().mockResolvedValue(createMockMesh("manifold"));
+            mockDrawHelper.drawSolidOrPolygonMesh = vi.fn().mockResolvedValue(createMockMesh("jscad"));
+            const solid: Inputs.JSCAD.JSCADGeom3 = { polygons: [], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] };
+
+            // Act
+            await drawPrivate.handleManifoldShape({ entity: { hash: 1, type: "manifold-shape" } });
+            await drawPrivate.handleJscadMesh({ entity: {} }, solid);
+
+            // Assert
+            expect(mockDrawHelper.drawManifoldOrCrossSection).toHaveBeenCalledWith(expect.objectContaining({ faceColour: "#00ff00" }));
+            expect(mockDrawHelper.drawSolidOrPolygonMesh).toHaveBeenCalledWith(expect.objectContaining({ colours: "#0000ff" }));
+        });
+
+        it("should draw lists of shapes and solids given no options in their defaults, and meshes from the kernel in the shape defaults", async () => {
+            // Arrange
+            mockContext.drawDefaults = { occt: { faceColour: "#ffffff" }, manifold: { faceColour: "#00ff00" } };
+            mockDrawHelper.drawShapes = vi.fn().mockResolvedValue(createMockMesh("shapes"));
+            mockDrawHelper.drawManifoldsOrCrossSections = vi.fn().mockResolvedValue(createMockMesh("manifolds"));
+            mockDrawHelper.handleDecomposedMesh = vi.fn().mockResolvedValue(createMockMesh("decomposed"));
+
+            // Act
+            await drawPrivate.handleOcctShapes({ entity: [{ type: "occ-shape", hash: 1 }, { type: "occ-shape", hash: 2 }] });
+            await drawPrivate.handleManifoldShapes({ entity: [{ hash: 1, type: "manifold-shape" }] });
+            await drawPrivate.handleDecomposedMeshShape({ entity: new Inputs.OCCT.DecomposedMeshDto([], []) });
+
+            // Assert
+            expect(mockDrawHelper.drawShapes).toHaveBeenCalledWith(expect.objectContaining({ faceColour: "#ffffff" }));
+            expect(mockDrawHelper.drawManifoldsOrCrossSections).toHaveBeenCalledWith(expect.objectContaining({ faceColour: "#00ff00" }));
+            expect(mockDrawHelper.handleDecomposedMesh).toHaveBeenCalledWith(expect.objectContaining({ faceColour: "#ffffff" }), expect.anything(), expect.objectContaining({ faceColour: "#ffffff" }));
+        });
+
+        it("should keep, on what it drew from the kernel's meshes, the options before sizing, so a redraw sizes them again", async () => {
+            // Arrange
+            mockContext.drawDefaults = { occt: { edgeWidthBySize: true } };
+            const drawn = createMockMesh("decomposed");
+            mockDrawHelper.handleDecomposedMesh = vi.fn().mockResolvedValue(drawn);
+            vi.spyOn(mockDrawHelper, "withEdgeWidthSized").mockImplementation(options => ({ ...options, edgeWidth: 9, edgeWidthBySize: false }));
+
+            // Act
+            await drawPrivate.handleDecomposedMeshShape({ entity: new Inputs.OCCT.DecomposedMeshDto([], []) });
+
+            // Assert
+            expect((drawn.metadata as { options: Inputs.Draw.DrawOcctShapeOptions }).options).toEqual(expect.objectContaining({ edgeWidth: 2, edgeWidthBySize: true }));
+        });
+
+        it("should redraw a mesh in the options it was drawn in, not in the defaults", async () => {
+            // Arrange
+            mockContext.drawDefaults = { occt: { faceColour: "#ffffff" } };
+            const earlier = createMockMeshWithMetadata("occt", Inputs.Draw.drawingTypes.occt, { ...new Inputs.Draw.DrawOcctShapeOptions(), faceColour: "#123456" });
+            mockDrawHelper.drawShape = vi.fn().mockResolvedValue(createMockMesh("occt"));
+
+            // Act
+            await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 7 }, babylonMesh: earlier });
+
+            // Assert
+            expect(mockDrawHelper.drawShape).toHaveBeenCalledWith(expect.objectContaining({ faceColour: "#123456" }));
+        });
+
+        it("should take options given as null for no options, drawing in the defaults", () => {
+            // Arrange
+            const polyline = { points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] };
+            const mockMesh = createMockMesh("polyline");
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylineClose = vi.fn().mockReturnValue(mockMesh);
+            mockContext.drawDefaults = { lines: { colours: "#ffffff" } };
+
+            // Act
+            drawPrivate.handlePolyline({ entity: polyline, options: null });
+
+            // Assert
+            expect(mockDrawHelper.drawPolylineClose).toHaveBeenCalledWith(expect.objectContaining({ colours: "#ffffff", size: 2 }));
+        });
+
+        it("should size the edges of meshes drawn from the kernel's buffers, a list by all of them together", async () => {
+            // Arrange
+            const sizing = vi.spyOn(mockDrawHelper, "withEdgeWidthSized");
+            mockDrawHelper.handleDecomposedMesh = vi.fn().mockResolvedValue(createMockMesh("decomposed"));
+            const one = new Inputs.OCCT.DecomposedMeshDto([], []);
+            const another = new Inputs.OCCT.DecomposedMeshDto([], []);
+
+            // Act
+            await drawPrivate.handleDecomposedMeshShape({ entity: one });
+            await drawPrivate.handleDecomposedMeshes({ entity: [one, another] });
+
+            // Assert
+            expect(sizing.mock.calls.map(call => call[1])).toEqual([[one], [one, another]]);
         });
 
         it("should draw a JSCAD path as a closed three-dimensional polyline, not as its raw 2D points", () => {

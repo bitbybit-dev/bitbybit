@@ -23,8 +23,28 @@ export class MockVector3 {
         return new MockVector3(0, 0, 0);
     }
     
-    static FromArray(array: number[]) {
-        return new MockVector3(array[0] || 0, array[1] || 0, array[2] || 0);
+    minimizeInPlaceFromFloats(x: number, y: number, z: number) {
+        return this.minimizeInPlace(new MockVector3(x, y, z));
+    }
+
+    maximizeInPlaceFromFloats(x: number, y: number, z: number) {
+        return this.maximizeInPlace(new MockVector3(x, y, z));
+    }
+
+    static FromArray(array: ArrayLike<number>, offset = 0) {
+        return new MockVector3(array[offset] || 0, array[offset + 1] || 0, array[offset + 2] || 0);
+    }
+
+    static Distance(start: MockVector3, end: MockVector3) {
+        return Math.hypot(end.x - start.x, end.y - start.y, end.z - start.z);
+    }
+
+    minimizeInPlace(other: MockVector3) {
+        return this.set(Math.min(this.x, other.x), Math.min(this.y, other.y), Math.min(this.z, other.z));
+    }
+
+    maximizeInPlace(other: MockVector3) {
+        return this.set(Math.max(this.x, other.x), Math.max(this.y, other.y), Math.max(this.z, other.z));
     }
     
     set(x: number, y: number, z: number) {
@@ -587,8 +607,20 @@ export function CreateGreasedLine(
     return mesh;
 }
 
+function extractMinAndMax(positions: ArrayLike<number>, start: number, count: number): { minimum: MockVector3; maximum: MockVector3 } {
+    const minimum = new MockVector3(Infinity, Infinity, Infinity);
+    const maximum = new MockVector3(-Infinity, -Infinity, -Infinity);
+    for (let index = start; index < start + count; index++) {
+        const point = MockVector3.FromArray(positions, index * 3);
+        minimum.minimizeInPlace(point);
+        maximum.maximizeInPlace(point);
+    }
+    return { minimum, maximum };
+}
+
 export function createBabylonJSMock() {
     return {
+        extractMinAndMax,
         Vector3: MockVector3,
         Color3: MockColor3,
         Color4: MockColor4,

@@ -447,6 +447,20 @@ describe("what BabylonJS draws, pushed to the edges of real-world use", () => {
             }), { seed: SEED + 3, numRuns: 60 });
         });
 
+        it("should give the parts new materials when redrawn in place after the default metallic or roughness changed", async () => {
+            // Arrange
+            const poses = { worlds: [[IDENTITY], [IDENTITY]] };
+            const drawn = await drawHelper.drawDesignBuild(buildOf(poses), options);
+            context.drawDefaults = { metallic: 0.4, roughness: 0.3 };
+
+            // Act
+            await drawHelper.drawDesignBuild(buildOf(poses), options, drawn);
+
+            // Assert
+            const materials = surfacesOf(drawn).map(surface => surface.material as BABYLON.PBRMetallicRoughnessMaterial);
+            expect(materials.map(material => [material.metallic, material.roughness])).toEqual([[0.4, 0.3], [0.4, 0.3]]);
+        });
+
         it("should mesh the parts again when redrawn in place with another angular deflection, as it does for another precision", async () => {
             // Arrange
             const poses = { worlds: [[IDENTITY], [IDENTITY]] };
@@ -540,6 +554,42 @@ describe("what BabylonJS draws, pushed to the edges of real-world use", () => {
                 expect(line.greasedLineMaterial!.colors!.map(each => each.toHexString().toLowerCase())).toEqual(expected);
                 drawn.dispose();
             }), { seed: SEED + 5, numRuns: 100 });
+        });
+    });
+
+    describe("the wire color of a shape in its appearance", () => {
+        const edges = (faceList: Inputs.OCCT.DecomposedFaceDto[]): Inputs.OCCT.DecomposedMeshDto => ({
+            faceList,
+            edgeList: [0, 1].map(edgeIndex => ({ edgeIndex, vertexCoord: [[edgeIndex, 0, 0], [edgeIndex, 1, 0]] as Inputs.Base.Point3[], middlePoint: [edgeIndex, 0.5, 0] as Inputs.Base.Point3 })),
+            pointsList: [],
+        });
+        const appearance: Models.OCCT.DesignBuiltAppearance = { faces: [], edges: [{ indexes: [1], color: "#ff0000" }] };
+
+        it("should give the edges of a shape drawn without faces the wire color, under the appearance's own edge colors, and keep the edge color beside faces", async () => {
+            // Arrange
+            workers.occtWorkerCall.mockResolvedValueOnce([meshBuffersOf(edges([]))]).mockResolvedValueOnce([meshBuffersOf(edges([square(0, 1)]))]);
+
+            // Act
+            const alone = await drawHelper.drawShapeWithAppearance({ shape: { hash: 1, type: "occ-shape" }, appearance }, { drawFaces: false, edgeColour: "#123456", wireColour: "#ffffff" });
+            const besideFaces = await drawHelper.drawShapeWithAppearance({ shape: { hash: 2, type: "occ-shape" }, appearance }, { drawFaces: true, edgeColour: "#123456", wireColour: "#ffffff" });
+
+            // Assert
+            const coloursOf = (drawn: BABYLON.Mesh): string[] => linesOf(drawn)[0]!.greasedLineMaterial!.colors!.map(each => each.toHexString().toLowerCase());
+            expect(coloursOf(alone)).toEqual(["#ffffff", "#ffffff", "#ff0000", "#ff0000"]);
+            expect(coloursOf(besideFaces)).toEqual(["#123456", "#123456", "#ff0000", "#ff0000"]);
+        });
+
+        it("should make the look of an appearance as metallic and rough as the defaults say, where the look says nothing", async () => {
+            // Arrange
+            context.drawDefaults = { metallic: 0.2, roughness: 0.35 };
+            workers.occtWorkerCall.mockResolvedValueOnce([meshBuffersOf(edges([square(0, 1)]))]);
+
+            // Act
+            const drawn = await drawHelper.drawShapeWithAppearance({ shape: { hash: 3, type: "occ-shape" }, appearance: { color: "#00ff00", faces: [] } }, { drawEdges: false });
+
+            // Assert
+            const material = surfacesOf(drawn)[0]!.material as BABYLON.PBRMetallicRoughnessMaterial;
+            expect([material.metallic, material.roughness]).toEqual([0.2, 0.35]);
         });
     });
 

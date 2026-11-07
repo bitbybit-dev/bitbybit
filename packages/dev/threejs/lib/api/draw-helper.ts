@@ -386,7 +386,7 @@ export class DrawHelper extends DrawHelperCore {
             }
         }
         if (options.drawEdges && mesh.edgeList.length > 0) {
-            const colors = edgeColorsOf(appearance, mesh.edgeList.map(edge => edge.edgeIndex), this.partEdgeColour(appearance, options));
+            const colors = edgeColorsOf(appearance, mesh.edgeList.map(edge => edge.edgeIndex), this.partEdgeColour(appearance, options, options.drawFaces && mesh.faceList.length > 0));
             const line = this.drawPolylines(undefined, mesh.edgeList.map(edge => edge.vertexCoord.filter(point => point !== undefined)), false, options.edgeWidth, options.edgeOpacity, colors);
             if (line) {
                 shapeGroup.add(line);
@@ -395,8 +395,8 @@ export class DrawHelper extends DrawHelperCore {
         return shapeGroup;
     }
 
-    private partEdgeColour(appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): string {
-        return defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
+    private partEdgeColour(appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions, facesDrawn: boolean): string {
+        return defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast, options.wireColour, facesDrawn);
     }
 
     private lookedMesh(source: DrawableShapeMesh, looks: readonly LookGroup[], faceOpacity: number, zOffset: number): THREEJS.Mesh {
@@ -514,7 +514,7 @@ export class DrawHelper extends DrawHelperCore {
 
     private edgeBatch(placed: readonly string[], parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance>, meshes: ReadonlyMap<string, DrawableShapeMesh>, placements: ReadonlyMap<string, readonly PartPlacement[]>, options: Resolved.Draw.DrawOcctShapeOptions): DesignEdges | undefined {
         const segments = new Map(placed.map(id => [id, edgeSegmentsOf(meshes.get(id)!)]));
-        const colors = new Map(placed.map(id => [id, this.segmentColors(segments.get(id)!, parts.get(id)!.appearance, options)]));
+        const colors = new Map(placed.map(id => [id, this.segmentColors(segments.get(id)!, parts.get(id)!.appearance, options, options.drawFaces && meshes.get(id)!.faceList.length > 0)]));
         const order: { part: string; index: number }[] = [];
         let total = 0;
         for (const id of placed) {
@@ -576,8 +576,8 @@ export class DrawHelper extends DrawHelperCore {
         return { line, texture, order };
     }
 
-    private segmentColors(segments: EdgeSegments, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): Float32Array {
-        const edgeColors = edgeColorsOf(appearance, segments.edgeRanges.map(range => range.edge), this.partEdgeColour(appearance, options));
+    private segmentColors(segments: EdgeSegments, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions, facesDrawn: boolean): Float32Array {
+        const edgeColors = edgeColorsOf(appearance, segments.edgeRanges.map(range => range.edge), this.partEdgeColour(appearance, options, facesDrawn));
         const channels = new Float32Array(segments.positions.length);
         const color = new THREEJS.Color();
         segments.edgeRanges.forEach((range, index) => {
@@ -1198,7 +1198,7 @@ export class DrawHelper extends DrawHelperCore {
                 false, 
                 resolved.edgeWidth, 
                 resolved.edgeOpacity, 
-                defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast),
+                defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast, resolvedOptions.wireColour, resolved.drawFaces && decomposedMesh.faceList.length > 0),
                 Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
                 resolvedOptions.edgeArrowSize,
                 resolvedOptions.edgeArrowAngle
@@ -1351,7 +1351,7 @@ export class DrawHelper extends DrawHelperCore {
         }
 
         if (resolved.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
-            const edgeColour = defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast);
+            const edgeColour = defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast, resolvedOptions.wireColour, resolved.drawFaces && decomposedMesh.faceList.length > 0);
             decomposedMesh.edgeList.forEach(edge => {
                 const ev = edge.vertexCoord.filter(s => s !== undefined);
                 const mesh = this.drawPolylines(

@@ -556,7 +556,7 @@ export namespace Draw {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number, edgeWidthBySize?: boolean, wireColour?: Base.Color) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
@@ -595,6 +595,8 @@ export namespace Draw {
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
             if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
+            if (edgeWidthBySize !== undefined) { this.edgeWidthBySize = edgeWidthBySize; }
+            if (wireColour !== undefined) { this.wireColour = wireColour; }
         }
         /**
          * How opaque the faces are, from 0 for invisible to 1 for opaque, multiplied into each look's
@@ -630,6 +632,13 @@ export namespace Draw {
          */
         edgeContrast?: number | undefined;
         /**
+         * The color of the edges of a shape drawn without faces (a wire, an edge, or `drawFaces` off), in
+         * place of `edgeColour` and `edgeContrast`; appearance edge colors still win.
+         * @default undefined
+         * @optional true
+         */
+        wireColour?: Base.Color | undefined;
+        /**
          * The color of the faces, as a hex string. A `faceMaterial` or a `surfaceAnalysis` takes its
          * place, and the colors of an appearance win over it.
          * @default #ff0000
@@ -655,6 +664,12 @@ export namespace Draw {
          * @step 0.1
          */
         edgeWidth?: number | undefined = 2;
+        /**
+         * When true, `edgeWidth` scales with the diagonal of what is drawn, as if it were 10 model units,
+         * so edges look alike at any size; not for design builds.
+         * @default false
+         */
+        edgeWidthBySize?: boolean | undefined = false;
         /**
          * The diameter of the vertex markers, in model units; used with `drawVertices`.
          * @default 0.03
@@ -1554,5 +1569,37 @@ export namespace Draw {
         recipeMeshes = "recipeMeshes",
         tag = "tag",
         tags = "tags",
+    }
+    /**
+     * The look `bitbybit.draw` gives what a script draws without options of its own, set once on the
+     * context, typically by an app from its settings. Each kind's built-in defaults fill what is not
+     * given here, and options a script passes to a draw call are used as they are.
+     */
+    export interface DrawDefaults {
+        /**
+         * Defaults for OpenCascade shapes, in the fields `draw.optionsOcctShape` takes.
+         */
+        occt?: Partial<DrawOcctShapeOptions> | undefined;
+        /**
+         * Defaults for Manifold solids, meshes and cross sections.
+         */
+        manifold?: Partial<DrawManifoldOrCrossSectionOptions> | undefined;
+        /**
+         * Defaults for JSCAD meshes.
+         */
+        jscad?: Partial<DrawBasicGeometryOptions> | undefined;
+        /**
+         * Defaults for lines, polylines and curves.
+         */
+        lines?: Partial<DrawBasicGeometryOptions> | undefined;
+        /**
+         * How metallic the materials made from a face or back face color are, from 0 to 1; 1 when
+         * not given.
+         */
+        metallic?: number | undefined;
+        /**
+         * How rough those materials are, from 0 for a mirror to 1 for chalk; 0.6 when not given.
+         */
+        roughness?: number | undefined;
     }
 }

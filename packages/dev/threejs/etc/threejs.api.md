@@ -832,7 +832,7 @@ namespace Draw_2 {
         userData?: DrawnTagMeta | undefined;
     };
     class DrawOcctShapeOptions {
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base_3.Color, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base_3.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base_3.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base_3.Color, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base_3.Color, surfaceAnalysis?: Inputs_2.OCCT.surfaceAnalysisEnum, draftDirection?: Base_3.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number);
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base_3.Color, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base_3.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base_3.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base_3.Color, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base_3.Color, surfaceAnalysis?: Inputs_2.OCCT.surfaceAnalysisEnum, draftDirection?: Base_3.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number, edgeWidthBySize?: boolean, wireColour?: Base_3.Color);
         allowQualityDecrease?: boolean | undefined;
         analysisMax?: number | undefined;
         analysisMin?: number | undefined;
@@ -855,6 +855,7 @@ namespace Draw_2 {
         edgeIndexHeight?: number | undefined;
         edgeOpacity?: number | undefined;
         edgeWidth?: number | undefined;
+        edgeWidthBySize?: boolean | undefined;
         faceColour?: Base_3.Color | undefined;
         faceIndexColour?: Base_3.Color | undefined;
         faceIndexHeight?: number | undefined;
@@ -871,6 +872,7 @@ namespace Draw_2 {
         surfaceAnalysis?: Inputs_2.OCCT.surfaceAnalysisEnum | undefined;
         vertexColour?: Base_3.Color | undefined;
         vertexSize?: number | undefined;
+        wireColour?: Base_3.Color | undefined;
     }
     // (undocumented)
     type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawFrameOptions | DrawRecipeMeshesOptions;
@@ -967,7 +969,7 @@ namespace Draw_3 {
     // (undocumented)
     type DrawManifoldOrCrossSectionOptions = WithDefaults<Inputs_2.Draw.DrawManifoldOrCrossSectionOptions, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "minSharpAngle" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     // (undocumented)
-    type DrawOcctShapeOptions = WithDefaults<Inputs_2.Draw.DrawOcctShapeOptions, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "vertexColour" | "edgeWidth" | "vertexSize" | "drawEdges" | "drawFaces" | "drawVertices" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "edgeArrowSize" | "edgeArrowAngle" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DrawOcctShapeOptions = WithDefaults<Inputs_2.Draw.DrawOcctShapeOptions, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "vertexColour" | "edgeWidth" | "edgeWidthBySize" | "vertexSize" | "drawEdges" | "drawFaces" | "drawVertices" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "edgeArrowSize" | "edgeArrowAngle" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
     type DrawRecipeMeshesOptions = WithDefaults<Inputs_2.Draw.DrawRecipeMeshesOptions, "elementKey" | "instancing" | "minInstances" | "maxBatchVertices" | "defaultColour" | "defaultOpacity" | "metallic" | "roughness">;
     // (undocumented)

@@ -698,7 +698,7 @@ export const DEFAULT_COLORS: {
 export type DefaultColors = typeof DEFAULT_COLORS;
 
 // @public
-export function defaultEdgeColor(faceColor: string, edgeColour: string, edgeContrast: number | undefined): string;
+export function defaultEdgeColor(faceColor: string, edgeColour: string, edgeContrast: number | undefined, wireColour?: string, facesDrawn?: boolean): string;
 
 // @public
 export interface DesignDrawMemory<T extends DesignMesh> {
@@ -768,6 +768,8 @@ export interface DesignLookOptions {
     faceColour: string;
     // (undocumented)
     faceOpacity: number;
+    // (undocumented)
+    wireColour?: string | undefined;
 }
 
 // @public
