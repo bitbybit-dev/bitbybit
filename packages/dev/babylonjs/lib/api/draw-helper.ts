@@ -10,7 +10,7 @@ import { resolveDto } from "@bitbybit-dev/base";
 import type { JSCADWorkerManager, JSCADText } from "@bitbybit-dev/jscad-worker";
 import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { CACHE_CONFIG, DEFAULT_COLORS, BABYLONJS_MATERIAL_DEFAULTS } from "./constants";
+import { CACHE_CONFIG, DEFAULT_COLORS, BABYLONJS_MATERIAL_DEFAULTS, COORDINATES_PER_POINT, EDGE_WIDTH_REFERENCE_SIZE } from "./constants";
 import type * as Resolved from "./resolved-inputs";
 import { RecipeMeshesDrawer } from "./draw-recipe-meshes";
 import { freeWithItsLastUser } from "./material-lifetime";
@@ -36,6 +36,7 @@ interface DesignDrawState {
     meshing: string;
     parts: DesignPartDrawn[];
 }
+
 
 export class DrawHelper extends DrawHelperCore {
 
@@ -116,6 +117,59 @@ export class DrawHelper extends DrawHelperCore {
         return parentId ? `${parentId}/${id}` : id;
     }
 
+    private colourMetallic(): number {
+        return this.context.drawDefaults?.metallic ?? BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
+    }
+
+    private colourRoughness(builtIn: number): number {
+        return this.context.drawDefaults?.roughness ?? builtIn;
+    }
+
+    protected override getMaterialKey(hex: string, alpha: number, zOffset: number, unlit = false): string {
+        return `${super.getMaterialKey(hex, alpha, zOffset, unlit)}-${this.colourMetallic()}-${this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT)}`;
+    }
+
+    /**
+     * `options` with `edgeWidth` scaled to the size of all `meshes` together, when `edgeWidthBySize`
+     * asks for it, and that flag then off, so sizing them again changes nothing. Otherwise the options
+     * come back as they are.
+     * @param options - Drawing options that may ask for edges sized to what they draw
+     * @param meshes - Every mesh the options will draw
+     * @returns New options with the edge width for that size
+     */
+    withEdgeWidthSized<T extends Pick<Resolved.Draw.DrawOcctShapeOptions, "edgeWidth"> & Pick<Inputs.Draw.DrawOcctShapeOptions, "edgeWidthBySize">>(options: T, meshes: readonly DrawableShapeMesh[]): T {
+        if (options.edgeWidthBySize !== true) {
+            return options;
+        }
+        const size = this.drawnSize(meshes);
+        return { ...options, edgeWidth: size > 0 ? options.edgeWidth * size / EDGE_WIDTH_REFERENCE_SIZE : options.edgeWidth, edgeWidthBySize: false };
+    }
+
+    private drawnSize(meshes: readonly DrawableShapeMesh[]): number {
+        const lowest = new BABYLON.Vector3(Infinity, Infinity, Infinity);
+        const highest = new BABYLON.Vector3(-Infinity, -Infinity, -Infinity);
+        const take = (point: BABYLON.Vector3): void => {
+            lowest.minimizeInPlace(point);
+            highest.maximizeInPlace(point);
+        };
+        meshes.forEach(mesh => {
+            mesh.faceList.forEach(face => {
+                if (face.vertexCoord.length >= COORDINATES_PER_POINT) {
+                    const { minimum, maximum } = BABYLON.extractMinAndMax(face.vertexCoord, 0, Math.floor(face.vertexCoord.length / COORDINATES_PER_POINT));
+                    take(minimum);
+                    take(maximum);
+                }
+            });
+            mesh.edgeList.forEach(edge => edge.vertexCoord.forEach(point => {
+                if (point !== undefined) {
+                    lowest.minimizeInPlaceFromFloats(point[0], point[1], point[2]);
+                    highest.maximizeInPlaceFromFloats(point[0], point[1], point[2]);
+                }
+            }));
+        });
+        return lowest.x === Infinity ? 0 : BABYLON.Vector3.Distance(lowest, highest);
+    }
+
     private getOrCreateMaterial(
         hex: string,
         alpha: number,
@@ -192,8 +246,8 @@ export class DrawHelper extends DrawHelperCore {
         const backMaterial = this.getOrCreateMaterial(materialKey, backFaceOpacity, zOffset + 0.1, () => {
             const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("backFaceMaterial"), this.context.scene);
             mat.baseColor = BABYLON.Color3.FromHexString(backFaceColour);
-            mat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
-            mat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
+            mat.metallic = this.colourMetallic();
+            mat.roughness = this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE);
             mat.alpha = backFaceOpacity;
             mat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
             mat.backFaceCulling = true;
@@ -364,8 +418,8 @@ export class DrawHelper extends DrawHelperCore {
         const pbr = this.getOrCreateMaterial(color, resolved.opacity, 0, () => {
             const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("surfaceMaterial"), this.context.scene);
             mat.baseColor = BABYLON.Color3.FromHexString(color);
-            mat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
-            mat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
+            mat.metallic = this.colourMetallic();
+            mat.roughness = this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE);
             mat.alpha = resolved.opacity;
             mat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
             mat.backFaceCulling = true;
@@ -423,8 +477,8 @@ export class DrawHelper extends DrawHelperCore {
         const pbr = this.getOrCreateMaterial(color, resolved.opacity, 0, () => {
             const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("surfacesMaterial"), this.context.scene);
             mat.baseColor = BABYLON.Color3.FromHexString(color);
-            mat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
-            mat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
+            mat.metallic = this.colourMetallic();
+            mat.roughness = this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE);
             mat.alpha = resolved.opacity;
             mat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
             mat.backFaceCulling = true;
@@ -935,8 +989,8 @@ export class DrawHelper extends DrawHelperCore {
         const pbr = this.getOrCreateMaterial(inputs.colour, inputs.opacity, zOffset, () => {
             const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("jscadMaterial"), this.context.scene);
             mat.baseColor = BABYLON.Color3.FromHexString(inputs.colour);
-            mat.metallic = 1.0;
-            mat.roughness = 0.6;
+            mat.metallic = this.colourMetallic();
+            mat.roughness = this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.JSCAD);
             mat.alpha = inputs.opacity;
             mat.alphaMode = 1;
             mat.backFaceCulling = true;
@@ -1111,7 +1165,8 @@ export class DrawHelper extends DrawHelperCore {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>;
         const safeWorkerOptions = this.getMeshingOptions(resolved);
         const decomposedMesh: DrawableShapeMesh = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMeshBuffers", safeWorkerOptions);
-        return this.handleDecomposedMesh(resolved, decomposedMesh, resolved);
+        const sized = this.withEdgeWidthSized(resolved, [decomposedMesh]);
+        return this.handleDecomposedMesh(sized, decomposedMesh, sized);
     }
 
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
@@ -1121,7 +1176,7 @@ export class DrawHelper extends DrawHelperCore {
         if (resolved.drawFaces) {
             meshes.forEach(checkDrawableMesh);
         }
-        const pooled = this.withSurfaceAnalysisRange(resolved, meshes);
+        const pooled = this.withEdgeWidthSized(this.withSurfaceAnalysisRange(resolved, meshes), meshes);
         const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(pooled, decomposedMesh, pooled)));
         const shapesMeshContainer = new BABYLON.Mesh(this.generateEntityId("shapesMeshContainer"), this.context.scene);
         meshesSolved.forEach(mesh => {
@@ -1140,7 +1195,7 @@ export class DrawHelper extends DrawHelperCore {
     async drawShapeWithAppearance(entity: Inputs.Draw.ShapeWithAppearance, options: Inputs.Draw.DrawOcctShapeOptions): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
         const [mesh] = await this.meshShapesForLooks([entity.shape], resolved);
-        return this.lookedShapeMesh(mesh!, entity.appearance, resolved);
+        return this.lookedShapeMesh(mesh!, entity.appearance, this.withEdgeWidthSized(resolved, [mesh!]));
     }
 
     /**
@@ -1153,9 +1208,10 @@ export class DrawHelper extends DrawHelperCore {
     async drawShapesWithAppearance(entities: readonly Inputs.Draw.ShapeWithAppearance[], options: Inputs.Draw.DrawOcctShapeOptions): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
         const meshes = await this.meshShapesForLooks(entities.map(entity => entity.shape), resolved);
+        const sized = this.withEdgeWidthSized(resolved, meshes);
         const container = new BABYLON.Mesh(this.generateEntityId("shapesWithAppearanceContainer"), this.context.scene);
         entities.forEach((entity, index) => {
-            this.lookedShapeMesh(meshes[index]!, entity.appearance, resolved).parent = container;
+            this.lookedShapeMesh(meshes[index]!, entity.appearance, sized).parent = container;
         });
         return container;
     }
@@ -1178,12 +1234,12 @@ export class DrawHelper extends DrawHelperCore {
         const meshing = this.meshingTextOf(options);
         const planOptions = { ...options, meshing };
         const plan = designDrawPlanOf<Models.OCCT.DesignBuiltPart<Inputs.OCCT.TopoDSShapePointer> | Models.OCCT.DesignSectionPart<Inputs.OCCT.TopoDSShapePointer>>(build, planOptions, state);
-        if (previous && state && plan.posesOnly) {
+        const looks = `${designOptionsKeyOf(options)}:${this.colourMetallic()}:${this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT)}`;
+        if (previous && state && plan.posesOnly && state.looks === looks) {
             this.poseDesign(state, plan.placements);
             return previous;
         }
         const meshes = await designMeshesOf(plan, planOptions, state, meshing, this.designMeshes, parts => this.meshShapesForLooks(parts.map(part => part.shape), options));
-        const looks = designOptionsKeyOf(options);
         const kept = new Map(state && state.looks === looks && state.precision === options.precision && state.meshing === meshing
             ? state.parts.filter(drawn => plan.parts.has(drawn.part) && plan.placements.has(drawn.part) && drawn.key === designPartKeyOf(plan.parts.get(drawn.part)!)).map(drawn => [drawn.part, drawn])
             : []);
@@ -1276,7 +1332,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private partEdges(mesh: DrawableShapeMesh, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): BABYLON.GreasedLineMesh {
-        const fallback = defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
+        const fallback = defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast, options.wireColour, options.drawFaces && mesh.faceList.length > 0);
         const edgeIndexes = mesh.edgeList.map(edge => edge.edgeIndex);
         const colors = edgeColorsOf(appearance, edgeIndexes, fallback);
         const line = this.drawPolylines(undefined, mesh.edgeList.map(edge => edge.vertexCoord.filter(point => point !== undefined)), false, options.edgeWidth, options.edgeOpacity, colors)!;
@@ -1313,8 +1369,8 @@ export class DrawHelper extends DrawHelperCore {
         return this.getOrCreateMaterial(`look:${look.color}:${look.metallic ?? "-"}:${look.roughness ?? "-"}:${look.emissive ?? "-"}:${look.emissiveStrength ?? "-"}`, opacity, zOffset, () => {
             const material = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("lookMaterial"), this.context.scene);
             material.baseColor = BABYLON.Color3.FromHexString(look.color);
-            material.metallic = look.metallic ?? BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
-            material.roughness = look.roughness ?? BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT;
+            material.metallic = look.metallic ?? this.colourMetallic();
+            material.roughness = look.roughness ?? this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT);
             if (look.emissive !== undefined) {
                 material.emissiveColor = BABYLON.Color3.FromHexString(look.emissive).scale(look.emissiveStrength ?? 1);
             }
@@ -1406,8 +1462,8 @@ export class DrawHelper extends DrawHelperCore {
                 pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                     const pbmat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("brepMaterial"), this.context.scene);
                     pbmat.baseColor = BABYLON.Color3.FromHexString(hex);
-                    pbmat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
-                    pbmat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT;
+                    pbmat.metallic = this.colourMetallic();
+                    pbmat.roughness = this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT);
                     pbmat.alpha = alpha;
                     pbmat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
                     pbmat.backFaceCulling = true;
@@ -1459,7 +1515,7 @@ export class DrawHelper extends DrawHelperCore {
                 false,
                 resolved.edgeWidth,
                 resolved.edgeOpacity,
-                defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast),
+                defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast, resolvedOptions.wireColour, resolved.drawFaces && decomposedMesh.faceList.length > 0),
                 1e-7,
                 false,
                 Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
@@ -1574,8 +1630,8 @@ export class DrawHelper extends DrawHelperCore {
             const pbr = analysisColors ? this.getOrCreateAnalysisMaterial(alpha, zOffset) : resolvedOptions.faceMaterial ?? this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                 const pbmat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("brepMaterial"), this.context.scene);
                 pbmat.baseColor = BABYLON.Color3.FromHexString(hex);
-                pbmat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
-                pbmat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT;
+                pbmat.metallic = this.colourMetallic();
+                pbmat.roughness = this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT);
                 pbmat.alpha = alpha;
                 pbmat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
                 pbmat.backFaceCulling = true;
@@ -1614,7 +1670,7 @@ export class DrawHelper extends DrawHelperCore {
         }
 
         if (resolved.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
-            const edgeColour = defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast);
+            const edgeColour = defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast, resolvedOptions.wireColour, resolved.drawFaces && decomposedMesh.faceList.length > 0);
             decomposedMesh.edgeList.forEach(edge => {
                 const ev = edge.vertexCoord.filter(s => s !== undefined);
                 const mesh = this.drawPolylines(
@@ -1663,8 +1719,8 @@ export class DrawHelper extends DrawHelperCore {
         return this.getOrCreateMaterial("#ffffff-analysis", alpha, zOffset, () => {
             const pbmat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("brepAnalysisMaterial"), this.context.scene);
             pbmat.baseColor = BABYLON.Color3.FromHexString("#ffffff");
-            pbmat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
-            pbmat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT;
+            pbmat.metallic = this.colourMetallic();
+            pbmat.roughness = this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT);
             pbmat.alpha = alpha;
             pbmat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
             pbmat.backFaceCulling = true;
@@ -1710,8 +1766,8 @@ export class DrawHelper extends DrawHelperCore {
                     const material = this.getOrCreateMaterial(options.faceColour, options.faceOpacity, 0, () => {
                         const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("manifoldMaterial"), this.context.scene);
                         mat.baseColor = BABYLON.Color3.FromHexString(options.faceColour);
-                        mat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
-                        mat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.MANIFOLD;
+                        mat.metallic = this.colourMetallic();
+                        mat.roughness = this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.MANIFOLD);
                         mat.alpha = options.faceOpacity;
                         mat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
                         mat.backFaceCulling = true;

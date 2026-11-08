@@ -477,10 +477,10 @@ own build) and no network beyond the third-party dependencies.
 ## check-openapi.mjs
 
 `npm run check:openapi` (`verify.yml`, `publish.yml`). The committed OpenAPI document
-(`docs/static/openapi.json`) describes the API that `@bitbybit-dev/cad-cloud-sdk` targets, and both
+(`packages/dev/cad-cloud-sdk/openapi.json`) describes the API that `@bitbybit-dev/cad-cloud-sdk` targets, and both
 carry the version: the document's `info.version` must equal the SDK's package version. A bump that
 forgot to regenerate the document, or a regenerated document under an unbumped package, fails here,
-before the documentation site publishes the one and the registry the other.
+before the documentation publishes the one and the registry the other.
 
 ## check-advisories.mjs
 
@@ -594,7 +594,7 @@ present and a hard stop naming the file anywhere else.
 
 ## ifc-corpus.mjs, ifc-corpus-measure.mjs and ifc-corpus-edit.mjs
 
-`npm run ifc:corpus -- fetch | check | manifest | run [--only <id part>] [--exact] [--edits] [--no-oracle]`, run
+`npm run ifc:corpus -- fetch | check | manifest | run [--only <id part>] [--exact] [--edits] [--no-oracle] [--save]`, run
 by hand and twice a week by `ifc.yml`, never by `npm test`: the files are large and served by other
 people. The helpers' suite, `ifc-corpus.test.mjs`, runs in `test:scripts`.
 
@@ -613,11 +613,14 @@ slower than users see them. It times reading, the summary, an element query, a p
 recipe; builds the recipe with Manifold in batches of 2000 elements (an in-process build cannot select
 roots, and one call over a large file would hold every solid at once), and with `--exact` builds it again
 as OpenCascade shapes; writes the model back and checks that its DATA section is byte for byte the one it
-read; and records the peak resident memory. Each element's volume and bounding box, over the roots tagged
-with its GlobalId and in metres, are compared to the ones IfcOpenShell measures (`corpus/oracle.py`, with
-`IFC_PYTHON` as `npm run validate` reads it). A volume agrees within 1 %, or within 1e-6 m³ for a tiny
-part; a box agrees when no corner is further from IfcOpenShell's than 1 % of its diagonal, or 1 mm. The
-box is what catches an element in the wrong place, which keeps its volume. The model is compared too: the
+read; and records the peak resident memory. Each element's volume, surface area and bounding box, over the
+roots tagged with its GlobalId and in metres, are compared to the ones IfcOpenShell measures
+(`corpus/oracle.py`, with `IFC_PYTHON` as `npm run validate` reads it). A volume agrees within 1 %, or
+within 1e-6 m³ for a tiny part; an area within 1 %, or within 1e-4 m²; a box agrees when no corner is
+further from IfcOpenShell's than 1 % of its diagonal, or 1 mm. The box is what catches an element in the
+wrong place, which keeps its volume, and the area what catches a wrong shape of the same volume: a skin as
+thin as rounding left over a window that should be a hole, which adds the window's area twice and no
+volume, passed every volume and box comparison on the corpus's Revit files. The model is compared too: the
 number of elements of each type, the storey or other spatial element each element stands in, and for a
 sample of up to 5,000 elements the property sets `properties.getSets` reads, by name and number of single
 values, all against what IfcOpenShell's own parser finds. The store's own memory - heap and external
@@ -630,10 +633,25 @@ units and scales it with IfcOpenShell's unit reader, because its geometry iterat
 ignore a file's length unit, and it reports every entity apart: a file can give one GlobalId to several,
 and both sides then measure them together. It measures a volume in the element's own frame and places
 only the box: a volume summed over coordinates far from the origin, as a georeferenced model's are, keeps
-little of its precision. A volume is compared only where IfcOpenShell's shape is closed, every edge
-shared by two triangles, since the volume of an open shell means nothing. The oracle's output is cached
+little of its precision. A volume or an area is compared only where IfcOpenShell's shape is closed,
+every edge shared by two triangles, since the volume of an open shell means nothing; in the exact lane
+both are measured over an element's solids alone. The oracle's output is cached
 by the file's hash in `corpus/.cache/oracle/`, so IfcOpenShell measures a file once. The report is
 written to `corpus/.cache/report.json`, with one line per file in the terminal.
+
+How many elements agree is held to a floor. `corpus/agreement.json` records, for each public file, how
+many volumes, areas and boxes agreed with IfcOpenShell in the Manifold lane and, from a run with
+`--exact`, in the exact lane. A run fails when a count falls below its floor by more than a thousandth
+of the elements it compared (at least one): our kernels are WebAssembly and measure alike everywhere,
+but the oracle is IfcOpenShell built for the machine it runs on, so CI's Linux cache can move an element
+that sits on the 1 % edge or on the closed-shell test. It fails too when a file with floors failed or
+lost its oracle, since nothing was compared, and when `agreement.json` names a file the manifest does
+not list, a count it does not know, or a count that is not a whole number (`manifest` checks the same).
+A count the run did not measure (the exact lane without `--exact`, everything with `--no-oracle`) and a
+floor of zero are not checked. The report records what fell. `--save` raises each floor to what the
+run measured and never lowers one, also after a run that failed, so a floor only rises; a count that
+fell for a reason (a newer IfcOpenShell, a file replaced) is lowered by hand in the change that
+explains it. Private files have no floors, since they are never named.
 
 With `--edits`, every IFC4 and IFC2X3 file up to 20 MB is also edited and checked by IfcOpenShell's
 validator, with its rules (`corpus/validate.py`, which reads statements the way `validation/check.py`

@@ -5,7 +5,7 @@ import { isZip, zipEntries, zipEntryData } from "@bitbybit-dev/base/lib/api/serv
 import { IFCService } from "@bitbybit-dev/ifc";
 import { ManifoldService } from "@bitbybit-dev/manifold";
 import { editForValidation } from "./ifc-corpus-edit.mjs";
-import { canonicalSets, compareBoxes, compareSemantics, compareVolumes, cutHost, joinBoxes, nodeShape, oracleByGlobalId, oracleInMetres, problemKinds, sameDataSection } from "./ifc-corpus.mjs";
+import { canonicalSets, compareAreas, compareBoxes, compareSemantics, compareVolumes, cutHost, joinBoxes, nodeShape, oracleByGlobalId, oracleInMetres, problemKinds, sameDataSection } from "./ifc-corpus.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const BATCH = 2000;
@@ -94,6 +94,7 @@ const [unsupported] = timed(() => ifc.geometry.unsupported({ model }));
 const ids = [...new Set(recipe.roots.map((root) => String(root.tag["globalId"])))];
 const metresPerUnit = recipe.millimetresPerUnit / MILLIMETRES_PER_METRE;
 const scale = metresPerUnit ** 3;
+const areaScale = metresPerUnit ** 2;
 
 function boxOf(solid) {
     const { min, max } = solid.boundingBox();
@@ -102,6 +103,7 @@ function boxOf(solid) {
 
 const manifold = await manifoldService();
 const volumes = new Map();
+const areas = new Map();
 const boxes = new Map();
 let manifoldMs = 0;
 let emptySolids = 0;
@@ -139,6 +141,7 @@ for (const batch of batches(ids)) {
             empty.push(index);
         } else {
             volumes.set(id, (volumes.get(id) ?? 0) + Math.abs(solid.volume()) * scale);
+            areas.set(id, (areas.get(id) ?? 0) + solid.surfaceArea() * areaScale);
             boxes.set(id, joinBoxes(boxes.get(id), boxOf(solid)));
         }
         solid.delete();
@@ -170,6 +173,13 @@ for (const batch of batches(ids)) {
     builtHosts.forEach((host) => host.delete());
 }
 
+function solidArea(occt, solid) {
+    const faces = occt.shapes.face.getFaces({ shape: solid });
+    const area = faces.reduce((sum, face) => sum + occt.shapes.face.getFaceArea({ shape: face }), 0);
+    faces.forEach((face) => face.delete());
+    return area;
+}
+
 function meshedBoxOf(occt, shape) {
     const loose = occt.operations.boundingBoxOfShape({ shape });
     const precision = Math.max(Math.hypot(...loose.size) * EXACT_BOX_DEFLECTION, Number.EPSILON);
@@ -193,6 +203,7 @@ function boxOfPositionsInto(positions, min, max) {
 let exactMs;
 let exactEmpty;
 const exactVolumes = new Map();
+const exactAreas = new Map();
 const exactBoxes = new Map();
 if (exact) {
     const occt = await occtService();
@@ -212,6 +223,7 @@ if (exact) {
                 const solids = occt.shapes.solid.getSolids({ shape });
                 if (solids.length > 0) {
                     exactVolumes.set(id, (exactVolumes.get(id) ?? 0) + solids.reduce((sum, solid) => sum + Math.abs(occt.shapes.solid.getSolidVolume({ shape: solid })), 0) * scale);
+                    exactAreas.set(id, (exactAreas.get(id) ?? 0) + solids.reduce((sum, solid) => sum + solidArea(occt, solid), 0) * areaScale);
                 }
                 solids.forEach((solid) => solid.delete());
                 exactBoxes.set(id, joinBoxes(exactBoxes.get(id), meshedBoxOf(occt, shape)));
@@ -273,8 +285,10 @@ console.log(JSON.stringify({
     oracleVersion: oracle?.ifcopenshell,
     unitsAgree: inMetres?.unitsAgree,
     volumes: oracleElements === undefined ? undefined : compareVolumes(volumes, oracleElements),
+    areas: oracleElements === undefined ? undefined : compareAreas(areas, oracleElements),
     boxes: oracleElements === undefined ? undefined : compareBoxes(boxes, oracleElements),
     exactVolumes: oracleElements === undefined || !exact ? undefined : compareVolumes(exactVolumes, oracleElements),
+    exactAreas: oracleElements === undefined || !exact ? undefined : compareAreas(exactAreas, oracleElements),
     exactBoxes: oracleElements === undefined || !exact ? undefined : compareBoxes(exactBoxes, oracleElements),
     editing: editing === undefined ? undefined : { ...editing, editMs },
     semantics: oracle?.semantics === undefined ? undefined : compareSemantics({ counts: summary.elementCounts, storeys: new Map(elements.map((element) => [element.globalId, element.storey])), sets: sampleSets }, oracle.semantics),

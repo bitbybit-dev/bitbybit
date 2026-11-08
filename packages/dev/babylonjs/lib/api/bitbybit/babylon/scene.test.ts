@@ -696,12 +696,35 @@ describe("BabylonScene", () => {
             [Inputs.Base.skyboxEnum.greyGradient],
             [Inputs.Base.skyboxEnum.clearSky],
             [Inputs.Base.skyboxEnum.city],
+            [Inputs.Base.skyboxEnum.studio],
+            [Inputs.Base.skyboxEnum.night],
         ])("should put a skybox of the %s kind into the scene", (kind) => {
             // Act
             sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(kind, 100, 0.1, 1));
 
             // Assert
             expect(scene.getMeshByName("bitbybit-hdrSkyBox")).toBeTruthy();
+        });
+
+        it.each([
+            [Inputs.Base.skyboxEnum.studio, "studio-small-09"],
+            [Inputs.Base.skyboxEnum.partlyCloudy, "kloofendal-partly-cloudy"],
+            [Inputs.Base.skyboxEnum.sunset, "qwantani-sunset"],
+            [Inputs.Base.skyboxEnum.clearDay, "autumn-field"],
+            [Inputs.Base.skyboxEnum.fairWeather, "sunflowers"],
+            [Inputs.Base.skyboxEnum.overcast, "overcast-soil"],
+            [Inputs.Base.skyboxEnum.morning, "kloppenheim-06"],
+            [Inputs.Base.skyboxEnum.dusk, "citrus-orchard-road"],
+            [Inputs.Base.skyboxEnum.night, "qwantani-moonrise"],
+        ])("should load the photographed %s environment from its own folder", (kind, folder) => {
+            // Arrange
+            const load = vi.spyOn(BABYLON.CubeTexture, "CreateFromPrefilteredData");
+
+            // Act
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(kind, 100, 0.1, 1, true));
+
+            // Assert
+            expect(load).toHaveBeenCalledWith(expect.stringMatching(new RegExp(`/textures/environments/${folder}/environment\\.env$`)), scene, false, false);
         });
 
         it("should take the environment intensity it was given", () => {

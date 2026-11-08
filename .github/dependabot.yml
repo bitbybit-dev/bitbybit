@@ -49,36 +49,6 @@ updates:
           - minor
           - patch
 
-  # The Docusaurus site for learn.bitbybit.dev. Its tree is by far the largest here and almost all
-  # of it is build-time only. The Docusaurus packages move in lockstep and must be bumped together
-  # or the plugins refuse to load, so they get their own group.
-  - package-ecosystem: npm
-    directory: /docs
-    schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 5
-    ignore:
-      # The site's tsconfig is editor-only (@docusaurus/tsconfig drives the build); a TypeScript
-      # major here changes nothing that ships and has already broken that file once.
-      - dependency-name: "typescript"
-        update-types: ["version-update:semver-major"]
-    groups:
-      docusaurus:
-        patterns:
-          - "@docusaurus/*"
-          - "docusaurus-*"
-          - "mermaid"
-      docs-minor-patch:
-        patterns:
-          - "*"
-        exclude-patterns:
-          - "@docusaurus/*"
-          - "docusaurus-*"
-        update-types:
-          - minor
-          - patch
-
   # Every example installs from the registry the way a user does, which is what makes them the
   # post-publish smoke test - and also what puts thirty lockfiles in front of Dependabot. Monthly
   # and grouped: an advisory in one of these is a bad example to copy, not a live service at risk.

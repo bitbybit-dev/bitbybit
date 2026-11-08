@@ -4,7 +4,7 @@ import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
 
-const GUIDE = new URL("../../../../../../docs/learn/using-ai-with-bitbybit/design-documents.md", import.meta.url);
+const GUIDE = new URL("../../../../../../guides/design-documents.md", import.meta.url);
 
 function guideDocuments(): Map<string, Models.OCCT.DesignDocument> {
     const text = readFileSync(GUIDE, "utf8");

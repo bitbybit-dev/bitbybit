@@ -549,6 +549,19 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeA, shapeB]);
         });
 
+        it("should mesh every part again when the precision share changes, and hand the share to the worker", async () => {
+            // Arrange
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+
+            // Act
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options: { ...options, precisionShare: 0.00005 }, group: drawn });
+
+            // Assert
+            expect(workerCall).toHaveBeenCalledTimes(2);
+            expect(workerCall.mock.calls[0]![1]).toEqual(expect.objectContaining({ precisionShare: 0 }));
+            expect(workerCall.mock.calls[1]![1]).toEqual(expect.objectContaining({ shapes: [shapeA, shapeB], precisionShare: 0.00005 }));
+        });
+
         it("should mesh and draw every part again when the precision changes", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });

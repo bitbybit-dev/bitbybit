@@ -407,7 +407,7 @@ describe("the weight of a kept mesh and the cache that keeps it, over generated 
 });
 
 describe("the meshing options of a drawing, written out as text", () => {
-    const meshingOf = fc.record({ precision: fc.constantFrom(0.01, 0.1), angularDeflection: fc.constantFrom(0.1, 0.5), relativeDeflection: fc.boolean(), allowQualityDecrease: fc.boolean(), forceFaceDeflection: fc.boolean() });
+    const meshingOf = fc.record({ precision: fc.constantFrom(0.01, 0.1), angularDeflection: fc.constantFrom(0.1, 0.5), relativeDeflection: fc.boolean(), allowQualityDecrease: fc.boolean(), forceFaceDeflection: fc.boolean(), precisionShare: fc.constantFrom(0, 0.00005) });
     const lookOf = fc.record({ faceColour: fc.constantFrom("#ff0000", "#00ff00"), edgeColour: fc.constantFrom("#ffffff", "#000000"), faceOpacity: fc.constantFrom(0.5, 1), drawEdges: fc.boolean(), edgeContrast: fc.option(fc.constantFrom(0.2, 0.8), { nil: undefined }) });
 
     it("should change with every option that changes a mesh and with none that only changes the look", () => {
@@ -416,6 +416,18 @@ describe("the meshing options of a drawing, written out as text", () => {
             const same = JSON.stringify(first) === JSON.stringify(second);
             expect(designMeshingTextOf({ ...first, ...firstLook }) === designMeshingTextOf({ ...second, ...secondLook })).toBe(same);
         }), { seed: SEED + 13, numRuns: 300 });
+    });
+
+    it("should write a drawing without a precision share as one with a share of 0", () => {
+        // Arrange
+        const meshing = { precision: 0.05, angularDeflection: 0.3, relativeDeflection: false, allowQualityDecrease: true, forceFaceDeflection: false };
+
+        // Act
+        const texts = [designMeshingTextOf(meshing), designMeshingTextOf({ ...meshing, precisionShare: 0 }), designMeshingTextOf({ ...meshing, precisionShare: 0.00005 })];
+
+        // Assert
+        expect(texts[1]).toBe(texts[0]);
+        expect(texts[2]).not.toBe(texts[0]);
     });
 });
 

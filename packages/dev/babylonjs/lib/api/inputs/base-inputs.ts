@@ -55,14 +55,25 @@ export namespace Base {
 
     /**
      * Which built-in skybox environment to use as the scene's background and image-based lighting:
-     * default, clear sky, city or a plain grey gradient. The skybox lights the model as well as
-     * filling the background, so changing it changes how materials look.
+     * default, clear sky, city or a plain grey gradient, or a photographed environment - a soft
+     * studio, a partly cloudy sky, sunset, a clear day, fair weather, overcast, morning, dusk or
+     * night. The skybox lights the model as well as filling the background, so
+     * changing it changes how materials look.
      */
     export enum skyboxEnum {
         default = "default",
         clearSky = "clearSky",
         city = "city",
         greyGradient = "greyGradient",
+        studio = "studio",
+        partlyCloudy = "partlyCloudy",
+        sunset = "sunset",
+        clearDay = "clearDay",
+        fairWeather = "fairWeather",
+        overcast = "overcast",
+        morning = "morning",
+        dusk = "dusk",
+        night = "night",
     }
     /**
      * How distance fog thickens: not at all, linearly between a start and an end distance, or

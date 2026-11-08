@@ -6,6 +6,18 @@ import * as Inputs from "../../inputs";
 import { GlobalCDNProvider, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../resolved-inputs";
 
+const ENVIRONMENT_FOLDERS: Readonly<Partial<Record<Inputs.Base.skyboxEnum, string>>> = {
+    [Inputs.Base.skyboxEnum.studio]: "studio-small-09",
+    [Inputs.Base.skyboxEnum.partlyCloudy]: "kloofendal-partly-cloudy",
+    [Inputs.Base.skyboxEnum.sunset]: "qwantani-sunset",
+    [Inputs.Base.skyboxEnum.clearDay]: "autumn-field",
+    [Inputs.Base.skyboxEnum.fairWeather]: "sunflowers",
+    [Inputs.Base.skyboxEnum.overcast]: "overcast-soil",
+    [Inputs.Base.skyboxEnum.morning]: "kloppenheim-06",
+    [Inputs.Base.skyboxEnum.dusk]: "citrus-orchard-road",
+    [Inputs.Base.skyboxEnum.night]: "qwantani-moonrise",
+};
+
 type SkyboxMeshInputs = Pick<Resolved.BabylonScene.SkyboxFromTextureDto,
     "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
 
@@ -455,6 +467,12 @@ export class BabylonScene {
         } else if (resolved.skybox === Inputs.Base.skyboxEnum.city) {
             texture = BABYLON.CubeTexture.CreateFromPrefilteredData(GlobalCDNProvider.BITBYBIT_CDN_URL + "/textures/skybox/city/environmentSpecular.env",
                 this.context.scene, false, false);
+        } else {
+            const folder = ENVIRONMENT_FOLDERS[resolved.skybox];
+            if (folder !== undefined) {
+                texture = BABYLON.CubeTexture.CreateFromPrefilteredData(`${GlobalCDNProvider.BITBYBIT_CDN_URL}/textures/environments/${folder}/environment.env`,
+                    this.context.scene, false, false);
+            }
         }
 
         if (texture) {

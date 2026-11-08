@@ -10137,11 +10137,11 @@ namespace OCCT_2 {
         shape: T;
     }
     class DrawShapeDto<T> extends DrawShapeSharedDto {
-        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean);
+        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number);
         shape?: T | undefined;
     }
     class DrawShapesDto<T> extends DrawShapeSharedDto {
-        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean);
+        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number);
         shapes: T[];
     }
     abstract class DrawShapeSharedDto {
@@ -10175,6 +10175,7 @@ namespace OCCT_2 {
         isoCurvesV?: number | undefined;
         keepMeshData?: boolean | undefined;
         precision?: number | undefined;
+        precisionShare?: number | undefined;
         relativeDeflection?: boolean | undefined;
         surfaceAnalysis?: surfaceAnalysisEnum | undefined;
         vertexColour?: string | undefined;
@@ -11969,7 +11970,7 @@ namespace OCCT_2 {
         shapes: U[];
     }
     class ShapesToMeshesDto<T> {
-        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean);
+        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number);
         adjustYtoZ?: boolean | undefined;
         allowQualityDecrease?: boolean | undefined;
         angularDeflection?: number | undefined;
@@ -11980,6 +11981,7 @@ namespace OCCT_2 {
         isoCurvesV?: number | undefined;
         keepMeshData?: boolean | undefined;
         precision?: number | undefined;
+        precisionShare?: number | undefined;
         relativeDeflection?: boolean | undefined;
         shapes: T[];
         surfaceAnalysis?: surfaceAnalysisEnum | undefined;
@@ -11999,7 +12001,7 @@ namespace OCCT_2 {
         shape: T;
     }
     class ShapeToMeshDto<T> {
-        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean);
+        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number);
         adjustYtoZ?: boolean | undefined;
         allowQualityDecrease?: boolean | undefined;
         angularDeflection?: number | undefined;
@@ -12010,6 +12012,7 @@ namespace OCCT_2 {
         isoCurvesV?: number | undefined;
         keepMeshData?: boolean | undefined;
         precision?: number | undefined;
+        precisionShare?: number | undefined;
         relativeDeflection?: boolean | undefined;
         shape: T;
         surfaceAnalysis?: surfaceAnalysisEnum | undefined;
@@ -13011,11 +13014,11 @@ namespace OCCT_3 {
     // (undocumented)
     type DraftAngleDto<T, U> = WithDefaults<Inputs_2.OCCT.DraftAngleDto<T, U>, "direction" | "angle" | "neutralPlaneOrigin" | "neutralPlaneDirection" | "flag">;
     // (undocumented)
-    type DrawShapeDto<T> = WithDefaults<Inputs_2.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DrawShapeDto<T> = WithDefaults<Inputs_2.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type DrawShapesDto<T> = WithDefaults<Inputs_2.OCCT.DrawShapesDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DrawShapesDto<T> = WithDefaults<Inputs_2.OCCT.DrawShapesDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type DrawShapeSharedDto = WithDefaults<Inputs_2.OCCT.DrawShapeSharedDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DrawShapeSharedDto = WithDefaults<Inputs_2.OCCT.DrawShapeSharedDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
     type DxfPathsPartsListDto = WithDefaults<Inputs_2.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "fileName" | "tryDownload">;
     // (undocumented)
@@ -13501,13 +13504,13 @@ namespace OCCT_3 {
     // (undocumented)
     type ShapeShapesDto<T, U> = Inputs_2.OCCT.ShapeShapesDto<T, U>;
     // (undocumented)
-    type ShapesToMeshesDto<T> = WithDefaults<Inputs_2.OCCT.ShapesToMeshesDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
+    type ShapesToMeshesDto<T> = WithDefaults<Inputs_2.OCCT.ShapesToMeshesDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
     type ShapeToDxfPathsDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
     // (undocumented)
     type ShapeToManifoldMeshDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToManifoldMeshDto<T>, "precision">;
     // (undocumented)
-    type ShapeToMeshDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToMeshDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
+    type ShapeToMeshDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToMeshDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
     type ShapeTransformQueryDto<T> = Inputs_2.OCCT.ShapeTransformQueryDto<T>;
     // (undocumented)

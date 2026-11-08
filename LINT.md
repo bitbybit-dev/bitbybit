@@ -173,5 +173,5 @@ own toolchain, and they are teaching material for the people who copy them), the
 (they ship to users as they are), the projects the scaffolder's smoke lanes keep under `.local`, the
 OCCT kernel glue, the API reports, declaration files (every `.d.ts` here is generated or vendored), the
 four assembled inputs namespaces (their fragments are the linted source) and the generated files, which
-are held to their generators by the `check:*` gates instead. The scripts that maintain the examples and
-the documentation site, `examples/scripts/` and `docs/scripts/`, are linted.
+are held to their generators by the `check:*` gates instead. The scripts that maintain the examples,
+`examples/scripts/`, are linted.

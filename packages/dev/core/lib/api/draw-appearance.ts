@@ -124,6 +124,7 @@ export interface DesignLookOptions {
     faceOpacity: number;
     edgeColour: string;
     edgeContrast?: number | undefined;
+    wireColour?: string | undefined;
     edgeWidth: number;
     edgeOpacity: number;
 }
@@ -276,14 +277,20 @@ export function contrastColor(color: string, contrast: number): string {
 }
 
 /**
- * The color of the edges nothing else colors: `edgeColour`, or, when `edgeContrast` is given, the
- * color of their faces moved by it as `contrastColor` moves it.
+ * The color of the edges nothing else colors: `wireColour` when it is given and no faces are drawn
+ * with them, otherwise `edgeColour`, or, when `edgeContrast` is given, the color of their faces moved
+ * by it as `contrastColor` moves it.
  * @param faceColor - The color of the faces the edges bound
  * @param edgeColour - The edge color of the drawing options
  * @param edgeContrast - The edge contrast of the drawing options, if any
+ * @param wireColour - The wire color of the drawing options, if any
+ * @param facesDrawn - Whether faces are drawn with the edges
  * @returns The edge color
  */
-export function defaultEdgeColor(faceColor: string, edgeColour: string, edgeContrast: number | undefined): string {
+export function defaultEdgeColor(faceColor: string, edgeColour: string, edgeContrast: number | undefined, wireColour?: string, facesDrawn = true): string {
+    if (!facesDrawn && wireColour !== undefined) {
+        return wireColour;
+    }
     return edgeContrast === undefined ? edgeColour : contrastColor(faceColor, edgeContrast);
 }
 
@@ -591,6 +598,7 @@ export function designOptionsKeyOf(options: DesignLookOptions): string {
         drawEdges: options.drawEdges,
         edgeColour: options.edgeColour,
         edgeContrast: options.edgeContrast ?? null,
+        wireColour: options.wireColour ?? null,
         edgeWidth: options.edgeWidth,
         edgeOpacity: options.edgeOpacity,
         faceColour: options.faceColour,
@@ -646,6 +654,7 @@ export interface DesignMeshingOptions {
     relativeDeflection: boolean;
     allowQualityDecrease: boolean;
     forceFaceDeflection: boolean;
+    precisionShare?: number | undefined;
 }
 
 /**
@@ -656,7 +665,7 @@ export interface DesignMeshingOptions {
  * @returns The text, the same for every set of options that meshes a shape the same way
  */
 export function designMeshingTextOf(options: DesignMeshingOptions): string {
-    return JSON.stringify([options.precision, options.angularDeflection, options.relativeDeflection, options.allowQualityDecrease, options.forceFaceDeflection]);
+    return JSON.stringify([options.precision, options.angularDeflection, options.relativeDeflection, options.allowQualityDecrease, options.forceFaceDeflection, options.precisionShare ?? 0]);
 }
 
 /** The drawing options a design build's plan reads: the look, and the precision and the meshing options its parts are meshed with. */

@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://learn.bitbybit.dev/sitemap.xml
-
-# LLM Context
-# For AI assistants and language models
-llms.txt: https://learn.bitbybit.dev/llms.txt

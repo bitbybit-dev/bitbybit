@@ -24,6 +24,33 @@ root by transforming its node's solid with the root's matrix.
 - **A compound is a union.** `Manifold.union` of its parts, since the kernel's own compose joins
   overlapping parts anyway, and a `union` node is the same call; an `intersection` is
   `Manifold.intersection`. A `voids` node subtracts the union of its `openings` from its `host` solid.
+- **A cut reaches through within the recipe's tolerance.** The kernel's booleans are exact, so an
+  opening that rounding left 1e-11 short of its wall's face leaves a skin that thin over the window,
+  where the recipe means a hole, and one whose sill rounding left just above the wall's bottom leaves
+  a sliver under the door. The exact kernel avoids both by cutting fuzzily; Manifold has no fuzzy
+  boolean, so before each cut the tool is compared with the solid it cuts, axis by axis in the cut's
+  own frame: where a side of the tool's bounding box lies within `tolerance` of the same side of the
+  host's - short of it, past it or on it - the tool's vertices within `tolerance` of that side are
+  moved `tolerance` out through it (`warp`). A side exactly on the host's is reached too: its face may
+  touch the host's at one corner and fall short of it elsewhere, rounded or turned a little, and only
+  moving it clears the skin. A vertex within reach of both sides of one axis, in a tool no thicker
+  than the tolerance, moves out through the nearer. Nothing else of the tool moves - a step in its
+  outline, a face of it that only touches the host - and nothing is added: scaling the tool shifted
+  inner faces by a share of the tolerance and opened new slivers where they met the host, and joining
+  the tool with a moved copy of itself doubled its triangles, which a batch union of many openings
+  then left as a zero-thickness sheet. An opening made of several parts (`compound` or `union` steps,
+  under any `transform`s) is placed in the cut's frame part by part and each part reached on its own,
+  so a part falling short of a face is reached though another part runs past it; a tool of more than
+  64 parts, which a shared compound nested in itself reaches in a few steps, is reached as a whole.
+  Any tool takes it - a prism, a triangle mesh, a turn - and no extrusion is made again, which would
+  leave one of manifold-3d's vectors alive per call. Every other side stays where it is drawn: a
+  niche keeps its depth, an opening inside a wall its outline, the thin strips beside it their
+  volume. What it cannot see is a face inside the host's box - an inner corner of an L-shaped wall,
+  a sloped top clipped below the box - and a host whose sides do not run along the frame's axes.
+  Openings of a `voids` node are compared with their host's box. A `difference` compares its solid
+  tools with the box of the solid as the half-spaces before them leave it, read once after each
+  half-space: reading it after every solid tool would make Manifold evaluate each step of a lazy
+  chain of cuts, quadratic in the tools, and would make the result depend on their order.
 - **A turn is the kernel's revolve, moved into place.** `Manifold.revolve` turns a cross section about
   its Y axis, which becomes Z. The profile is first carried into the axis's frame (distance from the
   axis as X, along it as Y, on whichever side it lies), revolved with `circularSegments` scaled by the

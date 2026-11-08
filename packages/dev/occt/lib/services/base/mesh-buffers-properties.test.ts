@@ -243,6 +243,26 @@ describe("MeshingService buffers against the lists, over real shapes", () => {
             }), { seed: SEED, numRuns: 20 });
         });
 
+        it("should draw a kept shape afresh when it is asked for a precision share, and again alike at that share", () => {
+            fc.assert(fc.property(drawings.filter(drawing => SOLIDS.includes(drawing.recipe)), (drawing) => {
+                // Arrange
+                const shape = shapeOf(drawing.recipe, drawing.scale);
+                const options = { ...meshOptionsOf(drawing, shape), relativeDeflection: false, precision: drawing.precision * drawing.scale };
+                const shared = { ...options, precisionShare: drawing.precision };
+                const expected = helper.meshingService.shapeToMeshBuffers(shared);
+                kernel.SetMeshRetention(1_000_000);
+                helper.meshingService.shapeToMeshBuffers(options);
+
+                // Act
+                const redrawn = helper.meshingService.shapeToMeshBuffers(shared);
+                const again = helper.meshingService.shapeToMeshBuffers(shared);
+
+                // Assert
+                expect(buffersAsLists(redrawn)).toEqual(buffersAsLists(expected));
+                expect(buffersAsLists(again)).toEqual(buffersAsLists(expected));
+            }), { seed: SEED, numRuns: 20 });
+        });
+
         it("should draw a copy moved off a kept shape where the copy stands", () => {
             fc.assert(fc.property(drawings.filter(drawing => SOLIDS.includes(drawing.recipe)), fc.tuple(fc.double({ min: -50, max: 50, noNaN: true }), fc.double({ min: -50, max: 50, noNaN: true }), fc.double({ min: -50, max: 50, noNaN: true })), (drawing, translation) => {
                 // Arrange

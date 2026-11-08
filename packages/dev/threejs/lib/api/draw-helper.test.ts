@@ -3277,6 +3277,34 @@ describe("DrawHelper unit tests", () => {
             expect(helper.arrowAngles).toEqual([15]);
         });
 
+        it("should draw edges with no faces beside them in the wire color when one is given, and keep the edge color beside faces", async () => {
+            // Arrange
+            const helper = watchingHelper();
+            const withFace = (): Inputs.OCCT.DecomposedMeshDto => {
+                const face = new Inputs.OCCT.DecomposedFaceDto();
+                face.faceIndex = 0;
+                face.vertexCoord = [0, 0, 0, 1, 0, 0, 0, 1, 0];
+                face.normalCoord = [0, 0, 1, 0, 0, 1, 0, 0, 1];
+                face.triIndexes = [0, 1, 2];
+                return { ...oneEdge(), faceList: [face] };
+            };
+            const colourOf = (drawn: THREEJS.Group, name?: string): number[] => {
+                const line = drawn.children.find(child => child instanceof LineSegments2 && (name === undefined || child.name === name)) as LineSegments2;
+                return flatOf(line.geometry.getAttribute("instanceColorStart")).slice(0, 3);
+            };
+
+            // Act
+            const alone = await helper.handleDecomposedMesh({ drawFaces: true, edgeColour: "#00ff00" }, oneEdge(), { wireColour: "#ffffff" });
+            const facesOff = await helper.handleDecomposedMesh({ drawFaces: false, edgeColour: "#00ff00" }, withFace(), { wireColour: "#ffffff" });
+            const besideFaces = await helper.handleDecomposedMesh({ drawFaces: true, edgeColour: "#00ff00" }, withFace(), { wireColour: "#ffffff" });
+            const unset = await helper.handleDecomposedMesh({ drawFaces: false, edgeColour: "#00ff00" }, oneEdge(), {});
+            const eachEdge = await helper.handleDecomposedMeshIndividually({ drawFaces: true, edgeColour: "#00ff00" }, oneEdge(), { wireColour: "#ffffff" });
+
+            // Assert
+            expect([alone, facesOff, besideFaces, unset].map(drawn => colourOf(drawn))).toEqual([[1, 1, 1], [1, 1, 1], [0, 1, 0], [0, 1, 0]]);
+            expect(colourOf(eachEdge, "edge 0")).toEqual([1, 1, 1]);
+        });
+
         it("should draw each edge's arrows asked for without an angle at the documented 15 degrees", async () => {
             // Arrange
             const helper = watchingHelper();

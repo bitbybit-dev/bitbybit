@@ -59,8 +59,6 @@ export default defineConfig([
         "**/node_modules/",
         "**/dist/",
         "**/coverage/",
-        "docs/*",
-        "!docs/scripts/",
         "examples/*",
         "!examples/scripts/",
         "packages/dev/create-app/templates/",
@@ -69,7 +67,7 @@ export default defineConfig([
         "packages/dev/*/etc/",
         "**/*.d.ts",
         ...targets.map((t) => t.out),
-    ], "outputs, the docs site and example apps, templates, generated and vendored files"),
+    ], "outputs, example apps, templates, generated and vendored files"),
     {
         files: ["**/*.{js,mjs,cjs,ts}"],
         extends: [eslint.configs.recommended],

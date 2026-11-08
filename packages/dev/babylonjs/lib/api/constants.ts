@@ -28,3 +28,7 @@ export const BABYLONJS_MATERIAL_DEFAULTS = {
     /** Default alpha mode for transparent materials */
     ALPHA_MODE: 1,
 } as const;
+
+export const EDGE_WIDTH_REFERENCE_SIZE = 10;
+
+export const COORDINATES_PER_POINT = 3;

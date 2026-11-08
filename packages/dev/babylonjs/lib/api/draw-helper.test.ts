@@ -1788,6 +1788,157 @@ describe("DrawHelper unit tests", () => {
         });
     });
 
+    describe("drawing with the context's draw defaults", () => {
+        const triangle = (side: number) => ({
+            faceList: [
+                {
+                    faceIndex: 0,
+                    centerPoint: [side / 3, side / 3, 0] as Inputs.Base.Point3,
+                    vertexCoord: [0, 0, 0, side, 0, 0, side / 2, side, 0],
+                    vertexCoordVec: [[0, 0, 0], [side, 0, 0], [side / 2, side, 0]] as Inputs.Base.Point3[],
+                    normalCoord: [],
+                    triIndexes: [0, 1, 2],
+                },
+            ],
+            edgeList: [
+                {
+                    edgeIndex: 0,
+                    middlePoint: [side / 2, 0, 0] as Inputs.Base.Point3,
+                    vertexCoord: [[0, 0, 0], [side, 0, 0]] as Inputs.Base.Point3[],
+                },
+            ],
+            pointsList: [],
+        });
+
+        const shapeOptions = (edgeWidthBySize: boolean): Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer> => {
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
+            inputs.drawFaces = true;
+            inputs.drawEdges = true;
+            inputs.edgeWidth = 2;
+            return { ...inputs, edgeWidthBySize } as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>;
+        };
+
+        it("should scale the edge width with the size of the shape when asked to", async () => {
+            // Arrange
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(triangle(100));
+            const lines = vi.spyOn(drawHelper, "drawPolylines");
+
+            // Act
+            await drawHelper.drawShape(shapeOptions(true));
+
+            // Assert
+            expect(lines.mock.calls[0]![3]).toBeCloseTo(2 * Math.hypot(100, 100) / 10, 6);
+        });
+
+        it("should keep the edge width as given when not asked to scale it", async () => {
+            // Arrange
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(triangle(100));
+            const lines = vi.spyOn(drawHelper, "drawPolylines");
+
+            // Act
+            await drawHelper.drawShape(shapeOptions(false));
+
+            // Assert
+            expect(lines.mock.calls[0]![3]).toBe(2);
+        });
+
+        it("should give every shape of a list the width that the size of the whole list asks for", async () => {
+            // Arrange
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce([triangle(1), triangle(10)]);
+            const lines = vi.spyOn(drawHelper, "drawPolylines");
+            const inputs = { ...shapeOptions(true), shapes: [occtShape(), occtShape()] } as Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>;
+
+            // Act
+            await drawHelper.drawShapes(inputs);
+
+            // Assert
+            expect(lines.mock.calls.map(call => call[3])).toEqual([2 * Math.hypot(10, 10) / 10, 2 * Math.hypot(10, 10) / 10]);
+        });
+
+        it("should make a face color into a material as metallic and rough as the defaults say", async () => {
+            // Arrange
+            mockContext.drawDefaults = { metallic: 0, roughness: 0.4 };
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(triangle(1));
+
+            // Act
+            const result = await drawHelper.drawShape(shapeOptions(false));
+
+            // Assert
+            const material = result.getChildMeshes().find(child => child.material instanceof BABYLON.PBRMetallicRoughnessMaterial)!.material as BABYLON.PBRMetallicRoughnessMaterial;
+            expect([material.metallic, material.roughness]).toEqual([0, 0.4]);
+        });
+
+        it("should size a wire by its edges alone, and keep the width of what has no size", async () => {
+            // Arrange
+            const wire = (points: Inputs.Base.Point3[]): Inputs.OCCT.DecomposedMeshDto => ({ faceList: [], edgeList: [{ edgeIndex: 0, middlePoint: [0, 0, 0], vertexCoord: points }], pointsList: [] });
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(wire([[0, 0, 0], [30, 40, 0]])).mockResolvedValueOnce(wire([[5, 5, 5], [5, 5, 5]]));
+            const lines = vi.spyOn(drawHelper, "drawPolylines");
+
+            // Act
+            await drawHelper.drawShape(shapeOptions(true));
+            await drawHelper.drawShape(shapeOptions(true));
+
+            // Assert
+            expect(lines.mock.calls.map(call => call[3])).toEqual([2 * 50 / 10, 2]);
+        });
+
+        it("should make the same face color into another material once the defaults change how metallic it is", async () => {
+            // Arrange
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue(triangle(1));
+            const materialOf = (drawn: BABYLON.Mesh): BABYLON.PBRMetallicRoughnessMaterial => drawn.getChildMeshes().find(child => child.material instanceof BABYLON.PBRMetallicRoughnessMaterial)!.material as BABYLON.PBRMetallicRoughnessMaterial;
+            const before = materialOf(await drawHelper.drawShape(shapeOptions(false)));
+            mockContext.drawDefaults = { metallic: 0.4 };
+
+            // Act
+            const after = materialOf(await drawHelper.drawShape(shapeOptions(false)));
+
+            // Assert
+            expect(after).not.toBe(before);
+            expect([before.metallic, after.metallic]).toEqual([1, 0.4]);
+        });
+
+        it("should make another material for the same face color when only the default roughness changes", async () => {
+            // Arrange
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue(triangle(1));
+            const materialOf = (drawn: BABYLON.Mesh): BABYLON.PBRMetallicRoughnessMaterial => drawn.getChildMeshes().find(child => child.material instanceof BABYLON.PBRMetallicRoughnessMaterial)!.material as BABYLON.PBRMetallicRoughnessMaterial;
+            const before = materialOf(await drawHelper.drawShape(shapeOptions(false)));
+            mockContext.drawDefaults = { roughness: 0.2 };
+
+            // Act
+            const after = materialOf(await drawHelper.drawShape(shapeOptions(false)));
+
+            // Assert
+            expect(after).not.toBe(before);
+            expect(after.roughness).toBe(0.2);
+        });
+
+        it("should make the back faces as metallic and rough as the defaults say", async () => {
+            // Arrange
+            mockContext.drawDefaults = { metallic: 0.25, roughness: 0.45 };
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(triangle(1));
+
+            // Act
+            const result = await drawHelper.drawShape({ ...shapeOptions(false), drawTwoSided: true, drawEdges: false });
+
+            // Assert
+            const materials = result.getChildMeshes().map(child => child.material).filter((material): material is BABYLON.PBRMetallicRoughnessMaterial => material instanceof BABYLON.PBRMetallicRoughnessMaterial);
+            expect(materials.map(material => [material.metallic, material.roughness])).toEqual([[0.25, 0.45], [0.25, 0.45]]);
+        });
+
+        it("should keep a fully metallic face color material when no defaults are set", async () => {
+            // Arrange
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(triangle(1));
+
+            // Act
+            const result = await drawHelper.drawShape(shapeOptions(false));
+
+            // Assert
+            const material = result.getChildMeshes().find(child => child.material instanceof BABYLON.PBRMetallicRoughnessMaterial)!.material as BABYLON.PBRMetallicRoughnessMaterial;
+            expect([material.metallic, material.roughness]).toEqual([1, 0.6]);
+        });
+    });
+
     describe("drawShapes (OCCT)", () => {
         it("should draw multiple OCCT shapes", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
@@ -4485,6 +4636,32 @@ describe("DrawHelper unit tests", () => {
             expect(lineColorOf(plain)).toBe("#00ff00");
             expect(lineColorOf(contrasted)).toBe("#999999");
             expect(lineColorOf(individually)).toBe("#ffffff");
+        });
+
+        it("should draw edges with no faces beside them in the wire color, and keep the edge color beside faces", async () => {
+            // Arrange
+            const withFace = (): Inputs.OCCT.DecomposedMeshDto => {
+                const face = new Inputs.OCCT.DecomposedFaceDto();
+                face.faceIndex = 0;
+                face.vertexCoord = [0, 0, 0, 1, 0, 0, 0, 1, 0];
+                face.normalCoord = [0, 0, 1, 0, 0, 1, 0, 0, 1];
+                face.triIndexes = [0, 1, 2];
+                const mesh = oneEdge();
+                mesh.faceList = [face];
+                return mesh;
+            };
+            const edgeColorOf = (drawn: BABYLON.Mesh): string => greasedLineOf(drawn.getChildMeshes().find(child => child.name === "edge 0")).greasedLineMaterial!.color!.toHexString();
+
+            // Act
+            const merged = await drawHelper.handleDecomposedMesh({ drawFaces: true, edgeColour: "#00ff00" }, oneEdge(), { wireColour: "#ffffff" });
+            const alone = await drawHelper.handleDecomposedMeshIndividually({ drawFaces: true, edgeColour: "#00ff00" }, oneEdge(), { wireColour: "#ffffff" });
+            const facesOff = await drawHelper.handleDecomposedMeshIndividually({ drawFaces: false, edgeColour: "#00ff00" }, withFace(), { wireColour: "#ffffff" });
+            const besideFaces = await drawHelper.handleDecomposedMeshIndividually({ drawFaces: true, edgeColour: "#00ff00" }, withFace(), { wireColour: "#ffffff" });
+            const unset = await drawHelper.handleDecomposedMeshIndividually({ drawFaces: false, edgeColour: "#00ff00" }, oneEdge(), {});
+
+            // Assert
+            expect(lineColorOf(merged)).toBe("#ffffff");
+            expect([alone, facesOff, besideFaces, unset].map(edgeColorOf)).toEqual(["#ffffff", "#ffffff", "#00ff00", "#00ff00"]);
         });
     });
 

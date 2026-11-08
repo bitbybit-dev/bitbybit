@@ -270,7 +270,9 @@ export namespace Base {
          */
         of: number;
         /**
-         * The indices of what is cut away, all at once.
+         * The indices of what is cut away, all at once. A solid tool that ends within the recipe's
+         * `tolerance` of a side of the solid's bounding box, as the half-spaces before it leave the
+         * solid, passes through that side.
          */
         tools: number[];
     }
@@ -296,6 +298,8 @@ export namespace Base {
     /**
      * A host solid with openings cut through it, such as a wall with its doors' and windows' holes.
      * The same as a difference, kept apart so an executor can cut openings through flat hosts in 2D.
+     * An opening that ends within the recipe's `tolerance` of a side of the host's bounding box passes
+     * through that side, so an opening as deep as its wall cuts through it however its placement rounds.
      * @beta
      */
     export interface RecipeVoidsNode {
@@ -921,7 +925,10 @@ export namespace Base {
         millimetresPerUnit: number;
         /**
          * The distance below which two positions count as the same, in the recipe's units, as the
-         * recipe's source measured it. An executor may use it where it compares positions, or not.
+         * recipe's source measured it. Every executor applies it to cuts: an opening of a `voids` step,
+         * or a solid tool of a `difference`, that ends within it of a side of the bounding box of what it
+         * cuts passes through that side. Elsewhere an executor may use it where it compares positions,
+         * or not.
          */
         tolerance: number;
         /**

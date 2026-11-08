@@ -8,6 +8,11 @@ export class Context extends ContextBase {
     scene!: BABYLON.Scene;
     engine!: BABYLON.Engine | BABYLON.WebGPUEngine;
     havokPlugin!: BABYLON.HavokPlugin;
+    /**
+     * The look `bitbybit.draw` gives anything drawn without options of its own; options a script
+     * passes are used as they are, and none means each kind's built-in defaults.
+     */
+    drawDefaults?: Inputs.Draw.DrawDefaults | undefined;
 
     getSamplingMode(samplingMode: Inputs.BabylonTexture.samplingModeEnum): number {
         switch (samplingMode) {

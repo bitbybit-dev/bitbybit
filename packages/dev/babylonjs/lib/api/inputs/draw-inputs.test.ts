@@ -258,6 +258,21 @@ describe("Draw DTO unit tests", () => {
             expect(left.angularDeflection).toBe(0.5);
             expect(left.relativeDeflection).toBe(false);
         });
+
+        it("should take the precision share after the relative deflection, 0 by default", () => {
+            // Act
+            const given = new Draw.DrawOcctShapeOptions(
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0.2, true, 0.00005
+            );
+            const left = new Draw.DrawOcctShapeOptions();
+
+            // Assert
+            expect(given.relativeDeflection).toBe(true);
+            expect(given.precisionShare).toBe(0.00005);
+            expect(left.precisionShare).toBe(0);
+        });
     });
 
     describe("DrawBasicGeometryOptions", () => {

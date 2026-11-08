@@ -35,8 +35,8 @@ package outside the browser bundle conventions of `packages/dev/CLAUDE.md`:
   `Inputs` and `Models` data classes and interfaces; a bare name is read in the namespace that names
   it first);
   `src/render.ts` turns a record into the markdown a model reads.
-- `src/guides.generated.ts` is generated from `docs/learn/using-ai-with-bitbybit/agentic-cad.md`,
-  `cad-geometry.md`, `design-documents.md` and `ifc-models.md` beside it by `npm run sync:guides`;
+- `src/guides.generated.ts` is generated from `guides/agentic-cad.md`, `cad-geometry.md`,
+  `design-documents.md` and `ifc-models.md` at the repository root by `npm run sync:guides`;
   `npm run check:guides` and `src/guides.test.ts` fail when the pages and the file disagree. Edit a
   page, then regenerate. The worked examples of the geometry and IFC pages are run from the page
   itself by `packages/dev/occt/lib/geometry-guide.test.ts` and

@@ -288,7 +288,7 @@ export namespace Draw {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean) {
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number, edgeWidthBySize?: boolean, wireColour?: Base.Color) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
@@ -326,6 +326,9 @@ export namespace Draw {
             if (edgeContrast !== undefined) { this.edgeContrast = edgeContrast; }
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+            if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
+            if (edgeWidthBySize !== undefined) { this.edgeWidthBySize = edgeWidthBySize; }
+            if (wireColour !== undefined) { this.wireColour = wireColour; }
         }
         /**
          * How opaque the faces are, from 0 to 1, multiplied into each look's own opacity. This renderer
@@ -362,6 +365,13 @@ export namespace Draw {
          */
         edgeContrast?: number | undefined;
         /**
+         * The color of the edges of a shape drawn without faces (a wire, an edge, or `drawFaces` off), in
+         * place of `edgeColour` and `edgeContrast`; appearance edge colors still win.
+         * @default undefined
+         * @optional true
+         */
+        wireColour?: Base.Color | undefined;
+        /**
          * The color of the faces, as a hex string. A `faceMaterial` or a `surfaceAnalysis` takes its
          * place, and the colors of an appearance win over it.
          * @default #ff0000
@@ -388,6 +398,12 @@ export namespace Draw {
          * @step 0.1
          */
         edgeWidth?: number | undefined = 2;
+        /**
+         * When true, `edgeWidth` scales with the size of what is drawn. Edge widths here are in
+         * pixels, which already look alike at any size, so this changes nothing.
+         * @default false
+         */
+        edgeWidthBySize?: boolean | undefined = false;
         /**
          * The diameter of the vertex markers, in model units; used with `drawVertices`.
          * @default 0.03
@@ -438,6 +454,15 @@ export namespace Draw {
          * @default false
          */
         relativeDeflection?: boolean | undefined = false;
+        /**
+         * Raises `precision` to this share of the longest side of each shape's bounding box, so large
+         * shapes mesh coarser and small ones keep `precision`. Ignored with `relativeDeflection`.
+         * @default 0
+         * @minimum 0
+         * @maximum 1
+         * @step 0.00001
+         */
+        precisionShare?: number | undefined = 0;
         /**
          * When true, each edge's index is written beside the middle of the edge, handy for picking
          * edges to fillet.

@@ -88,8 +88,10 @@ Please avoid submitting changes that are purely cosmetic (e.g., formatting, whit
 
 ## 📚 Want to Improve Our Documentation?
 
-- Find our docs [on GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/docs)
-- We use **Docusaurus** as our documentation framework
+- Find our docs at [learn.bitbybit.dev](https://learn.bitbybit.dev). The site is not kept in this repository:
+  to report a mistake or suggest a page, open an issue here or write to us
+- The guides for coding agents in `guides/` live here, because the `mcp` package serves them and the package
+  tests run their examples
 - The JSDoc on the public API is documentation too: `API_DOCS_GUIDE.md` says how it is written, and
   `npm run api-docs:report` lists what still falls short of it
 

@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { boxOffset, CACHE, canonicalSets, FILES, fileOf, compareBoxes, compareSemantics, compareVolumes, cutHost, download, editsFailed, isEdited, joinBoxes, manifestProblems, nodeShape, oracleByGlobalId, oracleCacheDir, oracleInMetres, oracleJsonOf, privateFiles, problemKinds, reportRow, sameDataSection, USER_AGENT, verify } from "./ifc-corpus.mjs";
+import { boxOffset, CACHE, canonicalSets, FILES, fileOf, compareAreas, compareBoxes, compareSemantics, compareVolumes, cutHost, download, editsFailed, floorDrops, floorProblems, floorsAfterRun, isEdited, joinBoxes, manifestProblems, nodeShape, oracleByGlobalId, oracleCacheDir, oracleInMetres, oracleJsonOf, privateFiles, problemKinds, raisedFloors, reportRow, sameDataSection, summaryLine, USER_AGENT, verify } from "./ifc-corpus.mjs";
 
 const BODY = "ISO-10303-21;\nHEADER;\nENDSEC;\nDATA;\n#1=IFCPROJECT('x',$,$,$,$,$,$,$,$);\nENDSEC;\nEND-ISO-10303-21;\n";
 const sha = (text) => createHash("sha256").update(text).digest("hex");
@@ -168,14 +168,14 @@ describe("privateFiles", () => {
 
 describe("reportRow", () => {
     const comparison = { compared: 2, agreeing: 1, worst: [{ globalId: "2O2Fr$t4X7Zf8NOew3FLOH" }] };
-    const result = { schema: "IFC2X3", elements: 2, volumes: comparison, boxes: comparison, exactVolumes: comparison, exactBoxes: comparison, semantics: comparison };
+    const result = { schema: "IFC2X3", elements: 2, volumes: comparison, areas: comparison, boxes: comparison, exactVolumes: comparison, exactAreas: comparison, exactBoxes: comparison, semantics: comparison };
 
     it("should keep a public file's exporter and the elements that disagree", () => {
         // Act
         const row = reportRow({ ...entry(), exporter: "Archicad 20" }, result);
 
         // Assert
-        assert.deepEqual(row, { id: "kit-fzk-haus", private: false, schema: "IFC2X3", exporter: "Archicad 20", elements: 2, volumes: comparison, boxes: comparison, exactVolumes: comparison, exactBoxes: comparison, semantics: comparison });
+        assert.deepEqual(row, { id: "kit-fzk-haus", private: false, schema: "IFC2X3", exporter: "Archicad 20", elements: 2, volumes: comparison, areas: comparison, boxes: comparison, exactVolumes: comparison, exactAreas: comparison, exactBoxes: comparison, semantics: comparison });
     });
 
     it("should keep counts only of a private file, naming it by its id and hiding GlobalIds where a failure names them", () => {
@@ -187,7 +187,7 @@ describe("reportRow", () => {
         const failed = reportRow(tower, { failed: "The GlobalId '0000000000000000000001' in /data/models/Model A.ifc, written as Model A.ifc", oracleFailed: "IfcOpenShell could not open /data/models/Model A.ifc" });
 
         // Assert
-        assert.deepEqual(measured, { id: "private-2", private: true, schema: "IFC2X3", elements: 2, volumes: { compared: 2, agreeing: 1 }, boxes: { compared: 2, agreeing: 1 }, exactVolumes: { compared: 2, agreeing: 1 }, exactBoxes: { compared: 2, agreeing: 1 }, semantics: { compared: 2, agreeing: 1 } });
+        assert.deepEqual(measured, { id: "private-2", private: true, schema: "IFC2X3", elements: 2, volumes: { compared: 2, agreeing: 1 }, areas: { compared: 2, agreeing: 1 }, boxes: { compared: 2, agreeing: 1 }, exactVolumes: { compared: 2, agreeing: 1 }, exactAreas: { compared: 2, agreeing: 1 }, exactBoxes: { compared: 2, agreeing: 1 }, semantics: { compared: 2, agreeing: 1 } });
         assert.deepEqual([failed.failed, failed.oracleFailed], ["The GlobalId '<GlobalId>' in private-2, written as private-2", "IfcOpenShell could not open private-2"]);
     });
 });
@@ -282,6 +282,155 @@ describe("compareVolumes", () => {
     });
 });
 
+describe("compareAreas", () => {
+    it("should count the closed elements within one per cent, or within a square centimetre, so a skin left over a window shows though the volume agrees", () => {
+        // Arrange
+        const ours = new Map([["wall", 30.27], ["skinned", 30.45], ["bolt", 0.00019], ["nut", 0.0003], ["slab", 41]]);
+        const oracle = [
+            { globalId: "wall", type: "IfcWall", status: "ok", volume: 3, area: 30 },
+            { globalId: "skinned", type: "IfcWall", status: "ok", volume: 3, area: 30 },
+            { globalId: "bolt", type: "IfcMechanicalFastener", status: "ok", volume: 1e-7, area: 0.0001 },
+            { globalId: "nut", type: "IfcMechanicalFastener", status: "ok", volume: 1e-7, area: 0.0001 },
+            { globalId: "slab", type: "IfcSlab", status: "ok", closed: false, volume: 4, area: 40 },
+            { globalId: "door", type: "IfcDoor", status: "ok", volume: 1, area: 9 },
+        ];
+
+        // Act
+        const result = compareAreas(ours, oracle);
+
+        // Assert
+        assert.deepEqual({ ...result, worst: result.worst.map((row) => row.globalId) }, { oracleElements: 6, oracleFailed: 0, oracleOpen: 1, compared: 4, missing: 1, agreeing: 2, worst: ["nut", "skinned"] });
+    });
+});
+
+describe("floor checks", () => {
+    const rows = [
+        { id: "kit-fzk-haus", private: false, volumes: { agreeing: 60, compared: 98 }, areas: { agreeing: 56, compared: 98 }, boxes: { agreeing: 80, compared: 215 } },
+        { id: "zen-taltech", private: false, volumes: { agreeing: 2396, compared: 2618 }, areas: { agreeing: 2000, compared: 2618 }, boxes: { agreeing: 2700, compared: 2773 }, exactVolumes: { agreeing: 2475, compared: 2605 } },
+        { id: "private-1", private: true, volumes: { agreeing: 1, compared: 3 }, areas: { agreeing: 0, compared: 3 }, boxes: { agreeing: 1, compared: 3 } },
+    ];
+
+    it("should name every count of a public file that fell below its floor by more than the platform may move it, and leave alone what was not measured", () => {
+        // Arrange
+        const floors = {
+            "kit-fzk-haus": { volumes: 60, areas: 58, boxes: 81, exactVolumes: 60 },
+            "zen-taltech": { volumes: 2401, areas: 2003 },
+            "private-1": { areas: 1 },
+        };
+
+        // Act
+        const drops = floorDrops(rows, floors, false);
+
+        // Assert
+        assert.deepEqual(drops, [
+            "kit-fzk-haus: areas agree on 56, below the floor of 58 by more than the 1 a run on another platform may move it",
+            "zen-taltech: volumes agree on 2396, below the floor of 2401 by more than the 3 a run on another platform may move it",
+        ]);
+    });
+
+    it("should let a count fall by one, or by a thousandth of what it compared when that is more, and no further", () => {
+        // Arrange
+        const at = (agreeing, compared) => [{ id: "f", private: false, volumes: { agreeing, compared } }];
+
+        // Act
+        const drops = [floorDrops(at(99, 100), { f: { volumes: 100 } }, false), floorDrops(at(98, 100), { f: { volumes: 100 } }, false), floorDrops(at(4995, 5000), { f: { volumes: 5000 } }, false), floorDrops(at(4994, 5000), { f: { volumes: 5000 } }, false)];
+
+        // Assert
+        assert.deepEqual(drops.map((found) => found.length), [0, 1, 0, 1]);
+    });
+
+    it("should count a file that failed or lost its oracle as below every floor above zero of the lanes the run measured", () => {
+        // Arrange
+        const failing = [{ id: "kit-fzk-haus", private: false, oracleFailed: "IfcOpenShell could not open it" }, { id: "zen-taltech", private: false, failed: "out of memory" }];
+        const floors = { "kit-fzk-haus": { volumes: 60, areas: 0, exactVolumes: 60 }, "zen-taltech": { boxes: 1, exactBoxes: 1 } };
+
+        // Act
+        const meshOnly = floorDrops(failing, floors, false);
+        const withExact = floorDrops(failing, floors, true);
+
+        // Assert
+        assert.deepEqual(meshOnly, ["kit-fzk-haus: volumes not compared, against a floor of 60", "zen-taltech: boxes not compared, against a floor of 1"]);
+        assert.deepEqual(withExact, [...meshOnly.slice(0, 1), "kit-fzk-haus: exactVolumes not compared, against a floor of 60", ...meshOnly.slice(1), "zen-taltech: exactBoxes not compared, against a floor of 1"]);
+    });
+
+    it("should raise each public file's floors to what it measured and never lower one, keeping files it did not measure or that failed, in a fixed order", () => {
+        // Arrange
+        const floors = { "zen-taltech": { areas: 1900, volumes: 2500 }, "bsc-duplex": { volumes: 10 }, "bsc-clinic": { boxes: 7 } };
+        const measured = [...rows, { id: "bsc-clinic", private: false, failed: "out of memory" }];
+
+        // Act
+        const raised = raisedFloors(measured, floors);
+
+        // Assert
+        assert.equal(JSON.stringify(raised), JSON.stringify({
+            "bsc-clinic": { boxes: 7 },
+            "bsc-duplex": { volumes: 10 },
+            "kit-fzk-haus": { volumes: 60, areas: 56, boxes: 80 },
+            "zen-taltech": { volumes: 2500, areas: 2000, boxes: 2700, exactVolumes: 2475 },
+        }));
+    });
+
+    it("should check the floors only when the run had an oracle, and hand back raised floors only when asked to save", () => {
+        // Arrange
+        const floors = { "kit-fzk-haus": { areas: 58 } };
+
+        // Act
+        const plain = floorsAfterRun(rows, floors, ["run"]);
+        const blind = floorsAfterRun(rows, floors, ["run", "--no-oracle"]);
+        const saving = floorsAfterRun(rows, floors, ["run", "--save"]);
+
+        // Assert
+        assert.deepEqual([plain.drops.length, plain.saved], [1, undefined]);
+        assert.deepEqual([blind.drops, blind.saved], [[], undefined]);
+        assert.equal(saving.saved?.["kit-fzk-haus"]?.volumes, 60);
+        assert.equal(saving.saved?.["kit-fzk-haus"]?.areas, 58);
+    });
+
+    it("should check exact-lane floors only in a run with --exact", () => {
+        // Arrange
+        const exactRows = [{ id: "zen-taltech", private: false, exactVolumes: { agreeing: 2000, compared: 2605 } }];
+        const floors = { "zen-taltech": { exactVolumes: 2475 } };
+
+        // Act
+        const meshRun = floorsAfterRun(exactRows, floors, ["run"]);
+        const exactRun = floorsAfterRun(exactRows, floors, ["run", "--exact"]);
+
+        // Assert
+        assert.deepEqual([meshRun.drops.length, exactRun.drops.length], [0, 1]);
+    });
+
+    it("should refuse floors for a file the manifest does not list, a count it does not know, and a value that is not a whole number", () => {
+        // Arrange
+        const manifest = { files: [entry(), entry({ id: "bsc-duplex" })] };
+        const floors = { "kit-fzk-haus": { volumes: 60, volume: 3 }, "bsc-duplex": { areas: -1, boxes: 2.5 }, "gone-file": { volumes: 1 } };
+
+        // Act
+        const problems = floorProblems(floors, manifest);
+
+        // Assert
+        assert.deepEqual(problems, [
+            "agreement.json: kit-fzk-haus counts volume, which is not one of volumes, areas, boxes, exactVolumes, exactAreas, exactBoxes",
+            "agreement.json: bsc-duplex areas is -1, not a whole number of elements",
+            "agreement.json: bsc-duplex boxes is 2.5, not a whole number of elements",
+            "agreement.json: gone-file is not in the manifest",
+        ]);
+    });
+});
+
+describe("summaryLine", () => {
+    it("should say how many volumes, areas and boxes agree in each lane the run measured", () => {
+        // Arrange
+        const row = { id: "kit-fzk-haus", bytes: 2570803, elements: 98, openMs: 1, recipeMs: 2, manifoldMs: 3, unsupported: 0, emptySolids: 0, surfaceRoots: 0, dataIdentical: true, peakRssMb: 100, storeMb: 10, volumes: { agreeing: 60, compared: 66 }, areas: { agreeing: 57, compared: 66 }, boxes: { agreeing: 80, compared: 82, missing: 1 }, exactMs: 9, exactEmpty: 0, exactVolumes: { agreeing: 61, compared: 66 }, exactAreas: { agreeing: 62, compared: 66 }, exactBoxes: { agreeing: 82, compared: 82 } };
+
+        // Act
+        const line = summaryLine(row);
+
+        // Assert
+        assert.ok(line.includes("volumes 60/66, areas 57/66 and boxes 80/82 agree"));
+        assert.ok(line.includes("exact volumes 61/66, areas 62/66 and boxes 82/82 agree"));
+    });
+});
+
 describe("oracleJsonOf", () => {
     it("should keep only the oracle's own line of what IfcOpenShell printed", () => {
         // Arrange
@@ -330,13 +479,13 @@ describe("oracleByGlobalId", () => {
     it("should measure the entities that share a GlobalId together, as the roots tagged with it are", () => {
         // Arrange
         const elements = [
-            { id: 10, globalId: "bar", type: "IfcReinforcingBar", status: "ok", volume: 1, min: [0, 0, 0], max: [1, 1, 1] },
-            { id: 11, globalId: "bar", type: "IfcReinforcingBar", status: "ok", volume: 2, min: [-1, 0, 0.5], max: [0.5, 2, 1] },
+            { id: 10, globalId: "bar", type: "IfcReinforcingBar", status: "ok", volume: 1, area: 6, min: [0, 0, 0], max: [1, 1, 1] },
+            { id: 11, globalId: "bar", type: "IfcReinforcingBar", status: "ok", volume: 2, area: 10, min: [-1, 0, 0.5], max: [0.5, 2, 1] },
             { id: 12, globalId: "wall", type: "IfcWall", status: "ok", volume: 3, min: [0, 0, 0], max: [3, 0.2, 2] },
             { id: 13, globalId: "beam", type: "IfcBeam", status: "ok", volume: 1, min: [0, 0, 0], max: [1, 1, 1] },
             { id: 14, globalId: "beam", type: "IfcBeam", status: "not built" },
-            { id: 15, globalId: "sheet", type: "IfcPlate", status: "ok", closed: true, volume: 0, min: null, max: null },
-            { id: 16, globalId: "sheet", type: "IfcPlate", status: "ok", closed: false, volume: 0.5, min: [0, 0, 0], max: [2, 2, 0.01] },
+            { id: 15, globalId: "sheet", type: "IfcPlate", status: "ok", closed: true, volume: 0, area: 0, min: null, max: null },
+            { id: 16, globalId: "sheet", type: "IfcPlate", status: "ok", closed: false, volume: 0.5, area: 8, min: [0, 0, 0], max: [2, 2, 0.01] },
         ];
 
         // Act
@@ -344,10 +493,10 @@ describe("oracleByGlobalId", () => {
 
         // Assert
         assert.deepEqual(merged, [
-            { globalId: "bar", type: "IfcReinforcingBar", entities: 2, status: "ok", closed: true, volume: 3, min: [-1, 0, 0], max: [1, 2, 1] },
+            { globalId: "bar", type: "IfcReinforcingBar", entities: 2, status: "ok", closed: true, volume: 3, area: 16, min: [-1, 0, 0], max: [1, 2, 1] },
             { ...elements[2], entities: 1 },
             { globalId: "beam", type: "IfcBeam", entities: 2, status: "not built" },
-            { globalId: "sheet", type: "IfcPlate", entities: 2, status: "ok", closed: false, volume: 0.5, min: [0, 0, 0], max: [2, 2, 0.01] },
+            { globalId: "sheet", type: "IfcPlate", entities: 2, status: "ok", closed: false, volume: 0.5, area: 8, min: [0, 0, 0], max: [2, 2, 0.01] },
         ]);
     });
 

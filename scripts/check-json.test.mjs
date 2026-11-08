@@ -53,9 +53,9 @@ describe("isChecked", () => {
         assert.deepEqual(checked, [true, true, true]);
     });
 
-    it("should leave out the documentation site and the examples", () => {
+    it("should leave out the examples", () => {
         // Act
-        const checked = ["docs/tsconfig.json", "examples/vite/threejs/cup/tsconfig.json"].map(isChecked);
+        const checked = ["examples/vite/threejs/cup/tsconfig.json", "examples/node/basic/package.json"].map(isChecked);
 
         // Assert
         assert.deepEqual(checked, [false, false]);
@@ -71,7 +71,7 @@ describe("isChecked", () => {
 
     it("should not mistake a path that merely starts with an excluded name for that tree", () => {
         // Act
-        const checked = ["docs-extra/config.json", "packages/dev/core/examples/data.json"].map(isChecked);
+        const checked = ["examples-extra/config.json", "packages/dev/core/examples/data.json"].map(isChecked);
 
         // Assert
         assert.deepEqual(checked, [true, true]);
@@ -93,7 +93,7 @@ describe("invalidJson", () => {
             ["tsconfig.json", "{ \"files\": [] }"],
             ["packages/dev/occt/tsconfig.json", "// generated\n{ \"files\": [] }"],
             ["scripts/allow.json", "{ \"a\": 1, }"],
-            ["docs/tsconfig.json", "// the site's own\n{}"],
+            ["examples/vite/threejs/cup/tsconfig.json", "// the example's own\n{}"],
         ]);
 
         // Act

@@ -13,6 +13,7 @@ export const CORPUS = path.join(ROOT, "packages/dev/ifc/corpus");
 export const MANIFEST = path.join(CORPUS, "corpus.json");
 export const FILES = path.join(CORPUS, "files");
 export const CACHE = path.join(CORPUS, ".cache");
+export const AGREEMENT = path.join(CORPUS, "agreement.json");
 const ORACLE = path.join(CORPUS, "oracle.py");
 const VALIDATE = path.join(CORPUS, "validate.py");
 const MEASURE = path.join(ROOT, "scripts/ifc-corpus-measure.mjs");
@@ -31,6 +32,11 @@ export const VOLUME_TOLERANCE = 0.01;
 export const VOLUME_FLOOR_M3 = 1e-6;
 export const BOX_TOLERANCE = 0.01;
 export const BOX_FLOOR_M = 0.001;
+export const AREA_TOLERANCE = 0.01;
+export const AREA_FLOOR_M2 = 1e-4;
+export const EXACT_AGREEMENT_KEYS = ["exactVolumes", "exactAreas", "exactBoxes"];
+export const AGREEMENT_KEYS = ["volumes", "areas", "boxes", ...EXACT_AGREEMENT_KEYS];
+export const FLOOR_SLACK_SHARE = 0.001;
 const UNIT_TOLERANCE = 1e-9;
 const WORST_LISTED = 10;
 const ORACLE_FAILURE_KEPT = 600;
@@ -134,7 +140,7 @@ function joinOracle(known, element) {
     const status = known.status === "ok" ? element.status : known.status;
     const box = ok ? joinBoxes(known.min ? known : undefined, element.min ? element : undefined) : undefined;
     const closed = known.closed !== false && element.closed !== false;
-    return { globalId: known.globalId, type: known.type, entities: known.entities + 1, status, ...(ok ? { closed, volume: known.volume + element.volume, min: box?.min ?? null, max: box?.max ?? null } : {}) };
+    return { globalId: known.globalId, type: known.type, entities: known.entities + 1, status, ...(ok ? { closed, volume: known.volume + element.volume, area: known.area + element.area, min: box?.min ?? null, max: box?.max ?? null } : {}) };
 }
 
 export function oracleByGlobalId(elements) {
@@ -155,19 +161,19 @@ export function oracleInMetres(oracle, ourMetresPerUnit) {
     };
 }
 
-export function relativeDifference(ours, theirs) {
-    return Math.abs(ours - theirs) / Math.max(Math.abs(theirs), VOLUME_FLOOR_M3);
+export function relativeDifference(ours, theirs, floor = VOLUME_FLOOR_M3) {
+    return Math.abs(ours - theirs) / Math.max(Math.abs(theirs), floor);
 }
 
-export function compareVolumes(ours, oracle) {
+function compareMeasure(ours, oracle, measure, tolerance, floor) {
     const built = oracle.filter((element) => element.status === "ok");
     const measured = built.filter((element) => element.closed !== false);
     const rows = measured.filter((element) => ours.has(element.globalId)).map((element) => {
-        const volume = ours.get(element.globalId);
-        return { globalId: element.globalId, type: element.type, ours: volume, theirs: element.volume, difference: relativeDifference(volume, element.volume) };
+        const value = ours.get(element.globalId);
+        return { globalId: element.globalId, type: element.type, ours: value, theirs: element[measure], difference: relativeDifference(value, element[measure], floor) };
     });
-    const tiny = rows.filter((row) => Math.abs(row.ours - row.theirs) <= VOLUME_FLOOR_M3);
-    const agreeing = rows.filter((row) => row.difference <= VOLUME_TOLERANCE || tiny.includes(row));
+    const tiny = rows.filter((row) => Math.abs(row.ours - row.theirs) <= floor);
+    const agreeing = rows.filter((row) => row.difference <= tolerance || tiny.includes(row));
     return {
         oracleElements: oracle.length,
         oracleFailed: oracle.length - built.length,
@@ -177,6 +183,14 @@ export function compareVolumes(ours, oracle) {
         agreeing: agreeing.length,
         worst: rows.filter((row) => !agreeing.includes(row)).sort((a, b) => b.difference - a.difference).slice(0, WORST_LISTED),
     };
+}
+
+export function compareVolumes(ours, oracle) {
+    return compareMeasure(ours, oracle, "volume", VOLUME_TOLERANCE, VOLUME_FLOOR_M3);
+}
+
+export function compareAreas(ours, oracle) {
+    return compareMeasure(ours, oracle, "area", AREA_TOLERANCE, AREA_FLOOR_M2);
 }
 
 export function boxOffset(ours, theirs) {
@@ -313,7 +327,58 @@ export function reportRow(entry, result) {
     if (!entry.private) { return row; }
     const scrubbed = (text) => (text === undefined ? undefined : withoutPath(entry, text));
     const editing = row.editing === undefined ? undefined : { ...row.editing, sample: undefined, edits: row.editing.edits?.map((edit) => ({ ...edit, refused: scrubbed(edit.refused) })) };
-    return { ...row, editing, failed: scrubbed(result.failed), oracleFailed: scrubbed(result.oracleFailed), volumes: withoutWorst(row.volumes), boxes: withoutWorst(row.boxes), exactVolumes: withoutWorst(row.exactVolumes), exactBoxes: withoutWorst(row.exactBoxes), semantics: withoutWorst(row.semantics) };
+    return { ...row, editing, failed: scrubbed(result.failed), oracleFailed: scrubbed(result.oracleFailed), volumes: withoutWorst(row.volumes), areas: withoutWorst(row.areas), boxes: withoutWorst(row.boxes), exactVolumes: withoutWorst(row.exactVolumes), exactAreas: withoutWorst(row.exactAreas), exactBoxes: withoutWorst(row.exactBoxes), semantics: withoutWorst(row.semantics) };
+}
+
+export function floorDrops(rows, floors, exact) {
+    return rows.filter((row) => !row.private && floors[row.id] !== undefined).flatMap((row) => Object.entries(floors[row.id]).flatMap(([key, floor]) => {
+        if (floor === 0 || (EXACT_AGREEMENT_KEYS.includes(key) && !exact)) { return []; }
+        const comparison = row[key];
+        if (comparison === undefined) {
+            return row.failed !== undefined || row.oracleFailed !== undefined ? [`${row.id}: ${key} not compared, against a floor of ${floor}`] : [];
+        }
+        const slack = Math.ceil(comparison.compared * FLOOR_SLACK_SHARE);
+        return comparison.agreeing < floor - slack ? [`${row.id}: ${key} agree on ${comparison.agreeing}, below the floor of ${floor} by more than the ${slack} a run on another platform may move it`] : [];
+    }));
+}
+
+export function floorProblems(floors, manifest) {
+    const listed = new Set((manifest?.files ?? []).map((entry) => entry.id));
+    return Object.entries(floors).flatMap(([id, counts]) => [
+        ...Object.entries(counts).flatMap(([key, floor]) => [
+            ...(AGREEMENT_KEYS.includes(key) ? [] : [`agreement.json: ${id} counts ${key}, which is not one of ${AGREEMENT_KEYS.join(", ")}`]),
+            ...(Number.isSafeInteger(floor) && floor >= 0 ? [] : [`agreement.json: ${id} ${key} is ${floor}, not a whole number of elements`]),
+        ]),
+        ...(listed.has(id) ? [] : [`agreement.json: ${id} is not in the manifest`]),
+    ]);
+}
+
+export function floorsAfterRun(rows, floors, args) {
+    return {
+        drops: args.includes("--no-oracle") ? [] : floorDrops(rows, floors, args.includes("--exact")),
+        saved: args.includes("--save") ? raisedFloors(rows, floors) : undefined,
+    };
+}
+
+export function raisedFloors(rows, floors) {
+    const raised = new Map(Object.entries(floors).map(([id, counts]) => [id, { ...counts }]));
+    for (const row of rows.filter((measured) => !measured.private)) {
+        for (const key of AGREEMENT_KEYS) {
+            const agreeing = row[key]?.agreeing;
+            if (agreeing !== undefined) {
+                const counts = raised.get(row.id) ?? {};
+                raised.set(row.id, { ...counts, [key]: Math.max(counts[key] ?? 0, agreeing) });
+            }
+        }
+    }
+    return Object.fromEntries([...raised.keys()].sort().map((id) => {
+        const counts = raised.get(id);
+        return [id, Object.fromEntries(AGREEMENT_KEYS.filter((key) => counts[key] !== undefined).map((key) => [key, counts[key]]))];
+    }));
+}
+
+function readFloors() {
+    return existsSync(AGREEMENT) ? JSON.parse(readFileSync(AGREEMENT, "utf8")) : {};
 }
 
 export function oracleJsonOf(stdout) {
@@ -381,17 +446,25 @@ async function measureAll(args) {
         rows.push(row);
         console.log(summaryLine(row));
     }
+    const floors = readFloors();
+    const problems = floorProblems(floors, readManifest());
+    const { drops, saved } = floorsAfterRun(rows, floors, args);
+    problems.forEach((problem) => console.log(problem));
+    drops.forEach((drop) => console.log(`agreement fell: ${drop}`));
     mkdirSync(CACHE, { recursive: true });
-    writeFileSync(path.join(CACHE, "report.json"), `${JSON.stringify({ when: new Date().toISOString(), node: process.version, rows }, null, 2)}\n`);
-    return rows.every((row) => row.failed === undefined && !editsFailed(row));
+    writeFileSync(path.join(CACHE, "report.json"), `${JSON.stringify({ when: new Date().toISOString(), node: process.version, rows, floorDrops: drops, floorProblems: problems }, null, 2)}\n`);
+    if (saved !== undefined) {
+        writeFileSync(AGREEMENT, `${JSON.stringify(saved, null, 4)}\n`);
+    }
+    return rows.every((row) => row.failed === undefined && !editsFailed(row)) && drops.length === 0 && problems.length === 0;
 }
 
-function summaryLine(row) {
+export function summaryLine(row) {
     if (row.failed !== undefined) { return `${row.id}: failed - ${row.failed}`; }
-    const volumes = row.volumes ? `, volumes ${row.volumes.agreeing}/${row.volumes.compared} and boxes ${row.boxes.agreeing}/${row.boxes.compared} agree, ${row.boxes.missing} built by IfcOpenShell only` : "";
+    const volumes = row.volumes ? `, volumes ${row.volumes.agreeing}/${row.volumes.compared}, areas ${row.areas.agreeing}/${row.areas.compared} and boxes ${row.boxes.agreeing}/${row.boxes.compared} agree, ${row.boxes.missing} built by IfcOpenShell only` : "";
     const oracle = row.oracleFailed === undefined ? "" : `, IfcOpenShell failed: ${row.oracleFailed.trim().split("\n").pop()}`;
     const units = row.unitsAgree === false ? ", length unit read differently from IfcOpenShell" : "";
-    const exact = row.exactMs === undefined ? "" : `, exact ${row.exactMs} ms with ${row.exactEmpty} empty${row.exactVolumes ? `, exact volumes ${row.exactVolumes.agreeing}/${row.exactVolumes.compared} and boxes ${row.exactBoxes.agreeing}/${row.exactBoxes.compared} agree` : ""}`;
+    const exact = row.exactMs === undefined ? "" : `, exact ${row.exactMs} ms with ${row.exactEmpty} empty${row.exactVolumes ? `, exact volumes ${row.exactVolumes.agreeing}/${row.exactVolumes.compared}, areas ${row.exactAreas.agreeing}/${row.exactAreas.compared} and boxes ${row.exactBoxes.agreeing}/${row.exactBoxes.compared} agree` : ""}`;
     const edits = row.editing === undefined ? "" : `, edits ${row.editing.edits.filter((edit) => edit.refused === undefined).length}/${row.editing.edits.length} made${row.editing.validationFailed === undefined ? ` with ${row.editing.added} new validator errors (${row.editing.baselineErrors} before)` : `, validation failed: ${row.editing.validationFailed.trim().split("\n").pop()}`}`;
     const semantics = row.semantics ? `, types ${row.semantics.types.agreeing}/${row.semantics.types.compared}, storeys ${row.semantics.storeys.agreeing}/${row.semantics.storeys.compared}, property sets ${row.semantics.propertySets.agreeing}/${row.semantics.propertySets.compared}` : "";
     return `${row.id}: ${Math.round(row.bytes / 1e6)} MB, ${row.elements} elements, open ${row.openMs} ms, recipe ${row.recipeMs} ms, manifold ${row.manifoldMs} ms, ${row.unsupported} unsupported, ${row.emptySolids} empty (${row.surfaceRoots} drawn as surfaces, ${row.cutAway ?? 0} cut away entirely, ${row.emptySolids - row.surfaceRoots - (row.cutAway ?? 0)} lost), data ${row.dataIdentical ? "identical" : "changed"} on write, peak ${row.peakRssMb} MB, store ${row.storeMb} MB beside the file's${volumes}${exact}${edits}${semantics}${units}${oracle}`;
@@ -402,11 +475,12 @@ async function main(args) {
     if (command === "fetch" || command === "check") { return fetchAll(args, command === "check"); }
     if (command === "run") { return measureAll(args); }
     if (command === "manifest") {
-        const problems = manifestProblems(readManifest());
+        const manifest = readManifest();
+        const problems = [...manifestProblems(manifest), ...floorProblems(readFloors(), manifest)];
         problems.forEach((problem) => console.log(problem));
         return problems.length === 0;
     }
-    console.log("usage: node scripts/ifc-corpus.mjs fetch | check | manifest | run [--only <id part>] [--exact] [--edits] [--no-oracle]");
+    console.log("usage: node scripts/ifc-corpus.mjs fetch | check | manifest | run [--only <id part>] [--exact] [--edits] [--no-oracle] [--save]");
     return false;
 }
 
