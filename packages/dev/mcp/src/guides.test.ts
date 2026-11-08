@@ -6,7 +6,7 @@ import { GUIDE_ALIASES } from "./tools/get-guide.js";
 
 const LEARN = "https://learn.bitbybit.dev/learn/using-ai-with-bitbybit";
 
-const page = (name: string): string => readFileSync(new URL(`../../../../docs/learn/using-ai-with-bitbybit/${name}.md`, import.meta.url), "utf8");
+const page = (name: string): string => readFileSync(new URL(`../../../../guides/${name}.md`, import.meta.url), "utf8");
 
 describe("splitGuides", () => {
     it("drops the frontmatter and the text before the first heading", () => {

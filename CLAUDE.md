@@ -9,7 +9,7 @@ and tests from a bare clone with nothing above it. Start with `README.md`, and `
 | Directory | What it is |
 |---|---|
 | `packages/dev/*` | the 16 published npm packages - see `packages/dev/CLAUDE.md` |
-| `docs/` | the Docusaurus site for learn.bitbybit.dev, including the generated API reference |
+| `guides/` | the four guides for coding agents (geometry, design documents, IFC, agentic CAD) that the `mcp` package serves and the package tests run; learn.bitbybit.dev shows them too |
 | `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react); `examples/scripts/examples.mjs` installs, builds and audits each one weekly from the registry, in examples.yml, and `examples/scripts/local.mjs` runs them against this repository's own packages instead |
 | `languages/` | the API help text per locale, keyed by each member's dotted path, and `doc-paths.json`, the map from documentation page names to those keys (`API_DOCS_GUIDE.md`) |
 
@@ -179,12 +179,6 @@ printed to the terminal and, on Actions, written to the run's summary. That summ
 coverage report the docs link to, so write it for someone who did not run it. A package with a
 `test` script that left no results is listed and fails the step, so a suite that silently stopped
 running is noticed.
-
-## Docs
-
-The Docusaurus site regenerates its API pages from an OpenAPI document, and `llms.txt` is generated
-from `docs/static/llms.template.txt` by `docs/scripts/generate-llms.js` on every docs `start` and
-`build`. Edit the template, never the output.
 
 ## Conventions
 

@@ -1,6 +1,6 @@
 # The sixteen published packages are one workspace: a sibling links as a symlink instead of
 # installing from the registry at the same version, one lockfile replaces fifteen, and the graph
-# is walked in dependency order. docs/ and examples/ stay outside on purpose - each is its own app.
+# is walked in dependency order. examples/ stays outside on purpose - each example is its own app.
 packages:
   - packages/dev/*
 

@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const EXCLUDED_TREES = ["docs/", "examples/"];
+const EXCLUDED_TREES = ["examples/"];
 
 export function isChecked(file) {
     if (!file.endsWith(".json")) {
@@ -41,5 +41,5 @@ if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.me
         console.error(`${invalid.length} tracked JSON file(s) are not plain JSON - no comments, no trailing commas:\n${invalid.map((entry) => `  ${entry.file}: ${entry.problem}`).join("\n")}`);
         process.exit(1);
     }
-    console.log(`every tracked JSON file outside docs/ and examples/ is plain JSON (${checked.length} files)`);
+    console.log(`every tracked JSON file outside examples/ is plain JSON (${checked.length} files)`);
 }

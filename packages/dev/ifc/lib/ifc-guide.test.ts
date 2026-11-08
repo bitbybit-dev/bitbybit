@@ -8,7 +8,7 @@ import { IFCService } from "./api/ifc-service";
 
 vi.mock("node:fs", async (importOriginal) => ({ ...await importOriginal<typeof import("node:fs")>(), writeFileSync: vi.fn() }));
 
-const GUIDE = new URL("../../../../docs/learn/using-ai-with-bitbybit/ifc-models.md", import.meta.url);
+const GUIDE = new URL("../../../../guides/ifc-models.md", import.meta.url);
 const PACKAGE_ENTRY = fileURLToPath(new URL("./index.ts", import.meta.url));
 const HOUSE_SECTION = "A house to start from";
 

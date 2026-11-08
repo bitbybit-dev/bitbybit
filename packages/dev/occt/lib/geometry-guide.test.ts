@@ -10,7 +10,7 @@ import { OCCTService } from "./occ-service";
 
 vi.mock("node:fs", async (importOriginal) => ({ ...await importOriginal<typeof import("node:fs")>(), writeFileSync: vi.fn() }));
 
-const GUIDE = new URL("../../../../docs/learn/using-ai-with-bitbybit/cad-geometry.md", import.meta.url);
+const GUIDE = new URL("../../../../guides/cad-geometry.md", import.meta.url);
 const PART_SECTION = "A part to start from";
 const PACKAGE_IMPORTS: readonly [string, string][] = [
     ["\"@bitbybit-dev/occt/bitbybit-dev-occt/index.js\"", JSON.stringify(fileURLToPath(new URL("../bitbybit-dev-occt/index.js", import.meta.url)))],

@@ -477,10 +477,10 @@ own build) and no network beyond the third-party dependencies.
 ## check-openapi.mjs
 
 `npm run check:openapi` (`verify.yml`, `publish.yml`). The committed OpenAPI document
-(`docs/static/openapi.json`) describes the API that `@bitbybit-dev/cad-cloud-sdk` targets, and both
+(`packages/dev/cad-cloud-sdk/openapi.json`) describes the API that `@bitbybit-dev/cad-cloud-sdk` targets, and both
 carry the version: the document's `info.version` must equal the SDK's package version. A bump that
 forgot to regenerate the document, or a regenerated document under an unbumped package, fails here,
-before the documentation site publishes the one and the registry the other.
+before the documentation publishes the one and the registry the other.
 
 ## check-advisories.mjs
 

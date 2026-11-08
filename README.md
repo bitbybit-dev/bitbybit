@@ -6,7 +6,7 @@ Written to be used by people and by AI coding agents alike: every function is pu
 
 ## License
 
-Source code in `packages/`, `languages/`, and `examples/` is [MIT licensed](./LICENSE). The Bitbybit OCCT Kernel the `occt` package ships is MIT-licensed too ([LICENSE](./packages/dev/occt/LICENSE)), but it is not built from this repository: its C++ kernel layer is closed source, and OCCT and the other open-source components compiled into it keep their own licenses ([NOTICE](./packages/dev/occt/NOTICE)). Documentation text in `docs/` is [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Logos, trademarks, and media assets are **not** open-source - see [CONTENT-LICENSE.md](./CONTENT-LICENSE.md) for details.
+Source code in `packages/`, `languages/`, and `examples/` is [MIT licensed](./LICENSE). The Bitbybit OCCT Kernel the `occt` package ships is MIT-licensed too ([LICENSE](./packages/dev/occt/LICENSE)), but it is not built from this repository: its C++ kernel layer is closed source, and OCCT and the other open-source components compiled into it keep their own licenses ([NOTICE](./packages/dev/occt/NOTICE)). The guides in `guides/` and `API.md` are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); the documentation at [learn.bitbybit.dev](https://learn.bitbybit.dev) is published separately, under its own terms. Logos, trademarks, and media assets are **not** open-source - see [CONTENT-LICENSE.md](./CONTENT-LICENSE.md) for details.
 
 # [FULL PLATFORM AT BITBYBIT.DEV](https://bitbybit.dev)   
 # [LEARN BITBYBIT](https://learn.bitbybit.dev)   

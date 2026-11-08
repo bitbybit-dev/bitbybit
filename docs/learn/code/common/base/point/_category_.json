@@ -1,9 +1,0 @@
-{
-    "label": "Point",
-    "link": {
-        "type": "generated-index",
-        "title": "Point Algorithms in Bitbybit",
-        "description": "Create, transform and analyse points in Bitbybit - the coordinates every other piece of geometry is built from. Points define where a wire runs, where a solid sits, and how a pattern repeats, so most parametric models begin by generating a list of them. These pages cover constructing points, measuring distances, translating, rotating and mirroring them, and the grid, spiral and hexagonal generators used to lay out repeating structures. Worked examples build a hex grid and a spiral from scratch, in Rete, Blockly and TypeScript.",
-        "slug": "/code/common/base/point"
-    }
-}

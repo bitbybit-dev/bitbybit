@@ -189,14 +189,14 @@ re-derived: the closed-form SVD behind transforming an elliptical arc, how a DXF
 the short and long arc, the extrusion edge numbering the 3D wire fillet depends on. That reaches the
 editor, which is where someone meets the function.
 
-**The documentation site** (`docs/learn`) holds what a user of the published packages needs before
+**The documentation** (learn.bitbybit.dev) holds what a user of the published packages needs before
 they hit it: the colour range, which way is up, what an SVG import supports, how DXF colours and
 versions behave.
 
 ## TypeScript configuration
 
 Every TypeScript config in the packages is plain JSON - no comments, no trailing commas - and so is
-every other tracked `.json` file outside `docs/` and `examples/`: `npm run check:json`
+every other tracked `.json` file outside `examples/`: `npm run check:json`
 (`scripts/check-json.mjs`, a step of `npm test`) parses each with `JSON.parse` and lists the ones
 that fail. A generated config therefore carries no banner, and the reasons behind each config live
 here rather than in it.
