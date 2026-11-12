@@ -6217,6 +6217,9 @@ interface FaceDebugInfo {
 }
 
 // @public
+export function faceDefaultDirection(normal: readonly [number, number, number]): [number, number, number] | undefined;
+
+// @public
 interface FaceSignature {
     // (undocumented)
     area: number;
