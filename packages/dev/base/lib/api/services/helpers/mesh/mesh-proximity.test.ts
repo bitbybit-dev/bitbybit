@@ -353,4 +353,35 @@ describe("closestOnTriangle", () => {
         // Assert
         expect(misses).toHaveLength(0);
     });
+
+    it("should treat corners on one line to within rounding as the segment they span", () => {
+        // Arrange
+        let seed = 11;
+        const random = (): number => {
+            seed = (seed * 16807) % 2147483647;
+            return seed / 2147483647 - 0.5;
+        };
+        const cases = Array.from({ length: 400 }, () => {
+            const a: [number, number, number] = [random() * 4, random() * 4, random() * 4];
+            const b: [number, number, number] = [random() * 4, random() * 4, random() * 4];
+            const t = random() + 0.5;
+            const c: [number, number, number] = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+            return { p: [random() * 6, random() * 6, random() * 6] as [number, number, number], a, b, c };
+        });
+
+        // Act
+        const misses = cases.filter(({ p, a, b, c }) => {
+            const found = closestOnTriangle(p, a, b, c);
+            const ends = [a, b, c].sort((first, second) => first[0] - second[0]);
+            const from = ends[0]!;
+            const to = ends[2]!;
+            const run = [to[0] - from[0], to[1] - from[1], to[2] - from[2]];
+            const share = Math.min(1, Math.max(0, ((p[0] - from[0]) * run[0]! + (p[1] - from[1]) * run[1]! + (p[2] - from[2]) * run[2]!) / (run[0]! ** 2 + run[1]! ** 2 + run[2]! ** 2)));
+            const nearest = [from[0] + run[0]! * share, from[1] + run[1]! * share, from[2] + run[2]! * share];
+            return Math.hypot(found.point[0] - nearest[0]!, found.point[1] - nearest[1]!, found.point[2] - nearest[2]!) > 1e-9;
+        });
+
+        // Assert
+        expect(misses).toHaveLength(0);
+    });
 });
