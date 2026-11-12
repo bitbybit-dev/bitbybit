@@ -14422,6 +14422,9 @@ interface OrientedBoundingBox {
     halfSizes: Base.Vector3;
 }
 
+// @public
+export function parametersIn(value: unknown, parameters: Pick<ReadonlySet<string>, "has">): Set<string>;
+
 // @public (undocumented)
 export type PartDefinitionInfo = {
     labelTag: number,

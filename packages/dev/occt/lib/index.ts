@@ -7,3 +7,4 @@ export * from "./kernel-exception";
 export * from "./release-design-caches";
 export * from "./kernel-failures";
 export { designNumber, designParameterValues } from "./services/design/document-values";
+export { parametersIn } from "./services/design/values";

@@ -482,11 +482,12 @@ type ReadMode = "expression" | "template" | "literal";
 
 /**
  * The parameters an expression or a template anywhere in `value` reads, by where each string sits:
- * a string under a key that names something (`type`, ids, `of`, `role`, a material) is a name; in
- * `properties` a string is a template; in an operation's `params` and a reference's `filter` a string
- * is a literal and only `{ "expr" }` computes; elsewhere a string is an expression.
+ * a string under a key that names something (`type`, ids, `of`, `role`, a material, a colour, a unit) is
+ * a name; in `properties` a string is a template; in an operation's `params` and a reference's `filter` a
+ * string is a literal and only `{ "expr" }` computes; elsewhere a string is an expression. Only names
+ * `parameters` declares are returned; a set of names or a map of values both serve.
  */
-export function parametersIn(value: unknown, parameters: DesignValues): Set<string> {
+export function parametersIn(value: unknown, parameters: Pick<ReadonlySet<string>, "has">): Set<string> {
     const names = new Set<string>();
     const add = (found: string[]): void => found.forEach(name => names.add(name));
     const visit = (inner: unknown, mode: ReadMode, key: string | undefined): void => {
