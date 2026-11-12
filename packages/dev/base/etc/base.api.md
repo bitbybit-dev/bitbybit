@@ -2909,6 +2909,19 @@ namespace Math_2 {
         maxDelta?: number | undefined;
         target?: number | undefined;
     }
+    enum niceStepDirectionEnum {
+        // (undocumented)
+        down = "down",
+        // (undocumented)
+        nearest = "nearest",
+        // (undocumented)
+        up = "up"
+    }
+    class NiceStepDto {
+        constructor(number?: number, direction?: niceStepDirectionEnum);
+        direction?: niceStepDirectionEnum | undefined;
+        number?: number | undefined;
+    }
     class NumberDto {
         constructor(number?: number);
         number?: number | undefined;
@@ -2941,6 +2954,12 @@ namespace Math_2 {
         constructor(number?: number, decimalPlaces?: number);
         decimalPlaces?: number | undefined;
         number?: number | undefined;
+    }
+    class ShortestAngleDto {
+        constructor(from?: number, to?: number, fullTurn?: number);
+        from?: number | undefined;
+        fullTurn?: number | undefined;
+        to?: number | undefined;
     }
     class ToFixedDto {
         constructor(number?: number, decimalPlaces?: number);
@@ -2989,6 +3008,8 @@ namespace Math_3 {
     // (undocumented)
     type MoveTowardsDto = WithDefaults<Inputs_2.Math.MoveTowardsDto, "current" | "target" | "maxDelta">;
     // (undocumented)
+    type NiceStepDto = WithDefaults<Inputs_2.Math.NiceStepDto, "number" | "direction">;
+    // (undocumented)
     type NumberDto = WithDefaults<Inputs_2.Math.NumberDto, "number">;
     // (undocumented)
     type PingPongDto = WithDefaults<Inputs_2.Math.PingPongDto, "t" | "length">;
@@ -3000,6 +3021,8 @@ namespace Math_3 {
     type RemapNumberDto = WithDefaults<Inputs_2.Math.RemapNumberDto, "number" | "fromLow" | "fromHigh" | "toLow" | "toHigh">;
     // (undocumented)
     type RoundToDecimalsDto = WithDefaults<Inputs_2.Math.RoundToDecimalsDto, "number" | "decimalPlaces">;
+    // (undocumented)
+    type ShortestAngleDto = WithDefaults<Inputs_2.Math.ShortestAngleDto, "from" | "to" | "fullTurn">;
     // (undocumented)
     type ToFixedDto = WithDefaults<Inputs_2.Math.ToFixedDto, "decimalPlaces">;
     // (undocumented)
@@ -3037,6 +3060,7 @@ export class MathBitByBit {
     moveTowards(inputs: Inputs_2.Math.MoveTowardsDto): number;
     multiply(inputs: Inputs_2.Math.TwoNumbersDto): number;
     negate(inputs: Inputs_2.Math.NumberDto): number;
+    niceStep(inputs: Inputs_2.Math.NiceStepDto): number;
     number(inputs: Inputs_2.Math.NumberDto): number;
     oneNrOperation(inputs: Inputs_2.Math.ActionOnOneNumberDto): number;
     pi(): number;
@@ -3050,6 +3074,7 @@ export class MathBitByBit {
     round(inputs: Inputs_2.Math.NumberDto): number;
     roundAndRemoveTrailingZeros(inputs: Inputs_2.Math.RoundToDecimalsDto): number;
     roundToDecimals(inputs: Inputs_2.Math.RoundToDecimalsDto): number;
+    shortestAngle(inputs: Inputs_2.Math.ShortestAngleDto): number;
     sign(inputs: Inputs_2.Math.NumberDto): number;
     sin(inputs: Inputs_2.Math.NumberDto): number;
     smoothstep(inputs: Inputs_2.Math.NumberDto): number;

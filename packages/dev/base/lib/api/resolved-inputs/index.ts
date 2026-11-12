@@ -232,12 +232,14 @@ export namespace Math {
     export type LerpDto = WithDefaults<Inputs.Math.LerpDto, "start" | "end" | "t">;
     export type ModulusDto = WithDefaults<Inputs.Math.ModulusDto, "number" | "modulus">;
     export type MoveTowardsDto = WithDefaults<Inputs.Math.MoveTowardsDto, "current" | "target" | "maxDelta">;
+    export type NiceStepDto = WithDefaults<Inputs.Math.NiceStepDto, "number" | "direction">;
     export type NumberDto = WithDefaults<Inputs.Math.NumberDto, "number">;
     export type PingPongDto = WithDefaults<Inputs.Math.PingPongDto, "t" | "length">;
     export type RandomNumberDto = WithDefaults<Inputs.Math.RandomNumberDto, "low" | "high">;
     export type RandomNumbersDto = WithDefaults<Inputs.Math.RandomNumbersDto, "low" | "high" | "count">;
     export type RemapNumberDto = WithDefaults<Inputs.Math.RemapNumberDto, "number" | "fromLow" | "fromHigh" | "toLow" | "toHigh">;
     export type RoundToDecimalsDto = WithDefaults<Inputs.Math.RoundToDecimalsDto, "number" | "decimalPlaces">;
+    export type ShortestAngleDto = WithDefaults<Inputs.Math.ShortestAngleDto, "from" | "to" | "fullTurn">;
     export type ToFixedDto = WithDefaults<Inputs.Math.ToFixedDto, "decimalPlaces">;
     export type TwoNumbersDto = WithDefaults<Inputs.Math.TwoNumbersDto, "first" | "second">;
     export type UnitOfLengthDto = WithDefaults<Inputs.Math.UnitOfLengthDto, "unit">;

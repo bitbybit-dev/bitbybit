@@ -1,7 +1,7 @@
 import * as Inputs from "../inputs";
 import { resolveDto } from "../kernel-calls";
 import type * as Resolved from "../resolved-inputs";
-import { degreesOf, fractionOf, fractionText, interpolated, radiansOf, roundedTo, smoothstep } from "./helpers/geometry/scalars";
+import { degreesOf, fractionOf, fractionText, interpolated, niceStep, radiansOf, roundedTo, shortestAngle, smoothstep } from "./helpers/geometry/scalars";
 import { InputError } from "../kernel-calls/errors";
 import { checkedUnitOfLength, lengthConverted, millimetresPerUnitOf } from "./helpers/geometry/lengths";
 
@@ -967,6 +967,53 @@ export class MathBitByBit {
             return resolved.target;
         }
         return resolved.current + Math.sign(delta) * resolved.maxDelta;
+    }
+
+    /**
+     * Gives the angle that `to` names, whole turns aside, nearest to `from`, so going from `from` to
+     * it is the short way round.
+     *
+     * Animating an angle toward the result never spins the long way. `fullTurn` sets the unit.
+     * Example: 10 to 350 in degrees -> -10, 350 to 10 -> 370
+     * @param inputs - The two angles and the size of a whole turn
+     * @returns The angle to arrive at, at most half a turn from `from`
+     * @group operations
+     * @shortname shortest angle
+     * @drawable false
+     * @example
+     * ```typescript
+     * const target = bitbybit.math.shortestAngle({ from: 10, to: 350, fullTurn: 360 });
+     * ```
+     */
+    shortestAngle(inputs: Inputs.Math.ShortestAngleDto): number {
+        const resolved = resolveDto(Inputs.Math.ShortestAngleDto, inputs) as Resolved.Math.ShortestAngleDto;
+        if (!(resolved.fullTurn > 0 && Number.isFinite(resolved.fullTurn))) {
+            throw new InputError(`\`fullTurn\` is ${String(resolved.fullTurn)}, and has to be a positive finite number.`, "fullTurn");
+        }
+        return shortestAngle(resolved.from, resolved.to, resolved.fullTurn);
+    }
+
+    /**
+     * Rounds a positive number to a step on the 1, 2, 5 scale - 0.1, 0.2, 0.5, 1, 2, 5, 10 and on -
+     * the sizes a grid, a ruler or a slider reads well in.
+     *
+     * Example: 0.37 up -> 0.5, 0.37 down -> 0.2, 0.37 nearest -> 0.5, 1.3 nearest -> 1
+     * @param inputs - The number and which way to round it
+     * @returns The step
+     * @group operations
+     * @shortname nice step
+     * @drawable false
+     * @example
+     * ```typescript
+     * const step = bitbybit.math.niceStep({ number: 0.37, direction: Bit.Inputs.Math.niceStepDirectionEnum.up });
+     * ```
+     */
+    niceStep(inputs: Inputs.Math.NiceStepDto): number {
+        const resolved = resolveDto(Inputs.Math.NiceStepDto, inputs) as Resolved.Math.NiceStepDto;
+        if (!(resolved.number > 0 && Number.isFinite(resolved.number))) {
+            throw new InputError(`\`number\` is ${String(resolved.number)}, and has to be a positive finite number.`, "number");
+        }
+        return niceStep(resolved.number, resolved.direction);
     }
 
     /**

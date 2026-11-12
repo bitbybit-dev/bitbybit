@@ -238,11 +238,17 @@
         "interpolated": {
             "exposedAs": "math.lerp"
         },
+        "niceStep": {
+            "exposedAs": "math.niceStep"
+        },
         "radiansOf": {
             "exposedAs": "math.degToRad"
         },
         "roundedTo": {
             "exposedAs": "math.roundToDecimals"
+        },
+        "shortestAngle": {
+            "exposedAs": "math.shortestAngle"
         },
         "roundedToMillionths": {
             "internal": "the six places the engineering size tables are rounded to; `math.roundToDecimals` is the general form"
