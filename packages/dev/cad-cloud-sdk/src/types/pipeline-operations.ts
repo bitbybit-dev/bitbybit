@@ -1304,7 +1304,10 @@ export interface OperationParams {
     "color.hexToRgba": {
         /** The color as a hex text such as `#ff5733` or `#f53`, with or without the `#`. */
         color?: unknown | PipelineRef;
-        /** How opaque the color is, from 0 for fully transparent to 1 for solid. */
+        /**
+         * How opaque the color is, from 0 for fully transparent to 1 for solid; a value outside that is held
+         * at the nearer end.
+         */
         alpha?: number | PipelineRef;
     };
     /**
@@ -1334,9 +1337,15 @@ export interface OperationParams {
          * whole turns aside.
          */
         hue?: number | PipelineRef;
-        /** How strong the color is, from 0 for grey to 1 for the purest hue. */
+        /**
+         * How strong the color is, from 0 for grey to 1 for the purest hue; a value outside that is held at
+         * the nearer end.
+         */
         saturation?: number | PipelineRef;
-        /** How light the color is, from 0 for black through 0.5 for the full hue to 1 for white. */
+        /**
+         * How light the color is, from 0 for black through 0.5 for the full hue to 1 for white; a value
+         * outside that is held at the nearer end.
+         */
         lightness?: number | PipelineRef;
     };
     /**
@@ -5670,10 +5679,11 @@ export interface OperationParams {
         number?: number | PipelineRef;
     };
     /**
-     * Rounds a positive number to a step on the 1, 2, 5 scale - 0.1, 0.2, 0.5, 1, 2, 5, 10 and on -
-     * the sizes a grid, a ruler or a slider reads well in.
+     * Rounds a positive number to a step on the 1, 2, 5 scale - 0.1, 0.2, 0.5, 1, 2, 5, 10 - the
+     * sizes a grid, a ruler or a slider reads well in.
      *
-     * Example: 0.37 up -> 0.5, 0.37 down -> 0.2, 0.37 nearest -> 0.5, 1.3 nearest -> 1
+     * A number within a billionth of a step counts as that step.
+     * Example: 0.37 up -> 0.5, down -> 0.2, nearest -> 0.5
      */
     "math.niceStep": {
         /** The rough size to turn into a step, such as a span divided by the number of ticks wanted. */
@@ -5817,6 +5827,7 @@ export interface OperationParams {
     /**
      * Rounds a number to a given number of decimal places.
      *
+     * A small negative number rounds to 0, never to -0.
      * Example: 1.32156 to 3 places -> 1.322
      */
     "math.roundToDecimals": {
@@ -5833,7 +5844,7 @@ export interface OperationParams {
      * Example: 10 to 350 in degrees -> -10, 350 to 10 -> 370
      */
     "math.shortestAngle": {
-        /** The angle the turn starts from. */
+        /** The angle the turn starts from, in the unit `fullTurn` sets. */
         from?: number | PipelineRef;
         /**
          * The angle to arrive at, in the same unit as `from`; any number of whole turns may be added
