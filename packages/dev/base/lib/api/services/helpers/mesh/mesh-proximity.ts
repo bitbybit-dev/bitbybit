@@ -131,47 +131,57 @@ function segmentsSquared(p1: Vec, q1: Vec, p2: Vec, q2: Vec): number {
     return dot3(gap, gap);
 }
 
-function pointTriangleSquared(p: Vec, a: Vec, b: Vec, c: Vec): number {
+function blended(a: Vec, b: Vec, c: Vec, weights: Vec): Inputs.Base.TrianglePoint3 {
+    const [u, v, w] = weights;
+    return { point: [a[0] * u + b[0] * v + c[0] * w, a[1] * u + b[1] * v + c[1] * w, a[2] * u + b[2] * v + c[2] * w], weights };
+}
+
+export function closestOnTriangle(p: Vec, a: Vec, b: Vec, c: Vec): Inputs.Base.TrianglePoint3 {
     const ab = subtract3(b, a);
     const ac = subtract3(c, a);
     const ap = subtract3(p, a);
     const d1 = dot3(ab, ap);
     const d2 = dot3(ac, ap);
     if (d1 <= 0 && d2 <= 0) {
-        return dot3(ap, ap);
+        return blended(a, b, c, [1, 0, 0]);
     }
     const bp = subtract3(p, b);
     const d3 = dot3(ab, bp);
     const d4 = dot3(ac, bp);
     if (d3 >= 0 && d4 <= d3) {
-        return dot3(bp, bp);
+        return blended(a, b, c, [0, 1, 0]);
     }
     const vc = d1 * d4 - d3 * d2;
     if (vc <= 0 && d1 >= 0 && d3 <= 0) {
-        const q = subtract3(p, along(a, ab, d1 / (d1 - d3)));
-        return dot3(q, q);
+        const v = d1 / (d1 - d3);
+        return blended(a, b, c, [1 - v, v, 0]);
     }
     const cp = subtract3(p, c);
     const d5 = dot3(ab, cp);
     const d6 = dot3(ac, cp);
     if (d6 >= 0 && d5 <= d6) {
-        return dot3(cp, cp);
+        return blended(a, b, c, [0, 0, 1]);
     }
     const vb = d5 * d2 - d1 * d6;
     if (vb <= 0 && d2 >= 0 && d6 <= 0) {
-        const q = subtract3(p, along(a, ac, d2 / (d2 - d6)));
-        return dot3(q, q);
+        const w = d2 / (d2 - d6);
+        return blended(a, b, c, [1 - w, 0, w]);
     }
     const va = d3 * d6 - d5 * d4;
     if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0) {
-        const q = subtract3(p, along(b, subtract3(c, b), (d4 - d3) / (d4 - d3 + (d5 - d6))));
-        return dot3(q, q);
+        const w = (d4 - d3) / (d4 - d3 + (d5 - d6));
+        return blended(a, b, c, [0, 1 - w, w]);
     }
     const total = va + vb + vc;
-    const v = vb / total;
-    const w = vc / total;
-    const q = subtract3(p, [a[0] + ab[0] * v + ac[0] * w, a[1] + ab[1] * v + ac[1] * w, a[2] + ab[2] * v + ac[2] * w]);
-    return dot3(q, q);
+    if (!(total > FLAT_SHARE * dot3(ab, ab) * dot3(ac, ac))) {
+        return blended(a, b, c, [1, 0, 0]);
+    }
+    return blended(a, b, c, [1 - (vb + vc) / total, vb / total, vc / total]);
+}
+
+function pointTriangleSquared(p: Vec, a: Vec, b: Vec, c: Vec): number {
+    const gap = subtract3(p, closestOnTriangle(p, a, b, c).point);
+    return dot3(gap, gap);
 }
 
 function rayTriangleHit(from: Vec, direction: Vec, a: Vec, b: Vec, c: Vec): Vec | undefined {

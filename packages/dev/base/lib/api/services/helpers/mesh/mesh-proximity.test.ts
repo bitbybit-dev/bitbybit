@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pointInTree, pointOnTree, pointsOnTree, treeBox, treesNested, treesWithin, triangleTree } from "./mesh-proximity";
+import { closestOnTriangle, pointInTree, pointOnTree, pointsOnTree, treeBox, treesNested, treesWithin, triangleTree } from "./mesh-proximity";
 
 const cube = (x: number, y: number, z: number, size: number): { positions: number[]; indices: number[] } => {
     const corners = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]];
@@ -218,5 +218,78 @@ describe("mesh proximity", () => {
             expect(treesWithin(rowOf(4, 3), rowOf(30, 0), 1.9)).toBe(false);
             expect(pointInTree(point(0, 0, 0), [0, 0, 0])).toBe(false);
         });
+    });
+});
+
+describe("closestOnTriangle", () => {
+    const a: [number, number, number] = [0, 0, 0];
+    const b: [number, number, number] = [1, 0, 0];
+    const c: [number, number, number] = [0, 1, 0];
+    const close = (received: number[], expected: number[]): void => {
+        expect(received).toHaveLength(expected.length);
+        received.forEach((value, at) => expect(value).toBeCloseTo(expected[at]!, 12));
+    };
+
+    it.each([
+        { region: "the face", point: [0.25, 0.25, 2], nearest: [0.25, 0.25, 0], weights: [0.5, 0.25, 0.25] },
+        { region: "the first corner", point: [-1, -2, 1], nearest: [0, 0, 0], weights: [1, 0, 0] },
+        { region: "the second corner", point: [3, -1, 0], nearest: [1, 0, 0], weights: [0, 1, 0] },
+        { region: "the third corner", point: [-1, 3, -1], nearest: [0, 1, 0], weights: [0, 0, 1] },
+        { region: "the first edge", point: [0.25, -3, 1], nearest: [0.25, 0, 0], weights: [0.75, 0.25, 0] },
+        { region: "the edge from the first corner to the third", point: [-3, 0.75, 0], nearest: [0, 0.75, 0], weights: [0.25, 0, 0.75] },
+        { region: "the edge from the second corner to the third", point: [1, 1, 5], nearest: [0.5, 0.5, 0], weights: [0, 0.5, 0.5] },
+    ])("should give the nearest point of $region with its corner weights", ({ point, nearest, weights }) => {
+        // Arrange
+        const from = point as [number, number, number];
+
+        // Act
+        const found = closestOnTriangle(from, a, b, c);
+
+        // Assert
+        close(found.point, nearest);
+        close(found.weights, weights);
+    });
+
+    it("should measure a triangle a ten-thousandth wide as it measures a large one", () => {
+        // Arrange
+        const scale = 1e-4;
+
+        // Act
+        const found = closestOnTriangle([0.25 * scale, 0.25 * scale, 1], [0, 0, 0], [scale, 0, 0], [0, scale, 0]);
+
+        // Assert
+        close(found.point.map(value => value / scale), [0.25, 0.25, 0]);
+        close(found.weights, [0.5, 0.25, 0.25]);
+    });
+
+    it("should treat a triangle whose corners lie on one line as the segment they span", () => {
+        // Arrange
+        const middle: [number, number, number] = [1, 0, 0];
+        const end: [number, number, number] = [2, 0, 0];
+
+        // Act
+        const between = closestOnTriangle([0.5, 1, 0], a, end, middle);
+        const beyond = closestOnTriangle([3, 1, 0], a, middle, end);
+
+        // Assert
+        close(between.point, [0.5, 0, 0]);
+        close(beyond.point, [2, 0, 0]);
+        close(beyond.weights, [0, 0, 1]);
+    });
+
+    it("should give weights that add up to 1 and rebuild the point from the corners", () => {
+        // Arrange
+        const corners: [[number, number, number], [number, number, number], [number, number, number]] = [[0.3, -1.2, 0.7], [2.1, 0.4, -0.5], [-0.8, 1.9, 1.3]];
+        const probes: [number, number, number][] = [[0, 0, 0], [5, 5, 5], [-3, 1, 2], [0.5, 0.4, 0.5], [1, -4, 0]];
+
+        // Act
+        const found = probes.map(probe => closestOnTriangle(probe, ...corners));
+
+        // Assert
+        for (const { point, weights } of found) {
+            expect(weights[0] + weights[1] + weights[2]).toBeCloseTo(1, 12);
+            weights.forEach(weight => expect(weight).toBeGreaterThanOrEqual(0));
+            close(point, [0, 1, 2].map(axis => corners[0][axis]! * weights[0] + corners[1][axis]! * weights[1] + corners[2][axis]! * weights[2]));
+        }
     });
 });

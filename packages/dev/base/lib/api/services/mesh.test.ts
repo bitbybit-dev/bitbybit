@@ -82,6 +82,26 @@ describe("Mesh unit tests", () => {
         });
     });
 
+    describe("closestPointOnTriangle", () => {
+        it("should give the foot of a point above the face with the weight of each corner", () => {
+            // Act
+            const nearest = meshBitByBit.closestPointOnTriangle({ point: [0.25, 0.25, 2], triangle: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] });
+
+            // Assert
+            uh.expectPointCloseTo(nearest.point, [0.25, 0.25, 0]);
+            uh.expectPointCloseTo(nearest.weights, [0.5, 0.25, 0.25]);
+        });
+
+        it("should give the nearest point of an edge for a point beyond it", () => {
+            // Act
+            const nearest = meshBitByBit.closestPointOnTriangle({ point: [1, 1, 5], triangle: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] });
+
+            // Assert
+            uh.expectPointCloseTo(nearest.point, [0.5, 0.5, 0]);
+            uh.expectPointCloseTo(nearest.weights, [0, 0.5, 0.5]);
+        });
+    });
+
     describe("calculateTrianglePlane", () => {
         it("should calculate plane for simple XY triangle", () => {
             const plane = meshBitByBit.calculateTrianglePlane({ triangle: triXY1 });

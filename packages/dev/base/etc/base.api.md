@@ -396,6 +396,10 @@ export namespace Base {
         normal: Vector3;
         d: number;
     };
+    export type TrianglePoint3 = {
+        point: Point3;
+        weights: Vector3;
+    };
     export enum unitOfLengthEnum {
         // (undocumented)
         centimetre = "cm",
@@ -3111,6 +3115,11 @@ namespace Mesh {
         mesh: Base.Mesh3;
         tolerance?: number | undefined;
     }
+    class PointTriangleDto {
+        constructor(point?: Base.Point3, triangle?: Base.Triangle3);
+        point: Base.Point3;
+        triangle: Base.Triangle3;
+    }
     class PolygonWithHolesDto {
         constructor(points?: Base.Point3[], holes?: Base.Point3[][]);
         holes?: Base.Point3[][] | undefined;
@@ -3159,6 +3168,8 @@ namespace Mesh_2 {
     // (undocumented)
     type MeshToIndexedDto = WithDefaults<Inputs_2.Mesh.MeshToIndexedDto, "tolerance">;
     // (undocumented)
+    type PointTriangleDto = Inputs_2.Mesh.PointTriangleDto;
+    // (undocumented)
     type PolygonWithHolesDto = Inputs_2.Mesh.PolygonWithHolesDto;
     // (undocumented)
     type SignedDistanceFromPlaneToPointDto = Inputs_2.Mesh.SignedDistanceFromPlaneToPointDto;
@@ -3174,6 +3185,7 @@ namespace Mesh_2 {
 export class MeshBitByBit {
     constructor(vector: Vector, polyline: Polyline);
     calculateTrianglePlane(inputs: Inputs_2.Mesh.TriangleToleranceDto): Inputs_2.Base.TrianglePlane3 | undefined;
+    closestPointOnTriangle(inputs: Inputs_2.Mesh.PointTriangleDto): Inputs_2.Base.TrianglePoint3;
     creasedNormals(inputs: Inputs_2.Mesh.CreasedNormalsDto): Inputs_2.Base.IndexedMesh;
     fromIndexed(inputs: Inputs_2.Mesh.IndexedMeshDto): Inputs_2.Base.Mesh3;
     frustum(inputs: Inputs_2.Mesh.FrustumDto): Inputs_2.Base.Mesh3;

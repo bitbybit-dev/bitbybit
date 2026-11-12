@@ -75,6 +75,12 @@ export namespace Base {
      */
     export type Triangle3 = [Base.Point3, Base.Point3, Base.Point3];
     /**
+     * The point of a triangle nearest to another point, with the share of each corner in it:
+     * `point` is `weights[0]` times the first corner plus `weights[1]` times the second plus
+     * `weights[2]` times the third, and the weights add up to 1.
+     */
+    export type TrianglePoint3 = { point: Point3; weights: Vector3; };
+    /**
      * A mesh as a flat list of triangles. The simplest possible mesh representation - no shared
      * vertices and no index buffer - which makes it easy to build and to reason about, at the cost of
      * repeating coordinates.

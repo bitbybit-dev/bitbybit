@@ -362,6 +362,9 @@
         }
     },
     "mesh/mesh-proximity.ts": {
+        "closestOnTriangle": {
+            "exposedAs": "mesh.closestPointOnTriangle"
+        },
         "pointInTree": {
             "exposedAs": "mesh.isPointInside"
         },

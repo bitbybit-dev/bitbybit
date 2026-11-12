@@ -258,6 +258,7 @@ export namespace Mesh {
     export type MeshMeshToleranceDto = WithDefaults<Inputs.Mesh.MeshMeshToleranceDto, "tolerance">;
     export type MeshPointDto = Inputs.Mesh.MeshPointDto;
     export type MeshToIndexedDto = WithDefaults<Inputs.Mesh.MeshToIndexedDto, "tolerance">;
+    export type PointTriangleDto = Inputs.Mesh.PointTriangleDto;
     export type PolygonWithHolesDto = Inputs.Mesh.PolygonWithHolesDto;
     export type SignedDistanceFromPlaneToPointDto = Inputs.Mesh.SignedDistanceFromPlaneToPointDto;
     export type TriangleDto = Inputs.Mesh.TriangleDto;
