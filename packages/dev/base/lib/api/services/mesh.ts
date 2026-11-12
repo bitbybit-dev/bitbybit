@@ -110,6 +110,12 @@ export class MeshBitByBit {
      * ```
      */
     closestPointOnTriangle(inputs: Inputs.Mesh.PointTriangleDto): Inputs.Base.TrianglePoint3 {
+        if (!isTriple(inputs.point)) {
+            throw new InputError("`point` has to be three finite numbers.", "point");
+        }
+        if (!Array.isArray(inputs.triangle) || inputs.triangle.length !== TRIANGLE_CORNERS || !inputs.triangle.every(isTriple)) {
+            throw new InputError("`triangle` has to be three corners of three finite numbers each.", "triangle");
+        }
         const [a, b, c] = inputs.triangle;
         return closestOnTriangle(inputs.point, a, b, c);
     }

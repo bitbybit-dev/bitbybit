@@ -92,6 +92,12 @@ describe("Mesh unit tests", () => {
             uh.expectPointCloseTo(nearest.weights, [0.5, 0.25, 0.25]);
         });
 
+        it("should refuse a point or a corner that is not three finite numbers", () => {
+            // Act & Assert
+            expect(() => meshBitByBit.closestPointOnTriangle({ point: [Number.NaN, 0, 0], triangle: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] })).toThrow(InputError);
+            expect(() => meshBitByBit.closestPointOnTriangle({ point: [0, 0, 1], triangle: [[0, 0, 0], [Infinity, 0, 0], [0, 1, 0]] })).toThrow(InputError);
+        });
+
         it("should give the nearest point of an edge for a point beyond it", () => {
             // Act
             const nearest = meshBitByBit.closestPointOnTriangle({ point: [1, 1, 5], triangle: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] });

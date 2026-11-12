@@ -972,6 +972,20 @@ describe("Math unit tests", () => {
         });
     });
 
+    describe("shortestAngle with an angle that is not a number", () => {
+        it.each(["from", "to"] as const)("should refuse %s when it is not finite", name => {
+            // Act & Assert
+            expect(() => math.shortestAngle({ from: 0, to: 90, fullTurn: 360, [name]: Number.NaN })).toThrow(expect.objectContaining({ property: name }));
+        });
+    });
+
+    describe("niceStep beyond the largest number", () => {
+        it("should refuse a number whose step up is too large to hold", () => {
+            // Act & Assert
+            expect(() => math.niceStep({ number: 1.7e308, direction: Inputs.Math.niceStepDirectionEnum.up })).toThrow(InputError);
+        });
+    });
+
     describe("niceStep", () => {
         it("should round 0.37 up, down and to the nearest step", () => {
             // Act

@@ -97,6 +97,7 @@ export class MathBitByBit {
     /**
      * Rounds a number to a given number of decimal places.
      *
+     * A small negative number rounds to 0, never to -0.
      * Example: 1.32156 to 3 places -> 1.322
      * @param inputs - The number and how many decimal places to keep
      * @returns The rounded number
@@ -990,14 +991,19 @@ export class MathBitByBit {
         if (!(resolved.fullTurn > 0 && Number.isFinite(resolved.fullTurn))) {
             throw new InputError(`\`fullTurn\` is ${String(resolved.fullTurn)}, and has to be a positive finite number.`, "fullTurn");
         }
+        const notFinite = (["from", "to"] as const).find(name => !Number.isFinite(resolved[name]));
+        if (notFinite !== undefined) {
+            throw new InputError(`\`${notFinite}\` is ${String(resolved[notFinite])}, not a finite number.`, notFinite);
+        }
         return shortestAngle(resolved.from, resolved.to, resolved.fullTurn);
     }
 
     /**
-     * Rounds a positive number to a step on the 1, 2, 5 scale - 0.1, 0.2, 0.5, 1, 2, 5, 10 and on -
-     * the sizes a grid, a ruler or a slider reads well in.
+     * Rounds a positive number to a step on the 1, 2, 5 scale - 0.1, 0.2, 0.5, 1, 2, 5, 10 - the
+     * sizes a grid, a ruler or a slider reads well in.
      *
-     * Example: 0.37 up -> 0.5, 0.37 down -> 0.2, 0.37 nearest -> 0.5, 1.3 nearest -> 1
+     * A number within a billionth of a step counts as that step.
+     * Example: 0.37 up -> 0.5, down -> 0.2, nearest -> 0.5
      * @param inputs - The number and which way to round it
      * @returns The step
      * @group operations
@@ -1013,7 +1019,11 @@ export class MathBitByBit {
         if (!(resolved.number > 0 && Number.isFinite(resolved.number))) {
             throw new InputError(`\`number\` is ${String(resolved.number)}, and has to be a positive finite number.`, "number");
         }
-        return niceStep(resolved.number, resolved.direction);
+        const step = niceStep(resolved.number, resolved.direction);
+        if (!Number.isFinite(step)) {
+            throw new InputError(`\`number\` is ${String(resolved.number)}, too large to round to a step.`, "number");
+        }
+        return step;
     }
 
     /**

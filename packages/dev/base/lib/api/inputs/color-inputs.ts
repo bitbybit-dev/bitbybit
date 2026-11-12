@@ -49,10 +49,11 @@ export namespace Color {
          */
         color?: Base.Color | undefined = "#0000ff";
         /**
-         * How opaque the color is, from 0 for fully transparent to 1 for solid.
+         * How opaque the color is, from 0 for fully transparent to 1 for solid; a value outside that is held
+         * at the nearer end.
          * @default 0.5
-         * @minimum 0
-         * @maximum 1
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 0.05
          */
         alpha?: number | undefined = 0.5;
@@ -76,18 +77,20 @@ export namespace Color {
          */
         hue?: number | undefined = 210;
         /**
-         * How strong the color is, from 0 for grey to 1 for the purest hue.
+         * How strong the color is, from 0 for grey to 1 for the purest hue; a value outside that is held at
+         * the nearer end.
          * @default 0.6
-         * @minimum 0
-         * @maximum 1
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 0.05
          */
         saturation?: number | undefined = 0.6;
         /**
-         * How light the color is, from 0 for black through 0.5 for the full hue to 1 for white.
+         * How light the color is, from 0 for black through 0.5 for the full hue to 1 for white; a value
+         * outside that is held at the nearer end.
          * @default 0.5
-         * @minimum 0
-         * @maximum 1
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 0.05
          */
         lightness?: number | undefined = 0.5;

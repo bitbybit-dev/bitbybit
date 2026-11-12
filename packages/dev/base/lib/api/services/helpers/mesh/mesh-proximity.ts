@@ -1,7 +1,7 @@
-import { cross3, dot3, subtract3 } from "../geometry/vectors";
+import { add3, cross3, dot3, scale3, subtract3 } from "../geometry/vectors";
 import type * as Inputs from "../../../inputs";
 import type { TreeBox, TriangleTree } from "../helper-types";
-import { FLAT_SHARE, LEAF_TRIANGLES, PARALLEL, POINT_SHARE, PRUNE_SLACK, RAY_DIRECTIONS, WELD_SHARE } from "./mesh-proximity.constants";
+import { FLAT_SHARE, LEAF_TRIANGLES, TRIANGLE_SIDES, PARALLEL, POINT_SHARE, PRUNE_SLACK, RAY_DIRECTIONS, WELD_SHARE } from "./mesh-proximity.constants";
 import { windingComponents } from "./mesh-orientation";
 import { uniqueVectors } from "../geometry/vector-grid";
 
@@ -131,52 +131,44 @@ function segmentsSquared(p1: Vec, q1: Vec, p2: Vec, q2: Vec): number {
     return dot3(gap, gap);
 }
 
-function blended(a: Vec, b: Vec, c: Vec, weights: Vec): Inputs.Base.TrianglePoint3 {
-    const [u, v, w] = weights;
-    return { point: [a[0] * u + b[0] * v + c[0] * w, a[1] * u + b[1] * v + c[1] * w, a[2] * u + b[2] * v + c[2] * w], weights };
+function nearestOnEdges(p: Vec, corners: readonly [Vec, Vec, Vec]): Inputs.Base.TrianglePoint3 {
+    let best: Inputs.Base.TrianglePoint3 | undefined;
+    let bestGap = Infinity;
+    for (let at = 0; at < TRIANGLE_SIDES; at++) {
+        const next = (at + 1) % TRIANGLE_SIDES;
+        const from = corners[at]!;
+        const run = subtract3(corners[next]!, from);
+        const length = dot3(run, run);
+        const share = length > 0 ? Math.min(1, Math.max(0, dot3(subtract3(p, from), run) / length)) : 0;
+        const point = add3(from, scale3(run, share));
+        const away = subtract3(p, point);
+        const gap = dot3(away, away);
+        if (best === undefined || gap < bestGap) {
+            const weights: Vec = [0, 0, 0];
+            weights[at] = 1 - share;
+            weights[next] = share;
+            best = { point, weights };
+            bestGap = gap;
+        }
+    }
+    return best!;
 }
 
 export function closestOnTriangle(p: Vec, a: Vec, b: Vec, c: Vec): Inputs.Base.TrianglePoint3 {
     const ab = subtract3(b, a);
     const ac = subtract3(c, a);
-    const ap = subtract3(p, a);
-    const d1 = dot3(ab, ap);
-    const d2 = dot3(ac, ap);
-    if (d1 <= 0 && d2 <= 0) {
-        return blended(a, b, c, [1, 0, 0]);
+    const facing = cross3(ab, ac);
+    const area = dot3(facing, facing);
+    if (area > FLAT_SHARE * dot3(ab, ab) * dot3(ac, ac)) {
+        const foot = subtract3(p, scale3(facing, dot3(facing, subtract3(p, a)) / area));
+        const u = dot3(cross3(subtract3(b, foot), subtract3(c, foot)), facing) / area;
+        const v = dot3(cross3(subtract3(c, foot), subtract3(a, foot)), facing) / area;
+        const w = 1 - u - v;
+        if (u >= 0 && v >= 0 && w >= 0) {
+            return { point: foot, weights: [u, v, w] };
+        }
     }
-    const bp = subtract3(p, b);
-    const d3 = dot3(ab, bp);
-    const d4 = dot3(ac, bp);
-    if (d3 >= 0 && d4 <= d3) {
-        return blended(a, b, c, [0, 1, 0]);
-    }
-    const vc = d1 * d4 - d3 * d2;
-    if (vc <= 0 && d1 >= 0 && d3 <= 0) {
-        const v = d1 / (d1 - d3);
-        return blended(a, b, c, [1 - v, v, 0]);
-    }
-    const cp = subtract3(p, c);
-    const d5 = dot3(ab, cp);
-    const d6 = dot3(ac, cp);
-    if (d6 >= 0 && d5 <= d6) {
-        return blended(a, b, c, [0, 0, 1]);
-    }
-    const vb = d5 * d2 - d1 * d6;
-    if (vb <= 0 && d2 >= 0 && d6 <= 0) {
-        const w = d2 / (d2 - d6);
-        return blended(a, b, c, [1 - w, 0, w]);
-    }
-    const va = d3 * d6 - d5 * d4;
-    if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0) {
-        const w = (d4 - d3) / (d4 - d3 + (d5 - d6));
-        return blended(a, b, c, [0, 1 - w, w]);
-    }
-    const total = va + vb + vc;
-    if (!(total > FLAT_SHARE * dot3(ab, ab) * dot3(ac, ac))) {
-        return blended(a, b, c, [1, 0, 0]);
-    }
-    return blended(a, b, c, [1 - (vb + vc) / total, vb / total, vc / total]);
+    return nearestOnEdges(p, [a, b, c]);
 }
 
 function pointTriangleSquared(p: Vec, a: Vec, b: Vec, c: Vec): number {

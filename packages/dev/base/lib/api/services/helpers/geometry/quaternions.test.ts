@@ -70,6 +70,17 @@ describe("quaternions", () => {
         close(quaternionTurned(quaternionOfDegrees(downAngles), [1, 2, 3]), quaternionTurned(down, [1, 2, 3]), 9);
     });
 
+    it("should read angles a thousandth of a degree from the gimbal back as given, not snapped to it", () => {
+        // Arrange
+        const angles: Vec3 = [30, 89.999, 40];
+
+        // Act
+        const read = degreesOfQuaternion(quaternionOfDegrees(angles));
+
+        // Assert
+        close(read, angles, 6);
+    });
+
     it.each<[string, Quaternion]>([
         ["a small turn", quaternionOfDegrees([10, 20, 30])],
         ["a half turn about X", quaternionAbout([1, 0, 0], 180)],

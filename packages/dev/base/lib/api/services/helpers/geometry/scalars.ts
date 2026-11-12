@@ -40,7 +40,7 @@ export function shortestAngle(from: number, to: number, fullTurn: number): numbe
 }
 
 function niceValue(mantissa: number, exponent: number): number {
-    return exponent >= 0 ? mantissa * Math.pow(DECIMAL_BASE, exponent) : mantissa / Math.pow(DECIMAL_BASE, -exponent);
+    return Number(`${String(mantissa)}e${String(exponent)}`);
 }
 
 export function niceStep(value: number, direction: `${Inputs.Math.niceStepDirectionEnum}`): number {

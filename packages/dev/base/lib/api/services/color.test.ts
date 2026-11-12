@@ -217,6 +217,11 @@ describe("Color unit tests", () => {
             expect(hex).toBe("#3380cc");
         });
 
+        it.each(["hue", "saturation", "lightness"] as const)("should name %s when it is the one that is not a number", name => {
+            // Act & Assert
+            expect(() => color.hslToHex({ hue: 0, saturation: 1, lightness: 0.5, [name]: Number.NaN })).toThrow(expect.objectContaining({ property: name }));
+        });
+
         it("should refuse a hue that is not a number", () => {
             // Act & Assert
             expect(() => color.hslToHex({ hue: Number.NaN, saturation: 1, lightness: 0.5 })).toThrow(InputError);

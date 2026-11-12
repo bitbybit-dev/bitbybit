@@ -471,8 +471,8 @@ export class Transforms {
      * Reads a quaternion back as the three angles in degrees that `quaternionFromEuler` takes,
      * about X, then Y, then Z.
      *
-     * The Y angle stays between -90 and 90; at either end, where X and Z turn about one line, X is 0
-     * and Z takes the whole turn.
+     * Y stays between -90 and 90. Within a ten-thousandth of a degree of either end, X and Z turn
+     * about one line, so X is 0 and Z takes the whole turn.
      * Example: [0, 0, 0.7071, 0.7071] -> [0, 0, 90]
      * @param inputs - The rotation
      * @returns The angles about X, Y and Z

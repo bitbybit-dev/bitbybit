@@ -53,7 +53,8 @@ export namespace Math {
     }
     /**
      * Which way a value moves to reach a step on the 1, 2, 5 scale: `up` to the smallest step at or
-     * above it, `down` to the largest at or below it, `nearest` to the closest by ratio.
+     * above it, `down` to the largest at or below it, `nearest` to the closest by ratio. A value within
+     * a billionth of a step counts as that step.
      */
     export enum niceStepDirectionEnum {
         up = "up",
@@ -629,7 +630,7 @@ export namespace Math {
             if (fullTurn !== undefined) { this.fullTurn = fullTurn; }
         }
         /**
-         * The angle the turn starts from.
+         * The angle the turn starts from, in the unit `fullTurn` sets.
          * @default 10
          * @minimum -Infinity
          * @maximum Infinity

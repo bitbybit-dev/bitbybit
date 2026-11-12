@@ -205,8 +205,9 @@ export class Color {
      */
     hslToHex(inputs: Inputs.Color.HslDto): Inputs.Base.Color {
         const resolved = resolveDto(Inputs.Color.HslDto, inputs) as Resolved.Color.HslDto;
-        if (![resolved.hue, resolved.saturation, resolved.lightness].every(Number.isFinite)) {
-            throw new InputError(`hue ${String(resolved.hue)}, saturation ${String(resolved.saturation)} and lightness ${String(resolved.lightness)} have to be finite numbers.`, "hue");
+        const notFinite = (["hue", "saturation", "lightness"] as const).find(name => !Number.isFinite(resolved[name]));
+        if (notFinite !== undefined) {
+            throw new InputError(`\`${notFinite}\` is ${String(resolved[notFinite])}, not a finite number.`, notFinite);
         }
         const held = (value: number): number => this.math.clamp({ number: value, min: 0, max: 1 });
         const [r, g, b] = hslChannels(resolved.hue, held(resolved.saturation), held(resolved.lightness));

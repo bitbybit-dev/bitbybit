@@ -258,7 +258,7 @@ describe("closestOnTriangle", () => {
         const found = closestOnTriangle([0.25 * scale, 0.25 * scale, 1], [0, 0, 0], [scale, 0, 0], [0, scale, 0]);
 
         // Assert
-        close(found.point.map(value => value / scale), [0.25, 0.25, 0]);
+        found.point.forEach((value, at) => expect(value).toBeCloseTo([0.25 * scale, 0.25 * scale, 0][at]!, 15));
         close(found.weights, [0.5, 0.25, 0.25]);
     });
 
@@ -291,5 +291,66 @@ describe("closestOnTriangle", () => {
             weights.forEach(weight => expect(weight).toBeGreaterThanOrEqual(0));
             close(point, [0, 1, 2].map(axis => corners[0][axis]! * weights[0] + corners[1][axis]! * weights[1] + corners[2][axis]! * weights[2]));
         }
+    });
+
+    it.each<[string, [number, number, number][], [number, number, number]]>([
+        ["first two", [[0, 0, 0], [0, 0, 0], [0, 2, 0]], [0, 1, 0]],
+        ["last two", [[0, 0, 0], [0, 2, 0], [0, 2, 0]], [0, 1, 0]],
+        ["first and last", [[0, 2, 0], [0, 0, 0], [0, 2, 0]], [0, 1, 0]],
+        ["three", [[0, 1, 0], [0, 1, 0], [0, 1, 0]], [0, 1, 0]],
+    ])("should treat a triangle whose %s corners meet as what is left of it", (_name, corners, nearest) => {
+        // Act
+        const found = closestOnTriangle([0.5, 1, 0], corners[0]!, corners[1]!, corners[2]!);
+
+        // Assert
+        close(found.point, nearest);
+        expect(found.weights.every(Number.isFinite)).toBe(true);
+        expect(found.weights[0] + found.weights[1] + found.weights[2]).toBeCloseTo(1, 12);
+    });
+
+    it("should drop a point onto a sliver a hundred-millionth wide, not onto a far point of its edge", () => {
+        // Act
+        const found = closestOnTriangle([0.3, 2e-9, 1e-9], [0, 0, 0], [1, 0, 0], [0.5, 1e-8, 0]);
+
+        // Assert
+        found.point.forEach((value, at) => expect(value).toBeCloseTo([0.3, 2e-9, 0][at]!, 15));
+    });
+
+    it("should find no point of the triangle nearer than the one it gives, for any triangle, slivers included", () => {
+        // Arrange
+        let seed = 7;
+        const random = (): number => {
+            seed = (seed * 16807) % 2147483647;
+            return seed / 2147483647 - 0.5;
+        };
+        const triple = (scale: number): [number, number, number] => [random() * scale, random() * scale, random() * scale];
+        const cases = Array.from({ length: 300 }, (_unused, index) => {
+            const a = triple(2);
+            const b = triple(2);
+            const thin = index % 3 === 0 ? 10 ** -(3 + (index % 7)) : 1;
+            const c: [number, number, number] = [a[0] + (b[0] - a[0]) * 0.4 + random() * thin, a[1] + (b[1] - a[1]) * 0.4 + random() * thin, a[2] + (b[2] - a[2]) * 0.4 + random() * thin];
+            return { p: triple(3), a, b, c };
+        });
+
+        // Act
+        const misses = cases.filter(({ p, a, b, c }) => {
+            const found = closestOnTriangle(p, a, b, c);
+            const gap = Math.hypot(p[0] - found.point[0], p[1] - found.point[1], p[2] - found.point[2]);
+            const steps = 60;
+            let nearest = Infinity;
+            for (let i = 0; i <= steps; i++) {
+                for (let j = 0; i + j <= steps; j++) {
+                    const [u, v] = [i / steps, j / steps];
+                    const w = 1 - u - v;
+                    const q = [a[0] * w + b[0] * u + c[0] * v, a[1] * w + b[1] * u + c[1] * v, a[2] * w + b[2] * u + c[2] * v];
+                    nearest = Math.min(nearest, Math.hypot(p[0] - q[0]!, p[1] - q[1]!, p[2] - q[2]!));
+                }
+            }
+            const onTriangle = found.weights.every(weight => weight >= -1e-9) && Math.abs(found.weights[0] + found.weights[1] + found.weights[2] - 1) < 1e-9;
+            return !onTriangle || gap > nearest + 1e-12;
+        });
+
+        // Assert
+        expect(misses).toHaveLength(0);
     });
 });

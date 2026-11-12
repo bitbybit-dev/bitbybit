@@ -280,7 +280,7 @@ export namespace Transforms {
             if (angle !== undefined) { this.angle = angle; }
         }
         /**
-         * The direction to turn about; its length does not matter.
+         * The direction to turn about; any length but 0.
          * @default [0, 0, 1]
          */
         axis?: Base.Vector3 | undefined = [0, 0, 1];

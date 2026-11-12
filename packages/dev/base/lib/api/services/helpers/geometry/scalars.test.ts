@@ -72,6 +72,22 @@ describe("scalar helpers", () => {
         expect(steps).toEqual([0.5, 5, 5, 5, 10, 1000, 1000, 0.0005, 0.0002]);
     });
 
+    it("should give each step exactly as its decimal is written, from the smallest numbers to the largest", () => {
+        // Act
+        const steps = [niceStep(3e-6, "up"), niceStep(2e-23, "up"), niceStep(3e-30, "down"), niceStep(1e-310, "down"), niceStep(3e40, "up")];
+
+        // Assert
+        expect(steps).toEqual([5e-6, 2e-23, 2e-30, 1e-310, 5e40]);
+    });
+
+    it("should count a number within a billionth of a step as that step, and one further off as past it", () => {
+        // Act
+        const steps = [niceStep(1.0000000001, "up"), niceStep(1.000001, "up"), niceStep(4.9999999999, "down"), niceStep(4.9999, "down")];
+
+        // Assert
+        expect(steps).toEqual([1, 2, 5, 2]);
+    });
+
     it("should round down to the largest step at or below a number, ignoring rounding noise", () => {
         // Act
         const steps = [0.37, 9.99, 1, 0.0049999999999, 25, 0.07].map(value => niceStep(value, "down"));
