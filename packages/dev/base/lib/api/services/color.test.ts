@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { Color } from "./color";
 import { MathBitByBit } from "./math";
 import * as Inputs from "../inputs";
+import { InputError } from "../kernel-calls";
 import { linearToSrgb, srgbToLinear } from "../color-space";
 
 describe("Color unit tests", () => {
@@ -146,6 +147,79 @@ describe("Color unit tests", () => {
 
             // Assert
             expect(result).toEqual({ r: 1, g: 0.5, b: 0 });
+        });
+    });
+
+    describe("hexToRgb with three digits", () => {
+        it("should read each digit as a pair", () => {
+            // Act
+            const rgb = color.hexToRgb({ color: "#f53" });
+
+            // Assert
+            expect(rgb).toEqual({ r: 255, g: 85, b: 51 });
+        });
+    });
+
+    describe("hexToRgba", () => {
+        it("should write a hex color and an opacity as a CSS rgba color", () => {
+            // Act
+            const css = color.hexToRgba({ color: "#ff5733", alpha: 0.5 });
+
+            // Assert
+            expect(css).toBe("rgba(255, 87, 51, 0.5)");
+        });
+
+        it("should hold the opacity between 0 and 1 and read three digits", () => {
+            // Act
+            const css = [color.hexToRgba({ color: "#f53", alpha: 1.5 }), color.hexToRgba({ color: "000", alpha: -1 })];
+
+            // Assert
+            expect(css).toEqual(["rgba(255, 85, 51, 1)", "rgba(0, 0, 0, 0)"]);
+        });
+
+        it("should take its defaults from the DTO", () => {
+            // Act
+            const css = color.hexToRgba({});
+
+            // Assert
+            expect(css).toBe("rgba(0, 0, 255, 0.5)");
+        });
+
+        it("should refuse an opacity that is not a number, and a text that is not a hex color", () => {
+            // Act & Assert
+            expect(() => color.hexToRgba({ color: "#ff5733", alpha: Number.NaN })).toThrow(InputError);
+            expect(() => color.hexToRgba({ color: "red", alpha: 1 })).toThrow("Invalid hex color: red");
+        });
+    });
+
+    describe("hslToHex", () => {
+        it("should write pure red, the example's blue and a grey", () => {
+            // Act
+            const hex = [color.hslToHex({ hue: 0, saturation: 1, lightness: 0.5 }), color.hslToHex({ hue: 210, saturation: 0.6, lightness: 0.5 }), color.hslToHex({ hue: 90, saturation: 0, lightness: 0.5 })];
+
+            // Assert
+            expect(hex).toEqual(["#ff0000", "#3380cc", "#808080"]);
+        });
+
+        it("should hold saturation and lightness between 0 and 1 and wrap the hue", () => {
+            // Act
+            const hex = [color.hslToHex({ hue: 480, saturation: 3, lightness: 0.5 }), color.hslToHex({ hue: 0, saturation: 1, lightness: 2 })];
+
+            // Assert
+            expect(hex).toEqual(["#00ff00", "#ffffff"]);
+        });
+
+        it("should take its defaults from the DTO", () => {
+            // Act
+            const hex = color.hslToHex({});
+
+            // Assert
+            expect(hex).toBe("#3380cc");
+        });
+
+        it("should refuse a hue that is not a number", () => {
+            // Act & Assert
+            expect(() => color.hslToHex({ hue: Number.NaN, saturation: 1, lightness: 0.5 })).toThrow(InputError);
         });
     });
 

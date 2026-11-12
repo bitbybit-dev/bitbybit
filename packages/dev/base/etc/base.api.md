@@ -501,7 +501,9 @@ export class Color {
     getRedParam(inputs: Inputs_2.Color.HexDtoMapped): number;
     hexColor(inputs: Inputs_2.Color.HexDto): Inputs_2.Base.Color;
     hexToRgb(inputs: Inputs_2.Color.HexDto): Inputs_2.Base.ColorRGB;
+    hexToRgba(inputs: Inputs_2.Color.HexAlphaDto): string;
     hexToRgbMapped(inputs: Inputs_2.Color.HexDtoMapped): Inputs_2.Base.ColorRGB;
+    hslToHex(inputs: Inputs_2.Color.HslDto): Inputs_2.Base.Color;
     invert(inputs: Inputs_2.Color.InvertHexDto): Inputs_2.Base.Color;
     linearToSrgb(inputs: Inputs_2.Color.ChannelDto): number;
     rgb1Color(inputs: Inputs_2.Color.Rgb1Dto): Inputs_2.Base.ColorRGB;
@@ -524,6 +526,11 @@ namespace Color_2 {
         constructor(channel?: number);
         channel?: number | undefined;
     }
+    class HexAlphaDto {
+        constructor(color?: Base.Color, alpha?: number);
+        alpha?: number | undefined;
+        color?: Base.Color | undefined;
+    }
     class HexDto {
         constructor(color?: Base.Color);
         color?: Base.Color | undefined;
@@ -533,6 +540,12 @@ namespace Color_2 {
         color?: Base.Color | undefined;
         from?: number | undefined;
         to?: number | undefined;
+    }
+    class HslDto {
+        constructor(hue?: number, saturation?: number, lightness?: number);
+        hue?: number | undefined;
+        lightness?: number | undefined;
+        saturation?: number | undefined;
     }
     class InvertHexDto {
         constructor(color?: Base.Color);
@@ -606,9 +619,13 @@ namespace Color_3 {
     // (undocumented)
     type ChannelDto = WithDefaults<Inputs_2.Color.ChannelDto, "channel">;
     // (undocumented)
+    type HexAlphaDto = WithDefaults<Inputs_2.Color.HexAlphaDto, "color" | "alpha">;
+    // (undocumented)
     type HexDto = WithDefaults<Inputs_2.Color.HexDto, "color">;
     // (undocumented)
     type HexDtoMapped = WithDefaults<Inputs_2.Color.HexDtoMapped, "color" | "from" | "to">;
+    // (undocumented)
+    type HslDto = WithDefaults<Inputs_2.Color.HslDto, "hue" | "saturation" | "lightness">;
     // (undocumented)
     type InvertHexDto = WithDefaults<Inputs_2.Color.InvertHexDto, "color" | "blackAndWhite">;
     // (undocumented)

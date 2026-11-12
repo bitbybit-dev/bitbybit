@@ -9,8 +9,10 @@ import * as Inputs from "../inputs";
  */
 export namespace Color {
     export type ChannelDto = WithDefaults<Inputs.Color.ChannelDto, "channel">;
+    export type HexAlphaDto = WithDefaults<Inputs.Color.HexAlphaDto, "color" | "alpha">;
     export type HexDto = WithDefaults<Inputs.Color.HexDto, "color">;
     export type HexDtoMapped = WithDefaults<Inputs.Color.HexDtoMapped, "color" | "from" | "to">;
+    export type HslDto = WithDefaults<Inputs.Color.HslDto, "hue" | "saturation" | "lightness">;
     export type InvertHexDto = WithDefaults<Inputs.Color.InvertHexDto, "color" | "blackAndWhite">;
     export type Rgb1Dto = WithDefaults<Inputs.Color.Rgb1Dto, "colorRgb">;
     export type Rgb255Dto = WithDefaults<Inputs.Color.Rgb255Dto, "colorRgb">;

@@ -3,6 +3,8 @@ import type { MathBitByBit } from "./math";
 import { resolveDto } from "../kernel-calls";
 import type * as Resolved from "../resolved-inputs";
 import { linearToSrgb, srgbToLinear } from "./helpers/color/color-space";
+import { hexChannels, hslChannels } from "./helpers/color/color-forms";
+import { InputError } from "../kernel-calls/errors";
 
 const HEX_RADIX = 16;
 
@@ -137,8 +139,9 @@ export class Color {
     /**
      * Reads a hex color into an `{ r, g, b }` object with channels from 0 to 255.
      *
-     * The text may start with or without `#`; anything else than six hex digits throws an error.
-     * Example: '#FF5733' -> { r: 255, g: 87, b: 51 }
+     * The text holds six hex digits or three, each standing for a pair, with or without `#`;
+     * anything else throws an error.
+     * Example: '#FF5733' -> { r: 255, g: 87, b: 51 }, '#f53' -> { r: 255, g: 85, b: 51 }
      * @param inputs - The hex color
      * @returns The color object with channels from 0 to 255
      * @group convert
@@ -151,15 +154,63 @@ export class Color {
      */
     hexToRgb(inputs: Inputs.Color.HexDto): Inputs.Base.ColorRGB {
         const resolved = resolveDto(Inputs.Color.HexDto, inputs) as Resolved.Color.HexDto;
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(resolved.color);
-        if (!result) {
+        const channels = hexChannels(resolved.color);
+        if (!channels) {
             throw new Error(`Invalid hex color: ${resolved.color}`);
         }
-        return {
-            r: parseInt(result[1]!, 16),
-            g: parseInt(result[2]!, 16),
-            b: parseInt(result[3]!, 16)
-        };
+        const [r, g, b] = channels;
+        return { r, g, b };
+    }
+
+    /**
+     * Writes a hex color with an opacity as a CSS `rgba()` color, for a style that needs to see
+     * through.
+     *
+     * Example: '#ff5733' with alpha 0.5 -> 'rgba(255, 87, 51, 0.5)'
+     * @param inputs - The hex color and its opacity
+     * @returns The CSS color text
+     * @group convert
+     * @shortname hex to rgba
+     * @drawable false
+     * @example
+     * ```typescript
+     * const fill = bitbybit.color.hexToRgba({ color: "#ff5733", alpha: 0.5 });
+     * ```
+     */
+    hexToRgba(inputs: Inputs.Color.HexAlphaDto): string {
+        const resolved = resolveDto(Inputs.Color.HexAlphaDto, inputs) as Resolved.Color.HexAlphaDto;
+        if (!Number.isFinite(resolved.alpha)) {
+            throw new InputError(`\`alpha\` is ${String(resolved.alpha)}, not a finite number.`, "alpha");
+        }
+        const { r, g, b } = this.hexToRgb({ color: resolved.color });
+        const alpha = this.math.clamp({ number: resolved.alpha, min: 0, max: 1 });
+        return `rgba(${String(r)}, ${String(g)}, ${String(b)}, ${String(alpha)})`;
+    }
+
+    /**
+     * Writes a color given by hue, saturation and lightness as a hex color: a way to pick colors
+     * that differ by hue alone, such as a palette spread round the wheel.
+     *
+     * The hue wraps round; saturation and lightness are held between 0 and 1.
+     * Example: hue 0, saturation 1, lightness 0.5 -> '#ff0000'; hue 210, 0.6, 0.5 -> '#3380cc'
+     * @param inputs - The hue in degrees, the saturation and the lightness
+     * @returns The hex color
+     * @group convert
+     * @shortname hsl to hex
+     * @drawable false
+     * @example
+     * ```typescript
+     * const blue = bitbybit.color.hslToHex({ hue: 210, saturation: 0.6, lightness: 0.5 });
+     * ```
+     */
+    hslToHex(inputs: Inputs.Color.HslDto): Inputs.Base.Color {
+        const resolved = resolveDto(Inputs.Color.HslDto, inputs) as Resolved.Color.HslDto;
+        if (![resolved.hue, resolved.saturation, resolved.lightness].every(Number.isFinite)) {
+            throw new InputError(`hue ${String(resolved.hue)}, saturation ${String(resolved.saturation)} and lightness ${String(resolved.lightness)} have to be finite numbers.`, "hue");
+        }
+        const held = (value: number): number => this.math.clamp({ number: value, min: 0, max: 1 });
+        const [r, g, b] = hslChannels(resolved.hue, held(resolved.saturation), held(resolved.lightness));
+        return this.rgbToHex({ r, g, b, min: 0, max: 1 });
     }
 
     /**

@@ -1,4 +1,12 @@
 {
+    "color/color-forms.ts": {
+        "hexChannels": {
+            "exposedAs": "color.hexToRgb"
+        },
+        "hslChannels": {
+            "exposedAs": "color.hslToHex"
+        }
+    },
     "color/color-space.ts": {
         "linearToSrgb": {
             "exposedAs": "color.linearToSrgb"
