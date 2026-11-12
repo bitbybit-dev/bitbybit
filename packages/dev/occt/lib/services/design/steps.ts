@@ -17,10 +17,10 @@ import { MAX_PATTERN_COUNT, countOf, directionOf, numberOf, pointOf } from "./va
 import type { ProfileHistory } from "./helpers";
 import { bodyOf, contextOf, faceCount, faceFrame, ownerOf, profileNames } from "./helpers";
 import { squaredFrame, tripleOf, unitVector } from "./placement";
-import { FULL_TURN } from "./constants";
+import { DESIGN_SKETCH_PLANES, FULL_TURN } from "./constants";
 import { drawnGear, drawnRack, isGear, isRack } from "./gear-loop";
 import type { DrawnLoop } from "./loop-types";
-import type { Outline, PlaneAxes } from "./steps-types";
+import type { Outline } from "./steps-types";
 
 type Join = Models.OCCT.DesignJoin;
 
@@ -42,17 +42,11 @@ function commandOf(command: Models.OCCT.DesignPenCommand, path: string, paramete
     return { type, ...(id === undefined ? {} : { id }), ...(evaluatedIn(rest, path, parameters) as Record<string, unknown>) } as Models.OCCT.SketchCommand;
 }
 
-const PLANES: Record<"XY" | "XZ" | "YZ", PlaneAxes> = {
-    XY: { normal: [0, 0, 1], direction: [1, 0, 0] },
-    XZ: { normal: [0, 1, 0], direction: [1, 0, 0] },
-    YZ: { normal: [1, 0, 0], direction: [0, 1, 0] },
-};
-
 function frameOf(on: Models.OCCT.DesignSketchPlacement, host: string | undefined, path: string, run: DesignRun): Inputs.Base.Frame {
     if ("plane" in on) {
         const offset = on.offset === undefined ? 0 : numberOf(on.offset, run.parameters, pointer(path, "offset"));
-        const plane = PLANES[on.plane];
-        return { origin: tripleOf(run.base.vector.mul({ vector: plane.normal, scalar: offset })), normal: plane.normal, direction: plane.direction };
+        const plane = DESIGN_SKETCH_PLANES[on.plane];
+        return { origin: tripleOf(run.base.vector.mul({ vector: [...plane.normal], scalar: offset })), normal: [...plane.normal], direction: [...plane.direction] };
     }
     if ("frame" in on) {
         const framePath = pointer(path, "frame");

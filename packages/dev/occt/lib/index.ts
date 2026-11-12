@@ -9,3 +9,4 @@ export * from "./kernel-failures";
 export { designNumber, designParameterValues } from "./services/design/document-values";
 export { parametersIn } from "./services/design/values";
 export { faceDefaultDirection } from "./services/design/helpers";
+export { DESIGN_SKETCH_PLANES } from "./services/design/constants";

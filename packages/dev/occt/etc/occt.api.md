@@ -2154,6 +2154,22 @@ export type DerivativesResult = {
 };
 
 // @public
+export const DESIGN_SKETCH_PLANES: {
+    readonly XY: {
+        readonly normal: readonly [0, 0, 1];
+        readonly direction: readonly [1, 0, 0];
+    };
+    readonly XZ: {
+        readonly normal: readonly [0, 1, 0];
+        readonly direction: readonly [1, 0, 0];
+    };
+    readonly YZ: {
+        readonly normal: readonly [1, 0, 0];
+        readonly direction: readonly [0, 1, 0];
+    };
+};
+
+// @public
 interface DesignApis {
     // (undocumented)
     occt?: 1;
