@@ -2902,6 +2902,12 @@ interface DesignHintBox {
     min: [number, number, number];
 }
 
+// Warning: (ae-forgotten-export) The symbol "Models_2" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Inputs_2" needs to be exported by the entry point index.d.ts
+//
+// @public
+export function designHoleDiameter(fastener: Models_2.OCCT.DesignHoleFastener, unit: Inputs_2.Base.unitOfLengthEnum, parameters?: ReadonlyMap<string, number | string>): number;
+
 // @public
 interface DesignHoleFastener {
     // (undocumented)
@@ -3160,8 +3166,6 @@ interface DesignMirrorFeature extends DesignFeatureBase {
 // @public
 type DesignNumber = number | string;
 
-// Warning: (ae-forgotten-export) The symbol "Models_2" needs to be exported by the entry point index.d.ts
-//
 // @beta
 export function designNumber(value: Models_2.OCCT.DesignNumber, parameters: Readonly<Record<string, number | string>>): number;
 
@@ -8761,8 +8765,6 @@ export class OccHelper {
     //
     // (undocumented)
     readonly solidsService: SolidsService;
-    // Warning: (ae-forgotten-export) The symbol "Inputs_2" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     surfaceFromFace(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Face>): Geom_Surface;
     // Warning: (ae-forgotten-export) The symbol "TransformsService" needs to be exported by the entry point index.d.ts

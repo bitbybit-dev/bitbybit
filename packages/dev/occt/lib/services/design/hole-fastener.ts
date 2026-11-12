@@ -105,6 +105,15 @@ export function holeSizeOf(fastener: Models.OCCT.DesignHoleFastener, parameters:
         : isoHoleSize(text, fit, socket, path, unit);
 }
 
+/**
+ * The diameter of the hole a fastener asks for, in `unit`: its clearance hole for the fit, or its
+ * thread's nominal diameter when the fit is `tapped`, as a hole feature sizes it. A size written as an
+ * expression reads `parameters`; a size the standard does not list is refused.
+ */
+export function designHoleDiameter(fastener: Models.OCCT.DesignHoleFastener, unit: Inputs.Base.unitOfLengthEnum, parameters: ReadonlyMap<string, number | string> = new Map<string, number | string>()): number {
+    return holeSizeOf(fastener, parameters, "", unit).diameter;
+}
+
 export function tappedWallsOf(shape: TopoDS_Shape, faces: readonly number[], frame: Inputs.Base.Frame, radius: number, run: DesignRun): number[] {
     const signatures = faceSignatures(shape, run);
     return faces.filter(index => {
