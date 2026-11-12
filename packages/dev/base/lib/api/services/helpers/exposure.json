@@ -230,6 +230,35 @@
             "exposedAs": "polyline.orient2d"
         }
     },
+    "geometry/quaternions.ts": {
+        "degreesOfQuaternion": {
+            "exposedAs": "transforms.quaternionToEuler"
+        },
+        "isQuaternion": {
+            "internal": "the input guard the quaternion methods share"
+        },
+        "quaternionAbout": {
+            "exposedAs": "transforms.quaternionFromAxisAngle"
+        },
+        "quaternionMatrix": {
+            "exposedAs": "transforms.quaternionToMatrix"
+        },
+        "quaternionOfAxes": {
+            "exposedAs": "transforms.quaternionFromFrame"
+        },
+        "quaternionOfDegrees": {
+            "exposedAs": "transforms.quaternionFromEuler"
+        },
+        "quaternionProduct": {
+            "exposedAs": "transforms.quaternionCombine"
+        },
+        "quaternionTurned": {
+            "exposedAs": "transforms.quaternionRotateVector"
+        },
+        "unitQuaternion": {
+            "internal": "the scaling to length 1 every quaternion method applies to what it is given"
+        }
+    },
     "geometry/scalars.ts": {
         "angleOfCosine": {
             "exposedAs": "vector.angleBetween"

@@ -140,6 +140,7 @@ export namespace Base {
         isClosed?: boolean;
         color?: string | number[];
     };
+    export type Quaternion = [number, number, number, number];
     // @beta
     export interface Recipe {
         buffers: RecipeBuffers;
@@ -4144,6 +4145,13 @@ export class Transforms {
     determinant(inputs: Inputs_2.Transforms.TransformationDto): number;
     identity(): Base.TransformMatrix;
     isRigid(inputs: Inputs_2.Transforms.TransformationToleranceDto): boolean;
+    quaternionCombine(inputs: Inputs_2.Transforms.TwoQuaternionsDto): Base.Quaternion;
+    quaternionFromAxisAngle(inputs: Inputs_2.Transforms.AxisAngleDto): Base.Quaternion;
+    quaternionFromEuler(inputs: Inputs_2.Transforms.EulerAnglesDto): Base.Quaternion;
+    quaternionFromFrame(inputs: Inputs_2.Frame.FrameDto): Base.Quaternion;
+    quaternionRotateVector(inputs: Inputs_2.Transforms.QuaternionVectorDto): Base.Vector3;
+    quaternionToEuler(inputs: Inputs_2.Transforms.QuaternionDto): Base.Vector3;
+    quaternionToMatrix(inputs: Inputs_2.Transforms.QuaternionDto): Base.TransformMatrix;
     rigidInverse(inputs: Inputs_2.Transforms.TransformationDto): Base.TransformMatrixes;
     rotationCenterAxis(inputs: Inputs_2.Transforms.RotationCenterAxisDto): Base.TransformMatrixes;
     rotationCenterX(inputs: Inputs_2.Transforms.RotationCenterDto): Base.TransformMatrixes;
@@ -4161,6 +4169,24 @@ export class Transforms {
 
 // @public
 namespace Transforms_2 {
+    class AxisAngleDto {
+        constructor(axis?: Base.Vector3, angle?: number);
+        angle?: number | undefined;
+        axis?: Base.Vector3 | undefined;
+    }
+    class EulerAnglesDto {
+        constructor(angles?: Base.Vector3);
+        angles?: Base.Vector3 | undefined;
+    }
+    class QuaternionDto {
+        constructor(quaternion?: Base.Quaternion);
+        quaternion: Base.Quaternion;
+    }
+    class QuaternionVectorDto {
+        constructor(quaternion?: Base.Quaternion, vector?: Base.Vector3);
+        quaternion: Base.Quaternion;
+        vector: Base.Vector3;
+    }
     class RotationCenterAxisDto {
         constructor(angle?: number, axis?: Base.Vector3, center?: Base.Point3);
         angle?: number | undefined;
@@ -4211,6 +4237,11 @@ namespace Transforms_2 {
         constructor(translation?: Base.Vector3);
         translation?: Base.Vector3 | undefined;
     }
+    class TwoQuaternionsDto {
+        constructor(first?: Base.Quaternion, second?: Base.Quaternion);
+        first: Base.Quaternion;
+        second: Base.Quaternion;
+    }
     class UniformScaleDto {
         constructor(scale?: number);
         scale?: number | undefined;
@@ -4224,6 +4255,14 @@ namespace Transforms_2 {
 
 // @public
 namespace Transforms_3 {
+    // (undocumented)
+    type AxisAngleDto = WithDefaults<Inputs_2.Transforms.AxisAngleDto, "axis" | "angle">;
+    // (undocumented)
+    type EulerAnglesDto = WithDefaults<Inputs_2.Transforms.EulerAnglesDto, "angles">;
+    // (undocumented)
+    type QuaternionDto = Inputs_2.Transforms.QuaternionDto;
+    // (undocumented)
+    type QuaternionVectorDto = Inputs_2.Transforms.QuaternionVectorDto;
     // (undocumented)
     type RotationCenterAxisDto = WithDefaults<Inputs_2.Transforms.RotationCenterAxisDto, "angle" | "axis" | "center">;
     // (undocumented)
@@ -4244,6 +4283,8 @@ namespace Transforms_3 {
     type TranslationsXYZDto = Inputs_2.Transforms.TranslationsXYZDto;
     // (undocumented)
     type TranslationXYZDto = WithDefaults<Inputs_2.Transforms.TranslationXYZDto, "translation">;
+    // (undocumented)
+    type TwoQuaternionsDto = Inputs_2.Transforms.TwoQuaternionsDto;
     // (undocumented)
     type UniformScaleDto = WithDefaults<Inputs_2.Transforms.UniformScaleDto, "scale">;
     // (undocumented)

@@ -369,6 +369,10 @@ export namespace Text {
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace Transforms {
+    export type AxisAngleDto = WithDefaults<Inputs.Transforms.AxisAngleDto, "axis" | "angle">;
+    export type EulerAnglesDto = WithDefaults<Inputs.Transforms.EulerAnglesDto, "angles">;
+    export type QuaternionDto = Inputs.Transforms.QuaternionDto;
+    export type QuaternionVectorDto = Inputs.Transforms.QuaternionVectorDto;
     export type RotationCenterAxisDto = WithDefaults<Inputs.Transforms.RotationCenterAxisDto, "angle" | "axis" | "center">;
     export type RotationCenterDto = WithDefaults<Inputs.Transforms.RotationCenterDto, "angle" | "center">;
     export type RotationCenterYawPitchRollDto = WithDefaults<Inputs.Transforms.RotationCenterYawPitchRollDto, "yaw" | "pitch" | "roll" | "center">;
@@ -379,6 +383,7 @@ export namespace Transforms {
     export type TransformationToleranceDto = WithDefaults<Inputs.Transforms.TransformationToleranceDto, "tolerance">;
     export type TranslationsXYZDto = Inputs.Transforms.TranslationsXYZDto;
     export type TranslationXYZDto = WithDefaults<Inputs.Transforms.TranslationXYZDto, "translation">;
+    export type TwoQuaternionsDto = Inputs.Transforms.TwoQuaternionsDto;
     export type UniformScaleDto = WithDefaults<Inputs.Transforms.UniformScaleDto, "scale">;
     export type UniformScaleFromCenterDto = WithDefaults<Inputs.Transforms.UniformScaleFromCenterDto, "scale" | "center">;
 }

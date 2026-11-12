@@ -48,6 +48,13 @@ export namespace Base {
      */
     export type Vector3 = [number, number, number];
     /**
+     * A rotation as four numbers [x, y, z, w]: the axis scaled by the sine of half the angle, then
+     * the cosine of half the angle. The order glTF and the renderers store rotations in; a
+     * quaternion of length 1 is a pure rotation, and one of any other length is scaled to 1 where it
+     * is read.
+     */
+    export type Quaternion = [number, number, number, number];
+    /**
      * An axis in space: an origin point and a direction vector. Used wherever an operation needs both
      * a position and an orientation - rotating about an arbitrary line, revolving a profile, mirroring
      * across a line.

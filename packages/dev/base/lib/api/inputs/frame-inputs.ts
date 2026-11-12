@@ -127,7 +127,8 @@ export namespace Frame {
 
     /**
      * One frame, for the methods that read a frame or turn it over: `frame.origin`, `frame.normal`,
-     * `frame.direction`, `frame.yDirection`, `frame.flip` and `frame.toMatrix`.
+     * `frame.direction`, `frame.yDirection`, `frame.flip`, `frame.toMatrix` and
+     * `transforms.quaternionFromFrame`.
      */
     export class FrameDto {
         constructor(frame?: Base.Frame) {

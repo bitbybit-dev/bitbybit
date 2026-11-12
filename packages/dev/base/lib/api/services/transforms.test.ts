@@ -5,6 +5,8 @@ import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import type * as Inputs from "../inputs";
 import { UnitTestHelper } from "../unit-test-helper";
+import { InputError } from "../kernel-calls";
+import { movedPoint } from "./helpers/geometry/matrices";
 
 describe("Transforms unit tests", () => {
 
@@ -302,6 +304,97 @@ describe("Transforms unit tests", () => {
 
     });
 
+
+    describe("quaternions", () => {
+        const HALF_ROOT = Math.SQRT1_2;
+        const close = (received: readonly number[], expected: readonly number[]): void => {
+            expect(received).toHaveLength(expected.length);
+            received.forEach((value, at) => expect(value).toBeCloseTo(expected[at]!, 9));
+        };
+
+        it("should build a quarter turn about Z from an axis of any length", () => {
+            // Act
+            const quarter = transforms.quaternionFromAxisAngle({ axis: [0, 0, 3], angle: 90 });
+            const fromDefaults = transforms.quaternionFromAxisAngle({});
+
+            // Assert
+            close(quarter, [0, 0, HALF_ROOT, HALF_ROOT]);
+            close(fromDefaults, [0, 0, HALF_ROOT, HALF_ROOT]);
+        });
+
+        it.each<[number, number, number]>([[90, 0, 0], [0, 90, 0], [0, 0, 90], [10, 20, 30], [-170, 60, 95]])(
+            "should turn points from the angles %j as rotationCenterX, Y and Z applied in order do", (x, y, z) => {
+                // Arrange
+                const steps: Inputs.Base.TransformMatrix[] = [
+                    ...transforms.rotationCenterX({ center: [0, 0, 0], angle: x }),
+                    ...transforms.rotationCenterY({ center: [0, 0, 0], angle: y }),
+                    ...transforms.rotationCenterZ({ center: [0, 0, 0], angle: z }),
+                ] as Inputs.Base.TransformMatrix[];
+                const matrices = transforms.combine({ transformation: steps });
+                const point: Inputs.Base.Point3 = [1.5, -2, 0.25];
+
+                // Act
+                const turned = transforms.quaternionRotateVector({ quaternion: transforms.quaternionFromEuler({ angles: [x, y, z] }), vector: point });
+
+                // Assert
+                close(turned, movedPoint(matrices[0]!, point));
+            });
+
+        it("should read back the angles it was built from, and take a quaternion of any length", () => {
+            // Act
+            const angles = transforms.quaternionToEuler({ quaternion: transforms.quaternionFromEuler({ angles: [10, 20, 30] }) });
+            const scaled = transforms.quaternionToEuler({ quaternion: [0, 0, 5, 5] });
+
+            // Assert
+            close(angles, [10, 20, 30]);
+            close(scaled, [0, 0, 90]);
+        });
+
+        it("should combine a turn about X and then one about Z, in that order", () => {
+            // Arrange
+            const aboutX = transforms.quaternionFromAxisAngle({ axis: [1, 0, 0], angle: 90 });
+            const aboutZ = transforms.quaternionFromAxisAngle({ axis: [0, 0, 1], angle: 90 });
+
+            // Act
+            const both = transforms.quaternionCombine({ first: aboutX, second: aboutZ });
+
+            // Assert
+            close(transforms.quaternionRotateVector({ quaternion: both, vector: [0, 1, 0] }), [0, 0, 1]);
+            close(transforms.quaternionRotateVector({ quaternion: both, vector: [1, 0, 0] }), [0, 1, 0]);
+        });
+
+        it("should turn the world axes onto a frame's, squaring a rough direction first", () => {
+            // Act
+            const turn = transforms.quaternionFromFrame({ frame: { origin: [4, 5, 6], normal: [0, 0, 2], direction: [0, 1, 0.3] } });
+
+            // Assert
+            close(turn, [0, 0, HALF_ROOT, HALF_ROOT]);
+        });
+
+        it("should write a matrix that point.transformPoints applies as the quaternion turns", () => {
+            // Arrange
+            const turn = transforms.quaternionFromEuler({ angles: [-170, 60, 95] });
+
+            // Act
+            const matrix = transforms.quaternionToMatrix({ quaternion: turn });
+
+            // Assert
+            close(movedPoint(matrix, [1, 2, 3]), transforms.quaternionRotateVector({ quaternion: turn, vector: [1, 2, 3] }));
+        });
+
+        it("should refuse an axis of no length, a quaternion that is not four numbers or is all 0, and a frame whose direction runs along its normal", () => {
+            // Act & Assert
+            expect(() => transforms.quaternionFromAxisAngle({ axis: [0, 0, 0], angle: 90 })).toThrow(InputError);
+            expect(() => transforms.quaternionFromEuler({ angles: [0, Number.NaN, 0] })).toThrow(InputError);
+            expect(() => transforms.quaternionToEuler({ quaternion: [0, 0, 0, 0] })).toThrow(InputError);
+            const tooShort: number[] = [0, 0, 1];
+            expect(() => transforms.quaternionToMatrix({ quaternion: tooShort as Inputs.Base.Quaternion })).toThrow(InputError);
+            expect(() => transforms.quaternionCombine({ first: [0, 0, 0, 1], second: [0, 0, 0, 0] })).toThrow(InputError);
+            const flat: number[] = [1, 2];
+            expect(() => transforms.quaternionRotateVector({ quaternion: [0, 0, 0, 1], vector: flat as Inputs.Base.Vector3 })).toThrow(InputError);
+            expect(() => transforms.quaternionFromFrame({ frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [0, 0, 5] } })).toThrow(InputError);
+        });
+    });
 
     describe("a stretch along a direction that is not one", () => {
         it("should leave the points where they are", () => {
