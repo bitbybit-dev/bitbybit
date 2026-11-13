@@ -24,3 +24,14 @@ export const TOUCH_SHARE = 1e-3;
 export const LEAST_TOUCH = 1e-6;
 export const GEAR_NUMBERS = ["module", "teeth", "pressureAngle", "profileShift", "backlash", "addendum", "dedendum", "rootFillet", "rotation"] as const;
 export const RACK_NUMBERS = ["module", "teeth", "pressureAngle", "backlash", "addendum", "dedendum", "rootFillet", "height"] as const;
+
+/**
+ * The three base planes a sketch may be drawn on: for each, the normal it faces along and the direction
+ * its x axis takes.
+ */
+export const DESIGN_SKETCH_PLANES = {
+    XY: { normal: [0, 0, 1], direction: [1, 0, 0] },
+    XZ: { normal: [0, 1, 0], direction: [1, 0, 0] },
+    YZ: { normal: [1, 0, 0], direction: [0, 1, 0] },
+} as const;
+

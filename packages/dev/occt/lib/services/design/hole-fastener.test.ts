@@ -2,6 +2,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService } from "../../occ-service";
 import type * as Models from "../../api/models";
+import * as Inputs from "../../api/inputs";
+import { designHoleDiameter } from "./hole-fastener";
 
 type Document = Models.OCCT.DesignPartDocument;
 
@@ -175,6 +177,31 @@ describe("OCCT design: holes sized by their fastener", () => {
                 "/features/2/fastener/standard: a fastener's standard is iso, ansi",
             ]);
         });
+    });
+});
+
+describe("the diameter a fastener asks for, without a kernel", () => {
+    it("should give an M6 clearance hole for its fit, its nominal size when tapped, and an inch size in inches", () => {
+        // Act
+        const diameters = [
+            designHoleDiameter({ size: "M6" }, Inputs.Base.unitOfLengthEnum.millimetre),
+            designHoleDiameter({ size: "M6", fit: "tapped" }, Inputs.Base.unitOfLengthEnum.millimetre),
+            designHoleDiameter({ size: "M6" }, Inputs.Base.unitOfLengthEnum.inch),
+        ];
+
+        // Assert
+        expect(diameters[0]).toBeCloseTo(6.6, 9);
+        expect(diameters[1]).toBeCloseTo(6, 9);
+        expect(diameters[2]).toBeCloseTo(6.6 / 25.4, 9);
+    });
+
+    it("should read a size an expression computes from the parameters, and refuse one the standard does not list", () => {
+        // Act
+        const parametered = designHoleDiameter({ size: { expr: "screw" } }, Inputs.Base.unitOfLengthEnum.millimetre, new Map([["screw", "M6"]]));
+
+        // Assert
+        expect(parametered).toBeCloseTo(6.6, 9);
+        expect(() => designHoleDiameter({ size: "M7" }, Inputs.Base.unitOfLengthEnum.millimetre)).toThrow();
     });
 });
 

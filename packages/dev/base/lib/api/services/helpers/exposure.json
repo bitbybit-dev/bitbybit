@@ -1,4 +1,12 @@
 {
+    "color/color-forms.ts": {
+        "hexChannels": {
+            "exposedAs": "color.hexToRgb"
+        },
+        "hslChannels": {
+            "exposedAs": "color.hslToHex"
+        }
+    },
     "color/color-space.ts": {
         "linearToSrgb": {
             "exposedAs": "color.linearToSrgb"
@@ -222,6 +230,35 @@
             "exposedAs": "polyline.orient2d"
         }
     },
+    "geometry/quaternions.ts": {
+        "degreesOfQuaternion": {
+            "exposedAs": "transforms.quaternionToEuler"
+        },
+        "isQuaternion": {
+            "internal": "the input guard the quaternion methods share"
+        },
+        "quaternionAbout": {
+            "exposedAs": "transforms.quaternionFromAxisAngle"
+        },
+        "quaternionMatrix": {
+            "exposedAs": "transforms.quaternionToMatrix"
+        },
+        "quaternionOfAxes": {
+            "exposedAs": "transforms.quaternionFromFrame"
+        },
+        "quaternionOfDegrees": {
+            "exposedAs": "transforms.quaternionFromEuler"
+        },
+        "quaternionProduct": {
+            "exposedAs": "transforms.quaternionCombine"
+        },
+        "quaternionTurned": {
+            "exposedAs": "transforms.quaternionRotateVector"
+        },
+        "unitQuaternion": {
+            "internal": "the scaling to length 1 every quaternion method applies to what it is given"
+        }
+    },
     "geometry/scalars.ts": {
         "angleOfCosine": {
             "exposedAs": "vector.angleBetween"
@@ -238,11 +275,17 @@
         "interpolated": {
             "exposedAs": "math.lerp"
         },
+        "niceStep": {
+            "exposedAs": "math.niceStep"
+        },
         "radiansOf": {
             "exposedAs": "math.degToRad"
         },
         "roundedTo": {
             "exposedAs": "math.roundToDecimals"
+        },
+        "shortestAngle": {
+            "exposedAs": "math.shortestAngle"
         },
         "roundedToMillionths": {
             "internal": "the six places the engineering size tables are rounded to; `math.roundToDecimals` is the general form"
@@ -362,6 +405,9 @@
         }
     },
     "mesh/mesh-proximity.ts": {
+        "closestOnTriangle": {
+            "exposedAs": "mesh.closestPointOnTriangle"
+        },
         "pointInTree": {
             "exposedAs": "mesh.isPointInside"
         },

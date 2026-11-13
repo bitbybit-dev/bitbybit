@@ -52,6 +52,16 @@ export namespace Math {
         degToRad = "degToRad",
     }
     /**
+     * Which way a value moves to reach a step on the 1, 2, 5 scale: `up` to the smallest step at or
+     * above it, `down` to the largest at or below it, `nearest` to the closest by ratio. A value within
+     * a billionth of a step counts as that step.
+     */
+    export enum niceStepDirectionEnum {
+        up = "up",
+        down = "down",
+        nearest = "nearest",
+    }
+    /**
      * The easing curve applied when interpolating between two values, in the usual in/out/inOut
      * families - sine, quadratic, cubic, quartic, quintic, exponential and the rest. Governs how an
      * animated or blended value accelerates: easeInOut starts and ends gently, easeIn only starts
@@ -609,6 +619,65 @@ export namespace Math {
          * @step 0.01
          */
         maxDelta?: number | undefined = 0.1;
+    }
+    /**
+     * Two angles and the size of a whole turn for `math.shortestAngle`.
+     */
+    export class ShortestAngleDto {
+        constructor(from?: number, to?: number, fullTurn?: number) {
+            if (from !== undefined) { this.from = from; }
+            if (to !== undefined) { this.to = to; }
+            if (fullTurn !== undefined) { this.fullTurn = fullTurn; }
+        }
+        /**
+         * The angle the turn starts from, in the unit `fullTurn` sets.
+         * @default 10
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        from?: number | undefined = 10;
+        /**
+         * The angle to arrive at, in the same unit as `from`; any number of whole turns may be added
+         * to it without changing the answer.
+         * @default 350
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        to?: number | undefined = 350;
+        /**
+         * How large a whole turn is in the unit the angles use: 360 for degrees, two pi for radians.
+         * @default 360
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 1
+         */
+        fullTurn?: number | undefined = 360;
+    }
+    /**
+     * A positive number and a direction for `math.niceStep`.
+     */
+    export class NiceStepDto {
+        constructor(number?: number, direction?: niceStepDirectionEnum) {
+            if (number !== undefined) { this.number = number; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
+        /**
+         * The rough size to turn into a step, such as a span divided by the number of ticks wanted.
+         * @default 0.37
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.01
+         */
+        number?: number | undefined = 0.37;
+        /**
+         * Whether the step may be larger than `number`, smaller, or whichever is closer.
+         * @default up
+         */
+        direction?: niceStepDirectionEnum | undefined = niceStepDirectionEnum.up;
     }
     /**
      * An expression written as text for `math.evalArithmetic`.

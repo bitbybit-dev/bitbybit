@@ -3,7 +3,7 @@ import type { Polyline } from "./polyline";
 import type { Vector } from "./vector";
 import { InputError, resolveDto } from "../kernel-calls";
 import { signedVolumeOf } from "./helpers/mesh/mesh-measures";
-import { pointInTree, treesNested, treesWithin, triangleTree } from "./helpers/mesh/mesh-proximity";
+import { closestOnTriangle, pointInTree, treesNested, treesWithin, triangleTree } from "./helpers/mesh/mesh-proximity";
 import type { MeshArrays, TriangleTree } from "./helpers/helper-types";
 import { triangulateFace } from "./helpers/geometry/triangulation";
 import { frustum, icosphere } from "./helpers/mesh/mesh-primitives";
@@ -91,6 +91,33 @@ export class MeshBitByBit {
      */
     signedDistanceToPlane(inputs: Inputs.Mesh.SignedDistanceFromPlaneToPointDto): number {
         return this.vector.dot({ first: inputs.plane.normal, second: inputs.point }) - inputs.plane.d;
+    }
+
+    /**
+     * Finds the point of a triangle nearest to another point, with the weight of each corner in it.
+     *
+     * Each corner times its weight, added up, gives the point; the weights add up to 1. Corners on one
+     * line act as the segment they span.
+     * Example: point [0.25,0.25,2] and triangle [[0,0,0], [1,0,0], [0,1,0]] -> { point: [0.25,0.25,0], weights: [0.5,0.25,0.25] }
+     * @param inputs - The point and the triangle
+     * @returns The nearest point and the weight of each corner in it
+     * @group traingle
+     * @shortname closest point on triangle
+     * @drawable false
+     * @example
+     * ```typescript
+     * const nearest = bitbybit.mesh.closestPointOnTriangle({ point: [0.25, 0.25, 2], triangle: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] });
+     * ```
+     */
+    closestPointOnTriangle(inputs: Inputs.Mesh.PointTriangleDto): Inputs.Base.TrianglePoint3 {
+        if (!isTriple(inputs.point)) {
+            throw new InputError("`point` has to be three finite numbers.", "point");
+        }
+        if (!Array.isArray(inputs.triangle) || inputs.triangle.length !== TRIANGLE_CORNERS || !inputs.triangle.every(isTriple)) {
+            throw new InputError("`triangle` has to be three corners of three finite numbers each.", "triangle");
+        }
+        const [a, b, c] = inputs.triangle;
+        return closestOnTriangle(inputs.point, a, b, c);
     }
 
     /**

@@ -204,14 +204,24 @@ export function connectorFrame(connector: Models.OCCT.DesignConnector, body: Bod
     return faceFrame(connector.on, origin, connector.direction, body, path, "on", run);
 }
 
-function defaultDirection(normal: Inputs.Base.Vector3, path: string): Inputs.Base.Vector3 {
+/**
+ * The x axis a frame on a flat face takes when no direction is given: X on a face whose unit normal
+ * runs along Y or Z, Y on one along X, and none for a face that is not square to a world axis, which
+ * needs a direction given.
+ */
+export function faceDefaultDirection(normal: readonly [number, number, number]): [number, number, number] | undefined {
     if (Math.abs(normal[1]) >= SQUARE || Math.abs(normal[2]) >= SQUARE) {
         return [1, 0, 0];
     }
-    if (Math.abs(normal[0]) >= SQUARE) {
-        return [0, 1, 0];
+    return Math.abs(normal[0]) >= SQUARE ? [0, 1, 0] : undefined;
+}
+
+function defaultDirection(normal: Inputs.Base.Vector3, path: string): Inputs.Base.Vector3 {
+    const direction = faceDefaultDirection(normal);
+    if (direction === undefined) {
+        throw new DesignProblem(pointer(path, "direction"), "the face is not square to a world axis, so its frame needs a direction");
     }
-    throw new DesignProblem(pointer(path, "direction"), "the face is not square to a world axis, so its frame needs a direction");
+    return direction;
 }
 
 export interface ProfileHistory {

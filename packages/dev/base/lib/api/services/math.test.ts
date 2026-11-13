@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { MathBitByBit } from "./math";
 import * as Inputs from "../inputs";
+import { InputError } from "../kernel-calls";
 
 describe("Math unit tests", () => {
     let math: MathBitByBit;
@@ -938,6 +939,67 @@ describe("Math unit tests", () => {
     it("should move backwards towards target", () => {
         const result = math.moveTowards({ current: 10, target: 0, maxDelta: 2 });
         expect(result).toEqual(8);
+    });
+
+    it("should round a small negative number to zero rather than minus zero", () => {
+        // Act
+        const rounded = math.roundToDecimals({ number: -0.0001, decimalPlaces: 2 });
+
+        // Assert
+        expect(Object.is(rounded, 0)).toBe(true);
+    });
+
+    describe("shortestAngle", () => {
+        it("should turn from 10 to 350 degrees the short way, through 0", () => {
+            // Act
+            const target = math.shortestAngle({ from: 10, to: 350, fullTurn: 360 });
+
+            // Assert
+            expect(target).toBe(-10);
+        });
+
+        it("should take its defaults from the DTO", () => {
+            // Act
+            const target = math.shortestAngle({});
+
+            // Assert
+            expect(target).toBe(-10);
+        });
+
+        it.each([0, -360, Number.NaN, Number.POSITIVE_INFINITY])("should refuse a whole turn of %s", fullTurn => {
+            // Act & Assert
+            expect(() => math.shortestAngle({ from: 0, to: 90, fullTurn })).toThrow(InputError);
+        });
+    });
+
+    describe("shortestAngle with an angle that is not a number", () => {
+        it.each(["from", "to"] as const)("should refuse %s when it is not finite", name => {
+            // Act & Assert
+            expect(() => math.shortestAngle({ from: 0, to: 90, fullTurn: 360, [name]: Number.NaN })).toThrow(expect.objectContaining({ property: name }));
+        });
+    });
+
+    describe("niceStep beyond the largest number", () => {
+        it("should refuse a number whose step up is too large to hold", () => {
+            // Act & Assert
+            expect(() => math.niceStep({ number: 1.7e308, direction: Inputs.Math.niceStepDirectionEnum.up })).toThrow(InputError);
+        });
+    });
+
+    describe("niceStep", () => {
+        it("should round 0.37 up, down and to the nearest step", () => {
+            // Act
+            const steps = [Inputs.Math.niceStepDirectionEnum.up, Inputs.Math.niceStepDirectionEnum.down, Inputs.Math.niceStepDirectionEnum.nearest]
+                .map(direction => math.niceStep({ number: 0.37, direction }));
+
+            // Assert
+            expect(steps).toEqual([0.5, 0.2, 0.5]);
+        });
+
+        it.each([0, -1, Number.NaN, Number.POSITIVE_INFINITY])("should refuse %s, which has no step", number => {
+            // Act & Assert
+            expect(() => math.niceStep({ number, direction: Inputs.Math.niceStepDirectionEnum.up })).toThrow(InputError);
+        });
     });
 
     describe("evalArithmetic", () => {

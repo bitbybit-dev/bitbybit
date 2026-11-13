@@ -43,6 +43,25 @@ export namespace Mesh {
         triangle!: Base.Triangle3;
     }
     /**
+     * A point and a triangle for `mesh.closestPointOnTriangle`.
+     */
+    export class PointTriangleDto {
+        constructor(point?: Base.Point3, triangle?: Base.Triangle3) {
+            if (point !== undefined) { this.point = point; }
+            if (triangle !== undefined) { this.triangle = triangle; }
+        }
+        /**
+         * The point to measure from.
+         * @default undefined
+         */
+        point!: Base.Point3;
+        /**
+         * The corners to search between, in the order the weights come back in.
+         * @default undefined
+         */
+        triangle!: Base.Triangle3;
+    }
+    /**
      * A triangle and a tolerance for `mesh.calculateTrianglePlane`.
      */
     export class TriangleToleranceDto {

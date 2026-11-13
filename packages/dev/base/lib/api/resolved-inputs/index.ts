@@ -9,8 +9,10 @@ import * as Inputs from "../inputs";
  */
 export namespace Color {
     export type ChannelDto = WithDefaults<Inputs.Color.ChannelDto, "channel">;
+    export type HexAlphaDto = WithDefaults<Inputs.Color.HexAlphaDto, "color" | "alpha">;
     export type HexDto = WithDefaults<Inputs.Color.HexDto, "color">;
     export type HexDtoMapped = WithDefaults<Inputs.Color.HexDtoMapped, "color" | "from" | "to">;
+    export type HslDto = WithDefaults<Inputs.Color.HslDto, "hue" | "saturation" | "lightness">;
     export type InvertHexDto = WithDefaults<Inputs.Color.InvertHexDto, "color" | "blackAndWhite">;
     export type Rgb1Dto = WithDefaults<Inputs.Color.Rgb1Dto, "colorRgb">;
     export type Rgb255Dto = WithDefaults<Inputs.Color.Rgb255Dto, "colorRgb">;
@@ -232,12 +234,14 @@ export namespace Math {
     export type LerpDto = WithDefaults<Inputs.Math.LerpDto, "start" | "end" | "t">;
     export type ModulusDto = WithDefaults<Inputs.Math.ModulusDto, "number" | "modulus">;
     export type MoveTowardsDto = WithDefaults<Inputs.Math.MoveTowardsDto, "current" | "target" | "maxDelta">;
+    export type NiceStepDto = WithDefaults<Inputs.Math.NiceStepDto, "number" | "direction">;
     export type NumberDto = WithDefaults<Inputs.Math.NumberDto, "number">;
     export type PingPongDto = WithDefaults<Inputs.Math.PingPongDto, "t" | "length">;
     export type RandomNumberDto = WithDefaults<Inputs.Math.RandomNumberDto, "low" | "high">;
     export type RandomNumbersDto = WithDefaults<Inputs.Math.RandomNumbersDto, "low" | "high" | "count">;
     export type RemapNumberDto = WithDefaults<Inputs.Math.RemapNumberDto, "number" | "fromLow" | "fromHigh" | "toLow" | "toHigh">;
     export type RoundToDecimalsDto = WithDefaults<Inputs.Math.RoundToDecimalsDto, "number" | "decimalPlaces">;
+    export type ShortestAngleDto = WithDefaults<Inputs.Math.ShortestAngleDto, "from" | "to" | "fullTurn">;
     export type ToFixedDto = WithDefaults<Inputs.Math.ToFixedDto, "decimalPlaces">;
     export type TwoNumbersDto = WithDefaults<Inputs.Math.TwoNumbersDto, "first" | "second">;
     export type UnitOfLengthDto = WithDefaults<Inputs.Math.UnitOfLengthDto, "unit">;
@@ -258,6 +262,7 @@ export namespace Mesh {
     export type MeshMeshToleranceDto = WithDefaults<Inputs.Mesh.MeshMeshToleranceDto, "tolerance">;
     export type MeshPointDto = Inputs.Mesh.MeshPointDto;
     export type MeshToIndexedDto = WithDefaults<Inputs.Mesh.MeshToIndexedDto, "tolerance">;
+    export type PointTriangleDto = Inputs.Mesh.PointTriangleDto;
     export type PolygonWithHolesDto = Inputs.Mesh.PolygonWithHolesDto;
     export type SignedDistanceFromPlaneToPointDto = Inputs.Mesh.SignedDistanceFromPlaneToPointDto;
     export type TriangleDto = Inputs.Mesh.TriangleDto;
@@ -364,6 +369,10 @@ export namespace Text {
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace Transforms {
+    export type AxisAngleDto = WithDefaults<Inputs.Transforms.AxisAngleDto, "axis" | "angle">;
+    export type EulerAnglesDto = WithDefaults<Inputs.Transforms.EulerAnglesDto, "angles">;
+    export type QuaternionDto = Inputs.Transforms.QuaternionDto;
+    export type QuaternionVectorDto = Inputs.Transforms.QuaternionVectorDto;
     export type RotationCenterAxisDto = WithDefaults<Inputs.Transforms.RotationCenterAxisDto, "angle" | "axis" | "center">;
     export type RotationCenterDto = WithDefaults<Inputs.Transforms.RotationCenterDto, "angle" | "center">;
     export type RotationCenterYawPitchRollDto = WithDefaults<Inputs.Transforms.RotationCenterYawPitchRollDto, "yaw" | "pitch" | "roll" | "center">;
@@ -374,6 +383,7 @@ export namespace Transforms {
     export type TransformationToleranceDto = WithDefaults<Inputs.Transforms.TransformationToleranceDto, "tolerance">;
     export type TranslationsXYZDto = Inputs.Transforms.TranslationsXYZDto;
     export type TranslationXYZDto = WithDefaults<Inputs.Transforms.TranslationXYZDto, "translation">;
+    export type TwoQuaternionsDto = Inputs.Transforms.TwoQuaternionsDto;
     export type UniformScaleDto = WithDefaults<Inputs.Transforms.UniformScaleDto, "scale">;
     export type UniformScaleFromCenterDto = WithDefaults<Inputs.Transforms.UniformScaleFromCenterDto, "scale" | "center">;
 }

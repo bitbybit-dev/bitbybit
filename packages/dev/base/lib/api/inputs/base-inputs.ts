@@ -48,6 +48,13 @@ export namespace Base {
      */
     export type Vector3 = [number, number, number];
     /**
+     * A rotation as four numbers [x, y, z, w]: the axis scaled by the sine of half the angle, then
+     * the cosine of half the angle. The order glTF and the renderers store rotations in; a
+     * quaternion of length 1 is a pure rotation, and one of any other length is scaled to 1 where it
+     * is read.
+     */
+    export type Quaternion = [number, number, number, number];
+    /**
      * An axis in space: an origin point and a direction vector. Used wherever an operation needs both
      * a position and an orientation - rotating about an arbitrary line, revolving a profile, mirroring
      * across a line.
@@ -74,6 +81,12 @@ export namespace Base {
      * flips the normal.
      */
     export type Triangle3 = [Base.Point3, Base.Point3, Base.Point3];
+    /**
+     * The point of a triangle nearest to another point, with the share of each corner in it:
+     * `point` is `weights[0]` times the first corner plus `weights[1]` times the second plus
+     * `weights[2]` times the third, and the weights add up to 1.
+     */
+    export type TrianglePoint3 = { point: Point3; weights: Vector3; };
     /**
      * A mesh as a flat list of triangles. The simplest possible mesh representation - no shared
      * vertices and no index buffer - which makes it easy to build and to reason about, at the cost of

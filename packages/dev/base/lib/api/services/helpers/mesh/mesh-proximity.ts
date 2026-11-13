@@ -1,7 +1,7 @@
-import { cross3, dot3, subtract3 } from "../geometry/vectors";
+import { add3, cross3, dot3, scale3, subtract3 } from "../geometry/vectors";
 import type * as Inputs from "../../../inputs";
 import type { TreeBox, TriangleTree } from "../helper-types";
-import { FLAT_SHARE, LEAF_TRIANGLES, PARALLEL, POINT_SHARE, PRUNE_SLACK, RAY_DIRECTIONS, WELD_SHARE } from "./mesh-proximity.constants";
+import { FLAT_SHARE, LEAF_TRIANGLES, TRIANGLE_SIDES, PARALLEL, POINT_SHARE, PRUNE_SLACK, RAY_DIRECTIONS, WELD_SHARE } from "./mesh-proximity.constants";
 import { windingComponents } from "./mesh-orientation";
 import { uniqueVectors } from "../geometry/vector-grid";
 
@@ -131,47 +131,49 @@ function segmentsSquared(p1: Vec, q1: Vec, p2: Vec, q2: Vec): number {
     return dot3(gap, gap);
 }
 
-function pointTriangleSquared(p: Vec, a: Vec, b: Vec, c: Vec): number {
+function nearestOnEdges(p: Vec, corners: readonly [Vec, Vec, Vec]): Inputs.Base.TrianglePoint3 {
+    let best: Inputs.Base.TrianglePoint3 | undefined;
+    let bestGap = Infinity;
+    for (let at = 0; at < TRIANGLE_SIDES; at++) {
+        const next = (at + 1) % TRIANGLE_SIDES;
+        const from = corners[at]!;
+        const run = subtract3(corners[next]!, from);
+        const length = dot3(run, run);
+        const share = length > 0 ? Math.min(1, Math.max(0, dot3(subtract3(p, from), run) / length)) : 0;
+        const point = add3(from, scale3(run, share));
+        const away = subtract3(p, point);
+        const gap = dot3(away, away);
+        if (best === undefined || gap < bestGap) {
+            const weights: Vec = [0, 0, 0];
+            weights[at] = 1 - share;
+            weights[next] = share;
+            best = { point, weights };
+            bestGap = gap;
+        }
+    }
+    return best!;
+}
+
+export function closestOnTriangle(p: Vec, a: Vec, b: Vec, c: Vec): Inputs.Base.TrianglePoint3 {
     const ab = subtract3(b, a);
     const ac = subtract3(c, a);
-    const ap = subtract3(p, a);
-    const d1 = dot3(ab, ap);
-    const d2 = dot3(ac, ap);
-    if (d1 <= 0 && d2 <= 0) {
-        return dot3(ap, ap);
+    const facing = cross3(ab, ac);
+    const area = dot3(facing, facing);
+    if (area > FLAT_SHARE * dot3(ab, ab) * dot3(ac, ac)) {
+        const foot = subtract3(p, scale3(facing, dot3(facing, subtract3(p, a)) / area));
+        const u = dot3(cross3(subtract3(b, foot), subtract3(c, foot)), facing) / area;
+        const v = dot3(cross3(subtract3(c, foot), subtract3(a, foot)), facing) / area;
+        const w = 1 - u - v;
+        if (u >= 0 && v >= 0 && w >= 0) {
+            return { point: foot, weights: [u, v, w] };
+        }
     }
-    const bp = subtract3(p, b);
-    const d3 = dot3(ab, bp);
-    const d4 = dot3(ac, bp);
-    if (d3 >= 0 && d4 <= d3) {
-        return dot3(bp, bp);
-    }
-    const vc = d1 * d4 - d3 * d2;
-    if (vc <= 0 && d1 >= 0 && d3 <= 0) {
-        const q = subtract3(p, along(a, ab, d1 / (d1 - d3)));
-        return dot3(q, q);
-    }
-    const cp = subtract3(p, c);
-    const d5 = dot3(ab, cp);
-    const d6 = dot3(ac, cp);
-    if (d6 >= 0 && d5 <= d6) {
-        return dot3(cp, cp);
-    }
-    const vb = d5 * d2 - d1 * d6;
-    if (vb <= 0 && d2 >= 0 && d6 <= 0) {
-        const q = subtract3(p, along(a, ac, d2 / (d2 - d6)));
-        return dot3(q, q);
-    }
-    const va = d3 * d6 - d5 * d4;
-    if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0) {
-        const q = subtract3(p, along(b, subtract3(c, b), (d4 - d3) / (d4 - d3 + (d5 - d6))));
-        return dot3(q, q);
-    }
-    const total = va + vb + vc;
-    const v = vb / total;
-    const w = vc / total;
-    const q = subtract3(p, [a[0] + ab[0] * v + ac[0] * w, a[1] + ab[1] * v + ac[1] * w, a[2] + ab[2] * v + ac[2] * w]);
-    return dot3(q, q);
+    return nearestOnEdges(p, [a, b, c]);
+}
+
+function pointTriangleSquared(p: Vec, a: Vec, b: Vec, c: Vec): number {
+    const gap = subtract3(p, closestOnTriangle(p, a, b, c).point);
+    return dot3(gap, gap);
 }
 
 function rayTriangleHit(from: Vec, direction: Vec, a: Vec, b: Vec, c: Vec): Vec | undefined {

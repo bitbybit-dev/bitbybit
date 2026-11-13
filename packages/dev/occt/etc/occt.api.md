@@ -246,6 +246,7 @@ namespace Base {
         isClosed?: boolean;
         color?: string | number[];
     };
+    type Quaternion = [number, number, number, number];
     // @beta
     interface Recipe {
         buffers: RecipeBuffers;
@@ -501,6 +502,10 @@ namespace Base {
     type TrianglePlane3 = {
         normal: Vector3;
         d: number;
+    };
+    type TrianglePoint3 = {
+        point: Point3;
+        weights: Vector3;
     };
     enum unitOfLengthEnum {
         // (undocumented)
@@ -1760,6 +1765,11 @@ namespace Color {
         constructor(channel?: number);
         channel?: number | undefined;
     }
+    class HexAlphaDto {
+        constructor(color?: Base.Color, alpha?: number);
+        alpha?: number | undefined;
+        color?: Base.Color | undefined;
+    }
     class HexDto {
         constructor(color?: Base.Color);
         color?: Base.Color | undefined;
@@ -1769,6 +1779,12 @@ namespace Color {
         color?: Base.Color | undefined;
         from?: number | undefined;
         to?: number | undefined;
+    }
+    class HslDto {
+        constructor(hue?: number, saturation?: number, lightness?: number);
+        hue?: number | undefined;
+        lightness?: number | undefined;
+        saturation?: number | undefined;
     }
     class InvertHexDto {
         constructor(color?: Base.Color);
@@ -1845,9 +1861,13 @@ namespace Color_2 {
     // (undocumented)
     type ChannelDto = WithDefaults<Inputs_3.Color.ChannelDto, "channel">;
     // (undocumented)
+    type HexAlphaDto = WithDefaults<Inputs_3.Color.HexAlphaDto, "color" | "alpha">;
+    // (undocumented)
     type HexDto = WithDefaults<Inputs_3.Color.HexDto, "color">;
     // (undocumented)
     type HexDtoMapped = WithDefaults<Inputs_3.Color.HexDtoMapped, "color" | "from" | "to">;
+    // (undocumented)
+    type HslDto = WithDefaults<Inputs_3.Color.HslDto, "hue" | "saturation" | "lightness">;
     // (undocumented)
     type InvertHexDto = WithDefaults<Inputs_3.Color.InvertHexDto, "color" | "blackAndWhite">;
     // (undocumented)
@@ -2151,6 +2171,22 @@ export type DerivativesResult = {
     d3y: number,
     d3z: number,
     isValid: boolean
+};
+
+// @public
+export const DESIGN_SKETCH_PLANES: {
+    readonly XY: {
+        readonly normal: readonly [0, 0, 1];
+        readonly direction: readonly [1, 0, 0];
+    };
+    readonly XZ: {
+        readonly normal: readonly [0, 1, 0];
+        readonly direction: readonly [1, 0, 0];
+    };
+    readonly YZ: {
+        readonly normal: readonly [1, 0, 0];
+        readonly direction: readonly [0, 1, 0];
+    };
 };
 
 // @public
@@ -2886,6 +2922,12 @@ interface DesignHintBox {
     min: [number, number, number];
 }
 
+// Warning: (ae-forgotten-export) The symbol "Models_2" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Inputs_2" needs to be exported by the entry point index.d.ts
+//
+// @public
+export function designHoleDiameter(fastener: Models_2.OCCT.DesignHoleFastener, unit: Inputs_2.Base.unitOfLengthEnum, parameters?: ReadonlyMap<string, number | string>): number;
+
 // @public
 interface DesignHoleFastener {
     // (undocumented)
@@ -3144,8 +3186,6 @@ interface DesignMirrorFeature extends DesignFeatureBase {
 // @public
 type DesignNumber = number | string;
 
-// Warning: (ae-forgotten-export) The symbol "Models_2" needs to be exported by the entry point index.d.ts
-//
 // @beta
 export function designNumber(value: Models_2.OCCT.DesignNumber, parameters: Readonly<Record<string, number | string>>): number;
 
@@ -6217,6 +6257,9 @@ interface FaceDebugInfo {
 }
 
 // @public
+export function faceDefaultDirection(normal: readonly [number, number, number]): [number, number, number] | undefined;
+
+// @public
 interface FaceSignature {
     // (undocumented)
     area: number;
@@ -8375,6 +8418,19 @@ namespace Math_2 {
         maxDelta?: number | undefined;
         target?: number | undefined;
     }
+    enum niceStepDirectionEnum {
+        // (undocumented)
+        down = "down",
+        // (undocumented)
+        nearest = "nearest",
+        // (undocumented)
+        up = "up"
+    }
+    class NiceStepDto {
+        constructor(number?: number, direction?: niceStepDirectionEnum);
+        direction?: niceStepDirectionEnum | undefined;
+        number?: number | undefined;
+    }
     class NumberDto {
         constructor(number?: number);
         number?: number | undefined;
@@ -8407,6 +8463,12 @@ namespace Math_2 {
         constructor(number?: number, decimalPlaces?: number);
         decimalPlaces?: number | undefined;
         number?: number | undefined;
+    }
+    class ShortestAngleDto {
+        constructor(from?: number, to?: number, fullTurn?: number);
+        from?: number | undefined;
+        fullTurn?: number | undefined;
+        to?: number | undefined;
     }
     class ToFixedDto {
         constructor(number?: number, decimalPlaces?: number);
@@ -8455,6 +8517,8 @@ namespace Math_3 {
     // (undocumented)
     type MoveTowardsDto = WithDefaults<Inputs_3.Math.MoveTowardsDto, "current" | "target" | "maxDelta">;
     // (undocumented)
+    type NiceStepDto = WithDefaults<Inputs_3.Math.NiceStepDto, "number" | "direction">;
+    // (undocumented)
     type NumberDto = WithDefaults<Inputs_3.Math.NumberDto, "number">;
     // (undocumented)
     type PingPongDto = WithDefaults<Inputs_3.Math.PingPongDto, "t" | "length">;
@@ -8466,6 +8530,8 @@ namespace Math_3 {
     type RemapNumberDto = WithDefaults<Inputs_3.Math.RemapNumberDto, "number" | "fromLow" | "fromHigh" | "toLow" | "toHigh">;
     // (undocumented)
     type RoundToDecimalsDto = WithDefaults<Inputs_3.Math.RoundToDecimalsDto, "number" | "decimalPlaces">;
+    // (undocumented)
+    type ShortestAngleDto = WithDefaults<Inputs_3.Math.ShortestAngleDto, "from" | "to" | "fullTurn">;
     // (undocumented)
     type ToFixedDto = WithDefaults<Inputs_3.Math.ToFixedDto, "decimalPlaces">;
     // (undocumented)
@@ -8528,6 +8594,11 @@ namespace Mesh {
         mesh: Base.Mesh3;
         tolerance?: number | undefined;
     }
+    class PointTriangleDto {
+        constructor(point?: Base.Point3, triangle?: Base.Triangle3);
+        point: Base.Point3;
+        triangle: Base.Triangle3;
+    }
     class PolygonWithHolesDto {
         constructor(points?: Base.Point3[], holes?: Base.Point3[][]);
         holes?: Base.Point3[][] | undefined;
@@ -8575,6 +8646,8 @@ namespace Mesh_2 {
     type MeshPointDto = Inputs_3.Mesh.MeshPointDto;
     // (undocumented)
     type MeshToIndexedDto = WithDefaults<Inputs_3.Mesh.MeshToIndexedDto, "tolerance">;
+    // (undocumented)
+    type PointTriangleDto = Inputs_3.Mesh.PointTriangleDto;
     // (undocumented)
     type PolygonWithHolesDto = Inputs_3.Mesh.PolygonWithHolesDto;
     // (undocumented)
@@ -8742,8 +8815,6 @@ export class OccHelper {
     //
     // (undocumented)
     readonly solidsService: SolidsService;
-    // Warning: (ae-forgotten-export) The symbol "Inputs_2" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     surfaceFromFace(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Face>): Geom_Surface;
     // Warning: (ae-forgotten-export) The symbol "TransformsService" needs to be exported by the entry point index.d.ts
@@ -14422,6 +14493,9 @@ interface OrientedBoundingBox {
     halfSizes: Base.Vector3;
 }
 
+// @public
+export function parametersIn(value: unknown, parameters: Pick<ReadonlySet<string>, "has">): Set<string>;
+
 // @public (undocumented)
 export type PartDefinitionInfo = {
     labelTag: number,
@@ -16541,6 +16615,24 @@ export interface TopTools_ListOfShape extends ClassHandle {
 
 // @public
 namespace Transforms {
+    class AxisAngleDto {
+        constructor(axis?: Base.Vector3, angle?: number);
+        angle?: number | undefined;
+        axis?: Base.Vector3 | undefined;
+    }
+    class EulerAnglesDto {
+        constructor(angles?: Base.Vector3);
+        angles?: Base.Vector3 | undefined;
+    }
+    class QuaternionDto {
+        constructor(quaternion?: Base.Quaternion);
+        quaternion: Base.Quaternion;
+    }
+    class QuaternionVectorDto {
+        constructor(quaternion?: Base.Quaternion, vector?: Base.Vector3);
+        quaternion: Base.Quaternion;
+        vector: Base.Vector3;
+    }
     class RotationCenterAxisDto {
         constructor(angle?: number, axis?: Base.Vector3, center?: Base.Point3);
         angle?: number | undefined;
@@ -16591,6 +16683,11 @@ namespace Transforms {
         constructor(translation?: Base.Vector3);
         translation?: Base.Vector3 | undefined;
     }
+    class TwoQuaternionsDto {
+        constructor(first?: Base.Quaternion, second?: Base.Quaternion);
+        first: Base.Quaternion;
+        second: Base.Quaternion;
+    }
     class UniformScaleDto {
         constructor(scale?: number);
         scale?: number | undefined;
@@ -16604,6 +16701,14 @@ namespace Transforms {
 
 // @public
 namespace Transforms_2 {
+    // (undocumented)
+    type AxisAngleDto = WithDefaults<Inputs_3.Transforms.AxisAngleDto, "axis" | "angle">;
+    // (undocumented)
+    type EulerAnglesDto = WithDefaults<Inputs_3.Transforms.EulerAnglesDto, "angles">;
+    // (undocumented)
+    type QuaternionDto = Inputs_3.Transforms.QuaternionDto;
+    // (undocumented)
+    type QuaternionVectorDto = Inputs_3.Transforms.QuaternionVectorDto;
     // (undocumented)
     type RotationCenterAxisDto = WithDefaults<Inputs_3.Transforms.RotationCenterAxisDto, "angle" | "axis" | "center">;
     // (undocumented)
@@ -16624,6 +16729,8 @@ namespace Transforms_2 {
     type TranslationsXYZDto = Inputs_3.Transforms.TranslationsXYZDto;
     // (undocumented)
     type TranslationXYZDto = WithDefaults<Inputs_3.Transforms.TranslationXYZDto, "translation">;
+    // (undocumented)
+    type TwoQuaternionsDto = Inputs_3.Transforms.TwoQuaternionsDto;
     // (undocumented)
     type UniformScaleDto = WithDefaults<Inputs_3.Transforms.UniformScaleDto, "scale">;
     // (undocumented)

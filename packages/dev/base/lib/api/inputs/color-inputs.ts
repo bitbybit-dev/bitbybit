@@ -30,10 +30,70 @@ export namespace Color {
             if (color !== undefined) { this.color = color; }
         }
         /**
-         * The color as a hex text such as `#ff5733`, with or without the `#`.
+         * The color as a hex text such as `#ff5733` or `#f53`, with or without the `#`.
          * @default #0000ff
          */
         color?: Base.Color | undefined = "#0000ff";
+    }
+    /**
+     * A hex color and an opacity for `color.hexToRgba`.
+     */
+    export class HexAlphaDto {
+        constructor(color?: Base.Color, alpha?: number) {
+            if (color !== undefined) { this.color = color; }
+            if (alpha !== undefined) { this.alpha = alpha; }
+        }
+        /**
+         * The color as a hex text such as `#ff5733` or `#f53`, with or without the `#`.
+         * @default #0000ff
+         */
+        color?: Base.Color | undefined = "#0000ff";
+        /**
+         * How opaque the color is, from 0 for fully transparent to 1 for solid; a value outside that is held
+         * at the nearer end.
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.05
+         */
+        alpha?: number | undefined = 0.5;
+    }
+    /**
+     * A hue, a saturation and a lightness for `color.hslToHex`.
+     */
+    export class HslDto {
+        constructor(hue?: number, saturation?: number, lightness?: number) {
+            if (hue !== undefined) { this.hue = hue; }
+            if (saturation !== undefined) { this.saturation = saturation; }
+            if (lightness !== undefined) { this.lightness = lightness; }
+        }
+        /**
+         * The hue in degrees round the color wheel: 0 red, 120 green, 240 blue; any angle is taken
+         * whole turns aside.
+         * @default 210
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        hue?: number | undefined = 210;
+        /**
+         * How strong the color is, from 0 for grey to 1 for the purest hue; a value outside that is held at
+         * the nearer end.
+         * @default 0.6
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.05
+         */
+        saturation?: number | undefined = 0.6;
+        /**
+         * How light the color is, from 0 for black through 0.5 for the full hue to 1 for white; a value
+         * outside that is held at the nearer end.
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.05
+         */
+        lightness?: number | undefined = 0.5;
     }
     /**
      * An `{ r, g, b }` color with channels from 0 to 255, for `color.rgb255Color`.

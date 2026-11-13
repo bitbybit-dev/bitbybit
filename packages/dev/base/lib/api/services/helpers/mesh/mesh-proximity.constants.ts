@@ -9,3 +9,4 @@ export const POINT_SHARE = 1e-12;
 export const FLAT_SHARE = 1e-28;
 export const WELD_SHARE = 1e-9;
 export const PRUNE_SLACK = 8 * Number.EPSILON;
+export const TRIANGLE_SIDES = 3;

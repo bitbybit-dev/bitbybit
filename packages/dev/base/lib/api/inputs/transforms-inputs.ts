@@ -271,4 +271,93 @@ export namespace Transforms {
          */
         tolerance?: number | undefined = 1e-7;
     }
+    /**
+     * An axis and an angle for `transforms.quaternionFromAxisAngle`.
+     */
+    export class AxisAngleDto {
+        constructor(axis?: Base.Vector3, angle?: number) {
+            if (axis !== undefined) { this.axis = axis; }
+            if (angle !== undefined) { this.angle = angle; }
+        }
+        /**
+         * The direction to turn about; any length but 0.
+         * @default [0, 0, 1]
+         */
+        axis?: Base.Vector3 | undefined = [0, 0, 1];
+        /**
+         * How far to turn, in degrees; positive is counter-clockwise when the axis points toward
+         * you.
+         * @default 90
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        angle?: number | undefined = 90;
+    }
+    /**
+     * Three angles in degrees, about X, Y and Z in turn, for `transforms.quaternionFromEuler`.
+     */
+    export class EulerAnglesDto {
+        constructor(angles?: Base.Vector3) {
+            if (angles !== undefined) { this.angles = angles; }
+        }
+        /**
+         * The turns in degrees about the X, Y and Z axes, applied in that order about the fixed
+         * world axes.
+         * @default [0, 0, 0]
+         */
+        angles?: Base.Vector3 | undefined = [0, 0, 0];
+    }
+    /**
+     * A rotation held as a quaternion, for `transforms.quaternionToEuler` and
+     * `transforms.quaternionToMatrix`.
+     */
+    export class QuaternionDto {
+        constructor(quaternion?: Base.Quaternion) {
+            if (quaternion !== undefined) { this.quaternion = quaternion; }
+        }
+        /**
+         * The rotation as [x, y, z, w]; any length but 0 is scaled to 1.
+         * @default undefined
+         */
+        quaternion!: Base.Quaternion;
+    }
+    /**
+     * Two rotations, applied one after the other, for `transforms.quaternionCombine`.
+     */
+    export class TwoQuaternionsDto {
+        constructor(first?: Base.Quaternion, second?: Base.Quaternion) {
+            if (first !== undefined) { this.first = first; }
+            if (second !== undefined) { this.second = second; }
+        }
+        /**
+         * The rotation applied first, as [x, y, z, w].
+         * @default undefined
+         */
+        first!: Base.Quaternion;
+        /**
+         * The rotation applied after it, as [x, y, z, w].
+         * @default undefined
+         */
+        second!: Base.Quaternion;
+    }
+    /**
+     * A rotation and a vector for `transforms.quaternionRotateVector`.
+     */
+    export class QuaternionVectorDto {
+        constructor(quaternion?: Base.Quaternion, vector?: Base.Vector3) {
+            if (quaternion !== undefined) { this.quaternion = quaternion; }
+            if (vector !== undefined) { this.vector = vector; }
+        }
+        /**
+         * The rotation as [x, y, z, w].
+         * @default undefined
+         */
+        quaternion!: Base.Quaternion;
+        /**
+         * The vector or point to turn about the origin.
+         * @default undefined
+         */
+        vector!: Base.Vector3;
+    }
 }

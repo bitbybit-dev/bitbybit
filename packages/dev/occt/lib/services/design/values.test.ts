@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { DesignProblem, pointer } from "./problems";
-import { countOf, directionOf, formatNumber, numberOf, parameterValues, parsed, pointOf, propertyValue, templatePieces, truthOf } from "./values";
+import { countOf, directionOf, formatNumber, numberOf, parameterValues, parametersIn, parsed, pointOf, propertyValue, templatePieces, truthOf } from "./values";
 
 const problemOf = (run: () => unknown): { path: string; message: string } => {
     try {
@@ -313,3 +313,31 @@ describe("design values", () => {
         });
     });
 });
+
+describe("the parameters a part of a document reads", () => {
+    const declared = new Set(["mm", "red", "size", "count"]);
+
+    it("should read expressions and leave names alone, so a unit or a colour reads no parameter", () => {
+        // Arrange
+        const box = { type: "operation", operation: "occt.shapes.solid.createBox", params: { width: { expr: "size * 2" }, height: "size", unit: "mm" }, color: "red", repeat: "count + 1" };
+
+        // Act
+        const reads = [...parametersIn(box, declared)].sort();
+
+        // Assert
+        expect(reads).toEqual(["count", "size"]);
+    });
+
+    it("should take the declared names as a set or as a map of their values", () => {
+        // Arrange
+        const feature = { distance: "size" };
+
+        // Act
+        const fromSet = [...parametersIn(feature, declared)];
+        const fromMap = [...parametersIn(feature, new Map([["size", 10]]))];
+
+        // Assert
+        expect([fromSet, fromMap]).toEqual([["size"], ["size"]]);
+    });
+});
+

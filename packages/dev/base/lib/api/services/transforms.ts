@@ -5,6 +5,8 @@ import type { MathBitByBit } from "./math";
 import type { Vector } from "./vector";
 import { InputError, resolveDto } from "../kernel-calls";
 import { composed, isRigidMatrix, isTransformMatrix, linearDeterminant, rigidInverse } from "./helpers/geometry/matrices";
+import { degreesOfQuaternion, isQuaternion, quaternionAbout, quaternionMatrix, quaternionOfAxes, quaternionOfDegrees, quaternionProduct, quaternionTurned, unitQuaternion } from "./helpers/geometry/quaternions";
+import { isTriple, squareFrame, unitOf } from "./helpers/geometry/frame-axes";
 import type * as Resolved from "../resolved-inputs";
 
 /**
@@ -415,6 +417,169 @@ export class Transforms {
         return [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0];
     }
 
+    /**
+     * Builds a quaternion that turns about an axis by an angle in degrees, positive
+     * counter-clockwise when the axis points toward you.
+     *
+     * A quaternion holds a rotation as four numbers with none of the gimbal lock of three angles;
+     * glTF and the renderers store rotations this way.
+     * Example: axis [0,0,1], angle 90 -> [0, 0, 0.7071, 0.7071]
+     * @param inputs - The axis and the angle in degrees
+     * @returns The rotation as [x, y, z, w]
+     * @group quaternion
+     * @shortname quaternion axis angle
+     * @drawable false
+     * @example
+     * ```typescript
+     * const quarter = bitbybit.transforms.quaternionFromAxisAngle({ axis: [0, 0, 1], angle: 90 });
+     * ```
+     */
+    quaternionFromAxisAngle(inputs: Inputs.Transforms.AxisAngleDto): Base.Quaternion {
+        const resolved = resolveDto(Inputs.Transforms.AxisAngleDto, inputs) as Resolved.Transforms.AxisAngleDto;
+        const axis = unitOf(resolved.axis);
+        if (axis === undefined || !Number.isFinite(resolved.angle)) {
+            throw new InputError("`axis` has to be three finite numbers not all 0, and `angle` a finite number.", axis === undefined ? "axis" : "angle");
+        }
+        return quaternionAbout(axis, resolved.angle);
+    }
+
+    /**
+     * Builds a quaternion from three angles in degrees: a turn about the X axis, then about Y, then
+     * about Z, each about the fixed world axes, as `rotationCenterX`, `rotationCenterY` and
+     * `rotationCenterZ` applied in that order.
+     *
+     * Example: [0, 0, 90] -> [0, 0, 0.7071, 0.7071]
+     * @param inputs - The angles about X, Y and Z
+     * @returns The rotation as [x, y, z, w]
+     * @group quaternion
+     * @shortname quaternion from euler
+     * @drawable false
+     * @example
+     * ```typescript
+     * const turn = bitbybit.transforms.quaternionFromEuler({ angles: [30, 0, 90] });
+     * ```
+     */
+    quaternionFromEuler(inputs: Inputs.Transforms.EulerAnglesDto): Base.Quaternion {
+        const resolved = resolveDto(Inputs.Transforms.EulerAnglesDto, inputs) as Resolved.Transforms.EulerAnglesDto;
+        if (!isTriple(resolved.angles)) {
+            throw new InputError("`angles` has to be three finite numbers.", "angles");
+        }
+        return quaternionOfDegrees(resolved.angles);
+    }
+
+    /**
+     * Reads a quaternion back as the three angles in degrees that `quaternionFromEuler` takes,
+     * about X, then Y, then Z.
+     *
+     * Y stays between -90 and 90. Within a ten-thousandth of a degree of either end, X and Z turn
+     * about one line, so X is 0 and Z takes the whole turn.
+     * Example: [0, 0, 0.7071, 0.7071] -> [0, 0, 90]
+     * @param inputs - The rotation
+     * @returns The angles about X, Y and Z
+     * @group quaternion
+     * @shortname quaternion to euler
+     * @drawable false
+     * @example
+     * ```typescript
+     * const angles = bitbybit.transforms.quaternionToEuler({ quaternion: [0, 0, 0.7071, 0.7071] });
+     * ```
+     */
+    quaternionToEuler(inputs: Inputs.Transforms.QuaternionDto): Base.Vector3 {
+        return degreesOfQuaternion(this.unitQuaternionOf(inputs.quaternion, "quaternion"));
+    }
+
+    /**
+     * Combines two rotations into the one that turns by `first` and then by `second`.
+     *
+     * Order matters: turning about X then Z differs from turning about Z then X.
+     * Example: a quarter turn about X, then a quarter turn about Z -> one rotation doing both
+     * @param inputs - The rotation applied first and the one applied after it
+     * @returns The combined rotation as [x, y, z, w]
+     * @group quaternion
+     * @shortname quaternion combine
+     * @drawable false
+     * @example
+     * ```typescript
+     * const both = bitbybit.transforms.quaternionCombine({ first: [0.7071, 0, 0, 0.7071], second: [0, 0, 0.7071, 0.7071] });
+     * ```
+     */
+    quaternionCombine(inputs: Inputs.Transforms.TwoQuaternionsDto): Base.Quaternion {
+        return quaternionProduct(this.unitQuaternionOf(inputs.second, "second"), this.unitQuaternionOf(inputs.first, "first"));
+    }
+
+    /**
+     * Turns a vector, or a point about the origin, by a rotation.
+     *
+     * Example: [1, 0, 0] turned by a quarter turn about Z -> [0, 1, 0]
+     * @param inputs - The rotation and the vector
+     * @returns The turned vector
+     * @group quaternion
+     * @shortname quaternion rotate vector
+     * @drawable false
+     * @example
+     * ```typescript
+     * const turned = bitbybit.transforms.quaternionRotateVector({ quaternion: [0, 0, 0.7071, 0.7071], vector: [1, 0, 0] });
+     * ```
+     */
+    quaternionRotateVector(inputs: Inputs.Transforms.QuaternionVectorDto): Base.Vector3 {
+        if (!isTriple(inputs.vector)) {
+            throw new InputError("`vector` has to be three finite numbers.", "vector");
+        }
+        return quaternionTurned(this.unitQuaternionOf(inputs.quaternion, "quaternion"), inputs.vector);
+    }
+
+    /**
+     * Gives the rotation that turns the world axes onto a frame's: X onto its direction and Z onto
+     * its normal. The origin is left out.
+     *
+     * The direction is squared to the normal first, so a rough direction is enough.
+     * Example: normal [0,0,1], direction [0,1,0] -> a quarter turn about Z
+     * @param inputs - The frame
+     * @returns The rotation as [x, y, z, w]
+     * @group quaternion
+     * @shortname quaternion from frame
+     * @drawable false
+     * @example
+     * ```typescript
+     * const turn = bitbybit.transforms.quaternionFromFrame({ frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [0, 1, 0] } });
+     * ```
+     */
+    quaternionFromFrame(inputs: Inputs.Frame.FrameDto): Base.Quaternion {
+        const axes = squareFrame(inputs.frame.origin, inputs.frame.normal, inputs.frame.direction);
+        if (typeof axes === "string") {
+            throw new InputError(`The frame's \`${axes}\` has no length, or its direction runs along its normal.`, "frame");
+        }
+        return quaternionOfAxes(axes);
+    }
+
+    /**
+     * Writes a rotation as the transformation matrix the other methods here build, so it can be
+     * applied with `point.transformPoints` or combined with moves.
+     *
+     * Example: a quarter turn about Z -> the matrix that takes [1,0,0] to [0,1,0]
+     * @param inputs - The rotation
+     * @returns The matrix, 16 numbers in column-major order
+     * @group quaternion
+     * @shortname quaternion to matrix
+     * @drawable false
+     * @example
+     * ```typescript
+     * const matrix = bitbybit.transforms.quaternionToMatrix({ quaternion: [0, 0, 0.7071, 0.7071] });
+     * const points = bitbybit.point.transformPoints({ points: [[1, 0, 0]], transformation: [matrix] });
+     * ```
+     */
+    quaternionToMatrix(inputs: Inputs.Transforms.QuaternionDto): Base.TransformMatrix {
+        return quaternionMatrix(this.unitQuaternionOf(inputs.quaternion, "quaternion"));
+    }
+
+    private unitQuaternionOf(quaternion: Base.Quaternion, name: string): Base.Quaternion {
+        const unit = isQuaternion(quaternion) ? unitQuaternion(quaternion) : undefined;
+        if (unit === undefined) {
+            throw new InputError(`\`${name}\` has to be four finite numbers, not all 0.`, name);
+        }
+        return unit;
+    }
+
     private translation(x: number, y: number, z: number) {
         return [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, x, y, z, 1.0];
     }
@@ -495,42 +660,7 @@ export class Transforms {
         const z = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
         const w = cosYaw * cosPitch * cosRoll + sinYaw * sinPitch * sinRoll;
 
-        return this.rotationMatrixFromQuat(x, y, z, w);
-    }
-
-    private rotationMatrixFromQuat(x: number, y: number, z: number, w: number) {
-        const xx = x * x;
-        const yy = y * y;
-        const zz = z * z;
-        const xy = x * y;
-        const zw = z * w;
-        const zx = z * x;
-        const yw = y * w;
-        const yz = y * z;
-        const xw = x * w;
-
-        const m = this.identity();
-
-        m[0] = 1.0 - 2.0 * (yy + zz);
-        m[1] = 2.0 * (xy + zw);
-        m[2] = 2.0 * (zx - yw);
-        m[3] = 0.0;
-
-        m[4] = 2.0 * (xy - zw);
-        m[5] = 1.0 - 2.0 * (zz + xx);
-        m[6] = 2.0 * (yz + xw);
-        m[7] = 0.0;
-
-        m[8] = 2.0 * (zx + yw);
-        m[9] = 2.0 * (yz - xw);
-        m[10] = 1.0 - 2.0 * (yy + xx);
-        m[11] = 0.0;
-
-        m[12] = 0.0;
-        m[13] = 0.0;
-        m[14] = 0.0;
-        m[15] = 1.0;
-        return m;
+        return quaternionMatrix([x, y, z, w]);
     }
 
     private stretchDirection(direction: Base.Vector3, scale: number): Base.TransformMatrix {
