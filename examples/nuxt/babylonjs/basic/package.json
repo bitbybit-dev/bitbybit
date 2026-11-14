@@ -12,8 +12,13 @@
   },
   "dependencies": {
     "@bitbybit-dev/babylonjs": "1.6.2",
-    "nuxt": "4.6.2",
+    "nuxt": "4.6.4",
     "vue": "latest",
     "vue-router": "latest"
+  },
+  "overrides": {
+    "readdir-glob": {
+      "minimatch": "^11.0.8"
+    }
   }
 }

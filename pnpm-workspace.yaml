@@ -35,5 +35,14 @@ allowBuilds:
 # The key is scoped to the 4.x range rather than left bare: a bare `js-yaml` overrides every
 # dependent whatever it asked for, so the first package here to want js-yaml 5 would silently be
 # handed a 4.x it cannot use. Scoped, the override reaches only what already asked for 4.
+#
+# minimatch 10 expands a `**/..` pattern into copies of itself and then compares every pair
+# (GHSA-g3hv-75wg-m249), and 11.0.1 is the only fix - 10.x has no patch. It reaches this
+# workspace through the lint and API tooling: eslint 10.10 and @eslint/config-array ask for ^10,
+# typescript-estree for ^10.2.2 and api-extractor for exactly 10.2.3. Every one of them calls only
+# `minimatch()`, `new Minimatch()` and `match()`, which 11 keeps (it drops makeRe, the AST class and
+# RegExp portions), so the override is scoped to 10 as js-yaml's is to 4. Drop the entry once
+# api-extractor and typescript-estree ask for 11 themselves (eslint 10.15 already does).
 overrides:
   js-yaml@4: ^4.3.2
+  minimatch@10: ^11.0.8

@@ -1,11 +1,4 @@
 {
     "//": "Advisories that check-advisories.mjs and the examples' npm audit (examples/scripts/examples.mjs audit) must not fail on, each with the reason it does not apply here. An entry that stops matching anything fails the check, so this list cannot rot: remove it when the dependency moves. Record only advisories that are unreachable or unfixable - never one that is merely inconvenient to fix.",
-    "allow": [
-        {
-            "ghsa": "GHSA-px8p-9vwx-vf98",
-            "package": "fflate",
-            "reason": "The advisory is an infinite loop in unzipSync on a malformed ZIP64 archive. The vulnerable copy reaches this repository only as @jscad/3mf-serializer's exact pin of fflate 0.7.3, and that package imports zipSync and strToU8 and nothing else - it writes 3MF archives and never unzips one, so the affected function is not reachable. No fix exists to take instead: the newest @jscad/3mf-serializer still pins 0.7.3.",
-            "reviewed": "2026-09-10"
-        }
-    ]
+    "allow": []
 }
