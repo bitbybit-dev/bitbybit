@@ -5,6 +5,7 @@ import type * as Models from "../../api/models";
 import { give, nameOf } from "./names";
 import { DesignProblem, pointer } from "./problems";
 import { release } from "../base/release";
+import { isKeptNotValid } from "../base/booleans.service";
 import type { ResolveContext } from "./references";
 import { resolveEdges, resolveFaces } from "./references";
 import type { BodyState, DesignRun } from "./state";
@@ -25,6 +26,15 @@ export function takesLengthUnit(registry: DtoRegistry, operation: string): boole
 
 export function faceCount(shape: TopoDS_Shape, run: DesignRun): number {
     return run.occ.CountSubShapes(shape, run.occ.TopAbs_ShapeEnum.FACE, false);
+}
+
+export const KEPT_NOT_VALID_NOTE = "its boolean came back not valid, and no rebuild of it was; the body is kept as it came, and a feature built on it may fail";
+
+export function notedBoolean<T extends Models.OCCT.ShapeWithHistories<TopoDS_Shape> | Models.OCCT.ShapeWithHistory<TopoDS_Shape>>(made: T, run: DesignRun): T {
+    if (isKeptNotValid(made.shape)) {
+        run.notes.push(KEPT_NOT_VALID_NOTE);
+    }
+    return made;
 }
 
 export function contextOf(body: BodyState, run: DesignRun): ResolveContext {

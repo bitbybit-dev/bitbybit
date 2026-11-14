@@ -5,7 +5,7 @@ import type { DesignOutcome } from "./cache";
 import { stableJson } from "./cache";
 import { release, releasedOnError } from "../base/release";
 import { sha256 } from "./digest";
-import { bodyOf, contextOf, faceCount, faceFrame, faceSignatures, profileNames } from "./helpers";
+import { bodyOf, contextOf, faceCount, faceFrame, faceSignatures, notedBoolean, profileNames } from "./helpers";
 import { holeSizeOf, tappedWallsOf } from "./hole-fastener";
 import { tripleOf } from "./placement";
 import type { FaceNames } from "./names";
@@ -138,7 +138,7 @@ function openedByLids(hollow: TopoDS_Shape, lids: readonly DesignShellLid[], inn
             const face = run.occt.shapes.face.getFace({ shape: inner, index: lid.face });
             tools.push(cleanedUp(() => run.occt.operations.extrude({ shape: face, direction: lid.direction }), () => release(face)));
         });
-        return run.occt.booleans.differenceWithHistory({ shape: hollow, shapes: tools, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
+        return notedBoolean(run.occt.booleans.differenceWithHistory({ shape: hollow, shapes: tools, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.inGroups }), run);
     }, () => tools.forEach(release));
 }
 
@@ -147,7 +147,7 @@ function cut(id: string, body: BodyState, open: number[], thickness: number, inn
     if (lids === undefined) {
         return "by cutting, an open face is not flat or has no inner face below it";
     }
-    const hollow = run.occt.booleans.differenceWithHistory({ shape: body.shape, shapes: [inner], keepEdges: false });
+    const hollow = notedBoolean(run.occt.booleans.differenceWithHistory({ shape: body.shape, shapes: [inner], keepEdges: false }), run);
     const { hollowNames, opened } = cleanedUp(() => {
         const hollowGiven = new Map<number, string[]>();
         hollow.histories.slice(1).forEach(history => give(hollowGiven, history.faces.flat(), nameOf(id, "inner")));

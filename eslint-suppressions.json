@@ -831,11 +831,6 @@
       "count": 2
     }
   },
-  "packages/dev/occt/lib/services/base/booleans.service.ts": {
-    "bitbybit/no-inline-object-types": {
-      "count": 1
-    }
-  },
   "packages/dev/occt/lib/services/base/converter.service.ts": {
     "@typescript-eslint/no-magic-numbers": {
       "count": 2

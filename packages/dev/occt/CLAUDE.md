@@ -127,7 +127,13 @@ repair or judge it themselves, and `shapeFix.isValid` finds it. The kernel catch
 two such kinds itself: a boolean of solids whose result is not valid, or whose volume no such boolean
 can have, is rebuilt from OCCT's split cells and refused as `occt.boolean.inconsistent` when that fails
 too; and a round pipe whose path bends tighter than its radius is refused as `occt.pipe.tooTight`
-(along lines and arcs that pipe is exact, cylinders and tori).
+(along lines and arcs that pipe is exact, cylinders and tori). A boolean the kernel keeps although
+it is not valid, because no rebuild was valid either, comes back with its shape and the alert
+`BitbybitBool_AlertInvalidResultKept`: the booleans service tags that shape (`isKeptNotValid`), and a
+design build says so on the feature's report line, from the cache too. `pipe` (and the thread
+cutter's sweep) refuses a solid that came out inside out as `occt.pipe.insideOut`: OCCT places a
+profile lying off the path at the far end when the path comes back to the profile's plane, and only
+the volume's sign tells, since the solid is valid.
 
 Two behaviours are stable and surprising, so assume the opposite at your peril:
 

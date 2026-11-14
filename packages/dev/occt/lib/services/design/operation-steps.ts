@@ -13,7 +13,7 @@ import { bodyKey } from "./state";
 import { operationPathOf } from "./format";
 import { DesignProblem, pointer, problemsAt } from "./problems";
 import { hasOnlyKey, valueOf } from "./values";
-import { bodyOf, faceCount, takesLengthUnit } from "./helpers";
+import { bodyOf, faceCount, notedBoolean, takesLengthUnit } from "./helpers";
 import type { BodyValue, UncheckedExpression } from "./steps-types";
 
 function isBodyValue(value: unknown): value is BodyValue {
@@ -159,6 +159,7 @@ function operatedWithHistory(feature: Models.OCCT.DesignOperationFeature, operat
         releaseShapesIn(result, shapes);
         return undefined;
     }
+    notedBoolean(result, run);
     const histories = "histories" in result ? result.histories : [result.history];
     const single = [inputs["shape"]].filter(isShape);
     const listed = (Array.isArray(inputs["shapes"]) ? inputs["shapes"] : []).filter(isShape);

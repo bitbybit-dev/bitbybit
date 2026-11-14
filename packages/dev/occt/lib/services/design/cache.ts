@@ -10,7 +10,7 @@ import { recentlyUsed } from "./recent";
 export type DesignOutcome = (
     | { kind: "body"; shape: TopoDS_Shape; names: FaceNames }
     | { kind: "sketch"; shape: TopoDS_Shape; commands: (string | undefined)[]; normal: [number, number, number]; frame: Inputs.Base.Frame }
-) & { rebinds?: readonly RebindEntry[] };
+) & { rebinds?: readonly RebindEntry[]; notes?: readonly string[] };
 
 /**
  * What features made, by the hash of what they were made from, so a build that meets the same

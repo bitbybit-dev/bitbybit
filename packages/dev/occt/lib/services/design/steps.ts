@@ -15,7 +15,7 @@ import { cleanedUp, cleanedUpOnError, DesignProblem, pointer } from "./problems"
 import type { DesignValues } from "./values";
 import { MAX_PATTERN_COUNT, countOf, directionOf, numberOf, pointOf } from "./values";
 import type { ProfileHistory } from "./helpers";
-import { bodyOf, contextOf, faceCount, faceFrame, ownerOf, profileNames } from "./helpers";
+import { bodyOf, contextOf, faceCount, faceFrame, notedBoolean, ownerOf, profileNames } from "./helpers";
 import { squaredFrame, tripleOf, unitVector } from "./placement";
 import { DESIGN_SKETCH_PLANES, FULL_TURN } from "./constants";
 import { drawnGear, drawnRack, isGear, isRack } from "./gear-loop";
@@ -225,11 +225,11 @@ export function withOutlines<T>(sketches: SketchState[], run: DesignRun, use: (w
 export function combined(join: Join, shape: TopoDS_Shape, tools: TopoDS_Shape[], run: DesignRun): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
     switch (join) {
         case "cut":
-            return run.occt.booleans.differenceWithHistory({ shape, shapes: tools, strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
+            return notedBoolean(run.occt.booleans.differenceWithHistory({ shape, shapes: tools, strategy: Inputs.OCCT.booleanStrategyEnum.inGroups }), run);
         case "intersect":
-            return run.occt.booleans.intersectionWithHistory({ shapes: [shape, ...tools] });
+            return notedBoolean(run.occt.booleans.intersectionWithHistory({ shapes: [shape, ...tools] }), run);
         default:
-            return run.occt.booleans.unionWithHistory({ shapes: [shape, ...tools], strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
+            return notedBoolean(run.occt.booleans.unionWithHistory({ shapes: [shape, ...tools], strategy: Inputs.OCCT.booleanStrategyEnum.inGroups }), run);
     }
 }
 
@@ -365,7 +365,7 @@ function copiesOf(count: number, copy: (index: number) => TopoDS_Shape): TopoDS_
 
 function fusedWithCopies(feature: string, body: BodyState, copies: TopoDS_Shape[], run: DesignRun): DesignOutcome {
     try {
-        const result = run.occt.booleans.unionWithHistory({ shapes: [body.shape, ...copies], strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
+        const result = notedBoolean(run.occt.booleans.unionWithHistory({ shapes: [body.shape, ...copies], strategy: Inputs.OCCT.booleanStrategyEnum.inGroups }), run);
         const sources: NamedSource[] = [
             { names: body.names, history: result.histories[0]! },
             ...copies.map((_, index): NamedSource => ({ names: copyNames(body.names, feature, index + 1), history: result.histories[index + 1]! })),
