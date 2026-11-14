@@ -20,6 +20,10 @@ export function holdsSolid(occ: BitbybitOcctModule, shape: TopoDS_Shape): boolea
     return occ.CountSubShapes(shape, occ.TopAbs_ShapeEnum.SOLID, false) > 0;
 }
 
+export function isInsideOut(occ: BitbybitOcctModule, made: TopoDS_Shape): boolean {
+    return holdsSolid(occ, made) && (occ.VolumePropertiesOfEach([made])[0] ?? 0) < -LEAST_VOLUME;
+}
+
 export function isBrokenResult(occ: BitbybitOcctModule, made: TopoDS_Shape, asSolid: boolean): boolean {
     if (made.IsNull()) {
         return true;

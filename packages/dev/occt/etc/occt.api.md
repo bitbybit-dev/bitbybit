@@ -14008,6 +14008,7 @@ export type OcctFailureDetails = {
     "occt.pipe.notValid": TrihedronFailureDetails;
     "occt.pipe.tooTight": undefined;
     "occt.pipe.bendDoesNotFit": CornerFailureDetails;
+    "occt.pipe.insideOut": undefined;
     "occt.design.crashed": DesignCrashDetails;
     "occt.recipe.failed": RecipeFailureDetails;
 };

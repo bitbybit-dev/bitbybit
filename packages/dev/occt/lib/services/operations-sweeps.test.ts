@@ -149,6 +149,77 @@ describe("OCCT evolved and scaled sweeps", () => {
         });
     });
 
+    describe("pipe placed off its path", () => {
+        const RAIL_HALF = 290;
+        const RAIL_RISE = 370;
+        const RAIL_BEND = 60;
+        const RAIL_FOOT = 20;
+        const RAIL_RADIUS = 14;
+        const BEYOND_REACH = 30;
+        const railLength = 2 * (RAIL_RISE - RAIL_BEND + RAIL_FOOT) + 2 * (RAIL_HALF - RAIL_BEND) + Math.PI * RAIL_BEND;
+        const railVolume = Math.PI * RAIL_RADIUS * RAIL_RADIUS * railLength;
+        const rail = (): TopoDS_Shape => {
+            const across = RAIL_BEND * Math.SQRT1_2;
+            const top = RAIL_RISE - RAIL_BEND;
+            const { edge } = occt.shapes;
+            return occt.shapes.wire.combineEdgesAndWiresIntoAWire({ shapes: [
+                edge.line({ start: [0, -RAIL_HALF, -RAIL_FOOT], end: [0, -RAIL_HALF, top] }),
+                edge.arcThroughThreePoints({ start: [0, -RAIL_HALF, top], middle: [0, -RAIL_HALF + RAIL_BEND - across, top + across], end: [0, -RAIL_HALF + RAIL_BEND, RAIL_RISE] }),
+                edge.line({ start: [0, -RAIL_HALF + RAIL_BEND, RAIL_RISE], end: [0, RAIL_HALF - RAIL_BEND, RAIL_RISE] }),
+                edge.arcThroughThreePoints({ start: [0, RAIL_HALF - RAIL_BEND, RAIL_RISE], middle: [0, RAIL_HALF - RAIL_BEND + across, top + across], end: [0, RAIL_HALF, top] }),
+                edge.line({ start: [0, RAIL_HALF, top], end: [0, RAIL_HALF, -RAIL_FOOT] }),
+            ] });
+        };
+        const circleBelowTheStart = (below: number): TopoDS_Shape => occt.shapes.wire.createCircleWire({ radius: RAIL_RADIUS, center: [0, -RAIL_HALF, -RAIL_FOOT - below], direction: [0, 0, 1] });
+        const insideOut = expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.insideOut" });
+
+        it("should refuse a pipe that came out inside out, its profile placed at the far end of a path that comes back to the profile's plane", () => {
+            // Arrange
+            const path = rail();
+            const profile = circleBelowTheStart(BEYOND_REACH);
+
+            // Act
+            const refusals = [
+                refusalOf(() => occt.operations.pipe({ shape: path, shapes: [profile] })),
+                refusalOf(() => occt.operations.pipeWithHistory({ shape: path, shapes: [profile] })),
+            ];
+
+            // Assert
+            expect(refusals).toEqual([insideOut, insideOut]);
+        });
+
+        it("should keep a pipe whose profile sits on the start of the path, either way round", () => {
+            // Arrange
+            const path = rail();
+            const profile = circleBelowTheStart(0);
+            const reversed = occt.shapes.wire.reversedWire({ shape: profile });
+
+            // Act
+            const pipes = [
+                occt.operations.pipe({ shape: path, shapes: [profile] }),
+                occt.operations.pipe({ shape: path, shapes: [reversed] }),
+                occt.operations.pipeWithHistory({ shape: path, shapes: [profile] }).shape,
+            ];
+
+            // Assert
+            pipes.forEach(pipe => expect(Math.abs(volumeOf(pipe) / railVolume - 1)).toBeLessThan(0.005));
+        });
+
+        it("should keep the sweep of an open profile placed at the far end, a shell with no inside to judge", () => {
+            // Arrange
+            const path = rail();
+            const z = -RAIL_FOOT - BEYOND_REACH;
+            const profile = occt.shapes.edge.arcThroughThreePoints({ start: [-RAIL_RADIUS, -RAIL_HALF, z], middle: [0, -RAIL_HALF + RAIL_RADIUS, z], end: [RAIL_RADIUS, -RAIL_HALF, z] });
+
+            // Act
+            const swept = occt.operations.pipe({ shape: path, shapes: [profile] });
+
+            // Assert
+            expect(occt.shapes.solid.getSolids({ shape: swept })).toHaveLength(0);
+            expect(occt.shapes.face.getFaces({ shape: swept }).length).toBeGreaterThan(0);
+        });
+    });
+
     describe("pipeWithScaling", () => {
         it("should grow the profile evenly between two places, holding a frustum's volume", () => {
             // Arrange
