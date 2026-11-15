@@ -284,8 +284,9 @@ export namespace Base {
         of: number;
         /**
          * The indices of what is cut away, all at once. A solid tool that ends within the recipe's
-         * `tolerance` of a side of the solid's bounding box, as the half-spaces before it leave the
-         * solid, passes through that side.
+         * `tolerance` of a face of the solid, as the half-spaces before it leave the solid, passes
+         * through that face: a side of the solid's bounding box, or a face inside it that the tool's end
+         * lies wholly on.
          */
         tools: number[];
     }
@@ -311,8 +312,9 @@ export namespace Base {
     /**
      * A host solid with openings cut through it, such as a wall with its doors' and windows' holes.
      * The same as a difference, kept apart so an executor can cut openings through flat hosts in 2D.
-     * An opening that ends within the recipe's `tolerance` of a side of the host's bounding box passes
-     * through that side, so an opening as deep as its wall cuts through it however its placement rounds.
+     * An opening that ends within the recipe's `tolerance` of a face of the host passes through that
+     * face, a side of the host's bounding box or a face inside it that the opening's end lies wholly on,
+     * so an opening as deep as its wall cuts through it however its placement rounds.
      * @beta
      */
     export interface RecipeVoidsNode {
@@ -939,9 +941,11 @@ export namespace Base {
         /**
          * The distance below which two positions count as the same, in the recipe's units, as the
          * recipe's source measured it. Every executor applies it to cuts: an opening of a `voids` step,
-         * or a solid tool of a `difference`, that ends within it of a side of the bounding box of what it
-         * cuts passes through that side. Elsewhere an executor may use it where it compares positions,
-         * or not.
+         * or a solid tool of a `difference`, that ends within it of a face of what it cuts passes through
+         * that face, whether a side of the bounding box of what it cuts or a face inside it that the cut's
+         * end lies wholly on. An executor that cannot move such an end out without moving more of the
+         * cut, as beside a shallow chamfer of it, or with a part of what it cuts just beyond the end,
+         * leaves it as drawn. Elsewhere an executor may use it where it compares positions, or not.
          */
         tolerance: number;
         /**

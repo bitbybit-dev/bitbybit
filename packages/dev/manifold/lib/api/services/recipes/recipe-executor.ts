@@ -1,8 +1,9 @@
 import type * as Manifold3D from "manifold-3d";
 import type { Base } from "@bitbybit-dev/base";
 import { loftMesh } from "./recipe-loft";
+import { outlineOf, reachedThrough, releaseOutline } from "./recipe-reach";
 import { manifoldOfMesh } from "../manifold-of-mesh";
-import type { Built, ProfileRings } from "./recipe-types";
+import type { Built, CutOutline, ProfileRings } from "./recipe-types";
 import { degreesOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 
 const UNIT_HEIGHT = 1;
@@ -10,7 +11,6 @@ const FULL_TURN = 2 * Math.PI;
 const MIN_REVOLVE_SEGMENTS = 3;
 const POSITION_PROPERTIES = 3;
 const FILL_RULE: Manifold3D.FillRule = "NonZero";
-const AXES = 3;
 const MAX_TOOL_PARTS = 64;
 
 function isHalfSpace(value: Built | undefined): value is Base.RecipeHalfSpaceNode {
@@ -310,30 +310,6 @@ class RecipeExecutor {
         }
     }
 
-    private reaching(tool: Manifold3D.Manifold, outside: Manifold3D.Box): Manifold3D.Manifold {
-        const reach = this.recipe.tolerance;
-        const ofTool = tool.boundingBox();
-        const below = ofTool.min.map((side, axis) => Math.abs(side - outside.min[axis]!) <= reach);
-        const above = ofTool.max.map((side, axis) => Math.abs(side - outside.max[axis]!) <= reach);
-        if (!below.includes(true) && !above.includes(true)) {
-            return tool.translate([0, 0, 0]);
-        }
-        return tool.warp((vertex) => {
-            for (let axis = 0; axis < AXES; axis++) {
-                const drawn = vertex[axis]!;
-                const fromBelow = drawn - ofTool.min[axis]!;
-                const fromAbove = ofTool.max[axis]! - drawn;
-                const down = below[axis]! && fromBelow <= reach;
-                const up = above[axis]! && fromAbove <= reach;
-                if (down && (!up || fromBelow <= fromAbove)) {
-                    vertex[axis] = drawn - reach;
-                } else if (up) {
-                    vertex[axis] = drawn + reach;
-                }
-            }
-        });
-    }
-
     private joinsParts(index: number): boolean {
         const node = this.recipe.nodes[index]!;
         return node.op === "compound" || node.op === "union" || (node.op === "transform" && this.joinsParts(node.of));
@@ -391,29 +367,29 @@ class RecipeExecutor {
         into.push(part);
     }
 
-    private reachedParts(index: number, outside: Manifold3D.Box, into: Manifold3D.Manifold[]): void {
+    private reachedParts(index: number, outline: CutOutline, into: Manifold3D.Manifold[]): void {
         const parts = this.toolParts(index);
         try {
             for (const part of parts) {
-                into.push(this.reaching(part, outside));
+                into.push(reachedThrough(part, outline, this.recipe.tolerance));
             }
         } finally {
             parts.forEach(release);
         }
     }
 
-    private cut(solid: Manifold3D.Manifold, toolIndex: number, outside: Manifold3D.Box): Manifold3D.Manifold {
-        const tool = this.built[toolIndex];
-        if (isHalfSpace(tool)) {
-            const [nx, ny, nz] = tool.normal;
-            const length = Math.hypot(nx, ny, nz);
-            const offset = (nx * tool.origin[0] + ny * tool.origin[1] + nz * tool.origin[2]) / length;
-            return solid.trimByPlane([-nx / length, -ny / length, -nz / length], -offset);
-        }
+    private trimmed(solid: Manifold3D.Manifold, tool: Base.RecipeHalfSpaceNode): Manifold3D.Manifold {
+        const [nx, ny, nz] = tool.normal;
+        const length = Math.hypot(nx, ny, nz);
+        const offset = (nx * tool.origin[0] + ny * tool.origin[1] + nz * tool.origin[2]) / length;
+        return solid.trimByPlane([-nx / length, -ny / length, -nz / length], -offset);
+    }
+
+    private cut(solid: Manifold3D.Manifold, toolIndex: number, outline: CutOutline): Manifold3D.Manifold {
         const tools: Manifold3D.Manifold[] = [];
         let reaching: Manifold3D.Manifold | undefined;
         try {
-            this.reachedParts(toolIndex, outside, tools);
+            this.reachedParts(toolIndex, outline, tools);
             reaching = this.wasm.Manifold.union(tools);
             return solid.subtract(reaching);
         } finally {
@@ -423,17 +399,31 @@ class RecipeExecutor {
     }
 
     private difference(node: Base.RecipeDifferenceNode): Manifold3D.Manifold {
-        let outside = this.solid(node.of).boundingBox();
+        let outline: CutOutline | undefined;
         let current: Manifold3D.Manifold | undefined;
-        for (const toolIndex of node.tools) {
-            const previous = current;
-            try {
-                current = this.cut(previous ?? this.solid(node.of), toolIndex, outside);
-            } finally {
-                release(previous);
+        try {
+            for (const toolIndex of node.tools) {
+                const previous = current;
+                const solid = previous ?? this.solid(node.of);
+                const tool = this.built[toolIndex];
+                try {
+                    if (isHalfSpace(tool)) {
+                        current = this.trimmed(solid, tool);
+                        if (outline) {
+                            releaseOutline(outline);
+                        }
+                        outline = undefined;
+                    } else {
+                        outline ??= outlineOf(solid);
+                        current = this.cut(solid, toolIndex, outline);
+                    }
+                } finally {
+                    release(previous);
+                }
             }
-            if (isHalfSpace(this.built[toolIndex])) {
-                outside = current.boundingBox();
+        } finally {
+            if (outline) {
+                releaseOutline(outline);
             }
         }
         return current!;
@@ -445,18 +435,19 @@ class RecipeExecutor {
         if (built.length === 0) {
             return host.translate([0, 0, 0]);
         }
-        const outside = host.boundingBox();
+        const outline = outlineOf(host);
         const tools: Manifold3D.Manifold[] = [];
         let openings: Manifold3D.Manifold | undefined;
         try {
             for (const opening of built) {
-                this.reachedParts(opening, outside, tools);
+                this.reachedParts(opening, outline, tools);
             }
             openings = this.wasm.Manifold.union(tools);
             return host.subtract(openings);
         } finally {
             tools.forEach(release);
             release(openings);
+            releaseOutline(outline);
         }
     }
 

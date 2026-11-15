@@ -28,29 +28,103 @@ root by transforming its node's solid with the root's matrix.
   opening that rounding left 1e-11 short of its wall's face leaves a skin that thin over the window,
   where the recipe means a hole, and one whose sill rounding left just above the wall's bottom leaves
   a sliver under the door. The exact kernel avoids both by cutting fuzzily; Manifold has no fuzzy
-  boolean, so before each cut the tool is compared with the solid it cuts, axis by axis in the cut's
-  own frame: where a side of the tool's bounding box lies within `tolerance` of the same side of the
-  host's - short of it, past it or on it - the tool's vertices within `tolerance` of that side are
-  moved `tolerance` out through it (`warp`). A side exactly on the host's is reached too: its face may
-  touch the host's at one corner and fall short of it elsewhere, rounded or turned a little, and only
-  moving it clears the skin. A vertex within reach of both sides of one axis, in a tool no thicker
-  than the tolerance, moves out through the nearer. Nothing else of the tool moves - a step in its
-  outline, a face of it that only touches the host - and nothing is added: scaling the tool shifted
-  inner faces by a share of the tolerance and opened new slivers where they met the host, and joining
-  the tool with a moved copy of itself doubled its triangles, which a batch union of many openings
-  then left as a zero-thickness sheet. An opening made of several parts (`compound` or `union` steps,
-  under any `transform`s) is placed in the cut's frame part by part and each part reached on its own,
-  so a part falling short of a face is reached though another part runs past it; a tool of more than
-  64 parts, which a shared compound nested in itself reaches in a few steps, is reached as a whole.
-  Any tool takes it - a prism, a triangle mesh, a turn - and no extrusion is made again, which would
-  leave one of manifold-3d's vectors alive per call. Every other side stays where it is drawn: a
-  niche keeps its depth, an opening inside a wall its outline, the thin strips beside it their
-  volume. What it cannot see is a face inside the host's box - an inner corner of an L-shaped wall,
-  a sloped top clipped below the box - and a host whose sides do not run along the frame's axes.
-  Openings of a `voids` node are compared with their host's box. A `difference` compares its solid
-  tools with the box of the solid as the half-spaces before them leave it, read once after each
-  half-space: reading it after every solid tool would make Manifold evaluate each step of a lazy
-  chain of cuts, quadratic in the tools, and would make the result depend on their order.
+  boolean, so before each cut the tool is compared with the outline of the solid it cuts
+  (`recipe-reach.ts`): its bounding box, and its faces, read once from its mesh. Two rules reach a
+  tool through:
+  - **The sides of the solid's box**, axis by axis in the cut's own frame. Where a side of the
+    tool's box lies within `tolerance` of the same side of the solid's - short of it, past it or on
+    it - the tool's vertices within `tolerance` of that side move `tolerance` out through it. A side
+    exactly on the box's is reached too: its face may touch the solid's at one corner and fall short
+    of it elsewhere, rounded or turned a little, and only moving it clears the skin. A vertex within
+    reach of both sides of one axis, in a tool no thicker than the tolerance, moves out through the
+    nearer, and through the lower when exactly halfway.
+  - **A face of the solid that faces the same way**, wherever it lies: inside the box, as the inner
+    face of an L-shaped wall or a counter's worktop that its backsplash rises above, and at any
+    angle, as a wall turned off the frame's axes or a sloped top a half-space clipped. Here the tool
+    is taken face by face - a face being its connected triangles on one plane - and a face is
+    reached when it lies within `tolerance` of the solid's faces of that plane that face the same
+    way, all of it on them, and is wider than `tolerance` across its longest line. All of it,
+    because beyond such a face's edges the solid may go on: a face that runs past the edge into the
+    solid, under a face of it that faces the other way, or from one such face to another under a
+    taller part of the solid between them, stays where it is drawn, since moving it would cut a slot
+    that thin into the solid beyond. Two clips of a member that meet along one line in an IFC file
+    did exactly that, and the sliver the slot cut off came back as a second shell. Wider, because an
+    edge or a strip that only touches a face holds no skin. Lying on them is checked at the face's
+    corners, at the middle of each edge of its triangles and at a point inside each, a dozen points
+    or so however large the face, so a narrow part of the solid standing on the face - a post, a rib
+    - can fall between them. A face that passes is therefore also refused when anything of the solid
+    lies just beyond it: the solid, turned into the face's frame, is sliced just past the tolerance
+    (`slice`), and an overlap of that section with the face's outline wider than a strip one
+    tolerance across, the contact where a riser meets the face's edge, keeps the face where it is
+    drawn. That also leaves alone a part of the solid that lies within the tolerance beyond the face,
+    such as a second block stacked on the first with a hair's gap. A face that passes the points is
+    sliced on its own, some tens of milliseconds over the heaviest IFC files; the outline keeps a copy of the solid
+    for it, deleted with the outline (`releaseOutline`), because a `difference` deletes each step's
+    solid while the outline read before the step is still in use. The points stay the
+    test of lying on the solid, and the slice only refuses: checking the points' area exactly
+    (Clipper, `CrossSection`) refuses faces that run partly over air, which the points pass and which
+    moving out only clears, and accepting every face with nothing beyond it moved faces over air
+    too, whose corners then flipped the faces beside them into sheets on the IFC corpus. Faces of the
+    solid on a side of its box that the tool's box already reaches are left to the first rule.
+
+  A reached face is offset as a CAD system moves a face: it goes `tolerance` out along its own
+  normal while every other face of the tool keeps its plane, so each of its corners moves to where
+  its planes meet once the reached ones have moved, worked out in full precision from the faces
+  around it. For an extruded opening that is its end lengthened along its own direction, but only at
+  an end that lies on a face; for a side, that edge of its outline moved out between the edges
+  beside it. At a corner, faces that face the same way to within the angle that matches a face of
+  the solid count as one plane, as the triangles of one flat face of a mesh opening stored in 32-bit
+  floats do. A corner where the move cannot be made - more than three planes, two of them facing
+  the same way with only one reached, or a move longer than twice the tolerance, as beside a chamfer
+  shallower than thirty degrees - leaves every face that meets there where it is drawn. The box rule
+  moves its vertices along the axes as before, so on a tool turned off them a face beside a side it
+  moves still leans, as it always has. Moving the corners out along the solid's normal instead leans
+  every face beside a reached one that is not square to it, along its whole length: one that lies on a
+  face of the solid leaves a wedge of it or a zero-thickness sheet, the defect the reach exists to
+  remove, and the others cut a little less than drawn. A tool none of whose faces is reached is cut
+  as the box rule leaves it and never warped again: a warped copy is a solid built again, and the
+  exact boolean then resolved the faces it did not move differently, which turned clean joins in a
+  chain of wall cuts into sheets.
+
+  Nothing else of the tool moves - a step in its outline, a face of it that only touches the solid -
+  and nothing is added: growing every face by the tolerance shaved thin strips off walls their
+  openings nearly filled, scaling the tool shifted inner faces by a share of the tolerance and
+  opened new slivers where they met the solid, joining the tool with a moved copy of itself doubled
+  its triangles, which a batch union of many openings then left as a zero-thickness sheet, and
+  lengthening every opening at both ends would deepen every niche by the tolerance. An opening made
+  of several parts (`compound` or `union` steps, under any `transform`s) is placed in the cut's frame
+  part by part and each part reached on its own, so a part falling short of a face is reached though
+  another part runs past it; a tool of more than 64 parts, which a shared compound nested in itself
+  reaches in a few steps, is reached as a whole. Any tool takes it - a prism, a triangle mesh, a
+  turn - and no extrusion is made again, which would leave one of manifold-3d's vectors alive per
+  call. Every other side stays where it is drawn: a niche keeps its depth, an opening inside a wall
+  its outline, the thin strips beside it their volume.
+
+  manifold-3d hands a mesh out in 32-bit floats only. The solid's mesh, which only finds its faces,
+  is read moved by the centre of its box, which keeps the rounding to its size rather than its
+  distance from the origin: a face comes to within about sixty billionths of the solid's size, which
+  reaches the tolerance only for a solid some 170 m across at the finest IFC precision (0.01 mm). A
+  solid that fills its box, as a plain wall does, has no face inside it, so its mesh is not read at
+  all; a solid of 256 triangles or more has them sorted once per cut along its longest side, so each
+  tool looks only at the triangles its box can meet. A tool is read the same way, moved by the same
+  centre, only when a face of the solid off the box sides it reaches lies near it, and its faces are
+  judged only when one of its triangles is flush with one. Where faces are reached, the corners'
+  moves are worked out again from the full-precision positions that the one `warpBatch` writing them
+  hands over, in the order `getMesh` lists them, with the corner planes already chosen; a separate
+  full-precision read would cost a second warp, and manifold-3d compiles a small WebAssembly module
+  for every warp callback, which is most of what a warp costs. Measured against 1.6.1 in CPU time,
+  the slowest IFC files of the corpus build 1 to 10 % slower, a plain wall with windows as fast, and
+  a 90,000-triangle mesh with hundreds of openings about a fifth slower. What the reach
+  cannot see is a face of a tool that lies on a face of the solid over part of it only, the rest
+  over air or inside the solid: that part keeps whatever the exact boolean makes of it - a sheet, or
+  nothing - and reaching a face beside it can change which, since the corner they share moves along
+  it.
+
+  Openings of a `voids` node are compared with their host's outline. A `difference` compares its
+  solid tools with the outline of the solid as the half-spaces before them leave it, read at the
+  first solid tool after the start or after a half-space, so a difference of half-spaces alone reads
+  none: reading it after every solid tool would make Manifold evaluate each step of a lazy chain of
+  cuts, quadratic in the tools, and would make the result depend on their order.
 - **A turn is the kernel's revolve, moved into place.** `Manifold.revolve` turns a cross section about
   its Y axis, which becomes Z. The profile is first carried into the axis's frame (distance from the
   axis as X, along it as Y, on whichever side it lies), revolved with `circularSegments` scaled by the

@@ -30,9 +30,9 @@ export class ManifoldRecipes {
     /**
      * Builds each root of a recipe as a solid placed by its matrix, in root order.
      *
-     * Shared nodes are built once. An invalid recipe throws; a root the kernel cannot build, such as
-     * an open mesh, throws unless `emptyWhenFailed` is set. A cut within `tolerance` of a side of the
-     * box of what it cuts goes through it.
+     * Shared nodes are built once. An invalid recipe throws; a root the kernel cannot build throws
+     * unless `emptyWhenFailed` is set. A cut ending within `tolerance` of a side of the bounding box,
+     * or of a face its end lies wholly on, goes through.
      * @param inputs - The recipe, how finely circles are divided, and whether Z turns into Y
      * @returns One solid per root, in root order
      * @group build

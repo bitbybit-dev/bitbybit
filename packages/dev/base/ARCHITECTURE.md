@@ -328,11 +328,13 @@ the Manifold kernel builds one is in `packages/dev/manifold/ARCHITECTURE.md`.
   which a mesh kernel then tears into slivers. The same happens beside an opening whose sill, head or
   side lies on a face of its host - a door standing on the wall's bottom, a window at the wall's end.
   The exact kernel cuts fuzzily at the tolerance and takes an opening within it of both faces as cut
-  through; the Manifold kernel moves the near side of a tool out by the tolerance wherever it stops
-  short of, or overshoots, a side of its host's bounding box by no more than the tolerance (its
-  `ARCHITECTURE.md`). What lies inside the host is cut as drawn: a niche keeps its depth and an
-  opening its outline, and only ends that meet the host's outside move, by the tolerance, which is
-  what the tolerance says - positions closer than it are the same.
+  through. The Manifold kernel, whose booleans are exact, moves the end of a tool out by the
+  tolerance where it stops short of, or overshoots, a side of its host's bounding box, and where it
+  lies wholly on a face inside the box with nothing of the host just beyond it, as a sink hole as deep
+  as a worktop that a backsplash rises above; its `ARCHITECTURE.md` says how, and which ends it leaves
+  as drawn. What lies inside the host is cut as drawn: a niche keeps its depth and an opening its
+  outline, and only ends that meet a face of the host move, by the tolerance, which is what the
+  tolerance says - positions closer than it are the same.
 - **Turns and lofts are generic.** A `revolve` turns a profile about an axis in its plane by the
   right-hand rule, and the profile must lie on one side of the axis. A `loft` places profiles by
   frames held in `f64`, sixteen numbers each, and joins each section to the next by straight sides:
