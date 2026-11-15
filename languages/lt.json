@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "Atspalvis, sodrumas ir šviesumas `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "Atspalvis laipsniais aplink spalvų ratą: 0 raudona, 120 žalia, 240 mėlyna; bet kuris kampas imamas\nperkeltas sveikais apsisukimais.",
     "Inputs.Color.HslDto.saturation_description": "Kiek spalva stipri: nuo 0 pilkai iki 1 grynam atspalviui; reikšmė už šio intervalo laikoma\nartimesniame gale.",
-    "Inputs.Color.HslDto.lightness_description": "Kiek spalva šviesi: nuo 0 juodai per 0.5 pilnam atspalviui iki 1 baltai; reikšmė\nuž šio intervalo laikoma artimesniame gale."
+    "Inputs.Color.HslDto.lightness_description": "Kiek spalva šviesi: nuo 0 juodai per 0.5 pilnam atspalviui iki 1 baltai; reikšmė\nuž šio intervalo laikoma artimesniame gale.",
+    "copy button": "Kopijuoti",
+    "download button": "Atsisiųsti",
+    "view mode label": "Peržiūros režimas",
+    "data label": "Duomenys",
+    "schema label": "Schema",
+    "metadata label": "Metaduomenys",
+    "column separator label": "Stulpelių skyriklis",
+    "row separator label": "Eilučių skyriklis",
+    "start row label": "Pradžios eilutė",
+    "max rows label": "Maksimalus eilučių skaičius",
+    "key down description": "Paleidžia kodą, kai įvyksta klavišo nuspaudimo įvykis."
 }

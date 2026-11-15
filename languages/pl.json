@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "Odcień, nasycenie i jasność dla `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "Odcień w stopniach wokół koła barw: 0 czerwony, 120 zielony, 240 niebieski; każdy kąt jest brany\nz przesunięciem o całe obroty.",
     "Inputs.Color.HslDto.saturation_description": "Jak intensywny jest kolor: od 0 dla szarości do 1 dla najczystszego odcienia; wartość spoza tego zakresu jest trzymana na\nbliższym końcu.",
-    "Inputs.Color.HslDto.lightness_description": "Jak jasny jest kolor: od 0 dla czerni przez 0.5 dla pełnego odcienia do 1 dla bieli; wartość\nspoza tego zakresu jest trzymana na bliższym końcu."
+    "Inputs.Color.HslDto.lightness_description": "Jak jasny jest kolor: od 0 dla czerni przez 0.5 dla pełnego odcienia do 1 dla bieli; wartość\nspoza tego zakresu jest trzymana na bliższym końcu.",
+    "copy button": "Kopiuj",
+    "download button": "Pobierz",
+    "view mode label": "Tryb widoku",
+    "data label": "Dane",
+    "schema label": "Schemat",
+    "metadata label": "Metadane",
+    "column separator label": "Separator kolumn",
+    "row separator label": "Separator wierszy",
+    "start row label": "Start wiersza",
+    "max rows label": "Maksymalna liczba wierszy",
+    "key down description": "Wyzwała kod, gdy nastąpi zdarzenie naciśnięcia klawisza."
 }

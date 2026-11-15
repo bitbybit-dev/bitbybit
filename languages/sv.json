@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "En färgton, en mättnad och en ljushet för `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "Färgtonen i grader runt färghjulet: 0 rött, 120 grönt, 240 blått; vilken vinkel som helst tas\nhela varv åt sidan.",
     "Inputs.Color.HslDto.saturation_description": "Hur stark färgen är, från 0 för grått till 1 för den renaste färgtonen; ett värde utanför det hålls vid\nden närmaste änden.",
-    "Inputs.Color.HslDto.lightness_description": "Hur ljus färgen är, från 0 för svart via 0.5 för den fulla färgtonen till 1 för vitt; ett värde\nutanför det hålls vid den närmaste änden."
+    "Inputs.Color.HslDto.lightness_description": "Hur ljus färgen är, från 0 för svart via 0.5 för den fulla färgtonen till 1 för vitt; ett värde\nutanför det hålls vid den närmaste änden.",
+    "copy button": "Kopiera",
+    "download button": "Ladda ner",
+    "view mode label": "Visningsläge",
+    "data label": "Data",
+    "schema label": "Schema",
+    "metadata label": "Metadata",
+    "column separator label": "Kolumnseparator",
+    "row separator label": "Radseparator",
+    "start row label": "Startrad",
+    "max rows label": "Max rader",
+    "key down description": "Utlöser kod när tangent ner-händelse inträffar."
 }

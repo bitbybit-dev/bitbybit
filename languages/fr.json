@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "Une teinte, une saturation et une luminosité pour `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "La teinte en degrés sur le cercle chromatique : 0 rouge, 120 vert, 240 bleu ; tout angle est pris\nà des tours entiers près.",
     "Inputs.Color.HslDto.saturation_description": "L'intensité de la couleur, de 0 pour le gris à 1 pour la teinte la plus pure ; une valeur hors de cet intervalle est ramenée à\nl'extrémité la plus proche.",
-    "Inputs.Color.HslDto.lightness_description": "La clarté de la couleur, de 0 pour le noir, en passant par 0.5 pour la teinte pleine, à 1 pour le blanc ; une valeur\nhors de cet intervalle est ramenée à l'extrémité la plus proche."
+    "Inputs.Color.HslDto.lightness_description": "La clarté de la couleur, de 0 pour le noir, en passant par 0.5 pour la teinte pleine, à 1 pour le blanc ; une valeur\nhors de cet intervalle est ramenée à l'extrémité la plus proche.",
+    "copy button": "Copier",
+    "download button": "Télécharger",
+    "view mode label": "Mode d'affichage",
+    "data label": "Données",
+    "schema label": "Schéma",
+    "metadata label": "Métadonnées",
+    "column separator label": "Séparateur de colonne",
+    "row separator label": "Séparateur de ligne",
+    "start row label": "Ligne de départ",
+    "max rows label": "Nombre maximal de lignes",
+    "key down description": "Déclenche le code lorsque l'événement touche enfoncée se produit."
 }

@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "用于 `color.hslToHex` 的色相、饱和度和亮度。",
     "Inputs.Color.HslDto.hue_description": "沿色轮以度表示的色相：0 红，120 绿，240 蓝；任何角度都按\n相差整圈处理。",
     "Inputs.Color.HslDto.saturation_description": "颜色的浓淡程度，0 为灰色，1 为最纯的色相；超出该范围的值限制在\n较近的一端。",
-    "Inputs.Color.HslDto.lightness_description": "颜色的明暗程度，0 为黑色，0.5 为完整色相，1 为白色；超出该范围的值\n限制在较近的一端。"
+    "Inputs.Color.HslDto.lightness_description": "颜色的明暗程度，0 为黑色，0.5 为完整色相，1 为白色；超出该范围的值\n限制在较近的一端。",
+    "copy button": "复制",
+    "download button": "下载",
+    "view mode label": "查看模式",
+    "data label": "数据",
+    "schema label": "架构",
+    "metadata label": "元数据",
+    "column separator label": "列分隔符",
+    "row separator label": "行分隔符",
+    "start row label": "起始行",
+    "max rows label": "最大行数",
+    "key down description": "按键按下事件发生时触发代码。"
 }

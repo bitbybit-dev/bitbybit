@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "`color.hslToHex` के लिए एक ह्यू, एक सैचुरेशन और एक लाइटनेस।",
     "Inputs.Color.HslDto.hue_description": "रंग चक्र पर डिग्री में ह्यू: 0 लाल, 120 हरा, 240 नीला; किसी भी कोण को\nपूरे चक्करों के अंतर तक लिया जाता है।",
     "Inputs.Color.HslDto.saturation_description": "रंग कितना गाढ़ा है, 0 (ग्रे) से 1 (सबसे शुद्ध ह्यू) तक; इससे बाहर का मान\nनिकटतम सिरे पर रोक दिया जाता है।",
-    "Inputs.Color.HslDto.lightness_description": "रंग कितना हल्का है, 0 (काला) से 0.5 (पूरा ह्यू) होते हुए 1 (सफ़ेद) तक; इससे बाहर का मान\nनिकटतम सिरे पर रोक दिया जाता है।"
+    "Inputs.Color.HslDto.lightness_description": "रंग कितना हल्का है, 0 (काला) से 0.5 (पूरा ह्यू) होते हुए 1 (सफ़ेद) तक; इससे बाहर का मान\nनिकटतम सिरे पर रोक दिया जाता है।",
+    "copy button": "कॉपी",
+    "download button": "डाउनलोड",
+    "view mode label": "दृश्य मोड",
+    "data label": "डेटा",
+    "schema label": "स्कीमा",
+    "metadata label": "मेटाडेटा",
+    "column separator label": "स्तंभ सेपरेटर",
+    "row separator label": "पंक्ति सेपरेटर",
+    "start row label": "शुरुआत पंक्ति",
+    "max rows label": "अधिकतम पंक्तियाँ",
+    "key down description": "की डाउन ईवेंट होने पर कोड ट्रिगर करता है।"
 }

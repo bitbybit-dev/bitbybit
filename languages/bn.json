@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "`color.hslToHex`-এর জন্য একটি হিউ, একটি স্যাচুরেশন ও একটি উজ্জ্বলতা।",
     "Inputs.Color.HslDto.hue_description": "রঙের চাকার চারপাশে ডিগ্রিতে হিউ: 0 লাল, 120 সবুজ, 240 নীল; যেকোনো কোণ পূর্ণ পাক\nসরিয়ে নেওয়া হয়।",
     "Inputs.Color.HslDto.saturation_description": "রংটি কতটা তীব্র, ধূসরের জন্য 0 থেকে সবচেয়ে বিশুদ্ধ হিউয়ের জন্য 1 পর্যন্ত; এর বাইরের মান\nনিকটতম প্রান্তে ধরা হয়।",
-    "Inputs.Color.HslDto.lightness_description": "রংটি কতটা হালকা, কালোর জন্য 0 থেকে পূর্ণ হিউয়ের জন্য 0.5 হয়ে সাদার জন্য 1 পর্যন্ত; এর\nবাইরের মান নিকটতম প্রান্তে ধরা হয়।"
+    "Inputs.Color.HslDto.lightness_description": "রংটি কতটা হালকা, কালোর জন্য 0 থেকে পূর্ণ হিউয়ের জন্য 0.5 হয়ে সাদার জন্য 1 পর্যন্ত; এর\nবাইরের মান নিকটতম প্রান্তে ধরা হয়।",
+    "copy button": "কপি",
+    "download button": "ডাউনলোড",
+    "view mode label": "দেখার মোড",
+    "data label": "ডেটা",
+    "schema label": "স্কিমা",
+    "metadata label": "মেটাডেটা",
+    "column separator label": "কলাম বিভাজক",
+    "row separator label": "সারি বিভাজক",
+    "start row label": "শুরু সারি",
+    "max rows label": "সর্বোচ্চ সারি",
+    "key down description": "কী নিচে ইভেন্ট ঘটলে কোড ট্রিগার করে।"
 }

@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "Tonis, piesātinājums un gaišums `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "Tonis grādos ap krāsu riteni: 0 sarkans, 120 zaļš, 240 zils; jebkurš leņķis tiek ņemts\nnobīdīts par veseliem apgriezieniem.",
     "Inputs.Color.HslDto.saturation_description": "Cik spēcīga ir krāsa: no 0 pelēkai līdz 1 tīrākajam tonim; vērtība ārpus šī diapazona tiek noturēta\ntuvākajā galā.",
-    "Inputs.Color.HslDto.lightness_description": "Cik gaiša ir krāsa: no 0 melnai caur 0.5 pilnam tonim līdz 1 baltai; vērtība\nārpus šī diapazona tiek noturēta tuvākajā galā."
+    "Inputs.Color.HslDto.lightness_description": "Cik gaiša ir krāsa: no 0 melnai caur 0.5 pilnam tonim līdz 1 baltai; vērtība\nārpus šī diapazona tiek noturēta tuvākajā galā.",
+    "copy button": "Kopēt",
+    "download button": "Lejupielādēt",
+    "view mode label": "Skata režīms",
+    "data label": "Dati",
+    "schema label": "Shēma",
+    "metadata label": "Metadati",
+    "column separator label": "Kolonnu atdalītājs",
+    "row separator label": "Rindu atdalītājs",
+    "start row label": "Sākuma rinda",
+    "max rows label": "Maksimālais rindu skaits",
+    "key down description": "Aktivizē kodu, kad notiek taustiņa nospiešanas notikums."
 }

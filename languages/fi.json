@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "Sävy, kylläisyys ja vaaleus funktiolle `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "Sävy asteina väriympyrän ympäri: 0 punainen, 120 vihreä, 240 sininen; mikä tahansa kulma otetaan\ntäysien kierrosten verran siirrettynä.",
     "Inputs.Color.HslDto.saturation_description": "Kuinka voimakas väri on, 0:sta harmaalle 1:een puhtaimmalle sävylle; tämän ulkopuolinen arvo pidetään\nlähimmässä päässä.",
-    "Inputs.Color.HslDto.lightness_description": "Kuinka vaalea väri on, 0:sta mustalle 0.5:n kautta täydelle sävylle 1:een valkoiselle; tämän\nulkopuolinen arvo pidetään lähimmässä päässä."
+    "Inputs.Color.HslDto.lightness_description": "Kuinka vaalea väri on, 0:sta mustalle 0.5:n kautta täydelle sävylle 1:een valkoiselle; tämän\nulkopuolinen arvo pidetään lähimmässä päässä.",
+    "copy button": "Kopioi",
+    "download button": "Lataa",
+    "view mode label": "Näkymätila",
+    "data label": "Data",
+    "schema label": "Skeema",
+    "metadata label": "Metadata",
+    "column separator label": "Sarake-erotin",
+    "row separator label": "Rivierotin",
+    "start row label": "Alkurivi",
+    "max rows label": "Maksimirivit",
+    "key down description": "Laukaisee koodin kun näppäin alas -tapahtuma tapahtuu."
 }

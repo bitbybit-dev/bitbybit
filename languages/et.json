@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "Värvitoon, küllastus ja heledus funktsioonile `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "Värvitoon kraadides ümber värviratta: 0 punane, 120 roheline, 240 sinine; iga nurk võetakse\ntäispöörete võrra nihutatuna.",
     "Inputs.Color.HslDto.saturation_description": "Kui tugev värv on, 0-st halli puhul kuni 1-ni puhtaima värvitooni puhul; sellest väljas olev väärtus hoitakse\nlähemas otsas.",
-    "Inputs.Color.HslDto.lightness_description": "Kui hele värv on, 0-st musta puhul läbi 0.5 täisvärvitooni puhul kuni 1-ni valge puhul; sellest\nväljas olev väärtus hoitakse lähemas otsas."
+    "Inputs.Color.HslDto.lightness_description": "Kui hele värv on, 0-st musta puhul läbi 0.5 täisvärvitooni puhul kuni 1-ni valge puhul; sellest\nväljas olev väärtus hoitakse lähemas otsas.",
+    "copy button": "Kopeeri",
+    "download button": "Lae alla",
+    "view mode label": "Vaaterežiim",
+    "data label": "Andmed",
+    "schema label": "Skeem",
+    "metadata label": "Metaandmed",
+    "column separator label": "Veeru eraldaja",
+    "row separator label": "Rea eraldaja",
+    "start row label": "Algusrida",
+    "max rows label": "Max read",
+    "key down description": "Käivitab koodi, kui toimub klahvi alla vajutamise sündmus."
 }

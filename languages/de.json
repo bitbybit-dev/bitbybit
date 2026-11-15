@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "Ein Farbton, eine Sättigung und eine Helligkeit für `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "Der Farbton in Grad um das Farbrad: 0 Rot, 120 Grün, 240 Blau; jeder Winkel wird um\nganze Umdrehungen verschoben genommen.",
     "Inputs.Color.HslDto.saturation_description": "Wie kräftig die Farbe ist, von 0 für Grau bis 1 für den reinsten Farbton; ein Wert außerhalb wird am\nnäheren Ende gehalten.",
-    "Inputs.Color.HslDto.lightness_description": "Wie hell die Farbe ist, von 0 für Schwarz über 0.5 für den vollen Farbton bis 1 für Weiß; ein Wert\naußerhalb wird am näheren Ende gehalten."
+    "Inputs.Color.HslDto.lightness_description": "Wie hell die Farbe ist, von 0 für Schwarz über 0.5 für den vollen Farbton bis 1 für Weiß; ein Wert\naußerhalb wird am näheren Ende gehalten.",
+    "copy button": "Kopieren",
+    "download button": "Herunterladen",
+    "view mode label": "Ansichtsmodus",
+    "data label": "Daten",
+    "schema label": "Schema",
+    "metadata label": "Metadaten",
+    "column separator label": "Spaltentrennzeichen",
+    "row separator label": "Zeilentrennzeichen",
+    "start row label": "Startzeile",
+    "max rows label": "Maximale Zeilenanzahl",
+    "key down description": "Löst Code aus, wenn das Ereignis 'Taste gedrückt' eintritt."
 }

@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "درجة لون وتشبع وإضاءة لـ `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "درجة اللون بالدرجات حول عجلة الألوان: 0 أحمر و120 أخضر و240 أزرق؛ أي زاوية تؤخذ\nبإزاحة دورات كاملة.",
     "Inputs.Color.HslDto.saturation_description": "مدى قوة اللون، من 0 للرمادي إلى 1 لأنقى درجة؛ القيمة الواقعة خارج ذلك تُحصر عند\nالطرف الأقرب.",
-    "Inputs.Color.HslDto.lightness_description": "مدى إضاءة اللون، من 0 للأسود مرورا بـ 0.5 للون الكامل إلى 1 للأبيض؛ القيمة الواقعة\nخارج ذلك تُحصر عند الطرف الأقرب."
+    "Inputs.Color.HslDto.lightness_description": "مدى إضاءة اللون، من 0 للأسود مرورا بـ 0.5 للون الكامل إلى 1 للأبيض؛ القيمة الواقعة\nخارج ذلك تُحصر عند الطرف الأقرب.",
+    "copy button": "نسخ",
+    "download button": "تنزيل",
+    "view mode label": "وضع العرض",
+    "data label": "بيانات",
+    "schema label": "مخطط",
+    "metadata label": "البيانات الوصفية",
+    "column separator label": "فاصل الأعمدة",
+    "row separator label": "فاصل الصفوف",
+    "start row label": "صف البداية",
+    "max rows label": "الصفوف القصوى",
+    "key down description": "يشغل الكود عند حدوث حدث ضغط المفتاح."
 }

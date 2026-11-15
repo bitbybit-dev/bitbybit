@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "Rona, saturasi, dan kecerahan untuk `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "Rona dalam derajat mengelilingi roda warna: 0 merah, 120 hijau, 240 biru; sudut apa pun diambil\nterpaut kelipatan putaran penuh.",
     "Inputs.Color.HslDto.saturation_description": "Seberapa kuat warna itu, dari 0 untuk abu-abu sampai 1 untuk rona paling murni; nilai di luar itu ditahan pada\nujung yang lebih dekat.",
-    "Inputs.Color.HslDto.lightness_description": "Seberapa terang warna itu, dari 0 untuk hitam, melalui 0.5 untuk rona penuh, sampai 1 untuk putih; nilai\ndi luar itu ditahan pada ujung yang lebih dekat."
+    "Inputs.Color.HslDto.lightness_description": "Seberapa terang warna itu, dari 0 untuk hitam, melalui 0.5 untuk rona penuh, sampai 1 untuk putih; nilai\ndi luar itu ditahan pada ujung yang lebih dekat.",
+    "copy button": "Salin",
+    "download button": "Unduh",
+    "view mode label": "Mode tampilan",
+    "data label": "Data",
+    "schema label": "Skema",
+    "metadata label": "Metadata",
+    "column separator label": "Pemisah kolom",
+    "row separator label": "Pemisah baris",
+    "start row label": "Baris mulai",
+    "max rows label": "Maksimal baris",
+    "key down description": "Memicu kode ketika event tombol turun terjadi."
 }

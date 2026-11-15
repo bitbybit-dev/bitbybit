@@ -18855,5 +18855,16 @@
     "Inputs.Color.HslDto_description": "Un matiz, una saturación y una luminosidad para `color.hslToHex`.",
     "Inputs.Color.HslDto.hue_description": "El matiz en grados alrededor de la rueda de color: 0 rojo, 120 verde, 240 azul; cualquier ángulo se toma\ndesplazado por vueltas completas.",
     "Inputs.Color.HslDto.saturation_description": "Cuán intenso es el color, de 0 para gris a 1 para el matiz más puro; un valor fuera de ese rango se mantiene en\nel extremo más cercano.",
-    "Inputs.Color.HslDto.lightness_description": "Cuán claro es el color, de 0 para negro pasando por 0.5 para el matiz pleno hasta 1 para blanco; un valor\nfuera de ese rango se mantiene en el extremo más cercano."
+    "Inputs.Color.HslDto.lightness_description": "Cuán claro es el color, de 0 para negro pasando por 0.5 para el matiz pleno hasta 1 para blanco; un valor\nfuera de ese rango se mantiene en el extremo más cercano.",
+    "copy button": "Copiar",
+    "download button": "Descargar",
+    "view mode label": "Modo de vista",
+    "data label": "Datos",
+    "schema label": "Esquema",
+    "metadata label": "Metadatos",
+    "column separator label": "Separador de columnas",
+    "row separator label": "Separador de filas",
+    "start row label": "Fila de inicio",
+    "max rows label": "Máximo de filas",
+    "key down description": "Dispara código cuando ocurre evento tecla abajo."
 }
