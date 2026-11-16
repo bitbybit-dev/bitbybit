@@ -106,9 +106,9 @@ export type ModelParamDefinition = components["schemas"]["ModelParamDefinition"]
 export type ModelSubmissionBody = components["schemas"]["ModelSubmissionBody"];
 /** Read the parts of uploaded STEP files as nesting would, without nesting them: each part's file, kind, outline size, area and cut length, or why it cannot be nested. */
 export type NestingInspectBody = components["schemas"]["NestingInspectBody"];
-/** The settings that change how parts are read (tolerance, xDirection); no stock is needed. */
+/** The settings that change how parts are read (tolerance, xDirection); no stock is needed. Every length is in the parts' units: millimetres on the nesting routes, which read their STEP files in millimetres, and the unit a pipeline models its shapes in for an occtPro.nesting step. */
 export type NestingInspectOptions = components["schemas"]["NestingInspectOptions"];
-/** Each part as nesting reads it, without nesting. */
+/** Each part as nesting reads it, without nesting. Every length is in the parts' units, millimetres for parts read from STEP files. A report delivered as a result always has ok true: when the kernel refuses a run, the task fails with the kernel's reason instead. */
 export type NestingInspection = components["schemas"]["NestingInspection"];
 /** Copies of a part that were not placed, and why. */
 export type NestingLeft = components["schemas"]["NestingLeft"];
@@ -116,7 +116,7 @@ export type NestingLeft = components["schemas"]["NestingLeft"];
 export type NestingLeftOutput = components["schemas"]["NestingLeftOutput"];
 /** Nest the flat parts of uploaded STEP files onto sheets or a strip. A part is a planar face, coplanar faces such as an unfolded sheet-metal part, a plate solid, or a drawing of closed wires; 'stepFileIds' says how parts are read from a file. */
 export type NestingNestBody = components["schemas"]["NestingNestBody"];
-/** The stock, the per-part options and the settings of a nesting run. */
+/** The stock, the per-part options and the settings of a nesting run. Every length is in the parts' units: millimetres on the nesting routes, which read their STEP files in millimetres, and the unit a pipeline models its shapes in for an occtPro.nesting step. */
 export type NestingOptions = components["schemas"]["NestingOptions"];
 /** A full circle. */
 export type NestingOutlineCircle = components["schemas"]["NestingOutlineCircle"];
@@ -136,7 +136,7 @@ export type NestingOutlineSpline = components["schemas"]["NestingOutlineSpline"]
 export type NestingOutlineSplineOutput = components["schemas"]["NestingOutlineSplineOutput"];
 /** The cut paths of every placed copy in the frame of its sheet: x along the sheet's width and y along its height from the corner, as the report's placement boxes are; the 'outlines' result of a nest. */
 export type NestingOutlines = components["schemas"]["NestingOutlines"];
-/** The formats of the nested sheets: 'step' or 'stpz' (each sheet one part, holding its placed parts and its outline), 'gltf', 'decomposed-mesh' (the placed parts, triangulated), 'dxf' (an AutoCAD 2000 drawing in millimetres: the sheets' outlines on layer SHEETS and the parts' cut paths on layer PARTS, every arc, ellipse and spline exact), 'svg' (the same drawing as an SVG file in millimetres, each layer a group), or 'outlines' (the same cut paths as JSON, each copy in the frame of its sheet and named by its placement, for drawing the layout). */
+/** The formats of the nested sheets: 'step' or 'stpz' (each sheet one part, holding its placed parts and its outline), 'gltf', 'decomposed-mesh' (the placed parts, triangulated), 'dxf' (an AutoCAD 2000 drawing in millimetres: the sheets' outlines on layer SHEETS and the parts' cut paths on layer PARTS, every arc, ellipse and spline exact), 'svg' (the same drawing as an SVG file in millimetres, each layer a group), or 'outlines' (the same cut paths as JSON, each copy in the frame of its sheet and named by its placement, for drawing the layout). A 'dxf' or 'svg' too large to write is left out while every other format is still written, and the task's metadata says why under 'outputsLeftOut' (format to reason); a caveat about a cut file that was written, such as a part whose faces could not be joined into one outline, is given under 'outputNotes' (format to note). */
 export type NestingOutputFormat = components["schemas"]["NestingOutputFormat"];
 /** Which formats the nested sheets are written in, and their mesh quality. */
 export type NestingOutputOptions = components["schemas"]["NestingOutputOptions"];
@@ -150,11 +150,11 @@ export type NestingPartOptions = components["schemas"]["NestingPartOptions"];
 export type NestingPlacement = components["schemas"]["NestingPlacement"];
 /** Where one copy of a part was placed. */
 export type NestingPlacementOutput = components["schemas"]["NestingPlacementOutput"];
-/** The layout of a nesting run: the used sheets, every placement with its transform, each part as read, what was left and why, and the totals. Positions are in the working space, right-handed with Y up; a STEP output turns that space to Z up, a quarter turn about X. */
+/** The layout of a nesting run: the used sheets, every placement with its transform, each part as read, what was left and why, and the totals. Every length is in the parts' units, millimetres for parts read from STEP files. Positions are in the working space, right-handed with Y up; a STEP output turns that space to Z up, a quarter turn about X. A report delivered as a result always has ok true: when the kernel refuses a run, the task fails with the kernel's reason instead. */
 export type NestingReport = components["schemas"]["NestingReport"];
-/** Returned when the options are refused or the call is stopped before any part was nested. */
+/** The nesting kernel's own answer when it refuses the options or is stopped before any part was nested. No result carries it: the API fails the task with its error instead. */
 export type NestingReportError = components["schemas"]["NestingReportError"];
-/** Returned when the options are refused or the call is stopped before any part was nested. */
+/** The nesting kernel's own answer when it refuses the options or is stopped before any part was nested. No result carries it: the API fails the task with its error instead. */
 export type NestingReportErrorOutput = components["schemas"]["NestingReportErrorOutput"];
 /** How a part may turn on the sheet: a fixed list of angles, steps that divide a full turn, or any angle. Without it a part turns in steps of 90 degrees. */
 export type NestingRotations = components["schemas"]["NestingRotations"];
@@ -234,6 +234,10 @@ export type TaskResultsDownload = components["schemas"]["TaskResultsDownload"];
 export type TaskResultsResponse = components["schemas"]["TaskResultsResponse"];
 /** Task lifecycle state: waiting (pending dependencies), queued (in queue), processing (actively computing), completed (result available), failed (error occurred), cancelled (user-cancelled), expired (result TTL exceeded) */
 export type TaskStatus = components["schemas"]["TaskStatus"];
+/** Flatten every constant-thickness sheet-metal solid in an uploaded STEP file and nest the flat patterns on sheets in the same call: the per-solid unfold report, the nesting report and the nested sheets, without writing the flats to a file and reading them back. */
+export type UnfoldAndNestBody = components["schemas"]["UnfoldAndNestBody"];
+/** Which formats the nested sheets and the flat patterns are written in, and their mesh quality. */
+export type UnfoldAndNestOutputOptions = components["schemas"]["UnfoldAndNestOutputOptions"];
 /** One bend: line, angle, radii (inner/outer/neutral and per-end for cones), and developed lengths. */
 export type UnfoldBend = components["schemas"]["UnfoldBend"];
 /** One bend: line, angle, radii (inner/outer/neutral and per-end for cones), and developed lengths. */
@@ -248,6 +252,8 @@ export type UnfoldFaceReport = components["schemas"]["UnfoldFaceReport"];
 export type UnfoldFaceReportBody = components["schemas"]["UnfoldFaceReportBody"];
 /** Unfold a single developable face of an uploaded STEP shape to a flat face. */
 export type UnfoldFaceToFlatBody = components["schemas"]["UnfoldFaceToFlatBody"];
+/** How the flat patterns of an unfold are nested: the stock, the copies, how each flat may turn, and the search settings. Every length is in millimetres. */
+export type UnfoldNestingOptions = components["schemas"]["UnfoldNestingOptions"];
 /** A sub-shape laid into the flat compound, mapped back to its source face (compound order). */
 export type UnfoldPlaced = components["schemas"]["UnfoldPlaced"];
 /** A sub-shape laid into the flat compound, mapped back to its source face (compound order). */

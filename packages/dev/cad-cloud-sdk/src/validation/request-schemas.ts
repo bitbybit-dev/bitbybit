@@ -540,6 +540,9 @@ export const schemaBundle = {
             "minLength": 1
           }
         },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
         "options": {
           "$ref": "#/$defs/NestingInspectOptions"
         }
@@ -590,15 +593,15 @@ export const schemaBundle = {
           "minimum": 0,
           "maximum": 1000000000
         },
-        "tolerance": {
-          "type": "number",
-          "minimum": 1e-9,
-          "maximum": 1000000000
-        },
         "timeBudgetSeconds": {
           "type": "number",
           "minimum": 0.001,
           "maximum": 120
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 1e-9,
+          "maximum": 1000000000
         },
         "evaluationBudget": {
           "type": "integer",
@@ -629,6 +632,9 @@ export const schemaBundle = {
             "type": "string",
             "minLength": 1
           }
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
         },
         "options": {
           "$ref": "#/$defs/NestingOptions"
@@ -685,15 +691,15 @@ export const schemaBundle = {
           "minimum": 0,
           "maximum": 1000000000
         },
-        "tolerance": {
-          "type": "number",
-          "minimum": 1e-9,
-          "maximum": 1000000000
-        },
         "timeBudgetSeconds": {
           "type": "number",
           "minimum": 0.001,
           "maximum": 120
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 1e-9,
+          "maximum": 1000000000
         },
         "evaluationBudget": {
           "type": "integer",
@@ -1260,12 +1266,83 @@ export const schemaBundle = {
       ],
       "additionalProperties": false
     },
+    "UnfoldAndNestBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
+        "kFactor": {
+          "default": 0.5,
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "thicknessOverride": {
+          "default": 0,
+          "type": "number",
+          "minimum": 0
+        },
+        "nesting": {
+          "$ref": "#/$defs/UnfoldNestingOptions"
+        },
+        "outputs": {
+          "$ref": "#/$defs/UnfoldAndNestOutputOptions"
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
+    },
+    "UnfoldAndNestOutputOptions": {
+      "type": "object",
+      "properties": {
+        "formats": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "step",
+              "stpz",
+              "decomposed-mesh",
+              "gltf",
+              "dxf",
+              "svg",
+              "outlines",
+              "flat-meshes"
+            ]
+          }
+        },
+        "meshPrecision": {
+          "$ref": "#/$defs/MeshPrecision"
+        },
+        "gltfMeshPrecision": {
+          "$ref": "#/$defs/MeshPrecision"
+        },
+        "adjustYtoZ": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "formats"
+      ],
+      "additionalProperties": false
+    },
     "UnfoldFaceReportBody": {
       "type": "object",
       "properties": {
         "stepFileId": {
           "type": "string",
           "minLength": 1
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
         },
         "faceIndex": {
           "default": 0,
@@ -1286,6 +1363,9 @@ export const schemaBundle = {
           "type": "string",
           "minLength": 1
         },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
         "faceIndex": {
           "default": 0,
           "type": "integer",
@@ -1301,12 +1381,82 @@ export const schemaBundle = {
       ],
       "additionalProperties": false
     },
+    "UnfoldNestingOptions": {
+      "type": "object",
+      "properties": {
+        "sheets": {
+          "minItems": 1,
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NestingStrip"
+              },
+              {
+                "$ref": "#/$defs/NestingSheet"
+              }
+            ]
+          }
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "rotations": {
+          "$ref": "#/$defs/NestingRotations"
+        },
+        "allowFlip": {
+          "type": "boolean"
+        },
+        "spacing": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "margin": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "timeBudgetSeconds": {
+          "type": "number",
+          "minimum": 0.001,
+          "maximum": 120
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 1e-9,
+          "maximum": 1000000000
+        },
+        "evaluationBudget": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sheetGap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      },
+      "additionalProperties": false
+    },
     "UnfoldSolidBody": {
       "type": "object",
       "properties": {
         "stepFileId": {
           "type": "string",
           "minLength": 1
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
         },
         "kFactor": {
           "default": 0.5,
@@ -1335,6 +1485,9 @@ export const schemaBundle = {
           "type": "string",
           "minLength": 1
         },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
         "kFactor": {
           "default": 0.5,
           "type": "number",
@@ -1358,6 +1511,9 @@ export const schemaBundle = {
         "stepFileId": {
           "type": "string",
           "minLength": 1
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
         },
         "kFactor": {
           "default": 0.5,
