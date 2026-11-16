@@ -7,15 +7,18 @@ import type { DataInput } from "./occ-worker";
 import { initializationComplete, onMessageInput } from "./occ-worker";
 import { NON_CACHEABLE_FUNCTIONS } from "./constants";
 
-const { failure, kernelCalls } = vi.hoisted(() => {
+const { failure, kernelCalls, kernelBase, systemsSeen } = vi.hoisted(() => {
     const failure: { value: unknown } = { value: undefined };
     const kernelCalls: { path: string; inputs: unknown }[] = [];
-    return { failure, kernelCalls };
+    const kernelBase: { settings: { coordinateSystem?: string } } = { settings: {} };
+    const systemsSeen: (string | undefined)[] = [];
+    return { failure, kernelCalls, kernelBase, systemsSeen };
 });
 
 vi.mock("@bitbybit-dev/occt", () => {
     const call = (path: string) => (inputs: unknown): unknown => {
         kernelCalls.push({ path, inputs });
+        systemsSeen.push(kernelBase.settings.coordinateSystem);
         return { made: path };
     };
     class OCCTService {
@@ -61,6 +64,7 @@ vi.mock("@bitbybit-dev/occt", () => {
     const rules = new Map([[BoxDto, [{ reads: ["width"], check: (inputs: { width: number }) => (inputs.width > 100 ? { property: "width", code: "custom", message: "must be at most 100" } : undefined) }]]]);
     class OccHelper {
         meshingService = {};
+        base = kernelBase;
     }
     return {
         OccHelper,
@@ -90,6 +94,8 @@ describe("the call shape every OCCT operation goes through", () => {
 
     beforeEach(() => {
         kernelCalls.length = 0;
+        systemsSeen.length = 0;
+        kernelBase.settings = {};
         failure.value = new Error("the kernel refused");
         reports = [];
         setInputIssueSink((report) => reports.push(report));
@@ -116,6 +122,166 @@ describe("the call shape every OCCT operation goes through", () => {
             // Assert
             expect(kernelCalls).toEqual([]);
             expect(answer).toEqual({ uid: "uid-1", result: undefined });
+        });
+    });
+
+    describe("the settings the worker was told", () => {
+        const BOX = { functionName: "shapes.solid.createBox", inputs: { width: 5 } };
+        const tell = (coordinateSystem?: unknown): Answer => answerTo({ functionName: "setSettings", inputs: coordinateSystem === undefined ? {} : { coordinateSystem } }, "uid-set");
+
+        it("should hand the kernel the coordinate system it was told, for every call after", () => {
+            // Arrange
+            tell("leftHanded");
+
+            // Act
+            answerTo(BOX, "uid-1");
+            answerTo({ functionName: "shapes.solid.createBox", inputs: { width: 6 } }, "uid-2");
+
+            // Assert
+            expect(systemsSeen).toEqual(["leftHanded", "leftHanded"]);
+        });
+
+        it("should answer with the settings now in force", () => {
+            // Act
+            const answers = [tell("rightHanded"), tell()];
+
+            // Assert
+            expect(answers).toEqual([{ uid: "uid-set", result: { coordinateSystem: "rightHanded" } }, { uid: "uid-set", result: {} }]);
+        });
+
+        it("should hand the kernel none again once it is told nothing", () => {
+            // Arrange
+            tell("rightHanded");
+            answerTo(BOX, "uid-1");
+
+            // Act
+            tell();
+            answerTo({ functionName: "shapes.solid.createBox", inputs: { width: 6 } }, "uid-2");
+
+            // Assert
+            expect(systemsSeen).toEqual(["rightHanded", undefined]);
+        });
+
+        it("should run the kernel again for the same call in another coordinate system", () => {
+            // Arrange
+            tell("leftHanded");
+            answerTo(BOX, "uid-1");
+
+            // Act
+            tell("rightHanded");
+            answerTo(BOX, "uid-2");
+            tell();
+            answerTo(BOX, "uid-3");
+
+            // Assert
+            expect(systemsSeen).toEqual(["leftHanded", "rightHanded", undefined]);
+        });
+
+        it("should answer the same call from the cache once its coordinate system is back", () => {
+            // Arrange
+            tell("leftHanded");
+            answerTo(BOX, "uid-1");
+            tell("rightHanded");
+
+            // Act
+            tell("leftHanded");
+            const again = answerTo(BOX, "uid-2");
+
+            // Assert
+            expect(kernelCalls).toHaveLength(1);
+            expect(again).toEqual({ uid: "uid-2", result: { made: "shapes.solid.createBox" } });
+        });
+
+        it("should key a call made with no settings as it always was keyed", () => {
+            // Arrange
+            const resolved = { width: 5, length: 2, height: 3 };
+
+            // Act
+            const key = cacheHelper.computeHash({ functionName: BOX.functionName, inputs: resolved, settings: undefined });
+
+            // Assert
+            expect(key).toBe(cacheHelper.computeHash({ functionName: BOX.functionName, inputs: resolved }));
+        });
+
+        it("should refuse a coordinate system it does not know and keep the one it had", () => {
+            // Arrange
+            tell("leftHanded");
+
+            // Act
+            const answer = tell("upsideDown");
+            answerTo(BOX, "uid-1");
+
+            // Assert
+            expect(answer.errorKind).toBe("input");
+            expect(answer.error).toContain("`coordinateSystem` is \"upsideDown\"");
+            expect(systemsSeen).toEqual(["leftHanded"]);
+        });
+
+        it("should refuse a name that is no setting and keep the settings it had", () => {
+            // Arrange
+            tell("leftHanded");
+
+            // Act
+            const answer = answerTo({ functionName: "setSettings", inputs: { cordinateSystem: "rightHanded" } }, "uid-set");
+            answerTo(BOX, "uid-1");
+
+            // Assert
+            expect(answer.errorKind).toBe("input");
+            expect(answer.error).toContain("`cordinateSystem` is not a setting");
+            expect(systemsSeen).toEqual(["leftHanded"]);
+        });
+
+        it("should tell a plugin that carries settings each time they change", () => {
+            // Arrange
+            const plugin = { dependencies: {}, settings: { coordinateSystem: "stale" } as unknown };
+            cacheHelper = initializationComplete(A_MODULE, plugin, true);
+            const atTheStart = plugin.settings;
+
+            // Act
+            tell("rightHanded");
+            const told = plugin.settings;
+            tell();
+
+            // Assert
+            expect([atTheStart, told, plugin.settings]).toEqual([{}, { coordinateSystem: "rightHanded" }, {}]);
+        });
+
+        it("should leave a plugin that carries no settings as it is", () => {
+            // Arrange
+            const plugin = { dependencies: {} };
+            cacheHelper = initializationComplete(A_MODULE, plugin, true);
+
+            // Act
+            const answer = tell("leftHanded");
+
+            // Assert
+            expect(answer).toEqual({ uid: "uid-set", result: { coordinateSystem: "leftHanded" } });
+            expect(Object.keys(plugin)).toEqual(["dependencies"]);
+        });
+
+        it("should refuse settings without telling a plugin anything", () => {
+            // Arrange
+            const plugin = { dependencies: {}, settings: {} as unknown };
+            cacheHelper = initializationComplete(A_MODULE, plugin, true);
+            tell("leftHanded");
+
+            // Act
+            answerTo({ functionName: "setSettings", inputs: { cordinateSystem: "rightHanded" } }, "uid-set");
+
+            // Assert
+            expect(plugin.settings).toEqual({ coordinateSystem: "leftHanded" });
+        });
+
+        it("should start a new kernel with no settings", () => {
+            // Arrange
+            tell("leftHanded");
+
+            // Act
+            cacheHelper = initializationComplete(A_MODULE, undefined, true);
+            answerTo(BOX, "uid-1");
+
+            // Assert
+            expect(systemsSeen).toEqual([undefined]);
         });
     });
 

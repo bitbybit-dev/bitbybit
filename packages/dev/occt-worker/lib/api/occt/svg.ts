@@ -4,10 +4,10 @@ import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
 
 /**
  * Importing SVG drawings as OpenCascade shapes. The importer parses the document (paths, basic
- * shapes, transforms and the style cascade), reduces every element to the generic path vocabulary
- * of `path` and builds wires, and faces where it can, laid on the ground plane and placed by the
- * import options. `loadSVG` gives one compound for the whole drawing; `loadSVGStructured` gives one
- * shape per element with its fill and stroke.
+ * shapes, transforms, reused elements, nested viewports, units and the style cascade with CSS),
+ * reduces every element to the generic path vocabulary of `path` and builds wires, and faces where
+ * it can, laid on the ground plane and placed by the import options. `loadSVG` gives one compound
+ * for the whole drawing; `loadSVGStructured` gives one shape per element with its fill and stroke.
  */
 export class OCCTSVG {
     constructor(
@@ -16,12 +16,11 @@ export class OCCTSVG {
     }
 
     /**
-     * Parses an SVG document and builds every drawable element into one compound shape on the
-     * ground plane, ready to draw, extrude or transform as a whole.
+     * Parses an SVG document into one compound on the ground, ready to draw, extrude or transform.
      *
-     * `faceStrategy` decides whether closed outlines become faces, `scale` and `flipY` map SVG
-     * units and its downward Y axis, and `alignment`, `direction` and `center` place the result.
-     * Invisible elements are skipped unless asked for.
+     * `faceStrategy` decides which closed outlines become faces; `unit`, `scale` and `flipY` map SVG
+     * units and its downward Y; `alignment`, `direction`, `center` and `keepOrigin` place it. A very
+     * large file is read up to its limits; `loadSVGStructured` lists what was left out.
      * @param inputs - The SVG text and the import and placement options
      * @returns One compound holding every element
      * @group io
@@ -50,12 +49,13 @@ export class OCCTSVG {
 
     /**
      * Parses an SVG document and builds one shape per drawable element, each bundled with its
-     * resolved fill, stroke and stroke width, plus the parse warnings and the SVG view box.
+     * resolved fill, stroke and stroke width, plus the warnings, the view box and the page size in
+     * millimetres.
      *
      * Use it when the elements need their own colors or separate handling; `loadSVG` gives the
-     * whole drawing as one shape. Faces are built where the outline allows it.
+     * whole drawing as one shape.
      * @param inputs - The SVG text and the import and placement options
-     * @returns The shapes with their styles, the warnings and the view box
+     * @returns The shapes with their styles, the warnings, the view box and the page size
      * @group io
      * @shortname load svg structured
      * @drawable false
@@ -63,7 +63,7 @@ export class OCCTSVG {
      * ```typescript
      * const options = new Bit.Inputs.OCCT.LoadSVGDto();
      * options.svg = svgText;
-     * options.scale = 0.1;
+     * options.unit = Bit.Inputs.Base.unitOfLengthEnum.millimetre;
      * const result = await bitbybit.occt.svg.loadSVGStructured(options);
      * result.shapes.forEach(s => console.log(s.fill, s.stroke));
      * ```

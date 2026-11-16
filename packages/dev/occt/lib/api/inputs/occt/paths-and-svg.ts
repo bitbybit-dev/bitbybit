@@ -261,7 +261,7 @@ export class ShapeFromPathDto {
  * keep, whether to build faces, and how to scale and place the drawing.
  */
 export class LoadSVGDto {
-    constructor(svg?: string, faceStrategy?: svgFaceStrategyEnum, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, alignment?: Base.basicAlignmentEnum, direction?: Base.Vector3, center?: Base.Point3) {
+    constructor(svg?: string, faceStrategy?: svgFaceStrategyEnum, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, alignment?: Base.basicAlignmentEnum, direction?: Base.Vector3, center?: Base.Point3, unit?: Base.unitOfLengthEnum, keepOrigin?: boolean) {
         if (svg !== undefined) { this.svg = svg; }
         if (faceStrategy !== undefined) { this.faceStrategy = faceStrategy; }
         if (makeRibbons !== undefined) { this.makeRibbons = makeRibbons; }
@@ -273,6 +273,8 @@ export class LoadSVGDto {
         if (alignment !== undefined) { this.alignment = alignment; }
         if (direction !== undefined) { this.direction = direction; }
         if (center !== undefined) { this.center = center; }
+        if (unit !== undefined) { this.unit = unit; }
+        if (keepOrigin !== undefined) { this.keepOrigin = keepOrigin; }
     }
     /**
      * The text of the SVG document.
@@ -280,9 +282,9 @@ export class LoadSVGDto {
      */
     svg?: string | undefined = '<svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>';
     /**
-     * How filled shapes become faces: `none` keeps only wires, `auto` follows each element's fill
-     * rule, `nonzero` and `evenOdd` force a rule, `perSubpath` makes one face per closed subpath
-     * without holes.
+     * How filled shapes become faces: `none` keeps wires, `auto` follows each element's fill rule,
+     * `nonzero` and `evenOdd` force one, `perSubpath` faces each closed subpath alone. Open subpaths
+     * stay wires.
      * @default none
      */
     faceStrategy?: svgFaceStrategyEnum | undefined = svgFaceStrategyEnum.none;
@@ -303,12 +305,14 @@ export class LoadSVGDto {
      */
     joinSegments?: boolean | undefined = true;
     /**
-     * How far apart segment ends may be and still join, in model units.
+     * How far apart segment ends may be and still join, in model units; a subpath that ends this
+     * close to its start counts as closed.
      * @default 1e-7
      */
     tolerance?: number | undefined = 1e-7;
     /**
-     * A factor applied to the SVG coordinates; 1 keeps the size.
+     * A factor applied to the SVG coordinates, or to the true size when `unit` is set; 1 keeps the
+     * size.
      * @default 1
      */
     scale?: number | undefined = 1;
@@ -318,7 +322,8 @@ export class LoadSVGDto {
      */
     flipY?: boolean | undefined = true;
     /**
-     * Which point of the drawing's bounding box sits on `center`; `midMid` centers it.
+     * Which point of the drawing's bounding box sits on `center`; `midMid` centers it. Not used
+     * when `keepOrigin` is true.
      * @default midMid
      */
     alignment?: Base.basicAlignmentEnum | undefined = Base.basicAlignmentEnum.midMid;
@@ -332,6 +337,19 @@ export class LoadSVGDto {
      * @default [0, 0, 0]
      */
     center?: Base.Point3 | undefined = [0, 0, 0];
+    /**
+     * Imports at true size in this unit, read from the page's `width`, `height` and view box at 96
+     * pixels an inch. Left out, SVG user units become model units.
+     * @default undefined
+     * @optional true
+     */
+    unit?: Base.unitOfLengthEnum | undefined;
+    /**
+     * When true, the origin of the imported coordinates lands on `center`, ignoring `alignment`: the
+     * SVG's own origin, or the page's top left corner when `unit` is set.
+     * @default false
+     */
+    keepOrigin?: boolean | undefined = false;
 }
 
 /**
@@ -344,7 +362,8 @@ export class SVGShape<T> {
      */
     shape!: T;
     /**
-     * True when `shape` is a face, false when it is a wire.
+     * True when `shape` holds faces: one face, or a compound of faces that also carries any
+     * subpaths that stayed wires. False when it holds only wires.
      */
     isFace!: boolean;
     /**
@@ -352,7 +371,8 @@ export class SVGShape<T> {
      */
     elementType!: string;
     /**
-     * Whether the element's outline was closed.
+     * Whether every subpath of the element's outline was closed, by a close command or by ending
+     * within `tolerance` of its start.
      */
     closed!: boolean;
     /**
@@ -366,12 +386,14 @@ export class SVGShape<T> {
      */
     stroke?: string | undefined;
     /**
-     * The stroke width that applied to the element, if any.
+     * The stroke width that applied to the element, scaled by its transforms, in SVG user units or
+     * in `unit` when one is set; `scale` is not applied to it.
      * @optional true
      */
     strokeWidth?: number | undefined;
     /**
-     * The combined opacity of the element from 0 to 1, if any was set.
+     * The opacity of the element from 0 to 1, multiplied by the opacity of every group around it,
+     * if any was set.
      * @optional true
      */
     opacity?: number | undefined;
@@ -401,6 +423,24 @@ export class SVGResult<T> {
      * @optional true
      */
     viewBox?: [number, number, number, number] | undefined;
+    /**
+     * The page's width in millimetres, present when the page's width and height are both known, from
+     * `width` and `height` or from the view box.
+     * @optional true
+     */
+    documentWidth?: number | undefined;
+    /**
+     * The page's height in millimetres, present when the page's width and height are both known, from
+     * `width` and `height` or from the view box.
+     * @optional true
+     */
+    documentHeight?: number | undefined;
+    /**
+     * How many millimetres one SVG user unit stands for, across the page; 25.4 / 96 when the
+     * document gives no size.
+     * @optional true
+     */
+    millimetresPerUserUnit?: number | undefined;
     /**
      * Problems met while parsing or building that did not stop the import.
      */

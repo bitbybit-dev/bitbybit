@@ -39,6 +39,7 @@ describe("the worker protocol constants", () => {
                 STARTED_THE_RUN: "startedTheRun",
                 CLEAN_ALL_CACHE: "cleanAllCache",
                 SET_MESH_RETENTION: "setMeshRetention",
+                SET_SETTINGS: "setSettings",
                 ADD_OC: "addOc",
                 SAVE_SHAPE_STEP: "saveShapeSTEP",
             });
@@ -58,6 +59,7 @@ describe("the worker protocol constants", () => {
                 "docToMeshes",
                 "saveShapeSTEP",
                 "setMeshRetention",
+                "setSettings",
                 "shapeToMesh",
                 "shapeToMeshBuffers",
                 "shapesToMeshBuffers",

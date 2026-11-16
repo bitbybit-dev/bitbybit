@@ -70,52 +70,70 @@ describe("OCCT io unit tests", () => {
         cone.delete();
     });
 
-    it("should save shape as step file with adjustYtoZ and fromRightHanded (no mirroring)", () => {
-        const box = solid.createBox({ width: 4, length: 6, height: 8, center: [0, 0, 0] });
-        
-        const stepRightHanded = io.saveShapeSTEP({ 
-            shape: box, 
-            adjustYtoZ: true, 
-            fromRightHanded: true, 
-            fileName: "box.step" 
-        });
-        
-        const stepLeftHanded = io.saveShapeSTEP({ 
-            shape: box, 
-            adjustYtoZ: true, 
-            fromRightHanded: false, 
-            fileName: "box.step" 
-        });
-        
-        expect(stepRightHanded).toContain("ISO-10303-21;");
-        expect(stepRightHanded).toContain("END-ISO-10303-21;");
-        expect(stepLeftHanded).toContain("ISO-10303-21;");
-        expect(stepLeftHanded).toContain("END-ISO-10303-21;");
-        
-        expect(stepRightHanded).not.toEqual(stepLeftHanded);
-        
-        box.delete();
-    });
+    describe("where a saved STEP puts the shape", () => {
+        const KERNEL_CENTRE: Inputs.Base.Point3 = [3, 5, 7];
+        const fileCentreAndVolume = (options: { adjustYtoZ?: boolean, fromRightHanded?: boolean }): { centre: number[], volume: number } => {
+            const box = solid.createBox({ width: 1, length: 0.6, height: 0.4, center: KERNEL_CENTRE });
+            try {
+                const step = io.saveShapeSTEP({ shape: box, fileName: "box.step", tryDownload: false, ...options });
+                const asWritten = io.loadSTEPorIGES({ filetext: step, fileName: "box.step", adjustZtoY: false });
+                if (asWritten === undefined) {
+                    throw new Error("expected the file to load");
+                }
+                try {
+                    const centre = occHelper.operationsService.boundingBoxOfShape({ shape: asWritten }).center;
+                    return { centre: centre.map(value => Math.round(value * 1e6) / 1e6 + 0), volume: solid.getSolidVolume({ shape: asWritten }) };
+                } finally {
+                    asWritten.delete();
+                }
+            } finally {
+                box.delete();
+            }
+        };
 
-    it("should save shape as step file with fromRightHanded true and preserve roundtrip", () => {
-        const cylinder = solid.createCylinder({ radius: 5, height: 10, direction: [0, 1, 0], center: [0, 0, 0] });
-        
-        const stepText = io.saveShapeSTEP({ 
-            shape: cylinder, 
-            adjustYtoZ: true, 
-            fromRightHanded: true, 
-            fileName: "cylinder.step" 
+        it("should write the shape as it is with no option set", () => {
+            // Act
+            const file = fileCentreAndVolume({});
+
+            // Assert
+            expect(file.centre).toEqual([3, 5, 7]);
         });
-        
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true })!;
-        
-        const volumeOriginal = solid.getSolidVolume({ shape: cylinder });
-        const volumeLoaded = solid.getSolidVolume({ shape: loaded });
-        
-        expect(volumeOriginal).toBeCloseTo(volumeLoaded);
-        
-        cylinder.delete();
-        loaded.delete();
+
+        it("should swap Y and Z with adjustYtoZ, the mirror a left-handed scene shows", () => {
+            // Act
+            const file = fileCentreAndVolume({ adjustYtoZ: true });
+
+            // Assert
+            expect(file.centre).toEqual([3, 7, 5]);
+        });
+
+        it("should turn the shape upright and unmirrored with adjustYtoZ and fromRightHanded", () => {
+            // Act
+            const file = fileCentreAndVolume({ adjustYtoZ: true, fromRightHanded: true });
+
+            // Assert
+            expect(file.centre).toEqual([3, -7, 5]);
+        });
+
+        it("should leave the shape as it is with fromRightHanded alone", () => {
+            // Act
+            const file = fileCentreAndVolume({ fromRightHanded: true });
+
+            // Assert
+            expect(file.centre).toEqual([3, 5, 7]);
+        });
+
+        it.each([
+            ["as it is", {}],
+            ["swapped", { adjustYtoZ: true }],
+            ["turned", { adjustYtoZ: true, fromRightHanded: true }],
+        ])("should keep the solid's volume when written %s", (_name, options) => {
+            // Act
+            const file = fileCentreAndVolume(options);
+
+            // Assert
+            expect(file.volume).toBeCloseTo(1 * 0.6 * 0.4, 9);
+        });
     });
 
     it("should load cube shape from step file", () => {
@@ -167,7 +185,7 @@ describe("OCCT io unit tests", () => {
             expect(distance).toBeLessThan(0.01);
         }
 
-        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(filletedWire);
+        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(filletedWire, undefined, undefined, undefined, undefined, undefined, false);
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
 
         expect(dxfPaths.length).toBe(1);
@@ -267,7 +285,7 @@ describe("OCCT io unit tests", () => {
         const points = [[0, 0, 0], [5, 0, 5], [10, 0, 2], [15, 0, 8]] as Inputs.Base.Point3[];
         const bezierWire = wire.interpolatePoints({ points, periodic: false, tolerance: 0.0001 });
 
-        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(bezierWire);
+        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(bezierWire, undefined, undefined, undefined, undefined, undefined, false);
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
 
         expect(dxfPaths.length).toBe(1);
@@ -360,7 +378,7 @@ describe("OCCT io unit tests", () => {
             expect(distance).toBeLessThan(0.01);
         }
 
-        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(combinedWire);
+        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(combinedWire, undefined, undefined, undefined, undefined, undefined, false);
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
 
         expect(dxfPaths.length).toBe(1);

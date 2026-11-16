@@ -62,6 +62,7 @@ describe("the reserved command handlers", () => {
             meshing: occHelper.meshingService,
             kernel: occt,
             setMeshRetention: (triangles) => occt.SetMeshRetention(triangles),
+            setSettings: (settings) => { occHelper.base.settings = settings; },
             cacheHelper,
             shapeResolver: new ShapeResolver(cacheHelper),
             addPendingDependency: (key, value) => pending.push([key, value]),

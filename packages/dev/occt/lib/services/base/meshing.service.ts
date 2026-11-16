@@ -1,15 +1,19 @@
 import type { BitbybitAnalysis_SurfaceQuantity, BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import type { WiresService } from "./wires.service";
+import type { TransformsService } from "./transforms.service";
 import type { BaseBitByBit } from "@bitbybit-dev/base";
 import { InputError } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { decodeMeshArrays, decodeMeshBuffers, decodePolylines, meshBuffersFromLists, type MeshArrays, type MeshContents } from "./mesh-arrays";
+import { meshTurnedToZUp } from "./mesh-z-up";
+import { shapeTurnedToZUp, TURNED_TO_Z_UP } from "./file-axes";
 import type { WithIsoCurves } from "./mesh-arrays-types";
 import { checkedChoice, checkedDirection, checkedNumber, checkedShapes, checkedWhole } from "./input-checks";
 import { degreesOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
 import { subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
+import { turnedVector } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/matrices";
 
 const SURFACE_ANALYSES: readonly Inputs.OCCT.surfaceAnalysisEnum[] = [
     Inputs.OCCT.surfaceAnalysisEnum.none,
@@ -68,8 +72,24 @@ export class MeshingService {
     constructor(
         public readonly occ: BitbybitOcctModule,
         public readonly wiresService: WiresService,
-        public readonly base: BaseBitByBit
+        public readonly base: BaseBitByBit,
+        private readonly transformsService: TransformsService,
     ) { }
+
+    private forZUpConsumer<M>(resolved: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>, meshOf: (inputs: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>) => M): M {
+        if (!resolved.adjustYtoZ || this.base.settings.coordinateSystem !== Inputs.Base.coordinateSystemEnum.rightHanded) {
+            return meshOf(resolved);
+        }
+        const draftDirection = resolved.surfaceAnalysis === Inputs.OCCT.surfaceAnalysisEnum.draftAngle
+            ? turnedVector(TURNED_TO_Z_UP, checkedDirection(resolved.draftDirection, "draftDirection"))
+            : resolved.draftDirection;
+        const turned = shapeTurnedToZUp(this.transformsService, resolved.shape);
+        try {
+            return meshOf({ ...resolved, shape: turned, adjustYtoZ: false, draftDirection });
+        } finally {
+            turned.delete();
+        }
+    }
 
     shapeFacesToPolygonPoints(inputs: Resolved.OCCT.ShapeFacesToPolygonPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         const def = this.shapeToMesh({
@@ -137,8 +157,7 @@ export class MeshingService {
         if (!resolved.shape || resolved.shape.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
-        const sized = this.sizedFor(resolved);
-        return this.bufferedMesh(sized, decodeMeshArrays) ?? this.jsonMesh(sized);
+        return this.forZUpConsumer(this.sizedFor(resolved), sized => this.bufferedMesh(sized, decodeMeshArrays) ?? this.jsonMesh(sized));
     }
 
     shapeToMeshBuffers(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshBuffersDto {
@@ -146,8 +165,7 @@ export class MeshingService {
         if (!resolved.shape || resolved.shape.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
-        const sized = this.sizedFor(resolved);
-        return this.bufferedMesh(sized, decodeMeshBuffers) ?? meshBuffersFromLists(this.jsonMesh(sized));
+        return this.forZUpConsumer(this.sizedFor(resolved), sized => this.bufferedMesh(sized, decodeMeshBuffers) ?? meshBuffersFromLists(this.jsonMesh(sized)));
     }
 
     shapesToMeshBuffers(inputs: Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshBuffersDto[] {
@@ -307,7 +325,23 @@ export class MeshingService {
         return arrays ? decodeMeshArrays(arrays, contents) : undefined;
     }
 
+    private turnsDocumentMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>): boolean {
+        return inputs.adjustYtoZ && this.base.settings.coordinateSystem === Inputs.Base.coordinateSystemEnum.rightHanded;
+    }
+
     docToMeshes(inputs: Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
+        return this.turnsDocumentMesh(inputs)
+            ? this.documentMeshes({ ...inputs, adjustYtoZ: false }).map(meshTurnedToZUp)
+            : this.documentMeshes(inputs);
+    }
+
+    docToMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto {
+        return this.turnsDocumentMesh(inputs)
+            ? meshTurnedToZUp(this.documentAsOneMesh({ ...inputs, adjustYtoZ: false }))
+            : this.documentAsOneMesh(inputs);
+    }
+
+    private documentMeshes(inputs: Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
         const doc = inputs.document;
         if (!doc || typeof doc.get !== "function" || typeof doc.IsNull !== "function" || doc.IsNull()) {
             return [];
@@ -340,7 +374,7 @@ export class MeshingService {
         return JSON.parse(json) as Inputs.OCCT.DecomposedMeshDto[];
     }
 
-    docToMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto {
+    private documentAsOneMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto {
         const doc = inputs.document;
         if (!doc || typeof doc.get !== "function" || typeof doc.IsNull !== "function" || doc.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };

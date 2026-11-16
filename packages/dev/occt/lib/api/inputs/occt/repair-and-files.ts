@@ -1,4 +1,6 @@
 import type { Base } from "@bitbybit-dev/base";
+import type { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
+import { dxfAcadVersionEnum } from "./enums";
 
 /**
  * Shapes to join for `shapeFix.sewWithReport`, which sews their faces together along edges that lie
@@ -161,6 +163,103 @@ export class LoadBrepBinaryDto {
 }
 
 /**
+ * A DXF file for `io.loadDxf` and `io.loadDxfStructured`, which build its lines, arcs, circles,
+ * ellipses, polylines and splines as exact edges joined into wires, and faces where asked.
+ */
+export class LoadDxfDto {
+    constructor(dxf?: string | File | Blob, makeFaces?: boolean, joinTolerance?: number, includeHiddenLayers?: boolean, unit?: Base.unitOfLengthEnum) {
+        if (dxf !== undefined) { this.dxf = dxf; }
+        if (makeFaces !== undefined) { this.makeFaces = makeFaces; }
+        if (joinTolerance !== undefined) { this.joinTolerance = joinTolerance; }
+        if (includeHiddenLayers !== undefined) { this.includeHiddenLayers = includeHiddenLayers; }
+        if (unit !== undefined) { this.unit = unit; }
+    }
+    /**
+     * The DXF file's text, or a File or Blob holding it (ASCII DXF, R12 or later). Older bytes not
+     * in UTF-8 are read in the header's code page, or Windows-1252.
+     * @default undefined
+     */
+    dxf!: string | File | Blob;
+    /**
+     * When true, closed outlines that lie flat in the drawing become faces, an outline inside
+     * another cutting a hole in it as an even-odd fill does; open outlines stay wires.
+     * @default false
+     */
+    makeFaces?: boolean | undefined = false;
+    /**
+     * How far apart, in file units, two entities' ends may lie and still join into one wire: at most
+     * 0.001 or a hundredth of the drawing's span, whichever is larger.
+     * @default 0.001
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.001
+     */
+    joinTolerance?: number | undefined = 0.001;
+    /**
+     * When true, entities on frozen and switched-off layers are read too.
+     * @default false
+     */
+    includeHiddenLayers?: boolean | undefined = false;
+    /**
+     * The unit to give the shapes in, scaled from the unit the file states; a file stating none is
+     * read as drawn. Left out, the numbers stay as drawn.
+     * @default undefined
+     * @optional true
+     */
+    unit?: Base.unitOfLengthEnum | undefined;
+}
+
+/**
+ * One layer, color and line type of a DXF file that `io.loadDxfStructured` read, with its shape.
+ * An output, not an input.
+ */
+export class DxfShapePart<T> {
+    /**
+     * The layer the entities lie on.
+     */
+    layer!: string;
+    /**
+     * Their color as hex, such as `#ff0000`.
+     */
+    color!: string;
+    /**
+     * Their line type.
+     */
+    lineType!: IO.lineTypeEnum;
+    /**
+     * A compound of their wires, and of faces when `makeFaces` asked for them.
+     */
+    shape!: T;
+}
+
+/**
+ * What `io.loadDxfStructured` returns: one shape per layer, color and line type, the file's unit
+ * and version, and any warnings. An output, not an input.
+ */
+export class DxfShapesResult<T> {
+    /**
+     * One entry per layer, color and line type, in the order the file first uses each; one with
+     * nothing that could be drawn has no entry.
+     */
+    parts!: DxfShapePart<T>[];
+    /**
+     * The unit the shapes are in: the one asked for, or the file's when none was asked; left out
+     * when the file states none it knows.
+     * @optional true
+     */
+    unit?: Base.unitOfLengthEnum | undefined;
+    /**
+     * The file's DXF version, such as `AC1015` for AutoCAD 2000; empty when it states none.
+     */
+    version!: string;
+    /**
+     * What the file held that was left out or changed, such as text, hatches or entities on hidden
+     * layers.
+     */
+    warnings!: string[];
+}
+
+/**
  * A shape, a file name and meshing options for `io.saveShapeObj`, which triangulates the shape and
  * writes it as an OBJ file with the material library its `mtllib` line names.
  */
@@ -193,8 +292,8 @@ export class SaveObjDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
-     * turn it 90 degrees about X with `transforms.rotate` instead.
+     * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
+     * what the screen shows either way; without them this swaps Y and Z.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
@@ -238,8 +337,8 @@ export class SavePlyDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
-     * turn it 90 degrees about X with `transforms.rotate` instead.
+     * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
+     * what the screen shows either way; without them this swaps Y and Z.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
@@ -282,8 +381,8 @@ export class SaveSvgDto<T> {
      */
     drawHidden?: boolean | undefined = false;
     /**
-     * How far the straight segments that trace a curved edge may stray from it, in model units;
-     * a smaller value follows curves more closely and makes a bigger file.
+     * How far the view may stray from the shape, in model units: the tolerance of hidden-line
+     * removal and of the cubics that stand in for curves SVG cannot draw.
      * @default 0.01
      * @minimum 0
      * @exclusiveMinimum true
@@ -303,6 +402,74 @@ export class SaveSvgDto<T> {
      * @default shape.svg
      */
     fileName?: string | undefined = "shape.svg";
+    /**
+     * When true, a browser download of the file is started where that is possible; the kernel
+     * itself only returns the text.
+     * @default true
+     */
+    tryDownload?: boolean | undefined = true;
+}
+
+/**
+ * A shape, a view and file options for `io.saveShapeDxf`, which draws the edges the view sees as a
+ * DXF drawing, and the edges other faces cover on a hidden layer when asked.
+ */
+export class SaveDxfDto<T> {
+    constructor(shape?: T, frame?: Base.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean, unit?: Base.unitOfLengthEnum, acadVersion?: dxfAcadVersionEnum) {
+        if (shape !== undefined) { this.shape = shape; }
+        if (frame !== undefined) { this.frame = frame; }
+        if (drawHidden !== undefined) { this.drawHidden = drawHidden; }
+        if (precision !== undefined) { this.precision = precision; }
+        if (fileName !== undefined) { this.fileName = fileName; }
+        if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        if (unit !== undefined) { this.unit = unit; }
+        if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
+    }
+    /**
+     * The shape to draw.
+     * @default undefined
+     */
+    shape!: T;
+    /**
+     * The view, as in `operations.hiddenLines`: the eye sits on the side the normal points to and
+     * looks back along it, and the drawing's x runs along the direction.
+     * @default undefined
+     */
+    frame!: Base.Frame;
+    /**
+     * When true, the edges other faces cover are drawn too, on the layer `hidden` with the
+     * `HIDDEN` line type.
+     * @default false
+     */
+    drawHidden?: boolean | undefined = false;
+    /**
+     * How far the view may stray from the shape, in model units: the tolerance of the hidden-line
+     * removal, and of the polylines that stand in for curves in `AC1009`.
+     * @default 0.01
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
+     * @step 0.001
+     */
+    precision?: number | undefined = 0.01;
+    /**
+     * The unit the shape is modelled in, written into the file so CAD programs open it at true
+     * size; `AC1015` only.
+     * @default undefined
+     * @optional true
+     */
+    unit?: Base.unitOfLengthEnum | undefined;
+    /**
+     * The DXF version: `AC1015` (AutoCAD 2000) keeps every curve exact; `AC1009` (R12) writes
+     * splines and ellipses as polylines.
+     * @default AC1015
+     */
+    acadVersion?: dxfAcadVersionEnum | undefined = dxfAcadVersionEnum.AC1015;
+    /**
+     * The name the downloaded file gets.
+     * @default shape.dxf
+     */
+    fileName?: string | undefined = "shape.dxf";
     /**
      * When true, a browser download of the file is started where that is possible; the kernel
      * itself only returns the text.

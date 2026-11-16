@@ -12,9 +12,9 @@ export class OCCTIO {
      * Writes a shape as STEP, the exchange format for exact CAD geometry, and starts a browser
      * download of the file.
      *
-     * With `adjustYtoZ` true, Y and Z swap, mirroring the shape; turn it 90 degrees about X with
-     * `transforms.rotate` first to keep it as built. The file is in millimetres, another `unit`
-     * scaled to them; `saveShapeSTEPAndReturn` returns the text.
+     * With `adjustYtoZ` true the file is Z-up: with the conventions set it shows what the screen
+     * shows, without them Y and Z are swapped. The file is in millimetres;
+     * `saveShapeSTEPAndReturn` returns the text.
      * @param inputs - The shape, the file name, the axis adjustment, the unit and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
@@ -230,8 +230,8 @@ export class OCCTIO {
      * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
      * asked, and starts a browser download of the file.
      *
-     * The drawing shows the view from the frame's normal side, x along its direction; with the shape's
-     * `unit`, it states its true width and height. `saveShapeSvgAndReturn` gives the text instead.
+     * The drawing shows the view from the frame's normal side, x along its direction; curves stay
+     * exact where SVG can draw them. `saveShapeSvgAndReturn` gives the text instead.
      * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
@@ -254,6 +254,39 @@ export class OCCTIO {
         const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.saveShapeSvg", resolved);
         if (resolved.tryDownload) {
             this.downloadFile(text, resolved.fileName, "image/svg+xml");
+        }
+        return text;
+    }
+
+    // replaces io.saveShapeDxf
+    /**
+     * Draws the edges a view of a shape sees as a DXF drawing, hidden ones on their own layer when
+     * asked, and starts a browser download of the file.
+     *
+     * The drawing shows the view from the frame's normal side, x along its direction, with every
+     * curve exact. `saveShapeDxfAndReturn` gives the text instead.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit, the version and the download options
+     * @returns Nothing; the download starts when the file is ready
+     * @group io
+     * @shortname save dxf
+     * @drawable false
+     * @example
+     * ```typescript
+     * const view = { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] };
+     * await bitbybit.occt.io.saveShapeDxf({ shape: part, frame: view, drawHidden: true, precision: 0.01, fileName: "top.dxf", tryDownload: true });
+     * ```
+     */
+    async saveShapeDxf(inputs: Inputs.OCCT.SaveDxfDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
+        const resolved = resolveDto(Inputs.OCCT.SaveDxfDto, inputs) as Resolved.OCCT.SaveDxfDto<Inputs.OCCT.TopoDSShapePointer>;
+        await this.saveShapeDxfAndReturn(resolved);
+    }
+
+    // replaces io.saveShapeDxf
+    async saveShapeDxfAndReturn(inputs: Inputs.OCCT.SaveDxfDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
+        const resolved = resolveDto(Inputs.OCCT.SaveDxfDto, inputs) as Resolved.OCCT.SaveDxfDto<Inputs.OCCT.TopoDSShapePointer>;
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.saveShapeDxf", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "image/vnd.dxf");
         }
         return text;
     }
@@ -300,25 +333,38 @@ export class OCCTIO {
         return this.occWorkerManager.genericCallToWorkerPromise("io.loadBrepBinary", { ...inputs, brepData });
     }
 
+    // replaces io.loadDxf
+    async loadDxf(inputs: Inputs.OCCT.LoadDxfDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        const resolved = resolveDto(Inputs.OCCT.LoadDxfDto, inputs) as Resolved.OCCT.LoadDxfDto;
+        const dxf = await this.occWorkerManager.prepareStepData(resolved.dxf);
+        return this.occWorkerManager.genericCallToWorkerPromise("io.loadDxf", { ...resolved, dxf });
+    }
+
+    // replaces io.loadDxfStructured
+    async loadDxfStructured(inputs: Inputs.OCCT.LoadDxfDto): Promise<Inputs.OCCT.DxfShapesResult<Inputs.OCCT.TopoDSShapePointer>> {
+        const resolved = resolveDto(Inputs.OCCT.LoadDxfDto, inputs) as Resolved.OCCT.LoadDxfDto;
+        const dxf = await this.occWorkerManager.prepareStepData(resolved.dxf);
+        return this.occWorkerManager.genericCallToWorkerPromise("io.loadDxfStructured", { ...resolved, dxf });
+    }
+
     // replaces io.dxfCreate
-    dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): Promise<string> {
+    async dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): Promise<string> {
         const resolved = resolveDto(Inputs.OCCT.DxfPathsPartsListDto, inputs) as Resolved.OCCT.DxfPathsPartsListDto;
-        return this.occWorkerManager.genericCallToWorkerPromise<string>("io.dxfCreate", resolved).then(s => {
-            if (resolved.tryDownload && document) {
-                const blob = new Blob([s], { type: "application/stl" });
-                const blobUrl = URL.createObjectURL(blob);
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.dxfCreate", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "image/vnd.dxf");
+        }
+        return text;
+    }
 
-                const fileName = resolved.fileName;
-
-                const fileLink = document.createElement("a");
-                fileLink.href = blobUrl;
-                fileLink.target = "_self";
-                fileLink.download = fileName;
-                fileLink.click();
-                fileLink.remove();
-            }
-            return s;
-        });
+    // replaces io.svgCreate
+    async svgCreate(inputs: Inputs.OCCT.SvgLayersDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
+        const resolved = resolveDto(Inputs.OCCT.SvgLayersDto, inputs) as Resolved.OCCT.SvgLayersDto<Inputs.OCCT.TopoDSShapePointer>;
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.svgCreate", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "image/svg+xml");
+        }
+        return text;
     }
 
     // replaces io.convertStepToGltf

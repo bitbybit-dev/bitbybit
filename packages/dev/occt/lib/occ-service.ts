@@ -23,7 +23,8 @@ import { OCCTSketch } from "./services/sketch/sketch";
 import { OCCTDesign } from "./services/design/design";
 import { OCCTRecipes } from "./services/recipes/recipes";
 import { OCCTParts } from "./services/parts/parts";
-import { resolveDto } from "@bitbybit-dev/base";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
+import { checkedSettings, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "./api/resolved-inputs";
 
 /**
@@ -93,12 +94,26 @@ export class OCCTService {
     }
 
     /**
+     * The settings this kernel works by, such as the coordinate system its numbers are in. Assign
+     * them once, before the calls they apply to: `occt.settings = { coordinateSystem }`. A name
+     * that is no setting, or a value its setting does not take, is refused as an `InputError`. The
+     * settings read back are frozen, so they change only by assigning new ones.
+     */
+    get settings(): BitbybitSettings {
+        return this.och.base.settings;
+    }
+
+    set settings(settings: BitbybitSettings) {
+        this.och.base.settings = checkedSettings(settings);
+    }
+
+    /**
      * Triangulates a shape and returns every triangle as three points, in one flat list over all
      * faces.
      *
      * `precision` is the meshing tolerance in model units: smaller values follow curved surfaces
-     * more closely and give more triangles. `adjustYtoZ` swaps the Y and Z axes for tools that
-     * treat Z as up, and `reversedPoints` flips the winding of each triangle.
+     * more closely and give more triangles. `adjustYtoZ` makes the points Z-up for tools that treat
+     * Z as up, and `reversedPoints` flips the winding of each triangle.
      * @param inputs - The shape, the meshing precision and the axis and winding options
      * @returns One list of three points per triangle
      * @group convert

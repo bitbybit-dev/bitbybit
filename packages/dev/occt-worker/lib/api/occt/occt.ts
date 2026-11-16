@@ -91,8 +91,8 @@ export class OCCT {
      * faces.
      *
      * `precision` is the meshing tolerance in model units: smaller values follow curved surfaces
-     * more closely and give more triangles. `adjustYtoZ` swaps the Y and Z axes for tools that
-     * treat Z as up, and `reversedPoints` flips the winding of each triangle.
+     * more closely and give more triangles. `adjustYtoZ` makes the points Z-up for tools that treat
+     * Z as up, and `reversedPoints` flips the winding of each triangle.
      * @param inputs - The shape, the meshing precision and the axis and winding options
      * @returns One list of three points per triangle
      * @group convert

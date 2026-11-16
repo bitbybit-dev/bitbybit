@@ -1,5 +1,5 @@
 import { Base } from "@bitbybit-dev/base";
-import type { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
+import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum, surfaceAnalysisEnum } from "./enums";
 
 /**
@@ -63,8 +63,8 @@ export class ShapeToMeshDto<T> {
      */
     precisionShare?: number | undefined = 0;
     /**
-     * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
-     * up.
+     * When true, the mesh is made Z-up for tools that treat Z as up: turned a quarter about X under
+     * right-handed conventions, with Y and Z swapped otherwise.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
@@ -149,8 +149,8 @@ export class ShapeFacesToPolygonPointsDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, the points are turned so this library's Y-up becomes Z-up, for tools that treat Z
-     * as up.
+     * When true, the points are made Z-up for tools that treat Z as up: turned a quarter about X under
+     * right-handed conventions, with Y and Z swapped otherwise.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
@@ -247,8 +247,8 @@ export class ShapesToMeshesDto<T> {
      */
     precisionShare?: number | undefined = 0;
     /**
-     * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
-     * as up.
+     * When true, the meshes are made Z-up for tools that treat Z as up: turned a quarter about X under
+     * right-handed conventions, with Y and Z swapped otherwise.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
@@ -354,8 +354,8 @@ export class DocToMeshDto<U> {
      */
     relativeDeflection?: boolean | undefined = false;
     /**
-     * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
-     * up.
+     * When true, the mesh is made Z-up for tools that treat Z as up: turned a quarter about X under
+     * right-handed conventions, with Y and Z swapped otherwise.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
@@ -432,8 +432,8 @@ export class DocToMeshesDto<U> {
      */
     relativeDeflection?: boolean | undefined = false;
     /**
-     * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
-     * as up.
+     * When true, the meshes are made Z-up for tools that treat Z as up: turned a quarter about X under
+     * right-handed conventions, with Y and Z swapped otherwise.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
@@ -485,14 +485,16 @@ export class SaveStepDto<T> {
      */
     fileName?: string | undefined = "shape.step";
     /**
-     * When true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape. To keep it as
-     * built, turn it 90 degrees about X with `transforms.rotate` instead.
+     * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
+     * what the screen shows either way; without them this swaps Y and Z.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
     /**
-     * When true, the swap of `adjustYtoZ` becomes a turn of -90 degrees about X: the shape is not
-     * mirrored but stands upside down in a Z-up tool.
+     * When true, `adjustYtoZ` turns the shape 90 degrees about X instead of swapping, for a
+     * right-handed scene.
+     * @deprecated Set the conventions once instead, `bitbybit.setConventions(1)`, which maps
+     * every file for the engine in use.
      * @default false
      */
     fromRightHanded?: boolean | undefined = false;
@@ -539,8 +541,8 @@ export class SaveStlDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
-     * turn it 90 degrees about X with `transforms.rotate` instead.
+     * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
+     * what the screen shows either way; without them this swaps Y and Z.
      * @default false
      */
     adjustYtoZ?: boolean | undefined = false;
@@ -563,16 +565,18 @@ export class SaveStlDto<T> {
  * path records.
  */
 export class ShapeToDxfPathsDto<T> {
-    constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number) {
+    constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number, exactCurves?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
         if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
         if (curvatureDeflection !== undefined) { this.curvatureDeflection = curvatureDeflection; }
         if (minimumOfPoints !== undefined) { this.minimumOfPoints = minimumOfPoints; }
         if (uTolerance !== undefined) { this.uTolerance = uTolerance; }
         if (minimumLength !== undefined) { this.minimumLength = minimumLength; }
+        if (exactCurves !== undefined) { this.exactCurves = exactCurves; }
     }
     /**
-     * The shape whose wires are traced; it must lie flat on the XZ ground plane.
+     * The shape whose wires are traced, seen along Y: X stays X and Z becomes the drawing's Y (-Z
+     * under right-handed conventions), so a flat shape keeps its size.
      * @default undefined
      */
     shape!: T;
@@ -618,6 +622,12 @@ export class ShapeToDxfPathsDto<T> {
      * @step 1.0e-7
      */
     minimumLength?: number | undefined = 1.0e-7;
+    /**
+     * When true, ellipses and splines stay exact, and other curves become cubic splines within
+     * `curvatureDeflection`; when false, curves other than lines and circles are traced as points.
+     * @default true
+     */
+    exactCurves?: boolean | undefined = true;
 }
 
 /**
@@ -625,16 +635,17 @@ export class ShapeToDxfPathsDto<T> {
  * drawing.
  */
 export class DxfPathsWithLayerDto {
-    constructor(paths?: IO.DxfPathDto[], layer?: string, color?: Base.Color) {
+    constructor(paths?: IO.DrawingPathDto[], layer?: string, color?: Base.Color, lineType?: IO.lineTypeEnum) {
         if (paths !== undefined) { this.paths = paths; }
         if (layer !== undefined) { this.layer = layer; }
         if (color !== undefined) { this.color = color; }
+        if (lineType !== undefined) { this.lineType = lineType; }
     }
     /**
      * The paths from `io.shapeToDxfPaths`.
      * @default undefined
      */
-    paths!: IO.DxfPathDto[];
+    paths!: IO.DrawingPathDto[];
     /**
      * The name of the DXF layer the paths go on.
      * @default Default
@@ -645,34 +656,50 @@ export class DxfPathsWithLayerDto {
      * @default #000000
      */
     color?: Base.Color | undefined = "#000000";
+    /**
+     * Whether the lines are whole or dashed, such as `hidden` for edges a view cannot see.
+     * @default continuous
+     */
+    lineType?: IO.lineTypeEnum | undefined = IO.lineTypeEnum.continuous;
 }
 
 /**
  * Layered DXF parts and file options for `io.dxfCreate`, which writes them into one DXF file.
  */
 export class DxfPathsPartsListDto {
-    constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean, unit?: Base.unitOfLengthEnum) {
+    constructor(pathsParts?: IO.DrawingPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean, unit?: Base.unitOfLengthEnum, curveTolerance?: number) {
         if (pathsParts !== undefined) { this.pathsParts = pathsParts; }
         if (colorFormat !== undefined) { this.colorFormat = colorFormat; }
         if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
         if (unit !== undefined) { this.unit = unit; }
+        if (curveTolerance !== undefined) { this.curveTolerance = curveTolerance; }
     }
     /**
      * The parts from `io.dxfPathsWithLayer`, each with its own layer and color.
      * @default undefined
      */
-    pathsParts!: IO.DxfPathsPartDto[];
+    pathsParts!: IO.DrawingPartDto[];
     /**
-     * How colors are written: `aci` as AutoCAD's indexed colors, `truecolor` as RGB.
+     * How colors are written: `aci`, the nearest of AutoCAD's 255 indexed colors, or `truecolor`,
+     * the exact color beside that index (`AC1015` only).
      * @default aci
      */
     colorFormat?: dxfColorFormatEnum | undefined = dxfColorFormatEnum.aci;
     /**
-     * The DXF version to write: `AC1009` is R12, the most widely readable, `AC1015` is 2000.
-     * @default AC1009
+     * The DXF version: `AC1015` (AutoCAD 2000) keeps splines and ellipses exact; `AC1009` (R12), for
+     * old software, writes them as polylines within `curveTolerance`.
+     * @default AC1015
      */
-    acadVersion?: dxfAcadVersionEnum | undefined = dxfAcadVersionEnum.AC1009;
+    acadVersion?: dxfAcadVersionEnum | undefined = dxfAcadVersionEnum.AC1015;
+    /**
+     * The largest distance, in model units, between a curve and the polyline that stands in for it
+     * where the version cannot hold the curve exactly.
+     * @default 0.01
+     * @minimum 0
+     * @exclusiveMinimum true
+     */
+    curveTolerance?: number | undefined = 0.01;
     /**
      * The unit the drawing is in, written into its header so CAD programs open it at true size;
      * `AC1015` only. Left out, no unit is stated.
@@ -685,6 +712,102 @@ export class DxfPathsPartsListDto {
      * @default bitbybit-dev.dxf
      */
     fileName?: string | undefined = "bitbybit-dev.dxf";
+    /**
+     * When true, a browser download of the file is started where that is possible; the kernel
+     * itself only returns the text.
+     * @default true
+     */
+    tryDownload?: boolean | undefined = true;
+}
+
+/**
+ * Shapes, a layer name, a color and a line type for `io.svgLayer`, which makes them one layer of an
+ * SVG drawing.
+ */
+export class SvgLayerDto<T> {
+    constructor(shapes?: T[], layer?: string, color?: Base.Color, lineType?: IO.lineTypeEnum) {
+        if (shapes !== undefined) { this.shapes = shapes; }
+        if (layer !== undefined) { this.layer = layer; }
+        if (color !== undefined) { this.color = color; }
+        if (lineType !== undefined) { this.lineType = lineType; }
+    }
+    /**
+     * The shapes whose wires are drawn on this layer.
+     * @default undefined
+     */
+    shapes!: T[];
+    /**
+     * The name of the layer, the group Inkscape shows for it.
+     * @default Default
+     */
+    layer?: string | undefined = "Default";
+    /**
+     * The color of the lines as a hex string such as `#000000`.
+     * @default #000000
+     */
+    color?: Base.Color | undefined = "#000000";
+    /**
+     * Whether the lines are whole or dashed, such as `hidden` for edges a view cannot see.
+     * @default continuous
+     */
+    lineType?: IO.lineTypeEnum | undefined = IO.lineTypeEnum.continuous;
+}
+
+/**
+ * Layers of shapes and file options for `io.svgCreate`, which draws them into one SVG file.
+ */
+export class SvgLayersDto<T> {
+    constructor(layers?: SvgLayerDto<T>[], unit?: Base.unitOfLengthEnum, strokeWidth?: number, margin?: number, tolerance?: number, fileName?: string, tryDownload?: boolean) {
+        if (layers !== undefined) { this.layers = layers; }
+        if (unit !== undefined) { this.unit = unit; }
+        if (strokeWidth !== undefined) { this.strokeWidth = strokeWidth; }
+        if (margin !== undefined) { this.margin = margin; }
+        if (tolerance !== undefined) { this.tolerance = tolerance; }
+        if (fileName !== undefined) { this.fileName = fileName; }
+        if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+    }
+    /**
+     * The layers from `io.svgLayer`; each becomes a group Inkscape reads as a layer.
+     * @default undefined
+     */
+    layers!: SvgLayerDto<T>[];
+    /**
+     * The unit the shapes are modelled in, which gives the file its true width and height. Left out,
+     * the file states no size and viewers fit it to the window.
+     * @default undefined
+     * @optional true
+     */
+    unit?: Base.unitOfLengthEnum | undefined;
+    /**
+     * How wide the lines are, in model units. Left out, a five-hundredth of the drawing's larger
+     * side.
+     * @default undefined
+     * @optional true
+     * @minimum 0
+     * @exclusiveMinimum true
+     */
+    strokeWidth?: number | undefined;
+    /**
+     * The empty border around the drawing, in model units. Left out, a fortieth of the drawing's
+     * larger side.
+     * @default undefined
+     * @optional true
+     * @minimum 0
+     */
+    margin?: number | undefined;
+    /**
+     * The largest distance, in model units, between a curve SVG cannot draw exactly and the cubic
+     * curves that stand in for it.
+     * @default 0.01
+     * @minimum 0
+     * @exclusiveMinimum true
+     */
+    tolerance?: number | undefined = 0.01;
+    /**
+     * The name the downloaded file gets.
+     * @default bitbybit-dev.svg
+     */
+    fileName?: string | undefined = "bitbybit-dev.svg";
     /**
      * When true, a browser download of the file is started where that is possible; the kernel
      * itself only returns the text.

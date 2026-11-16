@@ -2375,7 +2375,7 @@ interface EmbindModule {
   MakeInterpolatedBSplineEdge(_0: VectorDouble, _1: boolean, _2: number, _3: number, _4: VectorDouble, _5: VectorInt): TopoDS_Edge;
   ClosestPointsOnShape(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array;
   BoundingBoxOf(_0: TopoDS_Shape): Float64Array;
-  DxfPathsOf(_0: TopoDS_Shape, _1: number, _2: number, _3: number, _4: number, _5: number): Float64Array;
+  DrawingPathsOf(_0: TopoDS_Shape, _1: number, _2: number, _3: number, _4: number, _5: number, _6: boolean): Float64Array;
   CurvePointsAtNormalizedParameters(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
   CurvePointsAtLengths(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
   FacePointsAtUV(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array | null;
@@ -2407,6 +2407,7 @@ interface EmbindModule {
   BooleanCut(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number, _4: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string };
   BooleanCommon(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
   FilletWireCorners(_0: TopoDS_Wire, _1: ArrayLike<number>): { wire: TopoDS_Wire | null; failedCorners: Int32Array };
+  ShapesFromDrawing(_0: ArrayLike<number>, _1: number): { shapes: TopoDS_Compound; leftOut: Int32Array };
   gp_Pnt_GetCoord(_0: gp_Pnt): CoordResult;
   gp_Vec_GetCoord(_0: gp_Vec): CoordResult;
   gp_Dir_GetCoord(_0: gp_Dir): CoordResult;

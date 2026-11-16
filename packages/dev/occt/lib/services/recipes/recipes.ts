@@ -1,3 +1,4 @@
+import { placesRecipeRoots, recipeRootInModelAxes } from "../base/file-axes";
 import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type { Base } from "@bitbybit-dev/base";
@@ -150,10 +151,11 @@ export class OCCTRecipes {
         if (typeof this.occ.BuildRecipes !== "function") {
             throw new Error("This build of the Bitbybit OCCT Kernel cannot build recipes; a newer one can.");
         }
-        const text = JSON.stringify({ tolerance: recipe.tolerance, nodes: this.kernelNodes(recipe.nodes), roots: roots.map(({ node, matrix }) => ({ node, matrix })) });
+        const placedHere = placesRecipeRoots(this.och);
+        const text = JSON.stringify({ tolerance: recipe.tolerance, nodes: this.kernelNodes(recipe.nodes), roots: roots.map(({ node, matrix }) => ({ node, matrix: placedHere ? recipeRootInModelAxes(this.och, matrix, adjustZtoY) : matrix })) });
         let result: KernelRecipeBuild<TopoDS_Shape>;
         try {
-            result = this.occ.BuildRecipes(text, recipe.buffers.f64, recipe.buffers.i32, adjustZtoY, facetedMeshes, Math.min(Math.floor(maxTriangles), MAX_KERNEL_COUNT));
+            result = this.occ.BuildRecipes(text, recipe.buffers.f64, recipe.buffers.i32, adjustZtoY && !placedHere, facetedMeshes, Math.min(Math.floor(maxTriangles), MAX_KERNEL_COUNT));
         } catch (thrown) {
             throw readKernelException(this.occ, thrown);
         }

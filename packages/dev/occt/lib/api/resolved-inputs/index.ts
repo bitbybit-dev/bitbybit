@@ -160,8 +160,10 @@ export namespace OCCT {
     export type DrawShapeDto<T> = WithDefaults<Inputs.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     export type DrawShapesDto<T> = WithDefaults<Inputs.OCCT.DrawShapesDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     export type DrawShapeSharedDto = WithDefaults<Inputs.OCCT.DrawShapeSharedDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
-    export type DxfPathsPartsListDto = WithDefaults<Inputs.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "fileName" | "tryDownload">;
-    export type DxfPathsWithLayerDto = WithDefaults<Inputs.OCCT.DxfPathsWithLayerDto, "layer" | "color">;
+    export type DxfPathsPartsListDto = WithDefaults<Inputs.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "curveTolerance" | "fileName" | "tryDownload">;
+    export type DxfPathsWithLayerDto = WithDefaults<Inputs.OCCT.DxfPathsWithLayerDto, "layer" | "color" | "lineType">;
+    export type DxfShapePart<T> = Inputs.OCCT.DxfShapePart<T>;
+    export type DxfShapesResult<T> = Inputs.OCCT.DxfShapesResult<T>;
     export type EdgeIndexDto<T> = WithDefaults<Inputs.OCCT.EdgeIndexDto<T>, "index">;
     export type EdgesToPointsDto<T> = WithDefaults<Inputs.OCCT.EdgesToPointsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
     export type EllipseDto = WithDefaults<Inputs.OCCT.EllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor">;
@@ -269,12 +271,13 @@ export namespace OCCT {
     export type LineWithExtensionsDto = WithDefaults<Inputs.OCCT.LineWithExtensionsDto, "start" | "end" | "extensionStart" | "extensionEnd">;
     export type LoadBrepBinaryDto = Inputs.OCCT.LoadBrepBinaryDto;
     export type LoadBrepDto = Inputs.OCCT.LoadBrepDto;
+    export type LoadDxfDto = WithDefaults<Inputs.OCCT.LoadDxfDto, "makeFaces" | "joinTolerance" | "includeHiddenLayers">;
     export type LoadGltfToDocDto = Inputs.OCCT.LoadGltfToDocDto;
     export type LoadObjToDocDto = Inputs.OCCT.LoadObjToDocDto;
     export type LoadStepOrIgesDto = WithDefaults<Inputs.OCCT.LoadStepOrIgesDto, "fileName" | "adjustZtoY" | "unit">;
     export type LoadStepToDocDto = Inputs.OCCT.LoadStepToDocDto;
     export type LoadStlDto = WithDefaults<Inputs.OCCT.LoadStlDto, "asFaces" | "adjustZtoY">;
-    export type LoadSVGDto = WithDefaults<Inputs.OCCT.LoadSVGDto, "svg" | "faceStrategy" | "makeRibbons" | "includeInvisible" | "joinSegments" | "tolerance" | "scale" | "flipY" | "alignment" | "direction" | "center">;
+    export type LoadSVGDto = WithDefaults<Inputs.OCCT.LoadSVGDto, "svg" | "faceStrategy" | "makeRibbons" | "includeInvisible" | "joinSegments" | "tolerance" | "scale" | "flipY" | "alignment" | "direction" | "center" | "keepOrigin">;
     export type LoftAdvancedDto<T> = WithDefaults<Inputs.OCCT.LoftAdvancedDto<T>, "makeSolid" | "closed" | "periodic" | "straight" | "nrPeriodicSections" | "useSmoothing" | "maxUDegree" | "tolerance" | "parType">;
     export type LoftDto<T> = WithDefaults<Inputs.OCCT.LoftDto<T>, "makeSolid">;
     export type LPolygonDto = WithDefaults<Inputs.OCCT.LPolygonDto, "widthFirst" | "lengthFirst" | "widthSecond" | "lengthSecond" | "align" | "rotation" | "center" | "direction">;
@@ -361,6 +364,7 @@ export namespace OCCT {
     export type RotationExtrudeDto<T> = WithDefaults<Inputs.OCCT.RotationExtrudeDto<T>, "height" | "angle" | "makeSolid">;
     export type SaveBrepBinaryDto<T> = WithDefaults<Inputs.OCCT.SaveBrepBinaryDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
     export type SaveBrepDto<T> = WithDefaults<Inputs.OCCT.SaveBrepDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
+    export type SaveDxfDto<T> = WithDefaults<Inputs.OCCT.SaveDxfDto<T>, "drawHidden" | "precision" | "acadVersion" | "fileName" | "tryDownload">;
     export type SaveObjDto<T> = WithDefaults<Inputs.OCCT.SaveObjDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
     export type SavePlyDto<T> = WithDefaults<Inputs.OCCT.SavePlyDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
     export type SaveStepDto<T> = WithDefaults<Inputs.OCCT.SaveStepDto<T>, "fileName" | "adjustYtoZ" | "fromRightHanded" | "tryDownload" | "unit">;
@@ -403,7 +407,7 @@ export namespace OCCT {
     export type ShapesDto<T> = Inputs.OCCT.ShapesDto<T>;
     export type ShapeShapesDto<T, U> = Inputs.OCCT.ShapeShapesDto<T, U>;
     export type ShapesToMeshesDto<T> = WithDefaults<Inputs.OCCT.ShapesToMeshesDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
-    export type ShapeToDxfPathsDto<T> = WithDefaults<Inputs.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    export type ShapeToDxfPathsDto<T> = WithDefaults<Inputs.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength" | "exactCurves">;
     export type ShapeToManifoldMeshDto<T> = WithDefaults<Inputs.OCCT.ShapeToManifoldMeshDto<T>, "precision">;
     export type ShapeToMeshDto<T> = WithDefaults<Inputs.OCCT.ShapeToMeshDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
     export type ShapeTransformQueryDto<T> = Inputs.OCCT.ShapeTransformQueryDto<T>;
@@ -441,6 +445,8 @@ export namespace OCCT {
     export type SquareDto = WithDefaults<Inputs.OCCT.SquareDto, "size" | "center" | "direction">;
     export type StarDto = WithDefaults<Inputs.OCCT.StarDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half">;
     export type StarSolidDto = WithDefaults<Inputs.OCCT.StarSolidDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half" | "extrusionLengthFront" | "extrusionLengthBack">;
+    export type SvgLayerDto<T> = WithDefaults<Inputs.OCCT.SvgLayerDto<T>, "layer" | "color" | "lineType">;
+    export type SvgLayersDto<T> = WithDefaults<Inputs.OCCT.SvgLayersDto<T>, "tolerance" | "fileName" | "tryDownload">;
     export type SVGResult<T> = Inputs.OCCT.SVGResult<T>;
     export type SVGShape<T> = Inputs.OCCT.SVGShape<T>;
     export type SweepEvolvedDto<T, U> = WithDefaults<Inputs.OCCT.SweepEvolvedDto<T, U>, "makeSolid">;

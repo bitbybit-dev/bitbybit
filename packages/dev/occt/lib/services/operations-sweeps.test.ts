@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService } from "../occ-service";
@@ -156,9 +156,9 @@ describe("OCCT evolved and scaled sweeps", () => {
         const RAIL_FOOT = 20;
         const RAIL_RADIUS = 14;
         const BEYOND_REACH = 30;
-        const railLength = 2 * (RAIL_RISE - RAIL_BEND + RAIL_FOOT) + 2 * (RAIL_HALF - RAIL_BEND) + Math.PI * RAIL_BEND;
-        const railVolume = Math.PI * RAIL_RADIUS * RAIL_RADIUS * railLength;
-        const rail = (): TopoDS_Shape => {
+        const CIRCLE = Math.PI * RAIL_RADIUS * RAIL_RADIUS;
+        const lengthOf = (farLeg: number): number => (RAIL_RISE - RAIL_BEND + RAIL_FOOT) + 2 * (RAIL_HALF - RAIL_BEND) + (RAIL_RISE - RAIL_BEND + farLeg) + Math.PI * RAIL_BEND;
+        const rail = (farLeg = RAIL_FOOT): TopoDS_Shape => {
             const across = RAIL_BEND * Math.SQRT1_2;
             const top = RAIL_RISE - RAIL_BEND;
             const { edge } = occt.shapes;
@@ -167,11 +167,98 @@ describe("OCCT evolved and scaled sweeps", () => {
                 edge.arcThroughThreePoints({ start: [0, -RAIL_HALF, top], middle: [0, -RAIL_HALF + RAIL_BEND - across, top + across], end: [0, -RAIL_HALF + RAIL_BEND, RAIL_RISE] }),
                 edge.line({ start: [0, -RAIL_HALF + RAIL_BEND, RAIL_RISE], end: [0, RAIL_HALF - RAIL_BEND, RAIL_RISE] }),
                 edge.arcThroughThreePoints({ start: [0, RAIL_HALF - RAIL_BEND, RAIL_RISE], middle: [0, RAIL_HALF - RAIL_BEND + across, top + across], end: [0, RAIL_HALF, top] }),
-                edge.line({ start: [0, RAIL_HALF, top], end: [0, RAIL_HALF, -RAIL_FOOT] }),
+                edge.line({ start: [0, RAIL_HALF, top], end: [0, RAIL_HALF, -farLeg] }),
             ] });
         };
-        const circleBelowTheStart = (below: number): TopoDS_Shape => occt.shapes.wire.createCircleWire({ radius: RAIL_RADIUS, center: [0, -RAIL_HALF, -RAIL_FOOT - below], direction: [0, 0, 1] });
+        const circleAt = (center: Inputs.Base.Point3, direction: Inputs.Base.Vector3): TopoDS_Shape => occt.shapes.wire.createCircleWire({ radius: RAIL_RADIUS, center, direction });
+        const circleBelowTheStart = (below: number): TopoDS_Shape => circleAt([0, -RAIL_HALF, -RAIL_FOOT - below], [0, 0, 1]);
+        const squareBelowTheStart = (side: number, below: number): TopoDS_Shape => occt.shapes.wire.createSquareWire({ size: side, center: [0, -RAIL_HALF, -RAIL_FOOT - below], direction: [0, 0, 1] });
+        const extentsOf = (shape: TopoDS_Shape): { min: Inputs.Base.Point3; max: Inputs.Base.Point3; farFoot: number } => {
+            const points = occt.shapeToMesh({ shape, precision: 0.05, adjustYtoZ: false }).faceList.flatMap(face => face.vertexCoordVec);
+            const least = (axis: 0 | 1 | 2): number => points.reduce((found, point) => Math.min(found, point[axis]), Number.POSITIVE_INFINITY);
+            const most = (axis: 0 | 1 | 2): number => points.reduce((found, point) => Math.max(found, point[axis]), Number.NEGATIVE_INFINITY);
+            const farFoot = points.filter(point => point[1] > 0).reduce((found, point) => Math.min(found, point[2]), Number.POSITIVE_INFINITY);
+            return { min: [least(0), least(1), least(2)], max: [most(0), most(1), most(2)], farFoot };
+        };
+        const expectTheRail = (pipe: TopoDS_Shape, area: number, farLeg = RAIL_FOOT, halfWidth = RAIL_RADIUS, behindTheStart = 0): void => {
+            const box = extentsOf(pipe);
+            expect(Math.abs(volumeOf(pipe) / (area * lengthOf(farLeg)) - 1)).toBeLessThan(0.005);
+            expect(box.max[2]).toBeCloseTo(RAIL_RISE + halfWidth, 0);
+            expect(-box.min[1]).toBeCloseTo(RAIL_HALF + halfWidth, 0);
+            expect(box.max[1]).toBeLessThan(RAIL_HALF + halfWidth + 0.5);
+            expect(box.min[2]).toBeGreaterThan(-RAIL_FOOT - 6);
+            expect(box.farFoot).toBeCloseTo(-farLeg + behindTheStart, 1);
+        };
         const insideOut = expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.insideOut" });
+
+        it("should sweep the whole path from a profile just off its start, at any small offset, the profile keeping its offset along the path to the far end", () => {
+            // Arrange
+            const path = rail();
+            const offsets = [0.001, 0.01, 1, 5];
+
+            // Act
+            const pipes = offsets.map(below => occt.operations.pipe({ shape: path, shapes: [circleBelowTheStart(below)] }));
+            const longerFarLeg = occt.operations.pipe({ shape: rail(RAIL_FOOT + 5), shapes: [circleBelowTheStart(1.1e-5)] });
+            const square = occt.operations.pipe({ shape: path, shapes: [squareBelowTheStart(20, 0.001)] });
+
+            // Assert
+            pipes.forEach((pipe, index) => expectTheRail(pipe, CIRCLE, RAIL_FOOT, RAIL_RADIUS, offsets[index]));
+            expectTheRail(longerFarLeg, CIRCLE, RAIL_FOOT + 5);
+            expectTheRail(square, 400, RAIL_FOOT, 10);
+        });
+
+        it("should keep every placement OCCT already made right: on the start, across the bar, up a leg, on the end of a shorter far leg", () => {
+            // Arrange
+            const shorter = RAIL_FOOT - 5;
+
+            // Act
+            const onTheStart = occt.operations.pipe({ shape: rail(), shapes: [circleBelowTheStart(0)] });
+            const reversed = occt.operations.pipe({ shape: rail(), shapes: [occt.shapes.wire.reversedWire({ shape: circleBelowTheStart(0) })] });
+            const acrossTheBar = occt.operations.pipe({ shape: rail(), shapes: [circleAt([0, 0, RAIL_RISE], [0, 1, 0])] });
+            const upALeg = occt.operations.pipe({ shape: rail(), shapes: [circleAt([0, -RAIL_HALF, 80], [0, 0, 1])] });
+            const onTheFarEnd = occt.operations.pipe({ shape: rail(shorter), shapes: [circleAt([0, RAIL_HALF, -shorter], [0, 0, 1])] });
+
+            // Assert
+            [onTheStart, reversed, acrossTheBar, upALeg].forEach(pipe => expectTheRail(pipe, CIRCLE));
+            expectTheRail(onTheFarEnd, CIRCLE, shorter);
+        });
+
+        it("should sweep a profile at each end of the path once, from end to end", () => {
+            // Arrange
+            const atTheFarEnd = circleAt([0, RAIL_HALF, -RAIL_FOOT - 0.001], [0, 0, 1]);
+
+            // Act
+            const pipe = occt.operations.pipe({ shape: rail(), shapes: [circleBelowTheStart(0.001), atTheFarEnd] });
+
+            // Assert
+            expectTheRail(pipe, CIRCLE);
+        });
+
+        it("should report the caps of a pipe whose profile sits just off the start", () => {
+            // Arrange
+            const path = rail();
+
+            // Act
+            const { shape, histories } = occt.operations.pipeWithHistory({ shape: path, shapes: [circleBelowTheStart(0.001)] });
+
+            // Assert
+            expectTheRail(shape, CIRCLE);
+            expect(histories).toHaveLength(1);
+            expect(histories[0]!.firstFaces).toHaveLength(1);
+            expect(histories[0]!.lastFaces).toHaveLength(1);
+        });
+
+        it("should refuse the inside-out sweep OCCT makes of a profile drawn far from its path", () => {
+            // Arrange
+            const path = occt.shapes.wire.createPolylineWire({ points: [[0, 0, 0], [0, 0, 10], [100, 0, 10]] });
+            const far = occt.shapes.wire.createCircleWire({ radius: 3, center: [50, 0, -200], direction: [1, 0, 0] });
+
+            // Act
+            const refusal = refusalOf(() => occt.operations.pipe({ shape: path, shapes: [far] }));
+
+            // Assert
+            expect(refusal).toEqual(insideOut);
+        });
 
         it("should refuse a pipe that came out inside out, its profile placed at the far end of a path that comes back to the profile's plane", () => {
             // Arrange
@@ -188,21 +275,38 @@ describe("OCCT evolved and scaled sweeps", () => {
             expect(refusals).toEqual([insideOut, insideOut]);
         });
 
-        it("should keep a pipe whose profile sits on the start of the path, either way round", () => {
+        it("should refuse a pipe whose profile stands along its path, which sweeps no volume, and sweep the same profile turned across it", () => {
             // Arrange
-            const path = rail();
-            const profile = circleBelowTheStart(0);
-            const reversed = occt.shapes.wire.reversedWire({ shape: profile });
+            const line = occt.shapes.wire.createLineWire({ start: [0, 0, 0], end: [0, 50, 0] });
+            const standing = occt.shapes.wire.createSquareWire({ size: 5, center: [0, 0, 0], direction: [1, 0, 0] });
+            const across = occt.shapes.wire.createSquareWire({ size: 5, center: [0, 0, 0], direction: [0, 1, 0] });
 
             // Act
-            const pipes = [
-                occt.operations.pipe({ shape: path, shapes: [profile] }),
-                occt.operations.pipe({ shape: path, shapes: [reversed] }),
-                occt.operations.pipeWithHistory({ shape: path, shapes: [profile] }).shape,
-            ];
+            const refusal = refusalOf(() => occt.operations.pipe({ shape: line, shapes: [standing] }));
+            const swept = occt.operations.pipe({ shape: line, shapes: [across] });
 
             // Assert
-            pipes.forEach(pipe => expect(Math.abs(volumeOf(pipe) / railVolume - 1)).toBeLessThan(0.005));
+            expect(refusal).toEqual(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.alongPath" }));
+            expect(volumeOf(swept)).toBeCloseTo(25 * 50, 6);
+        });
+
+        it("should integrate a pipe's volume once to judge both whether it came out inside out and whether it holds none", () => {
+            // Arrange
+            const line = occt.shapes.wire.createLineWire({ start: [0, 0, 0], end: [0, 50, 0] });
+            const across = occt.shapes.wire.createSquareWire({ size: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+            const integrations = vi.spyOn(kernel, "VolumePropertiesOfEach");
+
+            // Act
+            let calls: number;
+            try {
+                occt.operations.pipe({ shape: line, shapes: [across] });
+            } finally {
+                calls = integrations.mock.calls.length;
+                integrations.mockRestore();
+            }
+
+            // Assert
+            expect(calls).toBe(1);
         });
 
         it("should keep the sweep of an open profile placed at the far end, a shell with no inside to judge", () => {

@@ -923,21 +923,11 @@
       "count": 2
     }
   },
-  "packages/dev/occt/lib/services/base/stl-data.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 6
-    }
-  },
   "packages/dev/occt/lib/services/base/surface-analysis.ts": {
     "@typescript-eslint/no-magic-numbers": {
       "count": 1
     },
     "bitbybit/no-inline-object-types": {
-      "count": 1
-    }
-  },
-  "packages/dev/occt/lib/services/base/svg-drawing.ts": {
-    "@typescript-eslint/no-magic-numbers": {
       "count": 1
     }
   },
@@ -985,7 +975,7 @@
   },
   "packages/dev/occt/lib/services/io.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 6
+      "count": 5
     }
   },
   "packages/dev/occt/lib/services/select/edges.ts": {
@@ -1037,11 +1027,6 @@
       "count": 2
     }
   },
-  "packages/dev/occt/lib/services/svg.ts": {
-    "bitbybit/no-inline-object-types": {
-      "count": 2
-    }
-  },
   "packages/dev/occt/lib/services/transforms.ts": {
     "@typescript-eslint/explicit-function-return-type": {
       "count": 1
@@ -1053,48 +1038,6 @@
     },
     "bitbybit/no-inline-object-types": {
       "count": 12
-    }
-  },
-  "packages/dev/occt/lib/svg/path-builder.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 1
-    },
-    "bitbybit/no-inline-object-types": {
-      "count": 2
-    }
-  },
-  "packages/dev/occt/lib/svg/svg-face-builder.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 3
-    }
-  },
-  "packages/dev/occt/lib/svg/svg-normalizer.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 1
-    },
-    "bitbybit/no-inline-object-types": {
-      "count": 8
-    }
-  },
-  "packages/dev/occt/lib/svg/svg-path-parser.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 2
-    },
-    "bitbybit/no-inline-object-types": {
-      "count": 1
-    }
-  },
-  "packages/dev/occt/lib/svg/svg-transform.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 2
-    }
-  },
-  "packages/dev/occt/lib/svg/svg-xml.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 4
-    },
-    "bitbybit/no-inline-object-types": {
-      "count": 3
     }
   },
   "packages/dev/playcanvas/lib/api/bitbybit-base.ts": {

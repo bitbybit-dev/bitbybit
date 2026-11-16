@@ -15,6 +15,8 @@ vi.mock("@bitbybit-dev/occt", async (importOriginal) => {
     const actual = await importOriginal<typeof import("@bitbybit-dev/occt")>();
     class OCCTService {
         plugins: { dependencies: Record<string, unknown> } | undefined;
+        constructor(_kernel: unknown, private readonly helper?: { base: { settings: { coordinateSystem?: string } } }) { }
+        coordinateSystemSeen = (): unknown => this.helper?.base.settings.coordinateSystem ?? "none";
         boom = (): unknown => { throw thrown.value; };
         work = (inputs: unknown): unknown => {
             progress.runs++;
@@ -40,6 +42,7 @@ vi.mock("@bitbybit-dev/occt", async (importOriginal) => {
     const occtDtoRegistry = { measure: { dto: MeasureDto, constraints: { size: { kind: "number" } } } };
     class OccHelper {
         meshingService = {};
+        base = { settings: {} };
     }
     return { OccHelper, OCCTService, occtDtoRegistry, occtDtoRules: new Map(), readKernelException: actual.readKernelException };
 });
@@ -436,6 +439,59 @@ describe("what the worker says when a call fails", () => {
             expect(answers()[1]).toEqual({ uid: "uid-1", result: { size: 2 } });
             expect(posted).toEqual([]);
             vi.unstubAllGlobals();
+        });
+
+        describe("the settings", () => {
+            const LEFT_HANDED = { coordinateSystem: "leftHanded" };
+            const lastAnswer = (): unknown => answers()[answers().length - 1];
+
+            it("should give a kernel it restarts, and its plugins, the settings the crashed one was given", async () => {
+                // Arrange
+                const plugins = { dependencies: {}, settings: undefined as unknown };
+                const restart = (): void => {
+                    initializationComplete(A_MODULE, plugins, true, restart);
+                };
+                initializationComplete(A_MODULE, { dependencies: {}, settings: undefined }, true, restart);
+                run({ functionName: "setSettings", inputs: LEFT_HANDED });
+
+                // Act
+                run({ functionName: "boom", inputs: {} });
+                await settle();
+                run({ functionName: "coordinateSystemSeen", inputs: {} });
+
+                // Assert
+                expect(lastAnswer()).toEqual({ uid: "uid-1", result: "leftHanded" });
+                expect(plugins.settings).toEqual(LEFT_HANDED);
+            });
+
+            it("should forget the settings when it is given a kernel anew", () => {
+                // Arrange
+                initializationComplete(A_MODULE, undefined, true);
+                run({ functionName: "setSettings", inputs: LEFT_HANDED });
+
+                // Act
+                initializationComplete(A_MODULE, undefined, true);
+                run({ functionName: "coordinateSystemSeen", inputs: {} });
+
+                // Assert
+                expect(lastAnswer()).toEqual({ uid: "uid-1", result: "none" });
+            });
+
+            it("should give a restarted kernel no settings when none were set", async () => {
+                // Arrange
+                const restart = (): void => {
+                    initializationComplete(A_MODULE, undefined, true, restart);
+                };
+                initializationComplete(A_MODULE, undefined, true, restart);
+
+                // Act
+                run({ functionName: "boom", inputs: {} });
+                await settle();
+                run({ functionName: "coordinateSystemSeen", inputs: {} });
+
+                // Assert
+                expect(lastAnswer()).toEqual({ uid: "uid-1", result: "none" });
+            });
         });
 
         describe("the mesh retention budget", () => {

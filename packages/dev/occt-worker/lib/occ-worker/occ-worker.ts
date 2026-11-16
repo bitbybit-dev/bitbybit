@@ -1,6 +1,7 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper, OCCTService, occtDtoRegistry, occtDtoRules, readKernelException } from "@bitbybit-dev/occt";
-import { InputError, describeKernelFailure, prepareKernelCall, setKernelStepSink } from "@bitbybit-dev/base";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
+import { InputError, describeKernelFailure, prepareKernelCall, setKernelStepSink, settingsCacheKey } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
@@ -27,6 +28,7 @@ let kernelGeneration = 0;
 let restarting: Promise<void> | undefined;
 let lostKernel: string | undefined;
 let meshRetention = 0;
+let settings: BitbybitSettings = {};
 let progressWords: Int32Array | undefined;
 let stepWords: Int32Array | undefined;
 
@@ -75,6 +77,13 @@ export type DataInput = {
     uid: string;
 };
 
+const tellPlugins = (given: BitbybitSettings): void => {
+    const plugins = openCascade.plugins;
+    if (plugins !== undefined && "settings" in plugins) {
+        plugins["settings"] = given;
+    }
+};
+
 /**
  * Initializes the OpenCascade worker with the given module and plugins.
  *
@@ -101,6 +110,7 @@ export const initializationComplete = (
     kernel = occ;
     if (restarting === undefined) {
         meshRetention = 0;
+        settings = {};
     } else if (meshRetention > 0) {
         occ.SetMeshRetention(meshRetention);
     }
@@ -110,6 +120,7 @@ export const initializationComplete = (
     cacheHelper = new CacheHelper();
 
     occHelper = new OccHelper(occ);
+    occHelper.base.settings = settings;
     openCascade = new OCCTService(occ, occHelper);
 
     shapeResolver = new ShapeResolver(cacheHelper);
@@ -121,6 +132,7 @@ export const initializationComplete = (
         Object.entries(pendingDependencies).forEach(([key, value]) => {
             plugins.dependencies[key] = value;
         });
+        tellPlugins(settings);
     }
 
     progressWords = progressWordsOf(occ);
@@ -155,6 +167,11 @@ function createCommandContext(): CommandContext {
         setMeshRetention: (triangles: number) => {
             kernel.SetMeshRetention(triangles);
             meshRetention = triangles;
+        },
+        setSettings: (given: BitbybitSettings) => {
+            settings = given;
+            occHelper.base.settings = given;
+            tellPlugins(given);
         },
         cacheHelper,
         shapeResolver,
@@ -215,7 +232,7 @@ function executeStandardFunction(
 ): unknown {
     const call = prepareKernelCall("OCCT", occtDtoRegistry, action.functionName, action.inputs, occtDtoRules);
 
-    const res = cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs }, () => {
+    const res = cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs, settings: settingsCacheKey(settings) }, () => {
         call.reportIssues();
         const resolvedInputs = shapeResolver.resolveShapeReferences(call.inputs);
         const computed = functionPathResolver.callFunction(openCascade, action.functionName, resolvedInputs);

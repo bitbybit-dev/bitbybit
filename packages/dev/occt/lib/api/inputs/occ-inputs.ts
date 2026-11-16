@@ -8418,8 +8418,8 @@ export namespace OCCT {
          */
         precisionShare?: number | undefined = 0;
         /**
-         * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
-         * up.
+         * When true, the mesh is made Z-up for tools that treat Z as up: turned a quarter about X under
+         * right-handed conventions, with Y and Z swapped otherwise.
          * @default false
          */
         adjustYtoZ?: boolean | undefined = false;
@@ -8504,8 +8504,8 @@ export namespace OCCT {
          */
         precision?: number | undefined = 0.01;
         /**
-         * When true, the points are turned so this library's Y-up becomes Z-up, for tools that treat Z
-         * as up.
+         * When true, the points are made Z-up for tools that treat Z as up: turned a quarter about X under
+         * right-handed conventions, with Y and Z swapped otherwise.
          * @default false
          */
         adjustYtoZ?: boolean | undefined = false;
@@ -8602,8 +8602,8 @@ export namespace OCCT {
          */
         precisionShare?: number | undefined = 0;
         /**
-         * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
-         * as up.
+         * When true, the meshes are made Z-up for tools that treat Z as up: turned a quarter about X under
+         * right-handed conventions, with Y and Z swapped otherwise.
          * @default false
          */
         adjustYtoZ?: boolean | undefined = false;
@@ -8709,8 +8709,8 @@ export namespace OCCT {
          */
         relativeDeflection?: boolean | undefined = false;
         /**
-         * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
-         * up.
+         * When true, the mesh is made Z-up for tools that treat Z as up: turned a quarter about X under
+         * right-handed conventions, with Y and Z swapped otherwise.
          * @default false
          */
         adjustYtoZ?: boolean | undefined = false;
@@ -8787,8 +8787,8 @@ export namespace OCCT {
          */
         relativeDeflection?: boolean | undefined = false;
         /**
-         * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
-         * as up.
+         * When true, the meshes are made Z-up for tools that treat Z as up: turned a quarter about X under
+         * right-handed conventions, with Y and Z swapped otherwise.
          * @default false
          */
         adjustYtoZ?: boolean | undefined = false;
@@ -8840,14 +8840,16 @@ export namespace OCCT {
          */
         fileName?: string | undefined = "shape.step";
         /**
-         * When true, Y and Z swap so Y-up becomes STEP's Z-up, which mirrors the shape. To keep it as
-         * built, turn it 90 degrees about X with `transforms.rotate` instead.
+         * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
+         * what the screen shows either way; without them this swaps Y and Z.
          * @default false
          */
         adjustYtoZ?: boolean | undefined = false;
         /**
-         * When true, the swap of `adjustYtoZ` becomes a turn of -90 degrees about X: the shape is not
-         * mirrored but stands upside down in a Z-up tool.
+         * When true, `adjustYtoZ` turns the shape 90 degrees about X instead of swapping, for a
+         * right-handed scene.
+         * @deprecated Set the conventions once instead, `bitbybit.setConventions(1)`, which maps
+         * every file for the engine in use.
          * @default false
          */
         fromRightHanded?: boolean | undefined = false;
@@ -8894,8 +8896,8 @@ export namespace OCCT {
          */
         precision?: number | undefined = 0.01;
         /**
-         * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
-         * turn it 90 degrees about X with `transforms.rotate` instead.
+         * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
+         * what the screen shows either way; without them this swaps Y and Z.
          * @default false
          */
         adjustYtoZ?: boolean | undefined = false;
@@ -8918,16 +8920,18 @@ export namespace OCCT {
      * path records.
      */
     export class ShapeToDxfPathsDto<T> {
-        constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number) {
+        constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number, exactCurves?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (curvatureDeflection !== undefined) { this.curvatureDeflection = curvatureDeflection; }
             if (minimumOfPoints !== undefined) { this.minimumOfPoints = minimumOfPoints; }
             if (uTolerance !== undefined) { this.uTolerance = uTolerance; }
             if (minimumLength !== undefined) { this.minimumLength = minimumLength; }
+            if (exactCurves !== undefined) { this.exactCurves = exactCurves; }
         }
         /**
-         * The shape whose wires are traced; it must lie flat on the XZ ground plane.
+         * The shape whose wires are traced, seen along Y: X stays X and Z becomes the drawing's Y (-Z
+         * under right-handed conventions), so a flat shape keeps its size.
          * @default undefined
          */
         shape!: T;
@@ -8973,6 +8977,12 @@ export namespace OCCT {
          * @step 1.0e-7
          */
         minimumLength?: number | undefined = 1.0e-7;
+        /**
+         * When true, ellipses and splines stay exact, and other curves become cubic splines within
+         * `curvatureDeflection`; when false, curves other than lines and circles are traced as points.
+         * @default true
+         */
+        exactCurves?: boolean | undefined = true;
     }
 
     /**
@@ -8980,16 +8990,17 @@ export namespace OCCT {
      * drawing.
      */
     export class DxfPathsWithLayerDto {
-        constructor(paths?: IO.DxfPathDto[], layer?: string, color?: Base.Color) {
+        constructor(paths?: IO.DrawingPathDto[], layer?: string, color?: Base.Color, lineType?: IO.lineTypeEnum) {
             if (paths !== undefined) { this.paths = paths; }
             if (layer !== undefined) { this.layer = layer; }
             if (color !== undefined) { this.color = color; }
+            if (lineType !== undefined) { this.lineType = lineType; }
         }
         /**
          * The paths from `io.shapeToDxfPaths`.
          * @default undefined
          */
-        paths!: IO.DxfPathDto[];
+        paths!: IO.DrawingPathDto[];
         /**
          * The name of the DXF layer the paths go on.
          * @default Default
@@ -9000,34 +9011,50 @@ export namespace OCCT {
          * @default #000000
          */
         color?: Base.Color | undefined = "#000000";
+        /**
+         * Whether the lines are whole or dashed, such as `hidden` for edges a view cannot see.
+         * @default continuous
+         */
+        lineType?: IO.lineTypeEnum | undefined = IO.lineTypeEnum.continuous;
     }
 
     /**
      * Layered DXF parts and file options for `io.dxfCreate`, which writes them into one DXF file.
      */
     export class DxfPathsPartsListDto {
-        constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean, unit?: Base.unitOfLengthEnum) {
+        constructor(pathsParts?: IO.DrawingPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean, unit?: Base.unitOfLengthEnum, curveTolerance?: number) {
             if (pathsParts !== undefined) { this.pathsParts = pathsParts; }
             if (colorFormat !== undefined) { this.colorFormat = colorFormat; }
             if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
             if (unit !== undefined) { this.unit = unit; }
+            if (curveTolerance !== undefined) { this.curveTolerance = curveTolerance; }
         }
         /**
          * The parts from `io.dxfPathsWithLayer`, each with its own layer and color.
          * @default undefined
          */
-        pathsParts!: IO.DxfPathsPartDto[];
+        pathsParts!: IO.DrawingPartDto[];
         /**
-         * How colors are written: `aci` as AutoCAD's indexed colors, `truecolor` as RGB.
+         * How colors are written: `aci`, the nearest of AutoCAD's 255 indexed colors, or `truecolor`,
+         * the exact color beside that index (`AC1015` only).
          * @default aci
          */
         colorFormat?: dxfColorFormatEnum | undefined = dxfColorFormatEnum.aci;
         /**
-         * The DXF version to write: `AC1009` is R12, the most widely readable, `AC1015` is 2000.
-         * @default AC1009
+         * The DXF version: `AC1015` (AutoCAD 2000) keeps splines and ellipses exact; `AC1009` (R12), for
+         * old software, writes them as polylines within `curveTolerance`.
+         * @default AC1015
          */
-        acadVersion?: dxfAcadVersionEnum | undefined = dxfAcadVersionEnum.AC1009;
+        acadVersion?: dxfAcadVersionEnum | undefined = dxfAcadVersionEnum.AC1015;
+        /**
+         * The largest distance, in model units, between a curve and the polyline that stands in for it
+         * where the version cannot hold the curve exactly.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        curveTolerance?: number | undefined = 0.01;
         /**
          * The unit the drawing is in, written into its header so CAD programs open it at true size;
          * `AC1015` only. Left out, no unit is stated.
@@ -9040,6 +9067,102 @@ export namespace OCCT {
          * @default bitbybit-dev.dxf
          */
         fileName?: string | undefined = "bitbybit-dev.dxf";
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         * @default true
+         */
+        tryDownload?: boolean | undefined = true;
+    }
+
+    /**
+     * Shapes, a layer name, a color and a line type for `io.svgLayer`, which makes them one layer of an
+     * SVG drawing.
+     */
+    export class SvgLayerDto<T> {
+        constructor(shapes?: T[], layer?: string, color?: Base.Color, lineType?: IO.lineTypeEnum) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (layer !== undefined) { this.layer = layer; }
+            if (color !== undefined) { this.color = color; }
+            if (lineType !== undefined) { this.lineType = lineType; }
+        }
+        /**
+         * The shapes whose wires are drawn on this layer.
+         * @default undefined
+         */
+        shapes!: T[];
+        /**
+         * The name of the layer, the group Inkscape shows for it.
+         * @default Default
+         */
+        layer?: string | undefined = "Default";
+        /**
+         * The color of the lines as a hex string such as `#000000`.
+         * @default #000000
+         */
+        color?: Base.Color | undefined = "#000000";
+        /**
+         * Whether the lines are whole or dashed, such as `hidden` for edges a view cannot see.
+         * @default continuous
+         */
+        lineType?: IO.lineTypeEnum | undefined = IO.lineTypeEnum.continuous;
+    }
+
+    /**
+     * Layers of shapes and file options for `io.svgCreate`, which draws them into one SVG file.
+     */
+    export class SvgLayersDto<T> {
+        constructor(layers?: SvgLayerDto<T>[], unit?: Base.unitOfLengthEnum, strokeWidth?: number, margin?: number, tolerance?: number, fileName?: string, tryDownload?: boolean) {
+            if (layers !== undefined) { this.layers = layers; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (strokeWidth !== undefined) { this.strokeWidth = strokeWidth; }
+            if (margin !== undefined) { this.margin = margin; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        }
+        /**
+         * The layers from `io.svgLayer`; each becomes a group Inkscape reads as a layer.
+         * @default undefined
+         */
+        layers!: SvgLayerDto<T>[];
+        /**
+         * The unit the shapes are modelled in, which gives the file its true width and height. Left out,
+         * the file states no size and viewers fit it to the window.
+         * @default undefined
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
+        /**
+         * How wide the lines are, in model units. Left out, a five-hundredth of the drawing's larger
+         * side.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        strokeWidth?: number | undefined;
+        /**
+         * The empty border around the drawing, in model units. Left out, a fortieth of the drawing's
+         * larger side.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         */
+        margin?: number | undefined;
+        /**
+         * The largest distance, in model units, between a curve SVG cannot draw exactly and the cubic
+         * curves that stand in for it.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        tolerance?: number | undefined = 0.01;
+        /**
+         * The name the downloaded file gets.
+         * @default bitbybit-dev.svg
+         */
+        fileName?: string | undefined = "bitbybit-dev.svg";
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
          * itself only returns the text.
@@ -12286,7 +12409,7 @@ export namespace OCCT {
      * keep, whether to build faces, and how to scale and place the drawing.
      */
     export class LoadSVGDto {
-        constructor(svg?: string, faceStrategy?: svgFaceStrategyEnum, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, alignment?: Base.basicAlignmentEnum, direction?: Base.Vector3, center?: Base.Point3) {
+        constructor(svg?: string, faceStrategy?: svgFaceStrategyEnum, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, alignment?: Base.basicAlignmentEnum, direction?: Base.Vector3, center?: Base.Point3, unit?: Base.unitOfLengthEnum, keepOrigin?: boolean) {
             if (svg !== undefined) { this.svg = svg; }
             if (faceStrategy !== undefined) { this.faceStrategy = faceStrategy; }
             if (makeRibbons !== undefined) { this.makeRibbons = makeRibbons; }
@@ -12298,6 +12421,8 @@ export namespace OCCT {
             if (alignment !== undefined) { this.alignment = alignment; }
             if (direction !== undefined) { this.direction = direction; }
             if (center !== undefined) { this.center = center; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (keepOrigin !== undefined) { this.keepOrigin = keepOrigin; }
         }
         /**
          * The text of the SVG document.
@@ -12305,9 +12430,9 @@ export namespace OCCT {
          */
         svg?: string | undefined = '<svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>';
         /**
-         * How filled shapes become faces: `none` keeps only wires, `auto` follows each element's fill
-         * rule, `nonzero` and `evenOdd` force a rule, `perSubpath` makes one face per closed subpath
-         * without holes.
+         * How filled shapes become faces: `none` keeps wires, `auto` follows each element's fill rule,
+         * `nonzero` and `evenOdd` force one, `perSubpath` faces each closed subpath alone. Open subpaths
+         * stay wires.
          * @default none
          */
         faceStrategy?: svgFaceStrategyEnum | undefined = svgFaceStrategyEnum.none;
@@ -12328,12 +12453,14 @@ export namespace OCCT {
          */
         joinSegments?: boolean | undefined = true;
         /**
-         * How far apart segment ends may be and still join, in model units.
+         * How far apart segment ends may be and still join, in model units; a subpath that ends this
+         * close to its start counts as closed.
          * @default 1e-7
          */
         tolerance?: number | undefined = 1e-7;
         /**
-         * A factor applied to the SVG coordinates; 1 keeps the size.
+         * A factor applied to the SVG coordinates, or to the true size when `unit` is set; 1 keeps the
+         * size.
          * @default 1
          */
         scale?: number | undefined = 1;
@@ -12343,7 +12470,8 @@ export namespace OCCT {
          */
         flipY?: boolean | undefined = true;
         /**
-         * Which point of the drawing's bounding box sits on `center`; `midMid` centers it.
+         * Which point of the drawing's bounding box sits on `center`; `midMid` centers it. Not used
+         * when `keepOrigin` is true.
          * @default midMid
          */
         alignment?: Base.basicAlignmentEnum | undefined = Base.basicAlignmentEnum.midMid;
@@ -12357,6 +12485,19 @@ export namespace OCCT {
          * @default [0, 0, 0]
          */
         center?: Base.Point3 | undefined = [0, 0, 0];
+        /**
+         * Imports at true size in this unit, read from the page's `width`, `height` and view box at 96
+         * pixels an inch. Left out, SVG user units become model units.
+         * @default undefined
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
+        /**
+         * When true, the origin of the imported coordinates lands on `center`, ignoring `alignment`: the
+         * SVG's own origin, or the page's top left corner when `unit` is set.
+         * @default false
+         */
+        keepOrigin?: boolean | undefined = false;
     }
 
     /**
@@ -12369,7 +12510,8 @@ export namespace OCCT {
          */
         shape!: T;
         /**
-         * True when `shape` is a face, false when it is a wire.
+         * True when `shape` holds faces: one face, or a compound of faces that also carries any
+         * subpaths that stayed wires. False when it holds only wires.
          */
         isFace!: boolean;
         /**
@@ -12377,7 +12519,8 @@ export namespace OCCT {
          */
         elementType!: string;
         /**
-         * Whether the element's outline was closed.
+         * Whether every subpath of the element's outline was closed, by a close command or by ending
+         * within `tolerance` of its start.
          */
         closed!: boolean;
         /**
@@ -12391,12 +12534,14 @@ export namespace OCCT {
          */
         stroke?: string | undefined;
         /**
-         * The stroke width that applied to the element, if any.
+         * The stroke width that applied to the element, scaled by its transforms, in SVG user units or
+         * in `unit` when one is set; `scale` is not applied to it.
          * @optional true
          */
         strokeWidth?: number | undefined;
         /**
-         * The combined opacity of the element from 0 to 1, if any was set.
+         * The opacity of the element from 0 to 1, multiplied by the opacity of every group around it,
+         * if any was set.
          * @optional true
          */
         opacity?: number | undefined;
@@ -12426,6 +12571,24 @@ export namespace OCCT {
          * @optional true
          */
         viewBox?: [number, number, number, number] | undefined;
+        /**
+         * The page's width in millimetres, present when the page's width and height are both known, from
+         * `width` and `height` or from the view box.
+         * @optional true
+         */
+        documentWidth?: number | undefined;
+        /**
+         * The page's height in millimetres, present when the page's width and height are both known, from
+         * `width` and `height` or from the view box.
+         * @optional true
+         */
+        documentHeight?: number | undefined;
+        /**
+         * How many millimetres one SVG user unit stands for, across the page; 25.4 / 96 when the
+         * document gives no size.
+         * @optional true
+         */
+        millimetresPerUserUnit?: number | undefined;
         /**
          * Problems met while parsing or building that did not stop the import.
          */
@@ -15562,6 +15725,103 @@ export namespace OCCT {
     }
 
     /**
+     * A DXF file for `io.loadDxf` and `io.loadDxfStructured`, which build its lines, arcs, circles,
+     * ellipses, polylines and splines as exact edges joined into wires, and faces where asked.
+     */
+    export class LoadDxfDto {
+        constructor(dxf?: string | File | Blob, makeFaces?: boolean, joinTolerance?: number, includeHiddenLayers?: boolean, unit?: Base.unitOfLengthEnum) {
+            if (dxf !== undefined) { this.dxf = dxf; }
+            if (makeFaces !== undefined) { this.makeFaces = makeFaces; }
+            if (joinTolerance !== undefined) { this.joinTolerance = joinTolerance; }
+            if (includeHiddenLayers !== undefined) { this.includeHiddenLayers = includeHiddenLayers; }
+            if (unit !== undefined) { this.unit = unit; }
+        }
+        /**
+         * The DXF file's text, or a File or Blob holding it (ASCII DXF, R12 or later). Older bytes not
+         * in UTF-8 are read in the header's code page, or Windows-1252.
+         * @default undefined
+         */
+        dxf!: string | File | Blob;
+        /**
+         * When true, closed outlines that lie flat in the drawing become faces, an outline inside
+         * another cutting a hole in it as an even-odd fill does; open outlines stay wires.
+         * @default false
+         */
+        makeFaces?: boolean | undefined = false;
+        /**
+         * How far apart, in file units, two entities' ends may lie and still join into one wire: at most
+         * 0.001 or a hundredth of the drawing's span, whichever is larger.
+         * @default 0.001
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.001
+         */
+        joinTolerance?: number | undefined = 0.001;
+        /**
+         * When true, entities on frozen and switched-off layers are read too.
+         * @default false
+         */
+        includeHiddenLayers?: boolean | undefined = false;
+        /**
+         * The unit to give the shapes in, scaled from the unit the file states; a file stating none is
+         * read as drawn. Left out, the numbers stay as drawn.
+         * @default undefined
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
+    }
+
+    /**
+     * One layer, color and line type of a DXF file that `io.loadDxfStructured` read, with its shape.
+     * An output, not an input.
+     */
+    export class DxfShapePart<T> {
+        /**
+         * The layer the entities lie on.
+         */
+        layer!: string;
+        /**
+         * Their color as hex, such as `#ff0000`.
+         */
+        color!: string;
+        /**
+         * Their line type.
+         */
+        lineType!: IO.lineTypeEnum;
+        /**
+         * A compound of their wires, and of faces when `makeFaces` asked for them.
+         */
+        shape!: T;
+    }
+
+    /**
+     * What `io.loadDxfStructured` returns: one shape per layer, color and line type, the file's unit
+     * and version, and any warnings. An output, not an input.
+     */
+    export class DxfShapesResult<T> {
+        /**
+         * One entry per layer, color and line type, in the order the file first uses each; one with
+         * nothing that could be drawn has no entry.
+         */
+        parts!: DxfShapePart<T>[];
+        /**
+         * The unit the shapes are in: the one asked for, or the file's when none was asked; left out
+         * when the file states none it knows.
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
+        /**
+         * The file's DXF version, such as `AC1015` for AutoCAD 2000; empty when it states none.
+         */
+        version!: string;
+        /**
+         * What the file held that was left out or changed, such as text, hatches or entities on hidden
+         * layers.
+         */
+        warnings!: string[];
+    }
+
+    /**
      * A shape, a file name and meshing options for `io.saveShapeObj`, which triangulates the shape and
      * writes it as an OBJ file with the material library its `mtllib` line names.
      */
@@ -15594,8 +15854,8 @@ export namespace OCCT {
          */
         precision?: number | undefined = 0.01;
         /**
-         * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
-         * turn it 90 degrees about X with `transforms.rotate` instead.
+         * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
+         * what the screen shows either way; without them this swaps Y and Z.
          * @default false
          */
         adjustYtoZ?: boolean | undefined = false;
@@ -15639,8 +15899,8 @@ export namespace OCCT {
          */
         precision?: number | undefined = 0.01;
         /**
-         * When true, Y and Z swap so Y-up becomes Z-up, which mirrors the shape. To keep it as built,
-         * turn it 90 degrees about X with `transforms.rotate` instead.
+         * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
+         * what the screen shows either way; without them this swaps Y and Z.
          * @default false
          */
         adjustYtoZ?: boolean | undefined = false;
@@ -15683,8 +15943,8 @@ export namespace OCCT {
          */
         drawHidden?: boolean | undefined = false;
         /**
-         * How far the straight segments that trace a curved edge may stray from it, in model units;
-         * a smaller value follows curves more closely and makes a bigger file.
+         * How far the view may stray from the shape, in model units: the tolerance of hidden-line
+         * removal and of the cubics that stand in for curves SVG cannot draw.
          * @default 0.01
          * @minimum 0
          * @exclusiveMinimum true
@@ -15704,6 +15964,74 @@ export namespace OCCT {
          * @default shape.svg
          */
         fileName?: string | undefined = "shape.svg";
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         * @default true
+         */
+        tryDownload?: boolean | undefined = true;
+    }
+
+    /**
+     * A shape, a view and file options for `io.saveShapeDxf`, which draws the edges the view sees as a
+     * DXF drawing, and the edges other faces cover on a hidden layer when asked.
+     */
+    export class SaveDxfDto<T> {
+        constructor(shape?: T, frame?: Base.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean, unit?: Base.unitOfLengthEnum, acadVersion?: dxfAcadVersionEnum) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (drawHidden !== undefined) { this.drawHidden = drawHidden; }
+            if (precision !== undefined) { this.precision = precision; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+            if (unit !== undefined) { this.unit = unit; }
+            if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
+        }
+        /**
+         * The shape to draw.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The view, as in `operations.hiddenLines`: the eye sits on the side the normal points to and
+         * looks back along it, and the drawing's x runs along the direction.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * When true, the edges other faces cover are drawn too, on the layer `hidden` with the
+         * `HIDDEN` line type.
+         * @default false
+         */
+        drawHidden?: boolean | undefined = false;
+        /**
+         * How far the view may stray from the shape, in model units: the tolerance of the hidden-line
+         * removal, and of the polylines that stand in for curves in `AC1009`.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.001
+         */
+        precision?: number | undefined = 0.01;
+        /**
+         * The unit the shape is modelled in, written into the file so CAD programs open it at true
+         * size; `AC1015` only.
+         * @default undefined
+         * @optional true
+         */
+        unit?: Base.unitOfLengthEnum | undefined;
+        /**
+         * The DXF version: `AC1015` (AutoCAD 2000) keeps every curve exact; `AC1009` (R12) writes
+         * splines and ellipses as polylines.
+         * @default AC1015
+         */
+        acadVersion?: dxfAcadVersionEnum | undefined = dxfAcadVersionEnum.AC1015;
+        /**
+         * The name the downloaded file gets.
+         * @default shape.dxf
+         */
+        fileName?: string | undefined = "shape.dxf";
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
          * itself only returns the text.

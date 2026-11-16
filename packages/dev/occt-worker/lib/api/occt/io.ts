@@ -6,11 +6,12 @@ import type { Resolved } from "@bitbybit-dev/occt";
 import { resolveDto } from "@bitbybit-dev/base";
 
 /**
- * Reading and writing OpenCascade shapes in exchange formats: STEP, IGES, STL and BREP in; STEP, STL,
- * BREP, OBJ, PLY, SVG and DXF out; STEP to glTF conversion with the assembly tree, colors and names
+ * Reading and writing OpenCascade shapes in exchange formats: STEP, IGES, STL, BREP and DXF in; STEP,
+ * STL, BREP, OBJ, PLY, SVG and DXF out; STEP to glTF conversion with the assembly tree, colors and names
  * preserved, and a STEP assembly structure as JSON. Files travel as text or binary data, never as
- * paths. OpenCascade treats Z as up while this library treats Y as up, so the `adjustYtoZ` and
- * `adjustZtoY` flags swap the axes on the way out and in.
+ * paths. CAD files stand Z up while this library models Y up, so the `adjustYtoZ` and `adjustZtoY`
+ * flags turn a shape between the two. With the conventions set every file shows what the screen
+ * shows; without them the flags swap Y and Z, which mirrors the shape.
  */
 export class OCCTIO {
     constructor(
@@ -22,9 +23,9 @@ export class OCCTIO {
      * Writes a shape as STEP, the exchange format for exact CAD geometry, and starts a browser
      * download of the file.
      *
-     * With `adjustYtoZ` true, Y and Z swap, mirroring the shape; turn it 90 degrees about X with
-     * `transforms.rotate` first to keep it as built. The file is in millimetres, another `unit`
-     * scaled to them; `saveShapeSTEPAndReturn` returns the text.
+     * With `adjustYtoZ` true the file is Z-up: with the conventions set it shows what the screen
+     * shows, without them Y and Z are swapped. The file is in millimetres;
+     * `saveShapeSTEPAndReturn` returns the text.
      * @param inputs - The shape, the file name, the axis adjustment, the unit and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
@@ -43,8 +44,8 @@ export class OCCTIO {
     /**
      * Writes a shape as STEP, the exchange format for exact CAD geometry, and returns its text.
      *
-     * With `adjustYtoZ` true, Y and Z swap so Y-up becomes STEP's Z-up, mirroring the shape; turn it
-     * 90 degrees about X with `transforms.rotate` first to keep it as built. The file is in
+     * With `adjustYtoZ` true the file is Z-up, as CAD programs expect: with the conventions set it
+     * shows what the screen shows, and without them Y and Z are swapped. The file is in
      * millimetres, a shape in another `unit` scaled to them.
      * @param inputs - The shape, the file name, the axis adjustment, the unit and the download options
      * @returns The STEP file as text
@@ -86,12 +87,12 @@ export class OCCTIO {
     }
 
     /**
-     * Triangulates a shape and writes it as STL, the mesh format 3D printers and slicers read,
-     * returning the file's text, or its bytes when `binary` is true.
+     * Triangulates a shape and writes it as STL, the mesh format 3D printers read, returning its
+     * text, or its bytes when `binary` is true.
      *
-     * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
-     * more closely. `adjustYtoZ` swaps Y and Z, which mirrors the shape. `fileName` and
-     * `tryDownload` matter only for a download.
+     * `precision` is the meshing tolerance in model units, smaller following curves more closely.
+     * With the conventions set the file shows what the screen shows, Z-up with `adjustYtoZ`.
+     * `fileName` and `tryDownload` matter only for a download.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment, the form and the download options
      * @returns The STL file as text, or as bytes when `binary` is true
      * @group io
@@ -254,9 +255,10 @@ export class OCCTIO {
      * Triangulates a shape and writes it as OBJ, the mesh format most 3D programs read, returning
      * the file's text.
      *
-     * `precision` is the meshing tolerance in model units, `adjustYtoZ` swaps Y and Z, which
-     * mirrors the shape, and coordinates keep six decimals. `mtl` stays empty, since a shape
-     * carries no colors; `assembly.manager.exportDocumentToObj` writes colored parts.
+     * `precision` is the meshing tolerance in model units and coordinates keep six decimals. With
+     * the conventions set the file shows what the screen shows, Z-up with `adjustYtoZ`. `mtl` stays
+     * empty, since a shape carries no colors; `assembly.manager.exportDocumentToObj` writes colored
+     * parts.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns The OBJ text, with an empty material library text
      * @group io
@@ -304,8 +306,8 @@ export class OCCTIO {
      * scanning tools read, returning the file's text.
      *
      * Coordinates keep six significant digits, so past 1000 units they keep two decimals.
-     * `precision` is the meshing tolerance in model units and `adjustYtoZ` swaps Y and Z, which
-     * mirrors the shape.
+     * `precision` is the meshing tolerance in model units. With the conventions set the file shows
+     * what the screen shows, Z-up with `adjustYtoZ`.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns The PLY file as text
      * @group io
@@ -329,8 +331,8 @@ export class OCCTIO {
      * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
      * asked, and starts a browser download of the file.
      *
-     * The drawing shows the view from the frame's normal side, x along its direction; with the shape's
-     * `unit`, it states its true width and height. `saveShapeSvgAndReturn` gives the text instead.
+     * The drawing shows the view from the frame's normal side, x along its direction; curves stay
+     * exact where SVG can draw them. `saveShapeSvgAndReturn` gives the text instead.
      * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
@@ -351,9 +353,9 @@ export class OCCTIO {
      * Draws the edges a view of a shape sees as SVG, hidden ones dashed when asked, and returns the
      * file's text.
      *
-     * The view looks from the frame's normal side, x along the frame's direction and y up, so each
-     * point is written as x and minus y. With the shape's `unit`, it states its true width and
-     * height.
+     * The view looks from the frame's normal side, x along the frame's direction. Curves stay exact
+     * where SVG can draw them, others become cubics within `precision`; with the shape's `unit`, the
+     * file states its true size.
      * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit and the download options
      * @returns The SVG file as text
      * @group io
@@ -393,6 +395,99 @@ export class OCCTIO {
         fileLink.download = fileName;
         fileLink.click();
         fileLink.remove();
+    }
+
+    /**
+     * Puts shapes on a named layer with a color and a line type, making one layer of an SVG drawing.
+     *
+     * The shapes are kept as they are; `svgCreate` draws their wires when it writes the file.
+     * @param inputs - The shapes, the layer name, the color and the line type
+     * @returns The shapes as one styled layer
+     * @group svg
+     * @shortname svg layer
+     * @drawable false
+     * @example
+     * ```typescript
+     * const cut = await bitbybit.occt.io.svgLayer({ shapes: [outline], layer: "cut", color: "#ff0000" });
+     * ```
+     */
+    svgLayer(inputs: Inputs.OCCT.SvgLayerDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.SvgLayerDto<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("io.svgLayer", inputs);
+    }
+
+    /**
+     * Draws layers of shapes into one SVG file and returns its text.
+     *
+     * Each layer becomes an Inkscape layer. The shapes are seen along Y: X stays X and Z becomes the
+     * drawing's Y (-Z under right-handed conventions). Curves stay exact where SVG can draw them and
+     * become cubics within `tolerance` elsewhere; with `unit` the file has its true size.
+     * @param inputs - The layers, the unit, the line width, the border, the tolerance and the download options
+     * @returns The SVG file as text
+     * @group svg
+     * @shortname svg create
+     * @drawable false
+     * @example
+     * ```typescript
+     * const cut = await bitbybit.occt.io.svgLayer({ shapes: [outline], layer: "cut", color: "#ff0000" });
+     * const engrave = await bitbybit.occt.io.svgLayer({ shapes: [lettering], layer: "engrave", color: "#0000ff" });
+     * const svg = await bitbybit.occt.io.svgCreate({ layers: [cut, engrave], unit: Bit.Inputs.Base.unitOfLengthEnum.millimetre, fileName: "panel.svg", tryDownload: false });
+     * ```
+     */
+    async svgCreate(inputs: Inputs.OCCT.SvgLayersDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
+        const resolved = resolveDto(Inputs.OCCT.SvgLayersDto, inputs) as Resolved.OCCT.SvgLayersDto<Inputs.OCCT.TopoDSShapePointer>;
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.svgCreate", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "image/svg+xml");
+        }
+        return text;
+    }
+
+    /**
+     * Draws the edges a view of a shape sees as a DXF drawing, hidden ones on their own layer when
+     * asked, and starts a browser download of the file.
+     *
+     * The drawing shows the view from the frame's normal side, x along its direction, with every
+     * curve exact. `saveShapeDxfAndReturn` gives the text instead.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit, the version and the download options
+     * @returns Nothing; the download starts when the file is ready
+     * @group io
+     * @shortname save dxf
+     * @drawable false
+     * @example
+     * ```typescript
+     * const view = { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] };
+     * await bitbybit.occt.io.saveShapeDxf({ shape: part, frame: view, drawHidden: true, precision: 0.01, fileName: "top.dxf", tryDownload: true });
+     * ```
+     */
+    async saveShapeDxf(inputs: Inputs.OCCT.SaveDxfDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
+        const resolved = resolveDto(Inputs.OCCT.SaveDxfDto, inputs) as Resolved.OCCT.SaveDxfDto<Inputs.OCCT.TopoDSShapePointer>;
+        await this.saveShapeDxfAndReturn(resolved);
+    }
+
+    /**
+     * Draws the edges a view of a shape sees as DXF, hidden ones on their own layer when asked, and
+     * returns the file's text.
+     *
+     * The view looks from the frame's normal side, x along the frame's direction. Curves stay exact;
+     * hidden edges go on the layer `hidden` with the `HIDDEN` line type.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision, the unit, the version and the download options
+     * @returns The DXF file as text
+     * @group io
+     * @shortname save dxf and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const view = { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] };
+     * const dxf = await bitbybit.occt.io.saveShapeDxfAndReturn({ shape: box, frame: view, drawHidden: true, precision: 0.01, fileName: "top.dxf", tryDownload: false });
+     * ```
+     */
+    async saveShapeDxfAndReturn(inputs: Inputs.OCCT.SaveDxfDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
+        const resolved = resolveDto(Inputs.OCCT.SaveDxfDto, inputs) as Resolved.OCCT.SaveDxfDto<Inputs.OCCT.TopoDSShapePointer>;
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.saveShapeDxf", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "image/vnd.dxf");
+        }
+        return text;
     }
 
     /**
@@ -484,11 +579,11 @@ export class OCCTIO {
     }
 
     /**
-     * Turns the wires of a shape into DXF path records, the first step of a 2D DXF export.
+     * Turns the wires of a shape into drawing paths, the first step of a 2D DXF export.
      *
-     * The shape must lie flat on the XZ ground plane, since DXF drawings are two-dimensional. The
-     * deflection settings say how closely curved edges are followed. Give the paths a layer with
-     * `dxfPathsWithLayer` and write the file with `dxfCreate`.
+     * The shape is seen along Y: X stays X and Z becomes the drawing's Y (-Z under right-handed
+     * conventions). Curves stay exact unless `exactCurves` is off. Give the paths a layer with
+     * `dxfPathsWithLayer` and write them with `dxfCreate`.
      * @param inputs - The shape and the deflection settings
      * @returns The DXF paths
      * @group dxf
@@ -503,19 +598,20 @@ export class OCCTIO {
      *     minimumOfPoints: 2,
      *     uTolerance: 1e-9,
      *     minimumLength: 1e-7,
+     *     exactCurves: true,
      * });
      * ```
      */
-    shapeToDxfPaths(inputs: Inputs.OCCT.ShapeToDxfPathsDto<Inputs.OCCT.TopoDSShapePointer>): Promise<IO.DxfPathDto[]> {
+    shapeToDxfPaths(inputs: Inputs.OCCT.ShapeToDxfPathsDto<Inputs.OCCT.TopoDSShapePointer>): Promise<IO.DrawingPathDto[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("io.shapeToDxfPaths", inputs);
     }
 
     /**
-     * Puts DXF paths on a named layer with a color, making one part of a DXF drawing.
+     * Puts drawing paths on a named layer with a color and a line type, making one part of a drawing.
      *
-     * A drawing may hold several parts, each with its own layer and color; `dxfCreate` writes them
-     * into one file.
-     * @param inputs - The paths, the layer name and the color
+     * A drawing may hold several parts, each with its own layer, color and line type; `dxfCreate`
+     * writes them into one file.
+     * @param inputs - The paths, the layer name, the color and the line type
      * @returns The paths as one layered part
      * @group dxf
      * @shortname dxf paths with layer
@@ -525,17 +621,17 @@ export class OCCTIO {
      * const part = await bitbybit.occt.io.dxfPathsWithLayer({ paths, layer: "cut", color: "#ff0000" });
      * ```
      */
-    dxfPathsWithLayer(inputs: Inputs.OCCT.DxfPathsWithLayerDto): Promise<IO.DxfPathsPartDto> {
+    dxfPathsWithLayer(inputs: Inputs.OCCT.DxfPathsWithLayerDto): Promise<IO.DrawingPartDto> {
         return this.occWorkerManager.genericCallToWorkerPromise("io.dxfPathsWithLayer", inputs);
     }
 
     /**
-     * Writes DXF parts into one DXF file and returns its text.
+     * Writes drawing parts into one DXF file and returns its text.
      *
-     * `colorFormat` chooses AutoCAD's indexed colors or true color, `acadVersion` the DXF version:
-     * AC1009 is R12, the most widely readable, AC1015 is 2000, which can also state the drawing's
-     * `unit`. `fileName` and `tryDownload` matter only where a browser download can be started.
-     * @param inputs - The layered parts, the color format, the DXF version, the unit and the download options
+     * `acadVersion` AC1015 (AutoCAD 2000) keeps every curve exact and can state the drawing's `unit`;
+     * AC1009 (R12) suits old software and writes splines and ellipses as polylines within
+     * `curveTolerance`. `fileName` and `tryDownload` matter only where a browser download can start.
+     * @param inputs - The layered parts, the color format, the DXF version, the unit, the curve tolerance and the download options
      * @returns The DXF file as text
      * @group dxf
      * @shortname dxf create
@@ -545,30 +641,67 @@ export class OCCTIO {
      * const dxf = await bitbybit.occt.io.dxfCreate({
      *     pathsParts: [part],
      *     colorFormat: Bit.Inputs.OCCT.dxfColorFormatEnum.aci,
-     *     acadVersion: Bit.Inputs.OCCT.dxfAcadVersionEnum.AC1009,
+     *     acadVersion: Bit.Inputs.OCCT.dxfAcadVersionEnum.AC1015,
+     *     unit: Bit.Inputs.Base.unitOfLengthEnum.millimetre,
      *     fileName: "drawing.dxf",
      *     tryDownload: false,
      * });
      * ```
      */
-    dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): Promise<string> {
+    async dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): Promise<string> {
         const resolved = resolveDto(Inputs.OCCT.DxfPathsPartsListDto, inputs) as Resolved.OCCT.DxfPathsPartsListDto;
-        return this.occWorkerManager.genericCallToWorkerPromise<string>("io.dxfCreate", resolved).then(s => {
-            if (resolved.tryDownload && document) {
-                const blob = new Blob([s], { type: "application/stl" });
-                const blobUrl = URL.createObjectURL(blob);
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.dxfCreate", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "image/vnd.dxf");
+        }
+        return text;
+    }
 
-                const fileName = resolved.fileName;
+    /**
+     * Reads a DXF file into one compound of exact wires, fit-point splines interpolated and block
+     * inserts expanded.
+     *
+     * It lies on the ground, Y along Z (-Z under right-handed conventions) and elevations along Y.
+     * Ends within `joinTolerance` join; `makeFaces` makes faces with holes. A very large file is
+     * read up to its limits; `loadDxfStructured` lists what was left out.
+     * @param inputs - The DXF file and the reading options
+     * @returns One compound holding every layer's wires, and faces when asked
+     * @group dxf
+     * @shortname load dxf
+     * @drawable true
+     * @example
+     * ```typescript
+     * const drawing = await bitbybit.occt.io.loadDxf({ dxf: dxfText, makeFaces: true, joinTolerance: 0.001, includeHiddenLayers: false, unit: Bit.Inputs.Base.unitOfLengthEnum.millimetre });
+     * const plate = await bitbybit.occt.operations.extrude({ shape: drawing, direction: [0, 3, 0] });
+     * ```
+     */
+    async loadDxf(inputs: Inputs.OCCT.LoadDxfDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        const resolved = resolveDto(Inputs.OCCT.LoadDxfDto, inputs) as Resolved.OCCT.LoadDxfDto;
+        const dxf = await this.occWorkerManager.prepareStepData(resolved.dxf);
+        return this.occWorkerManager.genericCallToWorkerPromise("io.loadDxf", { ...resolved, dxf });
+    }
 
-                const fileLink = document.createElement("a");
-                fileLink.href = blobUrl;
-                fileLink.target = "_self";
-                fileLink.download = fileName;
-                fileLink.click();
-                fileLink.remove();
-            }
-            return s;
-        });
+    /**
+     * Reads a DXF file as `loadDxf` does, into one shape per layer, color and line type, each with
+     * its layer name, color and line type, plus the file's unit, its version and what was left out.
+     *
+     * Use it to treat the layers apart, such as outlines to cut on one layer and lines to engrave on
+     * another.
+     * @param inputs - The DXF file and the reading options
+     * @returns The shapes with their layers, colors and line types, the unit, the version and the warnings
+     * @group dxf
+     * @shortname load dxf structured
+     * @drawable false
+     * @example
+     * ```typescript
+     * const result = await bitbybit.occt.io.loadDxfStructured({ dxf: dxfText, makeFaces: true });
+     * const cuts = result.parts.filter(part => part.layer === "cut").map(part => part.shape);
+     * ```
+     */
+    async loadDxfStructured(inputs: Inputs.OCCT.LoadDxfDto): Promise<Inputs.OCCT.DxfShapesResult<Inputs.OCCT.TopoDSShapePointer>> {
+        const resolved = resolveDto(Inputs.OCCT.LoadDxfDto, inputs) as Resolved.OCCT.LoadDxfDto;
+        const dxf = await this.occWorkerManager.prepareStepData(resolved.dxf);
+        return this.occWorkerManager.genericCallToWorkerPromise("io.loadDxfStructured", { ...resolved, dxf });
     }
 
     /**

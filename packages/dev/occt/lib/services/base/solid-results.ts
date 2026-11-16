@@ -20,8 +20,20 @@ export function holdsSolid(occ: BitbybitOcctModule, shape: TopoDS_Shape): boolea
     return occ.CountSubShapes(shape, occ.TopAbs_ShapeEnum.SOLID, false) > 0;
 }
 
+export function signedSolidVolume(occ: BitbybitOcctModule, made: TopoDS_Shape): number | undefined {
+    return holdsSolid(occ, made) ? occ.VolumePropertiesOfEach([made])[0] ?? 0 : undefined;
+}
+
+export function isInsideOutVolume(signedVolume: number | undefined): boolean {
+    return signedVolume !== undefined && signedVolume < -LEAST_VOLUME;
+}
+
+export function isEmptyVolume(signedVolume: number | undefined): boolean {
+    return signedVolume !== undefined && Math.abs(signedVolume) <= LEAST_VOLUME;
+}
+
 export function isInsideOut(occ: BitbybitOcctModule, made: TopoDS_Shape): boolean {
-    return holdsSolid(occ, made) && (occ.VolumePropertiesOfEach([made])[0] ?? 0) < -LEAST_VOLUME;
+    return isInsideOutVolume(signedSolidVolume(occ, made));
 }
 
 export function isBrokenResult(occ: BitbybitOcctModule, made: TopoDS_Shape, asSolid: boolean): boolean {

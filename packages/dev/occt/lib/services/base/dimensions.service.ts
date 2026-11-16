@@ -24,7 +24,24 @@ export class DimensionsService {
 
     private labelWires(text: Inputs.OCCT.TextWiresDto): ObjectDefinition<TextWiresDataDto<string>, TopoDS_Shape> {
         try {
-            return this.wiresService.textWiresWithData(text);
+            const laid = this.wiresService.textWiresWithData(text);
+            const onGround = laid.compound;
+            if (onGround === undefined || this.base.settings.coordinateSystem !== Inputs.Base.coordinateSystemEnum.rightHanded) {
+                return laid;
+            }
+            let readFromAbove: TopoDS_Shape;
+            try {
+                readFromAbove = this.transformsService.scale3d({ shape: onGround, scale: [1, 1, -1], center: [0, 0, 0] });
+            } catch (error) {
+                laid.shapes?.forEach(entry => entry.shape.delete());
+                throw error;
+            }
+            onGround.delete();
+            return {
+                ...laid,
+                compound: readFromAbove,
+                shapes: laid.shapes?.map(entry => entry.shape === onGround ? { ...entry, shape: readFromAbove } : entry),
+            };
         } catch (error) {
             if (error instanceof InputError && error.property === "height") {
                 throw new InputError(error.message.replace("`height`", "`labelSize`"), "labelSize");

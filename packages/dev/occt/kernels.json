@@ -2,24 +2,24 @@
     "kernels": [
         {
             "dir": "bitbybit-dev-occt",
-            "file": "bitbybit-dev-occt.1717d008.wasm",
-            "bytes": 31618479,
-            "sha256": "3800b98ce03b087d2c2c8d41c2837468da1c4048ed150047669ed669e1071c60",
-            "url": "https://github.com/bitbybit-dev/bitbybit-assets/releases/download/kernel-bitbybit-dev-occt.1717d008/bitbybit-dev-occt.1717d008.wasm"
+            "file": "bitbybit-dev-occt.1b60444f.wasm",
+            "bytes": 31698190,
+            "sha256": "9cb09c93d941e7cff6c5f3ad69220e62967715c012a7f0510c476047ef91052d",
+            "url": ""
         },
         {
             "dir": "bitbybit-dev-occt-64-bit",
-            "file": "bitbybit-dev-occt-64-bit.276fe5a6.wasm",
-            "bytes": 33087225,
-            "sha256": "c7e3e5c806b02cc8f18bf5c4d315d2f6afc781cd01b6e6c4ea6443b79f58dd18",
-            "url": "https://github.com/bitbybit-dev/bitbybit-assets/releases/download/kernel-bitbybit-dev-occt-64-bit.276fe5a6/bitbybit-dev-occt-64-bit.276fe5a6.wasm"
+            "file": "bitbybit-dev-occt-64-bit.58c9d878.wasm",
+            "bytes": 33172463,
+            "sha256": "e0d5304360430e16b04c005b4fc6acaa33aa3312f271f1dc17162e326c929b34",
+            "url": ""
         },
         {
             "dir": "bitbybit-dev-occt-64-bit-mt",
-            "file": "bitbybit-dev-occt-64-bit-mt.785e3b34.wasm",
-            "bytes": 31938064,
-            "sha256": "e79855f80e56cb96358dc9f332a2dad1fa0fdc671e7f5000815fdadc361952ec",
-            "url": "https://github.com/bitbybit-dev/bitbybit-assets/releases/download/kernel-bitbybit-dev-occt-64-bit-mt.785e3b34/bitbybit-dev-occt-64-bit-mt.785e3b34.wasm"
+            "file": "bitbybit-dev-occt-64-bit-mt.7962d9b5.wasm",
+            "bytes": 32023393,
+            "sha256": "b3df5eabc8aeff81548351790287b5d995905615e1571d90dcf712f2c1582db5",
+            "url": ""
         }
     ]
 }

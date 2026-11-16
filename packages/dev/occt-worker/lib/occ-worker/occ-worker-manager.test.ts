@@ -1,7 +1,8 @@
-import { KernelCallError } from "@bitbybit-dev/base";
+import { Inputs, KernelCallError } from "@bitbybit-dev/base";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import type { OccProgress } from "./occ-worker-manager";
 import { OCCTWorkerManager } from "./occ-worker-manager";
+import { stateWithin } from "../../../__test__/kernel-workers";
 import { OccStateEnum } from "./occ-state.enum";
 import type { OccInfo } from "./occ-info";
 
@@ -134,6 +135,135 @@ describe("OCCTWorkerManager unit tests", () => {
             // Assert
             expect(posted).toHaveLength(1);
             expect((posted[0] as PostedCall).action).toEqual({ functionName: "shapes.solid.createSphere", inputs });
+        });
+
+        it("should tell the worker the settings once, as a call of its own", () => {
+            // Act
+            void manager.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.leftHanded });
+            void manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Assert
+            expect(posted.map(call => call.action)).toEqual([
+                { functionName: "setSettings", inputs: { coordinateSystem: "leftHanded" } },
+                { functionName: "shapes.solid.createSphere", inputs: {} },
+            ]);
+            expect(Object.keys(posted[1] as PostedCall).sort()).toEqual(["action", "uid"]);
+        });
+
+        it("should tell the worker to go back to no settings with empty inputs", () => {
+            // Act
+            void manager.setSettings({});
+
+            // Assert
+            expect((posted[0] as PostedCall).action).toEqual({ functionName: "setSettings", inputs: {} });
+        });
+
+        it("should keep settings given before a worker is set, and tell the worker when it is", async () => {
+            // Arrange
+            const fresh = new OCCTWorkerManager();
+            const late = new RecordingWorker();
+
+            // Act
+            const kept = await fresh.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.leftHanded });
+            fresh.setOccWorker(late);
+
+            // Assert
+            expect(kept).toEqual({ coordinateSystem: "leftHanded" });
+            expect(late.posted.map(call => call.action)).toEqual([{ functionName: "setSettings", inputs: { coordinateSystem: "leftHanded" } }]);
+        });
+
+        it("should tell a worker set in place of another the settings in force", () => {
+            // Arrange
+            void manager.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.rightHanded });
+            const replacement = new RecordingWorker();
+
+            // Act
+            manager.setOccWorker(replacement);
+
+            // Assert
+            expect(replacement.posted.map(call => call.action)).toEqual([{ functionName: "setSettings", inputs: { coordinateSystem: "rightHanded" } }]);
+        });
+
+        it("should tell a worker nothing when no settings were ever given", () => {
+            // Arrange
+            const fresh = new OCCTWorkerManager();
+            const late = new RecordingWorker();
+
+            // Act
+            fresh.setOccWorker(late);
+
+            // Assert
+            expect(late.posted).toEqual([]);
+        });
+
+        it("should resolve with the settings at once, without waiting for the worker, which takes them ahead of every later call", async () => {
+            // Act
+            const pending = manager.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.rightHanded });
+            const state = await stateWithin(pending, 0);
+
+            // Assert
+            expect(state).toBe("resolved");
+            await expect(pending).resolves.toEqual({ coordinateSystem: "rightHanded" });
+        });
+
+        it("should reject a name that is no setting, send it nowhere, and tell a worker set later the settings in force before it", async () => {
+            // Arrange
+            await manager.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.leftHanded });
+            const replacement = new RecordingWorker();
+
+            // Act
+            const refused = manager.setSettings(JSON.parse("{\"cordinateSystem\":\"rightHanded\"}"));
+            await expect(refused).rejects.toThrow("`cordinateSystem` is not a setting");
+            manager.setOccWorker(replacement);
+
+            // Assert
+            expect(posted.map(call => call.action)).toEqual([{ functionName: "setSettings", inputs: { coordinateSystem: "leftHanded" } }]);
+            expect(replacement.posted.map(call => call.action)).toEqual([{ functionName: "setSettings", inputs: { coordinateSystem: "leftHanded" } }]);
+        });
+
+        it("should reject a value its setting does not take before any worker is set, and keep nothing of it", async () => {
+            // Arrange
+            const fresh = new OCCTWorkerManager();
+            const late = new RecordingWorker();
+
+            // Act
+            const refused = fresh.setSettings(JSON.parse("{\"coordinateSystem\":\"LeftHanded\"}"));
+            await expect(refused).rejects.toThrow("`coordinateSystem` is \"LeftHanded\"");
+            fresh.setOccWorker(late);
+
+            // Assert
+            expect(late.posted).toEqual([]);
+        });
+
+        it("should hand a worker's refusal of the settings to the error callback, and to nothing else", async () => {
+            // Arrange
+            const reported: string[] = [];
+            manager.errorCallback = (error: string): void => { reported.push(error); };
+            const written = vi.spyOn(console, "error").mockImplementation(() => undefined);
+            await manager.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.rightHanded });
+
+            // Act
+            answer({ uid: uidOf(0), error: "'setSettings' is not a call this worker knows", errorKind: "input" });
+            await new Promise((resolve) => setTimeout(resolve, 0));
+
+            // Assert
+            expect(reported).toEqual(["'setSettings' is not a call this worker knows"]);
+            expect(written).not.toHaveBeenCalled();
+            written.mockRestore();
+        });
+
+        it("should write a worker's refusal of the settings to the console when no error callback is set", async () => {
+            // Arrange
+            const written = vi.spyOn(console, "error").mockImplementation(() => undefined);
+            await manager.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.rightHanded });
+
+            // Act
+            answer({ uid: uidOf(0), error: "'setSettings' is not a call this worker knows", errorKind: "input" });
+            await new Promise((resolve) => setTimeout(resolve, 0));
+
+            // Assert
+            expect(written.mock.calls.map(([message]) => message)).toEqual(["OCCT refused the settings it was sent:"]);
+            written.mockRestore();
         });
 
         it("should resolve with the result the worker returned for that uid", async () => {

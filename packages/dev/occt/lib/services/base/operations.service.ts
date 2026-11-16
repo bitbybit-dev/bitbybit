@@ -21,7 +21,7 @@ import type { KernelObjects } from "./release-types";
 import { coordinatesOf, pointsFromCoordinates } from "./kernel-arrays";
 import { checkedDirection, checkedNumberList, checkedShape, checkedShapes, checkedWhole } from "./input-checks";
 import { withKernelErrorsRead, withKernelFailure } from "./kernel-refusals";
-import { holdsSolid, isBrokenResult, isInsideOut } from "./solid-results";
+import { holdsSolid, isBrokenResult, isEmptyVolume, isInsideOut, isInsideOutVolume, signedSolidVolume } from "./solid-results";
 import { tubeArguments, tubeOf } from "./tubes";
 import { add3, scale3, subtract3 } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/vectors";
 
@@ -516,8 +516,12 @@ export class OperationsService {
             }
             pipe.MakeSolid();
             const pipeShape = own(pipe.Shape());
-            if (isInsideOut(this.occ, pipeShape)) {
+            const signedVolume = signedSolidVolume(this.occ, pipeShape);
+            if (isInsideOutVolume(signedVolume)) {
                 throw occtFailure("occt.pipe.insideOut");
+            }
+            if (isEmptyVolume(signedVolume)) {
+                throw occtFailure("occt.pipe.alongPath");
             }
             read?.(pipe, pipeShape);
             return this.converterService.getActualTypeOfShape(pipeShape);

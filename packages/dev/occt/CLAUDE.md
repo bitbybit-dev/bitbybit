@@ -133,7 +133,8 @@ it is not valid, because no rebuild was valid either, comes back with its shape 
 design build says so on the feature's report line, from the cache too. `pipe` (and the thread
 cutter's sweep) refuses a solid that came out inside out as `occt.pipe.insideOut`: OCCT places a
 profile lying off the path at the far end when the path comes back to the profile's plane, and only
-the volume's sign tells, since the solid is valid.
+the volume's sign tells, since the solid is valid. A profile standing along its path (its plane holding the path's direction where it
+sits) caps into a solid of volume 0, which `pipe` refuses as `occt.pipe.alongPath`.
 
 Two behaviours are stable and surprising, so assume the opposite at your peril:
 

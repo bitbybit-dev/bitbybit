@@ -190,6 +190,7 @@ const DELEGATIONS: [string, (occt: OCCT) => unknown][] = [
     ["io.dxfPathsWithLayer", (o) => o.io.dxfPathsWithLayer(asInputs())],
     ["io.fileLengthUnit", (o) => o.io.fileLengthUnit(asInputs())],
     ["io.shapeToDxfPaths", (o) => o.io.shapeToDxfPaths(asInputs())],
+    ["io.svgLayer", (o) => o.io.svgLayer(asInputs())],
     ["operations.boundingBoxCenterOfShape", (o) => o.operations.boundingBoxCenterOfShape(asInputs())],
     ["operations.boundingBoxMaxOfShape", (o) => o.operations.boundingBoxMaxOfShape(asInputs())],
     ["operations.boundingBoxMinOfShape", (o) => o.operations.boundingBoxMinOfShape(asInputs())],
