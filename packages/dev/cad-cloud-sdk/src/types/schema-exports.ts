@@ -104,6 +104,76 @@ export type ModelParamApiType = components["schemas"]["ModelParamApiType"];
 export type ModelParamDefinition = components["schemas"]["ModelParamDefinition"];
 /** Submit a parametric model for generation with specified parameters and output formats */
 export type ModelSubmissionBody = components["schemas"]["ModelSubmissionBody"];
+/** Read the parts of uploaded STEP files as nesting would, without nesting them: each part's file, kind, outline size, area and cut length, or why it cannot be nested. */
+export type NestingInspectBody = components["schemas"]["NestingInspectBody"];
+/** The settings that change how parts are read (tolerance, xDirection); no stock is needed. */
+export type NestingInspectOptions = components["schemas"]["NestingInspectOptions"];
+/** Each part as nesting reads it, without nesting. */
+export type NestingInspection = components["schemas"]["NestingInspection"];
+/** Copies of a part that were not placed, and why. */
+export type NestingLeft = components["schemas"]["NestingLeft"];
+/** Copies of a part that were not placed, and why. */
+export type NestingLeftOutput = components["schemas"]["NestingLeftOutput"];
+/** Nest the flat parts of uploaded STEP files onto sheets or a strip. A part is a planar face, coplanar faces such as an unfolded sheet-metal part, a plate solid, or a drawing of closed wires; 'stepFileIds' says how parts are read from a file. */
+export type NestingNestBody = components["schemas"]["NestingNestBody"];
+/** The stock, the per-part options and the settings of a nesting run. */
+export type NestingOptions = components["schemas"]["NestingOptions"];
+/** A full circle. */
+export type NestingOutlineCircle = components["schemas"]["NestingOutlineCircle"];
+/** A full circle. */
+export type NestingOutlineCircleOutput = components["schemas"]["NestingOutlineCircleOutput"];
+/** An ellipse or an arc of one. */
+export type NestingOutlineEllipse = components["schemas"]["NestingOutlineEllipse"];
+/** An ellipse or an arc of one. */
+export type NestingOutlineEllipseOutput = components["schemas"]["NestingOutlineEllipseOutput"];
+/** Lines and arcs from vertex to vertex. */
+export type NestingOutlinePolyline = components["schemas"]["NestingOutlinePolyline"];
+/** Lines and arcs from vertex to vertex. */
+export type NestingOutlinePolylineOutput = components["schemas"]["NestingOutlinePolylineOutput"];
+/** A B-spline or NURBS curve. */
+export type NestingOutlineSpline = components["schemas"]["NestingOutlineSpline"];
+/** A B-spline or NURBS curve. */
+export type NestingOutlineSplineOutput = components["schemas"]["NestingOutlineSplineOutput"];
+/** The cut paths of every placed copy in the frame of its sheet: x along the sheet's width and y along its height from the corner, as the report's placement boxes are; the 'outlines' result of a nest. */
+export type NestingOutlines = components["schemas"]["NestingOutlines"];
+/** The formats of the nested sheets: 'step' or 'stpz' (each sheet one part, holding its placed parts and its outline), 'gltf', 'decomposed-mesh' (the placed parts, triangulated), 'dxf' (an AutoCAD 2000 drawing in millimetres: the sheets' outlines on layer SHEETS and the parts' cut paths on layer PARTS, every arc, ellipse and spline exact), 'svg' (the same drawing as an SVG file in millimetres, each layer a group), or 'outlines' (the same cut paths as JSON, each copy in the frame of its sheet and named by its placement, for drawing the layout). */
+export type NestingOutputFormat = components["schemas"]["NestingOutputFormat"];
+/** Which formats the nested sheets are written in, and their mesh quality. */
+export type NestingOutputOptions = components["schemas"]["NestingOutputOptions"];
+/** How one part was read, and how many of its copies were placed. */
+export type NestingPartEntry = components["schemas"]["NestingPartEntry"];
+/** How one part was read, and how many of its copies were placed. */
+export type NestingPartEntryOutput = components["schemas"]["NestingPartEntryOutput"];
+/** The options of one part, paired with the part of the same index. */
+export type NestingPartOptions = components["schemas"]["NestingPartOptions"];
+/** Where one copy of a part was placed. */
+export type NestingPlacement = components["schemas"]["NestingPlacement"];
+/** Where one copy of a part was placed. */
+export type NestingPlacementOutput = components["schemas"]["NestingPlacementOutput"];
+/** The layout of a nesting run: the used sheets, every placement with its transform, each part as read, what was left and why, and the totals. Positions are in the working space, right-handed with Y up; a STEP output turns that space to Z up, a quarter turn about X. */
+export type NestingReport = components["schemas"]["NestingReport"];
+/** Returned when the options are refused or the call is stopped before any part was nested. */
+export type NestingReportError = components["schemas"]["NestingReportError"];
+/** Returned when the options are refused or the call is stopped before any part was nested. */
+export type NestingReportErrorOutput = components["schemas"]["NestingReportErrorOutput"];
+/** How a part may turn on the sheet: a fixed list of angles, steps that divide a full turn, or any angle. Without it a part turns in steps of 90 degrees. */
+export type NestingRotations = components["schemas"]["NestingRotations"];
+/** How the search ran: whether the same seed gives the same layout again, and whether it was stopped or ran out of time. */
+export type NestingRun = components["schemas"]["NestingRun"];
+/** How the search ran: whether the same seed gives the same layout again, and whether it was stopped or ran out of time. */
+export type NestingRunOutput = components["schemas"]["NestingRunOutput"];
+/** One kind of rectangular stock. */
+export type NestingSheet = components["schemas"]["NestingSheet"];
+/** One used sheet: its stock, where it lies in the working space, and how much of it the parts fill. */
+export type NestingSheetEntry = components["schemas"]["NestingSheetEntry"];
+/** One used sheet: its stock, where it lies in the working space, and how much of it the parts fill. */
+export type NestingSheetEntryOutput = components["schemas"]["NestingSheetEntryOutput"];
+/** One strip of open length; it stands alone, never beside other stock. */
+export type NestingStrip = components["schemas"]["NestingStrip"];
+/** Totals over every used sheet. */
+export type NestingTotals = components["schemas"]["NestingTotals"];
+/** Totals over every used sheet. */
+export type NestingTotalsOutput = components["schemas"]["NestingTotalsOutput"];
 /** Output file format: 'step' (raw STEP), 'stpz' (gzip-compressed STEP), 'decomposed-mesh' (triangulated JSON), 'gltf' (glTF 2.0 binary .glb). Note: 'step' and 'stpz' are mutually exclusive - choose one or the other, not both. */
 export type OutputFormat = components["schemas"]["OutputFormat"];
 /** Controls which output formats are generated and their quality settings */
@@ -116,7 +186,7 @@ export type PhoneNestParams = components["schemas"]["PhoneNestParams"];
 export type PipelineAnyStep = components["schemas"]["PipelineAnyStep"];
 /** Execute a chain of Bitbybit CAD operations sequentially. Supports $ref:N step references, $file:N file inputs, map iteration, and choice conditionals. */
 export type PipelineBody = components["schemas"]["PipelineBody"];
-/** Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only), 'brep' (OpenCascade BREP as text, which OCCT-based tools such as FreeCAD read) and 'brep-binary' (OpenCascade binary BREP, the smallest and fastest exact form, which keeps the numbering of faces and edges; read back with occt.io.loadBrepBinary) - both OCCT only, without triangulation. */
+/** Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only), 'brep' (OpenCascade BREP as text) and 'brep-binary' (OpenCascade binary BREP, the smallest and fastest exact form, which keeps the numbering of faces and edges) - both OCCT only, without triangulation, and both in the frame the pipeline modelled the shape in (Y up), so occt.io.loadBrep and occt.io.loadBrepBinary read them back exactly as they were; a Z-up tool such as FreeCAD shows them lying on their backs, where a 'step' output stands upright. */
 export type PipelineOutputFormat = components["schemas"]["PipelineOutputFormat"];
 /** Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf, brep, brep-binary) beyond standard model outputs. */
 export type PipelineOutputOptions = components["schemas"]["PipelineOutputOptions"];
