@@ -128,6 +128,11 @@
             "types": "./dist/lib/api/services/engineering/mechanical/index.d.ts",
             "default": "./dist/lib/api/services/engineering/mechanical/index.js"
         },
+        "./lib/api/services/io": {
+            "@bitbybit-dev/source": "./lib/api/services/io/index.ts",
+            "types": "./dist/lib/api/services/io/index.d.ts",
+            "default": "./dist/lib/api/services/io/index.js"
+        },
         "./package.json": "./package.json",
         "./*.js": {
             "@bitbybit-dev/source": "./*.js",

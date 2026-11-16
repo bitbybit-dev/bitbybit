@@ -1,0 +1,11 @@
+export const BINARY_HEADER_BYTES = 80;
+export const BINARY_COUNT_BYTES = 4;
+export const BINARY_TRIANGLE_BYTES = 50;
+export const BINARY_POINT_BYTES = 12;
+export const BINARY_NUMBER_BYTES = 4;
+export const COMPONENTS_OF_A_POINT = 3;
+export const POINTS_OF_A_FACET = 4;
+export const SECOND_VERTEX_SLOT = 2;
+export const THIRD_VERTEX_SLOT = 3;
+export const CORNERS_OF_A_TRIANGLE = 3;
+export const NUMBERS_OF_A_TRIANGLE = 9;

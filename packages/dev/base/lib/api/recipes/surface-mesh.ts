@@ -1,12 +1,12 @@
-import type { Base } from "../inputs/base-inputs";
+import { Base } from "../inputs/base-inputs";
 import { InputError } from "../kernel-calls/errors";
 import { followedBy, linearDeterminant, movedCoordinate } from "../services/helpers/geometry/matrices";
+import { meshMatrixInModel } from "../services/helpers/files/mesh-file-axes";
 import { POINT3_SIZE, TRIANGLE_CORNERS } from "./limits.constants";
 import type { RecipeSurfaceMesh, SurfacePiece } from "./recipe-types";
 import { toRecipe } from "./validate";
 import { isIndexBelow } from "./checks";
 
-const Z_TO_Y: Base.TransformMatrix = [1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1];
 const X = 0;
 const Y = 1;
 const Z = 2;
@@ -63,7 +63,7 @@ function meshOfPieces(buffers: Base.RecipeBuffers, pieces: readonly SurfacePiece
     return { positions, indices };
 }
 
-export function recipeSurfaceMeshes(value: unknown, roots?: readonly number[], adjustZtoY = false): (RecipeSurfaceMesh | undefined)[] {
+export function recipeSurfaceMeshes(value: unknown, roots?: readonly number[], adjustZtoY = false, coordinateSystem?: Base.coordinateSystemEnum): (RecipeSurfaceMesh | undefined)[] {
     const recipe = toRecipe(value);
     const asked = roots ?? recipe.roots.map((_, index) => index);
     const bad = asked.find((index): boolean => !isIndexBelow(index, recipe.roots.length));
@@ -73,7 +73,8 @@ export function recipeSurfaceMeshes(value: unknown, roots?: readonly number[], a
     return asked.map((index) => {
         const root = recipe.roots[index]!;
         const pieces: SurfacePiece[] = [];
-        const placement = adjustZtoY ? followedBy(root.matrix, Z_TO_Y) : root.matrix;
+        const turn = meshMatrixInModel(coordinateSystem ?? Base.coordinateSystemEnum.rightHanded, adjustZtoY);
+        const placement = turn === undefined ? root.matrix : followedBy(root.matrix, turn);
         return collectPieces(recipe.nodes, root.node, placement, pieces) ? meshOfPieces(recipe.buffers, pieces) : undefined;
     });
 }

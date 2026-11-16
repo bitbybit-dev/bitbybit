@@ -1,0 +1,9 @@
+export const FULL_TURN = 2 * Math.PI;
+export const SAME_CONIC_SHARE = 1e-6;
+export const NUMBER_PRECISION_SLACK = 1e-5;
+export const LEAST_ARC_SWEEP = 1e-9;
+export const POINT_NOISE_SHARE = 1e-12;
+export const DASH_MATCH_SHARE = 1e-3;
+export const LAYER_STAND_IN = "_";
+export const UNREAD_PAINT = "#000000";
+export const HIGH_SURROGATE_AT_END = /[\uD800-\uDBFF]$/;

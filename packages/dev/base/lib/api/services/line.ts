@@ -4,7 +4,7 @@ import type { Point } from "./point";
 import type { Vector } from "./vector";
 import { resolveDto } from "../kernel-calls";
 import type * as Resolved from "../resolved-inputs";
-import { add3, scale3, subtract3 } from "./helpers/geometry/vectors";
+import { add3, distanceToSegment3, scale3, subtract3 } from "./helpers/geometry/vectors";
 
 /**
  * Straight lines between two points, held as plain objects of the form `{ start, end }`, and the
@@ -56,6 +56,26 @@ export class Line {
      */
     length(inputs: Inputs.Line.LineDto): number {
         return this.point.distance({ startPoint: inputs.line.start, endPoint: inputs.line.end });
+    }
+
+    /**
+     * Measures how far a point lies from a line, to the nearest point between its start and end.
+     *
+     * A point beside the line is measured square to it, and one past either end to that end. A line
+     * whose ends meet is measured to that one point.
+     * @param inputs - The line and the point
+     * @returns Distance in model units
+     * @group get
+     * @shortname distance to point
+     * @drawable false
+     * @example
+     * ```typescript
+     * const beside = bitbybit.line.distanceToPoint({ line: { start: [0, 0, 0], end: [10, 0, 0] }, point: [4, 3, 0] });
+     * const pastTheEnd = bitbybit.line.distanceToPoint({ line: { start: [0, 0, 0], end: [10, 0, 0] }, point: [13, 4, 0] });
+     * ```
+     */
+    distanceToPoint(inputs: Inputs.Line.LinePointDistanceDto): number {
+        return distanceToSegment3(inputs.point, inputs.line.start, inputs.line.end);
     }
 
     /**

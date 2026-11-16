@@ -171,7 +171,7 @@
   },
   "packages/dev/base/lib/api/services/color.ts": {
     "@typescript-eslint/no-magic-numbers": {
-      "count": 13
+      "count": 9
     }
   },
   "packages/dev/base/lib/api/services/frame.ts": {
@@ -188,17 +188,6 @@
     },
     "@typescript-eslint/no-magic-numbers": {
       "count": 3
-    }
-  },
-  "packages/dev/base/lib/api/services/helpers/files/dxf/dxf-generator.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 52
-    },
-    "bitbybit/no-inline-object-types": {
-      "count": 2
-    },
-    "max-lines": {
-      "count": 1
     }
   },
   "packages/dev/base/lib/api/services/helpers/geometry/frame-axes.ts": {

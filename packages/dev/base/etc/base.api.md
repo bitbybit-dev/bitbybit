@@ -93,6 +93,12 @@ export namespace Base {
         b: number;
         a: number;
     };
+    export enum coordinateSystemEnum {
+        // (undocumented)
+        leftHanded = "leftHanded",
+        // (undocumented)
+        rightHanded = "rightHanded"
+    }
     export type Frame = {
         origin: Base.Point3;
         normal: Base.Vector3;
@@ -458,6 +464,8 @@ export class BaseBitByBit {
     //
     // (undocumented)
     readonly recipes: Recipes;
+    get settings(): BitbybitSettings;
+    set settings(settings: BitbybitSettings);
     // (undocumented)
     readonly textService: TextBitByBit;
     // (undocumented)
@@ -480,6 +488,11 @@ export interface BevelGearSizes {
 }
 
 // @public
+export interface BitbybitSettings {
+    coordinateSystem?: Base.coordinateSystemEnum | undefined;
+}
+
+// @public
 export function callByPath(root: object, path: string, inputs: unknown): unknown;
 
 // @public
@@ -487,6 +500,9 @@ export interface ChamferedWasherSizes extends WasherSizes {
     readonly chamferHeight: number;
     readonly chamferWidth: number;
 }
+
+// @public
+export function checkedSettings(given: unknown): BitbybitSettings;
 
 // @public
 export function checkStructure(constraints: DtoConstraints, inputs: unknown): InputIssue[];
@@ -680,6 +696,9 @@ export const constraintKinds: {
 };
 
 // @public
+export const CURRENT_CONVENTIONS = 1;
+
+// @public
 export function custom<T>(property: Key<T>, holds: (inputs: T) => boolean, message: string, reads?: readonly Key<T>[]): InputRule<T>;
 
 // @public
@@ -832,6 +851,21 @@ export function describeKernelFailure(kernel: string, functionName: string, inpu
 export function distinct<T>(property: Key<T>, other: Key<T>): InputRule<T>;
 
 // @public
+export class Drawing {
+    constructor(dxfOf: () => Dxf, svgOf: () => Svg);
+    arcSegment(inputs: Inputs_2.IO.DrawingArcSegmentDto): Inputs_2.IO.DrawingArcSegmentDto;
+    circleSegment(inputs: Inputs_2.IO.DrawingCircleSegmentDto): Inputs_2.IO.DrawingCircleSegmentDto;
+    dxfToSvg(inputs: Inputs_2.IO.DxfToSvgDto): Inputs_2.IO.DxfToSvgResultDto;
+    ellipseSegment(inputs: Inputs_2.IO.DrawingEllipseSegmentDto): Inputs_2.IO.DrawingEllipseSegmentDto;
+    lineSegment(inputs: Inputs_2.IO.DrawingLineSegmentDto): Inputs_2.IO.DrawingLineSegmentDto;
+    part(inputs: Inputs_2.IO.DrawingPartDto): Inputs_2.IO.DrawingPartDto;
+    path(inputs: Inputs_2.IO.DrawingPathDto): Inputs_2.IO.DrawingPathDto;
+    polylineSegment(inputs: Inputs_2.IO.DrawingPolylineSegmentDto): Inputs_2.IO.DrawingPolylineSegmentDto;
+    splineSegment(inputs: Inputs_2.IO.DrawingSplineSegmentDto): Inputs_2.IO.DrawingSplineSegmentDto;
+    svgToDxf(inputs: Inputs_2.IO.SvgToDxfDto): Inputs_2.IO.SvgToDxfResultDto;
+}
+
+// @public
 export type DtoConstraints = Readonly<Record<string, PropertyConstraint>>;
 
 // @public
@@ -852,6 +886,28 @@ export type DtoRules = {
     readonly dto: RuleTarget;
     readonly rules: readonly InputRule<unknown>[];
 };
+
+// @public
+export class Dxf {
+    // @deprecated
+    arcSegment(inputs: Inputs_2.IO.DxfArcSegmentDto): Inputs_2.IO.DxfArcSegmentDto;
+    // @deprecated
+    circleSegment(inputs: Inputs_2.IO.DxfCircleSegmentDto): Inputs_2.IO.DxfCircleSegmentDto;
+    dxfCreate(inputs: Inputs_2.IO.DxfModelDto): string;
+    dxfRead(inputs: Inputs_2.IO.DxfReadDto): Inputs_2.IO.DxfDrawingDto;
+    // @deprecated
+    ellipseSegment(inputs: Inputs_2.IO.DxfEllipseSegmentDto): Inputs_2.IO.DxfEllipseSegmentDto;
+    // @deprecated
+    lineSegment(inputs: Inputs_2.IO.DxfLineSegmentDto): Inputs_2.IO.DxfLineSegmentDto;
+    // @deprecated
+    path(inputs: Inputs_2.IO.DxfPathDto): Inputs_2.IO.DxfPathDto;
+    // @deprecated
+    pathsPart(inputs: Inputs_2.IO.DxfPathsPartDto): Inputs_2.IO.DxfPathsPartDto;
+    // @deprecated
+    polylineSegment(inputs: Inputs_2.IO.DxfPolylineSegmentDto): Inputs_2.IO.DxfPolylineSegmentDto;
+    // @deprecated
+    splineSegment(inputs: Inputs_2.IO.DxfSplineSegmentDto): Inputs_2.IO.DxfSplineSegmentDto;
+}
 
 // @beta
 export class Engineering {
@@ -2083,81 +2139,234 @@ export interface InvoluteSplineSizes {
 
 // @public
 namespace IO {
-    class DxfArcSegmentDto {
-        constructor(center?: Base.Point2, radius?: number, startAngle?: number, endAngle?: number);
-        center: Base.Point2;
+    class DrawingArcSegmentDto {
+        constructor(center?: Base.Point2 | Base.Point3, radius?: number, startAngle?: number, endAngle?: number, normal?: Base.Vector3);
+        center: Base.Point2 | Base.Point3;
         endAngle: number;
+        normal?: Base.Vector3 | undefined;
         radius: number;
         startAngle: number;
     }
-    class DxfCircleSegmentDto {
-        constructor(center?: Base.Point2, radius?: number);
-        center: Base.Point2;
+    class DrawingCircleSegmentDto {
+        constructor(center?: Base.Point2 | Base.Point3, radius?: number, normal?: Base.Vector3);
+        center: Base.Point2 | Base.Point3;
+        normal?: Base.Vector3 | undefined;
         radius: number;
     }
-    class DxfLineSegmentDto {
-        constructor(start?: Base.Point2, end?: Base.Point2);
-        end: Base.Point2;
-        start: Base.Point2;
+    class DrawingEllipseSegmentDto {
+        constructor(center?: Base.Point2 | Base.Point3, majorAxis?: Base.Vector2 | Base.Vector3, ratio?: number, startParameter?: number, endParameter?: number, normal?: Base.Vector3);
+        center: Base.Point2 | Base.Point3;
+        endParameter?: number | undefined;
+        majorAxis: Base.Vector2 | Base.Vector3;
+        normal?: Base.Vector3 | undefined;
+        ratio: number;
+        startParameter?: number | undefined;
     }
-    class DxfModelDto {
-        constructor(dxfPathsParts?: DxfPathsPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base.unitOfLengthEnum);
-        acadVersion?: "AC1009" | "AC1015" | undefined;
-        colorFormat?: "aci" | "truecolor" | undefined;
-        dxfPathsParts: DxfPathsPartDto[];
-        unit?: Base.unitOfLengthEnum | undefined;
+    class DrawingLineSegmentDto {
+        constructor(start?: Base.Point2 | Base.Point3, end?: Base.Point2 | Base.Point3);
+        end: Base.Point2 | Base.Point3;
+        start: Base.Point2 | Base.Point3;
     }
-    class DxfPathDto {
-        constructor(segments?: (DxfLineSegmentDto | DxfArcSegmentDto | DxfCircleSegmentDto | DxfPolylineSegmentDto | DxfSplineSegmentDto)[]);
-        segments: (DxfLineSegmentDto | DxfArcSegmentDto | DxfCircleSegmentDto | DxfPolylineSegmentDto | DxfSplineSegmentDto)[];
-    }
-    class DxfPathsPartDto {
-        constructor(layer?: string, color?: Base.Color, paths?: DxfPathDto[]);
+    class DrawingPartDto {
+        constructor(layer?: string, color?: Base.Color, paths?: DrawingPathDto[], lineType?: lineTypeEnum);
         color?: Base.Color | undefined;
         layer?: string | undefined;
-        paths: DxfPathDto[];
+        lineType?: lineTypeEnum | undefined;
+        paths: DrawingPathDto[];
     }
-    class DxfPolylineSegmentDto {
-        constructor(points?: Base.Point2[], closed?: boolean, bulges?: number[]);
+    class DrawingPathDto {
+        constructor(segments?: (DrawingLineSegmentDto | DrawingArcSegmentDto | DrawingCircleSegmentDto | DrawingPolylineSegmentDto | DrawingSplineSegmentDto | DrawingEllipseSegmentDto)[]);
+        segments: (DrawingLineSegmentDto | DrawingArcSegmentDto | DrawingCircleSegmentDto | DrawingPolylineSegmentDto | DrawingSplineSegmentDto | DrawingEllipseSegmentDto)[];
+    }
+    class DrawingPolylineSegmentDto {
+        constructor(points?: (Base.Point2 | Base.Point3)[], closed?: boolean, bulges?: number[]);
         bulges?: number[] | undefined;
         closed?: boolean | undefined;
-        points: Base.Point2[];
+        points: (Base.Point2 | Base.Point3)[];
     }
-    class DxfSplineSegmentDto {
-        constructor(controlPoints?: Base.Point2[], degree?: number, closed?: boolean);
+    class DrawingSplineSegmentDto {
+        constructor(controlPoints?: (Base.Point2 | Base.Point3)[], degree?: number, closed?: boolean, knots?: number[], weights?: number[]);
         closed?: boolean | undefined;
-        controlPoints: Base.Point2[];
+        controlPoints: (Base.Point2 | Base.Point3)[];
         degree?: number | undefined;
+        knots?: number[] | undefined;
+        weights?: number[] | undefined;
+    }
+    // @deprecated
+    class DxfArcSegmentDto extends DrawingArcSegmentDto {
+    }
+    // @deprecated
+    class DxfCircleSegmentDto extends DrawingCircleSegmentDto {
+    }
+    class DxfDrawingDto {
+        parts: DrawingPartDto[];
+        unit?: Base.unitOfLengthEnum | undefined;
+        version: string;
+        warnings: string[];
+    }
+    // @deprecated
+    class DxfEllipseSegmentDto extends DrawingEllipseSegmentDto {
+    }
+    // @deprecated
+    class DxfLineSegmentDto extends DrawingLineSegmentDto {
+    }
+    class DxfModelDto {
+        constructor(dxfPathsParts?: DrawingPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base.unitOfLengthEnum, curveTolerance?: number);
+        acadVersion?: "AC1009" | "AC1015" | undefined;
+        colorFormat?: "aci" | "truecolor" | undefined;
+        curveTolerance?: number | undefined;
+        dxfPathsParts: DrawingPartDto[];
+        unit?: Base.unitOfLengthEnum | undefined;
+    }
+    // @deprecated
+    class DxfPathDto extends DrawingPathDto {
+    }
+    // @deprecated
+    class DxfPathsPartDto extends DrawingPartDto {
+    }
+    // @deprecated
+    class DxfPolylineSegmentDto extends DrawingPolylineSegmentDto {
+    }
+    class DxfReadDto {
+        constructor(dxf?: string | Uint8Array, includeHiddenLayers?: boolean);
+        dxf: string | Uint8Array;
+        includeHiddenLayers?: boolean | undefined;
+    }
+    // @deprecated
+    class DxfSplineSegmentDto extends DrawingSplineSegmentDto {
+    }
+    class DxfToSvgDto {
+        constructor(dxf?: string | Uint8Array, includeHiddenLayers?: boolean, strokeWidth?: number, margin?: number, tolerance?: number);
+        dxf: string | Uint8Array;
+        includeHiddenLayers?: boolean | undefined;
+        margin?: number | undefined;
+        strokeWidth?: number | undefined;
+        tolerance?: number | undefined;
+    }
+    class DxfToSvgResultDto {
+        svg: string;
+        warnings: string[];
+    }
+    enum lineTypeEnum {
+        // (undocumented)
+        center = "center",
+        // (undocumented)
+        continuous = "continuous",
+        // (undocumented)
+        dashed = "dashed",
+        // (undocumented)
+        dotted = "dotted",
+        // (undocumented)
+        hidden = "hidden"
+    }
+    class SvgDrawingDto {
+        parts: DrawingPartDto[];
+        unit?: Base.unitOfLengthEnum | undefined;
+        viewBox?: number[] | undefined;
+        warnings: string[];
+    }
+    class SvgModelDto {
+        constructor(parts?: DrawingPartDto[], unit?: Base.unitOfLengthEnum, strokeWidth?: number, margin?: number, tolerance?: number);
+        margin?: number | undefined;
+        parts: DrawingPartDto[];
+        strokeWidth?: number | undefined;
+        tolerance?: number | undefined;
+        unit?: Base.unitOfLengthEnum | undefined;
+    }
+    class SvgPathDataDto {
+        constructor(path?: DrawingPathDto, flipY?: boolean, tolerance?: number);
+        flipY?: boolean | undefined;
+        path: DrawingPathDto;
+        tolerance?: number | undefined;
+    }
+    class SvgReadDto {
+        constructor(svg?: string, unit?: Base.unitOfLengthEnum, includeInvisible?: boolean);
+        includeInvisible?: boolean | undefined;
+        svg: string;
+        unit?: Base.unitOfLengthEnum | undefined;
+    }
+    class SvgToDxfDto {
+        constructor(svg?: string, unit?: Base.unitOfLengthEnum, includeInvisible?: boolean, colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", curveTolerance?: number);
+        acadVersion?: "AC1009" | "AC1015" | undefined;
+        colorFormat?: "aci" | "truecolor" | undefined;
+        curveTolerance?: number | undefined;
+        includeInvisible?: boolean | undefined;
+        svg: string;
+        unit?: Base.unitOfLengthEnum | undefined;
+    }
+    class SvgToDxfResultDto {
+        dxf: string;
+        warnings: string[];
     }
 }
 
 // @public
 namespace IO_2 {
     // (undocumented)
+    type DrawingArcSegmentDto = Inputs_2.IO.DrawingArcSegmentDto;
+    // (undocumented)
+    type DrawingCircleSegmentDto = Inputs_2.IO.DrawingCircleSegmentDto;
+    // (undocumented)
+    type DrawingEllipseSegmentDto = WithDefaults<Inputs_2.IO.DrawingEllipseSegmentDto, "startParameter" | "endParameter">;
+    // (undocumented)
+    type DrawingLineSegmentDto = Inputs_2.IO.DrawingLineSegmentDto;
+    // (undocumented)
+    type DrawingPartDto = WithDefaults<Inputs_2.IO.DrawingPartDto, "layer" | "color" | "lineType">;
+    // (undocumented)
+    type DrawingPathDto = Inputs_2.IO.DrawingPathDto;
+    // (undocumented)
+    type DrawingPolylineSegmentDto = WithDefaults<Inputs_2.IO.DrawingPolylineSegmentDto, "closed">;
+    // (undocumented)
+    type DrawingSplineSegmentDto = WithDefaults<Inputs_2.IO.DrawingSplineSegmentDto, "degree" | "closed">;
+    // (undocumented)
     type DxfArcSegmentDto = Inputs_2.IO.DxfArcSegmentDto;
     // (undocumented)
     type DxfCircleSegmentDto = Inputs_2.IO.DxfCircleSegmentDto;
     // (undocumented)
+    type DxfDrawingDto = Inputs_2.IO.DxfDrawingDto;
+    // (undocumented)
+    type DxfEllipseSegmentDto = WithDefaults<Inputs_2.IO.DxfEllipseSegmentDto, "startParameter" | "endParameter">;
+    // (undocumented)
     type DxfLineSegmentDto = Inputs_2.IO.DxfLineSegmentDto;
     // (undocumented)
-    type DxfModelDto = WithDefaults<Inputs_2.IO.DxfModelDto, "colorFormat" | "acadVersion">;
+    type DxfModelDto = WithDefaults<Inputs_2.IO.DxfModelDto, "colorFormat" | "acadVersion" | "curveTolerance">;
     // (undocumented)
     type DxfPathDto = Inputs_2.IO.DxfPathDto;
     // (undocumented)
-    type DxfPathsPartDto = WithDefaults<Inputs_2.IO.DxfPathsPartDto, "layer" | "color">;
+    type DxfPathsPartDto = WithDefaults<Inputs_2.IO.DxfPathsPartDto, "layer" | "color" | "lineType">;
     // (undocumented)
     type DxfPolylineSegmentDto = WithDefaults<Inputs_2.IO.DxfPolylineSegmentDto, "closed">;
     // (undocumented)
+    type DxfReadDto = WithDefaults<Inputs_2.IO.DxfReadDto, "includeHiddenLayers">;
+    // (undocumented)
     type DxfSplineSegmentDto = WithDefaults<Inputs_2.IO.DxfSplineSegmentDto, "degree" | "closed">;
+    // (undocumented)
+    type DxfToSvgDto = WithDefaults<Inputs_2.IO.DxfToSvgDto, "includeHiddenLayers" | "tolerance">;
+    // (undocumented)
+    type DxfToSvgResultDto = Inputs_2.IO.DxfToSvgResultDto;
+    // (undocumented)
+    type SvgDrawingDto = Inputs_2.IO.SvgDrawingDto;
+    // (undocumented)
+    type SvgModelDto = WithDefaults<Inputs_2.IO.SvgModelDto, "tolerance">;
+    // (undocumented)
+    type SvgPathDataDto = WithDefaults<Inputs_2.IO.SvgPathDataDto, "flipY" | "tolerance">;
+    // (undocumented)
+    type SvgReadDto = WithDefaults<Inputs_2.IO.SvgReadDto, "includeInvisible">;
+    // (undocumented)
+    type SvgToDxfDto = WithDefaults<Inputs_2.IO.SvgToDxfDto, "includeInvisible" | "colorFormat" | "acadVersion" | "curveTolerance">;
+    // (undocumented)
+    type SvgToDxfResultDto = Inputs_2.IO.SvgToDxfResultDto;
 }
 
 // @public
 export class IoBitByBit {
     constructor();
-    // Warning: (ae-forgotten-export) The symbol "Dxf" needs to be exported by the entry point index.d.ts
-    //
+    // (undocumented)
+    drawing: Drawing;
     // (undocumented)
     dxf: Dxf;
+    // (undocumented)
+    svg: Svg;
 }
 
 // @public
@@ -2242,6 +2451,7 @@ export class Line {
     constructor(vector: Vector, point: Point, geometryHelper: GeometryHelper);
     create(inputs: Inputs_2.Line.LinePointsDto): Inputs_2.Base.Line3;
     createSegment(inputs: Inputs_2.Line.LinePointsDto): Inputs_2.Base.Segment3;
+    distanceToPoint(inputs: Inputs_2.Line.LinePointDistanceDto): number;
     getEndPoint(inputs: Inputs_2.Line.LineDto): Inputs_2.Base.Point3;
     getPointOnLine(inputs: Inputs_2.Line.PointOnLineDto): Inputs_2.Base.Point3;
     getStartPoint(inputs: Inputs_2.Line.LineDto): Inputs_2.Base.Point3;
@@ -2288,6 +2498,11 @@ namespace Line_2 {
         line1: LinePointsDto;
         line2: LinePointsDto;
         tolerance?: number | undefined;
+    }
+    class LinePointDistanceDto {
+        constructor(line?: LinePointsDto, point?: Base.Point3);
+        line: LinePointsDto;
+        point: Base.Point3;
     }
     class LinePointsDto {
         constructor(start?: Base.Point3, end?: Base.Point3);
@@ -2347,6 +2562,8 @@ namespace Line_3 {
     type LineDto = Inputs_2.Line.LineDto;
     // (undocumented)
     type LineLineIntersectionDto = WithDefaults<Inputs_2.Line.LineLineIntersectionDto, "checkSegmentsOnly" | "tolerance">;
+    // (undocumented)
+    type LinePointDistanceDto = Inputs_2.Line.LinePointDistanceDto;
     // (undocumented)
     type LinePointsDto = Inputs_2.Line.LinePointsDto;
     // (undocumented)
@@ -3285,7 +3502,7 @@ export interface PlanetarySet {
 
 // @public
 export class Point {
-    constructor(geometryHelper: GeometryHelper, transforms: Transforms, vector: Vector, lists: Lists);
+    constructor(geometryHelper: GeometryHelper, transforms: Transforms, vector: Vector, lists: Lists, settings?: () => BitbybitSettings);
     arcThroughThreePoints(inputs: Inputs_2.Point.ArcThroughThreePointsDto): Inputs_2.Base.Point3[];
     averagePoint(inputs: Inputs_2.Point.PointsDto): Inputs_2.Base.Point3;
     boundingBoxOfPoints(inputs: Inputs_2.Point.PointsDto): Inputs_2.Base.BoundingBox;
@@ -3789,6 +4006,7 @@ export interface RecipeIssue {
 
 // @beta
 export class Recipes {
+    constructor(settings?: () => BitbybitSettings);
     check(inputs: Inputs_2.Recipes.RecipeDto): RecipeIssue[];
     read(inputs: Inputs_2.Recipes.RecipeDto): Inputs_2.Base.Recipe;
     sourceOf(inputs: Inputs_2.Recipes.RecipeSourceDto): RecipeSource;
@@ -3922,6 +4140,19 @@ export interface SetScrewSizes {
 }
 
 // @public
+export function settingsCacheKey(settings: BitbybitSettings): BitbybitSettings | undefined;
+
+// @public
+export function settingsOfConventions(level: unknown, engineSettings: BitbybitSettings): BitbybitSettings;
+
+// @public
+export class SettingsRelay {
+    constructor(send: (settings: BitbybitSettings) => Promise<unknown>, refused: (reason: unknown) => void);
+    set(settings: unknown, toWorker: boolean): Promise<BitbybitSettings>;
+    workerSet(): void;
+}
+
+// @public
 export interface SocketHeadCapScrewSizes {
     readonly counterboreDepth: number;
     readonly counterboreDiameter: number;
@@ -3946,6 +4177,13 @@ export interface SpurGearSpec {
 
 // @public @deprecated
 export function srgbToLinear(channel: number): number;
+
+// @public
+export class Svg {
+    pathData(inputs: Inputs_2.IO.SvgPathDataDto): string;
+    svgCreate(inputs: Inputs_2.IO.SvgModelDto): string;
+    svgRead(inputs: Inputs_2.IO.SvgReadDto): Inputs_2.IO.SvgDrawingDto;
+}
 
 // @public
 namespace Text_2 {
@@ -4088,7 +4326,7 @@ namespace Text_3 {
 
 // @public
 export class TextBitByBit {
-    constructor(point: Point);
+    constructor(point: Point, settings?: () => BitbybitSettings);
     charAt(inputs: Inputs_2.Text.TextIndexDto): string;
     concat(inputs: Inputs_2.Text.TextConcatDto): string;
     create(inputs: Inputs_2.Text.TextDto): string;

@@ -64,6 +64,25 @@ describe("Recipes", () => {
         expect(extruded).toBeUndefined();
     });
 
+    it.each([
+        ["as it is with no coordinate system", undefined, false, [5, 0, 0, 6, 0, 0, 5, 1, 0], [0, 1, 2]],
+        ["turned a quarter about X with no coordinate system and Z up", undefined, true, [5, 0, 0, 6, 0, 0, 5, 0, -1], [0, 1, 2]],
+        ["as it is in a right-handed system", "rightHanded", false, [5, 0, 0, 6, 0, 0, 5, 1, 0], [0, 1, 2]],
+        ["turned a quarter about X in a right-handed system and Z up", "rightHanded", true, [5, 0, 0, 6, 0, 0, 5, 0, -1], [0, 1, 2]],
+        ["with X mirrored and its winding turned in a left-handed system", "leftHanded", false, [-5, 0, 0, -6, 0, 0, -5, 1, 0], [0, 2, 1]],
+        ["with Y and Z swapped and its winding turned in a left-handed system and Z up", "leftHanded", true, [5, 0, 0, 6, 0, 0, 5, 0, 1], [0, 2, 1]],
+    ] as const)("should place the triangles of a root %s", (_name, coordinateSystem, adjustZtoY, positions, indices) => {
+        // Arrange
+        const placed = new Recipes(() => (coordinateSystem === undefined ? {} : { coordinateSystem: coordinateSystem as Base.coordinateSystemEnum }));
+
+        // Act
+        const [moved] = placed.surfaceMeshes({ recipe: triangleRecipe(), roots: [0], adjustZtoY });
+
+        // Assert
+        expect(Array.from(moved!.positions).map(value => value + 0)).toEqual(positions);
+        expect(Array.from(moved!.indices)).toEqual(indices);
+    });
+
     it("should follow a root through the moves to the step it places, and refuse a node the recipe lacks", () => {
         // Act
         const source = recipes.sourceOf({ recipe: triangleRecipe(), node: 1, matrix: IDENTITY });

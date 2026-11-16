@@ -12,6 +12,107 @@ are in `CLAUDE.md` beside this file.
   thrown by another copy of the class than the one describing it, and `instanceof` matches only its
   own. Only a string `code` makes it a named failure.
 
+## Settings
+
+A setting is something an instance works by for all of its calls, set once: today the coordinate
+system the model's numbers are in. `BitbybitSettings` (`lib/api/kernel-calls/settings.ts`) is the one type,
+and `checkedSettings` the one gate: it refuses a name that is no setting and a value its setting does
+not take, as an `InputError`, and returns a new object. A new setting is a property on the type and
+a line in that file's table of checks; nothing else carries a list of them.
+
+- **Per instance, never global.** `BaseBitByBit.settings` holds them, checked as they are set, and
+  the services that read them (text, the point grids, recipes) take a getter, so two instances in
+  one page can differ. A kernel service exposes them as a `settings` accessor (`occt.settings`,
+  `jscad.settings`).
+- **Set once, not sent with a call.** A worker manager's `setSettings` checks them where they
+  arrive and sends one reserved command (`SettingsRelay`, shared by the three managers); the worker
+  keeps them, gives them to a kernel that replaces a crashed one, and adds them to its cache key only
+  when there are any (`settingsCacheKey`), so a call made with no settings hashes as it always did.
+  The manager remembers what it accepted and tells a worker set later. Nothing waits for the
+  worker's answer: a worker takes calls in the order they came and holds those that arrive before
+  its kernel is ready, so every later call works by the settings, and waiting for the answer would
+  wait for the kernel to load. A worker that refuses them all the same reports it through the
+  manager's `errorCallback`. A renderer's root object does all of it with
+  `await bitbybit.setSettings(bitbybit.engineSettings())`, for all three kernel workers at once.
+- **No setting means the behaviour from before settings existed**, pinned by tests, so nothing
+  saved changes until an application opts in. One bug fix is the exception: `occt.io.saveShapeSTEP` with
+  `fromRightHanded` turned the shape a quarter about X the wrong way, which stood it upside down in a
+  Z-up program, and now turns it upright with no setting too. A script that turned the file back
+  itself drops that turn; the release notes say so.
+
+### Conventions levels
+
+Content an application saves cannot carry its settings, because the right ones depend on the engine
+that runs it: the same model is left-handed in a default BabylonJS scene and right-handed in three.js.
+It carries one whole number instead, its conventions level. 0, or no level, is the behaviour from before
+settings existed; 1 is the engine's own coordinate system; a later setting joins a later level, and
+levels only add. `settingsOfConventions(level, engineSettings)` turns a level into settings,
+`CURRENT_CONVENTIONS` is the newest level, a renderer's root object applies one with
+`setConventions(level)`, and `initBitByBit` takes it as its `conventions` option. A level newer than
+the installed libraries know runs by the newest they have.
+
+### Moving content to a newer level
+
+A level is a promise to keep an older behaviour alive, so content is meant to leave it. Whether it
+can leave unseen depends on what it uses: `core` lists every operation a level changes
+(`CONVENTIONS_SURFACE`, with `isConventionSensitive` for an operation's path and
+`conventionSensitiveMentions` for source code). Content that uses none of them gives the same result
+at every level, so an application may move it to the newest one as it is. Content that uses one is
+best moved by its author, told which operations change, because only the author knows whether the
+content already works around the old behaviour.
+
+### The coordinate system
+
+The kernels are right-handed with Y up. A default BabylonJS scene is left-handed and draws the
+kernel's numbers as they are, which shows a mirror image; three.js and PlayCanvas are right-handed.
+With `coordinateSystem` set, the library speaks the engine's system: every file is a true
+right-handed file, and a shape that names a hand shows that hand on screen.
+
+| What | `leftHanded` | `rightHanded` |
+|---|---|---|
+| A file with Z up, out (STEP, STL, OBJ, PLY, 3MF, a 3D DXF) | Y and Z swapped: (x, z, y) | a quarter turn about X: (x, -z, y) |
+| A file with Z up, in | Y and Z swapped | the turn back: (x, z, -y) |
+| A file with Y up (glTF, or the up flag off) | X mirrored: (-x, y, z) | as it is |
+| A drawing or text laid on the ground | (x, 0, y) | (x, 0, -y) |
+| A view drawn onto a drawing plane | its y mirrored | as the kernel gives it |
+| A named hand, or a winding named as it is seen (a helix's or a flat spiral's `clockwise`, a thread, a helical gear) | built as the mirror image | as the kernel builds it |
+
+The table lives once, in `helpers/files`. `meshMatrixInFile` and `meshMatrixInModel` hold the file
+rows as matrices, `stlAxesInFile` and `stlAxesInModel` read an STL's axis map off them, and
+`pointOnGround` (`ground-axes.ts`) is the ground row, which is the Z-up row read in, on the
+drawing's plane (held so by test). Code that moves a mesh, a point or a placement calls them rather
+than writing a matrix out; the kernels' own turns of a shape, which keep the arithmetic of the
+behaviour before settings, are held equal to them by test.
+
+Rotation sense (a "counterclockwise" angle, the turn of a twist) is not a hand and is left alone:
+in a left-handed scene a positive turn follows the left-hand rule, as the engine's own do. A flat
+spiral has no hand either, a mirror through its own plane being the same spiral, but its
+`clockwise` is worded as a helix's is, as what is seen from the tip of its normal, so it is built to
+show that. A dimension label reads the same in both systems by construction.
+
+The file rows are not a choice of ours beyond one axis. Three laws pick each of them out of the 48
+axis-aligned systems (24 rotations, 24 mirrors), and `file-axes-laws.test.ts` runs all 48 against
+them and finds exactly the table's entry:
+
+1. **The picture.** A camera looking at the model in its own system and a right-handed viewer
+   looking at the file from the same place show the same picture. A left-handed model therefore
+   goes out through a mirror, a right-handed one through a turn.
+2. **Up.** The model's up (+Y) is the file's up: +Z in a file with Z up, +Y otherwise.
+3. **The named axis.** The picture and up leave four systems, a quarter turn about up apart. A
+   file with Z up keeps the model's X as its X, as CAD programs expect a part standing on the XY
+   plane; a file with Y up keeps the model's Z, which is what glTF loaders do in a left-handed scene.
+
+Opened in other programs, the files the table produces show two things that are the formats' and
+not ours:
+
+- **An OBJ file does not say which way is up.** FreeCAD reads it as it is, so it wants Z up;
+  Blender assumes Y up and stands it on Z. The up flag is the caller's to choose for the program
+  the file is for.
+- **A file with Y up from a left-handed scene is seen from behind** in a program's front view. It
+  is upright and unmirrored, turned half a turn about up, which is where Babylon.js's own glTF
+  loader and exporter put a model in a left-handed scene. A file with Z up is seen from the front
+  in both systems.
+
 ## Frames
 
 - Code that reduces a caller's list of vectors (`reachOf`, the largest coordinate) loops over it
@@ -31,11 +132,11 @@ package that needs it on a hot path, in one folder per domain:
 
 | Folder | What it holds |
 |---|---|
-| `geometry/` | `vectors` (2D and 3D tuple operations), `scalars` (degree conversion, interpolation, rounding), `matrices` (composition, rigid inverses, the 3x3 eigen solve), `frame-axes` (frames squared, points and vectors moved between a frame and the world, a frame as a matrix), `arcs` (the circle through three points), `polygons` (signed area, winding, point in polygon, rounded corners), `paths` (sweep frames along a polyline, rounded paths), `triangulation` and `vector-grid` (duplicates under a tolerance) |
+| `geometry/` | `vectors` (2D and 3D tuple operations), `scalars` (degree conversion, interpolation, rounding), `matrices` (composition, rigid inverses, the 3x3 eigen solve), `frame-axes` (frames squared, points and vectors moved between a frame and the world, a frame as a matrix), `arcs` (the circle through three points), `ellipse-arcs` (an SVG arc from its end points to its centre, and an elliptical arc's exact image under an affine map), `polygons` (signed area, winding, point in polygon, rounded corners), `polygon-nesting` (boxes, crossings, interior points, and nested outlines filled by the SVG fill rules), `paths` (sweep frames along a polyline, rounded paths), `triangulation` and `vector-grid` (duplicates under a tolerance) |
 | `mesh/` | measures (signed volume), normals (smooth and creased), orientation and winding repair, primitives (icosphere, frustum) and proximity trees; the normals and the winding work on indexed meshes, `Base.IndexedMesh` in public |
-| `curves/` | `nurbs` (B-spline curve and surface evaluation) and `surface-triangulation` (adaptive meshing of a curved face) |
+| `curves/` | `nurbs` (B-spline curve and surface evaluation), `nurbs-forms` (knot insertion, clamping, Bezier pieces), `bezier-pieces` (rational Bezier evaluation, cubic fitting and sampling within a tolerance), `conic-arcs` (circle and ellipse arcs: points, exact bounds, sampling, rational quadratic form, bulges) and `surface-triangulation` (adaptive meshing of a curved face) |
 | `color/` | the sRGB conversions |
-| `files/` | the zip and gzip readers over one inflater, the stored zip writer, crc32 and the DXF writer |
+| `files/` | the zip and gzip readers over one inflater, the stored zip writer, crc32, and the drawing writers: `drawing/` (the model both read), `dxf/` and `svg/`, which also holds the one SVG path data reader (numbers, commands, arcs to centre form, sampling) |
 
 **The readers take untrusted files, so they bound what a file can cost.** An archive's sizes are
 claims, and deflate can legitimately expand about a thousand times, so `inflateRaw` refuses a claimed
@@ -274,27 +375,343 @@ past that is flagged rather than counted.
 - A tip inside its own base circle has no involute to mesh with and is refused, for the gears of a
   pair as `checkedRingTips` refuses it for a ring.
 
-## DXF export
+## Drawings: DXF and SVG
 
-`lib/api/services/helpers/files/dxf/dxf-generator.ts` writes one of two versions, chosen by `acadVersion`:
+The drawing model and its writers are base's: `io` is a service of the root object (`bitbybit.io`,
+`lib/api/services/io/`), its `drawing` building the model (the `Inputs.IO.Drawing*Dto` segments, paths
+and parts), its `dxf` writing and reading DXF and its `svg` writing and reading SVG, none of it needing a kernel.
+The model's former DXF names (`DxfPathsPartDto` and its kin, and the builders on `io.dxf`) are
+deprecated subclasses of the drawing DTOs and forwards to `io.drawing`, removed in the next major
+version. A kernel carries the workflow of its own shapes and calls these writers
+directly, DXF and SVG kept apart. OCCT's `occt.io` traces shapes for DXF (`shapeToDxfPaths`,
+`dxfPathsWithLayer`, `dxfCreate`), draws layers of shapes as SVG (`svgLayer`, `svgCreate`), draws a
+view of a shape as either (`saveShapeDxf`, `saveShapeSvg`) and builds a DXF reading into shapes
+(`loadDxf`); one internal tracer (`DrawingService`) turns shapes into this model for all of them.
 
-- `AC1009` (R12), the default. Its readers expect the VPORT, VIEW, UCS, APPID and DIMSTYLE tables
-  and a BLOCKS section even when they are empty, and an APPID entry for `ACAD`, so those are written
-  empty rather than left out.
-- `AC1015` (2000) adds entity handles and subclass markers (`AcDbSymbolTable`,
-  `AcDbLayerTableRecord`). Handles count up in upper-case hexadecimal from 0x101, starting again in
-  every file, so the same drawing writes the same file however many were written before it.
+`io.dxf.dxfCreate` and `io.svg.svgCreate` write the same model: parts (a layer, a colour, a line
+type) of paths of segments - lines, arcs, circles, bulged polylines, splines and ellipses, with 2D or
+3D points. Both start in `lib/api/services/helpers/files/drawing/drawing-model.ts`, which checks every value where it
+arrives and refuses what no reader could draw, naming the input (`dxfPathsParts[0].paths[1].segments[2].knots`):
+a number that is not finite, a point of other than 2 or 3 numbers, a radius of 0, a zero normal,
+knots of the wrong count, decreasing, of no length or repeating an inner knot more often than the
+degree, a weight of 0 or less, an ellipse whose major axis leaves its plane, a colour that is not
+hex, a layer name with a character DXF forbids. It then normalises once for both writers:
 
-A `unit` on the model writes `$INSUNITS` (1 inch, 4 mm, 5 cm, 6 m) and `$MEASUREMENT` into an AC1015
-header. AC1009 has no place for it, so a unit given with AC1009 is refused, naming AC1015.
+- **A spline is always clamped.** Given knots are clamped by knot insertion at the ends of their
+  domain (the curve is unchanged); a closed spline without knots wraps its control points into a
+  periodic uniform curve and is then clamped; otherwise it gets clamped uniform knots. Every writer
+  can then take the curve's first and last control points as its ends.
+- **A polyline whose last point repeats its first is closed**, the repeat dropped with its bulge.
+  One whose points leave one Z is a 3D polyline and may carry no bulge (a bulge is defined in the
+  polyline's plane).
+- **Arcs keep the degrees they were given** for DXF and radians for geometry, both brought into
+  their first turn (`angleWithinTurn`), as an ellipse's start parameter is: at 1e20 degrees a sweep
+  added to the start would round away. Converting 30 degrees to radians and back writes
+  29.999999999999996. An arc or circle with a normal lies in the plane DXF derives from it by the
+  arbitrary axis algorithm, as CAD programs read it.
+- **A colour is one hex form**, read by `hexChannels` and written by `hexOfChannels`, the pair
+  behind `color.hexToRgb` and `color.rgbToHex`.
 
-A `#RRGGBB` colour is written as the nearest of the nine standard AutoCAD Color Index entries (1-9)
-by RGB distance, or, with `colorFormat: "truecolor"`, as ACI 256 (by layer) followed by group 420
-holding `r * 65536 + g * 256 + b`. Near-black (every channel under 30) and anything that is not
-`#RRGGBB` become ACI 7, which viewers draw black on a light background and white on a dark one.
+`io.drawing.svgToDxf` and `io.drawing.dxfToSvg` convert one file into the other through the model, and
+sit on `io.drawing` so DXF and SVG stay separate domains. `svgToDxf` is `io.svg.svgRead` then
+`io.dxf.dxfCreate`, its `unit` both reading the SVG at true size and stating the DXF's unit (which R12
+refuses); `dxfToSvg` is `io.dxf.dxfRead` then `io.svg.svgCreate` with the unit the DXF states. Each
+returns the file it wrote and the reading's warnings, so a spline given only by fit points, which
+`dxfRead` leaves out, is named there, and the writers' limits refuse what is too large to write. Each
+call builds its own `Svg` and `Dxf`, because `Dxf` holds a `Drawing` for its deprecated builders. A
+drawing taken through either converter and read back is the same drawing, layers, colours and line
+types included, within the six decimals the SVG writer keeps.
 
-A polyline is written closed when it has at least three points and its first and last agree within
-`CLOSED_POLYLINE_TOLERANCE` in X and Y.
+Bounds are exact for lines, arcs, circles, ellipses and bulges (`conicArcExtremes`: the ends and
+every angle where the arc turns back along an axis, at most a whole turn's worth) and, for splines,
+contain the curve and lie within the tolerance of it (`bezierPiecesBounds`: a piece is halved only
+while its control points reach past what is already bounded), so a view box never crops the
+drawing. A spline is split into Bezier pieces in one pass over its knots (Piegl and Tiller's
+DecomposeCurve), so a spline of 20,000 control points costs what its pieces do. Sampling never goes
+finer than a millionth of the drawing's larger side, nor an arc finer than a billionth of its
+radius, whatever the tolerance; a circle, arc or ellipse standing edge-on to the plan is drawn as
+the lines through the turning points of its shadow.
+
+### DXF
+
+`files/dxf/` builds the file as a list of lines joined once; spreading a list into `push` overflowed
+the stack past about 25,000 vertices, and a test writes half a million. `AC1015` (AutoCAD 2000) is
+the default and writes what AutoCAD requires of that version: every table with a handle, an owner
+of 0 and its subclass markers, the records LTYPE ByBlock, ByLayer and CONTINUOUS, layer 0, the STYLE
+and DIMSTYLE Standard (a DIMSTYLE record's handle is group 105), the APPID ACAD, the BLOCK_RECORD
+table with `*Model_Space` and `*Paper_Space`, their BLOCK and ENDBLK, every entity owned by the model
+space record, the OBJECTS section's root dictionary with its ACAD_GROUP dictionary, and `$HANDSEED`
+above every handle. Entities: LINE, ARC and CIRCLE (in their object coordinate system, with the
+extrusion when the normal is not +Z), LWPOLYLINE (planar, elevation 38), POLYLINE with VERTEX and
+SEQEND for 3D, SPLINE (degree, the full knot vector, control points, a weight 41 after each when
+rational, planar and rational flags; the closed flag is left off, as a clamped curve that ends where
+it starts is not periodic) and ELLIPSE (centre, major axis end, normal, ratio, parameters).
+`AC1009` (R12) defines no LWPOLYLINE, SPLINE or ELLIPSE, so polylines become POLYLINE, VERTEX and
+SEQEND and splines and ellipses polylines within `curveTolerance`; R12 has no handles and no place
+for a unit, so a unit given with it is refused.
+
+Numbers are written shortest and exact (`String`), with a decimal point, and never in exponent
+form: an exponent is written out as the digits it stands for, so 1e-13 keeps its one digit and
+1e21 its 22. Text outside ASCII is written as `\U+XXXX`, one escape of four hex digits per UTF-16
+code unit, so a character beyond the basic plane takes two, as AutoCAD and ezdxf read them. A
+colour is the nearest of the 255 AutoCAD index colours (the palette is generated: nine fixed, 24
+pure hues of `hslChannels` in five shades each full and pastel, six greys), black and white as 7;
+`truecolor` adds group 420 in AC1015 only. A layer takes the colour and line type of the first part
+on it, and names that differ only in case are one layer, as DXF names are, spelled as first used;
+each entity also carries its part's colour and, when not continuous, its line type, and CONTINUOUS
+when its layer's line type is not. Dashes are
+scaled to the drawing: a two-hundredth of its larger side in plan is the pattern's unit, one
+`patternUnitOf` for DXF and SVG, so a deep drawing dashes alike in both.
+
+### What other programs make of the files
+
+Every kind of segment the model takes, written as DXF (both versions) and as SVG, is drawn by
+programs that are not ours where the model has it: their points lie on the model's curve and
+their total length is the model's.
+
+- **DXF** is read by FreeCAD and by ezdxf, both exactly (a spline with weights measures 3 pi / 2
+  as the quarter circle it is), and by LibreCAD through the SVG it prints. ezdxf's audit finds no
+  error and nothing to fix in the files, and reads each file's version, unit, layers, line types
+  and true colours as they were written.
+- **SVG** is read by Chrome, by FreeCAD and by Blender; Chrome's page size states the drawing's
+  true size in millimetres and in inches.
+- **No program reads everything.** FreeCAD draws an arc of an ellipse whole and lays tilted curves
+  flat, LibreCAD ignores a spline's knots and weights and is flat, Blender mis-sizes inches. Every
+  DXF file the writer makes is still read exactly by FreeCAD or by ezdxf.
+- **Files made elsewhere come in the same way.** For drawings ezdxf authors with every entity
+  kind, flat and in space, `dxfRead` returns what ezdxf itself measures in them.
+
+### SVG
+
+`files/svg/` turns each segment into SVG moves, exact wherever SVG can be: lines, bulges and arcs
+as `A`, ellipses as `A` with a rotation, and a circle, arc or ellipse whose plane is tilted as the
+ellipse its shadow on XY is (its conjugate radii turned into principal ones by `principalArcOf`,
+the major always the longer), each arc split into
+quarter turns so no `A` is ambiguous; non-rational spline pieces of degree 1 to 3 as `L`, `Q` or `C`
+(the curve split into Bezier pieces by knot insertion), rational and higher degree pieces as cubic
+Hermite fits split in half until 7 samples each lie within the tolerance. Z is dropped. Segments
+that meet are one stroke, a segment turned round when its end meets the stroke, and a stroke that
+returns to its start is closed with `Z`. A document negates Y, frames the drawing with a fortieth of
+its larger side, widens a side with no extent and no border to the line width (never below the
+smallest number it writes), so no view box is 0 wide, states its size in mm, cm or in (metres as
+centimetres) when given a unit, and writes each layer as a group Inkscape reads as a layer, names
+that differ only in case one layer as in DXF.
+
+### Reading DXF
+
+`io.dxf.dxfRead` reads ASCII DXF, R12 to the current version, into the same model:
+`DxfDrawingDto` holds parts by layer, colour and line type, the file's unit and version, and warnings.
+`occt.io.loadDxf` builds the same reading into shapes. Both take the file as text or as bytes:
+`dxf-file-text.ts` reads bytes that are UTF-8 as UTF-8, bytes of a file from AutoCAD 2007 on (`AC1021`)
+as UTF-8 too, and older bytes in the code page the header's `$DWGCODEPAGE` names, or as Windows-1252.
+The reader is four files in `files/dxf/`:
+
+- `dxf-tokens.ts` splits the text into group code and value pairs and the pairs into records, the
+  VERTEX records of an old POLYLINE attached to it. It accepts a byte order mark and CRLF or CR line
+  ends, refuses a binary DXF, and refuses a code or a number it cannot read, naming the line. A
+  `\U+XXXX` escape is exactly four hex digits, one UTF-16 code unit, so a letter after it stays a
+  letter and no escape can name a character that does not exist.
+- `dxf-reader.ts` reads the HEADER (`$ACADVER`, and `$INSUNITS` for mm, cm, m and in, a code that is
+  not a number refused; another unit is read as drawn, with a warning), the LAYER table (colour, line type, frozen or switched off) and the
+  BLOCKS, then walks ENTITIES: LINE, ARC, CIRCLE, ELLIPSE, LWPOLYLINE, POLYLINE (2D with bulges, or
+  3D; meshes are left out), SPLINE (control points with knots and weights, or fit points alone) and
+  INSERT.
+  - Coordinates are read in the object coordinate system of each entity's extrusion, by the
+    arbitrary axis algorithm, so a mirrored drawing written with extrusion -Z reads where it lies.
+    Angles and ellipse parameters are brought into their first turn as they are read.
+  - An INSERT maps its block by base point, scale, rotation and extrusion, and repeats it for the
+    rows and columns of a MINSERT. Nesting stops at 16 levels with a warning, which also ends a block
+    that inserts itself. What a record decodes (its names, colours and style, its own segments, an
+    insert's block and frames) is worked out once and remembered, so a copy costs a lookup and the
+    mapping of its points. Before anything is expanded, the work the inserts ask for is counted
+    against one limit per file (see "Size limits" below), and a top-level insert whose whole
+    expansion does not fit what is left is left out, with one warning.
+  - Entities on layer 0 inside a block take the insert's layer, and BYBLOCK colours and line types
+    take the insert's. ACI 7 reads as black, since the writer writes black as 7.
+  - A polyline under a mapping that keeps shapes (a similarity) keeps its bulges, its normal turned
+    over by a mirror. Under any other mapping its arcs become ellipses.
+  - Paper space, frozen and switched-off layers (unless `includeHiddenLayers`) and every other entity
+    kind are left out, each kind counted in one warning; at most five skipped kinds, missing blocks
+    or external references are named, the rest counted together.
+- `dxf-reader-geometry.ts` holds the mappings, frame axes composed and applied by
+  `geometry/frame-axes.ts` (an insert's axes scaled and turned, so only the world-ward functions
+  apply), bulges as exact arcs, and `principalConicOf`, which turns a conic given by any two
+  conjugate radii onto its principal axes with `principalArcOf`, the one the SVG writer uses: the
+  major axis is always the longer, so a circle in a block stretched more in Y than in X, or an
+  ELLIPSE written with a ratio above 1, reads as an ellipse the writers take.
+- `dxf-reader-dtos.ts` turns the reading into DTOs. A conic with equal axes becomes a circle or an
+  arc, its angles measured in the object coordinate system of its normal, and any other conic an
+  ellipse on its principal axes. A polyline facing Z keeps its bulges. A spline given by fit points
+  alone needs a kernel to interpolate it, so it is left out here with a warning that names
+  `occt.io.loadDxf`, which reads it.
+
+### Reading SVG
+
+`files/svg/` also reads SVG, in TypeScript and with no kernel: the XML, the path mini-language,
+transforms, viewports and units, `<use>` references and the style cascade with CSS. `normalizeSvg`
+reduces a document to a scene of elements, each with its style and its subpaths of the four exact
+segment kinds SVG path data can express - line, quadratic Bezier, cubic Bezier, elliptical arc -
+every basic shape (rect, circle, ellipse, line, polyline, polygon, rounded corners, smooth-curve
+shorthands) becoming those. Coordinates stay in the root's user space, y down. `occt.svg.loadSVG`
+builds the scene into shapes (`occt/ARCHITECTURE.md`, "SVG import").
+
+- **The XML reader** (`svg-xml.ts`) is a small scanner of its own, because a web worker has no
+  `DOMParser`. It reads quoted values character by character, so a `>` inside one does not end the
+  tag, takes unquoted values, keeps the text of `<style>` (CDATA included, as written) and steps over
+  `<script>` without reading markup in it, expands the entities a DOCTYPE declares, and resolves each
+  element's namespace from the `xmlns` declarations in scope, kept as one stack per prefix, pushed
+  and popped as elements open and close, so a declaration costs the same however many others are in
+  scope. A prefixed attribute's namespace is resolved from the same stacks (`attrNamespaces`), so
+  `inkscape:label` is found by the Inkscape namespace whatever prefix a file binds to it. It refuses a document nested more than
+  256 elements deep with an `InputError` rather than letting a recursive walk overflow the stack.
+  Files can be large or malformed, so every scan is linear in the file's length: the end of a
+  `<style>` or `<script>` is found by a plain search for `</` and a case-insensitive compare of the
+  name, never by a pattern built from the file, and CDATA sections and CSS comments are cut out the
+  same way. Entity expansion has one limit per file (see "Size
+  limits"), shared by declarations that use earlier entities and every reference, and a document
+  past it is refused with an `InputError`, so nested or repeated entities cannot multiply the file. Entities, attributes, namespaces and every table a
+  name from the file is looked up in have no prototype, so `&constructor;` stays as written, and a
+  character reference past U+10FFFF reads as U+FFFD.
+- **Numbers are read by one grammar** (`svg-path-data.ts`) for path data,
+  transform lists, `points`, `viewBox` and lengths, so `-5-5`, `.7.7` and exponents read as they do
+  in a browser and a change to the grammar reaches every reader. A transform list that does not
+  scan cleanly, names an unknown transform or gives one the wrong number of arguments is ignored
+  whole with one warning, as a browser ignores an invalid presentation attribute.
+- **Units and viewports** (`svg-document.ts`): lengths take px, mm, cm, in, pt, pc, em and ex at 96
+  pixels to the inch and a 16 pixel font, and `%` against the nearest viewport (its view box when it
+  has one; the normalised diagonal for radii and stroke widths). A nested `<svg>` and a `<symbol>`
+  placed by `<use>` map their view box into their x, y, width and height with `preserveAspectRatio`.
+  The root's view box is not applied by default: coordinates stay in the root's user units, as they
+  always have, and the page size and the millimetres a user unit stands for are only reported. With
+  `unit` set the root's view box mapping is applied too and the result scaled from CSS pixels into
+  that unit, so the drawing comes in at true size with the page's top left corner at the origin. A
+  `transform` on the root applies outside its view box, in the page's pixels, as SVG 2 has it; in
+  user units it is carried back into them through the view box mapping, so the drawing lands where
+  a browser shows it.
+- **The style cascade** reads presentation attributes, every `<style>` element in the document and
+  the `style` attribute, in that order of strength, with `!important` above all of them and the
+  style attribute's above the stylesheet's (`svg-css.ts`, `svg-style.ts`). Selectors are type,
+  universal, `#id`, `.class` and attribute tests, grouped with commas and combined by descendant and
+  child combinators, ranked by specificity and then by order; rules inside `@media` apply, other
+  at-rules are skipped, and a selector it cannot match (pseudo-classes, sibling combinators) is named
+  in one warning instead of being dropped silently, as is a block at-rule nested more than 32 deep.
+  A selector is decided per element by remembering, for each compound and ancestor depth, whether
+  the compounds before it fit above that ancestor, so a long descendant selector over a deep tree
+  costs compounds times depth rather than every way of placing the compounds; that verdict depends
+  only on the ancestors, so siblings share it. A rule keeps only the properties the importer reads,
+  one declaration each (the last important one, else the last), and an element keeps only the
+  winning declaration per property, so a sheet that repeats declarations or names unknown properties
+  costs no memory per element. Matching the whole sheet has one limit per file, counted in what a
+  test really costs (a compound tried costs one plus its classes and attribute tests, an attribute
+  test the characters it compares, a selector's table its cells, a matched rule its declarations);
+  when it runs out the rest of the document is imported without the stylesheet, with a warning.
+  At-rule statements are found by a scan that never returns over what it has passed. Rules are matched once over the document tree
+  before the walk, by the element's place in the source, so content a `<use>` instantiates keeps the
+  rules that match it where it is defined. `inherit` takes the parent's value, `currentColor` the
+  element's own `color` where the paint is used, `opacity` multiplies down the tree, and `display:
+  none` hides the whole subtree whatever a descendant says, while `visibility` can be overridden.
+  Stroke widths are scaled by the square root of the transform's area scale. A fill of `none`,
+  `transparent`, zero alpha, or a zero `fill-opacity` or `opacity`, makes no faces.
+- **`<use>`** places a copy of the element it names (`href` or `xlink:href`) under its own transform
+  and x, y offset, inheriting the `<use>` element's style. A reference to an element that contains
+  the `<use>`, the root included, which is how a cycle shows, is refused with a warning, and so are
+  references nested more than 16 deep. The walk stops after 500,000 elements, counting every element
+  it steps over, the ones it skips without drawing included, and after a number of path segments
+  that grows with the file (see "Size limits"), counted after `<use>` is expanded, since one long
+  path placed many times multiplies geometry without multiplying elements. So that a visit costs the
+  same however long the attributes it reads, everything read from an element is read once however
+  often it is placed: its `d`, its transform, its specified style, a path's, polygon's or polyline's
+  outline, a viewport's view box and `preserveAspectRatio`, the element a `<use>` names and the child
+  a `<switch>` draws; only a rect's, circle's, ellipse's or line's outline is read again per
+  viewport size, its lengths read once. Style values and lengths are read once per document, and
+  keywords are compared only against values of their own length. External references are warned
+  about and skipped.
+- **What is skipped**: elements of other namespaces (Inkscape's, Sodipodi's, Illustrator's) silently;
+  definitions, paint servers, metadata and the like silently; text, images, `foreignObject` and any
+  other element it does not draw with one warning each, without descending into them. `clip-path`,
+  `mask` and a `transform` given in CSS are not applied and are warned about. A `<switch>` draws its
+  first child that names no required extension.
+- **Path data is tokenised per command** (`parseSvgPathData`, the one SVG path reader, which the SVG
+  writer's tests read their output with too), not by one split into numbers: an arc's
+  large-arc and sweep flags are single digits that may be written without separators (`016` in an
+  arc is `0, 1, 6`), and a general number reader misreads nearly every arc drawing tools write. An
+  incomplete argument group ends the command. Arcs are converted once from endpoint to centre
+  parametrisation, after the SVG 1.1 implementation notes (`packages/dev/base/lib/api/services/helpers/geometry/ellipse-arcs.ts`); an arc
+  that ends where it starts is left out, and a full ellipse is two 180-degree arcs, because one
+  360-degree arc is degenerate.
+- **Transforms are exact.** A matrix is `[a, b, c, d, e, f]` as in SVG's `matrix(a b c d e f)`:
+  `x' = a*x + c*y + e`, `y' = b*x + d*y + f`, the 2D affine form of `packages/dev/base/lib/api/services/helpers/geometry/affine2.ts`. Lines and Beziers map their control points. An arc is
+  re-derived from the combined matrix by a closed-form 2x2 singular value decomposition
+  (`affineEllipseArc2`): with the arc
+  as `M = L * Rot(phi) * diag(rx, ry)`, `L` the linear part `[[a, c], [b, d]]`, and
+  `e = (m00 + m11) / 2`, `f = (m00 - m11) / 2`, `g = (m10 + m01) / 2`, `h = (m10 - m01) / 2`,
+  `q = hypot(e, h)`, `r = hypot(f, g)`, `M = Rot(phi') * diag(q + r, q - r) * Rot(theta)` with
+  `phi' = (atan2(h, e) + atan2(g, f)) / 2` and `theta = (atan2(h, e) - atan2(g, f)) / 2`. The image
+  ellipse is `M` applied to the unit circle, so its radii are `q + r` and `|q - r|` and its tilt is
+  `phi'`; `theta` only turns the parametrisation, and the start and end angles are read from the
+  mapped end points instead. A negative determinant, a reflection, reverses the sweep. Flattening arcs
+  into segments instead would lose the exact geometry CAD input needs.
+
+`io.svg.svgRead` (`svg-reading.ts`) reads the scene into the drawing model, the mirror of `dxfRead`,
+in time linear in the scene:
+
+- **Geometry.** Y is turned up by mirroring each subpath through the transform code itself, so an arc
+  keeps the points it draws. Each subpath is one path, and a closed subpath whose end is not its start
+  gets its closing line. Lines stay lines; quadratic and cubic Beziers become splines of degree 2 and
+  3 with clamped Bezier knots, exactly. Consecutive arcs on one conic turning the same way are joined
+  into one, since the writer splits arcs into quarter turns: one conic means centres, radii and axes
+  within a millionth of the major radius or a hundred-thousandth of a user unit, what numbers written
+  to six decimals hold. A run that returns to its start past half a turn is a whole circle or ellipse.
+  Each run is turned counterclockwise about +Z over the same points and handed to the DXF reader's own
+  decision (`conicSegmentDto`): radii equal within 1e-12 make a circle or an arc, anything else an
+  ellipse on its principal axes. An arc a transform flattens to no width is left out with a warning,
+  one under a billionth of a turn is the line it is.
+- **Parts** are keyed by layer, colour and line type in first-seen order. The layer is the
+  `inkscape:label`, else the id, of the nearest group Inkscape marks as a layer
+  (`inkscape:groupmode="layer"`; the normalizer records it as the element's `layer`), so a `<use>`
+  copy is on the layer of the `<use>`; otherwise the model's default layer, `0`. A character a layer
+  name may not hold becomes `_` and a name past 255 characters is cut, each counted in one warning.
+- **Colour** is the resolved stroke unless it paints nothing (none, transparent, zero alpha), else the
+  fill likewise, else black. `packages/dev/base/lib/api/services/helpers/color/css-colors.ts` reads hex of 3, 4, 6 or 8 digits (alpha dropped),
+  `rgb()` and `rgba()` with numbers or percentages, and the 148 CSS named colours; a gradient, a
+  pattern or any other colour form is black, counted in one warning.
+- **Line type.** The cascade resolves `stroke-dasharray`, inherited and scaled as stroke widths are,
+  an odd list repeated once; `none`, a negative or unreadable length and all zeros draw a solid line,
+  as in a browser. No dashes is continuous; otherwise the line type whose `LINE_TYPE_PATTERNS` ratios
+  it matches within a thousandth of its period, at any scale. Dashed (4, 2) and hidden (2, 1) share
+  their ratios, so between them the one whose pattern unit is nearer the drawing's wins, `patternUnitOf`
+  of the drawing's bounds measured as the writers measure them and only when needed, which reads back
+  what `svgCreate` wrote at any size. A pattern no line type matches is dashed, counted in one warning.
+- Hidden elements are left out unless `includeInvisible`, counted in one warning, and the scene's
+  warnings come first. With `unit` the drawing comes in at true size with the page's top left corner
+  at the origin, so after the turn of Y the page lies below the X axis and a drawing `svgCreate` wrote
+  comes back moved by the view box's corner, which the result's `viewBox` gives.
+
+### Size limits
+
+Reading and writing a drawing costs work in proportion to its size, and every place where one file
+could ask for much more than its size suggests has a limit. Each is counted in the unit of its real
+cost, one per call (a `WorkBudget`, `packages/dev/base/lib/api/services/helpers/files/work-budget.ts`: a floor, a share per unit of
+input, a ceiling); none is fresh per element, layer or block, so repeating a block multiplies
+nothing. A reader keeps what it has read and says in a warning what it left out; a writer refuses
+with an `InputError` naming its input.
+
+| Limit | Counted in | Size | Past it |
+|---|---|---|---|
+| Block inserts (`dxf-reader.constants.ts`) | 2 per entity a copy places, plus its points (a line or conic 2, a polyline 1 per point and 1 per bulged span, a spline 1 per control or fit point), plus 1 per array copy | min(1,000,000, max(500,000, 16 x the file's characters)) | the top-level insert that does not fit is left out, with one warning |
+| Insert nesting | levels | 16 | deeper inserts left out, with one note |
+| Layer, block and line-type names | UTF-16 code units | 255, AutoCAD's limit | read: cut to 255 with one warning; written: refused |
+| Spline degree | degree | 25, OCCT's highest | read: left out as a spline that cannot be drawn; written: refused |
+| Spline fit points | points | 10,000 | left out as a spline that cannot be drawn |
+| Drawing numbers | magnitude | finite and below 1e100 (a weighted control point too, and a weight at least 1e-100) | written: refused |
+| Writing (`writerBudgetOf`, `drawing-budget.ts`) | one step per character written, plus the control points blended in decomposing, bounding, sampling and fitting splines | min(2^25, max(2^20, 2^14 x the drawing's numbers)) | refused: "too large to write" |
+| Sampling tolerance | length | never below a millionth of the drawing's larger side | the coarser tolerance is used |
+| SVG entity expansion (`svg/svg-xml.ts`) | characters substituted | min(134,217,728, max(65,536, 8 x the file's characters)) | refused, `InputError` |
+| SVG selector matching (`packages/dev/base/lib/api/services/helpers/files/svg/svg-css.ts`) | steps, as in "The style cascade" | min(64,000,000, max(2,000,000, 64 x the file's characters)) | the rest imported without the stylesheet, with a warning |
+| SVG path segments (`svg/svg-normalizer.ts`) | segments after `<use>`, a closing line included | min(120,000, max(25,000, 2 x the file's characters)) | that element and the rest left out, with a warning |
+| SVG dash arrays (`packages/dev/base/lib/api/services/helpers/files/svg/svg-style.ts`) | lengths in one `stroke-dasharray` | 64 | read as a solid line, with one warning |
+| SVG walk | elements visited, nesting, `<use>` depth | 500,000; XML 256 deep (refused); 512; 16 | the rest left out, with a warning |
+| Warnings | names per kind | 5 | the rest counted in one warning |
 
 ## Recipes
 

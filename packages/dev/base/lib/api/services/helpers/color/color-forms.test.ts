@@ -1,7 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { hexChannels, hslChannels } from "./color-forms";
+import { hexChannels, hexOfChannels, hslChannels } from "./color-forms";
 
 describe("color forms", () => {
+    it.each([
+        [[255, 87, 51], "#ff5733"],
+        [[0, 0, 0], "#000000"],
+        [[1, 2, 3], "#010203"],
+        [[255, 255, 255], "#ffffff"],
+    ] as const)("should write the channels %j as the six lower case hex digits %s", (channels, hex) => {
+        // Act
+        const written = hexOfChannels(channels);
+
+        // Assert
+        expect(written).toBe(hex);
+    });
+
+    it("should write back the channels it reads", () => {
+        // Act
+        const written = hexOfChannels(hexChannels("#3f7fbf")!);
+
+        // Assert
+        expect(written).toBe("#3f7fbf");
+    });
+
     it("should read six hex digits and three, with or without the hash, in either case", () => {
         // Act
         const read = ["#ff5733", "FF5733", "#f53", "F53", "#000", "#ffffff"].map(hexChannels);

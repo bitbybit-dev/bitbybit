@@ -5,8 +5,10 @@ import type { Vector } from "./vector";
 import type * as Models from "../models";
 import type { Lists } from "./lists";
 import { InputError, resolveDto } from "../kernel-calls";
+import type { BitbybitSettings } from "../kernel-calls/settings";
 import { arcThroughThreePoints, pointsOnArc } from "./helpers/geometry/arcs";
 import { add3, length3, scale3, subtract3 } from "./helpers/geometry/vectors";
+import { pointOnGround } from "./helpers/files/ground-axes";
 import type * as Resolved from "../resolved-inputs";
 
 /**
@@ -18,7 +20,11 @@ import type * as Resolved from "../resolved-inputs";
 
 export class Point {
 
-    constructor(private readonly geometryHelper: GeometryHelper, private readonly transforms: Transforms, private readonly vector: Vector, private readonly lists: Lists) { }
+    constructor(private readonly geometryHelper: GeometryHelper, private readonly transforms: Transforms, private readonly vector: Vector, private readonly lists: Lists, private readonly settings: () => BitbybitSettings = () => ({})) { }
+
+    private onGround(x: number, y: number): Inputs.Base.Point3 {
+        return pointOnGround(x, y, this.settings().coordinateSystem);
+    }
 
     /**
      * Applies a transformation matrix, or a list of them in order, to one point.
@@ -575,7 +581,7 @@ export class Point {
 
         if (resolved.pointsOnGround) {
             points.forEach((p, index) => {
-                points[index] = [p[0], 0, p[1]];
+                points[index] = this.onGround(p[0], p[1]);
             });
         }
 
@@ -865,11 +871,11 @@ export class Point {
 
         if (pointsOnGround) {
             for (let i = 0; i < scaledCenters.length; i++) {
-                scaledCenters[i] = [scaledCenters[i]![0], 0, scaledCenters[i]![1]];
+                scaledCenters[i] = this.onGround(scaledCenters[i]![0], scaledCenters[i]![1]);
             }
             for (let i = 0; i < scaledHexagons.length; i++) {
                 for (let j = 0; j < scaledHexagons[i]!.length; j++) {
-                    scaledHexagons[i]![j] = [scaledHexagons[i]![j]![0], 0, scaledHexagons[i]![j]![1]];
+                    scaledHexagons[i]![j] = this.onGround(scaledHexagons[i]![j]![0], scaledHexagons[i]![j]![1]);
                 }
             }
         }

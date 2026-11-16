@@ -13,7 +13,9 @@ const LEAST_ALIGNED_SLACK = 1e-9;
 
 /**
  * A frame as the four vectors the maths reads: the origin and three unit axes at right angles,
- * with `y` the cross product of `z` and `x`.
+ * with `y` the cross product of `z` and `x`. `vectorToWorld`, `pointToWorld` and `composeAxes`
+ * also map by axes of any length and angle, such as a scaled block insert's; the `ToLocal`
+ * functions and `relativeAxes` undo only unit axes at right angles.
  */
 export interface FrameAxes {
     readonly origin: Vec3;

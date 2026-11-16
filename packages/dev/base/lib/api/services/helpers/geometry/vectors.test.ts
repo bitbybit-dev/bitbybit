@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { add2, add3, between2, between3, cross2, cross3, distance2, distance3, dot2, dot3, leftOf2, length2, length3, polar2, rotated2, scale2, scale3, subtract2, subtract3, unit2Of } from "./vectors";
+import { add2, add3, between2, between3, cross2, cross3, distance2, distance3, distanceToSegment3, dot2, dot3, leftOf2, length2, length3, polar2, rotated2, scale2, scale3, subtract2, subtract3, unit2Of } from "./vectors";
 import { unitOf } from "./frame-axes";
 
 const PLAN_REACH = 20;
@@ -113,5 +113,16 @@ describe("vectors", () => {
         // Assert
         expect(plan).toBe(5);
         expect(space).toBe(7);
+    });
+
+    it("should measure from a point to the nearest point of a segment, its ends included, and to a segment of no length", () => {
+        // Act
+        const beside = distanceToSegment3([5, 3, 4], [0, 0, 0], [10, 0, 0]);
+        const beyond = distanceToSegment3([13, 4, 0], [0, 0, 0], [10, 0, 0]);
+        const before = distanceToSegment3([-1, 0, 0], [0, 0, 0], [10, 0, 0]);
+        const dot = distanceToSegment3([3, 4, 0], [0, 0, 0], [0, 0, 0]);
+
+        // Assert
+        expect([beside, beyond, before, dot]).toEqual([5, 5, 1, 5]);
     });
 });

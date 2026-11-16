@@ -1018,4 +1018,13 @@ export namespace Base {
         metre = "m",
         inch = "in",
     }
+    /**
+     * The coordinate system the numbers of a model are in: left-handed, as a default Babylon.js
+     * scene is, or right-handed, as three.js, PlayCanvas and CAD files are. Y is up in both. It
+     * decides how a file, a drawing or a shape that names a hand maps to those numbers.
+     */
+    export enum coordinateSystemEnum {
+        leftHanded = "leftHanded",
+        rightHanded = "rightHanded",
+    }
 }

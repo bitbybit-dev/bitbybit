@@ -1,7 +1,17 @@
 import type * as Inputs from "../../../inputs";
 
 type Point3 = Inputs.Base.Point3;
-type Homogeneous = [number, number, number, number];
+
+export type Homogeneous = [number, number, number, number];
+
+export const liftedPoint = (point: Point3, weight: number): Homogeneous => [point[0] * weight, point[1] * weight, point[2] * weight, weight];
+
+export const projectedPoint = (point: Homogeneous): Point3 => [point[0] / point[3], point[1] / point[3], point[2] / point[3]];
+
+export const blendedPoint = (from: Homogeneous, to: Homogeneous, share: number): Homogeneous => {
+    const keep = 1 - share;
+    return [keep * from[0] + share * to[0], keep * from[1] + share * to[1], keep * from[2] + share * to[2], keep * from[3] + share * to[3]];
+};
 
 export const expandedKnots = (knots: readonly number[], multiplicities: readonly number[]): number[] =>
     knots.flatMap((knot, at) => Array.from({ length: multiplicities[at] ?? 0 }, () => knot));
@@ -39,21 +49,14 @@ const deBoor = (degree: number, knots: readonly number[], parameter: number, at:
             const left = knots[span - degree + j]!;
             const right = knots[span + 1 + j - r]!;
             const alpha = right === left ? 0 : (t - left) / (right - left);
-            const previous = points[j - 1]!;
-            const current = points[j]!;
-            const keep = 1 - alpha;
-            points[j] = [keep * previous[0] + alpha * current[0], keep * previous[1] + alpha * current[1], keep * previous[2] + alpha * current[2], keep * previous[3] + alpha * current[3]];
+            points[j] = blendedPoint(points[j - 1]!, points[j]!, alpha);
         }
     }
     return points[degree]!;
 };
 
-const lifted = (point: Point3, weight: number): Homogeneous => [point[0] * weight, point[1] * weight, point[2] * weight, weight];
-
-const projected = (point: Homogeneous): Point3 => [point[0] / point[3], point[1] / point[3], point[2] / point[3]];
-
 export const nurbsCurvePoint = (degree: number, points: readonly Point3[], weights: readonly number[] | undefined, knots: readonly number[], t: number): Point3 =>
-    projected(deBoor(degree, knots, t, (index) => lifted(points[index]!, weights?.[index] ?? 1)));
+    projectedPoint(deBoor(degree, knots, t, (index) => liftedPoint(points[index]!, weights?.[index] ?? 1)));
 
 export const nurbsSurfacePoint = (
     degrees: readonly [number, number],
@@ -65,6 +68,6 @@ export const nurbsSurfacePoint = (
 ): Point3 => {
     const [uDegree, vDegree] = degrees;
     const [uKnots, vKnots] = knots;
-    const row = (index: number): Homogeneous => deBoor(vDegree, vKnots, v, (column) => lifted(net[index]![column]!, weights?.[index]?.[column] ?? 1));
-    return projected(deBoor(uDegree, uKnots, u, row));
+    const row = (index: number): Homogeneous => deBoor(vDegree, vKnots, v, (column) => liftedPoint(net[index]![column]!, weights?.[index]?.[column] ?? 1));
+    return projectedPoint(deBoor(uDegree, uKnots, u, row));
 };

@@ -1,1087 +1,335 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { DxfGenerator } from "./dxf-generator";
+import { describe, expect, it } from "vitest";
 import * as Inputs from "../../../../inputs";
+import type * as Resolved from "../../../../resolved-inputs";
+import { resolveDto } from "../../../../kernel-calls";
+import { DxfGenerator } from "./dxf-generator";
+import { entitiesOf, headerVariable, numberOf, readDxf, recordsOf, tablesOf, valueOf, valuesOf } from "../__test__/dxf-reader";
+import type { DxfFile, DxfRecord } from "../__test__/dxf-reader";
+import { problemsOfR12, problemsOfR2000 } from "../__test__/dxf-structure";
 
-describe("DxfGenerator unit tests", () => {
+type Part = Inputs.IO.DrawingPartDto;
 
-    let generator: DxfGenerator;
+const write = (parts: Part[], options: Partial<Inputs.IO.DxfModelDto> = {}): string =>
+    new DxfGenerator().generateDxf(resolveDto(Inputs.IO.DxfModelDto, { dxfPathsParts: parts, ...options }) as Resolved.IO.DxfModelDto);
 
-    beforeEach(() => {
-        generator = new DxfGenerator();
+const part = (segments: Inputs.IO.DrawingPathDto["segments"], extra: Partial<Part> = {}): Part => ({ layer: "cut", color: "#ff0000", paths: [{ segments }], ...extra });
+
+const square: Inputs.IO.DrawingPolylineSegmentDto = { points: [[0, 0], [40, 0], [40, 30], [0, 30]], closed: true };
+
+const tableRecords = (file: DxfFile, name: string): readonly DxfRecord[] => tablesOf(file).find(table => table.name === name)!.records;
+
+const allSegments: Inputs.IO.DrawingPathDto["segments"] = [
+    { start: [0, 0], end: [10, 5, 2] },
+    { center: [5, 5], radius: 3, startAngle: 30, endAngle: 300 },
+    { center: [5, 5, 1], radius: 2, normal: [1, 1, 1] },
+    { points: [[0, 0], [10, 0], [10, 10]], bulges: [0.5, 0, 0] },
+    { points: [[0, 0, 0], [10, 0, 2], [10, 10, 4]] },
+    { controlPoints: [[0, 0], [5, 10], [10, 0], [15, 10]], degree: 3, weights: [1, 2, 1, 1] },
+    { center: [0, 0], majorAxis: [8, 0], ratio: 0.5, startParameter: 1, endParameter: 5 },
+];
+
+const everyKind = [part(allSegments), part([square], { layer: "marks", color: "#0000ff", lineType: Inputs.IO.lineTypeEnum.dashed })];
+
+describe("DXF files AutoCAD 2000 reads", () => {
+    it("should write every section, table, record, handle and owner AutoCAD 2000 requires, and nothing it does not", () => {
+        // Act
+        const text = write(everyKind, { acadVersion: "AC1015", colorFormat: "truecolor", unit: Inputs.Base.unitOfLengthEnum.millimetre });
+
+        // Assert
+        expect(problemsOfR2000(text)).toEqual([]);
     });
 
-    describe("Line Segments", () => {
-        
-        it("should generate a LINE entity", () => {
-            const lineSegment = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-            const path = new Inputs.IO.DxfPathDto([lineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Layer1", "#FF0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+    it("should write each kind of segment as the AutoCAD 2000 entity that holds it exactly", () => {
+        // Act
+        const kinds = entitiesOf(readDxf(write(everyKind))).map(entity => entity.kind);
 
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("0\nLINE");
-            expect(result).toContain("8\nLayer1");
-            expect(result).toContain("10\n0.000000\n20\n0.000000");
-            expect(result).toContain("11\n10.000000\n21\n10.000000");
-        });
-
-        it("should generate multiple LINE entities in a single path", () => {
-            const line1 = new Inputs.IO.DxfLineSegmentDto([0, 0], [5, 5]);
-            const line2 = new Inputs.IO.DxfLineSegmentDto([5, 5], [10, 0]);
-            const path = new Inputs.IO.DxfPathDto([line1, line2]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            const lineMatches = result.match(/0\nLINE/g);
-            expect(lineMatches).toHaveLength(2);
-        });
+        // Assert
+        expect(kinds).toEqual(["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "POLYLINE", "VERTEX", "VERTEX", "VERTEX", "SEQEND", "SPLINE", "ELLIPSE", "LWPOLYLINE"]);
     });
 
-    describe("Circle Segments", () => {
-        
-        it("should generate a CIRCLE entity", () => {
-            const circleSegment = new Inputs.IO.DxfCircleSegmentDto([50, 50], 25);
-            const path = new Inputs.IO.DxfPathDto([circleSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Circles", "#ff0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+    it("should write AutoCAD 2000 when no version is asked for", () => {
+        // Act
+        const file = readDxf(write([]));
 
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("0\nCIRCLE");
-            expect(result).toContain("8\nCircles");
-            expect(result).toContain("10\n50.000000\n20\n50.000000");
-            expect(result).toContain("40\n25.000000");
-        });
-
-        it("should generate multiple circles", () => {
-            const circle1 = new Inputs.IO.DxfCircleSegmentDto([10, 10], 5);
-            const circle2 = new Inputs.IO.DxfCircleSegmentDto([30, 30], 10);
-            const circle3 = new Inputs.IO.DxfCircleSegmentDto([50, 10], 7.5);
-            const path = new Inputs.IO.DxfPathDto([circle1, circle2, circle3]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            const circleMatches = result.match(/0\nCIRCLE/g);
-            expect(circleMatches).toHaveLength(3);
-            expect(result).toContain("40\n5.000000");
-            expect(result).toContain("40\n10.000000");
-            expect(result).toContain("40\n7.500000");
-        });
+        // Assert
+        expect(headerVariable(file, "$ACADVER")[0]?.value).toBe("AC1015");
     });
 
-    describe("Arc Segments", () => {
-        
-        it("should generate an ARC entity", () => {
-            const arcSegment = new Inputs.IO.DxfArcSegmentDto([100, 100], 50, 0, 90);
-            const path = new Inputs.IO.DxfPathDto([arcSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Arcs", "#ffff00", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+    it("should write an empty drawing as a valid AutoCAD 2000 file with no entities", () => {
+        // Act
+        const text = write([]);
 
-            const result = generator.generateDxf(model);
+        // Assert
+        expect([problemsOfR2000(text), entitiesOf(readDxf(text))]).toEqual([[], []]);
+    });
+});
 
-            expect(result).toContain("0\nARC");
-            expect(result).toContain("8\nArcs");
-            expect(result).toContain("10\n100.000000\n20\n100.000000");
-            expect(result).toContain("40\n50.000000");
-            expect(result).toContain("50\n0.000000");
-            expect(result).toContain("51\n90.000000");
-        });
+describe("DXF files R12 reads", () => {
+    it("should write only the sections, codes and entities R12 defines", () => {
+        // Act
+        const text = write([part(allSegments)], { acadVersion: "AC1009" });
 
-        it("should generate arc with 180 degree sweep", () => {
-            const arcSegment = new Inputs.IO.DxfArcSegmentDto([0, 0], 10, 45, 225);
-            const path = new Inputs.IO.DxfPathDto([arcSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("50\n45.000000");
-            expect(result).toContain("51\n225.000000");
-        });
-
-        it("should generate multiple arcs", () => {
-            const arc1 = new Inputs.IO.DxfArcSegmentDto([0, 0], 10, 0, 90);
-            const arc2 = new Inputs.IO.DxfArcSegmentDto([20, 0], 10, 90, 180);
-            const path = new Inputs.IO.DxfPathDto([arc1, arc2]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            const arcMatches = result.match(/0\nARC/g);
-            expect(arcMatches).toHaveLength(2);
-        });
+        // Assert
+        expect(problemsOfR12(text)).toEqual([]);
     });
 
-    describe("Polyline Segments", () => {
-        
-        it("should generate a closed LWPOLYLINE entity", () => {
-            const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]];
-            const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, true);
-            const path = new Inputs.IO.DxfPathDto([polylineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Polylines", "#00ff00", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+    it("should write an empty drawing as a valid R12 file", () => {
+        // Act
+        const text = write([], { acadVersion: "AC1009" });
 
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("0\nLWPOLYLINE");
-            expect(result).toContain("8\nPolylines");
-            expect(result).toContain("90\n5");
-            expect(result).toContain("70\n1");
-        });
-
-        it("should generate an open polyline", () => {
-            const points: Inputs.Base.Point2[] = [[0, 0], [5, 5], [10, 0]];
-            const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, false);
-            const path = new Inputs.IO.DxfPathDto([polylineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("90\n3");
-            expect(result).toContain("70\n0");
-        });
-
-        it("should auto-detect closed polyline", () => {
-            const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]];
-            const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, false);
-            const path = new Inputs.IO.DxfPathDto([polylineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("70\n1");
-        });
+        // Assert
+        expect(problemsOfR12(text)).toEqual([]);
     });
 
-    describe("Spline Segments", () => {
-        
-        it("should generate a SPLINE entity", () => {
-            const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 10], [15, 0]];
-            const splineSegment = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false);
-            const path = new Inputs.IO.DxfPathDto([splineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Splines", "#00ffff", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+    it("should write splines and ellipses as polylines, and every polyline as vertices closed by SEQEND", () => {
+        // Act
+        const kinds = entitiesOf(readDxf(write([part(allSegments)], { acadVersion: "AC1009" }))).map(entity => entity.kind).filter(kind => kind !== "VERTEX");
 
-            const result = generator.generateDxf(model);
+        // Assert
+        expect(kinds).toEqual(["LINE", "ARC", "CIRCLE", "POLYLINE", "SEQEND", "POLYLINE", "SEQEND", "POLYLINE", "SEQEND", "POLYLINE", "SEQEND"]);
+    });
+});
 
-            expect(result).toContain("0\nSPLINE");
-            expect(result).toContain("8\nSplines");
-            expect(result).toContain("71\n3");
-            expect(result).toContain("73\n4");
-        });
+describe("DXF extents and units", () => {
+    it("should bound a spline's extents with the whole curve, however coarse the tolerance", () => {
+        // Arrange
+        const controlPoints: Inputs.Base.Point3[] = [[0, 0, 0], [3, 10, 0], [5, 8, 0], [10, 0, 0]];
+        const highest = Math.max(...Array.from({ length: 10_001 }, (_, step) => step / 10_000).map(t => 30 * t * (1 - t) ** 2 + 24 * t * t * (1 - t)));
 
-        it("should generate closed spline", () => {
-            const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 5], [10, 0], [5, -5]];
-            const splineSegment = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, true);
-            const path = new Inputs.IO.DxfPathDto([splineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+        // Act
+        const extremeY = Number(headerVariable(readDxf(write([part([{ controlPoints, degree: 3 }])], { curveTolerance: 0.5 })), "$EXTMAX")[1]?.value);
 
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("70\n1");
-        });
-
-        it("should generate spline with degree 2", () => {
-            const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 0]];
-            const splineSegment = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 2, false);
-            const path = new Inputs.IO.DxfPathDto([splineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("71\n2");
-        });
-
-        it("should use default degree if not specified", () => {
-            const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 5], [10, 0]];
-            const splineSegment = new Inputs.IO.DxfSplineSegmentDto(controlPoints);
-            const path = new Inputs.IO.DxfPathDto([splineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("71\n3");
-        });
+        // Assert
+        expect([extremeY >= highest, extremeY <= highest + 0.5]).toEqual([true, true]);
     });
 
-    describe("Mixed Segment Types in Paths", () => {
-        
-        it("should generate a path with line and arc segments (like a wire)", () => {
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 0]);
-            const arc = new Inputs.IO.DxfArcSegmentDto([10, 5], 5, -90, 90);
-            const line2 = new Inputs.IO.DxfLineSegmentDto([10, 10], [0, 10]);
-            const path = new Inputs.IO.DxfPathDto([line, arc, line2]);
-            const part = new Inputs.IO.DxfPathsPartDto("MixedPath", "#0000ff", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+    it("should state the drawing's extents, Z included", () => {
+        // Act
+        const file = readDxf(write([part([{ start: [-5, 2, 1], end: [20, 7, -3] }])]));
 
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("0\nLINE");
-            expect(result).toContain("0\nARC");
-            const lineMatches = result.match(/0\nLINE/g);
-            expect(lineMatches).toHaveLength(2);
-            const arcMatches = result.match(/0\nARC/g);
-            expect(arcMatches).toHaveLength(1);
-        });
-
-        it("should generate a complex path with all segment types", () => {
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 0]);
-            const arc = new Inputs.IO.DxfArcSegmentDto([15, 0], 5, 180, 270);
-            const circle = new Inputs.IO.DxfCircleSegmentDto([25, 5], 3);
-            const polyline = new Inputs.IO.DxfPolylineSegmentDto([[30, 0], [35, 5], [40, 0]], false);
-            const spline = new Inputs.IO.DxfSplineSegmentDto([[45, 0], [50, 10], [55, 0]], 3, false);
-            
-            const path = new Inputs.IO.DxfPathDto([line, arc, circle, polyline, spline]);
-            const part = new Inputs.IO.DxfPathsPartDto("ComplexPath", "#ffffff", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("0\nLINE");
-            expect(result).toContain("0\nARC");
-            expect(result).toContain("0\nCIRCLE");
-            expect(result).toContain("0\nLWPOLYLINE");
-            expect(result).toContain("0\nSPLINE");
-        });
-
-        it("should generate multiple lines and arcs forming a connected wire", () => {
-            const bottomLine = new Inputs.IO.DxfLineSegmentDto([5, 0], [15, 0]);
-            const bottomRightArc = new Inputs.IO.DxfArcSegmentDto([15, 5], 5, -90, 0);
-            const rightLine = new Inputs.IO.DxfLineSegmentDto([20, 5], [20, 15]);
-            const topRightArc = new Inputs.IO.DxfArcSegmentDto([15, 15], 5, 0, 90);
-            const topLine = new Inputs.IO.DxfLineSegmentDto([15, 20], [5, 20]);
-            const topLeftArc = new Inputs.IO.DxfArcSegmentDto([5, 15], 5, 90, 180);
-            const leftLine = new Inputs.IO.DxfLineSegmentDto([0, 15], [0, 5]);
-            const bottomLeftArc = new Inputs.IO.DxfArcSegmentDto([5, 5], 5, 180, 270);
-            
-            const path = new Inputs.IO.DxfPathDto([
-                bottomLine, bottomRightArc, rightLine, topRightArc,
-                topLine, topLeftArc, leftLine, bottomLeftArc
-            ]);
-            const part = new Inputs.IO.DxfPathsPartDto("RoundedRect", "#ff0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            const lineMatches = result.match(/0\nLINE/g);
-            const arcMatches = result.match(/0\nARC/g);
-            expect(lineMatches).toHaveLength(4);
-            expect(arcMatches).toHaveLength(4);
-        });
+        // Assert
+        expect([headerVariable(file, "$EXTMIN").map(pair => Number(pair.value)), headerVariable(file, "$EXTMAX").map(pair => Number(pair.value))]).toEqual([[-5, 2, -3], [20, 7, 1]]);
     });
 
-    describe("Multiple Paths and Layers", () => {
-        
-        it("should generate multiple paths in different parts", () => {
-            const path1 = new Inputs.IO.DxfPathDto([
-                new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10])
-            ]);
-            const path2 = new Inputs.IO.DxfPathDto([
-                new Inputs.IO.DxfCircleSegmentDto([20, 20], 5)
-            ]);
-            
-            const part1 = new Inputs.IO.DxfPathsPartDto("Layer1", "#ff0000", [path1]);
-            const part2 = new Inputs.IO.DxfPathsPartDto("Layer2", "#ffff00", [path2]);
-            const model = new Inputs.IO.DxfModelDto([part1, part2]);
+    it("should state the unit and its measurement system in AutoCAD 2000", () => {
+        // Act
+        const file = readDxf(write([], { unit: Inputs.Base.unitOfLengthEnum.inch }));
 
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("2\nLayer1");
-            expect(result).toContain("2\nLayer2");
-            expect(result).toContain("8\nLayer1");
-            expect(result).toContain("8\nLayer2");
-        });
-
-        it("should handle multiple paths in a single part", () => {
-            const path1 = new Inputs.IO.DxfPathDto([
-                new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 0])
-            ]);
-            const path2 = new Inputs.IO.DxfPathDto([
-                new Inputs.IO.DxfLineSegmentDto([0, 10], [10, 10])
-            ]);
-            const path3 = new Inputs.IO.DxfPathDto([
-                new Inputs.IO.DxfCircleSegmentDto([5, 5], 2)
-            ]);
-            
-            const part = new Inputs.IO.DxfPathsPartDto("MultiPath", "#00ff00", [path1, path2, path3]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            const layerMatches = result.match(/8\nMultiPath/g);
-            expect(layerMatches?.length).toBeGreaterThanOrEqual(3);
-        });
+        // Assert
+        expect([headerVariable(file, "$INSUNITS")[0]?.value, headerVariable(file, "$MEASUREMENT")[0]?.value]).toEqual(["1", "0"]);
     });
 
-    describe("DXF Structure and Format", () => {
-        
-        it("should generate valid DXF structure with AC1009 format by default", () => {
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-            const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+    it("should refuse a unit for R12, which has no place for one", () => {
+        // Act
+        const writing = (): string => write([], { acadVersion: "AC1009", unit: Inputs.Base.unitOfLengthEnum.millimetre });
 
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("0\nSECTION\n2\nHEADER");
-            expect(result).toContain("$ACADVER\n1\nAC1009");
-            expect(result).toContain("$DWGCODEPAGE\n3\nascii");
-            expect(result).toContain("0\nSECTION\n2\nTABLES");
-            expect(result).toContain("0\nTABLE\n2\nVPORT");
-            expect(result).toContain("0\nTABLE\n2\nVIEW");
-            expect(result).toContain("0\nTABLE\n2\nUCS");
-            expect(result).toContain("0\nTABLE\n2\nAPPID");
-            expect(result).toContain("0\nSECTION\n2\nENTITIES");
-            expect(result).toContain("0\nEOF");
-        });
-
-        it("should generate valid DXF structure with AC1015 format when specified", () => {
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-            const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("0\nSECTION\n2\nHEADER");
-            expect(result).toContain("$ACADVER\n1\nAC1015");
-            expect(result).toContain("$LASTSAVEDBY\n1\nbitbybit.dev");
-            expect(result).toContain("$DWGCODEPAGE\n3\nANSI_1252");
-            expect(result).toContain("0\nSECTION\n2\nTABLES");
-            expect(result).toContain("0\nSECTION\n2\nENTITIES");
-            expect(result).toContain("0\nEOF");
-            expect(result).not.toContain("0\nTABLE\n2\nVPORT");
-        });
-
-        it("should generate AC1009 entities without AcDb subclass markers", () => {
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-            const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "#ff0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-            const result = generator.generateDxf(model);
-
-            expect(result).not.toContain("100\nAcDbEntity");
-            expect(result).not.toContain("100\nAcDbLine");
-            expect(result).toContain("0\nLINE\n8\nTestLayer");
-        });
-
-        it("should generate AC1015 entities with AcDb subclass markers", () => {
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-            const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "#ff0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("100\nAcDbEntity");
-            expect(result).toContain("100\nAcDbLine");
-        });
-
-        it("should generate unique entity handles", () => {
-            const segments = [
-                new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]),
-                new Inputs.IO.DxfCircleSegmentDto([20, 20], 5),
-                new Inputs.IO.DxfArcSegmentDto([30, 30], 5, 0, 90)
-            ];
-            const path = new Inputs.IO.DxfPathDto(segments);
-            const part = new Inputs.IO.DxfPathsPartDto("Test", "#ff0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
-            expect(entitiesSection).toBeDefined();
-            
-            const handleMatches = entitiesSection?.match(/5\n[A-F0-9]+/g);
-            expect(handleMatches).toBeDefined();
-            if (handleMatches) {
-                const handles = handleMatches.map(match => match.replace("5\n", ""));
-                const uniqueHandles = new Set(handles);
-                expect(uniqueHandles.size).toBe(handles.length);
-            }
-        });
-
-        it("should handle empty model", () => {
-            const model = new Inputs.IO.DxfModelDto([]);
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("0\nSECTION\n2\nHEADER");
-            expect(result).toContain("0\nSECTION\n2\nTABLES");
-            expect(result).toContain("0\nSECTION\n2\nENTITIES");
-            expect(result).toContain("0\nEOF");
-            expect(result).toContain("2\n0");
-        });
+        // Assert
+        expect(writing).toThrow("an AC1009 (R12) file has no place for a drawing's unit");
     });
 
-    describe("Units", () => {
-        const U = Inputs.Base.unitOfLengthEnum;
-        const square = (): Inputs.IO.DxfPathsPartDto => new Inputs.IO.DxfPathsPartDto("0", "#000000", [new Inputs.IO.DxfPathDto([new Inputs.IO.DxfLineSegmentDto([0, 0], [1, 0])])]);
-        const headerOf = (dxf: string): string => dxf.slice(0, dxf.indexOf("0\nENDSEC"));
+    it("should bound an arc whose start angle is many turns round, the same angle again its end, as the whole circle it is", () => {
+        // Act
+        const file = readDxf(write([part([{ center: [0, 0], radius: 5, startAngle: 1e20, endAngle: 1e20 }])]));
 
-        it("should state each unit in an AC1015 header, with inches imperial and the rest metric", () => {
-            // Act
-            const headers = [U.inch, U.millimetre, U.centimetre, U.metre].map(unit => headerOf(generator.generateDxf(new Inputs.IO.DxfModelDto([square()], "aci", "AC1015", unit))));
+        // Assert
+        expect([entitiesOf(file)[0]!.kind, headerVariable(file, "$EXTMIN").map(pair => Number(pair.value)), headerVariable(file, "$EXTMAX").map(pair => Number(pair.value))])
+            .toEqual(["CIRCLE", [-5, -5, 0], [5, 5, 0]]);
+    });
+});
 
-            // Assert
-            expect(headers.map(header => /\$INSUNITS\n70\n(\d+)\n9\n\$MEASUREMENT\n70\n(\d)\n/.exec(header)?.slice(1))).toEqual([["1", "0"], ["4", "1"], ["5", "1"], ["6", "1"]]);
-        });
+describe("DXF layers and line types", () => {
+    it("should give each layer the first color and line type it was used with, and keep layer 0", () => {
+        // Arrange
+        const parts = [
+            part([square], { layer: "cut", color: "#00ff00" }),
+            part([square], { layer: "cut", color: "#ff0000", lineType: Inputs.IO.lineTypeEnum.hidden }),
+            part([square], { layer: "0", color: "#0000ff", lineType: Inputs.IO.lineTypeEnum.center }),
+        ];
 
-        it("should add only the two unit variables to the header, the file being the same without them", () => {
-            // Act
-            const plain = generator.generateDxf(new Inputs.IO.DxfModelDto([square()], "aci", "AC1015"));
-            const inches = generator.generateDxf(new Inputs.IO.DxfModelDto([square()], "aci", "AC1015", U.inch));
+        // Act
+        const layers = tableRecords(readDxf(write(parts)), "LAYER");
 
-            // Assert
-            expect(plain).not.toContain("$INSUNITS");
-            expect(inches.replace("9\n$INSUNITS\n70\n1\n9\n$MEASUREMENT\n70\n0\n", "")).toBe(plain);
-        });
-
-        it("should refuse a unit in an AC1009 file and a unit it does not know, naming the unit", () => {
-            // Act & Assert
-            expect(() => generator.generateDxf(new Inputs.IO.DxfModelDto([square()], "aci", "AC1009", U.inch))).toThrow(/AC1015/);
-            expect(() => generator.generateDxf(new Inputs.IO.DxfModelDto([square()], "aci", "AC1015", "ft" as Inputs.Base.unitOfLengthEnum))).toThrow("`unit`");
-        });
+        // Assert
+        expect(layers.map(layer => [valueOf(layer, 2), valueOf(layer, 62), valueOf(layer, 6)])).toEqual([["0", "5", "CENTER"], ["cut", "3", "CONTINUOUS"]]);
     });
 
-    describe("Repeated calls", () => {
-        it("should write the same file every time it is asked for the same drawing", () => {
-            // Arrange
-            const model = new Inputs.IO.DxfModelDto([new Inputs.IO.DxfPathsPartDto("0", "#000000", [new Inputs.IO.DxfPathDto([new Inputs.IO.DxfLineSegmentDto([0, 0], [1, 0])])])], "aci", "AC1015");
+    it("should write each entity with its own part's color and line type", () => {
+        // Arrange
+        const parts = [
+            part([square], { layer: "cut", color: "#00ff00" }),
+            part([square], { layer: "cut", color: "#ff0000", lineType: Inputs.IO.lineTypeEnum.hidden }),
+        ];
 
-            // Act
-            const files = [generator.generateDxf(model), generator.generateDxf(model)];
+        // Act
+        const entities = entitiesOf(readDxf(write(parts)));
 
-            // Assert
-            expect(files[1]).toBe(files[0]);
-        });
+        // Assert
+        expect(entities.map(entity => [valueOf(entity, 8), valueOf(entity, 62), valueOf(entity, 6)])).toEqual([["cut", "3", undefined], ["cut", "1", "HIDDEN"]]);
     });
 
-    describe("Format Version Control", () => {
-        
-        it("should default to AC1009 for maximum compatibility", () => {
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-            const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+    it("should write CONTINUOUS on a continuous part whose layer an earlier part made hidden, and no line type on the vertices of a polyline", () => {
+        // Arrange
+        const parts = [
+            part([{ start: [0, 0], end: [1, 0] }], { layer: "cut", color: "#ff0000", lineType: Inputs.IO.lineTypeEnum.hidden }),
+            part([square], { layer: "cut", color: "#00ff00" }),
+        ];
 
-            const result = generator.generateDxf(model);
+        // Act
+        const entities = entitiesOf(readDxf(write(parts, { acadVersion: "AC1009" })));
 
-            expect(result).toContain("$ACADVER\n1\nAC1009");
-        });
-
-        it("should use AC1015 when explicitly specified", () => {
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-            const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("$ACADVER\n1\nAC1015");
-        });
-
-        it("should generate simpler entities in AC1009 format", () => {
-            const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
-            const path = new Inputs.IO.DxfPathDto([arc]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-            const result = generator.generateDxf(model);
-
-            const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
-            expect(entitiesSection).toContain("0\nARC\n8\n0");
-            expect(entitiesSection).toContain("6\n ");
-        });
-
-        it("should generate more complex entities in AC1015 format", () => {
-            const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
-            const path = new Inputs.IO.DxfPathDto([arc]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("5\n");
-            expect(result).toContain("100\nAcDbEntity");
-            expect(result).toContain("100\nAcDbCircle");
-            expect(result).toContain("100\nAcDbArc");
-        });
-
-        it("should handle mixed entity types in AC1009", () => {
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-            const circle = new Inputs.IO.DxfCircleSegmentDto([20, 20], 5);
-            const arc = new Inputs.IO.DxfArcSegmentDto([30, 30], 5, 0, 180);
-            const path = new Inputs.IO.DxfPathDto([line, circle, arc]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "#ffffff", [path]);
-            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("0\nLINE");
-            expect(result).toContain("0\nCIRCLE");
-            expect(result).toContain("0\nARC");
-            const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
-            expect(entitiesSection).not.toContain("100\nAcDbEntity");
-        });
+        // Assert
+        expect(entities.map(entity => [entity.kind, valueOf(entity, 6)])).toEqual([
+            ["LINE", "HIDDEN"], ["POLYLINE", "CONTINUOUS"], ["VERTEX", undefined], ["VERTEX", undefined], ["VERTEX", undefined], ["VERTEX", undefined], ["SEQEND", undefined],
+        ]);
     });
 
-    describe("AC1015 Format Branches", () => {
-
-        describe("AC1015 Header Section", () => {
-
-            it("should include $HANDSEED variable in AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("$HANDSEED\n5\n20000");
-            });
-
-            it("should include $HANDSEED with value 0 in AC1009", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("$HANDSEED\n5\n0");
-                expect(result).not.toContain("$HANDSEED\n5\n20000");
-            });
-
-            it("should not include $LASTSAVEDBY in AC1009", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).not.toContain("$LASTSAVEDBY");
-            });
-        });
-
-        describe("AC1015 Tables Section", () => {
-
-            it("should not include VIEW table in AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).not.toContain("0\nTABLE\n2\nVIEW");
-            });
-
-            it("should not include UCS table in AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).not.toContain("0\nTABLE\n2\nUCS");
-            });
-
-            it("should not include APPID table in AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).not.toContain("0\nTABLE\n2\nAPPID");
-            });
-
-            it("should not include DIMSTYLE table in AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).not.toContain("0\nTABLE\n2\nDIMSTYLE");
-            });
-
-            it("should include VIEW, UCS, APPID, DIMSTYLE tables in AC1009", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("0\nTABLE\n2\nVIEW");
-                expect(result).toContain("0\nTABLE\n2\nUCS");
-                expect(result).toContain("0\nTABLE\n2\nAPPID");
-                expect(result).toContain("0\nTABLE\n2\nDIMSTYLE");
-            });
-        });
-
-        describe("AC1015 Line Type Table", () => {
-
-            it("should include AcDbSymbolTable marker in LTYPE table for AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                const ltypeStart = result.indexOf("TABLE\n2\nLTYPE");
-                const ltypeEnd = result.indexOf("ENDTAB", ltypeStart);
-                const ltypeSection = result.substring(ltypeStart, ltypeEnd);
-
-                expect(ltypeSection).toContain("100\nAcDbSymbolTable");
-            });
-
-            it("should include AcDbLinetypeTableRecord marker for line type entries in AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("100\nAcDbSymbolTableRecord");
-                expect(result).toContain("100\nAcDbLinetypeTableRecord");
-            });
-
-            it("should not include AcDbSymbolTable markers in AC1009", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-                const result = generator.generateDxf(model);
-
-                const ltypeStart = result.indexOf("TABLE\n2\nLTYPE");
-                const ltypeEnd = result.indexOf("ENDTAB", ltypeStart);
-                const ltypeSection = result.substring(ltypeStart, ltypeEnd);
-
-                expect(ltypeSection).not.toContain("100\nAcDbSymbolTable");
-                expect(ltypeSection).not.toContain("100\nAcDbLinetypeTableRecord");
-            });
-        });
-
-        describe("AC1015 Style Table", () => {
-
-            it("should include AcDbSymbolTable marker in STYLE table for AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                const styleStart = result.indexOf("TABLE\n2\nSTYLE");
-                const styleEnd = result.indexOf("ENDTAB", styleStart);
-                const styleSection = result.substring(styleStart, styleEnd);
-
-                expect(styleSection).toContain("100\nAcDbSymbolTable");
-            });
-
-            it("should include AcDbTextStyleTableRecord marker in AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("100\nAcDbTextStyleTableRecord");
-            });
-
-            it("should not include AcDbTextStyleTableRecord in AC1009", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).not.toContain("100\nAcDbTextStyleTableRecord");
-            });
-        });
-
-        describe("AC1015 Layer Table", () => {
-
-            it("should include AcDbSymbolTable marker in LAYER table for AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "#FF0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                const layerStart = result.indexOf("TABLE\n2\nLAYER");
-                const layerEnd = result.indexOf("ENDTAB", layerStart);
-                const layerSection = result.substring(layerStart, layerEnd);
-
-                expect(layerSection).toContain("100\nAcDbSymbolTable");
-            });
-
-            it("should include AcDbLayerTableRecord marker per layer in AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("CustomLayer", "#00FF00", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("100\nAcDbLayerTableRecord");
-            });
-
-            it("should include entity handles in LAYER table for AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("MyLayer", "#0000FF", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                const layerStart = result.indexOf("TABLE\n2\nLAYER");
-                const layerEnd = result.indexOf("ENDTAB", layerStart);
-                const layerSection = result.substring(layerStart, layerEnd);
-
-                expect(layerSection).toContain("5\n2");
-            });
-
-            it("should not include AcDbLayerTableRecord in AC1009", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const path = new Inputs.IO.DxfPathDto([line]);
-                const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "#FF0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).not.toContain("100\nAcDbLayerTableRecord");
-            });
-
-            it("should generate unique handles for multiple layers in AC1015", () => {
-                const line1 = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const line2 = new Inputs.IO.DxfLineSegmentDto([20, 20], [30, 30]);
-                const path1 = new Inputs.IO.DxfPathDto([line1]);
-                const path2 = new Inputs.IO.DxfPathDto([line2]);
-                const part1 = new Inputs.IO.DxfPathsPartDto("Layer1", "#FF0000", [path1]);
-                const part2 = new Inputs.IO.DxfPathsPartDto("Layer2", "#00FF00", [path2]);
-                const model = new Inputs.IO.DxfModelDto([part1, part2], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                const matches = result.match(/100\nAcDbLayerTableRecord/g);
-                expect(matches?.length).toBeGreaterThanOrEqual(2);
-            });
-        });
-
-        describe("AC1015 Entity-Specific Markers", () => {
-
-            it("should include AcDbCircle marker for CIRCLE entities in AC1015", () => {
-                const circle = new Inputs.IO.DxfCircleSegmentDto([10, 10], 5);
-                const path = new Inputs.IO.DxfPathDto([circle]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("100\nAcDbEntity");
-                expect(result).toContain("100\nAcDbCircle");
-            });
-
-            it("should include AcDbPolyline marker for LWPOLYLINE entities in AC1015", () => {
-                const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10]];
-                const polyline = new Inputs.IO.DxfPolylineSegmentDto(points, true);
-                const path = new Inputs.IO.DxfPathDto([polyline]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("100\nAcDbEntity");
-                expect(result).toContain("100\nAcDbPolyline");
-            });
-
-            it("should not include AcDbPolyline marker in AC1009", () => {
-                const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10]];
-                const polyline = new Inputs.IO.DxfPolylineSegmentDto(points, true);
-                const path = new Inputs.IO.DxfPathDto([polyline]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).not.toContain("100\nAcDbPolyline");
-            });
-
-            it("should include AcDbSpline marker for SPLINE entities in AC1015", () => {
-                const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 10], [15, 0]];
-                const spline = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false);
-                const path = new Inputs.IO.DxfPathDto([spline]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("100\nAcDbEntity");
-                expect(result).toContain("100\nAcDbSpline");
-            });
-
-            it("should not include AcDbSpline marker in AC1009", () => {
-                const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 10], [15, 0]];
-                const spline = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false);
-                const path = new Inputs.IO.DxfPathDto([spline]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).not.toContain("100\nAcDbSpline");
-            });
-
-            it("should include both AcDbCircle and AcDbArc markers for ARC entities in AC1015", () => {
-                const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
-                const path = new Inputs.IO.DxfPathDto([arc]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("100\nAcDbEntity");
-                expect(result).toContain("100\nAcDbCircle");
-                expect(result).toContain("100\nAcDbArc");
-            });
-
-            it("should include entity handles for all entity types in AC1015", () => {
-                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-                const circle = new Inputs.IO.DxfCircleSegmentDto([20, 20], 5);
-                const arc = new Inputs.IO.DxfArcSegmentDto([30, 30], 5, 0, 90);
-                const polyline = new Inputs.IO.DxfPolylineSegmentDto([[40, 0], [50, 0], [50, 10]], false);
-                const spline = new Inputs.IO.DxfSplineSegmentDto([[60, 0], [65, 10], [70, 0]], 3, false);
-                
-                const path = new Inputs.IO.DxfPathDto([line, circle, arc, polyline, spline]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
-                expect(entitiesSection).toBeDefined();
-                
-                const handleMatches = entitiesSection?.match(/5\n[A-F0-9]+/g);
-                expect(handleMatches).toBeDefined();
-                expect(handleMatches?.length).toBeGreaterThanOrEqual(5);
-            });
-        });
-
-        describe("AC1015 Arc Entity Z Coordinate", () => {
-
-            it("should use 0.0 for arc Z coordinate in AC1015", () => {
-                const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
-                const path = new Inputs.IO.DxfPathDto([arc]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("30\n0.0");
-            });
-
-            it("should use empty string for arc Z coordinate in AC1009", () => {
-                const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
-                const path = new Inputs.IO.DxfPathDto([arc]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-                const result = generator.generateDxf(model);
-
-                expect(result).toContain("30\n\n40");
-                expect(result).not.toContain("30\n0.0");
-            });
-
-            it("should include empty linetype field for arc in AC1009 only", () => {
-                const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
-                const path = new Inputs.IO.DxfPathDto([arc]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
-                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
-
-                const result = generator.generateDxf(model);
-
-                const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
-                expect(entitiesSection).toContain("6\n ");
-            });
-        });
+    it("should write one layer for names that differ only in case, as DXF names do not, spelled as first used", () => {
+        // Arrange
+        const parts = [part([square], { layer: "Cut" }), part([square], { layer: "cut", color: "#0000ff" })];
+
+        // Act
+        const layers = tableRecords(readDxf(write(parts)), "LAYER");
+
+        // Assert
+        expect(layers.map(layer => [valueOf(layer, 2), valueOf(layer, 62)])).toEqual([["0", "7"], ["Cut", "1"]]);
     });
 
-    describe("Color Handling", () => {
-        
-        it("should apply ACI color to entities", () => {
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-            const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("ColorLayer", "#0000ff", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+    it("should define each dashed line type once, after the three every file holds", () => {
+        // Act
+        const lineTypes = tableRecords(readDxf(write([part([square], { lineType: Inputs.IO.lineTypeEnum.dashed }), part([square], { lineType: Inputs.IO.lineTypeEnum.dotted })])), "LTYPE");
 
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("62\n5");
-        });
-
-        it("should write a color that is not hex, a number included, as ACI 7", () => {
-            // Arrange
-            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
-            const part = new Inputs.IO.DxfPathsPartDto("NumberColor", "5", [new Inputs.IO.DxfPathDto([line])]);
-
-            // Act
-            const result = generator.generateDxf(new Inputs.IO.DxfModelDto([part]));
-
-            // Assert
-            const entities = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
-            expect(entities).toContain("62\n7");
-            expect(entities).not.toContain("62\n5");
-        });
-
-        it("should convert hex color to ACI format by default", () => {
-            const circle = new Inputs.IO.DxfCircleSegmentDto([10, 10], 5);
-            const path = new Inputs.IO.DxfPathDto([circle]);
-            const part = new Inputs.IO.DxfPathsPartDto("HexColor", "#FF0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("62\n1");
-        });
-
-        it("should convert hex color to true color format when specified", () => {
-            const circle = new Inputs.IO.DxfCircleSegmentDto([10, 10], 5);
-            const path = new Inputs.IO.DxfPathDto([circle]);
-            const part = new Inputs.IO.DxfPathsPartDto("HexColor", "#FF0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part], "truecolor");
-
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("62\n256");
-            expect(result).toContain("420\n16711680");
-        });
+        // Assert
+        expect(lineTypes.map(record => valueOf(record, 2))).toEqual(["ByBlock", "ByLayer", "CONTINUOUS", "DASHED", "DOT"]);
     });
 
-    describe("Polyline bulges", () => {
-        it("should write the bulge of a vertex that has one", () => {
-            const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10]];
-            const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, false, [0.5, 0, 0]);
-            const model = new Inputs.IO.DxfModelDto([
-                new Inputs.IO.DxfPathsPartDto("Polylines", "#00ff00", [new Inputs.IO.DxfPathDto([polylineSegment])]),
-            ]);
+    it("should scale dashes to a two-hundredth of the drawing's larger side in plan, as SVG does, however deep it is", () => {
+        // Arrange
+        const deep = part([{ start: [0, 0], end: [400, 0] }, { start: [0, 0, 0], end: [0, 0, 1000] }], { lineType: Inputs.IO.lineTypeEnum.dashed });
 
-            // Act
-            const result = generator.generateDxf(model);
+        // Act
+        const dashed = tableRecords(readDxf(write([deep])), "LTYPE").find(record => valueOf(record, 2) === "DASHED")!;
 
-            // Assert
-            expect(result).toContain("42\n0.500000");
-        });
+        // Assert
+        expect([valuesOf(dashed, 49).map(Number), numberOf(dashed, 40)]).toEqual([[8, -4], 12]);
+    });
+});
 
-        it("should leave out the bulge of a vertex that has none", () => {
-            // Arrange
-            const points: Inputs.Base.Point2[] = [[0, 0], [10, 0]];
-            const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, false, [0, 0]);
-            const model = new Inputs.IO.DxfModelDto([
-                new Inputs.IO.DxfPathsPartDto("Polylines", "#00ff00", [new Inputs.IO.DxfPathDto([polylineSegment])]),
-            ]);
+describe("DXF colors and names", () => {
+    it("should write the exact color beside the index color in AutoCAD 2000 on request", () => {
+        // Act
+        const entity = entitiesOf(readDxf(write([part([square], { color: "#F80" })], { colorFormat: "truecolor" })))[0]!;
 
-            // Act
-            const result = generator.generateDxf(model);
-
-            expect(result).not.toContain("42\n0.000000");
-        });
+        // Assert
+        expect([valueOf(entity, 62), valueOf(entity, 420)]).toEqual(["30", String(0xff8800)]);
     });
 
-    describe("a segment of a kind the writer does not know", () => {
-        it("should write no entity for it", () => {
-            const unknown: Inputs.IO.DxfLineSegmentDto = new Inputs.IO.DxfLineSegmentDto();
-            const model = new Inputs.IO.DxfModelDto([
-                new Inputs.IO.DxfPathsPartDto("Unknown", "#00ff00", [new Inputs.IO.DxfPathDto([unknown])]),
-            ]);
+    it("should write only the index color in R12, which has no exact one", () => {
+        // Act
+        const entity = entitiesOf(readDxf(write([part([square], { color: "#F80" })], { colorFormat: "truecolor", acadVersion: "AC1009" })))[0]!;
 
-            // Act
-            const result = generator.generateDxf(model);
-
-            expect(result).toContain("0\nSECTION");
-            expect(result).not.toContain("8\nUnknown");
-        });
+        // Assert
+        expect([valueOf(entity, 62), valueOf(entity, 420)]).toEqual(["30", undefined]);
     });
 
-    describe("a model whose parts and segments leave their defaults out", () => {
-        const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10]];
-        const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 0], [15, 5]];
-        const spelledModel = (): Inputs.IO.DxfModelDto => new Inputs.IO.DxfModelDto([
-            new Inputs.IO.DxfPathsPartDto("Default", "#000000", [
-                new Inputs.IO.DxfPathDto([
-                    new Inputs.IO.DxfPolylineSegmentDto(points, false),
-                    new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false),
-                ]),
-            ]),
-        ], "aci", "AC1009");
-        const entitiesOf = (dxf: string): string => dxf.slice(dxf.indexOf("ENTITIES"));
+    it("should write a layer name outside ASCII as escapes", () => {
+        // Act
+        const entity = entitiesOf(readDxf(write([part([square], { layer: "Pjūvis Ø" })])))[0]!;
 
-        it("should write the entities the spelled out model writes when every default is left out", () => {
-            // Act
-            const leftOut = new DxfGenerator().generateDxf({ dxfPathsParts: [{ paths: [{ segments: [{ points }, { controlPoints }] }] }] });
-            const spelled = new DxfGenerator().generateDxf(spelledModel());
+        // Assert
+        expect(valueOf(entity, 8)).toBe("Pj\\U+016Bvis \\U+00D8");
+    });
 
-            // Assert
-            expect(entitiesOf(leftOut)).toBe(entitiesOf(spelled));
-        });
+    it("should keep every pair a code and a value, so a reader never loses its place", () => {
+        // Act
+        const file = readDxf(write([part(allSegments)]));
 
-        it("should write the entities the spelled out model writes when every default is handed as undefined", () => {
-            // Act
-            const handedUndefined = new DxfGenerator().generateDxf({
-                dxfPathsParts: [{
-                    layer: undefined,
-                    color: undefined,
-                    paths: [{ segments: [{ points, closed: undefined }, { controlPoints, degree: undefined, closed: undefined }] }],
-                }],
-                colorFormat: undefined,
-                acadVersion: undefined,
-            });
-            const spelled = new DxfGenerator().generateDxf(spelledModel());
+        // Assert
+        expect([recordsOf(file.pairs).at(-1)?.kind, file.pairs.every(pair => !pair.value.includes("\n"))]).toEqual(["EOF", true]);
+    });
+});
 
-            // Assert
-            expect(entitiesOf(handedUndefined)).toBe(entitiesOf(spelled));
-        });
+describe("DXF files of any size", () => {
+    it("should write one polyline of half a million vertices without overflowing the stack", () => {
+        // Arrange
+        const points: Inputs.Base.Point2[] = Array.from({ length: 500_000 }, (_, at) => [at, Math.sin(at)]);
 
-        it("should draw a part that names no layer on the default layer", () => {
-            // Act
-            const result = new DxfGenerator().generateDxf({ dxfPathsParts: [{ paths: [{ segments: [{ points }] }] }] });
+        // Act
+        const huge = readDxf(write([part([{ points }])]));
 
-            // Assert
-            expect(result).toContain("0\nLWPOLYLINE\n8\nDefault");
-        });
+        // Assert
+        expect(numberOf(entitiesOf(huge)[0]!, 90)).toBe(500_000);
+    }, 60_000);
 
-        it("should declare in the layer table the default layer a part that names no layer is drawn on", () => {
-            // Act
-            const leftOut = new DxfGenerator().generateDxf({ dxfPathsParts: [{ paths: [{ segments: [{ points }] }] }] });
-            const spelled = new DxfGenerator().generateDxf(spelledModel());
+    it("should write half a million R12 vertices across many polylines without overflowing the stack", () => {
+        // Arrange
+        const many = Array.from({ length: 5000 }, (_, at): Inputs.IO.DrawingPolylineSegmentDto => ({ points: Array.from({ length: 100 }, (__, index): Inputs.Base.Point2 => [at * 100 + index, 0]) }));
 
-            // Assert
-            expect(leftOut.slice(0, leftOut.indexOf("ENTITIES"))).toBe(spelled.slice(0, spelled.indexOf("ENTITIES")));
-        });
+        // Act
+        const r12 = readDxf(write([part(many)], { acadVersion: "AC1009" }));
+
+        // Assert
+        expect(entitiesOf(r12).filter(entity => entity.kind === "VERTEX")).toHaveLength(500_000);
+    }, 60_000);
+
+    it("should write the same file every time for the same drawing", () => {
+        // Act
+        const first = write([part(allSegments)]);
+        const second = write([part(allSegments)]);
+
+        // Assert
+        expect(second).toBe(first);
+    });
+});
+
+describe("DXF inputs no CAD program could read", () => {
+    const fourNumbers: number[] = [0, 0, 0, 0];
+    const notASegment: object = { wobble: 1 };
+    const aNumber: unknown = 5;
+    const aWord: unknown = "one";
+    const pathOfNothing: unknown = { layer: "a", color: "#000000", paths: [null] };
+    const refusals: [string, Partial<Inputs.IO.DxfModelDto>, string][] = [
+        ["a color that is not hex", { dxfPathsParts: [part([square], { color: "red" })] }, "dxfPathsParts[0].color"],
+        ["a short hex color without its hash", { dxfPathsParts: [part([square], { color: "f80" })] }, "dxfPathsParts[0].color"],
+        ["a layer with a slash", { dxfPathsParts: [part([square], { layer: "a/b" })] }, "dxfPathsParts[0].layer"],
+        ["a layer with a line break", { dxfPathsParts: [part([square], { layer: "a\nb" })] }, "dxfPathsParts[0].layer"],
+        ["a line type it does not know", { dxfPathsParts: [part([square], { lineType: "zigzag" as Inputs.IO.lineTypeEnum })] }, "dxfPathsParts[0].lineType"],
+        ["a point that is not a number", { dxfPathsParts: [part([{ start: [0, Number.NaN], end: [1, 1] }])] }, "dxfPathsParts[0].paths[0].segments[0].start"],
+        ["a point of four numbers", { dxfPathsParts: [part([{ start: fourNumbers as Inputs.Base.Point3, end: [1, 1] }])] }, "dxfPathsParts[0].paths[0].segments[0].start"],
+        ["a radius of 0", { dxfPathsParts: [part([{ center: [0, 0], radius: 0 }])] }, "dxfPathsParts[0].paths[0].segments[0].radius"],
+        ["an arc with no end angle", { dxfPathsParts: [part([{ center: [0, 0], radius: 1, startAngle: 90 }])] }, "dxfPathsParts[0].paths[0].segments[0].endAngle"],
+        ["an arc with no start angle", { dxfPathsParts: [part([{ center: [0, 0], radius: 1, endAngle: 90 }])] }, "dxfPathsParts[0].paths[0].segments[0].startAngle"],
+        ["a zero normal", { dxfPathsParts: [part([{ center: [0, 0], radius: 1, normal: [0, 0, 0] }])] }, "dxfPathsParts[0].paths[0].segments[0].normal"],
+        ["a polyline of one point", { dxfPathsParts: [part([{ points: [[0, 0]] }])] }, "dxfPathsParts[0].paths[0].segments[0].points"],
+        ["too few bulges", { dxfPathsParts: [part([{ points: [[0, 0], [1, 1], [2, 0]], bulges: [1] }])] }, "dxfPathsParts[0].paths[0].segments[0].bulges"],
+        ["a bulge on a 3D polyline", { dxfPathsParts: [part([{ points: [[0, 0, 0], [1, 1, 1]], bulges: [0.5, 0] }])] }, "dxfPathsParts[0].paths[0].segments[0].bulges"],
+        ["no more control points than the degree", { dxfPathsParts: [part([{ controlPoints: [[0, 0], [1, 1], [2, 0]], degree: 3 }])] }, "dxfPathsParts[0].paths[0].segments[0].controlPoints"],
+        ["a degree that is not whole", { dxfPathsParts: [part([{ controlPoints: [[0, 0], [1, 1], [2, 0]], degree: 1.5 }])] }, "dxfPathsParts[0].paths[0].segments[0].degree"],
+        ["a weight of 0", { dxfPathsParts: [part([{ controlPoints: [[0, 0], [1, 1], [2, 0]], degree: 2, weights: [1, 0, 1] }])] }, "dxfPathsParts[0].paths[0].segments[0].weights"],
+        ["too few knots", { dxfPathsParts: [part([{ controlPoints: [[0, 0], [1, 1], [2, 0]], degree: 2, knots: [0, 0, 0, 1, 1] }])] }, "dxfPathsParts[0].paths[0].segments[0].knots"],
+        ["decreasing knots", { dxfPathsParts: [part([{ controlPoints: [[0, 0], [1, 1], [2, 0]], degree: 2, knots: [0, 0, 1, 0, 1, 1] }])] }, "dxfPathsParts[0].paths[0].segments[0].knots"],
+        ["knots of no length", { dxfPathsParts: [part([{ controlPoints: [[0, 0], [1, 1], [2, 0]], degree: 2, knots: [0, 0, 0, 0, 1, 1] }])] }, "dxfPathsParts[0].paths[0].segments[0].knots"],
+        ["an inner knot repeated past the degree", { dxfPathsParts: [part([{ controlPoints: [[0, 0], [1, 1], [2, 0], [3, 1], [4, 0], [5, 1]], degree: 2, knots: [0, 0, 0, 1, 1, 1, 2, 2, 2] }])] }, "dxfPathsParts[0].paths[0].segments[0].knots"],
+        ["a zero major axis", { dxfPathsParts: [part([{ center: [0, 0], majorAxis: [0, 0], ratio: 0.5 }])] }, "dxfPathsParts[0].paths[0].segments[0].majorAxis"],
+        ["a ratio above 1", { dxfPathsParts: [part([{ center: [0, 0], majorAxis: [1, 0], ratio: 1.5 }])] }, "dxfPathsParts[0].paths[0].segments[0].ratio"],
+        ["a major axis out of the ellipse's plane", { dxfPathsParts: [part([{ center: [0, 0], majorAxis: [1, 0, 1], ratio: 0.5 }])] }, "dxfPathsParts[0].paths[0].segments[0].majorAxis"],
+        ["an object that is no segment", { dxfPathsParts: [part([notASegment as Inputs.IO.DrawingLineSegmentDto])] }, "dxfPathsParts[0].paths[0].segments[0]"],
+        ["a number for a segment", { dxfPathsParts: [part([aNumber as Inputs.IO.DrawingLineSegmentDto])] }, "dxfPathsParts[0].paths[0].segments[0]"],
+        ["a word for a radius", { dxfPathsParts: [part([{ center: [0, 0], radius: aWord as number }])] }, "dxfPathsParts[0].paths[0].segments[0].radius"],
+        ["a word for bulges", { dxfPathsParts: [part([{ points: [[0, 0], [1, 1]], bulges: aWord as number[] }])] }, "dxfPathsParts[0].paths[0].segments[0].bulges"],
+        ["a path of nothing", { dxfPathsParts: [pathOfNothing as Part] }, "dxfPathsParts[0].paths[0].segments"],
+        ["a word for the parts", { dxfPathsParts: aWord as Part[] }, "dxfPathsParts"],
+        ["a part with no paths", { dxfPathsParts: [{ layer: "a", color: "#000000" } as Part] }, "dxfPathsParts[0].paths"],
+        ["a curve tolerance of 0", { curveTolerance: 0 }, "curveTolerance"],
+        ["a version it does not write", { acadVersion: "AC1018" as "AC1015" }, "acadVersion"],
+        ["a color format it does not know", { colorFormat: "rgb" as "aci" }, "colorFormat"],
+        ["a unit it does not know", { unit: "km" as Inputs.Base.unitOfLengthEnum }, "unit"],
+    ];
+
+    it.each(refusals)("should refuse %s, naming the input at fault", (_name, options, property) => {
+        // Act
+        const writing = (): string => write(options.dxfPathsParts ?? [], options);
+
+        // Assert
+        expect(writing).toThrow(expect.objectContaining({ property }));
     });
 });
