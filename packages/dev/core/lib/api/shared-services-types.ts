@@ -1,4 +1,4 @@
-import type { Color, Dates, Engineering, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, Recipes, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
+import type { Color, Dates, Engineering, Frame, GeometryHelper, IoBitByBit, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, Recipes, TextBitByBit, Transforms, Vector, BitbybitSettings } from "@bitbybit-dev/base";
 import type { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import type { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import type { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
@@ -30,9 +30,10 @@ export interface SharedServices {
     frame: Frame;
     engineering: Engineering;
     recipes: Recipes;
+    io: IoBitByBit;
     line: Line;
     polyline: Polyline;
-        verb: Verb;
+    verb: Verb;
     time: Time;
     occt: OCCTW;
     asset: Asset;
@@ -43,4 +44,6 @@ export interface SharedServices {
     dates: Dates;
     mesh: MeshBitByBit;
     geometryHelper: GeometryHelper;
+    setSettings: (settings: BitbybitSettings) => Promise<BitbybitSettings>;
+    setConventions: (level: number, engineSettings: BitbybitSettings) => Promise<BitbybitSettings>;
 }

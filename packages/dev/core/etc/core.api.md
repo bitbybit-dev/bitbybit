@@ -445,6 +445,8 @@ export class ContextBase {
     renderLoopBag: ((timePassedFromPreviousIteration: number) => void)[];
     // (undocumented)
     rerenderScene: () => void;
+    // Warning: (ae-forgotten-export) The symbol "BitbybitSettings" needs to be exported by the entry point index.d.ts
+    settings: BitbybitSettings;
     // (undocumented)
     snapTolerance: number;
     // (undocumented)
@@ -459,6 +461,12 @@ export class ContextBase {
 
 // @public
 export function contrastColor(color: string, contrast: number): string;
+
+// @public
+export const CONVENTIONS_SURFACE: readonly string[];
+
+// @public
+export function conventionSensitiveMentions(code: string, more?: readonly string[]): string[];
 
 // @public
 export function createIfcWorkerFromCDN(cdnUrl?: string): Worker;
@@ -2728,6 +2736,7 @@ export class IFCWGeometry extends IFCGeometry {
 
 // @public
 export interface InitBitByBitOptions extends WorkerOptions_2 {
+    conventions?: number | undefined;
     workers?: WorkerInstances | undefined;
 }
 
@@ -2771,73 +2780,227 @@ declare namespace Inputs {
 
 // @public
 namespace IO {
-    class DxfArcSegmentDto {
-        constructor(center?: Base_2.Point2, radius?: number, startAngle?: number, endAngle?: number);
-        center: Base_2.Point2;
+    class DrawingArcSegmentDto {
+        constructor(center?: Base_2.Point2 | Base_2.Point3, radius?: number, startAngle?: number, endAngle?: number, normal?: Base_2.Vector3);
+        center: Base_2.Point2 | Base_2.Point3;
         endAngle: number;
+        normal?: Base_2.Vector3 | undefined;
         radius: number;
         startAngle: number;
     }
-    class DxfCircleSegmentDto {
-        constructor(center?: Base_2.Point2, radius?: number);
-        center: Base_2.Point2;
+    class DrawingCircleSegmentDto {
+        constructor(center?: Base_2.Point2 | Base_2.Point3, radius?: number, normal?: Base_2.Vector3);
+        center: Base_2.Point2 | Base_2.Point3;
+        normal?: Base_2.Vector3 | undefined;
         radius: number;
     }
-    class DxfLineSegmentDto {
-        constructor(start?: Base_2.Point2, end?: Base_2.Point2);
-        end: Base_2.Point2;
-        start: Base_2.Point2;
+    class DrawingEllipseSegmentDto {
+        constructor(center?: Base_2.Point2 | Base_2.Point3, majorAxis?: Base_2.Vector2 | Base_2.Vector3, ratio?: number, startParameter?: number, endParameter?: number, normal?: Base_2.Vector3);
+        center: Base_2.Point2 | Base_2.Point3;
+        endParameter?: number | undefined;
+        majorAxis: Base_2.Vector2 | Base_2.Vector3;
+        normal?: Base_2.Vector3 | undefined;
+        ratio: number;
+        startParameter?: number | undefined;
     }
-    class DxfModelDto {
-        constructor(dxfPathsParts?: DxfPathsPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base_2.unitOfLengthEnum);
-        acadVersion?: "AC1009" | "AC1015" | undefined;
-        colorFormat?: "aci" | "truecolor" | undefined;
-        dxfPathsParts: DxfPathsPartDto[];
-        unit?: Base_2.unitOfLengthEnum | undefined;
+    class DrawingLineSegmentDto {
+        constructor(start?: Base_2.Point2 | Base_2.Point3, end?: Base_2.Point2 | Base_2.Point3);
+        end: Base_2.Point2 | Base_2.Point3;
+        start: Base_2.Point2 | Base_2.Point3;
     }
-    class DxfPathDto {
-        constructor(segments?: (DxfLineSegmentDto | DxfArcSegmentDto | DxfCircleSegmentDto | DxfPolylineSegmentDto | DxfSplineSegmentDto)[]);
-        segments: (DxfLineSegmentDto | DxfArcSegmentDto | DxfCircleSegmentDto | DxfPolylineSegmentDto | DxfSplineSegmentDto)[];
-    }
-    class DxfPathsPartDto {
-        constructor(layer?: string, color?: Base_2.Color, paths?: DxfPathDto[]);
+    class DrawingPartDto {
+        constructor(layer?: string, color?: Base_2.Color, paths?: DrawingPathDto[], lineType?: lineTypeEnum);
         color?: Base_2.Color | undefined;
         layer?: string | undefined;
-        paths: DxfPathDto[];
+        lineType?: lineTypeEnum | undefined;
+        paths: DrawingPathDto[];
     }
-    class DxfPolylineSegmentDto {
-        constructor(points?: Base_2.Point2[], closed?: boolean, bulges?: number[]);
+    class DrawingPathDto {
+        constructor(segments?: (DrawingLineSegmentDto | DrawingArcSegmentDto | DrawingCircleSegmentDto | DrawingPolylineSegmentDto | DrawingSplineSegmentDto | DrawingEllipseSegmentDto)[]);
+        segments: (DrawingLineSegmentDto | DrawingArcSegmentDto | DrawingCircleSegmentDto | DrawingPolylineSegmentDto | DrawingSplineSegmentDto | DrawingEllipseSegmentDto)[];
+    }
+    class DrawingPolylineSegmentDto {
+        constructor(points?: (Base_2.Point2 | Base_2.Point3)[], closed?: boolean, bulges?: number[]);
         bulges?: number[] | undefined;
         closed?: boolean | undefined;
-        points: Base_2.Point2[];
+        points: (Base_2.Point2 | Base_2.Point3)[];
     }
-    class DxfSplineSegmentDto {
-        constructor(controlPoints?: Base_2.Point2[], degree?: number, closed?: boolean);
+    class DrawingSplineSegmentDto {
+        constructor(controlPoints?: (Base_2.Point2 | Base_2.Point3)[], degree?: number, closed?: boolean, knots?: number[], weights?: number[]);
         closed?: boolean | undefined;
-        controlPoints: Base_2.Point2[];
+        controlPoints: (Base_2.Point2 | Base_2.Point3)[];
         degree?: number | undefined;
+        knots?: number[] | undefined;
+        weights?: number[] | undefined;
+    }
+    // @deprecated
+    class DxfArcSegmentDto extends DrawingArcSegmentDto {
+    }
+    // @deprecated
+    class DxfCircleSegmentDto extends DrawingCircleSegmentDto {
+    }
+    class DxfDrawingDto {
+        parts: DrawingPartDto[];
+        unit?: Base_2.unitOfLengthEnum | undefined;
+        version: string;
+        warnings: string[];
+    }
+    // @deprecated
+    class DxfEllipseSegmentDto extends DrawingEllipseSegmentDto {
+    }
+    // @deprecated
+    class DxfLineSegmentDto extends DrawingLineSegmentDto {
+    }
+    class DxfModelDto {
+        constructor(dxfPathsParts?: DrawingPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base_2.unitOfLengthEnum, curveTolerance?: number);
+        acadVersion?: "AC1009" | "AC1015" | undefined;
+        colorFormat?: "aci" | "truecolor" | undefined;
+        curveTolerance?: number | undefined;
+        dxfPathsParts: DrawingPartDto[];
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    // @deprecated
+    class DxfPathDto extends DrawingPathDto {
+    }
+    // @deprecated
+    class DxfPathsPartDto extends DrawingPartDto {
+    }
+    // @deprecated
+    class DxfPolylineSegmentDto extends DrawingPolylineSegmentDto {
+    }
+    class DxfReadDto {
+        constructor(dxf?: string | Uint8Array, includeHiddenLayers?: boolean);
+        dxf: string | Uint8Array;
+        includeHiddenLayers?: boolean | undefined;
+    }
+    // @deprecated
+    class DxfSplineSegmentDto extends DrawingSplineSegmentDto {
+    }
+    class DxfToSvgDto {
+        constructor(dxf?: string | Uint8Array, includeHiddenLayers?: boolean, strokeWidth?: number, margin?: number, tolerance?: number);
+        dxf: string | Uint8Array;
+        includeHiddenLayers?: boolean | undefined;
+        margin?: number | undefined;
+        strokeWidth?: number | undefined;
+        tolerance?: number | undefined;
+    }
+    class DxfToSvgResultDto {
+        svg: string;
+        warnings: string[];
+    }
+    enum lineTypeEnum {
+        // (undocumented)
+        center = "center",
+        // (undocumented)
+        continuous = "continuous",
+        // (undocumented)
+        dashed = "dashed",
+        // (undocumented)
+        dotted = "dotted",
+        // (undocumented)
+        hidden = "hidden"
+    }
+    class SvgDrawingDto {
+        parts: DrawingPartDto[];
+        unit?: Base_2.unitOfLengthEnum | undefined;
+        viewBox?: number[] | undefined;
+        warnings: string[];
+    }
+    class SvgModelDto {
+        constructor(parts?: DrawingPartDto[], unit?: Base_2.unitOfLengthEnum, strokeWidth?: number, margin?: number, tolerance?: number);
+        margin?: number | undefined;
+        parts: DrawingPartDto[];
+        strokeWidth?: number | undefined;
+        tolerance?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class SvgPathDataDto {
+        constructor(path?: DrawingPathDto, flipY?: boolean, tolerance?: number);
+        flipY?: boolean | undefined;
+        path: DrawingPathDto;
+        tolerance?: number | undefined;
+    }
+    class SvgReadDto {
+        constructor(svg?: string, unit?: Base_2.unitOfLengthEnum, includeInvisible?: boolean);
+        includeInvisible?: boolean | undefined;
+        svg: string;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class SvgToDxfDto {
+        constructor(svg?: string, unit?: Base_2.unitOfLengthEnum, includeInvisible?: boolean, colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", curveTolerance?: number);
+        acadVersion?: "AC1009" | "AC1015" | undefined;
+        colorFormat?: "aci" | "truecolor" | undefined;
+        curveTolerance?: number | undefined;
+        includeInvisible?: boolean | undefined;
+        svg: string;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
+    class SvgToDxfResultDto {
+        dxf: string;
+        warnings: string[];
     }
 }
 
 // @public
 namespace IO_2 {
     // (undocumented)
+    type DrawingArcSegmentDto = Inputs_6.IO.DrawingArcSegmentDto;
+    // (undocumented)
+    type DrawingCircleSegmentDto = Inputs_6.IO.DrawingCircleSegmentDto;
+    // (undocumented)
+    type DrawingEllipseSegmentDto = WithDefaults<Inputs_6.IO.DrawingEllipseSegmentDto, "startParameter" | "endParameter">;
+    // (undocumented)
+    type DrawingLineSegmentDto = Inputs_6.IO.DrawingLineSegmentDto;
+    // (undocumented)
+    type DrawingPartDto = WithDefaults<Inputs_6.IO.DrawingPartDto, "layer" | "color" | "lineType">;
+    // (undocumented)
+    type DrawingPathDto = Inputs_6.IO.DrawingPathDto;
+    // (undocumented)
+    type DrawingPolylineSegmentDto = WithDefaults<Inputs_6.IO.DrawingPolylineSegmentDto, "closed">;
+    // (undocumented)
+    type DrawingSplineSegmentDto = WithDefaults<Inputs_6.IO.DrawingSplineSegmentDto, "degree" | "closed">;
+    // (undocumented)
     type DxfArcSegmentDto = Inputs_6.IO.DxfArcSegmentDto;
     // (undocumented)
     type DxfCircleSegmentDto = Inputs_6.IO.DxfCircleSegmentDto;
     // (undocumented)
+    type DxfDrawingDto = Inputs_6.IO.DxfDrawingDto;
+    // (undocumented)
+    type DxfEllipseSegmentDto = WithDefaults<Inputs_6.IO.DxfEllipseSegmentDto, "startParameter" | "endParameter">;
+    // (undocumented)
     type DxfLineSegmentDto = Inputs_6.IO.DxfLineSegmentDto;
     // (undocumented)
-    type DxfModelDto = WithDefaults<Inputs_6.IO.DxfModelDto, "colorFormat" | "acadVersion">;
+    type DxfModelDto = WithDefaults<Inputs_6.IO.DxfModelDto, "colorFormat" | "acadVersion" | "curveTolerance">;
     // (undocumented)
     type DxfPathDto = Inputs_6.IO.DxfPathDto;
     // (undocumented)
-    type DxfPathsPartDto = WithDefaults<Inputs_6.IO.DxfPathsPartDto, "layer" | "color">;
+    type DxfPathsPartDto = WithDefaults<Inputs_6.IO.DxfPathsPartDto, "layer" | "color" | "lineType">;
     // (undocumented)
     type DxfPolylineSegmentDto = WithDefaults<Inputs_6.IO.DxfPolylineSegmentDto, "closed">;
     // (undocumented)
+    type DxfReadDto = WithDefaults<Inputs_6.IO.DxfReadDto, "includeHiddenLayers">;
+    // (undocumented)
     type DxfSplineSegmentDto = WithDefaults<Inputs_6.IO.DxfSplineSegmentDto, "degree" | "closed">;
+    // (undocumented)
+    type DxfToSvgDto = WithDefaults<Inputs_6.IO.DxfToSvgDto, "includeHiddenLayers" | "tolerance">;
+    // (undocumented)
+    type DxfToSvgResultDto = Inputs_6.IO.DxfToSvgResultDto;
+    // (undocumented)
+    type SvgDrawingDto = Inputs_6.IO.SvgDrawingDto;
+    // (undocumented)
+    type SvgModelDto = WithDefaults<Inputs_6.IO.SvgModelDto, "tolerance">;
+    // (undocumented)
+    type SvgPathDataDto = WithDefaults<Inputs_6.IO.SvgPathDataDto, "flipY" | "tolerance">;
+    // (undocumented)
+    type SvgReadDto = WithDefaults<Inputs_6.IO.SvgReadDto, "includeInvisible">;
+    // (undocumented)
+    type SvgToDxfDto = WithDefaults<Inputs_6.IO.SvgToDxfDto, "includeInvisible" | "colorFormat" | "acadVersion" | "curveTolerance">;
+    // (undocumented)
+    type SvgToDxfResultDto = Inputs_6.IO.SvgToDxfResultDto;
 }
+
+// @public
+export function isConventionSensitive(path: string, more?: readonly string[]): boolean;
 
 // @public
 namespace JSCAD {
@@ -3605,6 +3768,11 @@ namespace Line {
         line2: LinePointsDto;
         tolerance?: number | undefined;
     }
+    class LinePointDistanceDto {
+        constructor(line?: LinePointsDto, point?: Base_2.Point3);
+        line: LinePointsDto;
+        point: Base_2.Point3;
+    }
     class LinePointsDto {
         constructor(start?: Base_2.Point3, end?: Base_2.Point3);
         end: Base_2.Point3;
@@ -3663,6 +3831,8 @@ namespace Line_2 {
     type LineDto = Inputs_6.Line.LineDto;
     // (undocumented)
     type LineLineIntersectionDto = WithDefaults<Inputs_6.Line.LineLineIntersectionDto, "checkSegmentsOnly" | "tolerance">;
+    // (undocumented)
+    type LinePointDistanceDto = Inputs_6.Line.LinePointDistanceDto;
     // (undocumented)
     type LinePointsDto = Inputs_6.Line.LinePointsDto;
     // (undocumented)
@@ -6494,19 +6664,33 @@ namespace OCCT {
         truecolor = "truecolor"
     }
     class DxfPathsPartsListDto {
-        constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean, unit?: Base_2.unitOfLengthEnum);
+        constructor(pathsParts?: IO.DrawingPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean, unit?: Base_2.unitOfLengthEnum, curveTolerance?: number);
         acadVersion?: dxfAcadVersionEnum | undefined;
         colorFormat?: dxfColorFormatEnum | undefined;
+        curveTolerance?: number | undefined;
         fileName?: string | undefined;
-        pathsParts: IO.DxfPathsPartDto[];
+        pathsParts: IO.DrawingPartDto[];
         tryDownload?: boolean | undefined;
         unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class DxfPathsWithLayerDto {
-        constructor(paths?: IO.DxfPathDto[], layer?: string, color?: Base_2.Color);
+        constructor(paths?: IO.DrawingPathDto[], layer?: string, color?: Base_2.Color, lineType?: IO.lineTypeEnum);
         color?: Base_2.Color | undefined;
         layer?: string | undefined;
-        paths: IO.DxfPathDto[];
+        lineType?: IO.lineTypeEnum | undefined;
+        paths: IO.DrawingPathDto[];
+    }
+    class DxfShapePart<T> {
+        color: string;
+        layer: string;
+        lineType: IO.lineTypeEnum;
+        shape: T;
+    }
+    class DxfShapesResult<T> {
+        parts: DxfShapePart<T>[];
+        unit?: Base_2.unitOfLengthEnum | undefined;
+        version: string;
+        warnings: string[];
     }
     class EdgeIndexDto<T> {
         constructor(shape?: T, index?: number);
@@ -7392,6 +7576,14 @@ namespace OCCT {
         constructor(brepData?: string | File | Blob);
         brepData: string | File | Blob;
     }
+    class LoadDxfDto {
+        constructor(dxf?: string | File | Blob, makeFaces?: boolean, joinTolerance?: number, includeHiddenLayers?: boolean, unit?: Base_2.unitOfLengthEnum);
+        dxf: string | File | Blob;
+        includeHiddenLayers?: boolean | undefined;
+        joinTolerance?: number | undefined;
+        makeFaces?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
     class LoadGltfToDocDto {
         constructor(gltfData?: string | ArrayBuffer | Uint8Array | File | Blob);
         gltfData: string | ArrayBuffer | Uint8Array | File | Blob;
@@ -7418,7 +7610,7 @@ namespace OCCT {
         stlData: string | ArrayBuffer | Uint8Array | File | Blob;
     }
     class LoadSVGDto {
-        constructor(svg?: string, faceStrategy?: svgFaceStrategyEnum, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, alignment?: Base_2.basicAlignmentEnum, direction?: Base_2.Vector3, center?: Base_2.Point3);
+        constructor(svg?: string, faceStrategy?: svgFaceStrategyEnum, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, alignment?: Base_2.basicAlignmentEnum, direction?: Base_2.Vector3, center?: Base_2.Point3, unit?: Base_2.unitOfLengthEnum, keepOrigin?: boolean);
         alignment?: Base_2.basicAlignmentEnum | undefined;
         center?: Base_2.Point3 | undefined;
         direction?: Base_2.Vector3 | undefined;
@@ -7426,10 +7618,12 @@ namespace OCCT {
         flipY?: boolean | undefined;
         includeInvisible?: boolean | undefined;
         joinSegments?: boolean | undefined;
+        keepOrigin?: boolean | undefined;
         makeRibbons?: boolean | undefined;
         scale?: number | undefined;
         svg?: string | undefined;
         tolerance?: number | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
     }
     class LoftAdvancedDto<T> {
         constructor(shapes?: T[], makeSolid?: boolean, closed?: boolean, periodic?: boolean, straight?: boolean, nrPeriodicSections?: number, useSmoothing?: boolean, maxUDegree?: number, tolerance?: number, parType?: approxParametrizationTypeEnum, startVertex?: Base_2.Point3, endVertex?: Base_2.Point3);
@@ -8001,6 +8195,17 @@ namespace OCCT {
         tryDownload?: boolean | undefined;
         withTriangulation?: boolean | undefined;
     }
+    class SaveDxfDto<T> {
+        constructor(shape?: T, frame?: Base_2.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean, unit?: Base_2.unitOfLengthEnum, acadVersion?: dxfAcadVersionEnum);
+        acadVersion?: dxfAcadVersionEnum | undefined;
+        drawHidden?: boolean | undefined;
+        fileName?: string | undefined;
+        frame: Base_2.Frame;
+        precision?: number | undefined;
+        shape: T;
+        tryDownload?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
     class SaveObjDto<T> {
         constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean);
         adjustYtoZ?: boolean | undefined;
@@ -8021,6 +8226,7 @@ namespace OCCT {
         constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean, unit?: Base_2.unitOfLengthEnum);
         adjustYtoZ?: boolean | undefined;
         fileName?: string | undefined;
+        // @deprecated
         fromRightHanded?: boolean | undefined;
         shape: T;
         tryDownload?: boolean | undefined;
@@ -8287,9 +8493,10 @@ namespace OCCT {
         surfaceAnalysis?: surfaceAnalysisEnum | undefined;
     }
     class ShapeToDxfPathsDto<T> {
-        constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number);
+        constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number, exactCurves?: boolean);
         angularDeflection?: number | undefined;
         curvatureDeflection?: number | undefined;
+        exactCurves?: boolean | undefined;
         minimumLength?: number | undefined;
         minimumOfPoints?: number | undefined;
         shape: T;
@@ -8660,7 +8867,27 @@ namespace OCCT {
         // (undocumented)
         perSubpath = "perSubpath"
     }
+    class SvgLayerDto<T> {
+        constructor(shapes?: T[], layer?: string, color?: Base_2.Color, lineType?: IO.lineTypeEnum);
+        color?: Base_2.Color | undefined;
+        layer?: string | undefined;
+        lineType?: IO.lineTypeEnum | undefined;
+        shapes: T[];
+    }
+    class SvgLayersDto<T> {
+        constructor(layers?: SvgLayerDto<T>[], unit?: Base_2.unitOfLengthEnum, strokeWidth?: number, margin?: number, tolerance?: number, fileName?: string, tryDownload?: boolean);
+        fileName?: string | undefined;
+        layers: SvgLayerDto<T>[];
+        margin?: number | undefined;
+        strokeWidth?: number | undefined;
+        tolerance?: number | undefined;
+        tryDownload?: boolean | undefined;
+        unit?: Base_2.unitOfLengthEnum | undefined;
+    }
     class SVGResult<T> {
+        documentHeight?: number | undefined;
+        documentWidth?: number | undefined;
+        millimetresPerUserUnit?: number | undefined;
         shapes: SVGShape<T>[];
         viewBox?: [number, number, number, number] | undefined;
         warnings: string[];
@@ -9322,9 +9549,13 @@ namespace OCCT_3 {
     // (undocumented)
     type DrawShapeSharedDto = WithDefaults<Inputs_5.OCCT.DrawShapeSharedDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type DxfPathsPartsListDto = WithDefaults<Inputs_5.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "fileName" | "tryDownload">;
+    type DxfPathsPartsListDto = WithDefaults<Inputs_5.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "curveTolerance" | "fileName" | "tryDownload">;
     // (undocumented)
-    type DxfPathsWithLayerDto = WithDefaults<Inputs_5.OCCT.DxfPathsWithLayerDto, "layer" | "color">;
+    type DxfPathsWithLayerDto = WithDefaults<Inputs_5.OCCT.DxfPathsWithLayerDto, "layer" | "color" | "lineType">;
+    // (undocumented)
+    type DxfShapePart<T> = Inputs_5.OCCT.DxfShapePart<T>;
+    // (undocumented)
+    type DxfShapesResult<T> = Inputs_5.OCCT.DxfShapesResult<T>;
     // (undocumented)
     type EdgeIndexDto<T> = WithDefaults<Inputs_5.OCCT.EdgeIndexDto<T>, "index">;
     // (undocumented)
@@ -9540,6 +9771,8 @@ namespace OCCT_3 {
     // (undocumented)
     type LoadBrepDto = Inputs_5.OCCT.LoadBrepDto;
     // (undocumented)
+    type LoadDxfDto = WithDefaults<Inputs_5.OCCT.LoadDxfDto, "makeFaces" | "joinTolerance" | "includeHiddenLayers">;
+    // (undocumented)
     type LoadGltfToDocDto = Inputs_5.OCCT.LoadGltfToDocDto;
     // (undocumented)
     type LoadObjToDocDto = Inputs_5.OCCT.LoadObjToDocDto;
@@ -9550,7 +9783,7 @@ namespace OCCT_3 {
     // (undocumented)
     type LoadStlDto = WithDefaults<Inputs_5.OCCT.LoadStlDto, "asFaces" | "adjustZtoY">;
     // (undocumented)
-    type LoadSVGDto = WithDefaults<Inputs_5.OCCT.LoadSVGDto, "svg" | "faceStrategy" | "makeRibbons" | "includeInvisible" | "joinSegments" | "tolerance" | "scale" | "flipY" | "alignment" | "direction" | "center">;
+    type LoadSVGDto = WithDefaults<Inputs_5.OCCT.LoadSVGDto, "svg" | "faceStrategy" | "makeRibbons" | "includeInvisible" | "joinSegments" | "tolerance" | "scale" | "flipY" | "alignment" | "direction" | "center" | "keepOrigin">;
     // (undocumented)
     type LoftAdvancedDto<T> = WithDefaults<Inputs_5.OCCT.LoftAdvancedDto<T>, "makeSolid" | "closed" | "periodic" | "straight" | "nrPeriodicSections" | "useSmoothing" | "maxUDegree" | "tolerance" | "parType">;
     // (undocumented)
@@ -9724,6 +9957,8 @@ namespace OCCT_3 {
     // (undocumented)
     type SaveBrepDto<T> = WithDefaults<Inputs_5.OCCT.SaveBrepDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
     // (undocumented)
+    type SaveDxfDto<T> = WithDefaults<Inputs_5.OCCT.SaveDxfDto<T>, "drawHidden" | "precision" | "acadVersion" | "fileName" | "tryDownload">;
+    // (undocumented)
     type SaveObjDto<T> = WithDefaults<Inputs_5.OCCT.SaveObjDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
     // (undocumented)
     type SavePlyDto<T> = WithDefaults<Inputs_5.OCCT.SavePlyDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
@@ -9808,7 +10043,7 @@ namespace OCCT_3 {
     // (undocumented)
     type ShapesToMeshesDto<T> = WithDefaults<Inputs_5.OCCT.ShapesToMeshesDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type ShapeToDxfPathsDto<T> = WithDefaults<Inputs_5.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    type ShapeToDxfPathsDto<T> = WithDefaults<Inputs_5.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength" | "exactCurves">;
     // (undocumented)
     type ShapeToManifoldMeshDto<T> = WithDefaults<Inputs_5.OCCT.ShapeToManifoldMeshDto<T>, "precision">;
     // (undocumented)
@@ -9883,6 +10118,10 @@ namespace OCCT_3 {
     type StarDto = WithDefaults<Inputs_5.OCCT.StarDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half">;
     // (undocumented)
     type StarSolidDto = WithDefaults<Inputs_5.OCCT.StarSolidDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type SvgLayerDto<T> = WithDefaults<Inputs_5.OCCT.SvgLayerDto<T>, "layer" | "color" | "lineType">;
+    // (undocumented)
+    type SvgLayersDto<T> = WithDefaults<Inputs_5.OCCT.SvgLayersDto<T>, "tolerance" | "fileName" | "tryDownload">;
     // (undocumented)
     type SVGResult<T> = Inputs_5.OCCT.SVGResult<T>;
     // (undocumented)

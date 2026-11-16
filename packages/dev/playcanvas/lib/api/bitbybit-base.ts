@@ -4,8 +4,10 @@ import type { Verb, Tag, Time, OCCTW, IFCW, Asset, JSONBitByBit, CSVBitByBit } f
 import type { JSCAD } from "@bitbybit-dev/jscad-worker";
 import type { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
 import type { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
-import type { Color, Dates, Engineering, Frame, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, Recipes, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
+import type { Color, Dates, Engineering, Frame, IoBitByBit, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, Recipes, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
 import { createSharedServices } from "@bitbybit-dev/core/lib/api/shared-services";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
+import { Inputs } from "@bitbybit-dev/base";
 import { Draw } from "./bitbybit/draw";
 import { Context } from "./context";
 import type { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
@@ -18,11 +20,11 @@ import type * as pc from "playcanvas";
 /**
  * The whole library behind one object for a PlayCanvas application: `occt`, `jscad` and `manifold`
  * for the CAD kernels, `ifc` for IFC building models, `recipes` for geometry as data, `engineering`
- * for the sizes and outlines of standard parts, `draw` to put anything into the scene, `playcanvas`
- * for the camera, and the plain data helpers `math`, `vector`, `point`, `frame`, `line`, `polyline`,
- * `transforms`, `lists`, `logic`, `json`, `csv`, `text`, `dates`, `color`, `asset`, `tag` and
- * `time`. Call `init` once with the application, the scene root and the kernel workers before using
- * any of them. The `bitbybit` object in these docs' examples is one.
+ * for the sizes and outlines of standard parts, `io` for DXF and SVG drawings, `draw` to put anything
+ * into the scene, `playcanvas` for the camera, and the plain data helpers `math`, `vector`, `point`,
+ * `frame`, `line`, `polyline`, `transforms`, `lists`, `logic`, `json`, `csv`, `text`, `dates`,
+ * `color`, `asset`, `tag` and `time`. Call `init` with the application, the scene root and the
+ * kernel workers first. The `bitbybit` object in these docs' examples is one.
  */
 export class BitByBitBase {
 
@@ -35,6 +37,8 @@ export class BitByBitBase {
      */
     public ifcWorkerManager: IFCWorkerManager;
     public occtWorkerManager: OCCTWorkerManager;
+    private readonly applySettings: (settings: BitbybitSettings) => Promise<BitbybitSettings>;
+    private readonly applyConventions: (level: number, engineSettings: BitbybitSettings) => Promise<BitbybitSettings>;
 
     public math: MathBitByBit;
     public logic: Logic;
@@ -47,6 +51,7 @@ export class BitByBitBase {
     public frame: Frame;
     public engineering: Engineering;
     public recipes: Recipes;
+    public io: IoBitByBit;
     public line: Line;
     public transforms: Transforms;
     public polyline: Polyline;
@@ -83,6 +88,8 @@ export class BitByBitBase {
         this.manifoldWorkerManager = shared.manifoldWorkerManager;
         this.ifcWorkerManager = shared.ifcWorkerManager;
         this.occtWorkerManager = shared.occtWorkerManager;
+        this.applySettings = shared.setSettings;
+        this.applyConventions = shared.setConventions;
         this.jscad = shared.jscad;
         this.manifold = shared.manifold;
         this.ifc = shared.ifc;
@@ -96,6 +103,7 @@ export class BitByBitBase {
         this.frame = shared.frame;
         this.engineering = shared.engineering;
         this.recipes = shared.recipes;
+        this.io = shared.io;
         this.line = shared.line;
         this.polyline = shared.polyline;
         this.verb = shared.verb;
@@ -147,5 +155,51 @@ export class BitByBitBase {
         if (manifold) {
             this.manifoldWorkerManager.setManifoldWorker(manifold);
         }
+    }
+
+    /**
+     * Sets the settings this instance works by, such as the coordinate system that files, drawings
+     * and text map by.
+     *
+     * They reach the kernel workers without waiting for a kernel to load, so every later call works
+     * by them. A setting left out keeps the earlier behaviour; one it does not take rejects.
+     * `engineSettings` gives those that fit PlayCanvas.
+     * @param settings - The settings to work by; an empty object for none
+     * @returns The settings now in force
+     * @example
+     * ```typescript
+     * await bitbybit.setSettings(bitbybit.engineSettings());
+     * ```
+     */
+    setSettings(settings: BitbybitSettings): Promise<BitbybitSettings> {
+        return this.applySettings(settings);
+    }
+
+    /**
+     * Sets the settings that content saved with a conventions level runs by: 0 for the behaviour
+     * from before settings existed, 1 for PlayCanvas's own coordinate system. Save the level with
+     * your content, so content made earlier keeps running as it did. A level that is no
+     * whole number from 0 rejects, and the earlier settings stay.
+     * @param level - The conventions level the content was saved with
+     * @returns The settings now in force
+     * @example
+     * ```typescript
+     * await bitbybit.setConventions(1);
+     * ```
+     */
+    setConventions(level: number): Promise<BitbybitSettings> {
+        return this.applyConventions(level, this.engineSettings());
+    }
+
+    /**
+     * The settings that fit PlayCanvas: its numbers are right-handed coordinates.
+     * @returns The settings for `setSettings`
+     * @example
+     * ```typescript
+     * const settings = bitbybit.engineSettings();
+     * ```
+     */
+    engineSettings(): BitbybitSettings {
+        return { coordinateSystem: Inputs.Base.coordinateSystemEnum.rightHanded };
     }
 }

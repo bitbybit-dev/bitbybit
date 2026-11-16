@@ -1,16 +1,8 @@
 import type * as pc from "playcanvas";
 import type { BitByBitBase } from "./bitbybit-base";
-import { type InitKernelsResult, type WorkerInstances, type WorkerOptions, getOrCreateWorkers, waitForKernelInitialization } from "@bitbybit-dev/core";
+import { type InitBitByBitOptions, type InitKernelsResult, type WorkerInstances, type WorkerOptions, getOrCreateWorkers, waitForKernelInitialization } from "@bitbybit-dev/core";
 
-/**
- * Options for initializing bitbybit with PlayCanvas
- */
-export interface InitBitByBitOptions extends WorkerOptions {
-    /** Pre-created worker instances. If not provided, workers will be created from CDN. */
-    workers?: WorkerInstances | undefined;
-}
-
-export { type InitKernelsResult, type WorkerInstances, type WorkerOptions };
+export { type InitBitByBitOptions, type InitKernelsResult, type WorkerInstances, type WorkerOptions };
 
 /**
  * Initialize BitByBit with PlayCanvas in a single call.
@@ -61,8 +53,9 @@ export async function initBitByBit(
     if (workers.ifcWorker) {
         bitbybit.ifcWorkerManager.setIfcWorker(workers.ifcWorker);
     }
-
-    const result = await waitForKernelInitialization(bitbybit, options);
+    const started = waitForKernelInitialization(bitbybit, options);
+    const conventionsSet = options.conventions === undefined ? undefined : bitbybit.setConventions(options.conventions);
+    const [result] = await Promise.all([started, conventionsSet]);
 
     return {
         ...result,

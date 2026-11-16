@@ -3,9 +3,11 @@ import { uniqueName } from "../../unique-name";
 import * as SERIALIZERS from "@babylonjs/serializers";
 import * as BABYLON from "@babylonjs/core";
 import type { Context } from "../../context";
-import { MathBitByBit, resolveDto } from "@bitbybit-dev/base";
+import { Inputs as BaseInputs, MathBitByBit, resolveDto } from "@bitbybit-dev/base";
 import { glbWithRootScale } from "@bitbybit-dev/base/lib/api/services/helpers/files/glb";
 import type * as Resolved from "../../resolved-inputs";
+import { stlFileOf, stlMeshInSceneAxes } from "./io-stl";
+import { isBackFace } from "../../back-faces";
 
 function receiveShadowsWhereSupported(mesh: BABYLON.AbstractMesh): void {
     try {
@@ -217,7 +219,8 @@ export class BabylonIO {
     /**
      * Downloads the whole scene as a glb file, the binary glTF that most 3D tools and web viewers
      * read; `discardSkyboxAndGrid` leaves out the skybox and ground this library adds. Given the
-     * `unit` the scene is modelled in, the file is in metres, glTF's own unit.
+     * `unit` the scene is modelled in, the file is in metres, glTF's own unit. Back faces of
+     * two-sided shapes are left out.
      * @param inputs - The file name, whether to leave out the skybox and ground, and the unit
      * @group export
      * @shortname gltf scene
@@ -249,7 +252,8 @@ export class BabylonIO {
      * send on or load back with `loadGlbFromArrayBuffer`.
      *
      * Every ancestor of a chosen node is written too, so the geometry keeps its place, with the
-     * meshes' materials as they are. With the scene's `unit`, the file is in metres.
+     * meshes' materials as they are. With the scene's `unit`, the file is in metres. Back faces
+     * are left out.
      * @param inputs - The nodes to write, whether to leave out the skybox and ground, whether to compress with Draco, and the unit
      * @returns The glb file as bytes
      * @group export
@@ -291,10 +295,8 @@ export class BabylonIO {
         };
         const isSceneFurniture = (node: BABYLON.Node): boolean => node.name === "bitbybit-hdrSkyBox" || node.name.includes("bitbybit-ground");
         const included = nodes === undefined ? undefined : this.withAncestors(nodes);
-        if (included !== undefined || discardSkyboxAndGrid) {
-            options.shouldExportNode = (node: BABYLON.Node) =>
-                (included === undefined || included.has(node)) && !(discardSkyboxAndGrid && isSceneFurniture(node));
-        }
+        options.shouldExportNode = (node: BABYLON.Node) =>
+            (included === undefined || included.has(node)) && !(discardSkyboxAndGrid && isSceneFurniture(node)) && !isBackFace(node);
         return options;
     }
 
@@ -312,7 +314,8 @@ export class BabylonIO {
 
     /**
      * Downloads a mesh and its visible child meshes as one STL file, the plain triangle format 3D
-     * printers take; lines are left out.
+     * printers take; lines are left out, and so is the back face of a shape drawn two-sided, so
+     * every wall is written once.
      * @param inputs - The mesh and the file name
      * @returns An empty object once the download has started
      * @group export
@@ -331,12 +334,13 @@ export class BabylonIO {
         }
         let meshes: BABYLON.Mesh[] = [resolved.mesh, ...childrenMeshes];
         meshes = meshes.filter(m => m.isVisible);
-        SERIALIZERS.STLExport.CreateSTL(meshes, true, resolved.fileName, true, true, true);
+        this.downloadStl(meshes, resolved.fileName);
         return Promise.resolve({});
     }
 
     /**
-     * Downloads several meshes, with their child meshes, as one STL file; lines are left out.
+     * Downloads several meshes, with their child meshes, as one STL file; lines and the back faces
+     * of shapes drawn two-sided are left out.
      * @param inputs - The meshes and the file name
      * @returns An empty object once the download has started
      * @group export
@@ -361,12 +365,27 @@ export class BabylonIO {
             }
         });
 
-        SERIALIZERS.STLExport.CreateSTL(meshes, true, resolved.fileName, true, true, true);
+        this.downloadStl(meshes, resolved.fileName);
         return Promise.resolve({});
+    }
+
+    private downloadStl(meshes: BABYLON.Mesh[], fileName: string): void {
+        const fronts = meshes.filter(mesh => !isBackFace(mesh));
+        const coordinateSystem = this.context.settings.coordinateSystem;
+        if (coordinateSystem === undefined) {
+            SERIALIZERS.STLExport.CreateSTL(fronts, true, fileName, true, true, true);
+            return;
+        }
+        const file = stlFileOf(fronts, this.context.scene.useRightHandedSystem, coordinateSystem);
+        BABYLON.Tools.Download(new Blob([file], { type: "application/octet-stream" }), `${fileName}.stl`);
     }
 
     private async loadAsset(_meshNames: string, rootUrl: string, fileOrName: string | File, importHidden: boolean): Promise<BABYLON.Mesh> {
         const res = await BABYLON.SceneLoader.ImportMeshAsync("", rootUrl, fileOrName, this.context.scene);
+        const name = typeof fileOrName === "string" ? fileOrName : fileOrName.name;
+        if (name.toLowerCase().endsWith(".stl") && this.context.settings.coordinateSystem === BaseInputs.Base.coordinateSystemEnum.rightHanded) {
+            res.meshes.forEach(stlMeshInSceneAxes);
+        }
         const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
         const container = new BABYLON.Mesh(uniqueName("ImportedMeshContainer"), this.context.scene);
         [...res.meshes, ...res.transformNodes]

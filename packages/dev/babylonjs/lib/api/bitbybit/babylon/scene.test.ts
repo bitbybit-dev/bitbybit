@@ -3,6 +3,7 @@ import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 import { BabylonScene } from "./scene";
 import * as Inputs from "../../inputs";
+import type { Inputs as BaseInputs } from "@bitbybit-dev/base";
 
 const A_COLOUR = "#ff0000";
 const A_POSITION: Inputs.Base.Point3 = [1, 2, 3];
@@ -590,6 +591,23 @@ describe("BabylonScene", () => {
 
             // Assert
             expect(scene.useRightHandedSystem).toBe(false);
+        });
+
+        it.each([
+            ["a right-handed scene right-handed when that is the coordinate system set", "rightHanded", false, true],
+            ["a right-handed scene a script made left-handed back to right-handed", "rightHanded", true, true],
+            ["a left-handed scene a script made right-handed back to left-handed", "leftHanded", true, false],
+            ["a left-handed scene left-handed when that is the coordinate system set", "leftHanded", false, false],
+        ])("should leave %s", (_name, coordinateSystem, changedByAScript, rightHandedAfter) => {
+            // Arrange
+            context.settings = { coordinateSystem: coordinateSystem as BaseInputs.Base.coordinateSystemEnum };
+            scene.useRightHandedSystem = changedByAScript ? !rightHandedAfter : rightHandedAfter;
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.useRightHandedSystem).toBe(rightHandedAfter);
         });
     });
     describe("the meshes a shadow-casting light picks up", () => {

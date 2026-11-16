@@ -1,5 +1,6 @@
 import * as BABYLON from "@babylonjs/core";
 import type { Context } from "./context";
+import { markAsBackFace } from "./back-faces";
 import * as Inputs from "./inputs";
 import { DrawHelperCore, checkDrawableMesh, checkKeptDesignMesh, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookedMeshOf, designDrawPlanOf, designMeshesOf, designMeshingTextOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
 import type { KeptDesignMesh, DrawableShapeMesh } from "@bitbybit-dev/core";
@@ -278,6 +279,7 @@ export class DrawHelper extends DrawHelperCore {
         vertexData.applyToMesh(mesh, false);
         mesh.material = backMaterial;
         mesh.isPickable = false;
+        markAsBackFace(mesh);
 
         return mesh;
     }

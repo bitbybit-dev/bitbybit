@@ -5,6 +5,7 @@ import { createHeadlessScene, addShadowGenerator } from "../../../__test__/headl
 import { BabylonMeshBuilder } from "./mesh-builder";
 import { BabylonMesh } from "../mesh";
 import * as Inputs from "../../../inputs";
+import { Inputs as BaseInputs } from "@bitbybit-dev/base";
 
 const SQUARE: Inputs.Base.Vector3[] = [[-2, 0, -2], [2, 0, -2], [2, 0, 2], [-2, 0, 2]];
 const PATH: Inputs.Base.Vector3[] = [[0, 0, 0], [0, 5, 0]];
@@ -221,6 +222,66 @@ describe("BabylonMeshBuilder", () => {
             const mesh = builder.createCapsule(new Inputs.BabylonMeshBuilder.CreateCapsuleDto([0, 1, 0], 2, 16, 4, 1));
 
             expect(spanOf(mesh, 1)).toBeCloseTo(4, 0);
+        });
+    });
+
+    describe("the facing of a capsule and a ground, which the engine builds one-sided", () => {
+        type Side = Inputs.BabylonMesh.sideOrientationEnum;
+        const { frontside, backside, doubleside } = Inputs.BabylonMesh.sideOrientationEnum;
+        const capsule = (b: BabylonMeshBuilder, side?: Side): BABYLON.Mesh => b.createCapsule(new Inputs.BabylonMeshBuilder.CreateCapsuleDto([0, 1, 0], 2, 8, 2, 0.5, 1, 0.5, 0.5, 1, 1, side));
+        const ground = (b: BabylonMeshBuilder, side?: Side): BABYLON.Mesh => b.createGround(new Inputs.BabylonMeshBuilder.CreateGroundDto(2, 2, 1, 1, side));
+        const facingOfTheScene = (): number => builder.createBox(new Inputs.BabylonMeshBuilder.CreateBoxDto(1, 1, 1)).sideOrientation;
+
+        it.each([
+            ["createCapsule", "left-handed", capsule, false, undefined],
+            ["createCapsule", "right-handed", capsule, true, undefined],
+            ["createCapsule", "right-handed", capsule, true, doubleside],
+            ["createGround", "left-handed", ground, false, undefined],
+            ["createGround", "right-handed", ground, true, undefined],
+            ["createGround", "right-handed", ground, true, doubleside],
+        ])("%s should keep the facing a %s scene gives its meshes when two-sided is asked", (_name, _hand, build, rightHanded, side) => {
+            // Arrange
+            headless.scene.useRightHandedSystem = rightHanded;
+
+            // Act
+            const mesh = build(builder, side);
+
+            // Assert
+            expect(mesh.sideOrientation).toBe(facingOfTheScene());
+        });
+
+        it.each([
+            ["createCapsule", "left-handed", capsule, false],
+            ["createCapsule", "right-handed", capsule, true],
+            ["createGround", "left-handed", ground, false],
+            ["createGround", "right-handed", ground, true],
+        ])("%s should write the front and the back side as it always has in a %s scene with no coordinate system set", (_name, _hand, build, rightHanded) => {
+            // Arrange
+            headless.scene.useRightHandedSystem = rightHanded;
+
+            // Act
+            const facings = [build(builder, frontside).sideOrientation, build(builder, backside).sideOrientation];
+
+            // Assert
+            expect(facings).toEqual([0, 1]);
+        });
+
+        it.each([
+            ["createCapsule", "left-handed", capsule, false, BaseInputs.Base.coordinateSystemEnum.leftHanded],
+            ["createCapsule", "right-handed", capsule, true, BaseInputs.Base.coordinateSystemEnum.rightHanded],
+            ["createGround", "left-handed", ground, false, BaseInputs.Base.coordinateSystemEnum.leftHanded],
+            ["createGround", "right-handed", ground, true, BaseInputs.Base.coordinateSystemEnum.rightHanded],
+        ])("%s should show its front as a %s scene shows any mesh, and its back the other way, once a coordinate system is set", (_name, _hand, build, rightHanded, coordinateSystem) => {
+            // Arrange
+            headless.scene.useRightHandedSystem = rightHanded;
+            headless.context.settings = { coordinateSystem };
+            const ofTheScene = facingOfTheScene();
+
+            // Act
+            const facings = [build(builder, frontside).sideOrientation, build(builder, backside).sideOrientation, build(builder, doubleside).sideOrientation];
+
+            // Assert
+            expect(facings).toEqual([ofTheScene, 1 - ofTheScene, ofTheScene]);
         });
     });
 

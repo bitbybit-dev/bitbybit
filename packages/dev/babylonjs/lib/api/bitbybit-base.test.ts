@@ -11,13 +11,14 @@ import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { IFCBitByBit, IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
 import {
-    Vector, Point, Frame, Line, Polyline, TextBitByBit, Color, MathBitByBit,
+    Vector, Point, Frame, Line, Polyline, IoBitByBit, TextBitByBit, Color, MathBitByBit,
     Lists, Logic, Transforms, Dates, MeshBitByBit
 } from "@bitbybit-dev/base";
 import { Context } from "./context";
 import { Draw } from "./bitbybit/draw";
 import { Babylon } from "./bitbybit/babylon/babylon";
 import { BitByBitBase } from "./bitbybit-base";
+import { Inputs } from "@bitbybit-dev/base";
 import * as BABYLON from "@babylonjs/core";
 import { partialMock } from "./__mocks__/test-helpers";
 
@@ -53,6 +54,7 @@ describe("BitByBitBase unit tests", () => {
             ["line", Line],
             ["transforms", Transforms],
             ["polyline", Polyline],
+            ["io", IoBitByBit],
             ["draw", Draw],
             ["verb", Verb],
             ["jscad", JSCAD],
@@ -420,6 +422,89 @@ describe("BitByBitBase unit tests", () => {
 
         it("should have time service with context", () => {
             expect(bitByBit.time).toBeDefined();
+        });
+    });
+
+    describe("settings", () => {
+        it.each([
+            ["left-handed for a scene as BabylonJS makes it", false, "leftHanded"],
+            ["right-handed for a scene made right-handed", true, "rightHanded"],
+        ])("should name the engine's coordinate system %s", (_name, rightHanded, expected) => {
+            // Arrange
+            const scene = instanceOf(new MockScene(), BABYLON.Scene);
+            scene.useRightHandedSystem = rightHanded;
+            bitByBit.init(scene);
+
+            // Act
+            const settings = bitByBit.engineSettings();
+
+            // Assert
+            expect(settings).toEqual({ coordinateSystem: expected });
+        });
+
+        it("should keep naming the coordinate system the scene had at init after the scene is switched", async () => {
+            // Arrange
+            const scene = instanceOf(new MockScene(), BABYLON.Scene);
+            bitByBit.init(scene);
+            scene.useRightHandedSystem = true;
+
+            // Act
+            const settings = bitByBit.engineSettings();
+            const applied = await bitByBit.setConventions(1);
+
+            // Assert
+            expect([settings, applied]).toEqual([{ coordinateSystem: "leftHanded" }, { coordinateSystem: "leftHanded" }]);
+        });
+
+        it.each([
+            ["left-handed for a scene as BabylonJS makes it", false, "leftHanded"],
+            ["right-handed for a scene made right-handed", true, "rightHanded"],
+        ])("should run content of conventions level 1 %s, and content of level 0 as it always ran", async (_name, rightHanded, expected) => {
+            // Arrange
+            const scene = instanceOf(new MockScene(), BABYLON.Scene);
+            scene.useRightHandedSystem = rightHanded;
+            bitByBit.init(scene);
+
+            // Act
+            const first = await bitByBit.setConventions(1);
+            const firstOnTheContext = { ...bitByBit.context.settings };
+            const none = await bitByBit.setConventions(0);
+
+            // Assert
+            expect([first, firstOnTheContext, none, bitByBit.context.settings]).toEqual([{ coordinateSystem: expected }, { coordinateSystem: expected }, {}, {}]);
+        });
+
+        it("should refuse a conventions level that is no whole number as a rejection and keep the settings it had", async () => {
+            // Arrange
+            bitByBit.init(instanceOf(new MockScene(), BABYLON.Scene));
+            await bitByBit.setConventions(1);
+
+            // Act
+            const refused = bitByBit.setConventions(1.5);
+
+            // Assert
+            await expect(refused).rejects.toThrow("A conventions level is a whole number from 0");
+            expect(bitByBit.context.settings).toEqual({ coordinateSystem: "leftHanded" });
+        });
+
+        it("should hand the settings to the shared services, which keep them on the context its engine services read", async () => {
+            // Act
+            const settings = await bitByBit.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.rightHanded });
+
+            // Assert
+            expect([settings, bitByBit.context.settings]).toEqual([{ coordinateSystem: "rightHanded" }, { coordinateSystem: "rightHanded" }]);
+        });
+
+        it("should refuse a name that is no setting as a rejection and keep the context's settings as they were", async () => {
+            // Arrange
+            await bitByBit.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.leftHanded });
+
+            // Act
+            const refused = bitByBit.setSettings(JSON.parse("{\"handedness\":\"right\"}"));
+
+            // Assert
+            await expect(refused).rejects.toThrow("`handedness` is not a setting");
+            expect(bitByBit.context.settings).toEqual({ coordinateSystem: "leftHanded" });
         });
     });
 });

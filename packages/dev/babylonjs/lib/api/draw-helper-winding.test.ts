@@ -4,6 +4,7 @@ import { createMockJSCADText, createMockVector, createMockWorkerManagers, type M
 import { meshBuffersOf, triangleFaceLists } from "./__mocks__/mesh-buffers";
 import { Context } from "./context";
 import { DrawHelper } from "./draw-helper";
+import { isBackFace } from "./back-faces";
 import type * as Inputs from "./inputs";
 
 const FRONT_NORMALS = [0, 0, 1, 0, 0, 1, 0, 0, 1];
@@ -69,6 +70,18 @@ describe("how the faces and back faces BabylonJS draws are wound", () => {
             expect(windingOf(backOf(drawn))).toEqual({ indices: [0, 2, 1], normals: BACK_NORMALS });
         });
 
+        it("should mark the back face it draws as one, and nothing else, so an export can leave it out", async () => {
+            // Arrange
+            workers.occtWorkerCall.mockResolvedValue(oneTriangle());
+
+            // Act
+            const drawn = await drawHelper.drawShape({ shape: { hash: 1, type: "occ-shape" }, drawEdges: false, drawTwoSided: true });
+
+            // Assert
+            expect([isBackFace(backOf(drawn)), isBackFace(frontOf(drawn)), isBackFace(drawn)]).toEqual([true, false, false]);
+            expect(isBackFace(backOf(drawn).createInstance("copy"))).toBe(true);
+        });
+
         it("should wind a surface redrawn in place the other way once, not twice", () => {
             // Arrange
             const part = { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: FRONT_NORMALS, indices: [0, 1, 2] };
@@ -127,6 +140,14 @@ describe("how the faces and back faces BabylonJS draws are wound", () => {
             // Assert
             expect(windingOf(back)).toEqual({ indices: [0, 1, 2], normals: BACK_NORMALS });
             expect(back.material!.sideOrientation).toBeNull();
+        });
+
+        it("should mark the back face it draws as one, and not the front", async () => {
+            // Act
+            const front = await drawJscad();
+
+            // Assert
+            expect([isBackFace(backOf(front)), isBackFace(front)]).toEqual([true, false]);
         });
 
         it("should leave the mesh the worker sent as it was", async () => {
