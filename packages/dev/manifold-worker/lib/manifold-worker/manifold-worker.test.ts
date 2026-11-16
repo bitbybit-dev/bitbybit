@@ -91,6 +91,8 @@ vi.mock("@bitbybit-dev/manifold", () => {
             },
         };
         boom = (): unknown => { throw failure.value; };
+        settings: unknown = {};
+        settingsNow = (): unknown => this.settings;
         decomposeManifoldOrCrossSection = call("decomposeManifoldOrCrossSection");
         decomposeManifoldsOrCrossSections = call("decomposeManifoldsOrCrossSections");
         toPolygonPoints = call("toPolygonPoints");
@@ -767,6 +769,98 @@ describe("the worker message loop", () => {
             // Assert
             expect(cacheOf().cleanedHashes).toEqual(["one", "two"]);
             expect(answer().result).toEqual({});
+        });
+    });
+
+    describe("setSettings", () => {
+        const RIGHT_HANDED = { coordinateSystem: "rightHanded" };
+        const LEFT_HANDED = { coordinateSystem: "leftHanded" };
+        const CUBE = { functionName: "manifold.shapes.cube", inputs: { size: 1 } };
+        const KEY = "{\"functionName\":\"manifold.shapes.cube\",\"inputs\":{\"size\":1}";
+        const answerTo = (action: { functionName?: string; inputs?: unknown }): Answer => {
+            const got: unknown[] = [];
+            onMessageInput({ action, uid: "uid-set" } as DataInput, (message: unknown) => got.push(message));
+            return got[1] as Answer;
+        };
+        const settingsOfTheKernel = (): unknown => {
+            const seen = answerTo({ functionName: "settingsNow", inputs: {} }).result;
+            cacheOf().ops.pop();
+            return seen;
+        };
+
+        it("should give the kernel the settings and answer with them", () => {
+            // Act
+            const answered = answerTo({ functionName: "setSettings", inputs: RIGHT_HANDED }).result;
+
+            // Assert
+            expect(answered).toEqual(RIGHT_HANDED);
+            expect(settingsOfTheKernel()).toEqual(RIGHT_HANDED);
+        });
+
+        it("should take the kernel back to no settings when given none", () => {
+            // Arrange
+            answerTo({ functionName: "setSettings", inputs: RIGHT_HANDED });
+
+            // Act
+            const answered = answerTo({ functionName: "setSettings", inputs: {} }).result;
+
+            // Assert
+            expect(answered).toEqual({});
+            expect(settingsOfTheKernel()).toEqual({});
+        });
+
+        it("should refuse a name that is no setting as an input error and keep the settings it had", () => {
+            // Arrange
+            answerTo({ functionName: "setSettings", inputs: LEFT_HANDED });
+
+            // Act
+            const refused = answerTo({ functionName: "setSettings", inputs: { handedness: "right" } });
+
+            // Assert
+            expect(refused.errorKind).toBe("input");
+            expect(refused.error).toContain("`handedness` is not a setting");
+            expect(settingsOfTheKernel()).toEqual(LEFT_HANDED);
+        });
+
+        it("should never cache the call that sets them, nor run it as a kernel call", () => {
+            // Act
+            answerTo({ functionName: "setSettings", inputs: RIGHT_HANDED });
+
+            // Assert
+            expect(cacheOf().ops).toEqual([]);
+            expect(kernelCalls).toEqual([]);
+        });
+
+        it("should keep what it made under other settings apart from what it makes now, and key a call as ever once they are gone", () => {
+            // Act
+            answerTo(CUBE);
+            answerTo({ functionName: "setSettings", inputs: RIGHT_HANDED });
+            answerTo(CUBE);
+            answerTo({ functionName: "setSettings", inputs: LEFT_HANDED });
+            answerTo(CUBE);
+            answerTo({ functionName: "setSettings", inputs: {} });
+            answerTo(CUBE);
+
+            // Assert
+            expect(cacheOf().ops.map(op => JSON.stringify(op))).toEqual([
+                `${KEY}}`,
+                `${KEY},"settings":{"coordinateSystem":"rightHanded"}}`,
+                `${KEY},"settings":{"coordinateSystem":"leftHanded"}}`,
+                `${KEY}}`,
+            ]);
+        });
+
+        it("should start a kernel given anew with no settings", () => {
+            // Arrange
+            answerTo({ functionName: "setSettings", inputs: RIGHT_HANDED });
+
+            // Act
+            initializationComplete(A_KERNEL, undefined, true);
+            answerTo(CUBE);
+
+            // Assert
+            expect(cacheOf().ops.map(op => JSON.stringify(op))).toEqual([`${KEY}}`]);
+            expect(settingsOfTheKernel()).toEqual({});
         });
     });
 

@@ -1,12 +1,14 @@
 import { CacheHelper } from "./cache-helper";
 import { Jscad, jscadDtoRegistry, jscadDtoRules } from "@bitbybit-dev/jscad";
-import { InputError, callByPath, describeKernelFailure, prepareKernelCall, rehydrateReferences } from "@bitbybit-dev/base";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
+import { InputError, callByPath, checkedSettings, describeKernelFailure, prepareKernelCall, rehydrateReferences, settingsCacheKey } from "@bitbybit-dev/base";
 
 const CACHE_THRESHOLD = 10000;
 
 
 let jscad: Jscad;
 let cacheHelper: CacheHelper;
+let settings: BitbybitSettings = {};
 
 type Held = { call: DataInput; postMessage: (message: unknown) => void };
 
@@ -15,6 +17,7 @@ let held: Held[] | undefined = [];
 export const initializationComplete = (jcd: any, _plugins?: any, doNotPost?: boolean) => {
     cacheHelper = new CacheHelper();
     jscad = new Jscad(jcd);
+    settings = {};
     if (!doNotPost) {
         postMessage("jscad-initialised");
     }
@@ -58,7 +61,7 @@ const unreportableFailure = (functionName: unknown): string => typeof functionNa
 
 const executeStandardFunction = (action: DataInput["action"]): unknown => {
     const call = prepareKernelCall("JSCAD", jscadDtoRegistry, action.functionName, action.inputs, jscadDtoRules);
-    return cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs }, () => {
+    return cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs, settings: settingsCacheKey(settings) }, () => {
         call.reportIssues();
         return callByPath(jscad, action.functionName, rehydrateReferences(call.inputs, geometryHash, cachedGeometry, isGeometry));
     });
@@ -84,6 +87,10 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
         } else if (d.action.functionName === "cleanAllCache") {
             cacheHelper.cleanAllCache();
             result = {};
+        } else if (d.action.functionName === "setSettings") {
+            settings = checkedSettings(d.action.inputs);
+            jscad.settings = settings;
+            result = { ...settings };
         } else {
             result = executeStandardFunction(d.action);
         }

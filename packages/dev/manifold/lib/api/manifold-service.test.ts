@@ -303,4 +303,17 @@ describe("Manifold unit tests", () => {
             expect(logged).toHaveLength(1);
         });
     });
+
+    it("should give its settings out frozen, so a write past the checked assignment changes nothing", () => {
+        // Arrange
+        manifold.settings = { coordinateSystem: Inputs.Base.coordinateSystemEnum.rightHanded };
+
+        // Act
+        const write = (): void => { (manifold.settings as Record<string, unknown>)["coordinateSystem"] = "righthanded"; };
+
+        // Assert
+        expect(write).toThrow(TypeError);
+        expect(manifold.settings).toEqual({ coordinateSystem: "rightHanded" });
+        manifold.settings = {};
+    });
 });

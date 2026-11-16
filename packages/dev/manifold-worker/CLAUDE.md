@@ -44,3 +44,9 @@ worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the
 using `importScripts`, and is published 32-bit only, so it takes no architecture argument. The
 `initialise` message exists so it can point at a different CDN **before** it loads its WASM; send it
 late and a worker configured for a custom CDN has already fetched from the default one.
+
+## Settings
+
+`setSettings` is one of the worker's own commands: it checks the settings, sets them on the kernel
+service and adds them to the cache key only when there are any. A kernel given anew starts with
+none. `base/ARCHITECTURE.md` ("Settings") has the design.

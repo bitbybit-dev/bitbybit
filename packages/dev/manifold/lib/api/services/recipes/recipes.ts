@@ -1,10 +1,11 @@
 import type * as Manifold3D from "manifold-3d";
-import type { Recipes } from "@bitbybit-dev/base";
+import type { BitbybitSettings, Recipes } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Inputs from "../../inputs/manifold-inputs";
 import type * as Resolved from "../../resolved-inputs";
 import { executeRecipe } from "./recipe-executor";
 import { recipeMeshes } from "./recipe-meshes";
+import { rootPlacingOf } from "./recipe-placing";
 
 const MIN_CIRCLE_SIDES = 3;
 const MAX_SHARP_ANGLE = 180;
@@ -23,7 +24,7 @@ export class ManifoldRecipes {
 
     private manifold: Manifold3D.ManifoldToplevel;
 
-    constructor(wasm: Manifold3D.ManifoldToplevel, private readonly recipes: Recipes) {
+    constructor(wasm: Manifold3D.ManifoldToplevel, private readonly recipes: Recipes, private readonly settings: () => BitbybitSettings = () => ({})) {
         this.manifold = wasm;
     }
 
@@ -50,7 +51,7 @@ export class ManifoldRecipes {
         if (!Number.isSafeInteger(resolved.circularSegments) || resolved.circularSegments < MIN_CIRCLE_SIDES) {
             throw new RangeError(`A circle needs at least ${MIN_CIRCLE_SIDES} sides, got ${resolved.circularSegments}`);
         }
-        return executeRecipe(this.manifold, recipe, resolved.circularSegments, resolved.adjustZtoY, resolved.emptyWhenFailed);
+        return executeRecipe(this.manifold, recipe, resolved.circularSegments, rootPlacingOf(this.settings().coordinateSystem, resolved.adjustZtoY), resolved.emptyWhenFailed);
     }
 
     /**
@@ -79,7 +80,7 @@ export class ManifoldRecipes {
         if (!(resolved.minSharpAngle >= 0 && resolved.minSharpAngle <= MAX_SHARP_ANGLE)) {
             throw new RangeError(`minSharpAngle must be an angle from 0 to ${MAX_SHARP_ANGLE} degrees, got ${resolved.minSharpAngle}`);
         }
-        return recipeMeshes(this.manifold, this.recipes, recipe, resolved);
+        return recipeMeshes(this.manifold, this.recipes, recipe, resolved, this.settings().coordinateSystem);
     }
 
     /**

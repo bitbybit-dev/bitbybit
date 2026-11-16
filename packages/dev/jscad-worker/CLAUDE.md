@@ -28,3 +28,9 @@ worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the
 `new Worker()` refuses a cross-origin URL. This worker is a **classic** worker, loaded through a blob
 using `importScripts`, and is published 32-bit only, so it takes no architecture argument. Unlike the
 OCCT and Manifold workers it deliberately receives no `initialise` message.
+
+## Settings
+
+`setSettings` is a reserved command beside `startedTheRun` and `cleanAllCache`: the worker checks
+the settings, sets them on the kernel service and adds them to the cache key only when there are any.
+A kernel given anew starts with none. `base/ARCHITECTURE.md` ("Settings") has the design.

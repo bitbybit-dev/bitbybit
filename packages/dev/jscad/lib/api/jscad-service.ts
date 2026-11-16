@@ -1,6 +1,8 @@
-import { GeometryHelper, Lists, Point, Transforms, Vector, resolveDto } from "@bitbybit-dev/base";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
+import { GeometryHelper, Lists, Point, Transforms, Vector, checkedSettings, resolveDto } from "@bitbybit-dev/base";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import { computeVertexNormals } from "@bitbybit-dev/base/lib/api/services/helpers/mesh/mesh-normals";
+import { meshMatrixInFile } from "@bitbybit-dev/base/lib/api/services/helpers/files/mesh-file-axes";
 import { JSCADExpansions } from "./services/jscad-expansions";
 import { JSCADBooleans } from "./services/jscad-booleans";
 import { JSCADExtrusions } from "./services/jscad-extrusions";
@@ -46,6 +48,7 @@ export class Jscad {
     public text: JSCADText;
     public colors: JSCADColors;
     private point: Point;
+    private currentSettings: BitbybitSettings = Object.freeze({});
 
     constructor(jscad: typeof JSCAD) {
         const geometryHelper = new GeometryHelper();
@@ -64,6 +67,21 @@ export class Jscad {
         this.text = new JSCADText(jscad);
         this.colors = new JSCADColors(jscad);
         this.jscad = jscad;
+    }
+
+    /**
+     * The settings this kernel works by, such as the coordinate system its numbers are in. Assign
+     * them once, before the calls they apply to: `jscad.settings = { coordinateSystem }`. With a
+     * coordinate system, solids are written to STL, 3MF and DXF files right-handed with Z up. A
+     * name that is no setting, or a value its setting does not take, is refused as an `InputError`.
+     * The settings read back are frozen, so they change only by assigning new ones.
+     */
+    get settings(): BitbybitSettings {
+        return this.currentSettings;
+    }
+
+    set settings(settings: BitbybitSettings) {
+        this.currentSettings = Object.freeze(checkedSettings(settings));
     }
 
     /**
@@ -279,7 +297,7 @@ export class Jscad {
      */
     downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): { blob: Blob } {
         const rawData = (this.jscad as JscadWithSerializers).STLSERIALIZER.serialize({ binary: true },
-            inputs.mesh
+            this.inFileAxes(inputs.mesh)
         );
         const madeBlob = new Blob(rawData, { type: "application/sla" });
         return { blob: madeBlob };
@@ -299,7 +317,7 @@ export class Jscad {
      */
     downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): { blob: Blob } {
         const rawData = (this.jscad as JscadWithSerializers).STLSERIALIZER.serialize({ binary: true },
-            ...inputs.meshes);
+            ...inputs.meshes.map(mesh => this.inFileAxes(mesh)));
         const madeBlob = new Blob(rawData, { type: "application/sla" });
         return { blob: madeBlob };
     }
@@ -323,7 +341,7 @@ export class Jscad {
         const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
         const options = resolved.options ? resolved.options : {};
         const rawData = (this.jscad as JscadWithSerializers).DXFSERIALIZER.serialize(options,
-            resolved.geometry
+            this.inFileAxes(resolved.geometry)
         );
         const madeBlob = new Blob(rawData);
         return { blob: madeBlob };
@@ -346,7 +364,20 @@ export class Jscad {
      */
     downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
         const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
-        return { blob: new Blob(writeThreeMf(this.jscad, resolved.options, resolved.geometry)) };
+        return { blob: new Blob(writeThreeMf(this.jscad, resolved.options, this.inFileAxes(resolved.geometry))) };
+    }
+
+    private inFileAxes(geometry: unknown): unknown {
+        const system = this.currentSettings.coordinateSystem;
+        const matrix = system === undefined ? undefined : meshMatrixInFile(system, true);
+        return matrix === undefined ? geometry : this.solidsMoved(geometry, matrix);
+    }
+
+    private solidsMoved(geometry: unknown, matrix: Base.TransformMatrix): unknown {
+        if (Array.isArray(geometry)) {
+            return geometry.map(entity => this.solidsMoved(entity, matrix));
+        }
+        return this.jscad.geometries.geom3.isA(geometry) ? this.jscad.transforms.transform(matrix, geometry) : geometry;
     }
 
     private legacyPolygons(entity: Inputs.JSCAD.JSCADEntity): (() => Inputs.JSCAD.JSCADPoly3[]) | undefined {

@@ -1,6 +1,7 @@
-import { KernelCallError } from "@bitbybit-dev/base";
+import { Inputs, KernelCallError } from "@bitbybit-dev/base";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { JSCADWorkerManager } from "./jscad-worker-manager";
+import { stateWithin } from "../../../__test__/kernel-workers";
 import { JscadStateEnum } from "./jscad-state.enum";
 import type { JscadInfo } from "./jscad-info";
 import { JSCADWorkerMock } from "./jscad-worker-mock";
@@ -427,6 +428,152 @@ describe("JSCADWorkerManager unit tests", () => {
 
             // Assert
             expect((posted[0] as PostedCall).action).toEqual({ functionName: "startedTheRun", inputs: {} });
+        });
+    });
+
+    describe("setSettings", () => {
+        const RIGHT_HANDED = { coordinateSystem: Inputs.Base.coordinateSystemEnum.rightHanded };
+        const LEFT_HANDED = { coordinateSystem: Inputs.Base.coordinateSystemEnum.leftHanded };
+
+        it("should tell the worker the settings once, as a call of its own", () => {
+            // Act
+            void manager.setSettings(LEFT_HANDED);
+            void manager.genericCallToWorkerPromise("shapes.sphere", {});
+
+            // Assert
+            expect(posted.map(call => call.action)).toEqual([
+                { functionName: "setSettings", inputs: { coordinateSystem: "leftHanded" } },
+                { functionName: "shapes.sphere", inputs: {} },
+            ]);
+            expect(Object.keys(posted[1] as PostedCall).sort()).toEqual(["action", "uid"]);
+        });
+
+        it("should tell the worker to go back to no settings with empty inputs", () => {
+            // Act
+            void manager.setSettings({});
+
+            // Assert
+            expect((posted[0] as PostedCall).action).toEqual({ functionName: "setSettings", inputs: {} });
+        });
+
+        it("should keep settings given before a worker is set, and tell the worker when it is", async () => {
+            // Arrange
+            const fresh = new JSCADWorkerManager();
+            const late = new RecordingWorker();
+
+            // Act
+            const kept = await fresh.setSettings(LEFT_HANDED);
+            fresh.setJscadWorker(late);
+
+            // Assert
+            expect(kept).toEqual({ coordinateSystem: "leftHanded" });
+            expect(late.posted.map(call => call.action)).toEqual([{ functionName: "setSettings", inputs: { coordinateSystem: "leftHanded" } }]);
+        });
+
+        it("should tell a worker set in place of another the settings in force", () => {
+            // Arrange
+            void manager.setSettings(LEFT_HANDED);
+            void manager.setSettings(RIGHT_HANDED);
+            const replacement = new RecordingWorker();
+
+            // Act
+            manager.setJscadWorker(replacement);
+
+            // Assert
+            expect(replacement.posted.map(call => call.action)).toEqual([{ functionName: "setSettings", inputs: { coordinateSystem: "rightHanded" } }]);
+        });
+
+        it("should tell a worker nothing when no settings were ever given", () => {
+            // Arrange
+            const fresh = new JSCADWorkerManager();
+            const late = new RecordingWorker();
+
+            // Act
+            fresh.setJscadWorker(late);
+
+            // Assert
+            expect(late.posted).toEqual([]);
+        });
+
+        it("should resolve with the settings at once, without waiting for the worker, which takes them ahead of every later call", async () => {
+            // Act
+            const pending = manager.setSettings(RIGHT_HANDED);
+            const state = await stateWithin(pending, 0);
+
+            // Assert
+            expect(state).toBe("resolved");
+            await expect(pending).resolves.toEqual({ coordinateSystem: "rightHanded" });
+        });
+
+        it("should reject a name that is no setting, send it nowhere, and tell a worker set later the settings in force before it", async () => {
+            // Arrange
+            await manager.setSettings(LEFT_HANDED);
+            const replacement = new RecordingWorker();
+
+            // Act
+            const refused = manager.setSettings(JSON.parse("{\"cordinateSystem\":\"rightHanded\"}"));
+            await expect(refused).rejects.toThrow("`cordinateSystem` is not a setting");
+            manager.setJscadWorker(replacement);
+
+            // Assert
+            expect(posted.map(call => call.action)).toEqual([{ functionName: "setSettings", inputs: { coordinateSystem: "leftHanded" } }]);
+            expect(replacement.posted.map(call => call.action)).toEqual([{ functionName: "setSettings", inputs: { coordinateSystem: "leftHanded" } }]);
+        });
+
+        it("should reject a value its setting does not take before any worker is set, and keep nothing of it", async () => {
+            // Arrange
+            const fresh = new JSCADWorkerManager();
+            const late = new RecordingWorker();
+
+            // Act
+            const refused = fresh.setSettings(JSON.parse("{\"coordinateSystem\":\"LeftHanded\"}"));
+            await expect(refused).rejects.toThrow("`coordinateSystem` is \"LeftHanded\"");
+            fresh.setJscadWorker(late);
+
+            // Assert
+            expect(late.posted).toEqual([]);
+        });
+
+        it("should hand a worker's refusal of the settings to the error callback, and to nothing else", async () => {
+            // Arrange
+            const reported: string[] = [];
+            manager.errorCallback = (error: string): void => { reported.push(error); };
+            const written = vi.spyOn(console, "error").mockImplementation(() => undefined);
+            await manager.setSettings(RIGHT_HANDED);
+
+            // Act
+            answer({ uid: uidOf(0), error: "'setSettings' is not a call this worker knows", errorKind: "input" });
+            await new Promise((resolve) => setTimeout(resolve, 0));
+
+            // Assert
+            expect(reported).toEqual(["'setSettings' is not a call this worker knows"]);
+            expect(written).not.toHaveBeenCalled();
+            written.mockRestore();
+        });
+
+        it("should write a worker's refusal of the settings to the console when no error callback is set", async () => {
+            // Arrange
+            const written = vi.spyOn(console, "error").mockImplementation(() => undefined);
+            await manager.setSettings(RIGHT_HANDED);
+
+            // Act
+            answer({ uid: uidOf(0), error: "'setSettings' is not a call this worker knows", errorKind: "input" });
+            await new Promise((resolve) => setTimeout(resolve, 0));
+
+            // Assert
+            expect(written.mock.calls.map(([message]) => message)).toEqual(["JSCAD refused the settings it was sent:"]);
+            written.mockRestore();
+        });
+
+        it("should not hand the worker the object it was given, which the caller may change", () => {
+            // Arrange
+            const given = { ...RIGHT_HANDED };
+
+            // Act
+            void manager.setSettings(given);
+
+            // Assert
+            expect((posted[0] as PostedCall).action.inputs).not.toBe(given);
         });
     });
 

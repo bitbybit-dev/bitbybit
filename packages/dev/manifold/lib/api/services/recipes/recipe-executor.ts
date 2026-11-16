@@ -5,6 +5,7 @@ import { outlineOf, reachedThrough, releaseOutline } from "./recipe-reach";
 import { manifoldOfMesh } from "../manifold-of-mesh";
 import type { Built, CutOutline, ProfileRings } from "./recipe-types";
 import { degreesOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
+import { asTheRecipeSays, type RootPlacing } from "./recipe-placing";
 
 const UNIT_HEIGHT = 1;
 const FULL_TURN = 2 * Math.PI;
@@ -65,20 +66,6 @@ function requiredInputsOf(node: Base.RecipeNode): readonly number[] {
     }
 }
 
-function negatedWithoutNegativeZero(value: number): number {
-    return 0 - value;
-}
-
-export function turnedZtoY(matrix: Base.TransformMatrix): Manifold3D.Mat4 {
-    const [a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p] = matrix;
-    return [
-        a, c, negatedWithoutNegativeZero(b), d,
-        e, g, negatedWithoutNegativeZero(f), h,
-        i, k, negatedWithoutNegativeZero(j), l,
-        m, o, negatedWithoutNegativeZero(n), p,
-    ];
-}
-
 function isClockwise(ring: readonly Manifold3D.Vec2[]): boolean {
     let twiceArea = 0;
     for (let at = 0, previous = ring.length - 1; at < ring.length; previous = at++) {
@@ -95,7 +82,7 @@ class RecipeExecutor {
         private readonly wasm: Manifold3D.ManifoldToplevel,
         private readonly recipe: Base.Recipe,
         private readonly circularSegments: number,
-        private readonly adjustZtoY: boolean,
+        private readonly placing: RootPlacing,
         private readonly emptyWhenFailed: boolean,
     ) {
     }
@@ -157,7 +144,7 @@ class RecipeExecutor {
     private placed(root: Base.RecipeRoot, index: number): Manifold3D.Manifold {
         let placed: Manifold3D.Manifold | undefined;
         try {
-            placed = this.solid(root.node).transform(this.adjustZtoY ? turnedZtoY(root.matrix) : root.matrix);
+            placed = this.solid(root.node).transform(this.placing(root.matrix));
             expectNoError(placed.status(), root, index);
             return placed;
         } catch (thrown) {
@@ -464,10 +451,10 @@ class RecipeExecutor {
     }
 }
 
-export function executeRecipe(wasm: Manifold3D.ManifoldToplevel, recipe: Base.Recipe, circularSegments: number, adjustZtoY: boolean, emptyWhenFailed: boolean): Manifold3D.Manifold[] {
-    return new RecipeExecutor(wasm, recipe, circularSegments, adjustZtoY, emptyWhenFailed).run();
+export function executeRecipe(wasm: Manifold3D.ManifoldToplevel, recipe: Base.Recipe, circularSegments: number, placing: RootPlacing, emptyWhenFailed: boolean): Manifold3D.Manifold[] {
+    return new RecipeExecutor(wasm, recipe, circularSegments, placing, emptyWhenFailed).run();
 }
 
 export function executeRecipeNodes(wasm: Manifold3D.ManifoldToplevel, recipe: Base.Recipe, circularSegments: number, emptyWhenFailed: boolean, nodes: readonly number[]): Map<number, Manifold3D.Manifold | undefined> {
-    return new RecipeExecutor(wasm, recipe, circularSegments, false, emptyWhenFailed).solidsOf(nodes);
+    return new RecipeExecutor(wasm, recipe, circularSegments, asTheRecipeSays, emptyWhenFailed).solidsOf(nodes);
 }

@@ -138,6 +138,8 @@ export class JSCADWorkerManager {
     //
     // (undocumented)
     setJscadWorker(worker: Worker | JSCADWorkerMock): void;
+    // Warning: (ae-forgotten-export) The symbol "BitbybitSettings" needs to be exported by the entry point index.d.ts
+    setSettings(settings: BitbybitSettings): Promise<BitbybitSettings>;
     startedTheRun(): Promise<void>;
 }
 

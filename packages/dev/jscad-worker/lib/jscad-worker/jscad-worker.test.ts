@@ -65,6 +65,8 @@ vi.mock("@bitbybit-dev/jscad", () => {
         };
         toPolygonPoints = (inputs: unknown) => ({ made: "points", from: inputs });
         boom = (): unknown => { throw failure.value; };
+        settings: unknown = {};
+        settingsNow = (): unknown => this.settings;
     }
     class SphereDto {
         radius = 1;
@@ -588,6 +590,96 @@ describe("the worker message loop", () => {
 
             // Assert
             expect(answer().result).toEqual({ made: "cube", from: { sizes: [] } });
+        });
+    });
+
+    describe("setSettings", () => {
+        const RIGHT_HANDED = { coordinateSystem: "rightHanded" };
+        const LEFT_HANDED = { coordinateSystem: "leftHanded" };
+
+        it("should give the kernel the settings and answer with them", () => {
+            // Act
+            const answered = answerTo({ functionName: "setSettings", inputs: RIGHT_HANDED }).result;
+
+            // Assert
+            expect(answered).toEqual(RIGHT_HANDED);
+            expect(answerTo({ functionName: "settingsNow", inputs: {} }).result).toEqual(RIGHT_HANDED);
+        });
+
+        it("should take the kernel back to no settings when given none", () => {
+            // Arrange
+            answerTo({ functionName: "setSettings", inputs: RIGHT_HANDED });
+
+            // Act
+            const answered = answerTo({ functionName: "setSettings", inputs: {} }).result;
+
+            // Assert
+            expect(answered).toEqual({});
+            expect(answerTo({ functionName: "settingsNow", inputs: {} }).result).toEqual({});
+        });
+
+        it("should refuse a name that is no setting as an input error and keep the settings it had", () => {
+            // Arrange
+            answerTo({ functionName: "setSettings", inputs: LEFT_HANDED });
+
+            // Act
+            const refused = answerTo({ functionName: "setSettings", inputs: { handedness: "right" } });
+
+            // Assert
+            expect(refused.errorKind).toBe("input");
+            expect(refused.error).toContain("`handedness` is not a setting");
+            expect(answerTo({ functionName: "settingsNow", inputs: {} }).result).toEqual(LEFT_HANDED);
+        });
+
+        it("should never cache the call that sets them", () => {
+            // Act
+            run({ functionName: "setSettings", inputs: RIGHT_HANDED });
+
+            // Assert
+            expect(cacheOf().ops).toEqual([]);
+        });
+
+        it("should keep what it made under other settings apart from what it makes now", () => {
+            // Arrange
+            run({ functionName: "shapes.cube", inputs: { size: 1 } });
+            run({ functionName: "setSettings", inputs: RIGHT_HANDED });
+
+            // Act
+            run({ functionName: "shapes.cube", inputs: { size: 1 } });
+            run({ functionName: "setSettings", inputs: LEFT_HANDED });
+            run({ functionName: "shapes.cube", inputs: { size: 1 } });
+
+            // Assert
+            expect(cacheOf().ops.map(op => JSON.stringify(op))).toEqual([
+                "{\"functionName\":\"shapes.cube\",\"inputs\":{\"size\":1}}",
+                "{\"functionName\":\"shapes.cube\",\"inputs\":{\"size\":1},\"settings\":{\"coordinateSystem\":\"rightHanded\"}}",
+                "{\"functionName\":\"shapes.cube\",\"inputs\":{\"size\":1},\"settings\":{\"coordinateSystem\":\"leftHanded\"}}",
+            ]);
+        });
+
+        it("should key a call as it always did once the settings are taken away again", () => {
+            // Arrange
+            run({ functionName: "setSettings", inputs: RIGHT_HANDED });
+            run({ functionName: "setSettings", inputs: {} });
+
+            // Act
+            run({ functionName: "shapes.cube", inputs: { size: 1 } });
+
+            // Assert
+            expect(cacheOf().ops.map(op => JSON.stringify(op))).toEqual(["{\"functionName\":\"shapes.cube\",\"inputs\":{\"size\":1}}"]);
+        });
+
+        it("should start a kernel given anew with no settings", () => {
+            // Arrange
+            run({ functionName: "setSettings", inputs: RIGHT_HANDED });
+
+            // Act
+            initializationComplete(A_KERNEL, undefined, true);
+            run({ functionName: "shapes.cube", inputs: { size: 1 } });
+
+            // Assert
+            expect(cacheOf().ops.map(op => JSON.stringify(op))).toEqual(["{\"functionName\":\"shapes.cube\",\"inputs\":{\"size\":1}}"]);
+            expect(answerTo({ functionName: "settingsNow", inputs: {} }).result).toEqual({});
         });
     });
 

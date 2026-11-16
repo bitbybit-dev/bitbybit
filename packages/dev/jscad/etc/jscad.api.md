@@ -56,6 +56,12 @@ export namespace Base {
         b: number;
         a: number;
     };
+    export enum coordinateSystemEnum {
+        // (undocumented)
+        leftHanded = "leftHanded",
+        // (undocumented)
+        rightHanded = "rightHanded"
+    }
     export type Frame = {
         origin: Base.Point3;
         normal: Base.Vector3;
@@ -1436,72 +1442,223 @@ namespace Frame_2 {
 
 // @public
 export namespace IO {
-    export class DxfArcSegmentDto {
-        constructor(center?: Base.Point2, radius?: number, startAngle?: number, endAngle?: number);
-        center: Base.Point2;
+    export class DrawingArcSegmentDto {
+        constructor(center?: Base.Point2 | Base.Point3, radius?: number, startAngle?: number, endAngle?: number, normal?: Base.Vector3);
+        center: Base.Point2 | Base.Point3;
         endAngle: number;
+        normal?: Base.Vector3 | undefined;
         radius: number;
         startAngle: number;
     }
-    export class DxfCircleSegmentDto {
-        constructor(center?: Base.Point2, radius?: number);
-        center: Base.Point2;
+    export class DrawingCircleSegmentDto {
+        constructor(center?: Base.Point2 | Base.Point3, radius?: number, normal?: Base.Vector3);
+        center: Base.Point2 | Base.Point3;
+        normal?: Base.Vector3 | undefined;
         radius: number;
     }
-    export class DxfLineSegmentDto {
-        constructor(start?: Base.Point2, end?: Base.Point2);
-        end: Base.Point2;
-        start: Base.Point2;
+    export class DrawingEllipseSegmentDto {
+        constructor(center?: Base.Point2 | Base.Point3, majorAxis?: Base.Vector2 | Base.Vector3, ratio?: number, startParameter?: number, endParameter?: number, normal?: Base.Vector3);
+        center: Base.Point2 | Base.Point3;
+        endParameter?: number | undefined;
+        majorAxis: Base.Vector2 | Base.Vector3;
+        normal?: Base.Vector3 | undefined;
+        ratio: number;
+        startParameter?: number | undefined;
     }
-    export class DxfModelDto {
-        constructor(dxfPathsParts?: DxfPathsPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base.unitOfLengthEnum);
-        acadVersion?: "AC1009" | "AC1015" | undefined;
-        colorFormat?: "aci" | "truecolor" | undefined;
-        dxfPathsParts: DxfPathsPartDto[];
-        unit?: Base.unitOfLengthEnum | undefined;
+    export class DrawingLineSegmentDto {
+        constructor(start?: Base.Point2 | Base.Point3, end?: Base.Point2 | Base.Point3);
+        end: Base.Point2 | Base.Point3;
+        start: Base.Point2 | Base.Point3;
     }
-    export class DxfPathDto {
-        constructor(segments?: (DxfLineSegmentDto | DxfArcSegmentDto | DxfCircleSegmentDto | DxfPolylineSegmentDto | DxfSplineSegmentDto)[]);
-        segments: (DxfLineSegmentDto | DxfArcSegmentDto | DxfCircleSegmentDto | DxfPolylineSegmentDto | DxfSplineSegmentDto)[];
-    }
-    export class DxfPathsPartDto {
-        constructor(layer?: string, color?: Base.Color, paths?: DxfPathDto[]);
+    export class DrawingPartDto {
+        constructor(layer?: string, color?: Base.Color, paths?: DrawingPathDto[], lineType?: lineTypeEnum);
         color?: Base.Color | undefined;
         layer?: string | undefined;
-        paths: DxfPathDto[];
+        lineType?: lineTypeEnum | undefined;
+        paths: DrawingPathDto[];
     }
-    export class DxfPolylineSegmentDto {
-        constructor(points?: Base.Point2[], closed?: boolean, bulges?: number[]);
+    export class DrawingPathDto {
+        constructor(segments?: (DrawingLineSegmentDto | DrawingArcSegmentDto | DrawingCircleSegmentDto | DrawingPolylineSegmentDto | DrawingSplineSegmentDto | DrawingEllipseSegmentDto)[]);
+        segments: (DrawingLineSegmentDto | DrawingArcSegmentDto | DrawingCircleSegmentDto | DrawingPolylineSegmentDto | DrawingSplineSegmentDto | DrawingEllipseSegmentDto)[];
+    }
+    export class DrawingPolylineSegmentDto {
+        constructor(points?: (Base.Point2 | Base.Point3)[], closed?: boolean, bulges?: number[]);
         bulges?: number[] | undefined;
         closed?: boolean | undefined;
-        points: Base.Point2[];
+        points: (Base.Point2 | Base.Point3)[];
     }
-    export class DxfSplineSegmentDto {
-        constructor(controlPoints?: Base.Point2[], degree?: number, closed?: boolean);
+    export class DrawingSplineSegmentDto {
+        constructor(controlPoints?: (Base.Point2 | Base.Point3)[], degree?: number, closed?: boolean, knots?: number[], weights?: number[]);
         closed?: boolean | undefined;
-        controlPoints: Base.Point2[];
+        controlPoints: (Base.Point2 | Base.Point3)[];
         degree?: number | undefined;
+        knots?: number[] | undefined;
+        weights?: number[] | undefined;
+    }
+    // @deprecated
+    export class DxfArcSegmentDto extends DrawingArcSegmentDto {
+    }
+    // @deprecated
+    export class DxfCircleSegmentDto extends DrawingCircleSegmentDto {
+    }
+    export class DxfDrawingDto {
+        parts: DrawingPartDto[];
+        unit?: Base.unitOfLengthEnum | undefined;
+        version: string;
+        warnings: string[];
+    }
+    // @deprecated
+    export class DxfEllipseSegmentDto extends DrawingEllipseSegmentDto {
+    }
+    // @deprecated
+    export class DxfLineSegmentDto extends DrawingLineSegmentDto {
+    }
+    export class DxfModelDto {
+        constructor(dxfPathsParts?: DrawingPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base.unitOfLengthEnum, curveTolerance?: number);
+        acadVersion?: "AC1009" | "AC1015" | undefined;
+        colorFormat?: "aci" | "truecolor" | undefined;
+        curveTolerance?: number | undefined;
+        dxfPathsParts: DrawingPartDto[];
+        unit?: Base.unitOfLengthEnum | undefined;
+    }
+    // @deprecated
+    export class DxfPathDto extends DrawingPathDto {
+    }
+    // @deprecated
+    export class DxfPathsPartDto extends DrawingPartDto {
+    }
+    // @deprecated
+    export class DxfPolylineSegmentDto extends DrawingPolylineSegmentDto {
+    }
+    export class DxfReadDto {
+        constructor(dxf?: string | Uint8Array, includeHiddenLayers?: boolean);
+        dxf: string | Uint8Array;
+        includeHiddenLayers?: boolean | undefined;
+    }
+    // @deprecated
+    export class DxfSplineSegmentDto extends DrawingSplineSegmentDto {
+    }
+    export class DxfToSvgDto {
+        constructor(dxf?: string | Uint8Array, includeHiddenLayers?: boolean, strokeWidth?: number, margin?: number, tolerance?: number);
+        dxf: string | Uint8Array;
+        includeHiddenLayers?: boolean | undefined;
+        margin?: number | undefined;
+        strokeWidth?: number | undefined;
+        tolerance?: number | undefined;
+    }
+    export class DxfToSvgResultDto {
+        svg: string;
+        warnings: string[];
+    }
+    export enum lineTypeEnum {
+        // (undocumented)
+        center = "center",
+        // (undocumented)
+        continuous = "continuous",
+        // (undocumented)
+        dashed = "dashed",
+        // (undocumented)
+        dotted = "dotted",
+        // (undocumented)
+        hidden = "hidden"
+    }
+    export class SvgDrawingDto {
+        parts: DrawingPartDto[];
+        unit?: Base.unitOfLengthEnum | undefined;
+        viewBox?: number[] | undefined;
+        warnings: string[];
+    }
+    export class SvgModelDto {
+        constructor(parts?: DrawingPartDto[], unit?: Base.unitOfLengthEnum, strokeWidth?: number, margin?: number, tolerance?: number);
+        margin?: number | undefined;
+        parts: DrawingPartDto[];
+        strokeWidth?: number | undefined;
+        tolerance?: number | undefined;
+        unit?: Base.unitOfLengthEnum | undefined;
+    }
+    export class SvgPathDataDto {
+        constructor(path?: DrawingPathDto, flipY?: boolean, tolerance?: number);
+        flipY?: boolean | undefined;
+        path: DrawingPathDto;
+        tolerance?: number | undefined;
+    }
+    export class SvgReadDto {
+        constructor(svg?: string, unit?: Base.unitOfLengthEnum, includeInvisible?: boolean);
+        includeInvisible?: boolean | undefined;
+        svg: string;
+        unit?: Base.unitOfLengthEnum | undefined;
+    }
+    export class SvgToDxfDto {
+        constructor(svg?: string, unit?: Base.unitOfLengthEnum, includeInvisible?: boolean, colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", curveTolerance?: number);
+        acadVersion?: "AC1009" | "AC1015" | undefined;
+        colorFormat?: "aci" | "truecolor" | undefined;
+        curveTolerance?: number | undefined;
+        includeInvisible?: boolean | undefined;
+        svg: string;
+        unit?: Base.unitOfLengthEnum | undefined;
+    }
+    export class SvgToDxfResultDto {
+        dxf: string;
+        warnings: string[];
     }
 }
 
 // @public
 namespace IO_2 {
     // (undocumented)
+    type DrawingArcSegmentDto = Inputs_2.IO.DrawingArcSegmentDto;
+    // (undocumented)
+    type DrawingCircleSegmentDto = Inputs_2.IO.DrawingCircleSegmentDto;
+    // (undocumented)
+    type DrawingEllipseSegmentDto = WithDefaults<Inputs_2.IO.DrawingEllipseSegmentDto, "startParameter" | "endParameter">;
+    // (undocumented)
+    type DrawingLineSegmentDto = Inputs_2.IO.DrawingLineSegmentDto;
+    // (undocumented)
+    type DrawingPartDto = WithDefaults<Inputs_2.IO.DrawingPartDto, "layer" | "color" | "lineType">;
+    // (undocumented)
+    type DrawingPathDto = Inputs_2.IO.DrawingPathDto;
+    // (undocumented)
+    type DrawingPolylineSegmentDto = WithDefaults<Inputs_2.IO.DrawingPolylineSegmentDto, "closed">;
+    // (undocumented)
+    type DrawingSplineSegmentDto = WithDefaults<Inputs_2.IO.DrawingSplineSegmentDto, "degree" | "closed">;
+    // (undocumented)
     type DxfArcSegmentDto = Inputs_2.IO.DxfArcSegmentDto;
     // (undocumented)
     type DxfCircleSegmentDto = Inputs_2.IO.DxfCircleSegmentDto;
     // (undocumented)
+    type DxfDrawingDto = Inputs_2.IO.DxfDrawingDto;
+    // (undocumented)
+    type DxfEllipseSegmentDto = WithDefaults<Inputs_2.IO.DxfEllipseSegmentDto, "startParameter" | "endParameter">;
+    // (undocumented)
     type DxfLineSegmentDto = Inputs_2.IO.DxfLineSegmentDto;
     // (undocumented)
-    type DxfModelDto = WithDefaults<Inputs_2.IO.DxfModelDto, "colorFormat" | "acadVersion">;
+    type DxfModelDto = WithDefaults<Inputs_2.IO.DxfModelDto, "colorFormat" | "acadVersion" | "curveTolerance">;
     // (undocumented)
     type DxfPathDto = Inputs_2.IO.DxfPathDto;
     // (undocumented)
-    type DxfPathsPartDto = WithDefaults<Inputs_2.IO.DxfPathsPartDto, "layer" | "color">;
+    type DxfPathsPartDto = WithDefaults<Inputs_2.IO.DxfPathsPartDto, "layer" | "color" | "lineType">;
     // (undocumented)
     type DxfPolylineSegmentDto = WithDefaults<Inputs_2.IO.DxfPolylineSegmentDto, "closed">;
     // (undocumented)
+    type DxfReadDto = WithDefaults<Inputs_2.IO.DxfReadDto, "includeHiddenLayers">;
+    // (undocumented)
     type DxfSplineSegmentDto = WithDefaults<Inputs_2.IO.DxfSplineSegmentDto, "degree" | "closed">;
+    // (undocumented)
+    type DxfToSvgDto = WithDefaults<Inputs_2.IO.DxfToSvgDto, "includeHiddenLayers" | "tolerance">;
+    // (undocumented)
+    type DxfToSvgResultDto = Inputs_2.IO.DxfToSvgResultDto;
+    // (undocumented)
+    type SvgDrawingDto = Inputs_2.IO.SvgDrawingDto;
+    // (undocumented)
+    type SvgModelDto = WithDefaults<Inputs_2.IO.SvgModelDto, "tolerance">;
+    // (undocumented)
+    type SvgPathDataDto = WithDefaults<Inputs_2.IO.SvgPathDataDto, "flipY" | "tolerance">;
+    // (undocumented)
+    type SvgReadDto = WithDefaults<Inputs_2.IO.SvgReadDto, "includeInvisible">;
+    // (undocumented)
+    type SvgToDxfDto = WithDefaults<Inputs_2.IO.SvgToDxfDto, "includeInvisible" | "colorFormat" | "acadVersion" | "curveTolerance">;
+    // (undocumented)
+    type SvgToDxfResultDto = Inputs_2.IO.SvgToDxfResultDto;
 }
 
 // @public
@@ -2017,6 +2174,9 @@ export class Jscad {
     //
     // (undocumented)
     polygon: JSCADPolygon;
+    // Warning: (ae-forgotten-export) The symbol "BitbybitSettings" needs to be exported by the entry point index.d.ts
+    get settings(): BitbybitSettings;
+    set settings(settings: BitbybitSettings);
     // Warning: (ae-forgotten-export) The symbol "JSCADShapes" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -2222,6 +2382,11 @@ export namespace Line {
         line2: LinePointsDto;
         tolerance?: number | undefined;
     }
+    export class LinePointDistanceDto {
+        constructor(line?: LinePointsDto, point?: Base.Point3);
+        line: LinePointsDto;
+        point: Base.Point3;
+    }
     export class LinePointsDto {
         constructor(start?: Base.Point3, end?: Base.Point3);
         end: Base.Point3;
@@ -2280,6 +2445,8 @@ namespace Line_2 {
     type LineDto = Inputs_2.Line.LineDto;
     // (undocumented)
     type LineLineIntersectionDto = WithDefaults<Inputs_2.Line.LineLineIntersectionDto, "checkSegmentsOnly" | "tolerance">;
+    // (undocumented)
+    type LinePointDistanceDto = Inputs_2.Line.LinePointDistanceDto;
     // (undocumented)
     type LinePointsDto = Inputs_2.Line.LinePointsDto;
     // (undocumented)
