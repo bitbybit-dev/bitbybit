@@ -112,9 +112,10 @@ root by transforming its node's solid with the root's matrix.
   moves are worked out again from the full-precision positions that the one `warpBatch` writing them
   hands over, in the order `getMesh` lists them, with the corner planes already chosen; a separate
   full-precision read would cost a second warp, and manifold-3d compiles a small WebAssembly module
-  for every warp callback, which is most of what a warp costs. Measured against 1.6.1 in CPU time,
-  the slowest IFC files of the corpus build 1 to 10 % slower, a plain wall with windows as fast, and
-  a 90,000-triangle mesh with hundreds of openings about a fifth slower. What the reach
+  for every warp callback, which is most of what a warp costs. Measured in CPU time against cuts that
+  reach only the sides of the host's box, the slowest IFC files of the corpus build 1 to 10 % slower,
+  a plain wall with windows as fast, and a 90,000-triangle mesh with hundreds of openings about a
+  fifth slower. What the reach
   cannot see is a face of a tool that lies on a face of the solid over part of it only, the rest
   over air or inside the solid: that part keeps whatever the exact boolean makes of it - a sheet, or
   nothing - and reaching a face beside it can change which, since the corner they share moves along
