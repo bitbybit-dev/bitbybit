@@ -24,7 +24,7 @@
         "@angular/cli": "^20.0.0",
         "@angular/compiler-cli": "^20.0.0",
         "typescript": "^5.8.2",
-        "@types/three": "0.186.0"
+        "@types/three": "0.187.0"
     },
     "overrides": {
         "glob@13": "^14.0.6",

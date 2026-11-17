@@ -16,11 +16,11 @@
     "@bitbybit-dev/occt-worker": "1.7.0",
     "@bitbybit-dev/threejs": "1.7.0",
     "manifold-3d": "3.5.4",
-    "three": "0.186.1"
+    "three": "0.187.0"
   },
   "devDependencies": {
     "typescript": "~5.8.3",
     "vite": "^6.3.2",
-    "@types/three": "0.186.0"
+    "@types/three": "0.187.0"
   }
 }
