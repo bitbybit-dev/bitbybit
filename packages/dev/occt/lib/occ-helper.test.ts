@@ -7,7 +7,7 @@ const SERVICES = [
     "base", "iteratorService", "converterService", "entitiesService", "geomService",
     "shapeGettersService", "transformsService", "enumService", "verticesService", "booleansService",
     "edgesService", "wiresService", "facesService", "shellsService", "solidsService",
-    "operationsService", "filletsService", "meshingService", "dimensionsService", "dxfService",
+    "operationsService", "filletsService", "meshingService", "dimensionsService", "drawingService",
 ] as const;
 
 describe("OccHelper", () => {

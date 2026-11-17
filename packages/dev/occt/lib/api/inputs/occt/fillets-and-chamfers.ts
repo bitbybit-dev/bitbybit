@@ -164,7 +164,8 @@ export class FilletEdgeVariableRadiusDto<T, U> {
      */
     radiusList!: number[];
     /**
-     * Positions along the edge as fractions from 0 at its start to 1 at its end, one per radius.
+     * Where each radius applies: the first position is the curve's start, the last its end, those
+     * between fractions of its parameter, which match its length only on lines and arcs.
      * @default undefined
      */
     paramsU!: number[];
@@ -197,8 +198,8 @@ export class FilletEdgesVariableRadiusDto<T, U> {
      */
     radiusLists!: number[][];
     /**
-     * One list per edge of positions as fractions from 0 to 1 along it, each pairing with the
-     * matching list in `radiusLists`.
+     * One list per edge of positions, read as in `filletEdgeVariableRadius` (first and last at the
+     * ends of the edge's curve), each pairing with the matching list in `radiusLists`.
      * @default undefined
      */
     paramsULists!: number[][];
@@ -231,7 +232,8 @@ export class FilletEdgesSameVariableRadiusDto<T, U> {
      */
     radiusList!: number[];
     /**
-     * Positions along each edge as fractions from 0 at its start to 1 at its end, one per radius.
+     * Where each radius applies on every edge, read as for `filletEdgeVariableRadius`: first and
+     * last positions at the curve's ends, those between along its parameter.
      * @default undefined
      */
     paramsU!: number[];

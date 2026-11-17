@@ -1,5 +1,5 @@
 const path = require('path');
-const version = "1.6.2";
+const version = "1.7.0";
 const CopyPlugin = require("copy-webpack-plugin");
 const { NormalModuleReplacementPlugin } = require("webpack");
 

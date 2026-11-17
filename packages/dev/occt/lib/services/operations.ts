@@ -5,6 +5,7 @@ import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../api/resolved-inputs";
 import type * as Models from "../api/models";
 import { numbersOfFrames } from "./base/frames";
+import { viewOntoGround } from "./base/file-axes";
 import { eachShape, keptBehind, sliceAlongFrames, splitAlongFrame } from "./base/frame-cuts";
 import { withHistories, withHistory } from "./base/history";
 import { released } from "./base/release";
@@ -1367,7 +1368,7 @@ export class OCCTOperations {
 
     private ontoGround(drawing: TopoDS_Compound): TopoDS_Compound {
         this.och.occ.BRepLib_BuildCurves3d_Simple(drawing);
-        const turned = this.och.transformsService.rotate({ shape: drawing, angle: 90, axis: [1, 0, 0] });
+        const turned = viewOntoGround(this.och, drawing);
         drawing.delete();
         const compound = this.och.occ.CastToCompound(turned);
         turned.delete();

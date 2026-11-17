@@ -3,6 +3,7 @@ export * from "./constants";
 export * from "./context";
 export * from "./draw-core";
 export * from "./draw-appearance";
+export * from "./conventions-surface";
 export * from "./draw-recipe";
 export * from "./draw-recipe-types";
 export * from "./draw-helper-core";

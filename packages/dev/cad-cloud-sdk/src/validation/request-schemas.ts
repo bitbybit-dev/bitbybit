@@ -528,6 +528,392 @@ export const schemaBundle = {
       ],
       "additionalProperties": false
     },
+    "NestingInspectBody": {
+      "type": "object",
+      "properties": {
+        "stepFileIds": {
+          "minItems": 1,
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
+        "options": {
+          "$ref": "#/$defs/NestingInspectOptions"
+        }
+      },
+      "required": [
+        "stepFileIds"
+      ],
+      "additionalProperties": false
+    },
+    "NestingInspectOptions": {
+      "type": "object",
+      "properties": {
+        "sheets": {
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NestingStrip"
+              },
+              {
+                "$ref": "#/$defs/NestingSheet"
+              }
+            ]
+          }
+        },
+        "parts": {
+          "maxItems": 5000,
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NestingPartOptions"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "spacing": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "margin": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "timeBudgetSeconds": {
+          "type": "number",
+          "minimum": 0.001,
+          "maximum": 120
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 1e-9,
+          "maximum": 1000000000
+        },
+        "evaluationBudget": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sheetGap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      },
+      "additionalProperties": false
+    },
+    "NestingNestBody": {
+      "type": "object",
+      "properties": {
+        "stepFileIds": {
+          "minItems": 1,
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
+        "options": {
+          "$ref": "#/$defs/NestingOptions"
+        },
+        "outputs": {
+          "$ref": "#/$defs/NestingOutputOptions"
+        }
+      },
+      "required": [
+        "stepFileIds",
+        "options"
+      ],
+      "additionalProperties": false
+    },
+    "NestingOptions": {
+      "type": "object",
+      "properties": {
+        "sheets": {
+          "minItems": 1,
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NestingStrip"
+              },
+              {
+                "$ref": "#/$defs/NestingSheet"
+              }
+            ]
+          }
+        },
+        "parts": {
+          "maxItems": 5000,
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NestingPartOptions"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "spacing": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "margin": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "timeBudgetSeconds": {
+          "type": "number",
+          "minimum": 0.001,
+          "maximum": 120
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 1e-9,
+          "maximum": 1000000000
+        },
+        "evaluationBudget": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sheetGap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      },
+      "required": [
+        "sheets"
+      ],
+      "additionalProperties": false
+    },
+    "NestingOutputFormat": {
+      "type": "string",
+      "enum": [
+        "step",
+        "stpz",
+        "decomposed-mesh",
+        "gltf",
+        "dxf",
+        "svg",
+        "outlines"
+      ]
+    },
+    "NestingOutputOptions": {
+      "type": "object",
+      "properties": {
+        "formats": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NestingOutputFormat"
+          }
+        },
+        "meshPrecision": {
+          "$ref": "#/$defs/MeshPrecision"
+        },
+        "gltfMeshPrecision": {
+          "$ref": "#/$defs/MeshPrecision"
+        },
+        "adjustYtoZ": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "formats"
+      ],
+      "additionalProperties": false
+    },
+    "NestingPartOptions": {
+      "type": "object",
+      "properties": {
+        "quantity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "rotations": {
+          "$ref": "#/$defs/NestingRotations"
+        },
+        "allowFlip": {
+          "type": "boolean"
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "xDirection": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "NestingRotations": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "fixed"
+            },
+            "angles": {
+              "minItems": 1,
+              "maxItems": 720,
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": -36000,
+                "maximum": 36000
+              }
+            }
+          },
+          "required": [
+            "mode",
+            "angles"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "step"
+            },
+            "step": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 360
+            }
+          },
+          "required": [
+            "mode",
+            "step"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "free"
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "type": "object"
+    },
+    "NestingSheet": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000000
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000000
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "strip": {
+          "type": "boolean",
+          "const": false
+        }
+      },
+      "required": [
+        "width",
+        "height"
+      ],
+      "additionalProperties": false
+    },
+    "NestingStrip": {
+      "type": "object",
+      "properties": {
+        "strip": {
+          "type": "boolean",
+          "const": true
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000000
+        },
+        "cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000000
+        }
+      },
+      "required": [
+        "strip",
+        "height"
+      ],
+      "additionalProperties": false
+    },
     "OutputFormat": {
       "type": "string",
       "enum": [
@@ -880,12 +1266,83 @@ export const schemaBundle = {
       ],
       "additionalProperties": false
     },
+    "UnfoldAndNestBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
+        "kFactor": {
+          "default": 0.5,
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "thicknessOverride": {
+          "default": 0,
+          "type": "number",
+          "minimum": 0
+        },
+        "nesting": {
+          "$ref": "#/$defs/UnfoldNestingOptions"
+        },
+        "outputs": {
+          "$ref": "#/$defs/UnfoldAndNestOutputOptions"
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
+    },
+    "UnfoldAndNestOutputOptions": {
+      "type": "object",
+      "properties": {
+        "formats": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "step",
+              "stpz",
+              "decomposed-mesh",
+              "gltf",
+              "dxf",
+              "svg",
+              "outlines",
+              "flat-meshes"
+            ]
+          }
+        },
+        "meshPrecision": {
+          "$ref": "#/$defs/MeshPrecision"
+        },
+        "gltfMeshPrecision": {
+          "$ref": "#/$defs/MeshPrecision"
+        },
+        "adjustYtoZ": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "formats"
+      ],
+      "additionalProperties": false
+    },
     "UnfoldFaceReportBody": {
       "type": "object",
       "properties": {
         "stepFileId": {
           "type": "string",
           "minLength": 1
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
         },
         "faceIndex": {
           "default": 0,
@@ -906,6 +1363,9 @@ export const schemaBundle = {
           "type": "string",
           "minLength": 1
         },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
         "faceIndex": {
           "default": 0,
           "type": "integer",
@@ -921,12 +1381,82 @@ export const schemaBundle = {
       ],
       "additionalProperties": false
     },
+    "UnfoldNestingOptions": {
+      "type": "object",
+      "properties": {
+        "sheets": {
+          "minItems": 1,
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NestingStrip"
+              },
+              {
+                "$ref": "#/$defs/NestingSheet"
+              }
+            ]
+          }
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "rotations": {
+          "$ref": "#/$defs/NestingRotations"
+        },
+        "allowFlip": {
+          "type": "boolean"
+        },
+        "spacing": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "margin": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "timeBudgetSeconds": {
+          "type": "number",
+          "minimum": 0.001,
+          "maximum": 120
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 1e-9,
+          "maximum": 1000000000
+        },
+        "evaluationBudget": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sheetGap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      },
+      "additionalProperties": false
+    },
     "UnfoldSolidBody": {
       "type": "object",
       "properties": {
         "stepFileId": {
           "type": "string",
           "minLength": 1
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
         },
         "kFactor": {
           "default": 0.5,
@@ -955,6 +1485,9 @@ export const schemaBundle = {
           "type": "string",
           "minLength": 1
         },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
         "kFactor": {
           "default": 0.5,
           "type": "number",
@@ -978,6 +1511,9 @@ export const schemaBundle = {
         "stepFileId": {
           "type": "string",
           "minLength": 1
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
         },
         "kFactor": {
           "default": 0.5,

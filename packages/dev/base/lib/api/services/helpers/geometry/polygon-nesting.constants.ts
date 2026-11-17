@@ -1,0 +1,6 @@
+export const NESTING_BOX_MARGIN = 0.01;
+export const INTERIOR_SCANLINES = [0.5, 0.25, 0.75, 0.125, 0.375, 0.625, 0.875];
+export const COINCIDENT_AREA_SHARE = 1e-9;
+export const SWEEP_CANDIDATES_PER_PAIR = 1000;
+export const SWEEP_STEPS_PER_BOX = 20;
+export const SWEEP_STEPS_PER_CANDIDATE = 2;

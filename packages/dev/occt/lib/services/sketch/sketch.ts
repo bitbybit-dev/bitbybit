@@ -7,7 +7,7 @@ import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import type * as Resolved from "../../api/resolved-inputs";
-import { PathBuilder } from "../../svg/path-builder";
+import { PathBuilder } from "../../services/base/path-builder";
 import type { OCCTShapes } from "../shapes/shapes";
 import type { OCCTOperations } from "../operations";
 import type { OCCTBooleans } from "../booleans";

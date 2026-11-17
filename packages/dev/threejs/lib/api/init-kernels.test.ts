@@ -2,6 +2,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as THREEJS from "three";
 import { BitByBitBase } from "./bitbybit-base";
 import { initBitByBit, initKernels } from "./init-kernels";
+import { KernelWorkerFake, stateWithin } from "../../../__test__/kernel-workers";
+
+const KERNELS_READY_WITHIN_MS = 200;
 
 class SilentWorker extends EventTarget implements Worker {
     onmessage: Worker["onmessage"] = null;
@@ -74,6 +77,71 @@ describe("initBitByBit", () => {
 
         // Assert
         expect(result).toMatchObject({ message: "No kernels selected for initialization.", initializedKernels: [] });
+    });
+
+    it("should set the conventions it was given once the library has its scene", async () => {
+        // Arrange
+        const order: string[] = [];
+        vi.spyOn(bitbybit, "init").mockImplementation(() => { order.push("init"); });
+        const setConventions = vi.spyOn(bitbybit, "setConventions").mockImplementation(() => { order.push("conventions"); return Promise.resolve({}); });
+
+        // Act
+        await initBitByBit(scene, bitbybit, { enableOCCT: false, enableJSCAD: false, enableManifold: false, workers, conventions: 1 });
+
+        // Assert
+        expect(setConventions.mock.calls).toEqual([[1]]);
+        expect(order).toEqual(["init", "conventions"]);
+    });
+
+    it("should come up with the conventions it was given while each kernel worker holds its calls until its kernel is ready", async () => {
+        // Arrange
+        const occtWorker = new KernelWorkerFake("occ-initialised");
+        const jscadWorker = new KernelWorkerFake("jscad-initialised");
+        const manifoldWorker = new KernelWorkerFake("manifold-initialised");
+        const kernels = [occtWorker, jscadWorker, manifoldWorker];
+        const started = initBitByBit(scene, bitbybit, { enableOCCT: true, enableJSCAD: true, enableManifold: true, workers: { occtWorker, jscadWorker, manifoldWorker }, conventions: 1 });
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        // Act
+        kernels.forEach((kernel) => kernel.ready());
+
+        // Assert
+        expect(await stateWithin(started, KERNELS_READY_WITHIN_MS)).toBe("resolved");
+        expect(kernels.map((kernel) => kernel.calls)).toEqual(kernels.map(() => [{ functionName: "setSettings", inputs: { coordinateSystem: "rightHanded" } }]));
+    });
+
+    it("should refuse a conventions level that is no whole number without waiting for the kernels", async () => {
+        // Arrange
+        const occtWorker = new KernelWorkerFake("occ-initialised");
+
+        // Act
+        const started = initBitByBit(scene, bitbybit, { enableOCCT: true, enableJSCAD: false, enableManifold: false, workers: { occtWorker }, conventions: 1.5 });
+
+        // Assert
+        await expect(started).rejects.toThrow("A conventions level is a whole number from 0");
+        expect(occtWorker.calls).toEqual([]);
+    });
+
+    it("should set no conventions when it was given none, so an app made earlier runs as it did", async () => {
+        // Arrange
+        const setConventions = vi.spyOn(bitbybit, "setConventions");
+
+        // Act
+        await initBitByBit(scene, bitbybit, { enableOCCT: false, enableJSCAD: false, enableManifold: false, workers, });
+
+        // Assert
+        expect(setConventions).not.toHaveBeenCalled();
+    });
+
+    it("should set level 0 when that is what it was given, which says so on purpose", async () => {
+        // Arrange
+        const setConventions = vi.spyOn(bitbybit, "setConventions").mockResolvedValue({});
+
+        // Act
+        await initBitByBit(scene, bitbybit, { enableOCCT: false, enableJSCAD: false, enableManifold: false, workers, conventions: 0 });
+
+        // Assert
+        expect(setConventions.mock.calls).toEqual([[0]]);
     });
 });
 

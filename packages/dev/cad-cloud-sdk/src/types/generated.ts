@@ -1145,7 +1145,7 @@ export interface paths {
         put?: never;
         /**
          * Sheet metal - unfold all solids to flat geometry
-         * @description Proprietary sheet-metal unfold: loads every solid in an uploaded STEP file and flattens each to a flat pattern. Requires the 'cad' API key scope. Returns 202 with a task ID; all flats are combined into one compound output per format.
+         * @description Proprietary sheet-metal unfold: loads every solid in an uploaded STEP file and flattens each to a flat pattern. Requires the 'cad' API key scope. Returns 202 with a task ID; every flat is one part of a single output per format, named after its solid, so a nesting call reads one part per flat.
          */
         post: {
             parameters: {
@@ -1285,7 +1285,7 @@ export interface paths {
         put?: never;
         /**
          * Sheet metal - unfold all solids, geometry + report
-         * @description Proprietary sheet-metal unfold, full workflow: flattens every solid in an uploaded STEP file AND returns per-solid metrics in one call. Requires the 'cad' API key scope. Returns 202 with a task ID; flats are combined into one compound output per format and the per-solid report array is delivered in the task metadata.
+         * @description Proprietary sheet-metal unfold, full workflow: flattens every solid in an uploaded STEP file AND returns per-solid metrics in one call. Requires the 'cad' API key scope. Returns 202 with a task ID; every flat is one part of a single output per format, named after its solid, and the per-solid report array is delivered in the task metadata.
          */
         post: {
             parameters: {
@@ -1297,6 +1297,216 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": components["schemas"]["UnfoldSolidBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/unfold/solid-and-nest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sheet metal - unfold all solids and nest the flats on sheets
+         * @description Proprietary sheet-metal unfold and true-shape nesting in one call: flattens every solid in an uploaded STEP file and nests the flat patterns on sheets straight away, without writing them to a file and reading them back. Left out, the sheets are sized for the flats and the spacing and margin are scaled to them; 'fileUnit' reads a file whose header names the wrong unit. Every length is in millimetres. Requires the 'cad' API key scope. Returns 202 with a task ID; the nested sheets come in the requested formats as on POST /api/v1/cad/pro/nesting/nest, 'flat-meshes' gives each solid's flat triangulated where it was unfolded, the NestingReport (each part naming its solid) is the metadata result, and the per-solid unfold report array is delivered in the task metadata.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldAndNestBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/nesting/nest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Nesting - place flat parts on sheets or a strip
+         * @description Proprietary true-shape 2D nesting: places the flat parts of uploaded STEP files onto rectangular sheets or one strip, turning and flipping them as each part's options allow, with a spacing that holds on the true curved edges and parts placed inside other parts' holes. Every part a file places is a part, with each of its solids on its own, so an unfold's output gives one part per flat pattern; 'stepFileIds' gives the full rule. Requires the 'cad' API key scope. Returns 202 with a task ID; every used sheet is one compound of its placed parts, laid in a row on the XZ plane, combined into one output per format, and the NestingReport (placements with their transforms, each part as read, what was left and why, totals) is delivered as the metadata result.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["NestingNestBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/nesting/inspect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Nesting - read parts without nesting them
+         * @description Reads the parts of uploaded STEP files as nesting would and reports each one's file, kind, outline size, area and cut length, or why it cannot be nested. Requires the 'cad' API key scope. Returns 202 with a task ID; the NestingInspection is delivered as the metadata result.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["NestingInspectBody"];
                 };
             };
             responses: {
@@ -2056,7 +2266,7 @@ export interface components {
             meshPrecision?: components["schemas"]["MeshPrecision"];
             /** @description Override tessellation precision specifically for glTF output. When set, takes precedence over meshPrecision for glTF only. */
             gltfMeshPrecision?: components["schemas"]["MeshPrecision"];
-            /** @description Convert from Y-up to Z-up coordinate system in the output. Useful for software that expects Z-up. */
+            /** @description Turns a decomposed-mesh output from Y-up, as the server models, to Z-up. It applies to decomposed-mesh only: a STEP output is always written Z-up, so a STEP sent in comes back as it went in, a glTF output is always Y-up, as glTF asks, and a BREP output keeps the frame the shapes were modelled in, as occt.io.loadBrep reads it back. */
             adjustYtoZ?: boolean;
             /** @description Include the full pipeline definition in metadata.json. Defaults to true. Set to false to exclude it for smaller metadata. */
             includePipelineInMetadata?: boolean;
@@ -2064,7 +2274,7 @@ export interface components {
             unit?: components["schemas"]["LengthUnit"];
         };
         /**
-         * @description Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only), 'brep' (OpenCascade BREP as text, which OCCT-based tools such as FreeCAD read) and 'brep-binary' (OpenCascade binary BREP, the smallest and fastest exact form, which keeps the numbering of faces and edges; read back with occt.io.loadBrepBinary) - both OCCT only, without triangulation.
+         * @description Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only), 'brep' (OpenCascade BREP as text) and 'brep-binary' (OpenCascade binary BREP, the smallest and fastest exact form, which keeps the numbering of faces and edges) - both OCCT only, without triangulation, and both in the frame the pipeline modelled the shape in (Y up), so occt.io.loadBrep and occt.io.loadBrepBinary read them back exactly as they were; a Z-up tool such as FreeCAD shows them lying on their backs, where a 'step' output stands upright.
          * @enum {string}
          */
         PipelineOutputFormat: "step" | "stpz" | "decomposed-mesh" | "gltf" | "json" | "csv" | "stl" | "3mf" | "brep" | "brep-binary";
@@ -2120,7 +2330,7 @@ export interface components {
             meshPrecision?: components["schemas"]["MeshPrecision"];
             /** @description Override tessellation precision specifically for glTF output. When set, takes precedence over meshPrecision for glTF only. */
             gltfMeshPrecision?: components["schemas"]["MeshPrecision"];
-            /** @description Convert from Y-up to Z-up coordinate system in the output. Useful for software that expects Z-up. */
+            /** @description Turns a decomposed-mesh output from Y-up, as the server models, to Z-up. It applies to decomposed-mesh only: a STEP output is always written Z-up, so a STEP sent in comes back as it went in, and a glTF output is always Y-up, as glTF asks. */
             adjustYtoZ?: boolean;
         };
         /**
@@ -2369,6 +2579,8 @@ export interface components {
         UnfoldFaceToFlatBody: {
             /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
             stepFileId: string;
+            /** @description The unit a STEP file's numbers are really in, when its header states another unit or none: some exporters write a model drawn in metres under a millimetre header. Each file is scaled from it, so the model is read in millimetres, the unit every length of the request and its results is in. A header naming no unit counts as millimetres; a file whose header names a unit other than mm, cm, m or in, or several different ones, is refused, since its unit is converted already. Left out, each file's own unit is used. */
+            fileUnit?: components["schemas"]["LengthUnit"];
             /**
              * @description 0-based index of the developable face (in the shape's BRepGraph face array) to unfold.
              * @default 0
@@ -2381,6 +2593,8 @@ export interface components {
         UnfoldFaceReportBody: {
             /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
             stepFileId: string;
+            /** @description The unit a STEP file's numbers are really in, when its header states another unit or none: some exporters write a model drawn in metres under a millimetre header. Each file is scaled from it, so the model is read in millimetres, the unit every length of the request and its results is in. A header naming no unit counts as millimetres; a file whose header names a unit other than mm, cm, m or in, or several different ones, is refused, since its unit is converted already. Left out, each file's own unit is used. */
+            fileUnit?: components["schemas"]["LengthUnit"];
             /**
              * @description 0-based index of the face to analyze.
              * @default 0
@@ -2391,30 +2605,34 @@ export interface components {
         UnfoldSolidToFlatBody: {
             /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
             stepFileId: string;
+            /** @description The unit a STEP file's numbers are really in, when its header states another unit or none: some exporters write a model drawn in metres under a millimetre header. Each file is scaled from it, so the model is read in millimetres, the unit every length of the request and its results is in. A header naming no unit counts as millimetres; a file whose header names a unit other than mm, cm, m or in, or several different ones, is refused, since its unit is converted already. Left out, each file's own unit is used. */
+            fileUnit?: components["schemas"]["LengthUnit"];
             /**
              * @description Sheet-metal K-factor (neutral-axis position), typically ~0.5.
              * @default 0.5
              */
             kFactor: number;
             /**
-             * @description Sheet thickness override in model units; 0 auto-detects thickness from face pairs.
+             * @description Sheet thickness override in millimetres; 0 auto-detects thickness from face pairs.
              * @default 0
              */
             thicknessOverride: number;
-            /** @description Output formats for the flattened patterns. Every solid's flat is combined into one compound output per format. Defaults to glTF. */
+            /** @description Output formats for the flattened patterns. Every solid's flat is one part, named flat-1, flat-2 and so on after the solid it came from, and all of them make one output per format. Defaults to glTF. */
             outputs?: components["schemas"]["OutputOptions"];
         };
         /** @description Compute per-solid sheet-metal unfold metrics for every solid in an uploaded STEP file. */
         UnfoldSolidReportBody: {
             /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
             stepFileId: string;
+            /** @description The unit a STEP file's numbers are really in, when its header states another unit or none: some exporters write a model drawn in metres under a millimetre header. Each file is scaled from it, so the model is read in millimetres, the unit every length of the request and its results is in. A header naming no unit counts as millimetres; a file whose header names a unit other than mm, cm, m or in, or several different ones, is refused, since its unit is converted already. Left out, each file's own unit is used. */
+            fileUnit?: components["schemas"]["LengthUnit"];
             /**
              * @description Sheet-metal K-factor (neutral-axis position), typically ~0.5.
              * @default 0.5
              */
             kFactor: number;
             /**
-             * @description Sheet thickness override in model units; 0 auto-detects thickness from face pairs.
+             * @description Sheet thickness override in millimetres; 0 auto-detects thickness from face pairs.
              * @default 0
              */
             thicknessOverride: number;
@@ -2423,18 +2641,204 @@ export interface components {
         UnfoldSolidBody: {
             /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
             stepFileId: string;
+            /** @description The unit a STEP file's numbers are really in, when its header states another unit or none: some exporters write a model drawn in metres under a millimetre header. Each file is scaled from it, so the model is read in millimetres, the unit every length of the request and its results is in. A header naming no unit counts as millimetres; a file whose header names a unit other than mm, cm, m or in, or several different ones, is refused, since its unit is converted already. Left out, each file's own unit is used. */
+            fileUnit?: components["schemas"]["LengthUnit"];
             /**
              * @description Sheet-metal K-factor (neutral-axis position), typically ~0.5.
              * @default 0.5
              */
             kFactor: number;
             /**
-             * @description Sheet thickness override in model units; 0 auto-detects thickness from face pairs.
+             * @description Sheet thickness override in millimetres; 0 auto-detects thickness from face pairs.
              * @default 0
              */
             thicknessOverride: number;
-            /** @description Output formats for the flattened patterns. For 'gltf'/'step'/'stpz', every solid's flat is combined into one compound output. The 'decomposed-mesh' format instead returns one mesh per solid (each tagged with its 'solidIndex'). Defaults to glTF. */
+            /** @description Output formats for the flattened patterns. For 'gltf'/'step'/'stpz', every solid's flat is one part, named flat-1, flat-2 and so on after the solid it came from, and all of them make one output per format. The 'decomposed-mesh' format instead returns one mesh per solid whose flat meshed (each tagged with its 'solidIndex'), an empty list when none did; a flat that could not be meshed is still in the other formats, and its report entry says why in 'meshError'. Defaults to glTF. */
             outputs?: components["schemas"]["OutputOptions"];
+        };
+        /** @description Flatten every constant-thickness sheet-metal solid in an uploaded STEP file and nest the flat patterns on sheets in the same call: the per-solid unfold report, the nesting report and the nested sheets, without writing the flats to a file and reading them back. */
+        UnfoldAndNestBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
+            stepFileId: string;
+            /** @description The unit a STEP file's numbers are really in, when its header states another unit or none: some exporters write a model drawn in metres under a millimetre header. Each file is scaled from it, so the model is read in millimetres, the unit every length of the request and its results is in. A header naming no unit counts as millimetres; a file whose header names a unit other than mm, cm, m or in, or several different ones, is refused, since its unit is converted already. Left out, each file's own unit is used. */
+            fileUnit?: components["schemas"]["LengthUnit"];
+            /**
+             * @description Sheet-metal K-factor (neutral-axis position), typically ~0.5.
+             * @default 0.5
+             */
+            kFactor: number;
+            /**
+             * @description Sheet thickness override in millimetres; 0 auto-detects thickness from face pairs.
+             * @default 0
+             */
+            thicknessOverride: number;
+            /** @description How the flat patterns are nested. Left out, every flat is placed once on sheets sized for them, turning in quarter turns. */
+            nesting?: components["schemas"]["UnfoldNestingOptions"];
+            /** @description Output formats for the nested sheets and the flat patterns. Defaults to glTF of the nested sheets. */
+            outputs?: components["schemas"]["UnfoldAndNestOutputOptions"];
+        };
+        /** @description How the flat patterns of an unfold are nested: the stock, the copies, how each flat may turn, and the search settings. Every length is in millimetres. */
+        UnfoldNestingOptions: {
+            /** @description The stock to nest onto: kinds of rectangular sheets, or one strip. Left out, one kind of sheet is sized for the flat patterns: at least twice as long as it is wide, holding the largest flat with its margins, large enough that all the flats fill about half of it, its sides rounded up. When every flat fits on standard 3000 x 1500 stock and that sheet would be larger, the standard stock is used instead. */
+            sheets?: (components["schemas"]["NestingStrip"] | components["schemas"]["NestingSheet"])[];
+            /** @description How many copies of every flat pattern to place: the number of models to make. Defaults to 1. All copies together, this number times the number of flat patterns, stay within 100000. */
+            quantity?: number;
+            rotations?: components["schemas"]["NestingRotations"];
+            /** @description Whether every flat pattern may be turned over (a half turn about an axis in its plane, never a mirror). Defaults to false. */
+            allowFlip?: boolean;
+            /** @description The least distance kept between any two flat patterns, in millimetres, measured on their true shapes. Defaults to a gap sized to the flats: a fiftieth of the square root of their area, rounded to 1, 2 or 5 of its decade. */
+            spacing?: number;
+            /** @description The band along each sheet's edges that no flat pattern enters, in millimetres. Defaults to the gap sized to the flats, the same one the spacing takes when it is left out; a spacing that is given does not change it. */
+            margin?: number;
+            /** @description How long the nesting may search; the best layout found by then is returned. Defaults to 5 seconds, at most 120. */
+            timeBudgetSeconds?: number;
+            /** @description How far the straight chords that stand in for curved edges may stray from them, in the parts' units (millimetres for parts read from STEP files); the spacing still holds on the true curves. Defaults to 0.1. */
+            tolerance?: number;
+            /** @description Stop after this many placements are tried, which makes a run repeatable for one seed; the time budget still applies. 0 means no limit. */
+            evaluationBudget?: number;
+            /** @description The seed of the search's random choices. Defaults to 1. */
+            seed?: number;
+            /** @description The gap between sheets as they are laid out in a row in the output, in the parts' units (millimetres for parts read from STEP files). Defaults to a tenth of the widest sheet. */
+            sheetGap?: number;
+        };
+        /** @description One strip of open length; it stands alone, never beside other stock. */
+        NestingStrip: {
+            /** @constant */
+            strip: true;
+            /** @description The strip's width across, along y, in the parts' units (millimetres for parts read from STEP files). Its length along x is open and is what the nesting makes as short as it can. */
+            height: number;
+            /** @description What the strip costs: one amount, added to the totals' cost whatever length the nesting uses. Defaults to 1. */
+            cost?: number;
+        };
+        /** @description One kind of rectangular stock. */
+        NestingSheet: {
+            /** @description The sheet's side along x, in the parts' units (millimetres for parts read from STEP files). */
+            width: number;
+            /** @description The sheet's side along y, in the parts' units (millimetres for parts read from STEP files). */
+            height: number;
+            /** @description How many sheets of this stock there are. Without it, as many as needed. */
+            quantity?: number;
+            /** @description What one sheet of this stock costs. Without costs, the stock that wastes least is opened first (each sheet costs its area). */
+            cost?: number;
+            /** @constant */
+            strip?: false;
+        };
+        /** @description How a part may turn on the sheet: a fixed list of angles, steps that divide a full turn, or any angle. Without it a part turns in steps of 90 degrees. */
+        NestingRotations: {
+            /** @constant */
+            mode: "fixed";
+            /** @description The turns a part may take, in degrees, such as [0, 180] for a grain direction; at most 720. */
+            angles: number[];
+        } | {
+            /** @constant */
+            mode: "step";
+            /** @description Turn in steps of this many degrees; it must divide 360 evenly (90 gives 0, 90, 180 and 270). */
+            step: number;
+        } | {
+            /** @constant */
+            mode: "free";
+        };
+        /** @description Which formats the nested sheets and the flat patterns are written in, and their mesh quality. */
+        UnfoldAndNestOutputOptions: {
+            /** @description Output formats to generate; each gives a separate downloadable result. The nested sheets come in the formats of NestingOutputFormat, and 'flat-meshes' gives each solid's flat pattern triangulated where it was unfolded, tagged with its solidIndex, for showing beside the model; a flat that could not be meshed has no mesh there but is nested all the same, and its unfold report entry says why in 'meshError'. Give 'step' or 'stpz', not both. */
+            formats: ("step" | "stpz" | "decomposed-mesh" | "gltf" | "dxf" | "svg" | "outlines" | "flat-meshes")[];
+            /** @description Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes. Only ignored when output is limited to step/stpz formats. */
+            meshPrecision?: components["schemas"]["MeshPrecision"];
+            /** @description Override tessellation precision specifically for glTF output. When set, takes precedence over meshPrecision for glTF only. */
+            gltfMeshPrecision?: components["schemas"]["MeshPrecision"];
+            /** @description Turns the decomposed-mesh and flat-meshes outputs from Y-up, as the server models, to Z-up. It applies to those two only: a STEP output is always written Z-up, and a glTF output is always Y-up, as glTF asks. */
+            adjustYtoZ?: boolean;
+        };
+        /** @description Nest the flat parts of uploaded STEP files onto sheets or a strip. A part is a planar face, coplanar faces such as an unfolded sheet-metal part, a plate solid, or a drawing of closed wires; 'stepFileIds' says how parts are read from a file. */
+        NestingNestBody: {
+            /** @description IDs of previously uploaded STEP files (.step, .stp or gzip-compressed .stpz), at most 50 and 200 MB together. Parts are read file after file, as each file's product structure gives them: every placement of a part (a product) is a part, and a file with no assembly is its one part. Within a part, every solid is a part of its own, in the order they sit, and whatever else it holds stays one part after them (an unfolded flat pattern with its bend lines, a drawing's outline with its holes); a part with no edge is skipped, and a request whose files give no part at all is refused. Parts are read into the Y-up working space the report uses. options.parts[i] pairs with the i-th part over all files, at most 5000, and the report names each part's file. */
+            stepFileIds: string[];
+            /** @description The unit a STEP file's numbers are really in, when its header states another unit or none: some exporters write a model drawn in metres under a millimetre header. Each file is scaled from it, so the model is read in millimetres, the unit every length of the request and its results is in. A header naming no unit counts as millimetres; a file whose header names a unit other than mm, cm, m or in, or several different ones, is refused, since its unit is converted already. Left out, each file's own unit is used. */
+            fileUnit?: components["schemas"]["LengthUnit"];
+            options: components["schemas"]["NestingOptions"];
+            /** @description Output formats for the nested sheets: every used sheet is one part, holding its placed parts and its outline, and all sheets are combined into one output per format. Defaults to glTF. */
+            outputs?: components["schemas"]["NestingOutputOptions"];
+        };
+        /** @description The stock, the per-part options and the settings of a nesting run. Every length is in the parts' units: millimetres on the nesting routes, which read their STEP files in millimetres, and the unit a pipeline models its shapes in for an occtPro.nesting step. */
+        NestingOptions: {
+            /** @description The stock to nest onto: kinds of rectangular sheets, or one strip. */
+            sheets: (components["schemas"]["NestingStrip"] | components["schemas"]["NestingSheet"])[];
+            /** @description The options of each part, in the order of the parts; the list may not be longer than the parts there are. A null entry, and every part past the end of the list, takes the defaults. All copies together stay within 100000, every part counting its quantity, or 1 when it has no entry or its entry gives none: the entries given are checked when the request arrives, and the total over every part once the parts are read. The request body may grow by 256 bytes for each of the 5000 parts nesting takes, so the options of every part fit, each with its quantity, a few fixed angles, a flip, a priority and an x direction. */
+            parts?: (components["schemas"]["NestingPartOptions"] | null)[];
+            /** @description The least distance kept between any two parts, in the parts' units (millimetres for parts read from STEP files), measured on their true shapes. Defaults to 0, where parts that tile exactly may touch. */
+            spacing?: number;
+            /** @description The band along each sheet's edges that no part enters, in the parts' units (millimetres for parts read from STEP files). Defaults to 0. */
+            margin?: number;
+            /** @description How long the search may run; the best layout found by then is returned. Defaults to 10 seconds, at most 120. */
+            timeBudgetSeconds?: number;
+            /** @description How far the straight chords that stand in for curved edges may stray from them, in the parts' units (millimetres for parts read from STEP files); the spacing still holds on the true curves. Defaults to 0.1. */
+            tolerance?: number;
+            /** @description Stop after this many placements are tried, which makes a run repeatable for one seed; the time budget still applies. 0 means no limit. */
+            evaluationBudget?: number;
+            /** @description The seed of the search's random choices. Defaults to 1. */
+            seed?: number;
+            /** @description The gap between sheets as they are laid out in a row in the output, in the parts' units (millimetres for parts read from STEP files). Defaults to a tenth of the widest sheet. */
+            sheetGap?: number;
+        };
+        /** @description The options of one part, paired with the part of the same index. */
+        NestingPartOptions: {
+            /** @description How many copies of the part to place. Defaults to 1; 0 leaves the part out. */
+            quantity?: number;
+            rotations?: components["schemas"]["NestingRotations"];
+            /** @description Whether the part may be turned over (a half turn about an axis in its plane, never a mirror). Defaults to false. */
+            allowFlip?: boolean;
+            /** @description Parts of higher priority are placed first, so they are the last to be left off when stock runs out. Defaults to 0. */
+            priority?: number;
+            /** @description The direction in the part's plane that a rotation of 0 lays along the sheet's x axis, in the Y-up working space the parts are read into (a STEP file's Z-up numbers are turned a quarter about X first, so the file's +Y is -Z here). A part lying flat keeps its drawn direction without it; one lying askew is squared up to its smallest box. */
+            xDirection?: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** @description Which formats the nested sheets are written in, and their mesh quality. */
+        NestingOutputOptions: {
+            /** @description Output formats to generate; each gives a separate downloadable result. Give 'step' or 'stpz', not both. */
+            formats: components["schemas"]["NestingOutputFormat"][];
+            /** @description Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes. Only ignored when output is limited to step/stpz formats. */
+            meshPrecision?: components["schemas"]["MeshPrecision"];
+            /** @description Override tessellation precision specifically for glTF output. When set, takes precedence over meshPrecision for glTF only. */
+            gltfMeshPrecision?: components["schemas"]["MeshPrecision"];
+            /** @description Turns a decomposed-mesh output from Y-up, as the server models, to Z-up. It applies to decomposed-mesh only: a STEP output is always written Z-up, so a STEP sent in comes back as it went in, and a glTF output is always Y-up, as glTF asks. */
+            adjustYtoZ?: boolean;
+        };
+        /**
+         * @description The formats of the nested sheets: 'step' or 'stpz' (each sheet one part, holding its placed parts and its outline), 'gltf', 'decomposed-mesh' (the placed parts, triangulated), 'dxf' (an AutoCAD 2000 drawing in millimetres: the sheets' outlines on layer SHEETS and the parts' cut paths on layer PARTS, every arc, ellipse and spline exact), 'svg' (the same drawing as an SVG file in millimetres, each layer a group), or 'outlines' (the same cut paths as JSON, each copy in the frame of its sheet and named by its placement, for drawing the layout). A 'dxf' or 'svg' too large to write is left out while every other format is still written, and the task's metadata says why under 'outputsLeftOut' (format to reason); a caveat about a cut file that was written, such as a part whose faces could not be joined into one outline, is given under 'outputNotes' (format to note).
+         * @enum {string}
+         */
+        NestingOutputFormat: "step" | "stpz" | "decomposed-mesh" | "gltf" | "dxf" | "svg" | "outlines";
+        /** @description Read the parts of uploaded STEP files as nesting would, without nesting them: each part's file, kind, outline size, area and cut length, or why it cannot be nested. */
+        NestingInspectBody: {
+            /** @description IDs of previously uploaded STEP files (.step, .stp or gzip-compressed .stpz), at most 50 and 200 MB together. Parts are read file after file, as each file's product structure gives them: every placement of a part (a product) is a part, and a file with no assembly is its one part. Within a part, every solid is a part of its own, in the order they sit, and whatever else it holds stays one part after them (an unfolded flat pattern with its bend lines, a drawing's outline with its holes); a part with no edge is skipped, and a request whose files give no part at all is refused. Parts are read into the Y-up working space the report uses. options.parts[i] pairs with the i-th part over all files, at most 5000, and the report names each part's file. */
+            stepFileIds: string[];
+            /** @description The unit a STEP file's numbers are really in, when its header states another unit or none: some exporters write a model drawn in metres under a millimetre header. Each file is scaled from it, so the model is read in millimetres, the unit every length of the request and its results is in. A header naming no unit counts as millimetres; a file whose header names a unit other than mm, cm, m or in, or several different ones, is refused, since its unit is converted already. Left out, each file's own unit is used. */
+            fileUnit?: components["schemas"]["LengthUnit"];
+            options?: components["schemas"]["NestingInspectOptions"];
+        };
+        /** @description The settings that change how parts are read (tolerance, xDirection); no stock is needed. Every length is in the parts' units: millimetres on the nesting routes, which read their STEP files in millimetres, and the unit a pipeline models its shapes in for an occtPro.nesting step. */
+        NestingInspectOptions: {
+            sheets?: (components["schemas"]["NestingStrip"] | components["schemas"]["NestingSheet"])[];
+            /** @description The options of each part, in the order of the parts; the list may not be longer than the parts there are. A null entry, and every part past the end of the list, takes the defaults. All copies together stay within 100000, every part counting its quantity, or 1 when it has no entry or its entry gives none: the entries given are checked when the request arrives, and the total over every part once the parts are read. The request body may grow by 256 bytes for each of the 5000 parts nesting takes, so the options of every part fit, each with its quantity, a few fixed angles, a flip, a priority and an x direction. */
+            parts?: (components["schemas"]["NestingPartOptions"] | null)[];
+            /** @description The least distance kept between any two parts, in the parts' units (millimetres for parts read from STEP files), measured on their true shapes. Defaults to 0, where parts that tile exactly may touch. */
+            spacing?: number;
+            /** @description The band along each sheet's edges that no part enters, in the parts' units (millimetres for parts read from STEP files). Defaults to 0. */
+            margin?: number;
+            /** @description How long the search may run; the best layout found by then is returned. Defaults to 10 seconds, at most 120. */
+            timeBudgetSeconds?: number;
+            /** @description How far the straight chords that stand in for curved edges may stray from them, in the parts' units (millimetres for parts read from STEP files); the spacing still holds on the true curves. Defaults to 0.1. */
+            tolerance?: number;
+            /** @description Stop after this many placements are tried, which makes a run repeatable for one seed; the time budget still applies. 0 means no limit. */
+            evaluationBudget?: number;
+            /** @description The seed of the search's random choices. Defaults to 1. */
+            seed?: number;
+            /** @description The gap between sheets as they are laid out in a row in the output, in the parts' units (millimetres for parts read from STEP files). Defaults to a tenth of the widest sheet. */
+            sheetGap?: number;
         };
         /** @description Request a pre-signed upload URL. After receiving the URL, PUT the raw file bytes to it within the expiration window. */
         FileUploadBody: {
@@ -2472,6 +2876,8 @@ export interface components {
             totalArea: number;
             faces: components["schemas"]["UnfoldFaceEntry"][];
             placed: components["schemas"]["UnfoldPlaced"][];
+            /** @description Why the flat pattern has no mesh in the decomposed-mesh or flat-meshes result, when it could not be meshed. The flat is still in every other output and, on unfold-and-nest, in the nest. */
+            meshError?: string;
         } | components["schemas"]["UnfoldSolidReportError"];
         /** @description One bend: line, angle, radii (inner/outer/neutral and per-end for cones), and developed lengths. */
         UnfoldBend: {
@@ -2579,6 +2985,153 @@ export interface components {
             totalArea?: number;
             faces?: components["schemas"]["UnfoldFaceEntry"][];
             placed?: components["schemas"]["UnfoldPlaced"][];
+        };
+        /** @description One used sheet: its stock, where it lies in the working space, and how much of it the parts fill. */
+        NestingSheetEntry: {
+            index: number;
+            /** @description The index of the stock in the options' sheets. */
+            stock: number;
+            /** @enum {string} */
+            kind: "sheet" | "strip";
+            /** @description The sheet's width; for a strip, the length it used. */
+            width: number;
+            height: number;
+            cost: number;
+            /** @description Where the sheet's corner lies in the working space, Y up, the sheet on the XZ plane facing +Y. A STEP output turns this space to Z up. */
+            origin: [
+                number,
+                number,
+                number
+            ];
+            usedLength: number;
+            remnantLength: number;
+            parts: number;
+            partArea: number;
+            utilization: number;
+        };
+        /** @description Where one copy of a part was placed. */
+        NestingPlacement: {
+            part: number;
+            copy: number;
+            sheet: number;
+            x: number;
+            y: number;
+            angleDeg: number;
+            flipped: boolean;
+            /** @description The part's box on its sheet as [minX, minY, maxX, maxY]. */
+            box: number[];
+            /** @description A point inside the placed part's material, for a label, in the working space (Y up). */
+            anchor: [
+                number,
+                number,
+                number
+            ];
+            /** @description The 4 x 4 matrix, column by column, that moves the input part to its place in the working space (Y up); a STEP output is that space turned to Z up. */
+            transform: number[];
+        };
+        /** @description How one part was read, and how many of its copies were placed. */
+        NestingPartEntry: {
+            index: number;
+            /** @description Which uploaded file the part came from, as an index into stepFileIds; present on the nesting routes, which read parts from files. */
+            file?: number;
+            /** @description Which solid of the model the flat pattern was unfolded from, as its solidIndex in the unfold report; present on the unfold-and-nest route. */
+            solid?: number;
+            ok: boolean;
+            /** @description Why the part cannot be nested: nullShape, notPlanar, notClosed, notPlate, unsupportedShape or invalidGeometry. */
+            problem?: string;
+            /** @description What the part was read as: face, faces, solid, wire or wires. */
+            kind: string;
+            area: number;
+            width: number;
+            height: number;
+            /** @description A plate's thickness; 0 for a face or a drawing. */
+            depth: number;
+            /** @description How far the outline's chords may stray from the true edges; added to the spacing. */
+            slack: number;
+            cutLength: number;
+            loops: number;
+            points: number;
+            searchedPoints: number;
+            quantity: number;
+            placed: number;
+        };
+        /** @description Copies of a part that were not placed, and why. */
+        NestingLeft: {
+            part: number;
+            count: number;
+            /** @description The part's problem, or tooLargeForAnySheet, noStockLeft, timeBudget or verificationFailed. */
+            reason: string;
+        };
+        /** @description Totals over every used sheet. */
+        NestingTotals: {
+            sheets: number;
+            placed: number;
+            left: number;
+            partArea: number;
+            sheetArea: number;
+            utilization: number;
+            cost: number;
+            cutLength: number;
+            pierces: number;
+        };
+        /** @description How the search ran: whether the same seed gives the same layout again, and whether it was stopped or ran out of time. */
+        NestingRun: {
+            seed: number;
+            evaluations: number;
+            seconds: number;
+            reproducible: boolean;
+            stopped: boolean;
+            hitWallLimit: boolean;
+        };
+        /** @description The nesting kernel's own answer when it refuses the options or is stopped before any part was nested. No result carries it: the API fails the task with its error instead. */
+        NestingReportError: {
+            /** @constant */
+            ok: false;
+            error: string;
+        };
+        /** @description A full circle. */
+        NestingOutlineCircle: {
+            /** @description The centre's x and y and the radius. */
+            circle: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** @description Lines and arcs from vertex to vertex. */
+        NestingOutlinePolyline: {
+            /** @description The vertices as x, y pairs, one after another. */
+            points: number[];
+            /** @description One per vertex: the tangent of a quarter of the arc's angle from that vertex to the next, 0 for a straight line, positive turning counterclockwise. */
+            bulges: number[];
+            closed: boolean;
+        };
+        /** @description An ellipse or an arc of one. */
+        NestingOutlineEllipse: {
+            ellipse: {
+                /** @description The centre's x and y. */
+                center: number[];
+                /** @description The vector from the centre to one end of the major axis; its length is the major radius. */
+                majorAxis: number[];
+                /** @description The minor radius divided by the major radius. */
+                ratio: number;
+                /** @description Where the arc starts, as the ellipse's parameter t in radians: the point center + cos(t) majorAxis + sin(t) ratio (-majorAxis y, majorAxis x), the minor axis being the major one turned a quarter counterclockwise and scaled by ratio. t is the angle from the major axis only when ratio is 1. */
+                start: number;
+                /** @description Where the arc ends, as the same parameter t in radians; the arc runs counterclockwise from start to end, a whole ellipse from 0 to 2 pi. */
+                end: number;
+            };
+        };
+        /** @description A B-spline or NURBS curve. */
+        NestingOutlineSpline: {
+            spline: {
+                degree: number;
+                /** @description The full knot vector, one more value than the control points and the degree together; the curve starts and ends at its end points. */
+                knots: number[];
+                /** @description The control points as x, y pairs, one after another. */
+                points: number[];
+                /** @description One weight per control point when the curve is rational; left out, every weight is 1. */
+                weights?: number[];
+            };
         };
         /** @description Success envelope for health check */
         HealthResponse: {
@@ -3022,6 +3575,8 @@ export interface components {
             totalArea: number;
             faces: components["schemas"]["UnfoldFaceEntryOutput"][];
             placed: components["schemas"]["UnfoldPlacedOutput"][];
+            /** @description Why the flat pattern has no mesh in the decomposed-mesh or flat-meshes result, when it could not be meshed. The flat is still in every other output and, on unfold-and-nest, in the nest. */
+            meshError?: string;
         } | components["schemas"]["UnfoldSolidReportErrorOutput"];
         /** @description One bend: line, angle, radii (inner/outer/neutral and per-end for cones), and developed lengths. */
         UnfoldBendOutput: {
@@ -3130,6 +3685,153 @@ export interface components {
             faces?: components["schemas"]["UnfoldFaceEntryOutput"][];
             placed?: components["schemas"]["UnfoldPlacedOutput"][];
         };
+        /** @description One used sheet: its stock, where it lies in the working space, and how much of it the parts fill. */
+        NestingSheetEntryOutput: {
+            index: number;
+            /** @description The index of the stock in the options' sheets. */
+            stock: number;
+            /** @enum {string} */
+            kind: "sheet" | "strip";
+            /** @description The sheet's width; for a strip, the length it used. */
+            width: number;
+            height: number;
+            cost: number;
+            /** @description Where the sheet's corner lies in the working space, Y up, the sheet on the XZ plane facing +Y. A STEP output turns this space to Z up. */
+            origin: [
+                number,
+                number,
+                number
+            ];
+            usedLength: number;
+            remnantLength: number;
+            parts: number;
+            partArea: number;
+            utilization: number;
+        };
+        /** @description Where one copy of a part was placed. */
+        NestingPlacementOutput: {
+            part: number;
+            copy: number;
+            sheet: number;
+            x: number;
+            y: number;
+            angleDeg: number;
+            flipped: boolean;
+            /** @description The part's box on its sheet as [minX, minY, maxX, maxY]. */
+            box: number[];
+            /** @description A point inside the placed part's material, for a label, in the working space (Y up). */
+            anchor: [
+                number,
+                number,
+                number
+            ];
+            /** @description The 4 x 4 matrix, column by column, that moves the input part to its place in the working space (Y up); a STEP output is that space turned to Z up. */
+            transform: number[];
+        };
+        /** @description How one part was read, and how many of its copies were placed. */
+        NestingPartEntryOutput: {
+            index: number;
+            /** @description Which uploaded file the part came from, as an index into stepFileIds; present on the nesting routes, which read parts from files. */
+            file?: number;
+            /** @description Which solid of the model the flat pattern was unfolded from, as its solidIndex in the unfold report; present on the unfold-and-nest route. */
+            solid?: number;
+            ok: boolean;
+            /** @description Why the part cannot be nested: nullShape, notPlanar, notClosed, notPlate, unsupportedShape or invalidGeometry. */
+            problem?: string;
+            /** @description What the part was read as: face, faces, solid, wire or wires. */
+            kind: string;
+            area: number;
+            width: number;
+            height: number;
+            /** @description A plate's thickness; 0 for a face or a drawing. */
+            depth: number;
+            /** @description How far the outline's chords may stray from the true edges; added to the spacing. */
+            slack: number;
+            cutLength: number;
+            loops: number;
+            points: number;
+            searchedPoints: number;
+            quantity: number;
+            placed: number;
+        };
+        /** @description Copies of a part that were not placed, and why. */
+        NestingLeftOutput: {
+            part: number;
+            count: number;
+            /** @description The part's problem, or tooLargeForAnySheet, noStockLeft, timeBudget or verificationFailed. */
+            reason: string;
+        };
+        /** @description Totals over every used sheet. */
+        NestingTotalsOutput: {
+            sheets: number;
+            placed: number;
+            left: number;
+            partArea: number;
+            sheetArea: number;
+            utilization: number;
+            cost: number;
+            cutLength: number;
+            pierces: number;
+        };
+        /** @description How the search ran: whether the same seed gives the same layout again, and whether it was stopped or ran out of time. */
+        NestingRunOutput: {
+            seed: number;
+            evaluations: number;
+            seconds: number;
+            reproducible: boolean;
+            stopped: boolean;
+            hitWallLimit: boolean;
+        };
+        /** @description The nesting kernel's own answer when it refuses the options or is stopped before any part was nested. No result carries it: the API fails the task with its error instead. */
+        NestingReportErrorOutput: {
+            /** @constant */
+            ok: false;
+            error: string;
+        };
+        /** @description A full circle. */
+        NestingOutlineCircleOutput: {
+            /** @description The centre's x and y and the radius. */
+            circle: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** @description Lines and arcs from vertex to vertex. */
+        NestingOutlinePolylineOutput: {
+            /** @description The vertices as x, y pairs, one after another. */
+            points: number[];
+            /** @description One per vertex: the tangent of a quarter of the arc's angle from that vertex to the next, 0 for a straight line, positive turning counterclockwise. */
+            bulges: number[];
+            closed: boolean;
+        };
+        /** @description An ellipse or an arc of one. */
+        NestingOutlineEllipseOutput: {
+            ellipse: {
+                /** @description The centre's x and y. */
+                center: number[];
+                /** @description The vector from the centre to one end of the major axis; its length is the major radius. */
+                majorAxis: number[];
+                /** @description The minor radius divided by the major radius. */
+                ratio: number;
+                /** @description Where the arc starts, as the ellipse's parameter t in radians: the point center + cos(t) majorAxis + sin(t) ratio (-majorAxis y, majorAxis x), the minor axis being the major one turned a quarter counterclockwise and scaled by ratio. t is the angle from the major axis only when ratio is 1. */
+                start: number;
+                /** @description Where the arc ends, as the same parameter t in radians; the arc runs counterclockwise from start to end, a whole ellipse from 0 to 2 pi. */
+                end: number;
+            };
+        };
+        /** @description A B-spline or NURBS curve. */
+        NestingOutlineSplineOutput: {
+            spline: {
+                degree: number;
+                /** @description The full knot vector, one more value than the control points and the degree together; the curve starts and ends at its end points. */
+                knots: number[];
+                /** @description The control points as x, y pairs, one after another. */
+                points: number[];
+                /** @description One weight per control point when the curve is rational; left out, every weight is 1. */
+                weights?: number[];
+            };
+        };
         /** @description Sheet-metal unfold metrics for a single face (surface type, developability, area before/after). */
         UnfoldFaceReport: {
             /** @constant */
@@ -3147,6 +3849,46 @@ export interface components {
         UnfoldSolidReport: (components["schemas"]["UnfoldSolidReportItemOutput"] & {
             solidIndex: number;
         })[];
+        /** @description The layout of a nesting run: the used sheets, every placement with its transform, each part as read, what was left and why, and the totals. Every length is in the parts' units, millimetres for parts read from STEP files. Positions are in the working space, right-handed with Y up; a STEP output turns that space to Z up, a quarter turn about X. A report delivered as a result always has ok true: when the kernel refuses a run, the task fails with the kernel's reason instead. */
+        NestingReport: {
+            /** @constant */
+            ok: true;
+            version: number;
+            spacing: number;
+            margin: number;
+            tolerance: number;
+            allowance: number;
+            sheets: components["schemas"]["NestingSheetEntryOutput"][];
+            placements: components["schemas"]["NestingPlacementOutput"][];
+            parts: components["schemas"]["NestingPartEntryOutput"][];
+            left: components["schemas"]["NestingLeftOutput"][];
+            totals: components["schemas"]["NestingTotalsOutput"];
+            run: components["schemas"]["NestingRunOutput"];
+        } | components["schemas"]["NestingReportErrorOutput"];
+        /** @description Each part as nesting reads it, without nesting. Every length is in the parts' units, millimetres for parts read from STEP files. A report delivered as a result always has ok true: when the kernel refuses a run, the task fails with the kernel's reason instead. */
+        NestingInspection: {
+            /** @constant */
+            ok: true;
+            version: number;
+            parts: components["schemas"]["NestingPartEntryOutput"][];
+        } | components["schemas"]["NestingReportErrorOutput"];
+        /** @description The cut paths of every placed copy in the frame of its sheet: x along the sheet's width and y along its height from the corner, as the report's placement boxes are; the 'outlines' result of a nest. */
+        NestingOutlines: {
+            version: number;
+            sheets: {
+                index: number;
+                width: number;
+                height: number;
+                copies: {
+                    /** @description The placement in the report this copy is. */
+                    placement: number;
+                    part: number;
+                    segments: (components["schemas"]["NestingOutlineCircleOutput"] | components["schemas"]["NestingOutlinePolylineOutput"] | components["schemas"]["NestingOutlineEllipseOutput"] | components["schemas"]["NestingOutlineSplineOutput"])[];
+                    /** @description The same cut path as SVG path data in the sheet's frame, y up: arcs and ellipses exact, splines as Bezier curves. */
+                    path: string;
+                }[];
+            }[];
+        };
     };
     responses: never;
     parameters: never;

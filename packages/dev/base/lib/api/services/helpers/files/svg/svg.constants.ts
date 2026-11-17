@@ -1,0 +1,13 @@
+export const QUADRATIC_DEGREE = 2;
+export const CUBIC_DEGREE = 3;
+export const SVG_ARC_PIECE = Math.PI / 2;
+export const EDGE_ON_SHARE = 1e-12;
+export const SVG_DECIMALS = 6;
+export const TRAILING_FRACTION_ZEROS = /(\.\d*?[1-9])0+$|\.0+$/;
+export const LEAST_VIEW_SPAN = 10 ** -SVG_DECIMALS;
+export const SVG_JOIN_DISTANCE = 1e-9;
+export const STROKE_SHARE = 1 / 500;
+export const MARGIN_SHARE = 1 / 40;
+export const SVG_UNITS: Readonly<Record<string, readonly [string, number]>> = { mm: ["mm", 1], cm: ["cm", 1], m: ["cm", 100], in: ["in", 1] };
+export const ID_UNSAFE = /[^A-Za-z0-9_.-]+/g;
+export const PATH_COLOR = "#000000";

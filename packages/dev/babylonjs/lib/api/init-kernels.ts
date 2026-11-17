@@ -1,13 +1,12 @@
 import type * as BABYLON from "@babylonjs/core";
 import type { BitByBitBase } from "./bitbybit-base";
-import { type InitKernelsResult, type WorkerInstances, type WorkerOptions, getOrCreateWorkers, waitForKernelInitialization } from "@bitbybit-dev/core";
+import { type InitBitByBitOptions as KernelOptions, type InitKernelsResult, type WorkerInstances, type WorkerOptions, getOrCreateWorkers, waitForKernelInitialization } from "@bitbybit-dev/core";
 
 /**
- * Options for initializing bitbybit with Babylon.js
+ * Options for initializing bitbybit with Babylon.js: the kernels, workers and conventions every
+ * renderer takes, and the physics plugin.
  */
-export interface InitBitByBitOptions extends WorkerOptions {
-    /** Pre-created worker instances. If not provided, workers will be created from CDN. */
-    workers?: WorkerInstances | undefined;
+export interface InitBitByBitOptions extends KernelOptions {
     /** Havok physics plugin instance (optional) */
     havokPlugin?: BABYLON.HavokPlugin | undefined;
 }
@@ -43,8 +42,9 @@ export async function initBitByBit(
     if (workers.ifcWorker) {
         bitbybit.ifcWorkerManager.setIfcWorker(workers.ifcWorker);
     }
-
-    const result = await waitForKernelInitialization(bitbybit, options);
+    const started = waitForKernelInitialization(bitbybit, options);
+    const conventionsSet = options.conventions === undefined ? undefined : bitbybit.setConventions(options.conventions);
+    const [result] = await Promise.all([started, conventionsSet]);
 
     return {
         ...result,

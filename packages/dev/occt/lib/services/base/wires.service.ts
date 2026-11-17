@@ -1167,13 +1167,17 @@ export class WiresService {
         }));
     }
 
+    private windsClockwise(clockwise: boolean): boolean {
+        return this.base.settings.coordinateSystem === Inputs.Base.coordinateSystemEnum.leftHanded ? !clockwise : clockwise;
+    }
+
     createHelixWire(inputs: Resolved.OCCT.HelixWireDto): TopoDS_Wire {
         const radius = checkedWithin(inputs.radius, "radius", { above: 0 });
         const pitch = checkedWithin(inputs.pitch, "pitch", { above: 0 });
         const height = checkedWithin(inputs.height, "height", { above: 0 });
         const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
         try {
-            return this.occ.MakeHelixWire(ax, radius, pitch, height, inputs.clockwise, inputs.tolerance);
+            return this.occ.MakeHelixWire(ax, radius, pitch, height, this.windsClockwise(inputs.clockwise), inputs.tolerance);
         } finally {
             ax.delete();
         }
@@ -1185,7 +1189,7 @@ export class WiresService {
         const numTurns = checkedWithin(inputs.numTurns, "numTurns", { above: 0 });
         const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
         try {
-            return this.occ.MakeHelixWireByTurns(ax, radius, pitch, numTurns, inputs.clockwise, inputs.tolerance);
+            return this.occ.MakeHelixWireByTurns(ax, radius, pitch, numTurns, this.windsClockwise(inputs.clockwise), inputs.tolerance);
         } finally {
             ax.delete();
         }
@@ -1198,7 +1202,7 @@ export class WiresService {
         const height = checkedWithin(inputs.height, "height", { above: 0 });
         const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
         try {
-            return this.occ.MakeTaperedHelixWire(ax, startRadius, endRadius, pitch, height, inputs.clockwise, inputs.tolerance);
+            return this.occ.MakeTaperedHelixWire(ax, startRadius, endRadius, pitch, height, this.windsClockwise(inputs.clockwise), inputs.tolerance);
         } finally {
             ax.delete();
         }
@@ -1210,7 +1214,7 @@ export class WiresService {
         const numTurns = checkedWithin(inputs.numTurns, "numTurns", { above: 0 });
         const ax = this.entitiesService.gpAx3_4(inputs.center, checkedDirection(inputs.direction, "direction"));
         try {
-            return this.occ.MakeFlatSpiralWire(ax, startRadius, endRadius, numTurns, inputs.clockwise, inputs.tolerance);
+            return this.occ.MakeFlatSpiralWire(ax, startRadius, endRadius, numTurns, this.windsClockwise(inputs.clockwise), inputs.tolerance);
         } finally {
             ax.delete();
         }

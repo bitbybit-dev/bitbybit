@@ -1,10 +1,11 @@
 import type * as Manifold3D from "manifold-3d";
-import type { Recipes } from "@bitbybit-dev/base";
+import type { BitbybitSettings, Recipes } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Inputs from "../../inputs/manifold-inputs";
 import type * as Resolved from "../../resolved-inputs";
 import { executeRecipe } from "./recipe-executor";
 import { recipeMeshes } from "./recipe-meshes";
+import { rootPlacingOf } from "./recipe-placing";
 
 const MIN_CIRCLE_SIDES = 3;
 const MAX_SHARP_ANGLE = 180;
@@ -23,16 +24,16 @@ export class ManifoldRecipes {
 
     private manifold: Manifold3D.ManifoldToplevel;
 
-    constructor(wasm: Manifold3D.ManifoldToplevel, private readonly recipes: Recipes) {
+    constructor(wasm: Manifold3D.ManifoldToplevel, private readonly recipes: Recipes, private readonly settings: () => BitbybitSettings = () => ({})) {
         this.manifold = wasm;
     }
 
     /**
      * Builds each root of a recipe as a solid placed by its matrix, in root order.
      *
-     * Shared nodes are built once. An invalid recipe throws; a root the kernel cannot build, such as
-     * an open mesh, throws unless `emptyWhenFailed` is set. A cut within `tolerance` of a side of the
-     * box of what it cuts goes through it.
+     * Shared nodes are built once. An invalid recipe throws; a root the kernel cannot build throws
+     * unless `emptyWhenFailed` is set. A cut ending within `tolerance` of a side of the bounding box,
+     * or of a face its end lies wholly on, goes through.
      * @param inputs - The recipe, how finely circles are divided, and whether Z turns into Y
      * @returns One solid per root, in root order
      * @group build
@@ -50,7 +51,7 @@ export class ManifoldRecipes {
         if (!Number.isSafeInteger(resolved.circularSegments) || resolved.circularSegments < MIN_CIRCLE_SIDES) {
             throw new RangeError(`A circle needs at least ${MIN_CIRCLE_SIDES} sides, got ${resolved.circularSegments}`);
         }
-        return executeRecipe(this.manifold, recipe, resolved.circularSegments, resolved.adjustZtoY, resolved.emptyWhenFailed);
+        return executeRecipe(this.manifold, recipe, resolved.circularSegments, rootPlacingOf(this.settings().coordinateSystem, resolved.adjustZtoY), resolved.emptyWhenFailed);
     }
 
     /**
@@ -79,7 +80,7 @@ export class ManifoldRecipes {
         if (!(resolved.minSharpAngle >= 0 && resolved.minSharpAngle <= MAX_SHARP_ANGLE)) {
             throw new RangeError(`minSharpAngle must be an angle from 0 to ${MAX_SHARP_ANGLE} degrees, got ${resolved.minSharpAngle}`);
         }
-        return recipeMeshes(this.manifold, this.recipes, recipe, resolved);
+        return recipeMeshes(this.manifold, this.recipes, recipe, resolved, this.settings().coordinateSystem);
     }
 
     /**

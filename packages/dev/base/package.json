@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/base",
-    "version": "1.6.2",
+    "version": "1.7.0",
     "description": "Bit By Bit Developers Base CAD Library to Program Geometry",
     "homepage": "https://docs.bitbybit.dev/modules/Bit",
     "main": "index.js",
@@ -127,6 +127,11 @@
             "@bitbybit-dev/source": "./lib/api/services/engineering/mechanical/index.ts",
             "types": "./dist/lib/api/services/engineering/mechanical/index.d.ts",
             "default": "./dist/lib/api/services/engineering/mechanical/index.js"
+        },
+        "./lib/api/services/io": {
+            "@bitbybit-dev/source": "./lib/api/services/io/index.ts",
+            "types": "./dist/lib/api/services/io/index.d.ts",
+            "default": "./dist/lib/api/services/io/index.js"
         },
         "./package.json": "./package.json",
         "./*.js": {

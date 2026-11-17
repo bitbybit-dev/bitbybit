@@ -90,10 +90,15 @@ its defaults, so one `--fix` run pointed at `packages/dev` would delete the publ
   reachable twice - so a cleanup sweep catches and ignores, and a catch that logged or rethrew would
   abort the sweep and leak everything after it. Other empty blocks are still reported. What is ignored
   and why belongs in the package's `ARCHITECTURE.md`, not in the block.
-- **The type-aware project service** places every file in its package's `tsconfig.json`. Four tooling
-  files sit in no package's compilation - `packages/dev/vitest.shared.ts` and the vitest configs of
-  `cad-cloud-sdk`, `create-app` and `mcp`, whose tsconfigs cover `src` alone - so they are named as
-  default-project files. The list is exact: naming a file the service can place is itself an error.
+- **The type-aware project service** places every file in its package's `tsconfig.json`. The files
+  that sit in no package's compilation - `packages/dev/vitest.shared.ts`, the test support shared by
+  every package in `packages/dev/__test__/`, and the vitest configs of `cad-cloud-sdk`, `create-app`
+  and `mcp`, whose tsconfigs cover `src` alone - are named as default-project files. The list is
+  exact: naming a file the service can place is itself an error. typescript-eslint refuses more than
+  eight such files unless told otherwise, so `DEFAULT_PROJECT_FILE_CAP` in `eslint.config.mjs` raises
+  the limit; these are small files, and the slowdown the option's name warns of comes from wide globs.
+  A local run with a warm cache never re-parses an unchanged file, so the limit shows first on a clean
+  run such as CI's: `npx eslint --no-cache .` reproduces it.
 - **`no-unnecessary-type-assertion` reads the loose project.** `typecheck:strict` compiles the strict
   overlay, where an index read is `T | undefined` rather than `T`, so an assertion this rule calls
   unnecessary can be load-bearing there. Five removals made on its advice once broke the strict build:

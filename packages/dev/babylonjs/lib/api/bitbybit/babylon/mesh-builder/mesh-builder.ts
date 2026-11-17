@@ -503,7 +503,7 @@ export class BabylonMeshBuilder {
             topCapSubdivisions: resolved.topCapSubdivisions,
             bottomCapSubdivisions: resolved.bottomCapSubdivisions
         }, this.context.scene);
-        mesh.sideOrientation = this.mesh.getSideOrientation(resolved.sideOrientation);
+        this.faceOneSidedMesh(mesh, resolved.sideOrientation);
         if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
@@ -679,7 +679,7 @@ export class BabylonMeshBuilder {
             subdivisionsX: resolved.subdivisionsX,
             subdivisionsY: resolved.subdivisionsY,
         }, this.context.scene);
-        mesh.sideOrientation = this.mesh.getSideOrientation(resolved.sideOrientation);
+        this.faceOneSidedMesh(mesh, resolved.sideOrientation);
         if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
@@ -716,6 +716,19 @@ export class BabylonMeshBuilder {
             mesh.metadata = { shadows: false };
         }
         return mesh;
+    }
+
+    private faceOneSidedMesh(mesh: BABYLON.Mesh, sideOrientation: Inputs.BabylonMesh.sideOrientationEnum): void {
+        if (sideOrientation === Inputs.BabylonMesh.sideOrientationEnum.doubleside) {
+            return;
+        }
+        if (this.context.settings.coordinateSystem === undefined) {
+            mesh.sideOrientation = this.mesh.getSideOrientation(sideOrientation);
+        } else if (sideOrientation === Inputs.BabylonMesh.sideOrientationEnum.backside) {
+            mesh.sideOrientation = mesh.sideOrientation === BABYLON.Material.ClockWiseSideOrientation
+                ? BABYLON.Material.CounterClockWiseSideOrientation
+                : BABYLON.Material.ClockWiseSideOrientation;
+        }
     }
 
     private enableShadows(mesh: BABYLON.Mesh) {

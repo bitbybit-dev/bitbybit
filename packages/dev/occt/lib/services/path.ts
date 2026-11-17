@@ -1,7 +1,7 @@
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
-import { PathBuilder } from "../svg/path-builder";
+import { PathBuilder } from "./base/path-builder";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../api/resolved-inputs";
 

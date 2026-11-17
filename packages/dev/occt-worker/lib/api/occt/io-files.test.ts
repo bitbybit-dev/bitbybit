@@ -13,6 +13,7 @@ const BREP_TEXT = "CASCADE Topology V3";
 const BREP_BYTES = new Uint8Array([79, 112, 101, 110, 0, 7]);
 const PLY_TEXT = "ply";
 const SVG_TEXT = "<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>";
+const DXF_TEXT = "0\nSECTION\n2\nENTITIES\n0\nENDSEC\n0\nEOF\n";
 const OBJ_WITH_LIBRARY: Models.OCCT.ObjFiles = { obj: "mtllib brick.mtl\ng brick\nv 0 0 0\n", mtl: "newmtl red\nKd 1 0 0\n" };
 const OBJ_WITHOUT_LIBRARY: Models.OCCT.ObjFiles = { obj: "g brick\nv 0 0 0\n", mtl: "" };
 
@@ -34,6 +35,8 @@ describe("OCCTIO hand-written file members", () => {
         worker.answers.set("io.saveShapeObj", OBJ_WITH_LIBRARY);
         worker.answers.set("io.saveShapePly", PLY_TEXT);
         worker.answers.set("io.saveShapeSvg", SVG_TEXT);
+        worker.answers.set("io.svgCreate", SVG_TEXT);
+        worker.answers.set("io.saveShapeDxf", DXF_TEXT);
         io = new OCCTIO(manager);
         const recorded = recordDownloads();
         anchors = recorded.anchors;
@@ -185,6 +188,49 @@ describe("OCCTIO hand-written file members", () => {
         });
     });
 
+    describe("saveShapeDxf", () => {
+        it("should download the drawing as a DXF file under the name the caller gave", async () => {
+            // Act
+            await io.saveShapeDxf({ shape: A_SHAPE, frame: A_VIEW, fileName: "top.dxf" });
+
+            // Assert
+            expect(worker.paths()).toEqual(["io.saveShapeDxf"]);
+            expect(anchors.map(anchor => anchor.download)).toEqual(["top.dxf"]);
+            expect(blobs[0]!.type).toBe("image/vnd.dxf");
+            expect(await blobs[0]!.text()).toBe(DXF_TEXT);
+        });
+
+        it("should hand back the text and send the defaults of its DTO for what the caller leaves out", async () => {
+            // Act
+            const result = await io.saveShapeDxfAndReturn({ shape: A_SHAPE, frame: A_VIEW, tryDownload: false });
+
+            // Assert
+            expect(result).toBe(DXF_TEXT);
+            expect(anchors).toEqual([]);
+            expect(sentInputs()).toEqual({ ...new Inputs.OCCT.SaveDxfDto(A_SHAPE, A_VIEW), tryDownload: false });
+        });
+    });
+
+    describe("svgCreate", () => {
+        it("should download the drawing as an SVG image when asked, and hand back its text", async () => {
+            // Act
+            const result = await io.svgCreate({ layers: [], fileName: "cut.svg", tryDownload: true });
+
+            // Assert
+            expect(result).toBe(SVG_TEXT);
+            expect(anchors.map(anchor => anchor.download)).toEqual(["cut.svg"]);
+            expect(blobs[0]!.type).toBe("image/svg+xml");
+        });
+
+        it("should start no download when the caller does not ask for one", async () => {
+            // Act
+            await io.svgCreate({ layers: [], tryDownload: false });
+
+            // Assert
+            expect(anchors).toEqual([]);
+        });
+    });
+
     describe("loadStl", () => {
         it("should send a File as the bytes it holds, with the defaults of its DTO", async () => {
             // Arrange
@@ -218,6 +264,29 @@ describe("OCCTIO hand-written file members", () => {
             // Assert
             expect(worker.paths()).toEqual(["io.loadBrep"]);
             expect(sentInputs()["brepData"]).toEqual(new TextEncoder().encode(BREP_TEXT));
+        });
+    });
+
+    describe("loadDxf", () => {
+        it("should send a Blob as the bytes it holds, with the reading defaults filled in", async () => {
+            // Arrange
+            const blob = new Blob(["0\nEOF"]);
+
+            // Act
+            await io.loadDxf({ dxf: blob, makeFaces: true });
+
+            // Assert
+            expect(worker.paths()).toEqual(["io.loadDxf"]);
+            expect(sentInputs()).toEqual({ dxf: new TextEncoder().encode("0\nEOF"), makeFaces: true, joinTolerance: 0.001, includeHiddenLayers: false });
+        });
+
+        it("should send the text of a structured read as it is", async () => {
+            // Act
+            await io.loadDxfStructured({ dxf: "0\nEOF", includeHiddenLayers: true });
+
+            // Assert
+            expect(worker.paths()).toEqual(["io.loadDxfStructured"]);
+            expect(sentInputs()).toEqual({ dxf: "0\nEOF", makeFaces: false, joinTolerance: 0.001, includeHiddenLayers: true });
         });
     });
 

@@ -5,7 +5,7 @@ import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import type { DesignOutcome } from "./cache";
 import { release } from "../base/release";
-import { bodyOf, contextOf, faceCount, faceSignatures } from "./helpers";
+import { bodyOf, contextOf, faceCount, faceSignatures, notedBoolean } from "./helpers";
 import { tripleOf, unitVector } from "./placement";
 import { carryNames, give, nameOf } from "./names";
 import { cleanedUp, cleanedUpOnError, DesignProblem, pointer } from "./problems";
@@ -322,7 +322,7 @@ function machined(feature: MachiningFeature, path: string, run: DesignRun): Desi
     const plan = machinedOf(feature, cylinder, frame, path, run);
     run.trace?.set(path, { frame: plan.frame, machining: { operation: plan.operation, inputs: plan.inputs } });
     const tool = plan.tool();
-    const made = cleanedUp(() => run.occt.booleans.differenceWithHistory({ shape: body.shape, shapes: [tool], keepEdges: false }), () => release(tool));
+    const made = cleanedUp(() => notedBoolean(run.occt.booleans.differenceWithHistory({ shape: body.shape, shapes: [tool], keepEdges: false }), run), () => release(tool));
     return cleanedUpOnError(() => {
         const given = new Map<number, string[]>();
         made.histories.slice(1).forEach(history => give(given, history.faces.flat(), nameOf(feature.id, ROLES[feature.type])));

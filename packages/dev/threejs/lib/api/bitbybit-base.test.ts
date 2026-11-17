@@ -6,13 +6,14 @@ import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { IFCBitByBit, IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
 import {
-    Vector, Point, Frame, Line, Polyline, TextBitByBit, Color, MathBitByBit,
+    Vector, Point, Frame, Line, Polyline, IoBitByBit, TextBitByBit, Color, MathBitByBit,
     Lists, Logic, Transforms, Dates, MeshBitByBit
 } from "@bitbybit-dev/base";
 import { Context } from "./context";
 import { Draw } from "./bitbybit/draw";
 import { ThreeJS } from "./bitbybit/threejs";
 import { BitByBitBase } from "./bitbybit-base";
+import { Inputs } from "@bitbybit-dev/base";
 
 type ServiceField = { [K in keyof BitByBitBase]: BitByBitBase[K] extends (...args: never[]) => unknown ? never : K }[keyof BitByBitBase];
 
@@ -46,6 +47,7 @@ describe("BitByBitBase unit tests", () => {
             ["line", Line],
             ["transforms", Transforms],
             ["polyline", Polyline],
+            ["io", IoBitByBit],
             ["draw", Draw],
             ["verb", Verb],
             ["jscad", JSCAD],
@@ -291,6 +293,58 @@ describe("BitByBitBase unit tests", () => {
             bitByBit.draw.drawAny({ entity: [[0, 0, 0], [1, 1, 1]] });
             
             expect(scene.children.length).toBeGreaterThanOrEqual(3);
+        });
+    });
+
+    describe("settings", () => {
+        it("should name the engine's coordinate system right-handed", () => {
+            // Act
+            const settings = bitByBit.engineSettings();
+
+            // Assert
+            expect(settings).toEqual({ coordinateSystem: "rightHanded" });
+        });
+
+        it("should run content of conventions level 1 by the engine's settings, and content of level 0 as it always ran", async () => {
+            // Act
+            const first = await bitByBit.setConventions(1);
+            const firstOnTheContext = { ...bitByBit.context.settings };
+            const none = await bitByBit.setConventions(0);
+
+            // Assert
+            expect([first, firstOnTheContext, none, bitByBit.context.settings]).toEqual([{ coordinateSystem: "rightHanded" }, { coordinateSystem: "rightHanded" }, {}, {}]);
+        });
+
+        it("should refuse a conventions level that is no whole number as a rejection and keep the settings it had", async () => {
+            // Arrange
+            await bitByBit.setConventions(1);
+
+            // Act
+            const refused = bitByBit.setConventions(1.5);
+
+            // Assert
+            await expect(refused).rejects.toThrow("A conventions level is a whole number from 0");
+            expect(bitByBit.context.settings).toEqual({ coordinateSystem: "rightHanded" });
+        });
+
+        it("should hand the settings to the shared services, which keep them on the context its engine services read", async () => {
+            // Act
+            const settings = await bitByBit.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.rightHanded });
+
+            // Assert
+            expect([settings, bitByBit.context.settings]).toEqual([{ coordinateSystem: "rightHanded" }, { coordinateSystem: "rightHanded" }]);
+        });
+
+        it("should refuse a name that is no setting as a rejection and keep the context's settings as they were", async () => {
+            // Arrange
+            await bitByBit.setSettings({ coordinateSystem: Inputs.Base.coordinateSystemEnum.leftHanded });
+
+            // Act
+            const refused = bitByBit.setSettings(JSON.parse("{\"handedness\":\"right\"}"));
+
+            // Assert
+            await expect(refused).rejects.toThrow("`handedness` is not a setting");
+            expect(bitByBit.context.settings).toEqual({ coordinateSystem: "leftHanded" });
         });
     });
 });

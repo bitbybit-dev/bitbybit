@@ -3,10 +3,8 @@ import type { MathBitByBit } from "./math";
 import { resolveDto } from "../kernel-calls";
 import type * as Resolved from "../resolved-inputs";
 import { linearToSrgb, srgbToLinear } from "./helpers/color/color-space";
-import { hexChannels, hslChannels } from "./helpers/color/color-forms";
+import { hexChannels, hexOfChannels, hslChannels } from "./helpers/color/color-forms";
 import { InputError } from "../kernel-calls/errors";
-
-const HEX_RADIX = 16;
 
 /**
  * Colors in the two forms the library uses: a hex text such as `#ff5733`, and an object `{ r, g, b
@@ -236,7 +234,7 @@ export class Color {
             const scaled = resolved.min === 0 && resolved.max === 255 ? channel : this.math.remap({ number: channel, fromLow: resolved.min, fromHigh: resolved.max, toLow: 0, toHigh: 255 });
             return Math.min(255, Math.max(0, Math.round(scaled)));
         };
-        return `#${Number(0x1000000 + byteOf(resolved.r) * 0x10000 + byteOf(resolved.g) * 0x100 + byteOf(resolved.b)).toString(HEX_RADIX).substring(1, 7)}`;
+        return hexOfChannels([byteOf(resolved.r), byteOf(resolved.g), byteOf(resolved.b)]);
     }
 
 

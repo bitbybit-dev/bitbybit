@@ -200,6 +200,7 @@ function withRebinds(report: Models.OCCT.DesignFeatureReport, entries: readonly 
 function step(feature: Feature, path: string, run: DesignRun, mode: StepMode, noted?: (planned: Planned) => void): Models.OCCT.DesignFeatureReport {
     const started = performance.now();
     const before = run.rebinding.entries.length;
+    const notesBefore = run.notes.length;
     const report: Models.OCCT.DesignFeatureReport = { id: feature.id, type: feature.type, status: "ok", ms: 0, cached: false, messages: [] };
     const writes = writesOf(feature);
     let hash = "";
@@ -227,6 +228,7 @@ function step(feature: Feature, path: string, run: DesignRun, mode: StepMode, no
                 if (kept !== undefined) {
                     run.used.add(hash);
                     run.rebinding.entries.push(...kept.rebinds ?? []);
+                    run.notes.push(...kept.notes ?? []);
                 }
                 report.cached = true;
                 apply(feature, writes, undefined, hash, readsOf(feature, plan, run), run);
@@ -237,11 +239,11 @@ function step(feature: Feature, path: string, run: DesignRun, mode: StepMode, no
                 if (outcome === undefined) {
                     const supplied = isBodyKey(writes) ? run.supplied.get(hash) : undefined;
                     const made = supplied === undefined ? plan.make() : suppliedOutcome(feature, supplied, path, run);
-                    const rebinds = run.rebinding.entries.slice(before);
-                    outcome = rebinds.length === 0 ? made : { ...made, rebinds };
+                    outcome = withRunNotes(made, run.rebinding.entries.slice(before), run.notes.slice(notesBefore));
                     run.cache.keep(hash, outcome);
-                } else if (outcome.rebinds !== undefined) {
-                    run.rebinding.entries.push(...outcome.rebinds);
+                } else {
+                    run.rebinding.entries.push(...outcome.rebinds ?? []);
+                    run.notes.push(...outcome.notes ?? []);
                 }
                 run.used.add(hash);
                 apply(feature, writes, outcome, hash, readsOf(feature, plan, run), run);
@@ -269,7 +271,21 @@ function step(feature: Feature, path: string, run: DesignRun, mode: StepMode, no
         }
     }
     report.ms = performance.now() - started;
+    if (report.status === "ok") {
+        report.messages.push(...new Set(run.notes.slice(notesBefore)));
+    }
     return withRebinds(report, run.rebinding.entries.slice(before));
+}
+
+function withRunNotes(made: DesignOutcome, rebinds: readonly RebindEntry[], notes: readonly string[]): DesignOutcome {
+    if (rebinds.length === 0 && notes.length === 0) {
+        return made;
+    }
+    return {
+        ...made,
+        ...(rebinds.length === 0 ? {} : { rebinds }),
+        ...(notes.length === 0 ? {} : { notes }),
+    };
 }
 
 /** A run of a part document's features, and the report of each feature. */
@@ -346,6 +362,7 @@ function newRun(document: Models.OCCT.DesignPartDocument, choice: ParameterChoic
         rebinding: { mode: context.rebind ?? "never", entries: [], hints: context.hints },
         supplied: new Map((context.outcomes ?? []).map(outcome => [outcome.hash, outcome])),
         pending: [],
+        notes: [],
     };
 }
 

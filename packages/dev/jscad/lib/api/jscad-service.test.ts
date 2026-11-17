@@ -322,6 +322,21 @@ describe("Jscad", () => {
         });
     });
 
+    describe("settings", () => {
+        it("should give its settings out frozen, so a write past the checked assignment changes nothing", () => {
+            // Arrange
+            jscad.settings = { coordinateSystem: Inputs.Base.coordinateSystemEnum.leftHanded };
+
+            // Act
+            const write = (): void => { (jscad.settings as Record<string, unknown>)["coordinateSystem"] = "righthanded"; };
+
+            // Assert
+            expect(write).toThrow(TypeError);
+            expect(jscad.settings).toEqual({ coordinateSystem: "leftHanded" });
+            jscad.settings = {};
+        });
+    });
+
     describe("the serialisers, given options of their own", () => {
         it("should hand the dxf serialiser the options it was given", () => {
             // Act

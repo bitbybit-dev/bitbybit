@@ -103,3 +103,34 @@ The shared draw rules live in `core`'s `CLAUDE.md`. What Babylon itself forces:
   glTF container loader's models are not, until `mesh.setPickable` turns it on. It once stayed
   pickable in a scene without shadows only because the shadow branch also held the picking and
   `hidden` lines. Drawing a node again replaces its axis triad rather than adding one.
+- **Under a coordinate system (`context.settings.coordinateSystem`, set by `setSettings`) an STL
+  download is written here, not by Babylon's exporter** (`io-stl.ts`). Babylon's swaps Y and Z
+  whatever the scene, drops node transforms and ignores which way a mesh faces. Ours reads every
+  mesh in world space and turns a triangle round where the mesh shows its fronts the other way:
+  the material's `sideOrientation`, else the mesh's, where a left-handed scene's own facing is
+  counter-clockwise and a right-handed one's clockwise, and a mirroring world matrix turns it once
+  more. The axes then go through base (`stlAxesInFile`), the table the kernel's STL uses too.
+  Babylon's STL loader swaps Y and Z as well, which is the left-handed row; in a right-handed
+  system the loaded meshes get a Z mirror baked in. With no coordinate system set both paths are
+  Babylon's own, as they always were. `io-coordinate-system.test.ts` pins all of it on the
+  `NullEngine` by signed volume.
+- **Capsule and ground take no side option in Babylon**, so their `frontside` and `backside` are
+  written to the mesh. With no coordinate system set that is the old 0 and 1, which shows
+  `frontside` inside out in a left-handed scene; under one, `frontside` keeps the facing the scene
+  gives every mesh and `backside` takes the other. `doubleside` leaves the mesh alone in both.
+- **`clearAllDrawn` puts the scene in the coordinate system that is set**: right-handed under a
+  right-handed setting, left-handed otherwise, which with no setting is what it always did. Code
+  may switch the scene's handedness for a while; `clearAllDrawn` is what puts it back, so it has to
+  know which system the scene was given to `init` in.
+- **The application that creates the scene decides the coordinate system.** `engineSettings`
+  answers with the handedness the scene had when it was given to `init`, never the live flag, and
+  `babylon.scene.useRightHandedSystem` changes only the scene. Code that switches the scene and
+  wants files, text and shapes that name a hand (a right-hand thread) to follow sets the settings
+  too (`bitbybit.setSettings`); otherwise
+  the next `setConventions` and `clearAllDrawn` both put back the system the scene was given to
+  `init` in.
+- **A back face never goes into a file.** A shape drawn two-sided is two meshes, the surface and a
+  back-face child wound the other way, which a file would hold as every wall twice. The one place
+  that makes a back face marks it (`markAsBackFace`, `metadata.backFace`, kept by a clone and read
+  through an instance's source), and the STL and glb exports leave marked meshes out, with or
+  without a coordinate system. The `.babylon` export keeps them: it is the scene as it is.

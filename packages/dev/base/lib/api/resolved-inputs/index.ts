@@ -137,14 +137,33 @@ export namespace Frame {
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace IO {
+    export type DrawingArcSegmentDto = Inputs.IO.DrawingArcSegmentDto;
+    export type DrawingCircleSegmentDto = Inputs.IO.DrawingCircleSegmentDto;
+    export type DrawingEllipseSegmentDto = WithDefaults<Inputs.IO.DrawingEllipseSegmentDto, "startParameter" | "endParameter">;
+    export type DrawingLineSegmentDto = Inputs.IO.DrawingLineSegmentDto;
+    export type DrawingPartDto = WithDefaults<Inputs.IO.DrawingPartDto, "layer" | "color" | "lineType">;
+    export type DrawingPathDto = Inputs.IO.DrawingPathDto;
+    export type DrawingPolylineSegmentDto = WithDefaults<Inputs.IO.DrawingPolylineSegmentDto, "closed">;
+    export type DrawingSplineSegmentDto = WithDefaults<Inputs.IO.DrawingSplineSegmentDto, "degree" | "closed">;
     export type DxfArcSegmentDto = Inputs.IO.DxfArcSegmentDto;
     export type DxfCircleSegmentDto = Inputs.IO.DxfCircleSegmentDto;
+    export type DxfDrawingDto = Inputs.IO.DxfDrawingDto;
+    export type DxfEllipseSegmentDto = WithDefaults<Inputs.IO.DxfEllipseSegmentDto, "startParameter" | "endParameter">;
     export type DxfLineSegmentDto = Inputs.IO.DxfLineSegmentDto;
-    export type DxfModelDto = WithDefaults<Inputs.IO.DxfModelDto, "colorFormat" | "acadVersion">;
+    export type DxfModelDto = WithDefaults<Inputs.IO.DxfModelDto, "colorFormat" | "acadVersion" | "curveTolerance">;
     export type DxfPathDto = Inputs.IO.DxfPathDto;
-    export type DxfPathsPartDto = WithDefaults<Inputs.IO.DxfPathsPartDto, "layer" | "color">;
+    export type DxfPathsPartDto = WithDefaults<Inputs.IO.DxfPathsPartDto, "layer" | "color" | "lineType">;
     export type DxfPolylineSegmentDto = WithDefaults<Inputs.IO.DxfPolylineSegmentDto, "closed">;
+    export type DxfReadDto = WithDefaults<Inputs.IO.DxfReadDto, "includeHiddenLayers">;
     export type DxfSplineSegmentDto = WithDefaults<Inputs.IO.DxfSplineSegmentDto, "degree" | "closed">;
+    export type DxfToSvgDto = WithDefaults<Inputs.IO.DxfToSvgDto, "includeHiddenLayers" | "tolerance">;
+    export type DxfToSvgResultDto = Inputs.IO.DxfToSvgResultDto;
+    export type SvgDrawingDto = Inputs.IO.SvgDrawingDto;
+    export type SvgModelDto = WithDefaults<Inputs.IO.SvgModelDto, "tolerance">;
+    export type SvgPathDataDto = WithDefaults<Inputs.IO.SvgPathDataDto, "flipY" | "tolerance">;
+    export type SvgReadDto = WithDefaults<Inputs.IO.SvgReadDto, "includeInvisible">;
+    export type SvgToDxfDto = WithDefaults<Inputs.IO.SvgToDxfDto, "includeInvisible" | "colorFormat" | "acadVersion" | "curveTolerance">;
+    export type SvgToDxfResultDto = Inputs.IO.SvgToDxfResultDto;
 }
 
 /**
@@ -156,6 +175,7 @@ export namespace Line {
     export type DrawLinesDto<T> = WithDefaults<Inputs.Line.DrawLinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
     export type LineDto = Inputs.Line.LineDto;
     export type LineLineIntersectionDto = WithDefaults<Inputs.Line.LineLineIntersectionDto, "checkSegmentsOnly" | "tolerance">;
+    export type LinePointDistanceDto = Inputs.Line.LinePointDistanceDto;
     export type LinePointsDto = Inputs.Line.LinePointsDto;
     export type LinesDto = Inputs.Line.LinesDto;
     export type LineStartEndPointsDto = Inputs.Line.LineStartEndPointsDto;

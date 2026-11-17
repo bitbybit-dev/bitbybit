@@ -91,6 +91,58 @@ describe("OCCTRecipes", () => {
         return new TextDecoder().decode(manager.exportDocumentToStep({ document, fileName: "recipe.step", author: "Tester", organization: "Tests", compress: false, tryDownload: false }));
     }
 
+    describe("build under the coordinate system switch", () => {
+        const { leftHanded, rightHanded } = Inputs.Base.coordinateSystemEnum;
+        const cornersOf = (shape: TopoDS_Shape): number[][] => {
+            const { min, max } = boxOf(shape);
+            return [min, max].map(corner => corner.map(value => Math.round(value * 1e6) / 1e6 + 0));
+        };
+
+        afterEach(() => {
+            occHelper.base.settings = {};
+        });
+
+        it.each([
+            ["swap Y and Z of a Z-up recipe in a left-handed system", leftHanded, true, [[0, 0, 0], [4, 3, 2]]],
+            ["turn a Z-up recipe a quarter about X in a right-handed system, as ever", rightHanded, true, [[0, 0, -2], [4, 3, 0]]],
+            ["mirror X of a recipe taken as it is in a left-handed system", leftHanded, false, [[-4, 0, 0], [0, 2, 3]]],
+            ["leave a recipe taken as it is alone in a right-handed system", rightHanded, false, [[0, 0, 0], [4, 2, 3]]],
+        ])("should %s", (_name, system, adjustZtoY, expected) => {
+            // Arrange
+            occHelper.base.settings = { coordinateSystem: system };
+
+            // Act
+            const [box] = built(recipeOf(BOX, [rootOf(1)]), { adjustZtoY });
+
+            // Assert
+            expect(cornersOf(box!)).toEqual(expected);
+            expect(volumeOf(box!)).toBeCloseTo(24, 9);
+        });
+
+        it("should place a moved root after its own matrix in a left-handed system", () => {
+            // Arrange
+            occHelper.base.settings = { coordinateSystem: leftHanded };
+
+            // Act
+            const [box] = built(recipeOf(BOX, [rootOf(1, moved(10, 20, 30))]), { adjustZtoY: true });
+
+            // Assert
+            expect(cornersOf(box!)).toEqual([[10, 30, 20], [14, 33, 22]]);
+        });
+
+        it("should keep the kernel's own turn off when it places the roots itself", () => {
+            // Arrange
+            occHelper.base.settings = { coordinateSystem: leftHanded };
+            const spy = vi.spyOn(occt, "BuildRecipes");
+
+            // Act
+            built(recipeOf(BOX, [rootOf(1)]), { adjustZtoY: true });
+
+            // Assert
+            expect(spy.mock.calls[0]![3]).toBe(false);
+        });
+    });
+
     describe("build", () => {
         it("should build each root as a shape placed by its matrix", () => {
             // Act

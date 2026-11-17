@@ -67,3 +67,10 @@ export const length3 = (a: Vec3): number => Math.sqrt(a[0] * a[0] + a[1] * a[1] 
 export const between3 = (a: Vec3, b: Vec3, share: number): Vec3 => [a[0] + (b[0] - a[0]) * share, a[1] + (b[1] - a[1]) * share, a[2] + (b[2] - a[2]) * share];
 
 export const distance3 = (a: Vec3, b: Vec3): number => length3(subtract3(a, b));
+
+export const distanceToSegment3 = (point: Vec3, start: Vec3, end: Vec3): number => {
+    const along = subtract3(end, start);
+    const reach = dot3(along, along);
+    const share = reach > 0 ? Math.min(Math.max(dot3(subtract3(point, start), along) / reach, 0), 1) : 0;
+    return distance3(point, between3(start, end, share));
+};

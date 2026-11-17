@@ -133,9 +133,9 @@ export class OCCTFillets {
     /**
      * Rounds one edge of a shape with a radius that changes along it.
      *
-     * `paramsU` are positions along the edge as fractions from 0 at its start to 1 at its end, and
-     * `radiusList` gives the radius at each; the kernel blends smoothly between them. The two lists
-     * must have the same length, or an error is thrown.
+     * `radiusList` holds the radius at each `paramsU` position; the first and last stand for the
+     * start and end of the edge's curve, whatever its orientation, and the radius may overshoot
+     * between positions. The lists must be equally long, or an error is thrown.
      * @param inputs - The shape, its edge, the radii and the positions along the edge they apply at
      * @returns The shape with the rounded edge
      * @group 3d fillets
@@ -171,8 +171,8 @@ export class OCCTFillets {
     /**
      * Rounds several edges of a shape, each with the same radius profile that changes along it.
      *
-     * `paramsU` are positions along each edge as fractions from 0 to 1 and `radiusList` the radius
-     * at each; the lists must have the same length, or an error is thrown.
+     * `radiusList` holds the radius at each `paramsU` position on every edge, read as
+     * `filletEdgeVariableRadius` reads them. The lists must be equally long, or an error is thrown.
      * @param inputs - The shape, its edges, the radii and the positions along each edge they apply at
      * @returns The shape with the rounded edges
      * @group 3d fillets
@@ -209,8 +209,8 @@ export class OCCTFillets {
      * Rounds several edges of a shape, each with its own radius profile that changes along it.
      *
      * `radiusLists` and `paramsULists` hold one list per edge, in edge order; within each pair the
-     * positions are fractions from 0 to 1 along the edge and the radii apply there. All three lists
-     * must have the same length, or an error is thrown.
+     * radii apply at the positions as `filletEdgeVariableRadius` reads them. All three lists must
+     * have the same length, or an error is thrown.
      * @param inputs - The shape, its edges, one radius list per edge and one position list per edge
      * @returns The shape with the rounded edges
      * @group 3d fillets

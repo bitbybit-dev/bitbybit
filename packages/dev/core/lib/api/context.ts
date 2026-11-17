@@ -1,6 +1,7 @@
 import type { PrintSaveInterface } from "../models/print-save.model";
 import type { JSONPath } from "jsonpath-plus";
 import type { Tag } from "./inputs/tag-inputs";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
 
 export interface PreviewDataInterface {
     data: unknown;
@@ -36,6 +37,11 @@ export class ContextBase {
      */
     jsonpath!: typeof JSONPath;
     canvasZoneClass = "canvasZone";
+    /**
+     * The settings this instance works by, as `setSettings` on the root object left them; empty
+     * until it is called. Read them here, change them there, so the kernel workers hear of it.
+     */
+    settings: BitbybitSettings = {};
 
     promptPrintSave!: (prompt: PrintSaveInterface) => void;
     promptPrint!: (prompt: PrintSaveInterface) => void;

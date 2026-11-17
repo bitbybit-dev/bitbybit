@@ -5,6 +5,7 @@ import type { HeadlessScene } from "../../__test__/headless";
 import { createHeadlessScene, addShadowGenerator } from "../../__test__/headless";
 import { BabylonIO } from "./io";
 import * as Inputs from "../../inputs";
+import { markAsBackFace } from "../../back-faces";
 
 const EMPTY_GLTF = JSON.stringify({
     asset: { version: "2.0" },
@@ -127,7 +128,27 @@ describe("BabylonIO", () => {
 
             // Assert
             expect(asked[0]!.fileName).toBe("workshop");
-            expect(typeof asked[0]!.options.shouldExportNode).toBe("undefined");
+            expect([new BABYLON.Mesh("part", headless.scene), new BABYLON.Mesh("bitbybit-hdrSkyBox", headless.scene)].map(node => asked[0]!.options.shouldExportNode!(node))).toEqual([true, true]);
+        });
+
+        it("should leave out the back face of a shape drawn two-sided", async () => {
+            // Arrange
+            const asked: SERIALIZERS.IExportOptions[] = [];
+            vi.spyOn(SERIALIZERS.GLTF2Export, "GLBAsync").mockImplementation(((_scene: BABYLON.Scene, _fileName: string, options: SERIALIZERS.IExportOptions) => {
+                asked.push(options);
+                return Promise.resolve({ downloadFiles: () => undefined });
+            }) as never);
+            const front = new BABYLON.Mesh("surface", headless.scene);
+            const back = new BABYLON.Mesh("back", headless.scene);
+            back.parent = front;
+            markAsBackFace(back);
+
+            // Act
+            io.exportGLB(new Inputs.BabylonIO.ExportSceneGlbDto("workshop", false));
+            await Promise.resolve();
+
+            // Assert
+            expect([front, back].map(node => asked[0]!.shouldExportNode!(node))).toEqual([true, false]);
         });
 
         it("should leave the skybox and the ground out when asked to", async () => {
@@ -216,7 +237,9 @@ describe("BabylonIO", () => {
             await io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto());
 
             // Assert
-            expect(typeof asked[0]!.shouldExportNode).toBe("undefined");
+            const part = new BABYLON.Mesh("part", headless.scene);
+            const skybox = new BABYLON.Mesh("bitbybit-hdrSkyBox", headless.scene);
+            expect([part, skybox].map(node => asked[0]!.shouldExportNode!(node))).toEqual([true, true]);
             expect(asked[0]!.meshCompressionMethod).toBe("None");
         });
 
@@ -240,6 +263,25 @@ describe("BabylonIO", () => {
             expect(shouldExport(assembly)).toBe(true);
             expect(shouldExport(root)).toBe(true);
             expect(shouldExport(sibling)).toBe(false);
+        });
+
+        it("should leave out the back face of a shape drawn two-sided, from the whole scene and from chosen nodes, so no wall is written twice", async () => {
+            // Arrange
+            const asked = serialiserAnswering();
+            const front = new BABYLON.Mesh("surface", headless.scene);
+            const back = new BABYLON.Mesh("back", headless.scene);
+            back.parent = front;
+            markAsBackFace(back);
+            const copyOfTheBack = BABYLON.MeshBuilder.CreateBox("source", { size: 1 }, headless.scene);
+            markAsBackFace(copyOfTheBack);
+            const instance = copyOfTheBack.createInstance("instance");
+
+            // Act
+            await io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto());
+            await io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto([front, back, instance]));
+
+            // Assert
+            expect(asked.map(options => [front, back, instance].map(node => options.shouldExportNode!(node)))).toEqual([[true, false, false], [true, false, false]]);
         });
 
         it("should leave the skybox out even when it is among the chosen nodes", async () => {
@@ -370,6 +412,26 @@ describe("BabylonIO", () => {
 
             // Assert
             expect(written[0]).toEqual([box, child]);
+        });
+
+        it("should leave out the back face of a shape drawn two-sided, so no wall is written twice", async () => {
+            // Arrange
+            const written: BABYLON.Mesh[][] = [];
+            vi.spyOn(SERIALIZERS.STLExport, "CreateSTL").mockImplementation(((meshes: BABYLON.Mesh[]) => {
+                written.push(meshes);
+                return "";
+            }) as never);
+            const front = BABYLON.MeshBuilder.CreateBox("surface", { size: 1 }, headless.scene);
+            const back = BABYLON.MeshBuilder.CreateBox("back", { size: 1 }, headless.scene);
+            back.parent = front;
+            markAsBackFace(back);
+
+            // Act
+            await io.exportMeshToStl(new Inputs.BabylonIO.ExportMeshToStlDto(front, "part"));
+            await io.exportMeshesToStl(new Inputs.BabylonIO.ExportMeshesToStlDto([front, back], "parts"));
+
+            // Assert
+            expect(written).toEqual([[front], [front]]);
         });
 
         it("should leave out the lines, which an stl cannot hold", async () => {

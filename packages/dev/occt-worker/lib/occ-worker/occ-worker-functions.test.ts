@@ -639,6 +639,49 @@ describe("OCC Worker Functions Unit Tests", () => {
             });
         }));
 
+        it("should write a STEP by the coordinate system the worker was told, and as before when told none", () => {
+            // Arrange
+            const answerOf = (call: Parameters<typeof onMessageInput>[0]): any => {
+                const messages: any[] = [];
+                onMessageInput(call, (message: any) => messages.push(message));
+                return messages[1];
+            };
+            const box = answerOf({ action: { functionName: "shapes.solid.createBox", inputs: { width: 1, length: 0.6, height: 0.4, center: [3, 5, 7] } }, uid: "uid-1" }).result;
+            const stepIn = (coordinateSystem?: Inputs.Base.coordinateSystemEnum): string => {
+                answerOf({ action: { functionName: "setSettings", inputs: coordinateSystem === undefined ? {} : { coordinateSystem } }, uid: "uid-set" });
+                return stepOf(answerOf({ action: { functionName: "saveShapeSTEP", inputs: { shape: { hash: box.hash, type: "occ-shape" }, fileName: "box.step", adjustYtoZ: true } }, uid: "uid-2" }).result as string);
+            };
+            const stepOf = (text: string): string => (text).replace(/FILE_NAME\([^;]*;/, "").replace(/STEP translator ([\d.]+) \d+/g, "STEP translator $1 n");
+
+            // Act
+            const files = [stepIn(), stepIn(Inputs.Base.coordinateSystemEnum.leftHanded), stepIn(Inputs.Base.coordinateSystemEnum.rightHanded)];
+            stepIn();
+
+            // Assert
+            expect(files[1]).toBe(files[0]);
+            expect(files[2]).not.toBe(files[0]);
+            expect(files[2]).toContain("ISO-10303-21;");
+        });
+
+        it("should draw a wire into SVG through a layer the worker answered with, finding the shape inside the layer by its reference", () => {
+            // Arrange
+            const answerOf = (call: Parameters<typeof onMessageInput>[0]): any => {
+                const messages: any[] = [];
+                onMessageInput(call, (message: any) => messages.push(message));
+                return messages[1];
+            };
+            const circle = answerOf({ action: { functionName: "shapes.wire.createCircleWire", inputs: { radius: 2, center: [0, 0, 0], direction: [0, 1, 0] } }, uid: "uid-circle" }).result;
+            const layer = answerOf({ action: { functionName: "io.svgLayer", inputs: { shapes: [{ hash: circle.hash, type: "occ-shape" }], layer: "cut", color: "#ff0000" } }, uid: "uid-layer" }).result;
+
+            // Act
+            const svg = answerOf({ action: { functionName: "io.svgCreate", inputs: { layers: [layer], tryDownload: false } }, uid: "uid-svg" }).result;
+
+            // Assert
+            expect(layer).toEqual({ shapes: [{ hash: expect.anything(), type: "occ-shape" }], layer: "cut", color: "#ff0000", lineType: "continuous" });
+            expect(svg).toContain("inkscape:label=\"cut\"");
+            expect(svg).toMatch(/<path d="M[^"]* A2 2 [^"]*"\/>/);
+        });
+
         it("should throw error for saveShapeSTEP when shape not in cache", () => new Promise<void>((done) => {
             onMessageInput({
                 action: {

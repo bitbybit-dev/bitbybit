@@ -34,7 +34,8 @@ const MAGIC_NUMBERS = ["error", {
     ignoreReadonlyClassProperties: true,
     ignoreTypeIndexes: true,
 }];
-const PLACEMENT_MARKER = "^ (replaces|after) [\\w.]+$|^ (first|last)$";
+const DEFAULT_PROJECT_FILE_CAP = 16;
+const PLACEMENT_MARKER ="^ (replaces|after) [\\w.]+$|^ (first|last)$";
 const NO_JSDOC = { jsDoc: "none" };
 
 const GENERATED = [
@@ -104,6 +105,7 @@ export default defineConfig([
                         "packages/dev/create-app/vitest.config.ts",
                         "packages/dev/mcp/vitest.config.ts",
                     ],
+                    maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: DEFAULT_PROJECT_FILE_CAP,
                 },
                 tsconfigRootDir: import.meta.dirname,
             },

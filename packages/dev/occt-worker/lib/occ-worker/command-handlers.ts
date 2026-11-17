@@ -5,7 +5,8 @@ import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES, isShapeRefe
 import type { ShapeResolver } from "./shape-resolver";
 import { Inputs, releaseDesignCaches } from "@bitbybit-dev/occt";
 import type { OccHelper, OCCTService, TopoDS_Shape } from "@bitbybit-dev/occt";
-import { InputError, resolveDto } from "@bitbybit-dev/base";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
+import { InputError, checkedSettings, resolveDto } from "@bitbybit-dev/base";
 import { meshBuffersOf } from "./mesh-transfer";
 
 const meshRetentionOf = (kernel: BitbybitOcctModule): MeshRetention => ({
@@ -53,6 +54,8 @@ export interface CommandContext {
     kernel: BitbybitOcctModule;
     /** Sets the kernel's mesh retention budget, kept by the worker for a kernel that replaces a crashed one */
     setMeshRetention: (triangles: number) => void;
+    /** Sets the settings the kernel works by, kept by the worker for a kernel that replaces a crashed one */
+    setSettings: (settings: BitbybitSettings) => void;
     /** The cache helper for managing shape cache */
     cacheHelper: CacheHelper;
     /** The shape resolver for resolving cached shapes */
@@ -238,6 +241,17 @@ export const CommandHandlers: Record<string, CommandHandler> = {
         }
         context.setMeshRetention(triangles);
         return { handled: true, result: meshRetentionOf(context.kernel) };
+    },
+
+    /**
+     * Handles setting the settings the kernel works by: exactly those given are in force after,
+     * and one left out goes back to the behaviour from before it existed. A setting the worker
+     * does not know, or a value it does not take, is refused and the earlier settings stay.
+     */
+    [ReservedFunctions.SET_SETTINGS]: (inputs, context): CommandResult => {
+        const settings = checkedSettings(inputs);
+        context.setSettings(settings);
+        return { handled: true, result: settings };
     },
 
     /**

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type * as Inputs from "../../../inputs";
-import { expandedKnots, knotDomain, nurbsCurvePoint, nurbsSurfacePoint } from "./nurbs";
+import { blendedPoint, expandedKnots, knotDomain, liftedPoint, nurbsCurvePoint, nurbsSurfacePoint, projectedPoint } from "./nurbs";
 
 const QUARTER: Inputs.Base.Point3[] = [[1, 0, 0], [1, 1, 0], [0, 1, 0]];
 const QUARTER_WEIGHTS = [1, Math.SQRT1_2, 1];
@@ -64,6 +64,32 @@ describe("nurbsCurvePoint and repeated knots", () => {
         // Assert
         expect(middle).toEqual(near([2, 0, 0]));
         expect(short).toEqual([0, 0]);
+    });
+});
+
+describe("weighted points", () => {
+    it("should lift a point by its weight into four numbers, the weight last", () => {
+        // Act
+        const lifted = liftedPoint([1, -2, 3], 0.5);
+
+        // Assert
+        expect(lifted).toEqual([0.5, -1, 1.5, 0.5]);
+    });
+
+    it("should project a lifted point back to where it was", () => {
+        // Act
+        const projected = projectedPoint([0.5, -1, 1.5, 0.5]);
+
+        // Assert
+        expect(projected).toEqual([1, -2, 3]);
+    });
+
+    it("should blend two weighted points a share of the way from the first to the second, the weight with them", () => {
+        // Act
+        const blended = blendedPoint([0, 0, 0, 1], [4, 8, -4, 3], 0.25);
+
+        // Assert
+        expect(blended).toEqual([1, 2, -1, 1.5]);
     });
 });
 

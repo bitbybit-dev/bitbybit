@@ -29,3 +29,14 @@ than the tolerance is a real gap, and failing on it is correct.
 
 `toPolygonPoints` checks it was handed a Manifold at all before calling into it, because types cannot
 enforce that across a worker boundary or from untyped script.
+
+**A recipe's roots are placed by the coordinate system that is set** (`manifold.settings`, which the
+worker is told through its reserved `setSettings` command and keys its cache by). A recipe is
+right-handed data, so a right-handed system and no setting place a root as they always did: by its
+matrix, followed by the turn of Z into Y when asked. A left-handed system follows the matrix with a
+mirror instead, Y and Z swapped when Z is up and X mirrored when it is not (`recipe-placing.ts`,
+the matrices from base's `meshMatrixInModel`). `build` hands the mirrored matrix to the kernel, which
+turns the triangles round itself. `meshes` must not: a mirrored placement is not a turn and a move,
+so nothing would draw as instances. It mirrors each shared mesh once and places it by the root's
+matrix carried between two mirrors, which is a turn and a move again. A root that is no solid takes
+its surface from base already placed, with the identity for a matrix.

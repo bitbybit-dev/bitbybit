@@ -7,6 +7,19 @@ import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { checkedShape, checkedShapes } from "./input-checks";
 
+const KEPT_NOT_VALID_ALERT = "BitbybitBool_AlertInvalidResultKept";
+
+const keptNotValid = new WeakSet<TopoDS_Shape>();
+
+export function isKeptNotValid(shape: TopoDS_Shape): boolean {
+    return keptNotValid.has(shape);
+}
+
+interface KernelBooleanResult {
+    shape: TopoDS_Shape | null;
+    errorAlerts: string;
+}
+
 export class BooleansService {
 
     constructor(
@@ -25,7 +38,8 @@ export class BooleansService {
         for (let i = 1; i < inputs.shapes.length; i++) {
             let intersectionResult: TopoDS_Shape;
             try {
-                intersectionResult = this.resultOf(this.occ.BooleanCommon([intersectShape], [inputs.shapes[i]!], !inputs.keepEdges, 0));
+                const result = this.occ.BooleanCommon([intersectShape], [inputs.shapes[i]!], !inputs.keepEdges, 0);
+                intersectionResult = this.taggedBy(result, this.resultOf(result));
             } catch (failure) {
                 intersectionResults.forEach(r => r.delete());
                 throw failure;
@@ -45,7 +59,7 @@ export class BooleansService {
         }
         checkedShapes(inputs.shapes);
         const result = this.occ.BooleanCommonEachWithHistory(inputs.shapes[0]!, inputs.shapes.slice(1), !inputs.keepEdges, 0);
-        return { shape: this.resultOf(result), histories: result.histories.map(historyFromKernel) };
+        return { shape: this.taggedBy(result, this.resultOf(result)), histories: result.histories.map(historyFromKernel) };
     }
 
     difference(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
@@ -54,7 +68,8 @@ export class BooleansService {
             throw new InputError("`shapes` is empty, so there is nothing to subtract from `shape`.", "shapes");
         }
         checkedShapes(inputs.shapes);
-        return this.loneSolidOf(this.resultOf(this.occ.BooleanCut([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy))));
+        const result = this.occ.BooleanCut([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy));
+        return this.taggedBy(result, this.loneSolidOf(this.resultOf(result)));
     }
 
     private loneSolidOf(shape: TopoDS_Shape): TopoDS_Shape {
@@ -87,7 +102,8 @@ export class BooleansService {
             throw new InputError("`shapes` is empty, so there is nothing to join.", "shapes");
         }
         checkedShapes(inputs.shapes);
-        return this.resultOf(this.occ.BooleanFuse(inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy)));
+        const result = this.occ.BooleanFuse(inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy));
+        return this.taggedBy(result, this.resultOf(result));
     }
 
     private strategyOf(strategy: Inputs.OCCT.booleanStrategyEnum): BitbybitBool_Strategy {
@@ -107,7 +123,7 @@ export class BooleansService {
         }
         checkedShapes(inputs.shapes);
         const result = this.occ.BooleanFuseWithHistory(inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy));
-        return { shape: this.resultOf(result), histories: result.histories.map(historyFromKernel) };
+        return { shape: this.taggedBy(result, this.resultOf(result)), histories: result.histories.map(historyFromKernel) };
     }
 
     differenceWithHistory(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
@@ -117,10 +133,17 @@ export class BooleansService {
         }
         checkedShapes(inputs.shapes);
         const result = this.occ.BooleanCutWithHistory([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy));
-        return { shape: this.loneSolidOf(this.resultOf(result)), histories: result.histories.map(historyFromKernel) };
+        return { shape: this.taggedBy(result, this.loneSolidOf(this.resultOf(result))), histories: result.histories.map(historyFromKernel) };
     }
 
-    private resultOf(result: { shape: TopoDS_Shape | null, errorAlerts: string }): TopoDS_Shape {
+    private taggedBy(result: KernelBooleanResult, shape: TopoDS_Shape): TopoDS_Shape {
+        if (result.errorAlerts.split(" ").includes(KEPT_NOT_VALID_ALERT)) {
+            keptNotValid.add(shape);
+        }
+        return shape;
+    }
+
+    private resultOf(result: KernelBooleanResult): TopoDS_Shape {
         if (result.shape === null) {
             const alerts = result.errorAlerts.split(" ");
             if (alerts.includes("BitbybitBool_AlertFaceWithoutSurface")) {

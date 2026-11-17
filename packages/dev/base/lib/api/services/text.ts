@@ -3,6 +3,8 @@ import type * as Models from "../models";
 import { defaultsVectorParams } from "../models/simplex";
 import type { Point } from "./point";
 import { resolveDto } from "../kernel-calls";
+import type { BitbybitSettings } from "../kernel-calls/settings";
+import { pointOnGround } from "./helpers/files/ground-axes";
 import type * as Resolved from "../resolved-inputs";
 
 type Line = { width: number, height: number, chars: Models.Text.VectorCharData[] };
@@ -14,7 +16,7 @@ type Line = { width: number, height: number, chars: Models.Text.VectorCharData[]
  * 0.
  */
 export class TextBitByBit {
-    constructor(private readonly point: Point) {
+    constructor(private readonly point: Point, private readonly settings: () => BitbybitSettings = () => ({})) {
     }
 
     /**
@@ -672,7 +674,7 @@ export class TextBitByBit {
             const gx = ratio * (glyph[i] as number) + xOffset;
             const gy = ratio * (glyph[i + 1] as number) + yOffset + extrudeYOffset;
             if (glyph[i] !== undefined) {
-                polyline.push([gx, 0, gy]);
+                polyline.push(this.onGround(gx, gy));
                 continue;
             }
             paths.push(polyline);
@@ -808,6 +810,10 @@ export class TextBitByBit {
         return lines;
     }
 
+    private onGround(x: number, y: number): Inputs.Base.Point3 {
+        return pointOnGround(x, y, this.settings().coordinateSystem);
+    }
+
     private vectorParamsChar(inputs: Resolved.Text.VectorCharDto): typeof defaultsVectorParams {
         const params = Object.assign({}, defaultsVectorParams, inputs);
         params.input = inputs.char || params.char;
@@ -820,7 +826,7 @@ export class TextBitByBit {
             vchar.paths = vchar.paths.map((path) => {
                 const pts = this.point.translatePoints({
                     points: path,
-                    translation: [x, 0, y],
+                    translation: this.onGround(x, y),
                 });
                 return pts;
             });

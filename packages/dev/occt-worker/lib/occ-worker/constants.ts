@@ -54,6 +54,8 @@ export const ReservedFunctions = {
     CLEAN_ALL_CACHE: "cleanAllCache",
     /** Set how many triangles meshing may keep on shapes, and report what is kept */
     SET_MESH_RETENTION: "setMeshRetention",
+    /** Set the settings the kernel works by, such as the coordinate system, kept for every call after */
+    SET_SETTINGS: "setSettings",
     /** Add OpenCascade dependencies/plugins */
     ADD_OC: "addOc",
     /** Save shape to STEP file format */
@@ -78,6 +80,7 @@ export const NON_CACHEABLE_FUNCTIONS = new Set<string>([
     ReservedFunctions.STARTED_THE_RUN,
     ReservedFunctions.CLEAN_ALL_CACHE,
     ReservedFunctions.SET_MESH_RETENTION,
+    ReservedFunctions.SET_SETTINGS,
     ReservedFunctions.ADD_OC,
     ReservedFunctions.SAVE_SHAPE_STEP,
 ]);

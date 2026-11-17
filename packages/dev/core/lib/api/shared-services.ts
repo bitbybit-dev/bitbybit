@@ -1,4 +1,5 @@
-import { BaseBitByBit } from "@bitbybit-dev/base";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
+import { BaseBitByBit, checkedSettings, settingsOfConventions } from "@bitbybit-dev/base";
 import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
@@ -33,6 +34,15 @@ export function createSharedServices(context: ContextBase): SharedServices {
     const ifc = new IFCW(ifcWorkerManager, occt);
 
     const base = new BaseBitByBit();
+    const setSettings = async (settings: BitbybitSettings): Promise<BitbybitSettings> => {
+        const checked = checkedSettings(settings);
+        const told = [occtWorkerManager.setSettings(checked), jscadWorkerManager.setSettings(checked), manifoldWorkerManager.setSettings(checked)];
+        base.settings = checked;
+        context.settings = checked;
+        await Promise.all(told);
+        return { ...checked };
+    };
+    const setConventions = async (level: number, engineSettings: BitbybitSettings): Promise<BitbybitSettings> => await setSettings(settingsOfConventions(level, engineSettings));
 
     return {
         jscadWorkerManager, manifoldWorkerManager, occtWorkerManager, ifcWorkerManager, jscad, manifold, ifc,
@@ -41,6 +51,7 @@ export function createSharedServices(context: ContextBase): SharedServices {
         frame: base.frame,
         engineering: base.engineering,
         recipes: base.recipes,
+        io: base.io,
         tag: new Tag(context),
         color: base.color,
         verb: new Verb(context, base.geometryHelper, base.math),
@@ -53,5 +64,7 @@ export function createSharedServices(context: ContextBase): SharedServices {
         text: base.textService,
         dates: base.dates,
         mesh: base.mesh,
+        setSettings,
+        setConventions,
     };
 }

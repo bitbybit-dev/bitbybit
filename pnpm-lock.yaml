@@ -6,6 +6,7 @@ settings:
 
 overrides:
   js-yaml@4: ^4.3.2
+  minimatch@10: ^11.0.8
 
 importers:
 
@@ -42,40 +43,40 @@ importers:
   packages/dev/babylonjs:
     dependencies:
       '@babylonjs/core':
-        specifier: 9.32.0
-        version: 9.32.0
+        specifier: 9.35.0
+        version: 9.35.0
       '@babylonjs/gui':
-        specifier: 9.32.0
-        version: 9.32.0(@babylonjs/core@9.32.0)
+        specifier: 9.35.0
+        version: 9.35.0(@babylonjs/core@9.35.0)
       '@babylonjs/havok':
         specifier: 1.3.13
         version: 1.3.13
       '@babylonjs/loaders':
-        specifier: 9.32.0
-        version: 9.32.0(@babylonjs/core@9.32.0)(babylonjs-gltf2interface@9.25.0)
+        specifier: 9.35.0
+        version: 9.35.0(@babylonjs/core@9.35.0)(babylonjs-gltf2interface@9.25.0)
       '@babylonjs/materials':
-        specifier: 9.32.0
-        version: 9.32.0(@babylonjs/core@9.32.0)
+        specifier: 9.35.0
+        version: 9.35.0(@babylonjs/core@9.35.0)
       '@babylonjs/serializers':
-        specifier: 9.32.0
-        version: 9.32.0(@babylonjs/core@9.32.0)(babylonjs-gltf2interface@9.25.0)
+        specifier: 9.35.0
+        version: 9.35.0(@babylonjs/core@9.35.0)(babylonjs-gltf2interface@9.25.0)
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../core
       '@bitbybit-dev/ifc-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt-worker
       earcut:
         specifier: 3.0.2
@@ -155,31 +156,31 @@ importers:
   packages/dev/core:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/ifc':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc
       '@bitbybit-dev/ifc-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc-worker
       '@bitbybit-dev/jscad':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt
       '@bitbybit-dev/occt-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.4.0
@@ -259,7 +260,7 @@ importers:
   packages/dev/ifc:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
     devDependencies:
       '@microsoft/api-extractor':
@@ -284,10 +285,10 @@ importers:
   packages/dev/ifc-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/ifc':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc
       rxjs:
         specifier: 7.8.2
@@ -312,7 +313,7 @@ importers:
   packages/dev/jscad:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@jscad/dxf-serializer':
         specifier: 2.1.23
@@ -349,10 +350,10 @@ importers:
   packages/dev/jscad-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/jscad':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad
       rxjs:
         specifier: 7.8.2
@@ -377,7 +378,7 @@ importers:
   packages/dev/manifold:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       manifold-3d:
         specifier: 3.5.4
@@ -402,10 +403,10 @@ importers:
   packages/dev/manifold-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/manifold':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold
       rxjs:
         specifier: 7.8.2
@@ -458,7 +459,7 @@ importers:
   packages/dev/occt:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
     devDependencies:
       '@microsoft/api-extractor':
@@ -483,10 +484,10 @@ importers:
   packages/dev/occt-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/occt':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt
       rxjs:
         specifier: 7.8.2
@@ -511,29 +512,29 @@ importers:
   packages/dev/playcanvas:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../core
       '@bitbybit-dev/ifc-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.4.0
         version: 10.4.0
       playcanvas:
-        specifier: 2.23.3
-        version: 2.23.3
+        specifier: 2.24.0
+        version: 2.24.0
       verb-nurbs-web:
         specifier: 2.1.3
         version: 2.1.3
@@ -563,29 +564,29 @@ importers:
   packages/dev/threejs:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../core
       '@bitbybit-dev/ifc-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.4.0
         version: 10.4.0
       three:
-        specifier: 0.186.1
-        version: 0.186.1
+        specifier: 0.187.0
+        version: 0.187.0
       verb-nurbs-web:
         specifier: 2.1.3
         version: 2.1.3
@@ -594,8 +595,8 @@ importers:
         specifier: 7.59.1
         version: 7.59.1(@types/node@22.20.1)
       '@types/three':
-        specifier: 0.186.0
-        version: 0.186.0
+        specifier: 0.187.0
+        version: 0.187.0
       '@vitest/coverage-v8':
         specifier: 4.1.12
         version: 4.1.12(vitest@4.1.12)
@@ -653,30 +654,30 @@ packages:
     resolution: {integrity: sha512-Vj1jF3cPfxg7OAfoI7QnVKLoILlm2JF9pnVHrX8qx7AHMiYWT+NDAA7jChlNgRS4WTLc/fD1lXLmPixluj+3Gg==}
     engines: {node: '>=6.9.0'}
 
-  '@babylonjs/core@9.32.0':
-    resolution: {integrity: sha512-mHBsyKJuQHbs97Rb/1qxMRg6Ru79+0BjLhGLTa34s6U/fkBCtOh+xKTQDqFpFtPqgBw9TLFcIEvFHy01vnJxwA==}
+  '@babylonjs/core@9.35.0':
+    resolution: {integrity: sha512-qY2uU4gVC1GA7vPfLtnF57bPBBuu5nGnh9efGZVWtba9naxeeH+Nkj919vEFhoBvmiDxbRXMOBKLp/wWC0YzYA==}
 
-  '@babylonjs/gui@9.32.0':
-    resolution: {integrity: sha512-VstJSVYIWp2DkyuoK72JIDUjfkurP6u9O+YHuE3yYHbRVbNdH8CQo9h6Rb9IU2zoFbnjvOA5Y9tIuHrvdexW+Q==}
+  '@babylonjs/gui@9.35.0':
+    resolution: {integrity: sha512-R1+ao9de3/4kNFz3p71eb8kdvWPvElJv8F9hk+8TXdD/BhrVJ/xqpEfp1aWgXa9wh/OaHg8JlUiFZWAntxA/ug==}
     peerDependencies:
       '@babylonjs/core': ^9.0.0
 
   '@babylonjs/havok@1.3.13':
     resolution: {integrity: sha512-DDrPHbNdeanogdE261r4sfgKgtZb11ccaDjNEbhEcrcWz1XgYHTIJzz5QwO+J4XhOQJLXfn9Lv20cI2REIZiwg==}
 
-  '@babylonjs/loaders@9.32.0':
-    resolution: {integrity: sha512-pHWbOaR34riRNxX0rffPpVcbaAoEXmjtS00A4RO43zoz4EPVg4mESX0EqzaA8yl7FbVk+aYWwyj30uR1OWrl1Q==}
+  '@babylonjs/loaders@9.35.0':
+    resolution: {integrity: sha512-glYCpmSCukBcWMziRsxOI1hTDeCxa6/kqfDSRfej7MsD9N+dnZfZTd3+ReHpQe4F33v5/PoSTt3grN/pA0bXFg==}
     peerDependencies:
       '@babylonjs/core': ^9.0.0
       babylonjs-gltf2interface: ^9.0.0
 
-  '@babylonjs/materials@9.32.0':
-    resolution: {integrity: sha512-IfYJLsHFlFSzJEvDJ3bQ4bVPiQw9LImUTTTt95IGo0yBzELgAaaziE8kv1wKkZoX6Fi7Q9k0GUYdlDyS5rlB5A==}
+  '@babylonjs/materials@9.35.0':
+    resolution: {integrity: sha512-91dqrYzShDsD9BEVBa05Bq8aN6frB25v95SEk9SXUewdal5jzPlblA6ZgBeMsKF970ZCO8y5KpDk+laI5in7Ww==}
     peerDependencies:
       '@babylonjs/core': ^9.0.0
 
-  '@babylonjs/serializers@9.32.0':
-    resolution: {integrity: sha512-zvAT6lpUf4uQKvTOMXnizFfiP9f1kGcDs2r/aAy8p7DWuixMrK4AqMWP7x7WWzGIgSinU2qAiuQdoVjTz18nag==}
+  '@babylonjs/serializers@9.35.0':
+    resolution: {integrity: sha512-VktjqJyl7/iKKLCHQzZ+YmU7IX/HS0Msegrr8z2RgY51jxPH1Zmar8P3ZMt3ol+IjNzaAPKjoU7CUHjZukwHxQ==}
     peerDependencies:
       '@babylonjs/core': ^9.0.0
       babylonjs-gltf2interface: ^9.0.0
@@ -1122,6 +1123,9 @@ packages:
       '@types/node':
         optional: true
 
+  '@isaacs/nonrecursive-glob-match@1.1.0':
+    resolution: {integrity: sha512-GPm/Dbvk5RLmhRnxXIa7nTpK0xtl4E0wj0MslsuNiJ1FIROU+2+9lgUC/dgF7Ey4QCWhfEsgxilMRMCdHPfDfw==}
+
   '@jridgewell/resolve-uri@3.1.2':
     resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
     engines: {node: '>=6.0.0'}
@@ -1491,8 +1495,8 @@ packages:
   '@types/stats.js@0.17.4':
     resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
 
-  '@types/three@0.186.0':
-    resolution: {integrity: sha512-mxYSBpDC+D0pLfSP6sW4WZTcT+nrtmZcimMqnVmy36Hte3XpeYSrvgg4TRdaM1GemGog1AWzI5qL2VoIfMXbJQ==}
+  '@types/three@0.187.0':
+    resolution: {integrity: sha512-v+vKNarUtk4n2QRZ4+CN5ygMM0ARUjXjIQl0R/unMUfmStFeVqGbgqarbrpoGTXRZoulSH16ePrVJVxPJEbMUA==}
 
   '@types/through@0.0.33':
     resolution: {integrity: sha512-HsJ+z3QuETzP3cswwtzt2vEIiHBk/dCcHGhbmG5X3ecnwFD/lPrMpliGXxSCg03L9AhrdwA4Oz/qfspkDW+xGQ==}
@@ -2341,13 +2345,9 @@ packages:
     resolution: {integrity: sha512-z0yWI+4FDrrweS8Zmt4Ej5HdJmky15+L2e6Wgn3+iK5fWzb6T3fhNFq2+MeTRb064c6Wr4N/wv0DzQTjNzHNGQ==}
     engines: {node: '>=10'}
 
-  minimatch@10.2.3:
-    resolution: {integrity: sha512-Rwi3pnapEqirPSbWbrZaa6N3nmqq4Xer/2XooiOKyV3q12ML06f7MOuc5DVH8ONZIFhwIYQ3yzPH4nt7iWHaTg==}
-    engines: {node: 18 || 20 || >=22}
-
-  minimatch@10.2.6:
-    resolution: {integrity: sha512-vpLQEs+VLCr1nU0BXS07maYoFwlDAH0gngQuuttxIwutDFEMHq2blX+8vpgxDdK3J1PwjCJiep77OitTZ4Ll1A==}
-    engines: {node: 18 || 20 || >=22}
+  minimatch@11.0.8:
+    resolution: {integrity: sha512-nFQuYSTVrGvysVBps5Ih+0BdnYFN/Cj3C816r6+p7yK+FHrVLGE4O4N9AFwykrlNlvM2HYt+Rad1Uiro6h88Ig==}
+    engines: {node: 20 || >=22}
 
   minimatch@5.1.9:
     resolution: {integrity: sha512-7o1wEA2RyMP7Iu7GNba9vc0RWWGACJOCZBJX2GJWip0ikV+wcOsgVuY9uE8CPiyQhkGFSlhuSkZPavN7u1c2Fw==}
@@ -2491,8 +2491,8 @@ packages:
     resolution: {integrity: sha512-wQ0b/W4Fr01qtpHlqSqspcj3EhBvimsdh0KlHhH8HRZnMsEa0ea2fTULOXOS9ccQr3om+GcGRk4e+isrZWV8qQ==}
     engines: {node: '>=16.20.0'}
 
-  playcanvas@2.23.3:
-    resolution: {integrity: sha512-hjDdo5yFtVr/WmDh59pRrT1LC+Rfpq4VXB8Xt3AMB8GfWXj9JzOMq3x+3FTmq/2L2gN37q9V1LMZaLuYshzMXQ==}
+  playcanvas@2.24.0:
+    resolution: {integrity: sha512-1zWNMmEPK+/g55knPERlnutr4BoqhhfDVa1Kyn7AwrrCpVkmc1HHRsd7O8nP3SoEjvtKnlpXutqkQIMBZC10dg==}
     engines: {node: '>=18.3.0'}
 
   pluralize@8.0.0:
@@ -2734,8 +2734,8 @@ packages:
     resolution: {integrity: sha512-ujeqbceABgwMZxEJnk2HDY2DlnUZ+9oEcb1KzTVfYHio0UE6dG71n60d8D2I4qNvleWrrXpmjpt7vZeF1LnMZQ==}
     engines: {node: '>=6'}
 
-  three@0.186.1:
-    resolution: {integrity: sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==}
+  three@0.187.0:
+    resolution: {integrity: sha512-Qiu7R+Cmh8CstZsY1uJOSWnVlfo7ZtNLV7mF8Jltk3LB3AtDu9cRZlcnRKkAk8Y4z6KKw35z7Y7Urd7jWY8etA==}
 
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
@@ -3034,28 +3034,28 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@babylonjs/core@9.32.0': {}
+  '@babylonjs/core@9.35.0': {}
 
-  '@babylonjs/gui@9.32.0(@babylonjs/core@9.32.0)':
+  '@babylonjs/gui@9.35.0(@babylonjs/core@9.35.0)':
     dependencies:
-      '@babylonjs/core': 9.32.0
+      '@babylonjs/core': 9.35.0
 
   '@babylonjs/havok@1.3.13':
     dependencies:
       '@types/emscripten': 1.41.6
 
-  '@babylonjs/loaders@9.32.0(@babylonjs/core@9.32.0)(babylonjs-gltf2interface@9.25.0)':
+  '@babylonjs/loaders@9.35.0(@babylonjs/core@9.35.0)(babylonjs-gltf2interface@9.25.0)':
     dependencies:
-      '@babylonjs/core': 9.32.0
+      '@babylonjs/core': 9.35.0
       babylonjs-gltf2interface: 9.25.0
 
-  '@babylonjs/materials@9.32.0(@babylonjs/core@9.32.0)':
+  '@babylonjs/materials@9.35.0(@babylonjs/core@9.35.0)':
     dependencies:
-      '@babylonjs/core': 9.32.0
+      '@babylonjs/core': 9.35.0
 
-  '@babylonjs/serializers@9.32.0(@babylonjs/core@9.32.0)(babylonjs-gltf2interface@9.25.0)':
+  '@babylonjs/serializers@9.35.0(@babylonjs/core@9.35.0)(babylonjs-gltf2interface@9.25.0)':
     dependencies:
-      '@babylonjs/core': 9.32.0
+      '@babylonjs/core': 9.35.0
       babylonjs-gltf2interface: 9.25.0
 
   '@bcoe/v8-coverage@1.0.2': {}
@@ -3120,7 +3120,7 @@ snapshots:
     dependencies:
       '@eslint/object-schema': 3.0.5
       debug: 4.4.3(supports-color@10.2.2)
-      minimatch: 10.2.6
+      minimatch: 11.0.8
     transitivePeerDependencies:
       - supports-color
 
@@ -3418,6 +3418,8 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.20.1
 
+  '@isaacs/nonrecursive-glob-match@1.1.0': {}
+
   '@jridgewell/resolve-uri@3.1.2': {}
 
   '@jridgewell/sourcemap-codec@1.6.0': {}
@@ -3479,7 +3481,7 @@ snapshots:
       '@rushstack/terminal': 0.24.4(@types/node@22.20.1)
       '@rushstack/ts-command-line': 5.3.14(@types/node@22.20.1)
       diff: 8.0.4
-      minimatch: 10.2.3
+      minimatch: 11.0.8
       resolve: 1.22.12
       semver: 7.7.4
       source-map: 0.6.1
@@ -3746,7 +3748,7 @@ snapshots:
 
   '@types/stats.js@0.17.4': {}
 
-  '@types/three@0.186.0':
+  '@types/three@0.187.0':
     dependencies:
       '@dimforge/rapier3d-compat': 0.12.0
       '@tweenjs/tween.js': 23.1.3
@@ -3830,7 +3832,7 @@ snapshots:
       '@typescript-eslint/types': 8.70.0
       '@typescript-eslint/visitor-keys': 8.70.0
       debug: 4.4.3(supports-color@10.2.2)
-      minimatch: 10.2.6
+      minimatch: 11.0.8
       semver: 7.8.5
       tinyglobby: 0.2.17
       ts-api-utils: 2.5.0(typescript@5.9.3)
@@ -4166,7 +4168,7 @@ snapshots:
       imurmurhash: 0.1.4
       is-glob: 4.0.3
       json-stable-stringify-without-jsonify: 1.0.1
-      minimatch: 10.2.6
+      minimatch: 11.0.8
       natural-compare: 1.4.0
       optionator: 0.9.4
     transitivePeerDependencies:
@@ -4626,12 +4628,9 @@ snapshots:
   mimic-response@3.1.0:
     optional: true
 
-  minimatch@10.2.3:
+  minimatch@11.0.8:
     dependencies:
-      brace-expansion: 5.0.12
-
-  minimatch@10.2.6:
-    dependencies:
+      '@isaacs/nonrecursive-glob-match': 1.1.0
       brace-expansion: 5.0.12
 
   minimatch@5.1.9:
@@ -4776,7 +4775,7 @@ snapshots:
 
   pkce-challenge@5.0.1: {}
 
-  playcanvas@2.23.3:
+  playcanvas@2.24.0:
     dependencies:
       '@types/webxr': 0.5.24
       '@webgpu/types': 0.1.72
@@ -5056,7 +5055,7 @@ snapshots:
       readable-stream: 3.6.2
     optional: true
 
-  three@0.186.1: {}
+  three@0.187.0: {}
 
   tinybench@2.9.0: {}
 

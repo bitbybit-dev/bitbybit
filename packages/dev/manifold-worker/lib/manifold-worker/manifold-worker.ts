@@ -1,13 +1,15 @@
 import type { ObjectDefinition } from "./cache-helper";
 import { CacheHelper } from "./cache-helper";
 import { ManifoldService, manifoldDtoRegistry } from "@bitbybit-dev/manifold";
-import { InputError, callByPath, describeKernelFailure, prepareKernelCall, rehydrateReferences } from "@bitbybit-dev/base";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
+import { InputError, callByPath, checkedSettings, describeKernelFailure, prepareKernelCall, rehydrateReferences, settingsCacheKey } from "@bitbybit-dev/base";
 
 const CACHE_THRESHOLD = 10000;
 
 
 let manifold: ManifoldService;
 let cacheHelper: CacheHelper;
+let settings: BitbybitSettings = {};
 
 type Held = { call: DataInput; postMessage: (message: unknown) => void };
 
@@ -16,6 +18,7 @@ let held: Held[] | undefined = [];
 export const initializationComplete = (mnf: any, _plugins?: any, doNotPost?: boolean) => {
     cacheHelper = new CacheHelper();
     manifold = new ManifoldService(mnf);
+    settings = {};
     if (!doNotPost) {
         postMessage("manifold-initialised");
     }
@@ -42,7 +45,7 @@ const MANIFOLD_REFERENCE = "manifold-shape";
 
 const WORKER_COMMANDS = new Set([
     "deleteManifoldOrCrossSection", "deleteManifoldsOrCrossSections",
-    "manifoldToMeshPointer", "startedTheRun", "cleanAllCache", "addManifoldPluginDependency",
+    "manifoldToMeshPointer", "startedTheRun", "cleanAllCache", "addManifoldPluginDependency", "setSettings",
 ]);
 
 const manifoldHash = (value: object): string | number | undefined => {
@@ -88,7 +91,7 @@ const unreportableFailure = (functionName: unknown): string => typeof functionNa
 
 const executeStandardFunction = (action: DataInput["action"]): unknown => {
     const call = prepareKernelCall("Manifold", manifoldDtoRegistry, action.functionName, action.inputs);
-    return serializeResult(cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs }, () => {
+    return serializeResult(cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs, settings: settingsCacheKey(settings) }, () => {
         call.reportIssues();
         return callByPath(manifold, action.functionName, rehydrateReferences(call.inputs, manifoldHash, lookupManifold));
     }));
@@ -108,6 +111,11 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
         }
         if (!WORKER_COMMANDS.has(d.action.functionName)) {
             result = executeStandardFunction(d.action);
+        }
+        if (d.action.functionName === "setSettings") {
+            settings = checkedSettings(d.action.inputs);
+            manifold.settings = settings;
+            result = { ...settings };
         }
         if (d.action.functionName === "addManifoldPluginDependency") {
             if (manifold && manifold.plugins) {

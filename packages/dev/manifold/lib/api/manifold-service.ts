@@ -5,7 +5,8 @@ import { CrossSection } from "./services/cross-section/cross-section";
 import { Mesh } from "./services/mesh/mesh";
 import { ManifoldRecipes } from "./services/recipes/recipes";
 import { creasedMeshData, positionsOf } from "./services/mesh-data";
-import { BaseBitByBit } from "@bitbybit-dev/base";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
+import { BaseBitByBit, checkedSettings } from "@bitbybit-dev/base";
 
 /**
  * The entry point to the Manifold kernel, a fast mesh-based solid modeler: `manifold` builds and
@@ -36,7 +37,22 @@ export class ManifoldService {
         this.manifold = new Manifold(wasm);
         this.crossSection = new CrossSection(wasm, this.base);
         this.mesh = new Mesh(wasm);
-        this.recipes = new ManifoldRecipes(wasm, this.base.recipes);
+        this.recipes = new ManifoldRecipes(wasm, this.base.recipes, () => this.base.settings);
+    }
+
+    /**
+     * The settings this kernel works by, such as the coordinate system its numbers are in. Assign
+     * them once, before the calls they apply to: `manifold.settings = { coordinateSystem }`. With a
+     * coordinate system, `recipes` places what it builds in that system. A name that is no setting,
+     * or a value its setting does not take, is refused as an `InputError`. The settings read back
+     * are frozen, so they change only by assigning new ones.
+     */
+    get settings(): BitbybitSettings {
+        return this.base.settings;
+    }
+
+    set settings(settings: BitbybitSettings) {
+        this.base.settings = checkedSettings(settings);
     }
 
     /**

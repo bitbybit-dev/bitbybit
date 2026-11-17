@@ -3,6 +3,9 @@
         "hexChannels": {
             "exposedAs": "color.hexToRgb"
         },
+        "hexOfChannels": {
+            "exposedAs": "color.rgbToHex"
+        },
         "hslChannels": {
             "exposedAs": "color.hslToHex"
         }
@@ -15,18 +18,95 @@
             "exposedAs": "color.srgbToLinear"
         }
     },
+    "color/css-colors.ts": {
+        "cssColorHex": {
+            "internal": "CSS color text (hex, rgb() and the named colors) as the drawing model's hex, read where an SVG style arrives behind io.svg.svgRead"
+        }
+    },
+    "curves/bezier-pieces.ts": {
+        "bezierPiecesBounds": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "bezierPoint": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "bezierPointAndTangent": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "cubicsOfPiece": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "samplesOfPiece": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        }
+    },
+    "curves/conic-arcs.ts": {
+        "angleWithinTurn": {
+            "internal": "angle bookkeeping that brings the drawing model's and the DXF reader's arcs into their first turn where they arrive"
+        },
+        "bulgeArcOf": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "conicArcAsNurbs": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "conicArcExtremes": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "conicArcOfEllipseArc": {
+            "internal": "curve forms behind the SVG reader: an SVG arc as the conic arc the drawing model's curves are read from; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "conicArcSamples": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "ellipseFramePoint": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "principalArcOf": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        }
+    },
+    "curves/nurbs-forms.ts": {
+        "bezierPiecesOf": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "clampedForm": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "clampedUniformKnots": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "insertKnot": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "isRationalPiece": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "periodicUniformForm": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        }
+    },
     "curves/nurbs.ts": {
+        "blendedPoint": {
+            "internal": "tuple forms of a weighted control point under the NURBS evaluators and the curve forms; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
         "expandedKnots": {
             "internal": "knot bookkeeping under the NURBS point evaluators"
         },
         "knotDomain": {
             "internal": "NURBS evaluation for readers that cannot use a kernel, such as the IFC builder; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
         },
+        "liftedPoint": {
+            "internal": "tuple forms of a weighted control point under the NURBS evaluators and the curve forms; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
         "nurbsCurvePoint": {
             "internal": "NURBS evaluation for readers that cannot use a kernel, such as the IFC builder; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
         },
         "nurbsSurfacePoint": {
             "internal": "NURBS evaluation for readers that cannot use a kernel, such as the IFC builder; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "projectedPoint": {
+            "internal": "tuple forms of a weighted control point under the NURBS evaluators and the curve forms; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
         }
     },
     "curves/surface-triangulation.ts": {
@@ -39,9 +119,183 @@
             "internal": "file-format plumbing behind io's readers, not geometry"
         }
     },
+    "files/drawing/drawing-budget.ts": {
+        "writerBudgetOf": {
+            "internal": "file-format plumbing: the one work limit each DXF and SVG write gets, sized by the numbers its drawing holds"
+        }
+    },
+    "files/drawing/drawing-geometry.ts": {
+        "bulgeArcOfSpan": {
+            "internal": "file-format plumbing: the drawing model's checked segments as the curve forms the DXF and SVG writers draw"
+        },
+        "circleArcOf": {
+            "internal": "file-format plumbing: the drawing model's checked segments as the curve forms the DXF and SVG writers draw"
+        },
+        "drawingBounds": {
+            "internal": "file-format plumbing: the extents the DXF header and the SVG view box are written from, over the drawing model's checked segments"
+        },
+        "drawingSize": {
+            "internal": "file-format plumbing: the size the DXF and SVG writers scale dashes, lines and borders by"
+        },
+        "ellipseArcOf": {
+            "internal": "file-format plumbing: the drawing model's checked segments as the curve forms the DXF and SVG writers draw"
+        },
+        "ocsAxesOf": {
+            "internal": "DXF's arbitrary axis algorithm, the object coordinate system an entity's extrusion names: file-format plumbing behind the DXF writer and reader"
+        },
+        "patternUnitOf": {
+            "internal": "file-format plumbing: the one dash unit the DXF and SVG writers share"
+        },
+        "polylineSpanEnd": {
+            "internal": "file-format plumbing: the drawing model's checked segments as the curve forms the DXF and SVG writers draw"
+        },
+        "polylineSpans": {
+            "internal": "file-format plumbing: the drawing model's checked segments as the curve forms the DXF and SVG writers draw"
+        },
+        "segmentSamples": {
+            "internal": "file-format plumbing: the drawing model's checked segments as the curve forms the DXF and SVG writers draw"
+        }
+    },
+    "files/drawing/drawing-model.ts": {
+        "drawingPartsOf": {
+            "internal": "input guards: the drawing model checked and normalised where it arrives, behind io.dxf.dxfCreate and io.svg"
+        },
+        "drawingPathOf": {
+            "internal": "input guards: the drawing model checked and normalised where it arrives, behind io.dxf.dxfCreate and io.svg"
+        },
+        "positiveNumber": {
+            "internal": "an input guard the DXF and SVG writers share for their tolerances and line width"
+        }
+    },
+    "files/dxf/dxf-colors.ts": {
+        "ACI_PALETTE": {
+            "internal": "file-format plumbing behind the DXF writer and reader: AutoCAD's index colors and true color numbers"
+        },
+        "nearestAciIndex": {
+            "internal": "file-format plumbing behind the DXF writer and reader: AutoCAD's index colors and true color numbers"
+        },
+        "trueColorOf": {
+            "internal": "file-format plumbing behind the DXF writer and reader: AutoCAD's index colors and true color numbers"
+        }
+    },
+    "files/dxf/dxf-entities.ts": {
+        "writeSegment": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: the entity records of each segment"
+        }
+    },
+    "files/dxf/dxf-file-text.ts": {
+        "dxfTextOf": {
+            "internal": "file-format plumbing behind io.dxf.dxfRead and occt.io.loadDxf: a DXF file's text from its bytes, in the code page its header names"
+        }
+    },
+    "files/dxf/dxf-generator.ts": {
+        "DxfGenerator": {
+            "internal": "the DXF writer behind io.dxf.dxfCreate"
+        }
+    },
+    "files/dxf/dxf-reader-dtos.ts": {
+        "conicSegmentDto": {
+            "internal": "file-format plumbing: a read conic as the circle, arc or ellipse DTO of the drawing model, one decision for io.dxf.dxfRead and io.svg.svgRead"
+        },
+        "drawingDtoOf": {
+            "internal": "file-format plumbing: a DXF reading as the drawing DTOs io.dxf.dxfRead returns"
+        }
+    },
+    "files/dxf/dxf-reader-geometry.ts": {
+        "mappedSegments": {
+            "internal": "file-format plumbing behind io.dxf.dxfRead and occt.io.loadDxf: a block insert's mapping as frame axes and the read segments under it"
+        },
+        "polylineSegments": {
+            "internal": "file-format plumbing behind io.dxf.dxfRead and occt.io.loadDxf: a block insert's mapping as frame axes and the read segments under it"
+        },
+        "positiveConic": {
+            "internal": "file-format plumbing behind io.dxf.dxfRead and occt.io.loadDxf: a block insert's mapping as frame axes and the read segments under it"
+        },
+        "principalConicOf": {
+            "internal": "file-format plumbing behind io.dxf.dxfRead and occt.io.loadDxf: a block insert's mapping as frame axes and the read segments under it"
+        },
+        "rotationAboutZ": {
+            "internal": "file-format plumbing behind io.dxf.dxfRead and occt.io.loadDxf: a block insert's mapping as frame axes and the read segments under it"
+        },
+        "scaling": {
+            "internal": "file-format plumbing behind io.dxf.dxfRead and occt.io.loadDxf: a block insert's mapping as frame axes and the read segments under it"
+        },
+        "translation": {
+            "internal": "file-format plumbing behind io.dxf.dxfRead and occt.io.loadDxf: a block insert's mapping as frame axes and the read segments under it"
+        }
+    },
+    "files/dxf/dxf-reader.ts": {
+        "readDxfDrawing": {
+            "internal": "the DXF reader behind io.dxf.dxfRead and occt.io.loadDxf"
+        }
+    },
+    "files/dxf/dxf-tables.ts": {
+        "writeBlocks": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: the sections and tables around the entities"
+        },
+        "writeClasses": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: the sections and tables around the entities"
+        },
+        "writeHeader": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: the sections and tables around the entities"
+        },
+        "writeObjects": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: the sections and tables around the entities"
+        },
+        "writeTables": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: the sections and tables around the entities"
+        }
+    },
+    "files/dxf/dxf-text.ts": {
+        "DxfText": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: group codes, numbers and names as DXF text"
+        },
+        "encodedText": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: group codes, numbers and names as DXF text"
+        },
+        "realText": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: group codes, numbers and names as DXF text"
+        }
+    },
+    "files/dxf/dxf-tokens.ts": {
+        "decodedText": {
+            "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
+        },
+        "dxfGroupsOf": {
+            "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
+        },
+        "numberIn": {
+            "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
+        },
+        "numberOf": {
+            "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
+        },
+        "numbersOf": {
+            "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
+        },
+        "recordsOf": {
+            "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
+        },
+        "textOf": {
+            "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
+        },
+        "valueOf": {
+            "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
+        }
+    },
+    "files/file-bytes.ts": {
+        "bytesOfData": {
+            "internal": "file-format plumbing: the bytes of a file given as text, an ArrayBuffer or a typed array, for the readers behind io and occt.io"
+        }
+    },
     "files/glb.ts": {
         "glbWithRootScale": {
             "internal": "file-format plumbing behind the glb writers' unit, not geometry"
+        }
+    },
+    "files/ground-axes.ts": {
+        "pointOnGround": {
+            "internal": "the ground row of the coordinate-system table behind `point.hexGrid`, `text.vectorText` and the kernels' drawings and text: where a drawing's y runs in a coordinate system, not geometry"
         }
     },
     "files/gzip.ts": {
@@ -58,6 +312,195 @@
         },
         "inflateRaw": {
             "internal": "file-format plumbing behind io's readers, not geometry"
+        }
+    },
+    "files/mesh-file-axes.ts": {
+        "meshMatrixInFile": {
+            "internal": "file-format plumbing behind the mesh writers: the matrix a coordinate system and an up axis ask for, not geometry"
+        },
+        "meshMatrixInModel": {
+            "internal": "file-format plumbing behind the mesh readers: the matrix a coordinate system and an up axis ask for, not geometry"
+        }
+    },
+    "files/stl-axes.ts": {
+        "stlAxesInFile": {
+            "internal": "file-format plumbing behind the STL writers: which axis map a coordinate system and an up axis ask for, not geometry"
+        },
+        "stlAxesInModel": {
+            "internal": "file-format plumbing behind the STL readers: which axis map a coordinate system and an up axis ask for, not geometry"
+        }
+    },
+    "files/stl.ts": {
+        "stlOfTriangles": {
+            "internal": "file-format plumbing behind the renderers' STL downloads: the bytes of a binary file, not geometry"
+        },
+        "stlWithAxes": {
+            "internal": "file-format plumbing behind the STL readers and writers: an axis map over a file's bytes, not geometry"
+        }
+    },
+    "files/svg/svg-css.ts": {
+        "matchStylesheet": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "parseDeclarations": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "parseStylesheets": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        }
+    },
+    "files/svg/svg-dash-patterns.ts": {
+        "lineTypeOfDashes": {
+            "internal": "file-format plumbing behind io.svg.svgRead: an SVG dash pattern as the drawing model's line type"
+        }
+    },
+    "files/svg/svg-document.ts": {
+        "documentFrame": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "fittedViewBox": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "parseAspectRatio": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "parseViewBox": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "viewBoxTransform": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        }
+    },
+    "files/svg/svg-memo.ts": {
+        "remembered": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        }
+    },
+    "files/svg/svg-normalizer.ts": {
+        "normalizeSvg": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        }
+    },
+    "files/svg/svg-numbers.ts": {
+        "NO_VIEWPORT": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "lengthInPixels": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "millimetresPerPixel": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "percentReference": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "pixelsOf": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "readLength": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        }
+    },
+    "files/svg/svg-path-data.ts": {
+        "parseSvgPathData": {
+            "internal": "file-format plumbing behind occt's SVG reader: SVG path data and numbers as subpaths of exact segments"
+        },
+        "scanSvgNumbers": {
+            "internal": "file-format plumbing behind occt's SVG reader: SVG path data and numbers as subpaths of exact segments"
+        },
+        "svgNumberAt": {
+            "internal": "file-format plumbing behind occt's SVG reader: SVG path data and numbers as subpaths of exact segments"
+        },
+        "svgSubpathPoints": {
+            "internal": "file-format plumbing behind occt's SVG reader: SVG path data and numbers as subpaths of exact segments"
+        }
+    },
+    "files/svg/svg-reading.ts": {
+        "readSvgDrawing": {
+            "internal": "the SVG reader behind io.svg.svgRead and io.drawing.svgToDxf: a scene as the drawing model's parts"
+        }
+    },
+    "files/svg/svg-shapes.ts": {
+        "lengthsIn": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "shapeToSubpaths": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        }
+    },
+    "files/svg/svg-strokes.ts": {
+        "reversedStroke": {
+            "internal": "file-format plumbing behind io.svg: each segment as SVG moves"
+        },
+        "strokeEnd": {
+            "internal": "file-format plumbing behind io.svg: each segment as SVG moves"
+        },
+        "strokeOf": {
+            "internal": "file-format plumbing behind io.svg: each segment as SVG moves"
+        }
+    },
+    "files/svg/svg-style.ts": {
+        "INITIAL_STYLE": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "STYLE_PROPERTIES": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "computeStyle": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "fillsArea": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "isKeyword": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "parseOpacity": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "specifiedValues": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "styleReadings": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "toSvgStyle": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        }
+    },
+    "files/svg/svg-transform.ts": {
+        "parseTransform": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "parseTransformList": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "transformSegment": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        },
+        "transformSubpath": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        }
+    },
+    "files/svg/svg-writer.ts": {
+        "pathDataOf": {
+            "internal": "the SVG writer behind io.svg.svgCreate and io.svg.pathData"
+        },
+        "svgDocumentOf": {
+            "internal": "the SVG writer behind io.svg.svgCreate and io.svg.pathData"
+        },
+        "svgNumber": {
+            "internal": "the SVG writer behind io.svg.svgCreate and io.svg.pathData"
+        }
+    },
+    "files/svg/svg-xml.ts": {
+        "parseXml": {
+            "internal": "the SVG reader behind occt.svg.loadSVG and occt.svg.loadSVGStructured, which builds its scene into shapes"
+        }
+    },
+    "files/work-budget.ts": {
+        "WorkBudget": {
+            "internal": "the per-call work limit that keeps reading and writing DXF and SVG drawings in proportion to their size"
         }
     },
     "files/zip.ts": {
@@ -83,6 +526,26 @@
             "internal": "file-format plumbing behind io's readers and the apps' archive downloads, not geometry"
         }
     },
+    "geometry/affine2.ts": {
+        "AFFINE_IDENTITY2": {
+            "internal": "the 2D affine form SVG transforms are written in, behind the SVG reader; base's public transforms are 4x4 matrices (`transforms`), so this form stays internal"
+        },
+        "affineAreaScale2": {
+            "internal": "the 2D affine form SVG transforms are written in, behind the SVG reader; base's public transforms are 4x4 matrices (`transforms`), so this form stays internal"
+        },
+        "affinePoint2": {
+            "internal": "the 2D affine form SVG transforms are written in, behind the SVG reader; base's public transforms are 4x4 matrices (`transforms`), so this form stays internal"
+        },
+        "affineProduct2": {
+            "internal": "the 2D affine form SVG transforms are written in, behind the SVG reader; base's public transforms are 4x4 matrices (`transforms`), so this form stays internal"
+        },
+        "affineScaling2": {
+            "internal": "the 2D affine form SVG transforms are written in, behind the SVG reader; base's public transforms are 4x4 matrices (`transforms`), so this form stays internal"
+        },
+        "affineTranslation2": {
+            "internal": "the 2D affine form SVG transforms are written in, behind the SVG reader; base's public transforms are 4x4 matrices (`transforms`), so this form stays internal"
+        }
+    },
     "geometry/arcs.ts": {
         "arcThroughThreePoints": {
             "exposedAs": "point.arcThroughThreePoints"
@@ -95,6 +558,14 @@
         },
         "pointsOnArc": {
             "exposedAs": "point.arcThroughThreePoints"
+        }
+    },
+    "geometry/ellipse-arcs.ts": {
+        "affineEllipseArc2": {
+            "internal": "an elliptical arc's exact image under the SVG reader's transforms, kept in centre form; a public curve API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
+        "ellipseArcOfEndpoints2": {
+            "internal": "the SVG path reader's conversion of an arc from its end points to its centre (SVG 1.1, F.6.5); a public curve API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
         }
     },
     "geometry/frame-axes.ts": {
@@ -211,6 +682,35 @@
         },
         "transportedAxes": {
             "exposedAs": "polyline.sweepFrames"
+        }
+    },
+    "geometry/polygon-nesting.ts": {
+        "boxOf2": {
+            "internal": "the plan tuple form of `point.boundingBoxOfPoints` for hot paths"
+        },
+        "boxesOverlap2": {
+            "internal": "the box sweep that narrows the drawing readers' outline nesting and crossing tests to the pairs that can touch"
+        },
+        "filledRegions2": {
+            "internal": "how the SVG and DXF readers turn nested closed outlines into faces with holes under the SVG fill rules; a public method waits for a caller outside the readers"
+        },
+        "interiorPoint2": {
+            "internal": "how the SVG and DXF readers turn nested closed outlines into faces with holes under the SVG fill rules; a public method waits for a caller outside the readers"
+        },
+        "nestedOutlines2": {
+            "internal": "how the SVG and DXF readers turn nested closed outlines into faces with holes under the SVG fill rules; a public method waits for a caller outside the readers"
+        },
+        "nestingOutlineOf2": {
+            "internal": "how the SVG and DXF readers turn nested closed outlines into faces with holes under the SVG fill rules; a public method waits for a caller outside the readers"
+        },
+        "outlinesCross2": {
+            "internal": "how the SVG and DXF readers turn nested closed outlines into faces with holes under the SVG fill rules; a public method waits for a caller outside the readers"
+        },
+        "overlappingBoxPairs2": {
+            "internal": "the box sweep that narrows the drawing readers' outline nesting and crossing tests to the pairs that can touch"
+        },
+        "segmentsCross2": {
+            "internal": "the plan tuple test for a proper crossing that the outline checks run on every pair of nearby edges; `polyline.twoPolylineIntersection` gives the points"
         }
     },
     "geometry/polygons.ts": {
@@ -370,6 +870,9 @@
         },
         "unitVectorOf": {
             "exposedAs": "vector.normalized"
+        },
+        "distanceToSegment3": {
+            "exposedAs": "line.distanceToPoint"
         }
     },
     "mesh/mesh-measures.ts": {

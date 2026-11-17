@@ -49,8 +49,9 @@ export async function initBitByBit(
     if (workers.ifcWorker) {
         bitbybit.ifcWorkerManager.setIfcWorker(workers.ifcWorker);
     }
-
-    const result = await waitForKernelInitialization(bitbybit, options);
+    const started = waitForKernelInitialization(bitbybit, options);
+    const conventionsSet = options.conventions === undefined ? undefined : bitbybit.setConventions(options.conventions);
+    const [result] = await Promise.all([started, conventionsSet]);
 
     return {
         ...result,

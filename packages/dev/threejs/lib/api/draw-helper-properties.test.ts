@@ -259,7 +259,7 @@ describe("what three.js draws, pushed to the edges of real-world use", () => {
         const index = batch.geometry.getIndex()!;
         const geometries = batch.userData["geometries"] as { part: string; indexStart: number; faceRanges: { face: number; start: number; count: number }[] }[];
         return geometries.every((geometry, geometryId) => {
-            const vertexStart = batch.getGeometryRangeAt(geometryId)!.vertexStart;
+            const vertexStart = batch.getGeometryRangeAt(geometryId).vertexStart;
             return geometry.faceRanges.every(range => {
                 const picked = Array.from({ length: range.count }, (_, at) => index.getX(geometry.indexStart + range.start + at) - vertexStart);
                 return JSON.stringify(picked) === JSON.stringify([0, 1, 2, 0, 2, 3].map(corner => corner + range.face * 4));

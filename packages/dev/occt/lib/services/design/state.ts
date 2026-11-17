@@ -86,6 +86,7 @@ export interface DesignRun {
     rebinding: Rebinding;
     supplied: ReadonlyMap<string, Models.OCCT.DesignSuppliedOutcome<TopoDS_Shape>>;
     pending: Models.OCCT.DesignPendingScript<TopoDS_Shape>[];
+    notes: string[];
 }
 
 /** What a feature reads, by key, and how it makes what it makes from them. */

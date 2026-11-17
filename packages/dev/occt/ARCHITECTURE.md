@@ -186,8 +186,44 @@ for its distance from the origin, would otherwise loop for a very long time.
 
 - The kernel builds a projected drawing on the XY plane, and its edges carry curves on that plane
   only. `BRepLib_BuildCurves3d_Simple` builds their 3D curves before the drawing is turned onto the
-  XZ ground plane; turning it first loses the edges.
+  XZ ground plane; turning it first loses the edges (`DrawingPathsOf` then throws).
+- `io.shapeToDxfPaths` reads a shape's paths in one kernel call (`DrawingPathsOf`), seen along Y: the drawing's y runs along Z, and along -Z in a right-handed
+  system (`groundAsDrawingPlane` in `lib/services/base/file-axes.ts` turns the shape a half turn about
+  X first), which is base's ground row (`base/ARCHITECTURE.md`, "The coordinate system"). With `exactCurves`, the default, ellipses lying flat and every
+  B-spline, Bezier, conic and tilted circle come back exact (a projection is affine, so projecting a
+  B-spline's poles projects the curve), and offset curves as cubics within `curvatureDeflection`;
+  the service decodes the flat array into base's drawing segments, an ellipse turned to run
+  counterclockwise, since base's ellipse runs from its start to its end that way.
+- `io.saveShapeSvg` and `io.saveShapeDxf` draw a view with the same pipeline: hidden lines, 3D
+  curves built, turned upright by a quarter turn about X so the view's y becomes the paths' y (the
+  other way in a left-handed system, whose views are drawn with their y mirrored), read
+  exactly, then written by base's writers (`lib/services/base/view-drawings.ts`). Hidden edges are their own
+  layer, `hidden`, in the `HIDDEN` line type, drawn first so the visible ones lie over them.
 - The SVG writer negates every y, since SVG's y axis points down.
+- `io.loadDxf` and `io.loadDxfStructured` read the file with base's reader (`dxfTextOf` for bytes, then
+  `readDxfDrawing`, which keeps the splines given by fit points) and build it in one kernel call, `ShapesFromDrawing`. The call takes a flat array that
+  `lib/services/base/dxf-drawing-numbers.ts` writes: one group per layer, colour and line type, and
+  each segment as a line, a conic on its principal axes, a clamped B-spline, or fit points to
+  interpolate. The kernel joins each group's edges into wires within `joinTolerance`, at a cost in proportion to
+  the edges; where three or more ends meet, a wire takes the edge given first, so the wires depend
+  only on the edges and their order.
+  `joinTolerance` may be at most 0.001 or a hundredth of the drawing's span, whichever is larger.
+  A segment with a number that is not finite or is 1e100 or more (OCCT's infinity) is left out with
+  a warning naming its layer, before the kernel sees it, as is a spline of a degree above 25 or too
+  many fit points, and the edges one load sends the kernel are limited (see "Size limits").
+- With `makeFaces`, `lib/services/base/dxf-loader.ts` groups the closed wires that lie flat by
+  height and makes even-odd faces of them with the SVG reader's face builder, whose warnings it words
+  for DXF, all heights and layers of one load sharing one face work limit. Every other wire stays a
+  wire.
+- A DXF file stands Z up, so the drawing is placed as a Z-up file is read (`shapeInModelAxes`): its
+  XY plane lies on the ground with the drawing's y along Z (along -Z in a right-handed system, the
+  inverse of `shapeToDxfPaths`), and an elevation or a 3D entity's z stands up along +Y in every
+  system. With no coordinate system set, and in a left-handed one, that is a swap of y and z, a
+  mirror, so a face that faces the file's +Z faces +Y; for a flat drawing it puts every point where
+  `drawingOntoGround`, the quarter turn `svg.loadSVG` makes, puts it. A view drawing from
+  `saveShapeDxf` puts the view's up on y instead, so a top view (normal +Y) reads back mirrored in Z.
+- `unit` scales the drawing from the unit the file states (`math.convertLength`), and the join
+  tolerance, given in the file's units, is scaled with it.
 
 ## Files
 
@@ -196,11 +232,15 @@ for its distance from the origin, would otherwise loop for a very long time.
   the reference to the shape it holds). Text the kernel finds damaged is refused as an input error
   that says where.
 - Mesh exports work on a copy of the shape without its mesh, so they triangulate at their own
-  precision and leave the caller's mesh alone. `adjustYtoZ` places that copy with y and z swapped,
-  which turns Y-up into Z-up; the swap is a mirror, so the mesh writers turn the triangles of a
-  mirrored placement to keep them facing out, and a placement moves a face that carries only a mesh
-  too. STL data swapped after the fact (`stlWithYAndZSwapped`) likewise swaps y and z in every normal
-  and corner and reverses each triangle's winding, binary or ASCII.
+  precision and leave the caller's mesh alone. With a coordinate system set, the copy is moved into
+  the file's axes by base's table (`shapeInFileAxes`): a quarter turn about X for Z up in a
+  right-handed system, y and z swapped in a left-handed one, and X mirrored there with the flag off.
+  With none set, `adjustYtoZ` places the copy with y and z swapped, which turns Y-up into Z-up. A swap
+  or a mirror reverses the hand, so the mesh writers turn the triangles of a mirrored placement to keep
+  them facing out, and a placement moves a face that carries only a mesh too. An STL's bytes are
+  mapped after the fact by base's `stlWithAxes` (`stlInFileAxes`, `stlInModelAxes`), which maps every
+  normal and corner and reverses each triangle's winding under a mirror, binary or ASCII; a binary
+  file is told by its count, and bytes past its triangles are copied as they are.
 - **Units.** Every unit an export or an import takes is optional, and leaving it out writes and reads
   exactly what the call did before it had one.
   - STEP: the shape writer cannot declare a unit, so a shape modelled in another unit is scaled into
@@ -235,48 +275,81 @@ for its distance from the origin, would otherwise loop for a very long time.
 
 ## SVG import
 
-- **Everything SVG is understood in TypeScript** (`lib/svg`): the XML, the path mini-language,
-  transforms, the style cascade and units. It is reduced to the four exact segment kinds SVG path data
-  can express - line, quadratic Bezier, cubic Bezier, elliptical arc - and every basic shape (rect,
-  circle, ellipse, line, polyline, polygon, rounded corners, smooth-curve shorthands) becomes those.
-  Coordinates stay in SVG user space, y down, until the path builder, so the normaliser is testable
-  without the kernel.
-- **The style cascade** covers presentation attributes and inline `style`, inherited down the tree.
-  Stylesheets are out of scope: a `<style>` element produces a warning rather than silent
-  mis-styling. Unsupported elements produce a warning with a hint, and `<use>` matters most: it
-  places geometry defined inside `<defs>`, which is skipped, so a drawing built that way would
-  otherwise import as nothing with no explanation.
-- **Path data is tokenised per command**, not by one split into numbers: an arc's large-arc and sweep
-  flags are single digits that may be written without separators (`016` in an arc is `0, 1, 6`), and
-  a general number reader misreads nearly every arc drawing tools write. An incomplete argument
-  group ends the command. Arcs are converted once from endpoint to centre parametrisation, after the
-  SVG 1.1 implementation notes, and a full ellipse is two 180-degree arcs, because one 360-degree arc
-  is degenerate.
-- **Transforms are exact.** A matrix is `[a, b, c, d, e, f]` as in SVG's `matrix(a b c d e f)`:
-  `x' = a*x + c*y + e`, `y' = b*x + d*y + f`. Lines and Beziers map their control points. An arc is
-  re-derived from the combined matrix by a closed-form 2x2 singular value decomposition: with the arc
-  as `M = L * Rot(phi) * diag(rx, ry)`, `L` the linear part `[[a, c], [b, d]]`, and
-  `e = (m00 + m11) / 2`, `f = (m00 - m11) / 2`, `g = (m10 + m01) / 2`, `h = (m10 - m01) / 2`,
-  `q = hypot(e, h)`, `r = hypot(f, g)`, the new radii are `q + r` and `|q - r|` and the new tilt is
-  `(atan2(h, e) - atan2(g, f)) / 2`. A negative determinant, a reflection, reverses the sweep.
-  Flattening arcs into segments instead would lose the exact geometry CAD input needs.
+- **The SVG is read in base** (`packages/dev/base/lib/api/services/helpers/files/svg/`, `normalizeSvg`;
+  `base/ARCHITECTURE.md`, "Reading SVG"): the XML, the path mini-language, transforms, viewports
+  and units, `<use>` and the style cascade, reduced to a scene of elements whose subpaths are lines,
+  quadratic and cubic Beziers and elliptical arcs, in the root's user space, y down. This service
+  builds that scene into shapes (`lib/services/svg.ts`, with `lib/services/base/path-builder.ts` and
+  `lib/services/base/drawing-faces.ts`), and builds at most 20,000 of the elements it draws, with a
+  warning.
 - **One native call builds a whole drawing.** The path builder encodes every group into flat buffers
   for `BuildShapesFromSegments`, which makes each segment exact geometry (a low-degree Bezier, a
-  rational conic arc), optionally joins each subpath into one B-spline, and returns one compound
-  child per group, in order.
+  rational conic arc), optionally joins each open subpath into one B-spline, and returns exactly one
+  compound child per group, in order: a group whose subpaths make no wire (a circle of radius 0, a
+  line of length 0, a path that only marks a dot) is an empty compound, which the path builder reads
+  as no shape for that group, so the shapes stay with the elements and styles they came from.
+  Building a subpath costs in proportion to its segments. A subpath with a number of 1e15 or more, or one
+  that is not finite, after transforms is left out with one warning, since OCCT cannot build curves
+  that far out; any other failure in the call comes back as an `InputError` and its exception is
+  released.
+- **A subpath is closed** when it has a close command or ends within `tolerance` of its start (the
+  end is then snapped onto the start, unless it is an arc), and it reaches the kernel as closed
+  either way, so the kernel keeps its exact edges instead of joining them into one B-spline as it
+  does an open subpath. Faces are decided per subpath: in a filled element the closed subpaths become
+  faces and the open ones stay wires beside them in one compound.
 - **Faces follow the fill rule**, not "the largest wire is the outside": an element may hold several
   disjoint regions, holes, and solids inside holes, and SVG does not constrain winding. The face
-  builder turns every wire counterclockwise, finds each wire's nesting depth by containment, decides
-  which depths are filled (`evenodd` by the depth's parity, `nonzero` by the summed winding of the
-  original orientations), and builds one face per filled region with its immediate unfilled children
-  as holes, turned clockwise so OCCT cuts them. Containment takes two tests: the enclosing wire holds
-  the other's centroid and has the strictly larger absolute area. The centroid test alone cannot
-  order two outlines drawn around one centre - a ring, a washer, a letter with a counter - and those
-  are ordinary. A region whose face cannot be built is passed over. All of it runs on the flat wires
-  before placement.
+  builder samples every closed subpath into a polygon in TypeScript, with the polygon arithmetic in
+  base's `packages/dev/base/lib/api/services/helpers/geometry/polygon-nesting.ts` (exact points on lines, Beziers
+  and arcs, placed as the path builder places them; when the kernel dropped a degenerate subpath and
+  the wires no longer line up with the subpaths, it samples the wires instead). Each polygon gets a
+  point guaranteed to be inside it: the middle of the widest span of a few horizontal scanlines,
+  which holds for a U or a C where the centroid falls outside. One loop holds another when it has the
+  larger area, its box holds the other's box and its polygon holds the other's interior point; two
+  of the same area that hold each other's interior points lie on one another, and the later is
+  nested in the earlier, so the fill rules decide them (opposite windings under nonzero, or any two
+  under even-odd, paint nothing) instead of two coincident faces; pairs
+  are found by sweeping the boxes sorted by their left edge, so thousands of side-by-side subpaths
+  cost close to nothing and no kernel classifier runs at all. The fill of each loop's inside follows
+  from its ancestors (`evenodd` by the depth's parity, `nonzero` by the summed winding of the
+  original orientations); a loop is a boundary only where the fill changes across it, so in nonzero a
+  hole under two filled levels is cut from the outermost one and the filled loops between are passed
+  over. Each filled boundary becomes a face with the unfilled boundaries directly inside it as holes,
+  turned so OCCT cuts them. A face that is not valid, usually an outline that crosses itself, is not
+  returned: its wires are, with a warning (the kernel's `MakeFaceFromWires` checks a face with holes
+  itself; a face of one outline is checked after it is made). Checking a face costs more than its
+  size, so the nesting, the sampling and the checking of every face of one import share one work
+  limit, and a region with too many holes or edges is returned as its wires, each with a warning
+  (see "Size limits"). Subpaths that cross one another are warned about rather
+  than resolved into a planar arrangement, and a closed subpath enclosing no area stays a wire with a
+  warning.
 - **Placement**: the drawing is built in the XY plane, turned onto the XZ ground plane like the other
-  on-ground primitives, anchored by its combined bounding box according to `alignment`, then oriented
-  to `direction` and moved to `center`.
+  on-ground primitives, anchored by its combined bounding box according to `alignment` (or, with
+  `keepOrigin`, by the origin of the imported coordinates), then oriented to `direction` and moved to
+  `center`. These steps move the compound of all the elements at once, so their number does not grow
+  with the drawing; `loadSVGStructured` reads each element's placed shape back from it in order.
+  `direction`, `center`, `scale`, `tolerance`, the enums and the SVG text itself are checked before
+  anything is built.
+
+### Size limits
+
+Reading a drawing costs work in proportion to its file, and every place where one file could ask
+for much more has a limit, counted in the unit of its real cost, one per call (base's `WorkBudget`:
+a floor, a share per character of the file, a ceiling). None is fresh per element, layer or height,
+so `<use>` and block inserts multiply nothing. Past a limit the reader keeps what it has built and
+says in a warning what it left out; `loadSVG` and `loadDxf` return only shapes, so their structured
+twins carry the warnings. Base's SVG and DXF readers have their own limits (`base/ARCHITECTURE.md`, "Size limits").
+
+| Limit | Counted in | Size | Past it |
+|---|---|---|---|
+| SVG elements built (`services/svg.ts`) | elements | 20,000 | the rest left out |
+| SVG outline points (`services/svg.ts`) | points sampled from closed subpaths of filled elements | min(2,000,000, max(250,000, 4 x the file's characters)) | that element and later filled ones as wires |
+| SVG coordinates (`path-builder.ts`) | each number of a placed subpath | finite and below 1e15 | that subpath left out |
+| Face work (`faceWorkBudgetFor`), SVG and DXF | steps of about 4 ns, charged before each kernel call from measured costs | min(1.5e9, max(2.5e8, 60,000 x the file's characters)) | the element or height in hand and the rest as wires |
+| Holes and edges per face | holes, edges | 2,000 holes, 12,000 edges | that region as wires |
+| DXF kernel edges (`kernelEdgeBudgetFor`) | edges, a spline 1 + poles / 8, fit points 1 + points / 8 (closed: 1 + points^2 / 1250) | min(200,000, max(60,000, 0.1 x the file's characters)) | that segment and the rest left out |
+| DXF fit points | points per spline | 10,000 (closed: 5,000) | that spline left out |
+| Warnings | lines per kind | 8 for DXF layers left out, 5 for unsupported SVG elements | the rest counted in one line |
 
 ## Design documents
 

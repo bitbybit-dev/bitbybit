@@ -220,6 +220,31 @@ describe("Line unit tests", () => {
             });
         });
 
+        describe("distanceToPoint", () => {
+            const along: Inputs.Base.Line3 = { start: [1, 2, 3], end: [11, 2, 3] };
+
+            it.each([
+                ["square to the line beside it", [5, 5, 7] as Inputs.Base.Point3, 5],
+                ["to the start for a point before it", [-2, 6, 3] as Inputs.Base.Point3, 5],
+                ["to the end for a point past it", [14, 2, 7] as Inputs.Base.Point3, 5],
+                ["as nothing for a point on it", [7, 2, 3] as Inputs.Base.Point3, 0],
+            ])("should measure %s", (_name, point, distance) => {
+                // Act
+                const measured = line.distanceToPoint({ line: along, point });
+
+                // Assert
+                expect(measured).toBeCloseTo(distance, TOLERANCE);
+            });
+
+            it("should measure to the one point a line whose ends meet is", () => {
+                // Act
+                const measured = line.distanceToPoint({ line: { start: [1, 1, 1], end: [1, 1, 1] }, point: [4, 5, 1] });
+
+                // Assert
+                expect(measured).toBeCloseTo(5, TOLERANCE);
+            });
+        });
+
         describe("getPointOnLine", () => {
             const testLine: Inputs.Base.Line3 = { start: [0, 0, 0], end: [10, 20, -30] };
 

@@ -13,9 +13,17 @@ const PENDING_CEILING = 0;
 const HELPERS = new URL("./", import.meta.url);
 const SERVICES = new URL("../", import.meta.url);
 const manifest = JSON.parse(readFileSync(new URL("exposure.json", HELPERS), "utf8")) as Manifest;
-const DOMAINS = readdirSync(HELPERS).filter(name => statSync(new URL(name, HELPERS)).isDirectory() && name !== "dxf").sort();
+const TEST_SUPPORT = "__test__";
+const filesUnder = (folder: string): string[] => readdirSync(new URL(folder, HELPERS)).flatMap(name => {
+    const path = `${folder}${name}`;
+    if (!statSync(new URL(path, HELPERS)).isDirectory()) {
+        return [path];
+    }
+    return name === TEST_SUPPORT ? [] : filesUnder(`${path}/`);
+});
+const DOMAINS = readdirSync(HELPERS).filter(name => statSync(new URL(name, HELPERS)).isDirectory()).sort();
 const modules = DOMAINS
-    .flatMap(domain => readdirSync(new URL(`${domain}/`, HELPERS)).map(name => `${domain}/${name}`))
+    .flatMap(domain => filesUnder(`${domain}/`))
     .filter(name => name.endsWith(".ts") && !name.endsWith(".test.ts") && !name.includes(".constants") && !name.endsWith("-types.ts"))
     .sort();
 const entries = Object.entries(manifest).flatMap(([module, helpers]) => Object.entries(helpers).map(([helper, exposure]) => ({ module, helper, exposure })));

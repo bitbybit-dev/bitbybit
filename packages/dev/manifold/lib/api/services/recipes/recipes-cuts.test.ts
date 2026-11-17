@@ -24,8 +24,45 @@ const CLEAN_HOST_VOLUME = LENGTH * THICKNESS * HEIGHT;
 const BOX_AREA = 2 * (LENGTH * THICKNESS + LENGTH * HEIGHT + THICKNESS * HEIGHT);
 const ROUNDING_SCALE: Base.TransformMatrix = [0.9999999999999997, 0, 0, 0, 0, 0.9999999999999997, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
+const L_PLAN = [0, 0, LENGTH, 0, LENGTH, THICKNESS, THICKNESS, THICKNESS, THICKNESS, LENGTH, 0, LENGTH];
+const L_PLAN_VOLUME = (LENGTH * THICKNESS + THICKNESS * (LENGTH - THICKNESS)) * HEIGHT;
+const STEPPED_ELEVATION = [0, 0, LENGTH, 0, LENGTH, HEIGHT, LENGTH / 2, HEIGHT, LENGTH / 2, 600, 0, 600];
+const STEPPED_VOLUME = ((LENGTH / 2) * 600 + (LENGTH / 2) * HEIGHT) * THICKNESS;
+
 function acrossTheWallAt(x: number, y: number, z = 400): Base.TransformMatrix {
     return [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, x, y, z, 1];
+}
+
+function movedBy(x: number, y: number): Base.TransformMatrix {
+    return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, 0, 1];
+}
+
+function turnedBy(angle: number): Base.TransformMatrix {
+    return [Math.cos(angle), Math.sin(angle), 0, 0, -Math.sin(angle), Math.cos(angle), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+}
+
+function lShapedWallWithAWindowShortOfItsInnerFaceBy(gap: number, away = 0): Base.RecipeNode[] {
+    return [
+        { op: "polygon", points: [0, 12], holes: [] },
+        { op: "extrude", profile: 0, direction: [0, 0, 1], depth: HEIGHT },
+        { op: "transform", of: 1, matrix: movedBy(away, away) },
+        { op: "polygon", points: [12, 8], holes: [] },
+        { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS - gap - GAP },
+        { op: "transform", of: 4, matrix: acrossTheWallAt(away + 300, away + THICKNESS - gap) },
+        { op: "voids", host: 2, openings: [5] },
+    ];
+}
+
+function steppedWallWithAnOpening(points: number): Base.RecipeNode[] {
+    return [
+        { op: "polygon", points: [0, 12], holes: [] },
+        { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+        { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+        { op: "polygon", points: [12, points], holes: [] },
+        { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+        { op: "transform", of: 4, matrix: acrossTheWallAt(0, HALF, 0) },
+        { op: "voids", host: 2, openings: [5] },
+    ];
 }
 
 function recipeOf(nodes: Base.RecipeNode[], roots: number[], f64: number[], tolerance = TOLERANCE, millimetresPerUnit = 1, i32: number[] = []): Base.Recipe {
@@ -664,5 +701,896 @@ describe("ManifoldRecipes.build and cuts that end within the recipe's tolerance 
         // Assert
         expect(wall?.genus).toBe(-1);
         expect(wall?.volume).toBeCloseTo(NOISY_HOST_VOLUME - edge ** 3 / 6, 0);
+    });
+
+    it("should cut an opening through a face inside the host's box that it stops just short of, as an L-shaped wall's inner face", () => {
+        // Arrange
+        const nodes = lShapedWallWithAWindowShortOfItsInnerFaceBy(GAP);
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...L_PLAN, ...WINDOW]));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - WINDOW_AREA * THICKNESS, 0);
+    });
+
+    it("should find the face inside the host's box that a window stops just short of among a host of many triangles", () => {
+        // Arrange
+        const tooth = 10;
+        const rise = GAP / 10;
+        const teeth = Array.from({ length: (LENGTH - THICKNESS) / tooth - 1 }, (_, at) => [LENGTH - tooth / 2 - tooth * at, THICKNESS + (at % 2 === 0 ? rise : 0)]).flat();
+        const lPlanWithAToothedInnerFace = [0, 0, LENGTH, 0, LENGTH, THICKNESS, ...teeth, THICKNESS, THICKNESS, THICKNESS, LENGTH, 0, LENGTH];
+        const toothArea = tooth * rise;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, lPlanWithAToothedInnerFace.length], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: HEIGHT },
+            { op: "polygon", points: [lPlanWithAToothedInnerFace.length, 8], holes: [] },
+            { op: "extrude", profile: 2, direction: [0, 0, 1], depth: THICKNESS - 2 * GAP },
+            { op: "transform", of: 3, matrix: acrossTheWallAt(300, THICKNESS - GAP) },
+            { op: "voids", host: 1, openings: [4] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [5], [...lPlanWithAToothedInnerFace, ...WINDOW]));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME + 40 * toothArea * HEIGHT - WINDOW_AREA * THICKNESS - 10 * toothArea * WINDOW_HEIGHT, 0);
+    });
+
+    it("should reach a face inside the host's box however far from the cut's origin the host lies", () => {
+        // Arrange
+        const pastAFloatStepFromTheOrigin = 1e7 + 0.5003;
+        const nodes = lShapedWallWithAWindowShortOfItsInnerFaceBy(GAP, pastAFloatStepFromTheOrigin);
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...L_PLAN, ...WINDOW]));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - WINDOW_AREA * THICKNESS, 0);
+    });
+
+    it("should leave an opening a few tolerances short of a face inside the host's box as drawn, a niche of the depth it was given", () => {
+        // Arrange
+        const gap = 2 * TOLERANCE;
+        const nodes = lShapedWallWithAWindowShortOfItsInnerFaceBy(gap);
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...L_PLAN, ...WINDOW]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - WINDOW_AREA * (THICKNESS - gap), 0);
+    });
+
+    it("should cut a sink hole as deep as its counter top through the worktop that the backsplash rises above, placed as an IFC file places them", () => {
+        // Arrange
+        const counterSection = [
+            -0.0605333333335195, -0.2146833333333333, 0.08106666666703725, -0.2146833333333333, 0.08106666666703725, -0.1956333333333329,
+            -0.02053333333351722, -0.1956333333333329, -0.02053333333351722, 0.4103166666666662, -0.0605333333335195, 0.4103166666666662,
+        ];
+        const sectionArea = 0.02693548;
+        const sectionOutline = 1.5332;
+        const counterLength = 3;
+        const holeWidth = 0.4062;
+        const holeLength = 0.4034;
+        const worktopThickness = 0.04000000000000228;
+        const hole = [-holeWidth / 2, -holeLength / 2, holeWidth / 2, -holeLength / 2, holeWidth / 2, holeLength / 2, -holeWidth / 2, holeLength / 2];
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: counterLength },
+            { op: "transform", of: 1, matrix: [0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, -1.200462295081974, -0.2146833333333333, 0.920533333333552, 1] },
+            { op: "polygon", points: [12, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: worktopThickness },
+            { op: "transform", of: 4, matrix: [-1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0.2995377049180236, -0.289000000000011, 0.8600000000000327, 1] },
+            { op: "transform", of: 5, matrix: IDENTITY },
+            { op: "voids", host: 2, openings: [6] },
+        ];
+        const holeArea = holeWidth * holeLength;
+
+        // Act
+        const [counter] = built(recipeOf(nodes, [7], [...counterSection, ...hole], 1e-5, 1000));
+
+        // Assert
+        expect(counter?.genus).toBe(1);
+        expect(counter?.volume).toBeCloseTo(sectionArea * counterLength - holeArea * worktopThickness, 6);
+        expect(counter?.area).toBeCloseTo(2 * sectionArea + sectionOutline * counterLength - 2 * holeArea + 2 * (holeWidth + holeLength) * worktopThickness, 4);
+    });
+
+    it("should cut an opening through a wall whose faces do not run along the cut's axes, short of both faces", () => {
+        // Arrange
+        const turn = turnedBy(Math.PI / 6);
+        const nodes: Base.RecipeNode[] = [
+            WALL_AND_WINDOW[0]!,
+            WALL_AND_WINDOW[1]!,
+            { op: "transform", of: 1, matrix: turn },
+            WALL_AND_WINDOW[2]!,
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS - 2 * GAP },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(300, HALF - GAP) },
+            { op: "transform", of: 5, matrix: turn },
+            { op: "voids", host: 2, openings: [6] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [7], [...CLEAN_WALL, ...WINDOW]));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(CLEAN_HOST_VOLUME - WINDOW_AREA * THICKNESS, 0);
+    });
+
+    it("should leave an opening a few tolerances short of a face that does not run along the cut's axes as drawn, and reach the face it nearly meets", () => {
+        // Arrange
+        const turn = turnedBy(Math.PI / 6);
+        const gap = 2 * TOLERANCE;
+        const nodes: Base.RecipeNode[] = [
+            WALL_AND_WINDOW[0]!,
+            WALL_AND_WINDOW[1]!,
+            { op: "transform", of: 1, matrix: turn },
+            WALL_AND_WINDOW[2]!,
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS - GAP - gap },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(300, HALF - GAP) },
+            { op: "transform", of: 5, matrix: turn },
+            { op: "voids", host: 2, openings: [6] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [7], [...CLEAN_WALL, ...WINDOW]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(CLEAN_HOST_VOLUME - WINDOW_AREA * (THICKNESS - gap), 0);
+    });
+
+    it("should compare a difference's solid tool after a half-space with the solid as that half-space left it, though a solid tool came before the half-space", () => {
+        // Arrange
+        const trimmedHeight = 900;
+        const nodes: Base.RecipeNode[] = [
+            ...WALL_AND_WINDOW,
+            { op: "transform", of: 3, matrix: acrossTheWallAt(100, HALF) },
+            { op: "halfSpace", origin: [0, 0, trimmedHeight], normal: [0, 0, 1] },
+            { op: "transform", of: 3, matrix: acrossTheWallAt(600, HALF, trimmedHeight - WINDOW_HEIGHT - GAP) },
+            { op: "difference", of: 1, tools: [4, 5, 6] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [7], [...CLEAN_WALL, ...WINDOW]));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(LENGTH * THICKNESS * trimmedHeight - WINDOW_AREA * THICKNESS - WINDOW_WIDTH * (WINDOW_HEIGHT + GAP) * THICKNESS, 0);
+    });
+
+    it("should move a corner exactly halfway between two opposite sides it reaches out through the lower one", () => {
+        // Arrange
+        const coarse = 1;
+        const plate = coarse;
+        const lopsidedOutline = [30, -plate / 2, 50, -plate / 2, 52, 0, 55, plate / 2, 30, plate / 2, 28, 0];
+        const toolHeight = 20;
+        const cutWhenTheMiddleCornersMoveDown = 24.4 * plate * toolHeight;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 8], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: 100 },
+            { op: "polygon", points: [8, 12], holes: [] },
+            { op: "extrude", profile: 2, direction: [0, 0, 1], depth: toolHeight },
+            { op: "transform", of: 3, matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 30, 1] },
+            { op: "voids", host: 1, openings: [4] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [5], [0, -plate / 2, 100, -plate / 2, 100, plate / 2, 0, plate / 2, ...lopsidedOutline], coarse));
+
+        // Assert
+        expect(wall?.volume).toBeCloseTo(100 * plate * 100 - cutWhenTheMiddleCornersMoveDown, 3);
+    });
+
+    it("should cut a difference's solid tool through a sloped top that a half-space before it clipped below the box, as a notch", () => {
+        // Arrange
+        const rise = 0.2;
+        const eaves = 800;
+        const slopedTopAt = (x: number): number => eaves + rise * x;
+        const notch = [300, 400, 500, 400, 500, slopedTopAt(500) - GAP, 300, slopedTopAt(300) - GAP];
+        const notchArea = (500 - 300) * ((slopedTopAt(300) + slopedTopAt(500)) / 2 - 400);
+        const nodes: Base.RecipeNode[] = [
+            WALL_AND_WINDOW[0]!,
+            WALL_AND_WINDOW[1]!,
+            { op: "halfSpace", origin: [0, 0, eaves], normal: [-rise, 0, 1] },
+            { op: "polygon", points: [8, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "difference", of: 1, tools: [2, 5] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...CLEAN_WALL, ...notch]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(LENGTH * THICKNESS * slopedTopAt(LENGTH / 2) - notchArea * THICKNESS, 1);
+    });
+
+    it("should leave the sides of an opening that meet faces inside the host's box only along an edge where they are drawn", () => {
+        // Arrange
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [12, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(LENGTH / 2 + GAP, HALF, 600 - WINDOW_HEIGHT) },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...STEPPED_ELEVATION, ...WINDOW]));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - WINDOW_AREA * THICKNESS, 0);
+    });
+
+    it("should leave an opening's head where it is drawn when it lies flush with a face inside the host's box over a strip narrower than the tolerance", () => {
+        // Arrange
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [12, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(LENGTH / 2 - GAP, HALF, 600 - WINDOW_HEIGHT) },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...STEPPED_ELEVATION, ...WINDOW]));
+
+        // Assert
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - WINDOW_AREA * THICKNESS, 0);
+    });
+
+    it("should leave a side where it is drawn when only part of it lies on a face inside the host's box, so it cuts no slot past that face's edge", () => {
+        // Arrange
+        const notchFrom = 300;
+        const notchTo = 700;
+        const notchBottom = 400;
+        const stepTop = 600;
+        const notch = [notchFrom, notchBottom, notchTo, notchBottom, notchTo, stepTop, notchFrom, stepTop];
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [12, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...STEPPED_ELEVATION, ...notch]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - (notchTo - notchFrom) * (stepTop - notchBottom) * THICKNESS, 0);
+    });
+
+    it("should leave a side where it is drawn when its ends lie on faces inside the host's box but its middle runs under a taller part of the host", () => {
+        // Arrange
+        const tallMiddle = [0, 0, LENGTH, 0, LENGTH, 600, 600, 600, 600, HEIGHT, 400, HEIGHT, 400, 600, 0, 600];
+        const tallMiddleVolume = (LENGTH * 600 + 200 * (HEIGHT - 600)) * THICKNESS;
+        const pocket = [300, 400, 700, 400, 700, 600, 300, 600];
+        const pocketDepth = HALF;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 16], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [16, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: pocketDepth },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...tallMiddle, ...pocket]));
+
+        // Assert
+        expect(wall?.volume).toBeCloseTo(tallMiddleVolume - (700 - 300) * (600 - 400) * pocketDepth, 0);
+    });
+
+    it("should not count a face that faces the same way at another height as one a side lies on, though both lie within the tool's reach", () => {
+        // Arrange
+        const steppedWithATunnel = [...STEPPED_ELEVATION.slice(0, 12), 550, 450, 900, 450, 900, 520, 550, 520];
+        const tunnelArea = (900 - 550) * (520 - 450);
+        const notch = [300, 400, 700, 400, 700, 600, 300, 600];
+        const notchInTheTunnel = (700 - 550) * (520 - 450);
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [[12, 8]] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [20, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...steppedWithATunnel, ...notch]));
+
+        // Assert
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - tunnelArea * THICKNESS - ((700 - 300) * (600 - 400) - notchInTheTunnel) * THICKNESS, 0);
+    });
+
+    it("should leave an opening that meets a face inside the host's box along one edge only where it is drawn, as a niche", () => {
+        // Arrange
+        const width = 200;
+        const eaves = THICKNESS / 2;
+        const gableWithItsRidgeOnTheInnerFace = [300, 0, 300 + width, 0, 300 + width, eaves, 300 + width / 2, THICKNESS, 300, eaves];
+        const gableArea = width * eaves + (width * (THICKNESS - eaves)) / 2;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: HEIGHT },
+            { op: "polygon", points: [12, 10], holes: [] },
+            { op: "extrude", profile: 2, direction: [0, 0, 1], depth: WINDOW_HEIGHT },
+            { op: "transform", of: 3, matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 400, 1] },
+            { op: "voids", host: 1, openings: [4] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [5], [...L_PLAN, ...gableWithItsRidgeOnTheInnerFace]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - gableArea * WINDOW_HEIGHT, 0);
+    });
+
+    it("should leave an opening that meets a turned and tilted face inside the host's box along one edge only where it is drawn, the edge running across the face's axes", () => {
+        // Arrange
+        const tilt = Math.PI / 7;
+        const turn = Math.PI / 6;
+        const tilted: Base.TransformMatrix = [
+            Math.cos(turn), Math.sin(turn) * Math.cos(tilt), Math.sin(turn) * Math.sin(tilt), 0,
+            -Math.sin(turn), Math.cos(turn) * Math.cos(tilt), Math.cos(turn) * Math.sin(tilt), 0,
+            0, -Math.sin(tilt), Math.cos(tilt), 0,
+            0, 0, 0, 1,
+        ];
+        const width = 200;
+        const eaves = THICKNESS / 2;
+        const gableWithItsRidgeOnTheInnerFace = [300, 0, 300 + width, 0, 300 + width, eaves, 300 + width / 2, THICKNESS, 300, eaves];
+        const gableArea = width * eaves + (width * (THICKNESS - eaves)) / 2;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: HEIGHT },
+            { op: "transform", of: 1, matrix: tilted },
+            { op: "polygon", points: [12, 10], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: WINDOW_HEIGHT },
+            { op: "transform", of: 4, matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 400, 1] },
+            { op: "transform", of: 5, matrix: tilted },
+            { op: "voids", host: 2, openings: [6] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [7], [...L_PLAN, ...gableWithItsRidgeOnTheInnerFace]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - gableArea * WINDOW_HEIGHT, 0);
+    });
+
+    it("should reach a face whose edge an opening's side ends on, with the corners rounding left just off that edge", () => {
+        // Arrange
+        const turn = turnedBy(Math.PI / 6);
+        const nodes: Base.RecipeNode[] = [
+            WALL_AND_WINDOW[0]!,
+            WALL_AND_WINDOW[1]!,
+            { op: "transform", of: 1, matrix: turn },
+            WALL_AND_WINDOW[2]!,
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS - 2 * GAP },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(LENGTH - WINDOW_WIDTH, HALF - GAP) },
+            { op: "transform", of: 5, matrix: turn },
+            { op: "voids", host: 2, openings: [6] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [7], [...CLEAN_WALL, ...WINDOW]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(CLEAN_HOST_VOLUME - WINDOW_AREA * THICKNESS, 0);
+    });
+
+    it("should leave an opening whose flat ridge on a face inside the host's box is narrower than the tolerance where it is drawn, as a niche", () => {
+        // Arrange
+        const width = 200;
+        const eaves = THICKNESS / 2;
+        const ridge = TOLERANCE / 2;
+        const ridgeAt = THICKNESS - GAP;
+        const gableWithANarrowFlatRidge = [300, 0, 300 + width, 0, 300 + width, eaves, 300 + (width + ridge) / 2, ridgeAt, 300 + (width - ridge) / 2, ridgeAt, 300, eaves];
+        const gableArea = width * eaves + ((width + ridge) * (ridgeAt - eaves)) / 2;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: HEIGHT },
+            { op: "polygon", points: [12, 12], holes: [] },
+            { op: "extrude", profile: 2, direction: [0, 0, 1], depth: WINDOW_HEIGHT },
+            { op: "transform", of: 3, matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 400, 1] },
+            { op: "voids", host: 1, openings: [4] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [5], [...L_PLAN, ...gableWithANarrowFlatRidge]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - gableArea * WINDOW_HEIGHT, 0);
+    });
+
+    it("should not count a face that faces the other way on the same plane as one a side lies on, so it cuts nothing from a block it only touches", () => {
+        // Arrange
+        const blocksMeetingAtAnEdge = [0, 0, 500, 0, 500, 600, 1000, 600, 1000, 1000, 500, 1000, 500, 600, 0, 600];
+        const notch = [300, 400, 700, 400, 700, 600, 300, 600];
+        const blocksVolume = (500 * 600 + 500 * 400) * THICKNESS;
+        const cutFromTheLowerBlock = (500 - 300) * (600 - 400) * THICKNESS;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 16], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [16, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+
+        // Act
+        const [blocks] = built(recipeOf(nodes, [6], [...blocksMeetingAtAnEdge, ...notch]));
+
+        // Assert
+        expect(blocks?.volume).toBeCloseTo(blocksVolume - cutFromTheLowerBlock, 0);
+    });
+
+    it("should reach a face of an opening that lies on a face inside the host's box, though another face of the opening on the same plane runs under a taller part of the host", () => {
+        // Arrange
+        const prongTop = 600 - GAP;
+        const twoProngs = [300, 400, 700, 400, 700, prongTop, 600, prongTop, 600, 500, 450, 500, 450, prongTop, 300, prongTop];
+        const cutThroughTheStepAndShortUnderTheTallerPart = 400 * 100 + 150 * 100 + 100 * (prongTop - 500);
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [12, 16], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...STEPPED_ELEVATION, ...twoProngs]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - cutThroughTheStepAndShortUnderTheTallerPart * THICKNESS, 0);
+    });
+
+    it("should keep a side that lies on a face of the host in its plane when the head beside it is reached through a sloped face, leaving no sliver", () => {
+        // Arrange
+        const notchedSlab = [0, 0, 8500, 0, 8500, 200, 8000, 200, 8000, 400, 7600, 400, 7600, 600, 8000, 600, 8000, 1000, 7500, 500, 7500, 8000, 0, 8000];
+        const slabArea = 60395000;
+        const opening = [7800, 450, 8000, 450, 8000, 1000, 7800, 800];
+        const openingInsideTheSlab = 200 * ((800 - 600 + (1000 - 600)) / 2);
+        const keptOutline = 8500 + 200 + 500 + 200 + 400 + 200 + 200 + 200 + 300 * Math.SQRT2 + 7500 + 7500 + 8000;
+        const depth = 350;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 24], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth },
+            { op: "polygon", points: [24, 8], holes: [] },
+            { op: "extrude", profile: 2, direction: [0, 0, 1], depth },
+            { op: "voids", host: 1, openings: [3] },
+        ];
+
+        // Act
+        const [slab] = built(recipeOf(nodes, [4], [...notchedSlab, ...opening]));
+
+        // Assert
+        expect(slab?.genus).toBe(0);
+        expect(slab?.volume).toBeCloseTo((slabArea - openingInsideTheSlab) * depth, 0);
+        expect(slab?.area).toBeCloseTo(2 * (slabArea - openingInsideTheSlab) + keptOutline * depth, 0);
+    });
+
+    it("should reach a face of an opening on a face inside the host's box that faces the same way as a side of the box the opening also reaches", () => {
+        // Arrange
+        const stepThenRiser = [300, 500, 700, 500, 700, HEIGHT - GAP, 500, HEIGHT - GAP, 500, 600 - GAP, 300, 600 - GAP];
+        const cutFromTheStepAndTheTallerPart = 200 * 100 + 200 * (HEIGHT - 500);
+
+        // Act
+        const [wall] = built(recipeOf(steppedWallWithAnOpening(12), [6], [...STEPPED_ELEVATION, ...stepThenRiser]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - cutFromTheStepAndTheTallerPart * THICKNESS, 0);
+    });
+
+    it("should reach an opening's end whose outline has a corner all but on the line between the corners beside it", () => {
+        // Arrange
+        const windowWithABarelyRaisedHead = [0, 0, WINDOW_WIDTH, 0, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH / 2, WINDOW_HEIGHT + GAP, 0, WINDOW_HEIGHT];
+        const raisedHeadArea = (WINDOW_WIDTH * GAP) / 2;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: HEIGHT },
+            { op: "polygon", points: [12, 10], holes: [] },
+            { op: "extrude", profile: 2, direction: [0, 0, 1], depth: THICKNESS - 2 * GAP },
+            { op: "transform", of: 3, matrix: acrossTheWallAt(300, THICKNESS - GAP) },
+            { op: "voids", host: 1, openings: [4] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [5], [...L_PLAN, ...windowWithABarelyRaisedHead]));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - (WINDOW_AREA + raisedHeadArea) * THICKNESS, 0);
+    });
+
+    it("should reach a face of an opening beside a chamfer of it, sliding the corner between them along the chamfer", () => {
+        // Arrange
+        const chamferRise = 42;
+        const chamfered = [300, 400, 450, 400, 450, 600 - GAP - chamferRise, 400, 600 - GAP, 300, 600 - GAP];
+        const leftAboveTheChamfer = ((50 + (GAP * 50) / chamferRise) * (chamferRise + GAP)) / 2;
+
+        // Act
+        const [wall] = built(recipeOf(steppedWallWithAnOpening(10), [6], [...STEPPED_ELEVATION, ...chamfered]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - (150 * 200 - leftAboveTheChamfer) * THICKNESS, 0);
+    });
+
+    it("should leave a face of an opening where it is drawn when reaching it would slide a corner along a shallow chamfer beside it more than twice the tolerance", () => {
+        // Arrange
+        const chamferRise = 13;
+        const chamfered = [300, 400, 450, 400, 450, 600 - GAP - chamferRise, 400, 600 - GAP, 300, 600 - GAP];
+        const drawnArea = 150 * (200 - GAP) - (50 * chamferRise) / 2;
+        const warped = vi.spyOn(manifoldPrototype, "warpBatch");
+
+        // Act
+        const [wall] = built(recipeOf(steppedWallWithAnOpening(10), [6], [...STEPPED_ELEVATION, ...chamfered]));
+
+        // Assert
+        expect(warped).not.toHaveBeenCalled();
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - drawnArea * THICKNESS, 0);
+    });
+
+    it("should leave an opening's end where it is drawn when a corner of it is shared by more than three of its faces, so none of them leaves its plane", () => {
+        // Arrange
+        const min = [300, HALF, 400];
+        const max = [500, THICKNESS - GAP, 700];
+        const corners = boxCorners(min, max);
+        corners[5] = [max[0]! + 20, min[1]!, max[2]!];
+        const rightSideFoldedThroughACornerOfTheEnd = [...BOX_FACES.slice(0, 18), 2, 6, 5, 2, 5, 1, ...BOX_FACES.slice(24)];
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: HEIGHT },
+            { op: "triangles", positions: [12, 24], indices: [0, 36] },
+            { op: "voids", host: 1, openings: [2] },
+        ];
+
+        // Act
+        const [wall, opening] = built(recipeOf(nodes, [3, 2], [...L_PLAN, ...corners.flat()], TOLERANCE, 1, rightSideFoldedThroughACornerOfTheEnd));
+
+        // Assert
+        expect(wall?.genus).toBe(-1);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - opening!.volume, 0);
+    });
+
+    it("should reach a triangle mesh opening's end whose triangles rounding has turned a little apart, with a corner inside the end and one on its edge moving out with it", () => {
+        // Arrange
+        const min = [300, GAP, 400];
+        const max = [500, THICKNESS - GAP, 700];
+        const insideTheEnd = [400, max[1]! - GAP, 550];
+        const onTheEndsLowerEdge = [400, max[1]!, 400];
+        const corners = [...boxCorners(min, max), insideTheEnd, onTheEndsLowerEdge];
+        const lowerEdgeSplitAndEndFanned = [
+            0, 2, 1, 0, 3, 9, 0, 9, 2,
+            ...BOX_FACES.slice(6, 24),
+            2, 9, 8, 9, 3, 8, 3, 7, 8, 7, 6, 8, 6, 2, 8,
+            ...BOX_FACES.slice(30),
+        ];
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: HEIGHT },
+            { op: "triangles", positions: [12, 30], indices: [0, lowerEdgeSplitAndEndFanned.length] },
+            { op: "voids", host: 1, openings: [2] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [3], [...L_PLAN, ...corners.flat()], TOLERANCE, 1, lowerEdgeSplitAndEndFanned));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - (max[0]! - min[0]!) * (max[2]! - min[2]!) * THICKNESS, 0);
+    });
+
+    it("should reach a triangle mesh opening's end as one face, though one of its triangles is a sliver narrower than the tolerance", () => {
+        // Arrange
+        const min = [300, GAP, 400];
+        const max = [500, THICKNESS - GAP, 700];
+        const justAboveTheEndsLowerEdge = [400, max[1]!, min[2]! + GAP];
+        const corners = [...boxCorners(min, max), justAboveTheEndsLowerEdge];
+        const endWithASliverAlongItsLowerEdge = [...BOX_FACES.slice(0, 24), 2, 3, 8, 3, 7, 8, 7, 6, 8, 6, 2, 8, ...BOX_FACES.slice(30)];
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 12], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: HEIGHT },
+            { op: "triangles", positions: [12, 27], indices: [0, endWithASliverAlongItsLowerEdge.length] },
+            { op: "voids", host: 1, openings: [2] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [3], [...L_PLAN, ...corners.flat()], TOLERANCE, 1, endWithASliverAlongItsLowerEdge));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - (max[0]! - min[0]!) * (max[2]! - min[2]!) * THICKNESS, 0);
+    });
+
+    it("should leave an opening's end where it is drawn when a narrow part of the host stands on the face it ends on, so it cuts no slot under it", () => {
+        // Arrange
+        const postBetweenTheSamplePoints = [0, 0, LENGTH, 0, LENGTH, 600, 380, 600, 380, HEIGHT, 320, HEIGHT, 320, 600, 0, 600];
+        const wallWithAPostVolume = (LENGTH * 600 + 60 * (HEIGHT - 600)) * THICKNESS;
+        const pocket = [300, -50, 700, -50, 700, 50, 300, 50];
+        const pocketDepth = 200 - GAP;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 16], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [16, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: pocketDepth },
+            { op: "transform", of: 4, matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 400, 1] },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...postBetweenTheSamplePoints, ...pocket]));
+
+        // Assert
+        expect(wall?.genus).toBe(-1);
+        expect(wall?.volume).toBeCloseTo(wallWithAPostVolume - 400 * 100 * pocketDepth, 0);
+    });
+
+    it("should leave an opening's end where it is drawn when another part of the host lies within the tolerance beyond the face it ends on", () => {
+        // Arrange
+        const block = [0, 0, 100, 0, 100, 100, 0, 100];
+        const hole = [40, 40, 60, 40, 60, 60, 40, 60];
+        const gapBetweenTheBlocks = 0.3 * TOLERANCE;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 8], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: 100 },
+            { op: "transform", of: 1, matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 100 + gapBetweenTheBlocks, 1] },
+            { op: "compound", of: [1, 2] },
+            { op: "polygon", points: [8, 8], holes: [] },
+            { op: "extrude", profile: 4, direction: [0, 0, 1], depth: 100 },
+            { op: "voids", host: 3, openings: [5] },
+        ];
+
+        // Act
+        const [blocks] = built(recipeOf(nodes, [6], [...block, ...hole]));
+
+        // Assert
+        expect(blocks?.volume).toBeCloseTo(2 * 100 ** 3 - 20 * 20 * 100, 0);
+    });
+
+    it("should leave an opening's end where it is drawn when a rib under a millimetre wide stands on the face it ends on", () => {
+        // Arrange
+        const rib = 0.9;
+        const steppedWithARib = [0, 0, LENGTH, 0, LENGTH, HEIGHT, 500, HEIGHT, 500, 600, 400 + rib, 600, 400 + rib, 800, 400, 800, 400, 600, 0, 600];
+        const steppedWithARibVolume = STEPPED_VOLUME + rib * 200 * THICKNESS;
+        const underTheRib = [300, 400, 480, 400, 480, 600 - GAP, 300, 600 - GAP];
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 20], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [20, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...steppedWithARib, ...underTheRib]));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(steppedWithARibVolume - 180 * (200 - GAP) * THICKNESS, 0);
+    });
+
+    it("should reach an opening's end that runs a hair under a taller part of the host, the part of the host beyond it no wider than a strip of the tolerance", () => {
+        // Arrange
+        const aHairUnderTheTallerPart = [300, 400, 500 + GAP, 400, 500 + GAP, 600 - GAP, 300, 600 - GAP];
+
+        // Act
+        const [wall] = built(recipeOf(steppedWallWithAnOpening(8), [6], [...STEPPED_ELEVATION, ...aHairUnderTheTallerPart]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - (200 + GAP) * 200 * THICKNESS, 0);
+    });
+
+    it("should reach an opening's end through a face though another part of the host lies beyond it, further than the tolerance", () => {
+        // Arrange
+        const block = [0, 0, 100, 0, 100, 100, 0, 100];
+        const hole = [40, 40, 60, 40, 60, 60, 40, 60];
+        const gapBetweenTheBlocks = 2 * TOLERANCE;
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 8], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: 100 },
+            { op: "transform", of: 1, matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 100 + gapBetweenTheBlocks, 1] },
+            { op: "compound", of: [1, 2] },
+            { op: "polygon", points: [8, 8], holes: [] },
+            { op: "extrude", profile: 4, direction: [0, 0, 1], depth: 100 - GAP },
+            { op: "voids", host: 3, openings: [5] },
+        ];
+
+        // Act
+        const [blocks] = built(recipeOf(nodes, [6], [...block, ...hole]));
+
+        // Assert
+        expect(blocks?.genus).toBe(0);
+        expect(blocks?.volume).toBeCloseTo(2 * 100 ** 3 - 20 * 20 * 100, 0);
+    });
+
+    it("should leave a face of an opening where it is drawn when its middle runs over air, though its ends lie on a face inside the host's box", () => {
+        // Arrange
+        const steppedWithADip = [0, 0, LENGTH, 0, LENGTH, HEIGHT, 500, HEIGHT, 500, 600, 350, 600, 350, 550, 250, 550, 250, 600, 0, 600];
+        const steppedWithADipVolume = STEPPED_VOLUME - 100 * 50 * THICKNESS;
+        const overTheDip = [200, 400, 400, 400, 400, 600 - GAP, 200, 600 - GAP];
+        const cutFromTheWall = 200 * (200 - GAP) - 100 * (50 - GAP);
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 20], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [20, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...steppedWithADip, ...overTheDip]));
+
+        // Assert
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(steppedWithADipVolume - cutFromTheWall * THICKNESS, 0);
+    });
+
+    it("should leave an opening's end that already runs past a face inside the host's box where it is drawn, building the opening no further", () => {
+        // Arrange
+        const nodes = lShapedWallWithAWindowShortOfItsInnerFaceBy(-2 * TOLERANCE);
+        const warped = vi.spyOn(manifoldPrototype, "warpBatch");
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...L_PLAN, ...WINDOW]));
+
+        // Assert
+        expect(warped).not.toHaveBeenCalled();
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(L_PLAN_VOLUME - WINDOW_AREA * THICKNESS, 0);
+    });
+
+    it("should leave a face of an opening where it is drawn when it meets, at a corner, a face that runs on all but in its plane into a taller part of the host", () => {
+        // Arrange
+        const rise = TOLERANCE;
+        const headRunningOnUnderTheTallerPart = [300, 400, 700, 400, 700, 600 - GAP + rise, 500, 600 - GAP, 300, 600 - GAP];
+        const drawnArea = 400 * (200 - GAP) + (200 * rise) / 2;
+
+        // Act
+        const [wall] = built(recipeOf(steppedWallWithAnOpening(10), [6], [...STEPPED_ELEVATION, ...headRunningOnUnderTheTallerPart]));
+
+        // Assert
+        expect(wall?.genus).toBe(1);
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - drawnArea * THICKNESS, 0);
+    });
+
+    it("should cut with an opening as the sides of the box leave it, never built again, when no face of it lies on a face of the host", () => {
+        // Arrange
+        const partlyUnderTheStep = [450, 400, 550, 400, 550, 600 - GAP, 450, 600 - GAP];
+        const warped = vi.spyOn(manifoldPrototype, "warpBatch");
+
+        // Act
+        const [wall] = built(recipeOf(steppedWallWithAnOpening(8), [6], [...STEPPED_ELEVATION, ...partlyUnderTheStep]));
+
+        // Assert
+        expect(warped).not.toHaveBeenCalled();
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - 100 * (200 - GAP) * THICKNESS, 0);
+    });
+
+    it("should read no mesh at all when the host fills its box, as a plain wall does", () => {
+        // Arrange
+        const nodes: Base.RecipeNode[] = [
+            ...WALL_AND_WINDOW,
+            { op: "transform", of: 3, matrix: acrossTheWallAt(300, HALF) },
+            { op: "voids", host: 1, openings: [4] },
+        ];
+        const read = vi.spyOn(manifoldPrototype, "getMesh");
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [5], [...CLEAN_WALL, ...WINDOW]));
+
+        // Assert
+        expect(read).not.toHaveBeenCalled();
+        expect(wall?.genus).toBe(1);
+    });
+
+    it("should read only the host's mesh when every face near an opening is a side of the host's box", () => {
+        // Arrange
+        const belowTheStep = [100, 100, 300, 100, 300, 400, 100, 400];
+        const read = vi.spyOn(manifoldPrototype, "getMesh");
+
+        // Act
+        const [wall] = built(recipeOf(steppedWallWithAnOpening(8), [6], [...STEPPED_ELEVATION, ...belowTheStep]));
+
+        // Assert
+        expect(read).toHaveBeenCalledTimes(1);
+        expect(wall?.genus).toBe(1);
+    });
+
+    it("should pass over a face of the host too narrow to keep its width in 32-bit floats, and cut an opening beside it as drawn", () => {
+        // Arrange
+        const narrowerThanAFloatStep = 2e-6;
+        const steppedWithANarrowFaceAtOneCorner = [...STEPPED_ELEVATION, narrowerThanAFloatStep / 2, narrowerThanAFloatStep];
+        const nodes: Base.RecipeNode[] = [
+            { op: "polygon", points: [0, 14], holes: [] },
+            { op: "extrude", profile: 0, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 1, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "polygon", points: [14, 8], holes: [] },
+            { op: "extrude", profile: 3, direction: [0, 0, 1], depth: THICKNESS },
+            { op: "transform", of: 4, matrix: acrossTheWallAt(0, HALF, 0) },
+            { op: "voids", host: 2, openings: [5] },
+        ];
+        const read = vi.spyOn(manifoldPrototype, "getMesh");
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [6], [...steppedWithANarrowFaceAtOneCorner, ...WINDOW]));
+
+        // Assert
+        expect(read).toHaveBeenCalledTimes(1);
+        expect(wall?.genus).toBe(0);
+        expect(wall?.volume).toBeCloseTo(STEPPED_VOLUME - WINDOW_AREA * THICKNESS, 0);
+    });
+
+    it("should build an empty solid when the host of a voids step builds empty, reading no mesh from it", () => {
+        // Arrange
+        const apart: Base.TransformMatrix = movedBy(2 * LENGTH, 0);
+        const nodes: Base.RecipeNode[] = [
+            ...WALL_AND_WINDOW,
+            { op: "transform", of: 1, matrix: apart },
+            { op: "intersection", of: [1, 4] },
+            { op: "transform", of: 3, matrix: acrossTheWallAt(300, HALF) },
+            { op: "voids", host: 5, openings: [6] },
+        ];
+        const read = vi.spyOn(manifoldPrototype, "getMesh");
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [7], [...CLEAN_WALL, ...WINDOW]));
+
+        // Assert
+        expect(read).not.toHaveBeenCalled();
+        expect(wall?.volume).toBe(0);
+    });
+
+    it("should read no mesh for a difference that only clips by half-spaces", () => {
+        // Arrange
+        const nodes: Base.RecipeNode[] = [
+            WALL_AND_WINDOW[0]!,
+            WALL_AND_WINDOW[1]!,
+            { op: "halfSpace", origin: [0, 0, 900], normal: [0, 0, 1] },
+            { op: "halfSpace", origin: [900, 0, 0], normal: [1, 0, 1] },
+            { op: "difference", of: 1, tools: [2, 3] },
+        ];
+        const read = vi.spyOn(manifoldPrototype, "getMesh");
+
+        // Act
+        const [wall] = built(recipeOf(nodes, [4], CLEAN_WALL));
+
+        // Assert
+        expect(read).not.toHaveBeenCalled();
+        expect(wall?.volume).toBeCloseTo(((900 * 900) / 2) * THICKNESS, 0);
     });
 });

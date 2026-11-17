@@ -1,4 +1,4 @@
-import { BLUE_OFFSET, GREEN_OFFSET, HUE_DEGREES_PER_STEP, HUE_FALL_START, HUE_RISE_START, HUE_STEPS, RED_OFFSET } from "./color-forms.constants";
+import { BLUE_OFFSET, GREEN_OFFSET, GREEN_PLACE, HEX_LEAD, HUE_DEGREES_PER_STEP, HUE_FALL_START, HUE_RISE_START, HUE_STEPS, RED_OFFSET, RED_PLACE } from "./color-forms.constants";
 
 const HEX_RADIX = 16;
 const LONG_HEX = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
@@ -15,6 +15,10 @@ export function hexChannels(text: string): [number, number, number] | undefined 
     }
     const doubled = (digit: string): number => parseInt(digit + digit, HEX_RADIX);
     return [doubled(short[1]!), doubled(short[2]!), doubled(short[3]!)];
+}
+
+export function hexOfChannels(channels: readonly [number, number, number]): string {
+    return `#${(HEX_LEAD + channels[0] * RED_PLACE + channels[1] * GREEN_PLACE + channels[2]).toString(HEX_RADIX).substring(1)}`;
 }
 
 export function hslChannels(hue: number, saturation: number, lightness: number): [number, number, number] {

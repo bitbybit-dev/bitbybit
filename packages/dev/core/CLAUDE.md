@@ -115,3 +115,32 @@ alone it hands out a material built for the opposite convention, which draws bla
 
 `bitbybit.verb` is deprecated and comes out in the next major; `packages/dev/CLAUDE.md` explains why.
 Do not invest in it.
+
+## Settings
+
+`createSharedServices` builds the one `setSettings` every renderer's root object exposes, and the
+`setConventions(level, engineSettings)` each root delegates to with its own engine settings: it
+checks the settings, tells the OCCT, JSCAD and Manifold worker managers, then sets them on base and on
+the context, all before it returns, so a refused setting changes nothing and every call made after it,
+to any kernel, works by them. Nothing waits for a worker's answer: a manager posts the settings and a
+worker holds them, with every other call, until its kernel is ready, so awaiting `setSettings` or
+`initBitByBit({ conventions })` never waits for a kernel to load. A worker that refuses them all the
+same (one built before a setting existed) says so through its manager's `errorCallback`, or on the
+console; the other kernels keep the new settings. Engine code reads `context.settings`. The behaviour is
+tested once, here (`shared-services.test.ts`); each renderer's suite tests only its engine settings and
+that it delegates.
+
+## The conventions surface
+
+`lib/api/conventions-surface.ts` lists every operation whose results depend on the conventions
+level, as dotted paths (one ending in a dot stands for a whole service), with `isConventionSensitive`
+for a path and `conventionSensitiveMentions` for source code. Content that uses none of them runs the
+same at every level. Three guards keep it true: every registered operation whose inputs name an up
+axis or a hand must be on it, every entry must exist, and every public operation whose code reaches a
+read of the coordinate-system setting must be on it. That last one follows the calls with the type
+checker over the packages' sources (`lib/api/__test__/coordinate-system-readers.ts`), from the
+kernels' registered operations and the three renderers' root objects down through any helper, class
+or package, so a new caller of an old reader fails as much as a new reader does. An operation that
+reaches the setting yet keeps its result is listed in the test with the reason, and leaves the list
+when it stops reaching it.
+An application adds the entries of what it builds on top through the functions' `more` argument.

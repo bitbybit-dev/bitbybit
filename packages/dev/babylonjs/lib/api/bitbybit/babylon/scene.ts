@@ -3,7 +3,7 @@ import { uniqueName } from "../../unique-name";
 import * as BABYLON from "@babylonjs/core";
 import type * as GUI from "@babylonjs/gui";
 import * as Inputs from "../../inputs";
-import { GlobalCDNProvider, resolveDto } from "@bitbybit-dev/base";
+import { GlobalCDNProvider, Inputs as BaseInputs, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../resolved-inputs";
 
 const ENVIRONMENT_FOLDERS: Readonly<Partial<Record<Inputs.Base.skyboxEnum, string>>> = {
@@ -107,9 +107,10 @@ export class BabylonScene {
     }
 
     /**
-     * Switches the scene between the left-handed coordinate system BabylonJS uses by default and a
-     * right-handed one, the convention of most CAD tools and of glTF; the active camera is
-     * refreshed to match.
+     * Switches the scene between the left-handed coordinate system BabylonJS uses by default and the
+     * right-handed one of most CAD tools and glTF, and refreshes the active camera. The settings
+     * stay as they were set: for files, text and shapes that name a hand, such as a right-hand
+     * thread, to follow the switch, set them too with `bitbybit.setSettings`.
      * @param inputs - Whether to use the right-handed system
      * @group system
      * @shortname hand right
@@ -372,12 +373,13 @@ export class BabylonScene {
     }
 
     /**
-     * Removes everything drawn from the scene: meshes, the materials and the textures they wear,
-     * procedural textures, the scene's custom render targets, every light but the default
-     * hemispheric one, transform nodes, shadow generators, fog and the environment texture, and
-     * restores the default camera when another was active.
+     * Removes everything drawn from the scene, and makes the scene right-handed under a right-handed
+     * setting, left-handed otherwise.
      *
-     * Textures that pipelines, post-processes, probes and the scene's lookups hold stay.
+     * It removes meshes with the materials and textures they wear, procedural textures, custom render
+     * targets, every light but the default one, transform nodes, shadow generators, fog and the
+     * environment texture, and restores the default camera. Textures that pipelines,
+     * post-processes and probes hold stay.
      * @group environment
      * @shortname clear all drawn
      * @example
@@ -399,7 +401,7 @@ export class BabylonScene {
             scene.textures
                 .filter(texture => texturesOfTheDrawing.has(texture))
                 .forEach(texture => texture.dispose());
-            scene.useRightHandedSystem = false;
+            scene.useRightHandedSystem = this.context.settings.coordinateSystem === BaseInputs.Base.coordinateSystemEnum.rightHanded;
             scene.geometries.slice().forEach(geometry => {
                 this.disposeNodes(geometry.meshes);
                 if (!geometry.isDisposed()) {

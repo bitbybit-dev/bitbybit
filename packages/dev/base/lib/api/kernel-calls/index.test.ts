@@ -10,12 +10,15 @@ describe("kernel-calls barrel", () => {
 
         // Assert
         expect(exported).toEqual([
+            "CURRENT_CONVENTIONS",
             "InputError",
             "KernelCallError",
             "KernelOperationError",
+            "SettingsRelay",
             "atLeastOne",
             "callByPath",
             "checkStructure",
+            "checkedSettings",
             "constraintKinds",
             "custom",
             "defineRules",
@@ -40,6 +43,8 @@ describe("kernel-calls barrel", () => {
             "sameLength",
             "setInputIssueSink",
             "setKernelStepSink",
+            "settingsCacheKey",
+            "settingsOfConventions",
             "unknownProperties",
             "validateInputs",
             "when",

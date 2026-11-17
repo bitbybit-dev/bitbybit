@@ -5,3 +5,6 @@ export const HUE_FALL_START = 9;
 export const RED_OFFSET = 0;
 export const GREEN_OFFSET = 8;
 export const BLUE_OFFSET = 4;
+export const HEX_LEAD = 0x1000000;
+export const RED_PLACE = 0x10000;
+export const GREEN_PLACE = 0x100;

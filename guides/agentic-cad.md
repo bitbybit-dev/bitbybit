@@ -82,7 +82,7 @@ The only work that must run on Bitbybit's servers is a Pro algorithm, or compute
 
 ## Pro algorithms
 
-Some algorithms are available on CAD Cloud only, such as sheet-metal unfolding. They are verified against reference parts, expensive to maintain, and priced for it. An agent discovers them the same way as everything else: `describe` reports the tier `cloud-pro`, the endpoint and the API key scope. The [CAD Cloud page](https://bitbybit.dev/cad-cloud) lists the plans.
+Some algorithms are available on CAD Cloud only, such as sheet-metal unfolding and true-shape nesting of flat parts on sheets. They are verified against reference parts, expensive to maintain, and priced for it. An agent discovers them the same way as everything else: `describe` reports the tier `cloud-pro`, the endpoint and the API key scope. The [CAD Cloud page](https://bitbybit.dev/cad-cloud) lists the plans.
 
 ## For companies
 

@@ -1,10 +1,12 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { OCCTSVG } from "./svg";
 import { OCCTPath } from "./path";
 import * as Inputs from "../api/inputs";
+import { InputError } from "@bitbybit-dev/base";
+import { ledgerRun, namesOf } from "../__test__/kernel-ledger";
 
 describe("OCCTSVG + OCCTPath integration", () => {
     let occt: BitbybitOcctModule;
@@ -340,6 +342,240 @@ describe("OCCTSVG + OCCTPath integration", () => {
             const res = svg.loadSVGStructured(dto);
             expect(res.shapes.map((s) => s.elementType)).toEqual(["rect", "circle", "line"]);
             res.shapes.forEach((sh) => sh.shape.delete());
+        });
+    });
+
+    describe("loadSVGStructured element alignment", () => {
+        const fills = (text: string): (string | undefined)[] => {
+            const res = svg.loadSVGStructured({ svg: text, faceStrategy: Inputs.OCCT.svgFaceStrategyEnum.nonzero });
+            const found = res.shapes.map((s) => s.fill);
+            res.shapes.forEach((s) => s.shape.delete());
+            return found;
+        };
+
+        it("should keep styles with their shapes after a circle of radius 0", () => {
+            // Act
+            const found = fills("<svg><circle r=\"0\" fill=\"red\"/><rect width=\"10\" height=\"10\" fill=\"blue\"/><polyline points=\"0,0 50,0 50,50\" fill=\"green\"/></svg>");
+
+            // Assert
+            expect(found).toEqual(["blue", "green"]);
+        });
+
+        it("should keep styles with their shapes after a line of length 0", () => {
+            // Act
+            const res = svg.loadSVGStructured({ svg: "<svg><rect id=\"a\" width=\"10\" height=\"10\"/><line id=\"z\" x1=\"3\" y1=\"3\" x2=\"3\" y2=\"3\"/><rect id=\"b\" x=\"100\" width=\"20\" height=\"20\"/></svg>" });
+
+            // Assert
+            expect(res.shapes.map((s) => s.id)).toEqual(["a", "b"]);
+            expect(res.shapes.map((s) => wireLength(s.shape))).toEqual([40, 80].map((l) => expect.closeTo(l, 9)));
+            res.shapes.forEach((s) => s.shape.delete());
+        });
+
+        it("should keep styles with their shapes after a path that only marks a dot", () => {
+            // Act
+            const found = fills("<svg><path d=\"M5 5 h0\" stroke=\"black\" fill=\"black\"/><rect width=\"10\" height=\"10\" fill=\"blue\"/><circle cx=\"100\" r=\"5\" fill=\"green\"/></svg>");
+
+            // Assert
+            expect(found).toEqual(["blue", "green"]);
+        });
+    });
+
+    describe("loadSVGStructured size and placement", () => {
+        const bboxOf = (shape: TopoDS_Shape) => occHelper.operationsService.boundingBoxOfShape({ shape });
+        const CORELDRAW = "<svg width=\"210mm\" height=\"297mm\" viewBox=\"0 0 21000 29700\"><rect width=\"10000\" height=\"5000\" fill=\"black\"/></svg>";
+
+        it("should report the page size in millimetres and the millimetres a user unit stands for", () => {
+            // Act
+            const res = svg.loadSVGStructured({ svg: CORELDRAW });
+
+            // Assert
+            expect(res.documentWidth).toBeCloseTo(210, 9);
+            expect(res.documentHeight).toBeCloseTo(297, 9);
+            expect(res.millimetresPerUserUnit).toBeCloseTo(0.01, 12);
+            res.shapes.forEach((s) => s.shape.delete());
+        });
+
+        it("should keep user units when no unit is asked for", () => {
+            // Act
+            const res = svg.loadSVGStructured({ svg: CORELDRAW, faceStrategy: Inputs.OCCT.svgFaceStrategyEnum.auto });
+
+            // Assert
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(50000000, 0);
+            res.shapes.forEach((s) => s.shape.delete());
+        });
+
+        it("should import at true size in the unit asked for", () => {
+            // Act
+            const mm = svg.loadSVGStructured({ svg: CORELDRAW, faceStrategy: Inputs.OCCT.svgFaceStrategyEnum.auto, unit: Inputs.Base.unitOfLengthEnum.millimetre });
+            const cm = svg.loadSVGStructured({ svg: CORELDRAW, faceStrategy: Inputs.OCCT.svgFaceStrategyEnum.auto, unit: Inputs.Base.unitOfLengthEnum.centimetre });
+
+            // Assert
+            expect(faceArea(mm.shapes[0]!.shape)).toBeCloseTo(5000, 6);
+            expect(faceArea(cm.shapes[0]!.shape)).toBeCloseTo(50, 8);
+            mm.shapes.forEach((s) => s.shape.delete());
+            cm.shapes.forEach((s) => s.shape.delete());
+        });
+
+        it("should scale a stroke width at true size into the unit", () => {
+            // Act
+            const res = svg.loadSVGStructured({ svg: "<svg width=\"100mm\" height=\"100mm\" viewBox=\"0 0 1000 1000\"><path d=\"M0 0 L10 0\" stroke-width=\"5\"/></svg>", unit: Inputs.Base.unitOfLengthEnum.millimetre });
+
+            // Assert
+            expect(res.shapes[0]!.strokeWidth).toBeCloseTo(0.5, 12);
+            res.shapes.forEach((s) => s.shape.delete());
+        });
+
+        it("should place the drawing's own origin on the center when asked to keep it", () => {
+            // Act
+            const res = svg.loadSVGStructured({ svg: "<svg><rect x=\"100\" y=\"200\" width=\"40\" height=\"20\"/></svg>", keepOrigin: true, center: [1, 2, 3] });
+
+            // Assert
+            const b = bboxOf(res.shapes[0]!.shape);
+            expect(b.min).toEqual([101, 2, -217].map((v) => expect.closeTo(v, 5)));
+            expect(b.max).toEqual([141, 2, -197].map((v) => expect.closeTo(v, 5)));
+            res.shapes.forEach((s) => s.shape.delete());
+        });
+
+        it("should place the page's top left corner on the center when keeping the origin at true size", () => {
+            // Act
+            const shape = svg.loadSVG({ svg: "<svg width=\"100mm\" height=\"50mm\" viewBox=\"10 10 100 50\"><rect x=\"10\" y=\"10\" width=\"10\" height=\"10\"/></svg>", keepOrigin: true, unit: Inputs.Base.unitOfLengthEnum.millimetre });
+
+            // Assert
+            const b = bboxOf(shape);
+            expect(b.min).toEqual([0, 0, -10].map((v) => expect.closeTo(v, 5)));
+            expect(b.max).toEqual([10, 0, 0].map((v) => expect.closeTo(v, 5)));
+            shape.delete();
+        });
+    });
+
+    describe("loadSVGStructured arcs under transforms", () => {
+        const onEllipseUnder = (transform: [number, number, number, number, number, number]): number => {
+            const [a, b, c, d, e, f] = transform;
+            const res = svg.loadSVGStructured({
+                svg: `<svg><ellipse cx="3" cy="4" rx="10" ry="5" transform="matrix(${transform.join(" ")})"/></svg>`,
+                flipY: false,
+                keepOrigin: true,
+            });
+            const points = occHelper.wiresService.divideWireByParamsToPoints({ shape: res.shapes[0]!.shape, nrOfDivisions: 24, removeStartPoint: false, removeEndPoint: false });
+            res.shapes.forEach((s) => s.shape.delete());
+            const det = a * d - b * c;
+            return Math.max(...points.map(([x, , z]) => {
+                const px = x - e;
+                const py = z - f;
+                const u = (d * px - c * py) / det;
+                const v = (-b * px + a * py) / det;
+                return Math.abs(((u - 3) / 10) ** 2 + ((v - 4) / 5) ** 2 - 1);
+            }));
+        };
+
+        it("should build a rotated ellipse on the analytically rotated ellipse", () => {
+            // Act
+            const deviation = onEllipseUnder([Math.cos(Math.PI / 6), Math.sin(Math.PI / 6), -Math.sin(Math.PI / 6), Math.cos(Math.PI / 6), 7, -2]);
+
+            // Assert
+            expect(deviation).toBeLessThan(1e-7);
+        });
+
+        it("should build a skewed ellipse on the analytically skewed ellipse", () => {
+            // Act
+            const deviation = onEllipseUnder([1, 0, Math.tan(Math.PI / 6), 1, 0, 0]);
+
+            // Assert
+            expect(deviation).toBeLessThan(1e-7);
+        });
+
+        it("should build an ellipse under a general matrix on its analytic image", () => {
+            // Act
+            const deviation = onEllipseUnder([1, 0.5, 0.2, 1, 3, 2]);
+
+            // Assert
+            expect(deviation).toBeLessThan(1e-7);
+        });
+
+        it("should build an ellipse under a mirroring matrix on its analytic image", () => {
+            // Act
+            const deviation = onEllipseUnder([-0.3, 1.1, 0.9, 0.4, 3, 2]);
+
+            // Assert
+            expect(deviation).toBeLessThan(1e-7);
+        });
+    });
+
+    describe("placement checked before anything is built", () => {
+        const DRAWING = "<svg><rect width=\"10\" height=\"10\" fill=\"red\"/><circle cx=\"50\" r=\"5\" fill=\"blue\"/></svg>";
+
+        it("should refuse a direction of [0, 0, 0] and keep nothing it built", () => {
+            // Act
+            const whole = ledgerRun(occt, () => svg.loadSVG({ svg: DRAWING, faceStrategy: Inputs.OCCT.svgFaceStrategyEnum.auto, direction: [0, 0, 0] }));
+            const each = ledgerRun(occt, () => svg.loadSVGStructured({ svg: DRAWING, keepOrigin: true, direction: [0, 0, 0] }));
+
+            // Assert
+            expect(whole.thrown).toEqual(new InputError("`direction` is [0, 0, 0], which points nowhere.", "direction"));
+            expect(each.thrown).toEqual(new InputError("`direction` is [0, 0, 0], which points nowhere.", "direction"));
+            expect(namesOf(whole.leaked)).toEqual([]);
+            expect(namesOf(each.leaked)).toEqual([]);
+            expect(whole.made + each.made).toBe(0);
+        });
+
+        it("should refuse a center that is not a point and keep nothing it built", () => {
+            // Act
+            const whole = ledgerRun(occt, () => svg.loadSVG({ svg: DRAWING, center: [0, Number.NaN, 0] }));
+            const each = ledgerRun(occt, () => svg.loadSVGStructured({ svg: DRAWING, faceStrategy: Inputs.OCCT.svgFaceStrategyEnum.auto, center: [Number.POSITIVE_INFINITY, 0, 0] }));
+
+            // Assert
+            expect(whole.thrown).toEqual(new InputError("`center` is not a point: it needs three finite numbers.", "center"));
+            expect(each.thrown).toEqual(new InputError("`center` is not a point: it needs three finite numbers.", "center"));
+            expect(namesOf(whole.leaked)).toEqual([]);
+            expect(namesOf(each.leaked)).toEqual([]);
+            expect(whole.made + each.made).toBe(0);
+        });
+    });
+
+    describe("drawings of many elements", () => {
+        const placedTimes = (fan: number): string => `<svg><defs><line id="r" x2="1" y2="1"/><g id="g">${"<use href=\"#r\" x=\"2\"/>".repeat(fan)}</g></defs>${"<use href=\"#g\" y=\"2\"/>".repeat(fan)}</svg>`;
+
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it("should build no more than 20000 elements of a drawing that holds more, and say so", () => {
+            // Act
+            const res = svg.loadSVGStructured({ svg: placedTimes(150) });
+
+            // Assert
+            expect(res.shapes).toHaveLength(20_000);
+            expect(res.warnings).toStrictEqual(["The SVG draws more than 20000 elements; the first 20000 are imported and the rest are left out."]);
+            res.shapes.forEach((s) => s.shape.delete());
+        });
+
+        it("should place a drawing with as many kernel transforms however many elements it holds", () => {
+            // Arrange
+            const transforms = occHelper.transformsService;
+            const spies = [vi.spyOn(transforms, "rotate"), vi.spyOn(transforms, "translate"), vi.spyOn(transforms, "alignAndTranslate"), vi.spyOn(transforms, "align")];
+            const callsFor = (load: () => void): number => {
+                spies.forEach((spy) => spy.mockClear());
+                load();
+                return spies.reduce((sum, spy) => sum + spy.mock.calls.length, 0);
+            };
+
+            // Act
+            const one = callsFor(() => svg.loadSVGStructured({ svg: placedTimes(1) }).shapes.forEach((s) => s.shape.delete()));
+            const many = callsFor(() => svg.loadSVGStructured({ svg: placedTimes(20) }).shapes.forEach((s) => s.shape.delete()));
+            const whole = callsFor(() => svg.loadSVG({ svg: placedTimes(20), keepOrigin: true }).delete());
+
+            // Assert
+            expect(many).toBe(one);
+            expect(whole).toBeLessThan(one);
+        });
+
+        it("should give each element its own placed shape, in order, when the drawing is placed as a whole", () => {
+            // Act
+            const res = svg.loadSVGStructured({ svg: "<svg><rect id=\"a\" width=\"10\" height=\"10\" fill=\"none\"/><path id=\"b\" d=\"M100 0 h20 v20 z\" fill=\"blue\"/><circle id=\"c\" cx=\"300\" r=\"5\" fill=\"none\"/></svg>", faceStrategy: Inputs.OCCT.svgFaceStrategyEnum.auto, alignment: Inputs.Base.basicAlignmentEnum.bottomLeft });
+
+            // Assert
+            expect(res.shapes.map((s) => [s.id, shapeType(s.shape)])).toEqual([["a", "wire"], ["b", "face"], ["c", "wire"]]);
+            expect(res.shapes.map((s) => occHelper.operationsService.boundingBoxOfShape({ shape: s.shape }).min[0])).toEqual([0, 100, 295].map((x) => expect.closeTo(x, 6)));
+            res.shapes.forEach((s) => s.shape.delete());
         });
     });
 

@@ -1,6 +1,7 @@
 import * as Inputs from "../inputs";
 import type * as Resolved from "../resolved-inputs";
 import { InputError, resolveDto } from "../kernel-calls";
+import type { BitbybitSettings } from "../kernel-calls/settings";
 import { checkRecipe, toRecipe } from "../recipes/validate";
 import { recipeSurfaceMeshes } from "../recipes/surface-mesh";
 import { recipeSourceOf } from "../recipes/sources";
@@ -16,6 +17,9 @@ import { isTransformMatrix } from "./helpers/geometry/matrices";
  * @beta
  */
 export class Recipes {
+
+    constructor(private readonly settings: () => BitbybitSettings = () => ({})) {
+    }
 
     /**
      * Checks a value against the recipe format and lists what is wrong with it: steps that refer
@@ -77,7 +81,7 @@ export class Recipes {
      */
     surfaceMeshes(inputs: Inputs.Recipes.RecipeSurfaceMeshesDto): (RecipeSurfaceMesh | undefined)[] {
         const resolved = resolveDto(Inputs.Recipes.RecipeSurfaceMeshesDto, inputs) as Resolved.Recipes.RecipeSurfaceMeshesDto;
-        return recipeSurfaceMeshes(resolved.recipe, resolved.roots, resolved.adjustZtoY);
+        return recipeSurfaceMeshes(resolved.recipe, resolved.roots, resolved.adjustZtoY, this.settings().coordinateSystem);
     }
 
     /**

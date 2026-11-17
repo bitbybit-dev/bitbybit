@@ -124,3 +124,10 @@ and nothing else.
 statically imports the CDN script is built and the worker is constructed from that. The `initialise`
 message exists so the worker can point at a different CDN **before** it loads its WASM; send it late
 and a worker configured for a custom CDN has already fetched from the default one.
+
+## Settings
+
+`setSettings` is a reserved command, never cached. The worker keeps what it is told, sets it on the
+kernel's base and on a plugin that carries a `settings` property, keeps it for a kernel started after
+a crash, and starts a kernel given anew with none. The cache key gains a `settings` entry only when
+there are any. `base/ARCHITECTURE.md` ("Settings") has the design.

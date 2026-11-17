@@ -7,6 +7,8 @@ export interface ManifoldPrototype {
     delete: (this: Manifold3D.Manifold) => void;
     status: (this: Manifold3D.Manifold) => Manifold3D.ErrorStatus;
     warp: (this: Manifold3D.Manifold, warpFunc: (vert: Manifold3D.Vec3) => void) => Manifold3D.Manifold;
+    getMesh: (this: Manifold3D.Manifold, normalIdx?: number) => Manifold3D.Mesh;
+    warpBatch: (this: Manifold3D.Manifold, warpFunc: (verts: Float64Array, count: number) => void) => Manifold3D.Manifold;
 }
 
 export interface CrossSectionPrototype {

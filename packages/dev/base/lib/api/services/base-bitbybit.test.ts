@@ -17,6 +17,8 @@ import { Recipes } from "./recipes";
 import { TextBitByBit } from "./text";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
+import { Base } from "../inputs/base-inputs";
+import { InputError } from "../kernel-calls/errors";
 
 describe("BaseBitByBit", () => {
     it("should hold one of every base service", () => {
@@ -63,5 +65,53 @@ describe("BaseBitByBit", () => {
 
         // Assert
         expect(lengths).toEqual([3.7416573867739413, 3.7416573867739413, 3.7416573867739413, 3.7416573867739413, 3.7416573867739413]);
+    });
+
+    it("should keep the settings it is given as a copy of their own, under the services that read them", () => {
+        // Arrange
+        const base = new BaseBitByBit();
+        const given = { coordinateSystem: Base.coordinateSystemEnum.rightHanded };
+
+        // Act
+        base.settings = given;
+        given.coordinateSystem = Base.coordinateSystemEnum.leftHanded;
+
+        // Assert
+        expect(base.settings).toEqual({ coordinateSystem: "rightHanded" });
+        expect(base.point.hexGrid({ radiusHexagon: 1, nrHexagonsX: 1, nrHexagonsY: 2, orientOnCenter: false, pointsOnGround: true }).map(point => point[2])).toEqual([0, -1.5]);
+    });
+
+    it.each([
+        ["none set", undefined],
+        ["some set", { coordinateSystem: Base.coordinateSystemEnum.leftHanded }],
+    ])("should give its settings out frozen with %s, so a write past the checked assignment changes nothing", (_name, given) => {
+        // Arrange
+        const base = new BaseBitByBit();
+        base.settings = given ?? {};
+        const before = { ...base.settings };
+
+        // Act
+        const write = (): void => { (base.settings as Record<string, unknown>)["coordinateSystem"] = "righthanded"; };
+
+        // Assert
+        expect(write).toThrow(TypeError);
+        expect(base.settings).toEqual(before);
+    });
+
+    it.each([
+        ["a name that is no setting", "{\"cordinateSystem\":\"rightHanded\"}", "`cordinateSystem` is not a setting"],
+        ["a value its setting does not take", "{\"coordinateSystem\":\"righthanded\"}", "`coordinateSystem` is \"righthanded\""],
+    ])("should refuse %s and keep the settings it had", (_name, json, refusal) => {
+        // Arrange
+        const base = new BaseBitByBit();
+        base.settings = { coordinateSystem: Base.coordinateSystemEnum.leftHanded };
+
+        // Act
+        const refuse = (): void => { base.settings = JSON.parse(json); };
+
+        // Assert
+        expect(refuse).toThrow(InputError);
+        expect(refuse).toThrow(refusal);
+        expect(base.settings).toEqual({ coordinateSystem: "leftHanded" });
     });
 });

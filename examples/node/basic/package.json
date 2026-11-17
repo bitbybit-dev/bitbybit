@@ -1,12 +1,12 @@
 {
   "name": "basic",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "Example of how to use @bitbybit-dev/occt within node",
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
     "start": "node --import=extensionless/register dist/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon --import=extensionless/register -q dist/index.js\""
+    "dev": "concurrently \"npx tsc --watch\" \"node --watch --import=extensionless/register dist/index.js\""
   },
   "author": "Bit By Bit Developers",
   "license": "MIT",
@@ -15,13 +15,12 @@
     "node": ">=20.19.4"
   },
   "dependencies": {
-    "@bitbybit-dev/occt": "1.6.2"
+    "@bitbybit-dev/occt": "1.7.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.0",
     "extensionless": "1.9.9",
     "concurrently": "^7.6.0",
-    "nodemon": "^3.1.14",
     "typescript": "~5.8.0"
   },
   "extensionless": {

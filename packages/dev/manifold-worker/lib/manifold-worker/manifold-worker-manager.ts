@@ -1,5 +1,5 @@
-import type { KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
-import { KernelCallError } from "@bitbybit-dev/base";
+import type { BitbybitSettings, KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
+import { KernelCallError, SettingsRelay } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
 import type { ManifoldInfo } from "./manifold-info";
 import { ManifoldStateEnum } from "./manifold-state.enum";
@@ -18,6 +18,7 @@ export class ManifoldWorkerManager {
     errorCallback!: (err: string) => void;
     private manifoldWorker!: Worker | ManifoldWorkerMock;
     private promisesMade: PendingCall[] = [];
+    private readonly settingsRelay = new SettingsRelay((settings) => this.genericCallToWorkerPromise("setSettings", settings), (reason) => this.settingsRefused(reason));
 
     manifoldWorkerAlreadyInitialised(): boolean {
         return this.manifoldWorker ? true : false;
@@ -64,6 +65,7 @@ export class ManifoldWorkerManager {
                 }
             }
         };
+        this.settingsRelay.workerSet();
     }
 
     cleanPromisesMade(): void {
@@ -125,6 +127,30 @@ export class ManifoldWorkerManager {
      */
     cleanAllCache(): Promise<void> {
         return this.genericCallToWorkerPromise("cleanAllCache", {});
+    }
+
+    /**
+     * Tells the worker the settings the calls made from here work by, such as the coordinate
+     * system their numbers are in. Exactly the settings given are in force for every call made
+     * after this one: the worker keeps them for every call, and keeps results made under
+     * different settings apart. A setting left out goes back to the behaviour from before it
+     * existed; a name that is no setting, or a value it does not take, rejects the call and changes
+     * nothing. The call does not wait for the worker, which takes calls in the order they were made
+     * and holds those made before its kernel is ready: given before a worker is set, the settings
+     * are kept and sent when it is, and a worker set later, in place of another, is told them too.
+     * A worker that refuses them all the same, one built before a setting existed, says so through
+     * `errorCallback`, or on the console when none is set.
+     * @param settings - The settings to work by; an empty object for none
+     * @returns The settings now in force
+     */
+    setSettings(settings: BitbybitSettings): Promise<BitbybitSettings> {
+        return this.settingsRelay.set(settings, this.manifoldWorkerAlreadyInitialised());
+    }
+
+    private settingsRefused(reason: unknown): void {
+        if (!this.errorCallback) {
+            console.error("Manifold refused the settings it was sent:", reason);
+        }
     }
 
 }

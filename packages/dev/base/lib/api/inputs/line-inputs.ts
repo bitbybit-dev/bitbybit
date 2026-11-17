@@ -267,6 +267,26 @@ export namespace Line {
         tolerance?: number | undefined = 0.01;
     }
     /**
+     * A line and a point for `line.distanceToPoint`, which measures from the point to the nearest
+     * point of the line between its start and its end.
+     */
+    export class LinePointDistanceDto {
+        constructor(line?: LinePointsDto, point?: Base.Point3) {
+            if (line !== undefined) { this.line = line; }
+            if (point !== undefined) { this.point = point; }
+        }
+        /**
+         * The line to measure to; nothing past its start or its end counts.
+         * @default undefined
+         */
+        line!: LinePointsDto;
+        /**
+         * The point to measure from.
+         * @default undefined
+         */
+        point!: Base.Point3;
+    }
+    /**
      * A line and a fraction along it for `line.getPointOnLine`.
      */
     export class PointOnLineDto {

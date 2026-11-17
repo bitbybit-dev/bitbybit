@@ -383,7 +383,8 @@ export class OCCTGears {
         const spec = resolved;
         const herringbone = checkedFlag(resolved.herringbone, "herringbone");
         const sizes = this.build.base.engineering.mechanical.gears.helicalGearSizes(spec);
-        const runs = (frame: Inputs.Base.Frame, rotation: number, width: number): GearSection[][] => this.helicalRuns(spec, sizes.twist, herringbone, frame, rotation, width);
+        const twist = this.build.base.settings.coordinateSystem === Inputs.Base.coordinateSystemEnum.leftHanded ? -sizes.twist : sizes.twist;
+        const runs = (frame: Inputs.Base.Frame, rotation: number, width: number): GearSection[][] => this.helicalRuns(spec, twist, herringbone, frame, rotation, width);
         return this.madeToothed(
             resolved,
             () => sizes.rootRadius,

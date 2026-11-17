@@ -1,4 +1,5 @@
 import { InputError } from "@bitbybit-dev/base";
+import { bytesOfData } from "@bitbybit-dev/base/lib/api/services/helpers/files/file-bytes";
 import type { Handle_TDocStd_Document } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 
 /** The smallest mesh deflection the kernel's mesh exports take, in model units. */
@@ -10,17 +11,9 @@ export const SMALLEST_MESH_DEFLECTION = 1e-7;
  * reads it before the call reaches the kernel.
  */
 export function bytesOfFile(data: unknown, property: string): Uint8Array {
-    if (typeof data === "string") {
-        return new TextEncoder().encode(data);
-    }
-    if (data instanceof Uint8Array) {
-        return data;
-    }
-    if (data instanceof ArrayBuffer) {
-        return new Uint8Array(data);
-    }
-    if (ArrayBuffer.isView(data)) {
-        return new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+    const bytes = bytesOfData(data);
+    if (bytes !== undefined) {
+        return bytes;
     }
     throw new InputError(`\`${property}\` is not text or bytes: a File or Blob is read by the worker layer before the call reaches the kernel.`, property);
 }

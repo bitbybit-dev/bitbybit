@@ -26,6 +26,8 @@ export type OcctFailureDetails = {
     "occt.pipe.notValid": TrihedronFailureDetails;
     "occt.pipe.tooTight": undefined;
     "occt.pipe.bendDoesNotFit": CornerFailureDetails;
+    "occt.pipe.insideOut": undefined;
+    "occt.pipe.alongPath": undefined;
     "occt.design.crashed": DesignCrashDetails;
     "occt.recipe.failed": RecipeFailureDetails;
 };
@@ -57,6 +59,8 @@ export const OCCT_FAILURES: Readonly<Record<OcctFailureCode, string>> = {
     "occt.pipe.notValid": "The pipe came out as a shape that is not valid, part of its side missing. With the {trihedron} trihedron OCCT can do that on a path that is straight or nearly so; the discrete trihedron (isDiscreteTrihedron) builds such paths.",
     "occt.pipe.tooTight": "The path bends more tightly than the pipe's radius, so the pipe would fold through itself on the inside of the bend. Widen the path's bends beyond the radius, or make the pipe thinner.",
     "occt.pipe.bendDoesNotFit": "The bend radius does not fit the path at these corners, counted from 1: {corners}. The edges that meet there are too short to bend round it; use a smaller bend radius or longer edges.",
+    "occt.pipe.insideOut": "The pipe came out inside out, because OCCT placed the profile at the far end of the path. That happens when the profile lies off the path and the path comes back to the profile's plane; place the profile on the path, at its start.",
+    "occt.pipe.alongPath": "The pipe holds no volume: its profile lies along the path instead of across it, or encloses no area. Turn the profile so that the path crosses its plane.",
     "occt.design.crashed": "The kernel crashed while a design build made the feature {feature} ({path}), and every shape made before it is gone. Leave that feature out, or change it, to build the rest.",
     "occt.recipe.failed": "The recipe could not build node {node}, which root {root} places: {reason}.",
 };

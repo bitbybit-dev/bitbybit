@@ -30,3 +30,11 @@ as plain data with no type behind it.
 
 **`JSCADPolygon.createFromCurve` is `@deprecated`.** Converting between two CAD kernels does not belong
 in a package dedicated to one of them, and verb's own removal in the next major takes it anyway.
+
+**A solid goes into a file in the file's axes once a coordinate system is set** (`jscad.settings`,
+which the worker is told through its reserved `setSettings` command and keys its cache by). JSCAD's
+numbers are drawn as they are, Y up, so its STL, 3MF and DXF solids are moved by base's
+`meshMatrixInFile` first: Y and Z swapped in a left-handed system, a quarter turn about X in a
+right-handed one. JSCAD's own transform turns the polygons round under a mirror, so the facets stay
+outward. Flat shapes and paths are written as drawn, since the XY plane reads the same from the front
+in both systems. With no setting the writers get the geometry as it is, as they always did.

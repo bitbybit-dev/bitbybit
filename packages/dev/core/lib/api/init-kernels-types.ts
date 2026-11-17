@@ -10,6 +10,11 @@ import type { WorkerInstances, WorkerOptions } from "./worker-types";
 export interface InitBitByBitOptions extends WorkerOptions {
     /** Pre-created worker instances. If not provided, workers will be created from CDN. */
     workers?: WorkerInstances | undefined;
+    /**
+     * The conventions level to run by, as `setConventions` takes it: 1 for the engine's own
+     * coordinate system. Left out, the libraries behave as they did before levels existed.
+     */
+    conventions?: number | undefined;
 }
 
 /**

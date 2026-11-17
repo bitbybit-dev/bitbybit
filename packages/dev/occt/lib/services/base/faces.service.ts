@@ -583,7 +583,7 @@ export class FacesService {
             nrHexagonsInHeight: resolved.nrHexagonsU,
             nrHexagonsInWidth: resolved.nrHexagonsV,
             centerGrid: false,
-            pointsOnGround: true,
+            pointsOnGround: false,
             flatTop: resolved.flatU,
             extendTop: resolved.extendUUp,
             extendBottom: resolved.extendUBottom,
@@ -630,10 +630,10 @@ export class FacesService {
 
                 if (include && scaleFromPatternU > 0 && scaleFromPatternV > 0) {
                     const center = hex.centers[hexIndex]!;
-                    const corners = hex.hexagons[hexIndex]!.flatMap(point => [point[2] - center[2], point[0] - center[0]]);
+                    const corners = hex.hexagons[hexIndex]!.flatMap(point => [point[1] - center[1], point[0] - center[0]]);
                     const filletRadius = (hex.maxFilletRadius ?? 0) * filletFactor;
                     outlines.add(corners, filletRadius > 1e-6 ? filletRadius : 0, scaleFromPatternU, scaleFromPatternV,
-                        center[2] + gridOriginU, center[0] + gridOriginV);
+                        center[1] + gridOriginU, center[0] + gridOriginV);
                 }
             }
         }
