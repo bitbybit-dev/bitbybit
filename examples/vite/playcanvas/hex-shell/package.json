@@ -11,7 +11,7 @@
   "dependencies": {
     "@bitbybit-dev/playcanvas": "1.7.0",
     "lil-gui": "0.20.0",
-    "playcanvas": "2.23.3"
+    "playcanvas": "2.24.0"
   },
   "devDependencies": {
     "typescript": "~5.8.3",
