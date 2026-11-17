@@ -43,23 +43,23 @@ importers:
   packages/dev/babylonjs:
     dependencies:
       '@babylonjs/core':
-        specifier: 9.32.0
-        version: 9.32.0
+        specifier: 9.35.0
+        version: 9.35.0
       '@babylonjs/gui':
-        specifier: 9.32.0
-        version: 9.32.0(@babylonjs/core@9.32.0)
+        specifier: 9.35.0
+        version: 9.35.0(@babylonjs/core@9.35.0)
       '@babylonjs/havok':
         specifier: 1.3.13
         version: 1.3.13
       '@babylonjs/loaders':
-        specifier: 9.32.0
-        version: 9.32.0(@babylonjs/core@9.32.0)(babylonjs-gltf2interface@9.25.0)
+        specifier: 9.35.0
+        version: 9.35.0(@babylonjs/core@9.35.0)(babylonjs-gltf2interface@9.25.0)
       '@babylonjs/materials':
-        specifier: 9.32.0
-        version: 9.32.0(@babylonjs/core@9.32.0)
+        specifier: 9.35.0
+        version: 9.35.0(@babylonjs/core@9.35.0)
       '@babylonjs/serializers':
-        specifier: 9.32.0
-        version: 9.32.0(@babylonjs/core@9.32.0)(babylonjs-gltf2interface@9.25.0)
+        specifier: 9.35.0
+        version: 9.35.0(@babylonjs/core@9.35.0)(babylonjs-gltf2interface@9.25.0)
       '@bitbybit-dev/base':
         specifier: 1.6.2
         version: link:../base
@@ -533,8 +533,8 @@ importers:
         specifier: 10.4.0
         version: 10.4.0
       playcanvas:
-        specifier: 2.23.3
-        version: 2.23.3
+        specifier: 2.24.0
+        version: 2.24.0
       verb-nurbs-web:
         specifier: 2.1.3
         version: 2.1.3
@@ -585,8 +585,8 @@ importers:
         specifier: 10.4.0
         version: 10.4.0
       three:
-        specifier: 0.186.1
-        version: 0.186.1
+        specifier: 0.187.0
+        version: 0.187.0
       verb-nurbs-web:
         specifier: 2.1.3
         version: 2.1.3
@@ -595,8 +595,8 @@ importers:
         specifier: 7.59.1
         version: 7.59.1(@types/node@22.20.1)
       '@types/three':
-        specifier: 0.186.0
-        version: 0.186.0
+        specifier: 0.187.0
+        version: 0.187.0
       '@vitest/coverage-v8':
         specifier: 4.1.12
         version: 4.1.12(vitest@4.1.12)
@@ -654,30 +654,30 @@ packages:
     resolution: {integrity: sha512-Vj1jF3cPfxg7OAfoI7QnVKLoILlm2JF9pnVHrX8qx7AHMiYWT+NDAA7jChlNgRS4WTLc/fD1lXLmPixluj+3Gg==}
     engines: {node: '>=6.9.0'}
 
-  '@babylonjs/core@9.32.0':
-    resolution: {integrity: sha512-mHBsyKJuQHbs97Rb/1qxMRg6Ru79+0BjLhGLTa34s6U/fkBCtOh+xKTQDqFpFtPqgBw9TLFcIEvFHy01vnJxwA==}
+  '@babylonjs/core@9.35.0':
+    resolution: {integrity: sha512-qY2uU4gVC1GA7vPfLtnF57bPBBuu5nGnh9efGZVWtba9naxeeH+Nkj919vEFhoBvmiDxbRXMOBKLp/wWC0YzYA==}
 
-  '@babylonjs/gui@9.32.0':
-    resolution: {integrity: sha512-VstJSVYIWp2DkyuoK72JIDUjfkurP6u9O+YHuE3yYHbRVbNdH8CQo9h6Rb9IU2zoFbnjvOA5Y9tIuHrvdexW+Q==}
+  '@babylonjs/gui@9.35.0':
+    resolution: {integrity: sha512-R1+ao9de3/4kNFz3p71eb8kdvWPvElJv8F9hk+8TXdD/BhrVJ/xqpEfp1aWgXa9wh/OaHg8JlUiFZWAntxA/ug==}
     peerDependencies:
       '@babylonjs/core': ^9.0.0
 
   '@babylonjs/havok@1.3.13':
     resolution: {integrity: sha512-DDrPHbNdeanogdE261r4sfgKgtZb11ccaDjNEbhEcrcWz1XgYHTIJzz5QwO+J4XhOQJLXfn9Lv20cI2REIZiwg==}
 
-  '@babylonjs/loaders@9.32.0':
-    resolution: {integrity: sha512-pHWbOaR34riRNxX0rffPpVcbaAoEXmjtS00A4RO43zoz4EPVg4mESX0EqzaA8yl7FbVk+aYWwyj30uR1OWrl1Q==}
+  '@babylonjs/loaders@9.35.0':
+    resolution: {integrity: sha512-glYCpmSCukBcWMziRsxOI1hTDeCxa6/kqfDSRfej7MsD9N+dnZfZTd3+ReHpQe4F33v5/PoSTt3grN/pA0bXFg==}
     peerDependencies:
       '@babylonjs/core': ^9.0.0
       babylonjs-gltf2interface: ^9.0.0
 
-  '@babylonjs/materials@9.32.0':
-    resolution: {integrity: sha512-IfYJLsHFlFSzJEvDJ3bQ4bVPiQw9LImUTTTt95IGo0yBzELgAaaziE8kv1wKkZoX6Fi7Q9k0GUYdlDyS5rlB5A==}
+  '@babylonjs/materials@9.35.0':
+    resolution: {integrity: sha512-91dqrYzShDsD9BEVBa05Bq8aN6frB25v95SEk9SXUewdal5jzPlblA6ZgBeMsKF970ZCO8y5KpDk+laI5in7Ww==}
     peerDependencies:
       '@babylonjs/core': ^9.0.0
 
-  '@babylonjs/serializers@9.32.0':
-    resolution: {integrity: sha512-zvAT6lpUf4uQKvTOMXnizFfiP9f1kGcDs2r/aAy8p7DWuixMrK4AqMWP7x7WWzGIgSinU2qAiuQdoVjTz18nag==}
+  '@babylonjs/serializers@9.35.0':
+    resolution: {integrity: sha512-VktjqJyl7/iKKLCHQzZ+YmU7IX/HS0Msegrr8z2RgY51jxPH1Zmar8P3ZMt3ol+IjNzaAPKjoU7CUHjZukwHxQ==}
     peerDependencies:
       '@babylonjs/core': ^9.0.0
       babylonjs-gltf2interface: ^9.0.0
@@ -1495,8 +1495,8 @@ packages:
   '@types/stats.js@0.17.4':
     resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
 
-  '@types/three@0.186.0':
-    resolution: {integrity: sha512-mxYSBpDC+D0pLfSP6sW4WZTcT+nrtmZcimMqnVmy36Hte3XpeYSrvgg4TRdaM1GemGog1AWzI5qL2VoIfMXbJQ==}
+  '@types/three@0.187.0':
+    resolution: {integrity: sha512-v+vKNarUtk4n2QRZ4+CN5ygMM0ARUjXjIQl0R/unMUfmStFeVqGbgqarbrpoGTXRZoulSH16ePrVJVxPJEbMUA==}
 
   '@types/through@0.0.33':
     resolution: {integrity: sha512-HsJ+z3QuETzP3cswwtzt2vEIiHBk/dCcHGhbmG5X3ecnwFD/lPrMpliGXxSCg03L9AhrdwA4Oz/qfspkDW+xGQ==}
@@ -2491,8 +2491,8 @@ packages:
     resolution: {integrity: sha512-wQ0b/W4Fr01qtpHlqSqspcj3EhBvimsdh0KlHhH8HRZnMsEa0ea2fTULOXOS9ccQr3om+GcGRk4e+isrZWV8qQ==}
     engines: {node: '>=16.20.0'}
 
-  playcanvas@2.23.3:
-    resolution: {integrity: sha512-hjDdo5yFtVr/WmDh59pRrT1LC+Rfpq4VXB8Xt3AMB8GfWXj9JzOMq3x+3FTmq/2L2gN37q9V1LMZaLuYshzMXQ==}
+  playcanvas@2.24.0:
+    resolution: {integrity: sha512-1zWNMmEPK+/g55knPERlnutr4BoqhhfDVa1Kyn7AwrrCpVkmc1HHRsd7O8nP3SoEjvtKnlpXutqkQIMBZC10dg==}
     engines: {node: '>=18.3.0'}
 
   pluralize@8.0.0:
@@ -2734,8 +2734,8 @@ packages:
     resolution: {integrity: sha512-ujeqbceABgwMZxEJnk2HDY2DlnUZ+9oEcb1KzTVfYHio0UE6dG71n60d8D2I4qNvleWrrXpmjpt7vZeF1LnMZQ==}
     engines: {node: '>=6'}
 
-  three@0.186.1:
-    resolution: {integrity: sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==}
+  three@0.187.0:
+    resolution: {integrity: sha512-Qiu7R+Cmh8CstZsY1uJOSWnVlfo7ZtNLV7mF8Jltk3LB3AtDu9cRZlcnRKkAk8Y4z6KKw35z7Y7Urd7jWY8etA==}
 
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
@@ -3034,28 +3034,28 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@babylonjs/core@9.32.0': {}
+  '@babylonjs/core@9.35.0': {}
 
-  '@babylonjs/gui@9.32.0(@babylonjs/core@9.32.0)':
+  '@babylonjs/gui@9.35.0(@babylonjs/core@9.35.0)':
     dependencies:
-      '@babylonjs/core': 9.32.0
+      '@babylonjs/core': 9.35.0
 
   '@babylonjs/havok@1.3.13':
     dependencies:
       '@types/emscripten': 1.41.6
 
-  '@babylonjs/loaders@9.32.0(@babylonjs/core@9.32.0)(babylonjs-gltf2interface@9.25.0)':
+  '@babylonjs/loaders@9.35.0(@babylonjs/core@9.35.0)(babylonjs-gltf2interface@9.25.0)':
     dependencies:
-      '@babylonjs/core': 9.32.0
+      '@babylonjs/core': 9.35.0
       babylonjs-gltf2interface: 9.25.0
 
-  '@babylonjs/materials@9.32.0(@babylonjs/core@9.32.0)':
+  '@babylonjs/materials@9.35.0(@babylonjs/core@9.35.0)':
     dependencies:
-      '@babylonjs/core': 9.32.0
+      '@babylonjs/core': 9.35.0
 
-  '@babylonjs/serializers@9.32.0(@babylonjs/core@9.32.0)(babylonjs-gltf2interface@9.25.0)':
+  '@babylonjs/serializers@9.35.0(@babylonjs/core@9.35.0)(babylonjs-gltf2interface@9.25.0)':
     dependencies:
-      '@babylonjs/core': 9.32.0
+      '@babylonjs/core': 9.35.0
       babylonjs-gltf2interface: 9.25.0
 
   '@bcoe/v8-coverage@1.0.2': {}
@@ -3748,7 +3748,7 @@ snapshots:
 
   '@types/stats.js@0.17.4': {}
 
-  '@types/three@0.186.0':
+  '@types/three@0.187.0':
     dependencies:
       '@dimforge/rapier3d-compat': 0.12.0
       '@tweenjs/tween.js': 23.1.3
@@ -4775,7 +4775,7 @@ snapshots:
 
   pkce-challenge@5.0.1: {}
 
-  playcanvas@2.23.3:
+  playcanvas@2.24.0:
     dependencies:
       '@types/webxr': 0.5.24
       '@webgpu/types': 0.1.72
@@ -5055,7 +5055,7 @@ snapshots:
       readable-stream: 3.6.2
     optional: true
 
-  three@0.186.1: {}
+  three@0.187.0: {}
 
   tinybench@2.9.0: {}
 

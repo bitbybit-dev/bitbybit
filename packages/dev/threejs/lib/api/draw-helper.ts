@@ -500,7 +500,7 @@ export class DrawHelper extends DrawHelperCore {
             geometry.setIndex(new THREEJS.BufferAttribute(entry.mesh.indices, 1));
             const geometryId = mesh.addGeometry(geometry);
             geometry.dispose();
-            geometries[geometryId] = { part: entry.part, indexStart: mesh.getGeometryRangeAt(geometryId)!.indexStart, faceRanges: entry.mesh.faceRanges };
+            geometries[geometryId] = { part: entry.part, indexStart: mesh.getGeometryRangeAt(geometryId).indexStart, faceRanges: entry.mesh.faceRanges };
             placements.get(entry.part)!.forEach((placement, index) => {
                 const id = mesh.addInstance(geometryId);
                 mesh.setMatrixAt(id, this.scratchMatrix.fromArray(placement.world));
