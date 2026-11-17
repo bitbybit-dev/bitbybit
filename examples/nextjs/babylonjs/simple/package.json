@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@bitbybit-dev/babylonjs": "1.7.0",
-    "next": "16.4.1",
+    "next": "16.4.5",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
