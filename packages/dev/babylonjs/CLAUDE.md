@@ -125,7 +125,8 @@ The shared draw rules live in `core`'s `CLAUDE.md`. What Babylon itself forces:
 - **The application that creates the scene decides the coordinate system.** `engineSettings`
   answers with the handedness the scene had when it was given to `init`, never the live flag, and
   `babylon.scene.useRightHandedSystem` changes only the scene. Code that switches the scene and
-  wants files, text and hands to follow sets the settings too (`bitbybit.setSettings`); otherwise
+  wants files, text and shapes that name a hand (a right-hand thread) to follow sets the settings
+  too (`bitbybit.setSettings`); otherwise
   the next `setConventions` and `clearAllDrawn` both put back the system the scene was given to
   `init` in.
 - **A back face never goes into a file.** A shape drawn two-sided is two meshes, the surface and a

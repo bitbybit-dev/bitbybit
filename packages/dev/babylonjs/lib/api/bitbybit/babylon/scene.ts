@@ -107,10 +107,10 @@ export class BabylonScene {
     }
 
     /**
-     * Switches the scene between the left-handed coordinate system BabylonJS uses by default and a
-     * right-handed one, the convention of most CAD tools and of glTF; the active camera is
-     * refreshed to match. The settings stay as they were set: for files, text and hands to
-     * follow the switch, set them too with `bitbybit.setSettings`.
+     * Switches the scene between the left-handed coordinate system BabylonJS uses by default and the
+     * right-handed one of most CAD tools and glTF, and refreshes the active camera. The settings
+     * stay as they were set: for files, text and shapes that name a hand, such as a right-hand
+     * thread, to follow the switch, set them too with `bitbybit.setSettings`.
      * @param inputs - Whether to use the right-handed system
      * @group system
      * @shortname hand right
