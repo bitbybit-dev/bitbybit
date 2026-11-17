@@ -61,22 +61,22 @@ importers:
         specifier: 9.35.0
         version: 9.35.0(@babylonjs/core@9.35.0)(babylonjs-gltf2interface@9.25.0)
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../core
       '@bitbybit-dev/ifc-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt-worker
       earcut:
         specifier: 3.0.2
@@ -156,31 +156,31 @@ importers:
   packages/dev/core:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/ifc':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc
       '@bitbybit-dev/ifc-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc-worker
       '@bitbybit-dev/jscad':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt
       '@bitbybit-dev/occt-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.4.0
@@ -260,7 +260,7 @@ importers:
   packages/dev/ifc:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
     devDependencies:
       '@microsoft/api-extractor':
@@ -285,10 +285,10 @@ importers:
   packages/dev/ifc-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/ifc':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc
       rxjs:
         specifier: 7.8.2
@@ -313,7 +313,7 @@ importers:
   packages/dev/jscad:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@jscad/dxf-serializer':
         specifier: 2.1.23
@@ -350,10 +350,10 @@ importers:
   packages/dev/jscad-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/jscad':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad
       rxjs:
         specifier: 7.8.2
@@ -378,7 +378,7 @@ importers:
   packages/dev/manifold:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       manifold-3d:
         specifier: 3.5.4
@@ -403,10 +403,10 @@ importers:
   packages/dev/manifold-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/manifold':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold
       rxjs:
         specifier: 7.8.2
@@ -459,7 +459,7 @@ importers:
   packages/dev/occt:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
     devDependencies:
       '@microsoft/api-extractor':
@@ -484,10 +484,10 @@ importers:
   packages/dev/occt-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/occt':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt
       rxjs:
         specifier: 7.8.2
@@ -512,22 +512,22 @@ importers:
   packages/dev/playcanvas:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../core
       '@bitbybit-dev/ifc-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.4.0
@@ -564,22 +564,22 @@ importers:
   packages/dev/threejs:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../core
       '@bitbybit-dev/ifc-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.6.2
+        specifier: 1.7.0
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.4.0
