@@ -10539,9 +10539,9 @@ export interface OperationParams {
      * Triangulates a shape, writes it as OBJ, the mesh format most 3D programs read, and starts a
      * browser download of the file.
      *
-     * `precision` is the meshing tolerance in model units and `adjustYtoZ` swaps Y and Z, which
-     * mirrors the shape. The file name may hold no spaces or slashes; `tryDownload` false skips the
-     * download, and `saveShapeObjAndReturn` gives the text instead.
+     * `precision` is the meshing tolerance in model units. With the conventions set the file shows
+     * what the screen shows, Z-up with `adjustYtoZ`. The file name may hold no spaces or slashes;
+     * `saveShapeObjAndReturn` gives the text instead.
      */
     "occt.io.saveShapeObj": {
         /** The shape written to the file. */
@@ -10604,9 +10604,9 @@ export interface OperationParams {
      * Triangulates a shape, writes it as ASCII PLY with a normal per vertex, and starts a browser
      * download of the file.
      *
-     * `precision` is the meshing tolerance in model units and `adjustYtoZ` swaps Y and Z, which
-     * mirrors the shape. `fileName` names the download and `tryDownload` false skips it;
-     * `saveShapePlyAndReturn` gives the text instead.
+     * `precision` is the meshing tolerance in model units. With the conventions set the file shows
+     * what the screen shows, Z-up with `adjustYtoZ`. `fileName` names the download and
+     * `tryDownload` false skips it; `saveShapePlyAndReturn` gives the text instead.
      */
     "occt.io.saveShapePly": {
         /** The shape written to the file. */
@@ -10729,9 +10729,9 @@ export interface OperationParams {
      * Triangulates a shape, writes it as STL, the mesh format 3D printers read, and starts a browser
      * download of the file.
      *
-     * `precision` is the meshing tolerance in model units, `adjustYtoZ` swaps Y and Z, which
-     * mirrors the shape, and `binary` writes the smaller binary form. `fileName` names the
-     * download, `tryDownload` false skips it. `saveShapeStlAndReturn` gives the file instead.
+     * `precision` is the meshing tolerance in model units and `binary` writes the smaller binary
+     * form. With the conventions set the file shows what the screen shows, Z-up with `adjustYtoZ`.
+     * `saveShapeStlAndReturn` gives the file instead.
      */
     "occt.io.saveShapeStl": {
         /** The shape written to the file. */
