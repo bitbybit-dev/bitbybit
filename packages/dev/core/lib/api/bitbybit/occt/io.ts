@@ -9,7 +9,7 @@ import type * as Resolved from "../../resolved-inputs";
 /**
  * Reading and writing CAD files with OCCT: everything `io` offers on the kernel, plus loaders that
  * take a STEP or IGES file as a File object or as its text and give back a shape. Files are Z-up by
- * convention, so `adjustZtoY` turns the loaded shape to this library's Y-up unless it is set false.
+ * convention, so `upAxis` turns the loaded shape to this library's Y-up unless it is set to `keep`.
  */
 export class OCCTWIO extends OCCTIO {
 
@@ -24,7 +24,7 @@ export class OCCTWIO extends OCCTIO {
      * Reads a STEP or IGES file, given as a File, into one shape.
      *
      * The file's extension decides the kind: `.step`, `.stp` are STEP, `.iges`, `.igs` are IGES.
-     * `adjustZtoY` turns the file's Z-up into Y-up, and the shape comes back in `unit`, scaled from
+     * `upAxis` turns the file's Z-up into Y-up, and the shape comes back in `unit`, scaled from
      * the file's own. A file that cannot be read gives undefined.
      * @param inputs - The file, the axis adjustment and the unit
      * @returns The loaded shape
@@ -33,7 +33,7 @@ export class OCCTWIO extends OCCTIO {
      * @example
      * ```typescript
      * const file = await bitbybit.asset.getFile({ fileName: "part.step" });
-     * const shape = await bitbybit.occt.io.loadSTEPorIGES({ assetFile: file, adjustZtoY: true });
+     * const shape = await bitbybit.occt.io.loadSTEPorIGES({ assetFile: file, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp });
      * await bitbybit.draw.drawAnyAsync({ entity: shape });
      * ```
      */
@@ -42,7 +42,7 @@ export class OCCTWIO extends OCCTIO {
         return this.context.getFile(resolved.assetFile).then(s => {
             return this.occWorkerManager.genericCallToWorkerPromise(
                 "io.loadSTEPorIGES",
-                new Inputs.OCCT.LoadStepOrIgesDto(s, resolved.assetFile.name, resolved.adjustZtoY, resolved.unit)
+                new Inputs.OCCT.LoadStepOrIgesDto(s, resolved.assetFile.name, undefined, resolved.unit, resolved.upAxis)
             );
         });
     }
@@ -51,7 +51,7 @@ export class OCCTWIO extends OCCTIO {
      * Reads a STEP or IGES file, given as its text, into one shape; `fileType` says which of the
      * two formats the text is in.
      *
-     * `adjustZtoY` turns the file's Z-up into Y-up, and the shape comes back in `unit`, scaled from
+     * `upAxis` turns the file's Z-up into Y-up, and the shape comes back in `unit`, scaled from
      * the file's own. Text that cannot be read gives undefined.
      * @param inputs - The file text, its format, the axis adjustment and the unit
      * @returns The loaded shape
@@ -60,14 +60,14 @@ export class OCCTWIO extends OCCTIO {
      * @example
      * ```typescript
      * const text = await bitbybit.asset.fetchText({ url: "https://example.com/models/part.step" });
-     * const shape = await bitbybit.occt.io.loadSTEPorIGESFromText({ text, fileType: Bit.Inputs.OCCT.fileTypeEnum.step, adjustZtoY: true });
+     * const shape = await bitbybit.occt.io.loadSTEPorIGESFromText({ text, fileType: Bit.Inputs.OCCT.fileTypeEnum.step, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp });
      * ```
      */
     loadSTEPorIGESFromText(inputs: Inputs.OCCT.ImportStepIgesFromTextDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
         const resolved = resolveDto(Inputs.OCCT.ImportStepIgesFromTextDto, inputs) as Resolved.OCCT.ImportStepIgesFromTextDto;
         return this.occWorkerManager.genericCallToWorkerPromise(
             "io.loadSTEPorIGES",
-            new Inputs.OCCT.LoadStepOrIgesDto(resolved.text, `fake.${resolved.fileType}`, resolved.adjustZtoY, resolved.unit)
+            new Inputs.OCCT.LoadStepOrIgesDto(resolved.text, `fake.${resolved.fileType}`, undefined, resolved.unit, resolved.upAxis)
         );
     }
 

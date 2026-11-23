@@ -1,6 +1,6 @@
 import * as Inputs from "../../inputs";
 import type * as Resolved from "../../resolved-inputs";
-import { resolveDto } from "@bitbybit-dev/base";
+import { checkedUpAxis, resolveDto } from "@bitbybit-dev/base";
 import type { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
 import { IFCGeometry } from "@bitbybit-dev/ifc-worker/lib/api/geometry";
 import type { OCCT } from "@bitbybit-dev/occt-worker";
@@ -39,9 +39,10 @@ export class IFCWGeometry extends IFCGeometry {
      */
     async toShapes(inputs: Inputs.IFC.GeometryToShapesDto<Inputs.IFC.IfcModelPointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
         const resolved = resolveDto(Inputs.IFC.GeometryToShapesDto, inputs) as Resolved.IFC.GeometryToShapesDto<Inputs.IFC.IfcModelPointer>;
+        const upAxis = checkedUpAxis(resolved.upAxis, [Inputs.Base.upAxisConversionEnum.keep, Inputs.Base.upAxisConversionEnum.zUpToYUp]);
         const recipe = await this.recipe({ model: resolved.model, elements: resolved.elements });
         return this.occt.recipes.build({
-            recipe, adjustZtoY: resolved.adjustZtoY, emptyWhenFailed: resolved.emptyWhenFailed,
+            recipe, upAxis, emptyWhenFailed: resolved.emptyWhenFailed,
             facetedMeshes: resolved.facetedMeshes, maxTriangles: resolved.maxTriangles,
         });
     }

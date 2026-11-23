@@ -29,7 +29,7 @@ export class Asset {
      * @example
      * ```typescript
      * const file = await bitbybit.asset.getFile({ fileName: "part.step" });
-     * const shape = await bitbybit.occt.io.loadSTEPorIGES({ assetFile: file, adjustZtoY: true });
+     * const shape = await bitbybit.occt.io.loadSTEPorIGES({ assetFile: file, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp });
      * ```
      */
     getFile(inputs: Inputs.Asset.GetAssetDto): Promise<File> {
@@ -120,7 +120,7 @@ export class Asset {
      * @example
      * ```typescript
      * const file = await bitbybit.asset.fetchFile({ url: "https://example.com/models/part.step" });
-     * const shape = await bitbybit.occt.io.loadSTEPorIGES({ assetFile: file, adjustZtoY: true });
+     * const shape = await bitbybit.occt.io.loadSTEPorIGES({ assetFile: file, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp });
      * ```
      */
     async fetchFile(inputs: Inputs.Asset.FetchDto): Promise<File> {

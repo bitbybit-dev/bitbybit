@@ -119,7 +119,7 @@ describe("OCCTW", () => {
     });
 
     describe("io.loadSTEPorIGES", () => {
-        it("should read the file through the context before sending it, with the unit asked for", async () => {
+        it("should read the file through the context before sending it, with the unit asked for and the deprecated flag as its upAxis", async () => {
             // Arrange
             const file = new File(["ISO-10303-21;"], "part.step");
             const asked: (File | Blob)[] = [];
@@ -136,7 +136,7 @@ describe("OCCTW", () => {
             expect(asked).toEqual([file]);
             expect(worker.posted[0]!.action).toEqual({
                 functionName: "io.loadSTEPorIGES",
-                inputs: { filetext: "ISO-10303-21;", assetFile: undefined, fileName: "part.step", adjustZtoY: false, unit: "in" },
+                inputs: { filetext: "ISO-10303-21;", assetFile: undefined, fileName: "part.step", upAxis: Inputs.Base.upAxisConversionEnum.keep, unit: "in" },
             });
         });
     });
@@ -149,7 +149,7 @@ describe("OCCTW", () => {
             // Assert
             expect(worker.posted[0]!.action).toEqual({
                 functionName: "io.loadSTEPorIGES",
-                inputs: { filetext: "ISO-10303-21;", assetFile: undefined, fileName: "fake.step", adjustZtoY: true, unit: "mm" },
+                inputs: { filetext: "ISO-10303-21;", assetFile: undefined, fileName: "fake.step", upAxis: Inputs.Base.upAxisConversionEnum.zUpToYUp, unit: "mm" },
             });
         });
     });

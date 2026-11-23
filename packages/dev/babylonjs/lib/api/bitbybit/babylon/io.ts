@@ -144,7 +144,7 @@ export class BabylonIO {
      * @drawable true
      * @example
      * ```typescript
-     * const glb = await bitbybit.occt.io.convertStepToGltf({ stepData: file, meshPrecision: 0.005, meshAngle: 0.5, meshRelative: true, internalVerticesMode: false, controlSurfaceDeflection: false });
+     * const glb = await bitbybit.occt.io.convertStepToGltf({ stepData: file, meshPrecision: 0.005, meshAngle: 0.5, meshRelative: true, internalVerticesMode: true, controlSurfaceDeflection: false });
      * const model = await bitbybit.babylon.io.loadGlbFromArrayBuffer({ glbData: glb, fileName: "part.glb", hidden: false });
      * ```
      */

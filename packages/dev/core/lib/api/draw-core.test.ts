@@ -286,6 +286,128 @@ describe("shapes with their appearance and design builds are told apart", () => 
     });
 });
 
+describe("a document and its annotations are drawn as themselves", () => {
+    let probe: ProbeCore;
+    const document = { hash: 42, type: "occ-document" };
+    const annotations = {
+        annotations: [{ label: "0:1:4:1", kind: "dimension", type: "Size_Diameter", name: "", value: 5, attached: 1, lines: [[[0, 0, 0], [1, 0, 0]]], fills: [] }],
+        views: [],
+        leftOut: { annotations: 0, views: 0 },
+    };
+
+    beforeEach(() => {
+        probe = new ProbeCore();
+    });
+
+    it("should detect the reference the worker gives a document as a document", () => {
+        // Act
+        const handle = probe.detectOcctDocument(document);
+        const named = probe.detectOcctDocument({ hash: "a1", type: "occ-document" });
+
+        // Assert
+        expect(handle).toBe(true);
+        expect(named).toBe(true);
+    });
+
+    it.each([
+        ["a shape", { hash: 1, type: "occ-shape" }],
+        ["a kernel object that is not a document", { hash: 1, type: "occ-entity" }],
+        ["a handle without its hash", { type: "occ-document" }],
+        ["a list of documents", [{ hash: 1, type: "occ-document" }]],
+        ["missing", undefined],
+    ])("should not detect %s as a document", (_name, entity) => {
+        // Act
+        const detected = probe.detectOcctDocument(entity);
+
+        // Assert
+        expect(detected).toBe(false);
+    });
+
+    it("should detect what getDocumentAnnotations returns, and one without annotations or views", () => {
+        // Act
+        const some = probe.detectDocumentAnnotations(annotations);
+        const none = probe.detectDocumentAnnotations({ annotations: [], views: [], leftOut: { annotations: 0, views: 0 } });
+
+        // Assert
+        expect(some).toBe(true);
+        expect(none).toBe(true);
+    });
+
+    it.each([
+        ["without views", { annotations: [] }],
+        ["with an annotation that has no fills", { annotations: [{ lines: [] }], views: [] }],
+        ["with annotations that are not objects", { annotations: [1], views: [] }],
+        ["given as a list", [annotations]],
+    ])("should not detect annotations %s", (_name, entity) => {
+        // Act
+        const detected = probe.detectDocumentAnnotations(entity);
+
+        // Assert
+        expect(detected).toBe(false);
+    });
+
+    it("should resolve each of them to its own kind, and only in the asynchronous call", () => {
+        // Arrange
+        const every = probe.kinds().map(k => k.kind);
+
+        // Act
+        const ofDocument = probe.resolve(document, "async", every);
+        const ofAnnotations = probe.resolve(annotations, "async", every);
+        const syncDocument = probe.resolve(document, "sync", every);
+        const syncAnnotations = probe.resolve(annotations, "sync", every);
+
+        // Assert
+        expect(ofDocument).toBe("occtDocument");
+        expect(ofAnnotations).toBe("documentAnnotations");
+        expect(syncDocument).toBeUndefined();
+        expect(syncAnnotations).toBeUndefined();
+    });
+});
+
+describe("DrawCore hatched section detection", () => {
+    let probe: ProbeCore;
+    const frame = { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] };
+    const cap = { face: { hash: 1, type: "occ-shape" }, lines: { hash: 2, type: "occ-shape" }, hatch: { boundaries: [{ segments: [{ center: [0, 0], radius: 2 }] }], pattern: "ansi31", angle: 45, spacing: 1 } };
+    const section = { frame, shapes: [{ angle: 45, caps: [cap] }, { angle: 135, caps: [] }] };
+
+    beforeEach(() => {
+        probe = new ProbeCore();
+    });
+
+    it("should detect what hatchedSectionByFrame returns, a shape the plane missed included, and resolve it only in the asynchronous call", () => {
+        // Arrange
+        const every = probe.kinds().map(k => k.kind);
+
+        // Act
+        const detected = probe.detectHatchedSection(section);
+        const empty = probe.detectHatchedSection({ frame, shapes: [] });
+        const ofSection = probe.resolve(section, "async", every);
+        const syncSection = probe.resolve(section, "sync", every);
+
+        // Assert
+        expect(detected).toBe(true);
+        expect(empty).toBe(true);
+        expect(ofSection).toBe("hatchedSection");
+        expect(syncSection).toBeUndefined();
+    });
+
+    it.each([
+        ["without a frame", { shapes: [] }],
+        ["with a frame that is not one", { frame: { origin: [0, 0, 0] }, shapes: [] }],
+        ["whose shape has no angle", { frame, shapes: [{ caps: [] }] }],
+        ["whose cap has no hatch", { frame, shapes: [{ angle: 45, caps: [{ face: cap.face }] }] }],
+        ["whose hatch has no boundaries", { frame, shapes: [{ angle: 45, caps: [{ ...cap, hatch: { pattern: "solid" } }] }] }],
+        ["a design section, which lists parts", { frame, parts: [] }],
+        ["given as a list", [section]],
+    ])("should not detect a hatched section %s", (_name, entity) => {
+        // Act
+        const detected = probe.detectHatchedSection(entity);
+
+        // Assert
+        expect(detected).toBe(false);
+    });
+});
+
 describe("a frame is drawn as a frame", () => {
     let probe: ProbeCore;
     const frame: Inputs.Base.Frame = { origin: [1, 2, 3], normal: [0, 1, 0], direction: [0, 0, 1] };
@@ -404,7 +526,7 @@ describe("the order a draw call tries kinds in", () => {
     it("should be this exact list, because order is what decides the ambiguous cases", () => {
         expect(probe.kinds().map(k => k.kind)).toEqual([
             "jscadMesh", "occtShape", "occtShapes",
-            "occtShapeWithAppearance", "occtShapesWithAppearance", "designBuild", "jscadMeshes",
+            "occtShapeWithAppearance", "occtShapesWithAppearance", "designBuild", "occtDocument", "documentAnnotations", "hatchedSection", "jscadMeshes",
             "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh", "manifoldMesh", "manifoldMeshes", "recipeMeshes",
             "line", "point", "jscadPath", "polyline", "frame", "node", "verbCurve", "verbSurface",
             "jscadPaths", "polylines", "frames", "lines", "points", "nodes",
@@ -415,7 +537,7 @@ describe("the order a draw call tries kinds in", () => {
     it("should reach a kernel shape only from the asynchronous call", () => {
         const async = probe.kinds().filter(k => k.phase === "async").map(k => k.kind);
         expect(async).toEqual(["jscadMesh", "occtShape", "occtShapes",
-            "occtShapeWithAppearance", "occtShapesWithAppearance", "designBuild", "jscadMeshes",
+            "occtShapeWithAppearance", "occtShapesWithAppearance", "designBuild", "occtDocument", "documentAnnotations", "hatchedSection", "jscadMeshes",
             "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh", "manifoldMesh", "manifoldMeshes", "recipeMeshes"]);
     });
 

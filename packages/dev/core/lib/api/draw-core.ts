@@ -66,6 +66,9 @@ export class DrawCore {
             { kind: "occtShapeWithAppearance", phase: "async", matches: (e) => this.detectShapeWithAppearance(e) },
             { kind: "occtShapesWithAppearance", phase: "async", matches: (e) => this.detectShapesWithAppearance(e) },
             { kind: "designBuild", phase: "async", matches: (e) => this.detectDesignBuild(e) },
+            { kind: "occtDocument", phase: "async", matches: (e) => this.detectOcctDocument(e) },
+            { kind: "documentAnnotations", phase: "async", matches: (e) => this.detectDocumentAnnotations(e) },
+            { kind: "hatchedSection", phase: "async", matches: (e) => this.detectHatchedSection(e) },
             { kind: "jscadMeshes", phase: "async", matches: (e) => this.detectJscadMeshes(e) },
             { kind: "manifoldShape", phase: "async", matches: (e) => this.detectManifoldShape(e) },
             { kind: "manifoldShapes", phase: "async", matches: (e) => this.detectManifoldShapes(e) },
@@ -397,6 +400,37 @@ export class DrawCore {
         const partsDrawable = entity["parts"].every(part => isRecord(part) && typeof part["id"] === "string" && this.detectShapeWithAppearance(part));
         const components = entity["components"];
         return partsDrawable && (components === undefined || (Array.isArray(components) && components.every(isPlacedComponent)));
+    }
+
+    /**
+     * Whether the entity is an assembly document the OCCT kernel holds, as
+     * `assembly.manager.loadStepToDoc` returns it: the reference the worker gives a document, which
+     * no other kernel object carries.
+     * @beta
+     */
+    detectOcctDocument(entity: unknown): entity is Inputs.OCCT.TDocStdDocumentPointer {
+        return isRecord(entity) && entity["type"] === "occ-document" && (typeof entity["hash"] === "number" || typeof entity["hash"] === "string");
+    }
+
+    /**
+     * Whether the entity is what `assembly.query.getDocumentAnnotations` returns: `annotations` that
+     * each carry their `lines` and `fills` as lists, and a list of saved `views`.
+     * @beta
+     */
+    detectDocumentAnnotations(entity: unknown): entity is Models.OCCT.DocumentAnnotations {
+        return isRecord(entity) && Array.isArray(entity["views"]) && Array.isArray(entity["annotations"])
+            && entity["annotations"].every(annotation => isRecord(annotation) && Array.isArray(annotation["lines"]) && Array.isArray(annotation["fills"]));
+    }
+
+    /**
+     * Whether the entity is what `operations.hatchedSectionByFrame` returns: a `frame`, and a list of
+     * `shapes` that each carry their `angle` and `caps`, every cap with its `hatch` boundaries.
+     * @beta
+     */
+    detectHatchedSection(entity: unknown): entity is Models.OCCT.HatchedSection<Inputs.OCCT.TopoDSShapePointer> {
+        return isRecord(entity) && isFrameShaped(entity["frame"]) && Array.isArray(entity["shapes"])
+            && entity["shapes"].every(cut => isRecord(cut) && typeof cut["angle"] === "number" && Array.isArray(cut["caps"])
+                && cut["caps"].every(cap => isRecord(cap) && isRecord(cap["hatch"]) && Array.isArray(cap["hatch"]["boundaries"])));
     }
 
     detectDecomposedMesh(entity: unknown): entity is Inputs.OCCT.DecomposedMeshDto {

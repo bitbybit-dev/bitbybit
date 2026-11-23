@@ -1,8 +1,8 @@
 
 import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, checkDrawableMesh, checkKeptDesignMesh, defaultEdgeColor, DesignMeshCache, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookedMeshOf, lookMeshesOf, designDrawPlanOf, designMeshesOf, designMeshingTextOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
-import type { KeptDesignMesh, DrawableShapeMesh } from "@bitbybit-dev/core";
+import { DrawHelperCore, annotationsDrawingOf, annotationsInView, checkDrawableMesh, documentAnnotationsInputs, documentMeshInputs, hatchedSectionDrawingOf, checkKeptDesignMesh, defaultEdgeColor, DesignMeshCache, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookedMeshOf, lookMeshesOf, designDrawPlanOf, designMeshesOf, designMeshingTextOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
+import type { AnnotationsDrawing, DocumentDrawing, FlatTriangles, HatchedSectionDrawing, KeptDesignMesh, DrawableShapeMesh } from "@bitbybit-dev/core";
 import type { EdgeRange, EdgeSegments, FaceLook, FaceRange, LookGroup, LookMesh, PartPlacement, MeshData, MeshPart, GrowingMeshData } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import type { JSCADText } from "@bitbybit-dev/jscad-worker";
@@ -22,6 +22,8 @@ import { RecipeMeshesDrawer } from "./draw-recipe-meshes";
 import type { PointsLook } from "./draw-helper-types";
 
 const NORMAL_ITEM_SIZE = 3;
+const POSITION_ITEM_SIZE = 3;
+const BACK_FACE_DEPTH_OFFSET = 0.1;
 
 interface DesignInstance {
     id: number;
@@ -249,6 +251,134 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
+     * Meshes an assembly document in the worker as one mesh carrying the document's colors, turned
+     * turned by `upAxis`, from the file's Z-up into Y-up by default, or with `keep` in the
+     * document's own axes, where `assembly.query.getShapeFromLabel` puts its shapes.
+     * @param document - The document the OCCT kernel holds
+     * @param options - The drawing options, whose meshing settings mesh the document
+     * @returns The mesh of every part the document places
+     * @beta
+     */
+    async documentMesh(document: Inputs.OCCT.TDocStdDocumentPointer, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): Promise<DrawableShapeMesh> {
+        return this.occWorkerManager.genericCallToWorkerPromise<DrawableShapeMesh>("docToMesh", documentMeshInputs(document, options));
+    }
+
+    /**
+     * Reads the annotations of an assembly document in the worker, as
+     * `occt.assembly.query.getDocumentAnnotations` does, at the drawing's precision and turned by
+     * `upAxis` as `documentMesh` turns the parts.
+     * @param document - The document the OCCT kernel holds
+     * @param options - The drawing options, whose precision and `upAxis` are read
+     * @returns The annotations and the saved views
+     * @beta
+     */
+    documentAnnotations(document: Inputs.OCCT.TDocStdDocumentPointer, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): Promise<Models.OCCT.DocumentAnnotations> {
+        return this.occWorkerManager.genericCallToWorkerPromise<Models.OCCT.DocumentAnnotations>("assembly.query.getDocumentAnnotations", documentAnnotationsInputs(document, options));
+    }
+
+    /**
+     * Draws an assembly document, turned by `upAxis`, its parts in
+     * the document's colors, and with
+     * `drawAnnotations` its annotations inside the same group. The annotations are read and laid out
+     * before anything is drawn, so a view name no saved view bears leaves nothing in the scene.
+     * @param document - The document the OCCT kernel holds
+     * @param options - The drawing options
+     * @returns The group holding the document, added to the scene
+     * @beta
+     */
+    async drawDocument(document: Inputs.OCCT.TDocStdDocumentPointer, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): Promise<THREEJS.Group> {
+        const [mesh, annotations] = await Promise.all([
+            this.documentMesh(document, options),
+            options.drawAnnotations ? this.documentAnnotations(document, options) : undefined,
+        ]);
+        const drawing = annotations === undefined ? undefined : annotationsDrawingOf(annotationsInView(annotations, options.annotationsView), options.annotationsFilled);
+        const drawn = await this.handleDecomposedMesh(options, mesh, options);
+        if (drawing !== undefined) {
+            drawn.add(this.drawAnnotations(drawing, options));
+        }
+        return drawn;
+    }
+
+    /**
+     * Draws the annotations `occt.assembly.query.getDocumentAnnotations` read, or with
+     * `annotationsView` only those that saved view shows.
+     * @param annotations - The annotations and saved views of a document
+     * @param options - The drawing options, of which the annotation settings are read
+     * @returns A group holding the lines and the letters, added to the scene
+     * @beta
+     */
+    drawDocumentAnnotations(annotations: Models.OCCT.DocumentAnnotations, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): THREEJS.Group {
+        return this.drawAnnotations(annotationsDrawingOf(annotationsInView(annotations, options.annotationsView), options.annotationsFilled), options);
+    }
+
+    /**
+     * Draws annotations as a PMI viewer shows them: their lines `annotationWidth` wide and their
+     * letters filled, both in `annotationColour`, unlit and seen from either side, and hidden by the
+     * model in front of them like any geometry.
+     * @param drawing - The lines and the filled letters, as `annotationsDrawingOf` gives them
+     * @param options - The drawing options, of which the annotation settings are read
+     * @returns A group holding the lines and the letters, added to the scene
+     * @beta
+     */
+    drawAnnotations(drawing: AnnotationsDrawing, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): THREEJS.Group {
+        const group = new THREEJS.Group();
+        group.name = this.generateEntityId("annotations");
+        this.context.scene.add(group);
+        const lines = this.drawPolylines(undefined, drawing.lines, false, options.annotationWidth, 1, options.annotationColour);
+        if (lines) {
+            group.add(lines);
+        }
+        if (drawing.indices.length > 0) {
+            group.add(this.flatFill("annotationLetters", drawing, options.annotationColour));
+        }
+        return group;
+    }
+
+    /**
+     * Draws a hatched section as a drawing shows a cut: the cut faces filled in `faceColour` with
+     * `drawFaces`, their outlines in `edgeColour` and `edgeWidth` with `drawEdges`, and the hatch
+     * lines, and any solid hatch, in `hatchColour`, the lines `hatchWidth` wide as edges are. Fills
+     * are unlit and seen from either side, lifted a hair along the frame's normal so they show over
+     * the cut faces of the shapes the section was cut from, and cast no shadow.
+     * @param section - What `occt.operations.hatchedSectionByFrame` returns
+     * @param options - The drawing options; `precision` is how closely curved cut edges are followed
+     * @returns A group holding the fills and the lines, added to the scene
+     * @beta
+     */
+    drawHatchedSection(section: Models.OCCT.HatchedSection<Inputs.OCCT.TopoDSShapePointer>, options: Resolved.Draw.DrawOcctShapeOptions & HatchedSectionDrawing): THREEJS.Group {
+        const drawing = hatchedSectionDrawingOf(section, options.precision);
+        const group = new THREEJS.Group();
+        group.name = this.generateEntityId("hatchedSection");
+        this.context.scene.add(group);
+        if (options.drawFaces && drawing.faces.indices.length > 0) {
+            group.add(this.flatFill("sectionFaces", drawing.faces, options.faceColour));
+        }
+        if (drawing.ink.indices.length > 0) {
+            group.add(this.flatFill("sectionInk", drawing.ink, options.hatchColour));
+        }
+        const lines = this.drawPolylines(undefined, drawing.lines, false, options.hatchWidth, 1, options.hatchColour);
+        if (lines) {
+            group.add(lines);
+        }
+        const outlines = options.drawEdges ? this.drawPolylines(undefined, drawing.outlines, false, options.edgeWidth, options.edgeOpacity, options.edgeColour) : undefined;
+        if (outlines) {
+            group.add(outlines);
+        }
+        group.traverse(child => { child.castShadow = false; });
+        return group;
+    }
+
+    private flatFill(name: string, triangles: FlatTriangles, colour: string): THREEJS.Mesh {
+        const geometry = new THREEJS.BufferGeometry();
+        geometry.setAttribute("position", new THREEJS.Float32BufferAttribute(triangles.positions, POSITION_ITEM_SIZE));
+        geometry.setIndex(triangles.indices);
+        const material = new THREEJS.MeshBasicMaterial({ name: this.generateEntityId(`${name}Material`), color: new THREEJS.Color(colour), side: THREEJS.DoubleSide });
+        const mesh = new THREEJS.Mesh(geometry, material);
+        mesh.name = this.generateEntityId(name);
+        return mesh;
+    }
+
+    /**
      * Draws a kernel shape in its appearance: one mesh whose faces take their looks, its back faces
      * when asked, and its edges once.
      * @param entity - The shape with its appearance
@@ -412,6 +542,41 @@ export class DrawHelper extends DrawHelperCore {
         mesh.receiveShadow = true;
         mesh.userData = { faceRanges };
         return mesh;
+    }
+
+    private lookedBackFaceMesh(source: DrawableShapeMesh, looks: readonly LookGroup[], zOffset: number): THREEJS.Group {
+        const { positions, normals, indices, looks: drawn } = lookedMeshOf(source, looks, { flipNormals: true, reverseWinding: true });
+        const geometry = new THREEJS.BufferGeometry();
+        drawn.forEach((span, materialIndex) => geometry.addGroup(span.indexStart, span.indexCount, materialIndex));
+        geometry.setAttribute("position", new THREEJS.BufferAttribute(positions, POSITION_ITEM_SIZE));
+        geometry.setAttribute("normal", new THREEJS.BufferAttribute(normals, NORMAL_ITEM_SIZE));
+        geometry.setIndex(new THREEJS.BufferAttribute(indices, 1));
+        const group = new THREEJS.Group();
+        group.name = this.generateEntityId("backFaceSurface");
+        const mesh = new THREEJS.Mesh(geometry, drawn.map(look => this.lookBackFaceMaterial(look.group.look, zOffset)));
+        mesh.name = this.generateEntityId("backFaceSurfaceChild");
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        group.add(mesh);
+        return group;
+    }
+
+    private lookBackFaceMaterial(look: FaceLook, zOffset: number): THREEJS.MeshPhysicalMaterial {
+        return this.getOrCreateMaterial(`look-back:${look.color}`, look.opacity, zOffset + BACK_FACE_DEPTH_OFFSET, () => {
+            const material = new THREEJS.MeshPhysicalMaterial();
+            material.name = this.generateEntityId("backFaceMaterial");
+            material.color = new THREEJS.Color(look.color);
+            material.metalness = MATERIAL_DEFAULTS.METALNESS.SURFACE;
+            material.roughness = MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
+            if (look.opacity < 1) {
+                material.transparent = true;
+                material.opacity = look.opacity;
+                material.depthWrite = false;
+            }
+            material.polygonOffset = true;
+            material.polygonOffsetFactor = zOffset + BACK_FACE_DEPTH_OFFSET;
+            return material;
+        });
     }
 
     private lookMaterial(look: FaceLook, faceOpacity: number, zOffset: number): THREEJS.MeshPhysicalMaterial {
@@ -1167,22 +1332,15 @@ export class DrawHelper extends DrawHelperCore {
             });
 
             const colorGroups = decomposedMesh.colorGroups;
-            if (!analysisColors && !resolved.faceMaterial && colorGroups && Object.keys(colorGroups).length > 0) {
-                const looks = lookGroupsOfColors(colorGroups, decomposedMesh.faceList.map(face => face.faceIndex), hex);
-                shapeGroup.add(this.lookedMesh(decomposedMesh, looks, alpha, zOffset));
-            } else {
-                const mesh = this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
-                shapeGroup.add(mesh);
-            }
+            const looks = !analysisColors && !resolved.faceMaterial && colorGroups && Object.keys(colorGroups).length > 0
+                ? lookGroupsOfColors(colorGroups, decomposedMesh.faceList.map(face => face.faceIndex), hex)
+                : undefined;
+            shapeGroup.add(looks === undefined ? this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false) : this.lookedMesh(decomposedMesh, looks, alpha, zOffset));
 
             if (resolved.drawTwoSided !== false) {
-                const backFaceMesh = this.createBackFaceMesh(
-                    meshData,
-                    resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                    resolved.backFaceOpacity,
-                    zOffset
-                );
-                shapeGroup.add(backFaceMesh);
+                shapeGroup.add(looks === undefined
+                    ? this.createBackFaceMesh(meshData, resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE, resolved.backFaceOpacity, zOffset)
+                    : this.lookedBackFaceMesh(decomposedMesh, looks, zOffset));
             }
         }
         if (resolved.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {

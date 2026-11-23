@@ -8,7 +8,7 @@ import { OCCTWorkerMock } from "@bitbybit-dev/occt-worker/lib/occ-worker/occ-wor
 import { IFC } from "@bitbybit-dev/ifc";
 import { IFCWorkerManager, IFCWorkerMock } from "@bitbybit-dev/ifc-worker";
 import { ContextBase } from "../../context";
-import type * as Inputs from "../../inputs";
+import * as Inputs from "../../inputs";
 import { OCCTW } from "../occt/occt";
 import { IFCW } from "./ifc";
 
@@ -79,13 +79,35 @@ describe("IFC geometry built with OpenCascade", () => {
 
         it("should keep the model's Z up when asked, and build only the elements named", async () => {
             // Act
-            const shapes = await ifc.geometry.toShapes({ model, elements: ["wall-1"], adjustZtoY: false });
+            const shapes = await ifc.geometry.toShapes({ model, elements: ["wall-1"], upAxis: Inputs.Base.upAxisConversionEnum.keep });
             const box = await occt.operations.boundingBoxOfShape({ shape: shapes[0]! });
 
             // Assert
             expect(shapes).toHaveLength(1);
             expect(box.max[2]).toBeCloseTo(WALL_HEIGHT, 6);
             expect(box.min[0]).toBeCloseTo(6000, 6);
+        });
+
+        it("should still keep the model's Z up with the deprecated adjustZtoY false", async () => {
+            // Act
+            const shapes = await ifc.geometry.toShapes({ model, elements: ["wall-1"], adjustZtoY: false });
+            const box = await occt.operations.boundingBoxOfShape({ shape: shapes[0]! });
+
+            // Assert
+            expect(box.max[2]).toBeCloseTo(WALL_HEIGHT, 6);
+        });
+
+        it("should refuse yUpToZUp, which no model is built with, before it asks for the model's recipe, naming upAxis", async () => {
+            // Arrange
+            const recipe = vi.spyOn(ifc.geometry, "recipe");
+
+            // Act
+            const refusal = await ifc.geometry.toShapes({ model, upAxis: Inputs.Base.upAxisConversionEnum.yUpToZUp }).then(() => undefined, (error: unknown) => error);
+
+            // Assert
+            expect(recipe).not.toHaveBeenCalled();
+            expect([(refusal as { name?: string }).name, (refusal as { property?: string }).property]).toEqual(["InputError", "upAxis"]);
+            expect((refusal as Error).message).not.toContain("recipes.build");
         });
 
         it("should hand the kernel the recipe of the model with the build options as given or defaulted", async () => {
@@ -98,7 +120,7 @@ describe("IFC geometry built with OpenCascade", () => {
             // Assert
             const call = build.mock.calls[0]![0];
             expect(call.recipe.roots.map((root) => root.tag["type"])).toEqual(["IfcSlab"]);
-            expect({ ...call, recipe: undefined }).toEqual({ recipe: undefined, adjustZtoY: true, emptyWhenFailed: true, facetedMeshes: true, maxTriangles: 7 });
+            expect({ ...call, recipe: undefined }).toEqual({ recipe: undefined, upAxis: Inputs.Base.upAxisConversionEnum.zUpToYUp, emptyWhenFailed: true, facetedMeshes: true, maxTriangles: 7 });
         });
     });
 
@@ -129,7 +151,7 @@ describe("IFC geometry built with OpenCascade", () => {
         it("should describe the model for a STEP file with the class groups as asked", async () => {
             // Arrange
             const recipe = vi.spyOn(ifc.geometry, "recipe");
-            const document: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-entity" };
+            const document: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-document" };
             vi.spyOn(occt.recipes, "buildDocument").mockResolvedValue(document);
             vi.spyOn(occt.assembly.manager, "exportDocumentToStep").mockResolvedValue(new Uint8Array([1]));
             vi.spyOn(occt.assembly.manager, "deleteDocument").mockResolvedValue();
@@ -144,7 +166,7 @@ describe("IFC geometry built with OpenCascade", () => {
         it("should give each product its element's property set values, unless asked not to", async () => {
             // Arrange
             const withSet = await ifc.properties.addSet({ model, elements: ["floor"], name: "Pset_SlabCommon", properties: [{ name: "IsExternal", value: false }, { name: "Reference", value: "S-1" }] });
-            const document: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-entity" };
+            const document: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-document" };
             const buildDocument = vi.spyOn(occt.recipes, "buildDocument").mockResolvedValue(document);
 
             // Act
@@ -159,7 +181,7 @@ describe("IFC geometry built with OpenCascade", () => {
 
         it("should hand the kernel the document options as given or defaulted", async () => {
             // Arrange
-            const document: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-entity" };
+            const document: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-document" };
             const buildDocument = vi.spyOn(occt.recipes, "buildDocument").mockResolvedValue(document);
 
             // Act

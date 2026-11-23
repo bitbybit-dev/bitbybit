@@ -300,6 +300,19 @@ describe("the faces of every look merged into one mesh", () => {
         expect(looked.faceRanges.map(range => range.start)).toEqual([0, 6, 12]);
     });
 
+    it("should give the back of the faces when asked, the normals turned round and every triangle wound the other way, look by look", () => {
+        // Act
+        const back = lookedMeshOf(threeSquares, blackMiddleFace, { flipNormals: true, reverseWinding: true });
+        const [white] = lookMeshesOf(threeSquares, blackMiddleFace, { flipNormals: true });
+
+        // Assert
+        expect(Array.from(back.indices.subarray(0, 6))).toEqual([0, 2, 1, 0, 3, 2]);
+        expect(Array.from(back.normals.subarray(0, 6))).toEqual([-0, -0, -1, -0, -0, -1]);
+        expect(back.looks.map(look => look.group.look.color)).toEqual(["#ffffff", "#000000"]);
+        expect(Array.from(white!.normals.subarray(0, 3))).toEqual([-0, -0, -1]);
+        expect(Array.from(white!.indices.subarray(0, 3))).toEqual([0, 1, 2]);
+    });
+
     it("should leave out a look whose faces hold no triangles or that the mesh does not have", () => {
         // Arrange
         const withoutTriangles = { ...square(1, 5), triIndexes: [] };
