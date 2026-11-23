@@ -139,12 +139,20 @@ export namespace Frame {
 export namespace IO {
     export type DrawingArcSegmentDto = Inputs.IO.DrawingArcSegmentDto;
     export type DrawingCircleSegmentDto = Inputs.IO.DrawingCircleSegmentDto;
+    export type DrawingDimensionDto = WithDefaults<Inputs.IO.DrawingDimensionDto, "kind" | "offset" | "angle" | "decimalPlaces" | "textHeight">;
+    export type DrawingDimensionPictureDto = Inputs.IO.DrawingDimensionPictureDto;
     export type DrawingEllipseSegmentDto = WithDefaults<Inputs.IO.DrawingEllipseSegmentDto, "startParameter" | "endParameter">;
+    export type DrawingExtentDto = Inputs.IO.DrawingExtentDto;
+    export type DrawingHatchDto = WithDefaults<Inputs.IO.DrawingHatchDto, "pattern" | "angle" | "spacing">;
+    export type DrawingHatchRegionDto = WithDefaults<Inputs.IO.DrawingHatchRegionDto, "pattern" | "angle" | "spacing" | "tolerance">;
     export type DrawingLineSegmentDto = Inputs.IO.DrawingLineSegmentDto;
     export type DrawingPartDto = WithDefaults<Inputs.IO.DrawingPartDto, "layer" | "color" | "lineType">;
     export type DrawingPathDto = Inputs.IO.DrawingPathDto;
     export type DrawingPolylineSegmentDto = WithDefaults<Inputs.IO.DrawingPolylineSegmentDto, "closed">;
+    export type DrawingScalePartsDto = WithDefaults<Inputs.IO.DrawingScalePartsDto, "factor">;
     export type DrawingSplineSegmentDto = WithDefaults<Inputs.IO.DrawingSplineSegmentDto, "degree" | "closed">;
+    export type DrawingTextDto = WithDefaults<Inputs.IO.DrawingTextDto, "height" | "anchor" | "rotation" | "widthFactor">;
+    export type DrawingTextSizeDto = Inputs.IO.DrawingTextSizeDto;
     export type DxfArcSegmentDto = Inputs.IO.DxfArcSegmentDto;
     export type DxfCircleSegmentDto = Inputs.IO.DxfCircleSegmentDto;
     export type DxfDrawingDto = Inputs.IO.DxfDrawingDto;
@@ -160,7 +168,7 @@ export namespace IO {
     export type DxfToSvgResultDto = Inputs.IO.DxfToSvgResultDto;
     export type SvgDrawingDto = Inputs.IO.SvgDrawingDto;
     export type SvgModelDto = WithDefaults<Inputs.IO.SvgModelDto, "tolerance">;
-    export type SvgPathDataDto = WithDefaults<Inputs.IO.SvgPathDataDto, "flipY" | "tolerance">;
+    export type SvgPathDataDto = WithDefaults<Inputs.IO.SvgPathDataDto, "flipY" | "tolerance" | "cubicsOnly">;
     export type SvgReadDto = WithDefaults<Inputs.IO.SvgReadDto, "includeInvisible">;
     export type SvgToDxfDto = WithDefaults<Inputs.IO.SvgToDxfDto, "includeInvisible" | "colorFormat" | "acadVersion" | "curveTolerance">;
     export type SvgToDxfResultDto = Inputs.IO.SvgToDxfResultDto;
@@ -288,6 +296,7 @@ export namespace Mesh {
     export type TriangleDto = Inputs.Mesh.TriangleDto;
     export type TriangleToleranceDto = WithDefaults<Inputs.Mesh.TriangleToleranceDto, "tolerance">;
     export type TriangleTriangleToleranceDto = WithDefaults<Inputs.Mesh.TriangleTriangleToleranceDto, "tolerance">;
+    export type TriangulateLoopsDto = WithDefaults<Inputs.Mesh.TriangulateLoopsDto, "fillRule">;
 }
 
 /**
@@ -357,7 +366,7 @@ export namespace Polyline {
 export namespace Recipes {
     export type RecipeDto = Inputs.Recipes.RecipeDto;
     export type RecipeSourceDto = WithDefaults<Inputs.Recipes.RecipeSourceDto, "node">;
-    export type RecipeSurfaceMeshesDto = WithDefaults<Inputs.Recipes.RecipeSurfaceMeshesDto, "adjustZtoY">;
+    export type RecipeSurfaceMeshesDto = WithDefaults<Inputs.Recipes.RecipeSurfaceMeshesDto, "upAxis">;
 }
 
 /**

@@ -80,6 +80,17 @@ describe("writing a drawing against a work budget lowered to 6,000 steps, since 
         expect(refusals[0]?.message).toBe("`dxfPathsParts` is too large to write as DXF: it takes more than 6000 steps, each character written and each control point blended counted, the most a drawing of its size may take.");
     });
 
+    it("should refuse a DXF hatch whose boundary of ellipses samples past the budget, naming the parts", () => {
+        // Arrange
+        const ellipses: Inputs.IO.DrawingPathDto = { segments: Array.from({ length: 20 }, () => ({ center: [0, 0], majorAxis: [50, 0], ratio: 0.5 })) };
+
+        // Act
+        const refusal = refusalOf(() => dxf.dxfCreate({ dxfPathsParts: [{ layer: "cut", paths: [], hatches: [{ boundaries: [ellipses] }] }], curveTolerance: 1e-12 }));
+
+        // Assert
+        expect(refusal?.property).toBe("dxfPathsParts");
+    });
+
     it("should write a drawing whose work stays within the budget", () => {
         // Act
         const text = svg.svgCreate({ parts: [partOf({ start: [0, 0], end: [1, 1] })] });

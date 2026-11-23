@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { nurbsCurvePoint } from "./nurbs";
-import { angleWithinTurn, bulgeArcOf, conicArcAsNurbs, conicArcExtremes, conicArcOfEllipseArc, conicArcSamples, ellipseFramePoint, principalArcOf } from "./conic-arcs";
+import { WorkBudget } from "../files/work-budget";
+import { angleWithinTurn, bulgeArcOf, bulgeOfSweep, conicArcAsNurbs, conicArcExtremes, conicArcOfEllipseArc, conicArcSamples, ellipseFramePoint, principalArcOf } from "./conic-arcs";
 import type { ConicArc } from "./conic-arcs";
 
 const tilted: ConicArc = { frame: { center: [1, 2, 3], xAxis: [4, 0, 4], yAxis: [0, 2, 0] }, start: 0.3, sweep: 4 };
@@ -34,6 +35,34 @@ describe("conic arcs", () => {
         expect(10 * (1 - Math.cos(Math.PI / (samples.length - 2) / 2))).toBeGreaterThan(0.01);
         expect(wide).toHaveLength(3);
         expect(wide[1]![1]).toBeCloseTo(-1, 12);
+    });
+
+    it("should charge a budget one step a sample, and give only the chord between the ends when the budget cannot pay for the samples", () => {
+        // Arrange
+        const half: ConicArc = { frame: { center: [0, 0, 0], xAxis: [10, 0, 0], yAxis: [0, 10, 0] }, start: 0, sweep: Math.PI };
+        const roomy = new WorkBudget(1000);
+        const tight = new WorkBudget(5);
+
+        // Act
+        const samples = conicArcSamples(half, 0.01, roomy);
+        const chord = conicArcSamples(half, 0.01, tight);
+
+        // Assert
+        expect(samples).toEqual(conicArcSamples(half, 0.01));
+        expect(roomy.spent).toBe(samples.length);
+        expect(chord).toEqual([[10, 0, 0], ellipseFramePoint(half.frame, Math.PI)]);
+        expect(tight.exhausted).toBe(true);
+    });
+
+    it("should give the bulge of a circular arc of a sweep, the inverse of the arc a bulge draws", () => {
+        // Act
+        const bulges = [Math.PI, Math.PI / 2, -Math.PI / 3].map(bulgeOfSweep);
+        const sweeps = bulges.map(bulge => bulgeArcOf([0, 0, 0], [10, 0, 0], bulge).sweep);
+
+        // Assert
+        expect(bulges[0]).toBeCloseTo(1, 15);
+        expect(bulges[1]).toBeCloseTo(Math.tan(Math.PI / 8), 15);
+        sweeps.forEach((sweep, at) => expect(sweep).toBeCloseTo([Math.PI, Math.PI / 2, -Math.PI / 3][at]!, 12));
     });
 
     it("should give an arc's ends and every point where it turns back along an axis, which bound it exactly", () => {

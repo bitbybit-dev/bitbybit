@@ -96,8 +96,9 @@ describe("how base's helpers reach users", () => {
             if (exposure.exposedAs === undefined) {
                 return false;
             }
-            const [service, method] = exposure.exposedAs.split(".");
-            const file = new URL(`${service}.ts`, SERVICES);
+            const path = exposure.exposedAs.split(".");
+            const method = path.pop();
+            const file = new URL(`${path.join("/")}.ts`, SERVICES);
             if (!existsSync(file)) {
                 return true;
             }

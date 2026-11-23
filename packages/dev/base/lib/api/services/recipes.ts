@@ -1,6 +1,6 @@
 import * as Inputs from "../inputs";
 import type * as Resolved from "../resolved-inputs";
-import { InputError, resolveDto } from "../kernel-calls";
+import { InputError, checkedUpAxis, resolveDto } from "../kernel-calls";
 import type { BitbybitSettings } from "../kernel-calls/settings";
 import { checkRecipe, toRecipe } from "../recipes/validate";
 import { recipeSurfaceMeshes } from "../recipes/surface-mesh";
@@ -81,7 +81,8 @@ export class Recipes {
      */
     surfaceMeshes(inputs: Inputs.Recipes.RecipeSurfaceMeshesDto): (RecipeSurfaceMesh | undefined)[] {
         const resolved = resolveDto(Inputs.Recipes.RecipeSurfaceMeshesDto, inputs) as Resolved.Recipes.RecipeSurfaceMeshesDto;
-        return recipeSurfaceMeshes(resolved.recipe, resolved.roots, resolved.adjustZtoY, this.settings().coordinateSystem);
+        const upAxis = checkedUpAxis(resolved.upAxis, [Inputs.Base.upAxisConversionEnum.keep, Inputs.Base.upAxisConversionEnum.zUpToYUp]);
+        return recipeSurfaceMeshes(resolved.recipe, resolved.roots, upAxis === Inputs.Base.upAxisConversionEnum.zUpToYUp, this.settings().coordinateSystem);
     }
 
     /**

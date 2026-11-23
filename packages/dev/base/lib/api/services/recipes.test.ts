@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Base } from "../inputs/base-inputs";
+import { Base } from "../inputs/base-inputs";
 import { Recipes } from "./recipes";
 import { InputError } from "../kernel-calls";
 
@@ -65,22 +65,44 @@ describe("Recipes", () => {
     });
 
     it.each([
-        ["as it is with no coordinate system", undefined, false, [5, 0, 0, 6, 0, 0, 5, 1, 0], [0, 1, 2]],
-        ["turned a quarter about X with no coordinate system and Z up", undefined, true, [5, 0, 0, 6, 0, 0, 5, 0, -1], [0, 1, 2]],
-        ["as it is in a right-handed system", "rightHanded", false, [5, 0, 0, 6, 0, 0, 5, 1, 0], [0, 1, 2]],
-        ["turned a quarter about X in a right-handed system and Z up", "rightHanded", true, [5, 0, 0, 6, 0, 0, 5, 0, -1], [0, 1, 2]],
-        ["with X mirrored and its winding turned in a left-handed system", "leftHanded", false, [-5, 0, 0, -6, 0, 0, -5, 1, 0], [0, 2, 1]],
-        ["with Y and Z swapped and its winding turned in a left-handed system and Z up", "leftHanded", true, [5, 0, 0, 6, 0, 0, 5, 0, 1], [0, 2, 1]],
-    ] as const)("should place the triangles of a root %s", (_name, coordinateSystem, adjustZtoY, positions, indices) => {
+        ["as it is with no coordinate system", undefined, Base.upAxisConversionEnum.keep, [5, 0, 0, 6, 0, 0, 5, 1, 0], [0, 1, 2]],
+        ["turned a quarter about X with no coordinate system and Z up", undefined, Base.upAxisConversionEnum.zUpToYUp, [5, 0, 0, 6, 0, 0, 5, 0, -1], [0, 1, 2]],
+        ["as it is in a right-handed system", "rightHanded", Base.upAxisConversionEnum.keep, [5, 0, 0, 6, 0, 0, 5, 1, 0], [0, 1, 2]],
+        ["turned a quarter about X in a right-handed system and Z up", "rightHanded", Base.upAxisConversionEnum.zUpToYUp, [5, 0, 0, 6, 0, 0, 5, 0, -1], [0, 1, 2]],
+        ["with X mirrored and its winding turned in a left-handed system", "leftHanded", Base.upAxisConversionEnum.keep, [-5, 0, 0, -6, 0, 0, -5, 1, 0], [0, 2, 1]],
+        ["with Y and Z swapped and its winding turned in a left-handed system and Z up", "leftHanded", Base.upAxisConversionEnum.zUpToYUp, [5, 0, 0, 6, 0, 0, 5, 0, 1], [0, 2, 1]],
+    ] as const)("should place the triangles of a root %s", (_name, coordinateSystem, upAxis, positions, indices) => {
         // Arrange
         const placed = new Recipes(() => (coordinateSystem === undefined ? {} : { coordinateSystem: coordinateSystem as Base.coordinateSystemEnum }));
 
         // Act
-        const [moved] = placed.surfaceMeshes({ recipe: triangleRecipe(), roots: [0], adjustZtoY });
+        const [moved] = placed.surfaceMeshes({ recipe: triangleRecipe(), roots: [0], upAxis });
 
         // Assert
         expect(Array.from(moved!.positions).map(value => value + 0)).toEqual(positions);
         expect(Array.from(moved!.indices)).toEqual(indices);
+    });
+
+    it("should still turn the triangles with the deprecated adjustZtoY, as zUpToYUp does", () => {
+        // Act
+        const [byFlag] = recipes.surfaceMeshes({ recipe: triangleRecipe(), roots: [0], adjustZtoY: true });
+        const [byAxis] = recipes.surfaceMeshes({ recipe: triangleRecipe(), roots: [0], upAxis: Base.upAxisConversionEnum.zUpToYUp });
+
+        // Assert
+        expect(Array.from(byFlag!.positions)).toEqual(Array.from(byAxis!.positions));
+    });
+
+    it("should refuse yUpToZUp, which no recipe is read with, and a flag that contradicts the axis, and take a flag at its old default beside the axis as no decision", () => {
+        // Act
+        const turnedToZ = (): unknown => recipes.surfaceMeshes({ recipe: triangleRecipe(), upAxis: Base.upAxisConversionEnum.yUpToZUp });
+        const contradicted = (): unknown => recipes.surfaceMeshes({ recipe: triangleRecipe(), upAxis: Base.upAxisConversionEnum.yUpToZUp, adjustZtoY: true });
+        const besideOldDefault = recipes.surfaceMeshes({ recipe: triangleRecipe(), upAxis: Base.upAxisConversionEnum.zUpToYUp, adjustZtoY: false });
+
+        // Assert
+        expect(turnedToZ).toThrow(InputError);
+        expect(turnedToZ).toThrow("`upAxis`");
+        expect(contradicted).toThrow("`adjustZtoY`");
+        expect(besideOldDefault).toEqual(recipes.surfaceMeshes({ recipe: triangleRecipe(), upAxis: Base.upAxisConversionEnum.zUpToYUp }));
     });
 
     it("should follow a root through the moves to the step it places, and refuse a node the recipe lacks", () => {

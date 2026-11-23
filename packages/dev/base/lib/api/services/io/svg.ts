@@ -18,8 +18,9 @@ const marginOf = (value: number | undefined): number | undefined => {
 
 /**
  * Writes SVG drawings from the same path parts DXF files are made of: lines, arcs, circles, bulged
- * polylines, splines and ellipses, kept exact wherever SVG can draw them. Reads SVG files back into
- * those parts, by layer, color and line type.
+ * polylines, splines and ellipses, kept exact wherever SVG can draw them, with texts drawn as the
+ * strokes of their letters and hatches filled with patterns. Reads SVG files back into those parts,
+ * by layer, color and line type.
  */
 export class Svg {
 
@@ -27,9 +28,10 @@ export class Svg {
      * Writes an SVG file from path parts, each layer an Inkscape layer.
      *
      * Arcs, circles, ellipses and bulges stay exact arcs, unweighted splines up to degree 3 exact
-     * Beziers, others cubics within `tolerance` (at least a millionth of the drawing). Y points up, Z
-     * is dropped and `unit` gives the true size. A drawing too large to write throws.
-     * @param inputs - The path parts, the unit, the line width, the border and the curve tolerance
+     * Beziers, others cubics within `tolerance`. Texts become letter strokes, hatches patterned
+     * regions. Y points up, Z is dropped and `unit` gives the true size. A drawing too large to
+     * write throws.
+     * @param inputs - The path parts with their texts, hatches and line weights, the unit, the line width, the border, the dash scale and the curve tolerance
      * @returns The SVG file as text
      * @group svg
      * @shortname svg create
@@ -50,6 +52,7 @@ export class Svg {
             unit,
             strokeWidth: resolved.strokeWidth === undefined ? undefined : positiveNumber(resolved.strokeWidth, "strokeWidth"),
             margin: marginOf(resolved.margin),
+            lineTypeScale: resolved.lineTypeScale === undefined ? undefined : positiveNumber(resolved.lineTypeScale, "lineTypeScale"),
             tolerance,
             property: "parts",
         });
@@ -59,9 +62,9 @@ export class Svg {
      * Writes one drawing path as SVG path data, the text of a `path` element's `d` attribute.
      *
      * Segments that meet are drawn as one stroke, reversed where a segment ends where the stroke is,
-     * and a stroke that returns to its start is closed. Curves are kept exact as `svgCreate` keeps
-     * them.
-     * @param inputs - The path, whether Y is negated, and the curve tolerance
+     * and a stroke that returns to its start is closed. Curves stay exact as in `svgCreate`, or with
+     * `cubicsOnly` become cubic Beziers within `tolerance`.
+     * @param inputs - The path, whether Y is negated, the curve tolerance and whether only cubics are written
      * @returns SVG path data
      * @group svg
      * @shortname path data
@@ -75,15 +78,15 @@ export class Svg {
     pathData(inputs: Inputs.IO.SvgPathDataDto): string {
         const resolved = resolveDto(Inputs.IO.SvgPathDataDto, inputs) as Resolved.IO.SvgPathDataDto;
         const tolerance = positiveNumber(resolved.tolerance, "tolerance");
-        return pathDataOf(drawingPathOf(resolved.path, "path"), { flipY: resolved.flipY, tolerance, property: "path" });
+        return pathDataOf(drawingPathOf(resolved.path, "path"), { flipY: resolved.flipY, cubicsOnly: resolved.cubicsOnly, tolerance, property: "path" });
     }
 
     /**
-     * Reads an SVG file into path parts by layer, color and line type, the model `svgCreate` writes.
+     * Reads an SVG file into path parts by layer, color and line type.
      *
-     * Lines, arcs and Bezier curves are read exactly, transforms applied and Y turned up. Inkscape
+     * Lines, arcs and Bezier curves are read exactly, transforms applied, Y up. Inkscape
      * layers are layers, each stroke color (else fill) a color, each dash pattern a line type. Text
-     * and images are left out and named in `warnings`.
+     * and images are left out, named in `warnings`; `svgCreate`'s texts and hatches return as paths.
      * @param inputs - The SVG text, the unit to read it in and whether hidden elements are read
      * @returns The drawing's parts, unit, view box and warnings
      * @group svg

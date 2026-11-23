@@ -1,5 +1,6 @@
 import type { DtoConstraints } from "./constraints";
 import { isRecord } from "./unknown-values";
+import { layUpAxisFlags } from "./up-axis-aliases";
 
 /**
  * A DTO class that can be constructed with no arguments, which gives every defaulted property its
@@ -39,15 +40,18 @@ export type WithDefaults<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: Excl
  * that passed nothing gets the defaults alone. The result is a new plain object - a DTO carries data
  * and no behaviour, and a plain object is what crosses a worker boundary and what a walk over the
  * inputs treats as data - and the caller's object is never changed. Properties named in `nested`
- * hold a DTO of their own and get its defaults the same way.
+ * hold a DTO of their own and get its defaults the same way. On a DTO with an `upAxis` default, the
+ * deprecated `adjustZtoY` and `adjustYtoZ` flags a caller gives are laid onto `upAxis` and dropped.
  * @param Dto - The DTO class whose initializers are the defaults
  * @param inputs - What the caller passed, usually an object literal
  * @param nested - The properties that hold a DTO, and its class
  * @returns A new plain object holding every default the caller did not override
+ * @throws InputError when a deprecated up-axis flag asks for another turn than `upAxis` or the other flag
  */
 export function resolveDto<T extends object>(Dto: DtoConstructor<T>, inputs: unknown, nested?: Readonly<Record<string, DtoConstructor>>): T {
     const resolved: Record<string, unknown> = {};
-    Object.assign(resolved, new Dto());
+    const defaults: Record<string, unknown> = { ...(new Dto() as Record<string, unknown>) };
+    Object.assign(resolved, defaults);
     const hasDefault = (key: string): boolean => Object.prototype.hasOwnProperty.call(resolved, key) && resolved[key] !== undefined;
     const isUnset = (key: string, value: unknown): boolean => value === undefined
         || (value === null && hasDefault(key))
@@ -58,6 +62,7 @@ export function resolveDto<T extends object>(Dto: DtoConstructor<T>, inputs: unk
                 resolved[key] = value;
             }
         }
+        layUpAxisFlags(resolved, inputs, defaults);
     }
     if (nested) {
         for (const [key, NestedDto] of Object.entries(nested)) {

@@ -6,6 +6,8 @@ import { signedVolumeOf } from "./helpers/mesh/mesh-measures";
 import { closestOnTriangle, pointInTree, treesNested, treesWithin, triangleTree } from "./helpers/mesh/mesh-proximity";
 import type { MeshArrays, TriangleTree } from "./helpers/helper-types";
 import { triangulateFace } from "./helpers/geometry/triangulation";
+import { filledLoopTriangles } from "./helpers/geometry/loop-fill";
+import type { FillRule2 } from "./helpers/geometry/polygon-nesting";
 import { frustum, icosphere } from "./helpers/mesh/mesh-primitives";
 import { axesAlong, isTriple, pointToWorld } from "./helpers/geometry/frame-axes";
 import { add3, scale3 } from "./helpers/geometry/vectors";
@@ -15,6 +17,10 @@ import { uniqueVectors } from "./helpers/geometry/vector-grid";
 import type * as Resolved from "../resolved-inputs";
 
 const TRIANGLE_CORNERS = 3;
+const LOOP_FILL_RULES: Readonly<Partial<Record<string, FillRule2>>> = {
+    [Inputs.Base.loopFillRuleEnum.evenOdd]: "evenOdd",
+    [Inputs.Base.loopFillRuleEnum.nonZero]: "nonzero",
+};
 const MAX_ICOSPHERE_DETAIL = 6;
 const MIN_FRUSTUM_SIDES = 3;
 const POINT_SIZE = 3;
@@ -432,6 +438,42 @@ export class MeshBitByBit {
         let next = 0;
         const indices = loops.map((loop) => loop.map(() => next++));
         const triangles = triangulateFace(positions, indices);
+        const mesh: Inputs.Base.Mesh3 = [];
+        for (let at = 0; at + 2 < triangles.length; at += TRIANGLE_CORNERS) {
+            mesh.push([[...corners[triangles[at]!]!], [...corners[triangles[at + 1]!]!], [...corners[triangles[at + 2]!]!]]);
+        }
+        return mesh;
+    }
+
+    /**
+     * Fills closed loops lying in one plane with triangles, as letters are filled.
+     *
+     * Outlines and holes come from how the loops nest, in any order or direction; under the default
+     * even-odd rule the middle of an `O` stays open.
+     * Example: a 4 by 4 square around a 2 by 2 square -> a ring of area 12
+     * @param inputs - The loops and the fill rule
+     * @returns The triangles, each three points
+     * @group polygon
+     * @shortname triangulate loops
+     * @drawable false
+     * @example
+     * ```typescript
+     * const outer = [[-2, -2, 0], [2, -2, 0], [2, 2, 0], [-2, 2, 0]];
+     * const inner = [[-1, -1, 0], [1, -1, 0], [1, 1, 0], [-1, 1, 0]];
+     * const ring = bitbybit.mesh.triangulateLoops({ loops: [outer, inner], fillRule: Bit.Inputs.Base.loopFillRuleEnum.evenOdd });
+     * ```
+     */
+    triangulateLoops(inputs: Inputs.Mesh.TriangulateLoopsDto): Inputs.Base.Mesh3 {
+        const resolved = resolveDto(Inputs.Mesh.TriangulateLoopsDto, inputs) as Resolved.Mesh.TriangulateLoopsDto;
+        const corners = resolved.loops.flat();
+        const positions = corners.flat();
+        let next = 0;
+        const loops = resolved.loops.map((loop) => loop.map(() => next++));
+        const rule = LOOP_FILL_RULES[resolved.fillRule];
+        if (rule === undefined) {
+            throw new InputError(`\`fillRule\` is ${String(resolved.fillRule)}, which is none of ${Object.keys(LOOP_FILL_RULES).join(", ")}.`, "fillRule");
+        }
+        const triangles = filledLoopTriangles(positions, loops, rule);
         const mesh: Inputs.Base.Mesh3 = [];
         for (let at = 0; at + 2 < triangles.length; at += TRIANGLE_CORNERS) {
             mesh.push([[...corners[triangles[at]!]!], [...corners[triangles[at + 1]!]!], [...corners[triangles[at + 2]!]!]]);

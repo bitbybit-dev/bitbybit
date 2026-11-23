@@ -117,3 +117,5 @@ This package is part of the open-source Bitbybit ecosystem. Your subscription he
 ## License
 
 MIT © [Bit By Bit Developers](https://bitbybit.dev)
+
+The simplex stroke font the text services draw with is Hershey font data; `NOTICE` carries its terms and acknowledgements.

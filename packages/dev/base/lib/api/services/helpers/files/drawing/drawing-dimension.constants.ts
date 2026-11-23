@@ -1,0 +1,14 @@
+export const ARROW_WIDTH_SHARE = 1 / 3;
+export const TEXT_GAP_SHARE = 1 / 4;
+export const EXTENSION_GAP_SHARE = 1 / 4;
+export const EXTENSION_OVERSHOOT_SHARE = 1 / 2;
+export const ARROWS_INSIDE_ROOM = 5 / 2;
+export const ARROW_TAIL_SHARE = 3 / 2;
+export const ARC_TOLERANCE_SHARE = 1 / 100;
+export const MOST_DECIMAL_PLACES = 15;
+export const TOLERANCE_DECIMAL_PLACES = 6;
+export const UPRIGHT_SLACK = 1e-9;
+export const DIAMETER_SIGN = "⌀";
+export const RADIUS_SIGN = "R";
+export const DEGREE_SIGN = "°";
+export const PLUS_MINUS_SIGN = "±";

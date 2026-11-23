@@ -394,7 +394,7 @@ describe("reading DXF", () => {
         expect(drawing.warnings).toEqual(["1 spline is given only by fit points, which need a kernel to interpolate; they were left out here, and occt.io.loadDxf reads them."]);
     });
 
-    it("should read old POLYLINE entities, 2D with bulges and 3D, and count meshes, text and paper space it leaves out", () => {
+    it("should read old POLYLINE entities, 2D with bulges and 3D, and count meshes, multi-line text, texts without a height and paper space it leaves out", () => {
         // Act
         const drawing = read(entities(
             ["0", "POLYLINE", "8", "0", "66", "1", "10", "0", "20", "0", "30", "2", "70", "1",
@@ -412,10 +412,10 @@ describe("reading DXF", () => {
             { points: [[0, 0, 0], [1, 1, 1]], bulges: [0, 0], closed: false },
         ]);
         expect(drawing.warnings).toEqual([
-            "1 POLYLINE mesh entity was left out: only lines, arcs, circles, ellipses, polylines, splines and block inserts are drawn.",
-            "2 TEXT entities were left out: only lines, arcs, circles, ellipses, polylines, splines and block inserts are drawn.",
-            "1 MTEXT entity was left out: only lines, arcs, circles, ellipses, polylines, splines and block inserts are drawn.",
+            "1 POLYLINE mesh entity was left out: only lines, arcs, circles, ellipses, polylines, splines, texts, hatches and block inserts are drawn.",
+            "1 MTEXT entity was left out: only lines, arcs, circles, ellipses, polylines, splines, texts, hatches and block inserts are drawn.",
             "1 entity in paper space was left out: only model space is drawn.",
+            "2 TEXT entities could not be drawn: it has no height.",
         ]);
     });
 

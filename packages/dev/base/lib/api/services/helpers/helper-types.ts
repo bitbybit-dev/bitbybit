@@ -131,3 +131,44 @@ export interface GltfJson {
 }
 
 export type UnitOfLength = `${Inputs.Base.unitOfLengthEnum}`;
+
+export type StrokePoint = readonly [number, number];
+
+export interface StrokeGlyph {
+    readonly advance: number;
+    readonly strokes: readonly (readonly StrokePoint[])[];
+}
+
+export interface StrokeFontMarks {
+    readonly height: number;
+    readonly above: Readonly<Record<number, readonly (number | undefined)[]>>;
+    readonly below: Readonly<Record<number, readonly (number | undefined)[]>>;
+}
+
+export interface StrokeOverlay {
+    readonly base: number;
+    readonly strokes: readonly (number | undefined)[];
+}
+
+export interface StrokeFontLetters {
+    readonly height: number;
+    readonly overlaid: Readonly<Record<number, StrokeOverlay>>;
+    readonly drawn: Readonly<Record<number, readonly (number | undefined)[]>>;
+}
+
+export interface StrokeComposition {
+    readonly base: number;
+    readonly above: number | undefined;
+    readonly below: number | undefined;
+}
+
+export interface StrokeFontInk {
+    readonly lowest: number;
+    readonly highest: number;
+}
+
+export interface StrokeFontFacts {
+    readonly lowest: number;
+    readonly highest: number;
+    readonly glyphs: Map<number, StrokeGlyph>;
+}

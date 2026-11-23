@@ -7,7 +7,7 @@ import type { DrawingPart, DrawingSpline } from "./drawing-types";
 
 type Point3 = Inputs.Base.Point3;
 
-const partOf = (spline: DrawingSpline): DrawingPart => ({ layer: "0", color: "#000000", lineType: Inputs.IO.lineTypeEnum.continuous, paths: [{ segments: [spline] }] });
+const partOf = (spline: DrawingSpline): DrawingPart => ({ layer: "0", color: "#000000", lineType: Inputs.IO.lineTypeEnum.continuous, lineWeight: undefined, paths: [{ segments: [spline] }], texts: [], hatches: [] });
 
 const splineOf = (points: Point3[], weights: number[] = points.map(() => 1), degree = 3): DrawingSpline => ({
     kind: "spline",

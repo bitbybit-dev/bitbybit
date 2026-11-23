@@ -34,6 +34,7 @@ export const UNIT_CODES: ReadonlyMap<number, Inputs.Base.unitOfLengthEnum> = new
     [5, Inputs.Base.unitOfLengthEnum.centimetre],
     [6, Inputs.Base.unitOfLengthEnum.metre],
 ]);
+export const IMPERIAL_UNIT_CODES: ReadonlySet<number> = new Set([1, 2, 3, 8, 9, 10]);
 export const UNIT_NAMES: ReadonlyMap<number, string> = new Map([
     [2, "feet"], [3, "miles"], [7, "kilometres"], [8, "microinches"], [9, "mils"], [10, "yards"], [11, "angstroms"], [12, "nanometres"], [13, "microns"], [14, "decimetres"],
 ]);
@@ -77,3 +78,19 @@ export const GROUP = {
     elevation: 38,
     space: 67,
 } as const;
+export const ANNOTATED_ENTITIES = new Set(["TEXT", "HATCH"]);
+export const ANNOTATION_GROUP = {
+    text: 1, otherY: 21, height: 40, widthFactor: 41, patternScale: 41, edgeWeight: 42, baseX: 43, baseY: 44, offsetX: 45, offsetY: 46, dash: 49,
+    patternAngle: 52, lineAngle: 53, solid: 70, justified: 72, edgeType: 72, hasBulge: 72, verticalJustified: 73, counterclockwise: 73, rational: 73, closedLoop: 73,
+    periodic: 74, lineCount: 78, dashCount: 79, loopCount: 91, loopFlags: 92, vertexCount: 93, edgeDegree: 94, knotCount: 95, pointCount: 96, sources: 97, fitCount: 97,
+    owner: 330,
+} as const;
+export const TEXT_JUSTIFIED = { left: 0, center: 1, right: 2, aligned: 3, middle: 4, fit: 5 } as const;
+export const TEXT_VERTICAL = { baseline: 0, bottom: 1, middle: 2, top: 3 } as const;
+export const MIDDLE_DROP_SHARE = 0.5;
+export const HATCH_EDGE = { line: 1, arc: 2, ellipse: 3, spline: 4 } as const;
+export const HATCH_POLYLINE_FLAG = 2;
+export const TEXT_CODES = /%%(%|[cdpuokCDPUOK]|\d{3})|\^(.?)/g;
+export const TEXT_CONTROLS = /\p{Cc}/gu;
+export const SAME_TURN = 1e-9;
+export const SAME_ANGLE_DEGREES = 1e-6;

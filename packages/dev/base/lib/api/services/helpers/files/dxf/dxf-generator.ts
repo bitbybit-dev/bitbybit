@@ -1,18 +1,20 @@
 import * as Inputs from "../../../../inputs";
 import type * as Resolved from "../../../../resolved-inputs";
 import { InputError } from "../../../../kernel-calls";
-import { checkedUnitOfLength } from "../../geometry/lengths";
+import { checkedUnitOfLength, millimetresPerUnitOf } from "../../geometry/lengths";
+import type { UnitOfLength } from "../../helper-types";
 import { drawingBounds, drawingSize, patternUnitOf } from "../drawing/drawing-geometry";
 import { writerBudgetOf } from "../drawing/drawing-budget";
 import { drawingPartsOf, positiveNumber } from "../drawing/drawing-model";
 import type { DrawingPart } from "../drawing/drawing-types";
 import { DEFAULT_LAYER, LEAST_TOLERANCE_SHARE, SPACE_AXES } from "../drawing/drawing.constants";
+import { writeHatch, writeText } from "./dxf-annotations";
 import { writeSegment } from "./dxf-entities";
 import type { DxfEntityStyle } from "./dxf-entities";
-import { writeBlocks, writeClasses, writeHeader, writeObjects, writeTables } from "./dxf-tables";
+import { dxfMeasurementOf, writeBlocks, writeClasses, writeHeader, writeObjects, writeTables } from "./dxf-tables";
 import type { DxfLayerRow, DxfLayout, DxfVersion } from "./dxf-tables";
 import { DxfText } from "./dxf-text";
-import { DXF_FIRST_HANDLE } from "./dxf.constants";
+import { DXF_FIRST_HANDLE, DXF_LINE_WEIGHTS, DXF_LINE_WEIGHTS_PER_MILLIMETRE } from "./dxf.constants";
 
 const VERSIONS = new Set<string>(["AC1009", "AC1015"]);
 const COLOR_FORMATS = new Set<string>(["aci", "truecolor"]);
@@ -30,10 +32,18 @@ const layersOf = (parts: readonly DrawingPart[]): Map<string, DxfLayerRow> => {
     return rows;
 };
 
-const entityStyleOf = (part: DrawingPart, layers: ReadonlyMap<string, DxfLayerRow>): DxfEntityStyle => {
+const lineWeightOf = (width: number | undefined, millimetresPerUnit: number): number | undefined => {
+    if (width === undefined) {
+        return undefined;
+    }
+    const wanted = width * millimetresPerUnit * DXF_LINE_WEIGHTS_PER_MILLIMETRE;
+    return DXF_LINE_WEIGHTS.reduce((nearest, weight) => Math.abs(weight - wanted) < Math.abs(nearest - wanted) ? weight : nearest);
+};
+
+const entityStyleOf = (part: DrawingPart, layers: ReadonlyMap<string, DxfLayerRow>, millimetresPerUnit: number): DxfEntityStyle => {
     const continuous = Inputs.IO.lineTypeEnum.continuous;
     const byLayer = part.lineType === continuous && layers.get(part.layer.toUpperCase())!.lineType === continuous;
-    return { layer: part.layer, color: part.color, lineType: byLayer ? undefined : part.lineType };
+    return { layer: part.layer, color: part.color, lineType: byLayer ? undefined : part.lineType, lineWeight: lineWeightOf(part.lineWeight, millimetresPerUnit) };
 };
 
 const lineTypesOf = (parts: readonly DrawingPart[]): Inputs.IO.lineTypeEnum[] =>
@@ -53,7 +63,7 @@ const colorFormatOf = (value: unknown): "aci" | "truecolor" => {
     return value as "aci" | "truecolor";
 };
 
-const unitOf = (value: Inputs.Base.unitOfLengthEnum | undefined, version: DxfVersion): string | undefined => {
+const unitOf = (value: Inputs.Base.unitOfLengthEnum | undefined, version: DxfVersion): UnitOfLength | undefined => {
     if (value === undefined) {
         return undefined;
     }
@@ -77,22 +87,30 @@ export class DxfGenerator {
         text.refuseWhenSpent();
         const curveTolerance = Math.max(givenTolerance, LEAST_TOLERANCE_SHARE * drawingSize(bounds, SPACE_AXES));
         const layers = layersOf(parts);
-        const layout: DxfLayout = { version, colorFormat, unit, bounds, layers: [...layers.values()], lineTypes: lineTypesOf(parts), patternUnit: patternUnitOf(bounds) };
+        const patternUnit = model.lineTypeScale === undefined ? patternUnitOf(bounds) : positiveNumber(model.lineTypeScale, "lineTypeScale");
+        const millimetresPerUnit = unit === undefined ? 1 : millimetresPerUnitOf(unit);
+        const layout: DxfLayout = { version, colorFormat, unit, bounds, layers: [...layers.values()], lineTypes: lineTypesOf(parts), patternUnit };
         const handseed = writeHeader(text, layout);
         writeClasses(text, layout);
         const owners = writeTables(text, layout);
         writeBlocks(text, layout, owners);
         text.pair("0", "SECTION");
         text.pair("2", "ENTITIES");
-        const context = { text, version, owner: owners.modelSpace, colorFormat, curveTolerance };
-        for (const part of parts) {
-            const style = entityStyleOf(part, layers);
+        const context = { text, version, owner: owners.modelSpace, colorFormat, curveTolerance, measurement: dxfMeasurementOf(unit) };
+        parts.forEach((part, at) => {
+            const style = entityStyleOf(part, layers, millimetresPerUnit);
+            for (const hatch of part.hatches) {
+                writeHatch(context, hatch, style, `dxfPathsParts[${at}].hatches`);
+            }
             for (const path of part.paths) {
                 for (const segment of path.segments) {
                     writeSegment(context, segment, style);
                 }
             }
-        }
+            for (const text of part.texts) {
+                writeText(context, text, style);
+            }
+        });
         text.pair("0", "ENDSEC");
         writeObjects(text, layout);
         text.pair("0", "EOF");

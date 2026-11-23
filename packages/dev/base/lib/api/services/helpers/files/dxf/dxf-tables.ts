@@ -5,10 +5,14 @@ import { nearestAciIndex, trueColorOf } from "./dxf-colors";
 import type { DxfText } from "./dxf-text";
 import {
     DXF_GRID_SPACING_CODES, DXF_IMPERIAL_MEASUREMENT, DXF_INSUNITS, DXF_LENS_LENGTH, DXF_METRIC_MEASUREMENT, DXF_OTHER_POINT_CODES, DXF_POINT_CODES, DXF_SNAP_BASE_CODES,
-    DXF_SNAP_SPACING_CODES, DXF_VIEW_ASPECT, DXF_VIEW_CENTER_CODES, DXF_VIEW_DIRECTION_CODES, DXF_VIEW_MARGIN, DXF_VIEW_TARGET_CODES,
+    DXF_SNAP_SPACING_CODES, DXF_TEXT_STYLE, DXF_VIEW_ASPECT, DXF_VIEW_CENTER_CODES, DXF_VIEW_DIRECTION_CODES, DXF_VIEW_MARGIN, DXF_VIEW_TARGET_CODES,
 } from "./dxf.constants";
 
 export type DxfVersion = "AC1009" | "AC1015";
+
+export type DxfMeasurement = "imperial" | "metric";
+
+export const dxfMeasurementOf = (unit: string | undefined): DxfMeasurement => unit === "in" ? "imperial" : "metric";
 
 export interface DxfLayerRow {
     readonly name: string;
@@ -58,7 +62,7 @@ export const writeHeader = (text: DxfText, layout: DxfLayout): number | undefine
             variable(text, "$INSUNITS");
             text.pair("70", DXF_INSUNITS[layout.unit]!);
             variable(text, "$MEASUREMENT");
-            text.pair("70", layout.unit === "in" ? DXF_IMPERIAL_MEASUREMENT : DXF_METRIC_MEASUREMENT);
+            text.pair("70", dxfMeasurementOf(layout.unit) === "imperial" ? DXF_IMPERIAL_MEASUREMENT : DXF_METRIC_MEASUREMENT);
         }
         variable(text, "$HANDSEED");
         handseed = text.reserve("5");
@@ -183,7 +187,7 @@ const writeLayers = (text: DxfText, layout: DxfLayout): void => {
 const writeStyles = (text: DxfText, layout: DxfLayout): void => {
     const table = openTable(text, layout, "STYLE", 1);
     openRecord(text, layout, "STYLE", table, "AcDbTextStyleTableRecord");
-    for (const [code, value] of [["2", "Standard"], ["70", "0"], ["40", "0.0"], ["41", "1.0"], ["50", "0.0"], ["71", "0"], ["42", "2.5"], ["3", "txt"], ["4", ""]] as const) {
+    for (const [code, value] of [["2", DXF_TEXT_STYLE], ["70", "0"], ["40", "0.0"], ["41", "1.0"], ["50", "0.0"], ["71", "0"], ["42", "2.5"], ["3", "txt"], ["4", ""]] as const) {
         text.pair(code, value);
     }
     closeTable(text);
@@ -210,7 +214,7 @@ const writeDimensionStyles = (text: DxfText, layout: DxfLayout): void => {
         text.pair("340", text.peekHandle());
     }
     openRecord(text, layout, "DIMSTYLE", table, "AcDbDimStyleTableRecord", "105");
-    text.pair("2", "Standard");
+    text.pair("2", DXF_TEXT_STYLE);
     text.pair("70", "0");
     closeTable(text);
 };

@@ -5,11 +5,13 @@ import type { ConicArc } from "../../curves/conic-arcs";
 import { bezierPiecesOf } from "../../curves/nurbs-forms";
 import { unitOf } from "../../geometry/frame-axes";
 import type { FrameAxes } from "../../geometry/frame-axes";
-import { cross3, length3, scale3 } from "../../geometry/vectors";
+import { cross3, distance2, length3, scale3 } from "../../geometry/vectors";
 import type { WorkBudget } from "../work-budget";
-import type { DrawingArc, DrawingBounds, DrawingCircle, DrawingEllipse, DrawingPart, DrawingPolyline, DrawingSegment, DrawingSpline } from "./drawing-types";
-import { ARBITRARY_AXIS_LIMIT, PATTERN_UNIT_SHARE, PLAN_AXES } from "./drawing.constants";
+import { textCornersOf, textInked } from "./drawing-text";
+import type { DrawingArc, DrawingBounds, DrawingCircle, DrawingEllipse, DrawingPart, DrawingPath, DrawingPolyline, DrawingSegment, DrawingSpline } from "./drawing-types";
+import { ARBITRARY_AXIS_LIMIT, JOIN_DISTANCE, PATTERN_UNIT_SHARE, PLAN_AXES } from "./drawing.constants";
 
+type Point2 = Inputs.Base.Point2;
 type Point3 = Inputs.Base.Point3;
 type Vec3 = Inputs.Base.Vector3;
 
@@ -39,6 +41,10 @@ export const ellipseArcOf = (segment: DrawingEllipse): ConicArc => {
     };
 };
 
+export const pointsMeet = (a: Point2 | undefined, b: Point2): boolean => a !== undefined && distance2(a, b) <= JOIN_DISTANCE;
+
+export const meetsReversed = (end: Point2 | undefined, start: Point2, finish: Point2): boolean => !pointsMeet(end, start) && pointsMeet(end, finish);
+
 export const polylineSpans = (polyline: DrawingPolyline): number => polyline.closed ? polyline.points.length : polyline.points.length - 1;
 
 export const polylineSpanEnd = (polyline: DrawingPolyline, span: number): Point3 => polyline.points[(span + 1) % polyline.points.length]!;
@@ -50,7 +56,7 @@ export const bulgeArcOfSpan = (polyline: DrawingPolyline, span: number): ConicAr
 
 export const segmentSamples = (segment: DrawingSpline | DrawingEllipse, tolerance: number, budget?: WorkBudget): readonly Point3[] =>
     segment.kind === "ellipse"
-        ? conicArcSamples(ellipseArcOf(segment), tolerance)
+        ? conicArcSamples(ellipseArcOf(segment), tolerance, budget)
         : bezierPiecesOf(segment.curve, budget).flatMap((piece, at) => samplesOfPiece(piece, tolerance, budget).slice(at === 0 ? 0 : 1));
 
 const boundsPointsOf = (segment: DrawingSegment, tolerance: number, budget: WorkBudget | undefined): readonly Point3[] => {
@@ -76,15 +82,29 @@ const boundsPointsOf = (segment: DrawingSegment, tolerance: number, budget: Work
 export const drawingBounds = (parts: readonly DrawingPart[], tolerance: number, budget?: WorkBudget): DrawingBounds | undefined => {
     const min: Point3 = [Infinity, Infinity, Infinity];
     const max: Point3 = [-Infinity, -Infinity, -Infinity];
-    for (const part of parts) {
-        for (const path of part.paths) {
+    const grow = (points: readonly Point3[]): void => {
+        for (const point of points) {
+            for (let axis = 0; axis < min.length; axis++) {
+                min[axis] = Math.min(min[axis]!, point[axis]!);
+                max[axis] = Math.max(max[axis]!, point[axis]!);
+            }
+        }
+    };
+    const growByPaths = (paths: readonly DrawingPath[]): void => {
+        for (const path of paths) {
             for (const segment of path.segments) {
-                for (const point of boundsPointsOf(segment, tolerance, budget)) {
-                    for (let axis = 0; axis < min.length; axis++) {
-                        min[axis] = Math.min(min[axis]!, point[axis]!);
-                        max[axis] = Math.max(max[axis]!, point[axis]!);
-                    }
-                }
+                grow(boundsPointsOf(segment, tolerance, budget));
+            }
+        }
+    };
+    for (const part of parts) {
+        growByPaths(part.paths);
+        for (const hatch of part.hatches) {
+            growByPaths(hatch.boundaries);
+        }
+        for (const text of part.texts) {
+            if (textInked(text)) {
+                grow(textCornersOf(text));
             }
         }
     }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import type { Base } from "./base-inputs";
+import { Base } from "./base-inputs";
 
 
 /**
@@ -161,6 +161,28 @@ export namespace Mesh {
          * @optional true
          */
         holes?: Base.Point3[][] | undefined;
+    }
+    /**
+     * Closed loops lying in one plane and the rule that decides what they enclose, for
+     * `mesh.triangulateLoops`.
+     */
+    export class TriangulateLoopsDto {
+        constructor(loops?: Base.Point3[][], fillRule?: Base.loopFillRuleEnum) {
+            if (loops !== undefined) { this.loops = loops; }
+            if (fillRule !== undefined) { this.fillRule = fillRule; }
+        }
+        /**
+         * The loops, each a list of corners in one plane; the last need not repeat the first, and loops
+         * may run either way and nest.
+         * @default undefined
+         */
+        loops!: Base.Point3[][];
+        /**
+         * How the loops decide what is inside: `evenOdd` leaves every loop inside another open
+         * whichever way it runs, as letters are filled; `nonZero` lets their directions count.
+         * @default evenOdd
+         */
+        fillRule?: Base.loopFillRuleEnum | undefined = Base.loopFillRuleEnum.evenOdd;
     }
     /**
      * Two triangle meshes and how close they may come, for `mesh.meshesWithin`.

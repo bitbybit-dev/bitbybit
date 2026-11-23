@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import type { Base } from "./base-inputs";
+import { Base } from "./base-inputs";
 
 /**
  * Parameters for working with recipes without a CAD kernel: the recipe to check or read, the roots
@@ -31,10 +31,11 @@ export namespace Recipes {
      * @beta
      */
     export class RecipeSurfaceMeshesDto {
-        constructor(recipe?: Base.Recipe, roots?: number[], adjustZtoY?: boolean) {
+        constructor(recipe?: Base.Recipe, roots?: number[], adjustZtoY?: boolean, upAxis?: Base.upAxisConversionEnum) {
             if (recipe !== undefined) { this.recipe = recipe; }
             if (roots !== undefined) { this.roots = roots; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The recipe: steps such as polygons, extrusions and triangle meshes, and the roots to build
@@ -49,11 +50,19 @@ export namespace Recipes {
          */
         roots?: number[] | undefined;
         /**
-         * When true, each mesh turns a quarter turn about X, as a kernel's recipe build does with
-         * this option: `(x, y, z)` becomes `(x, z, -y)`.
-         * @default false
+         * Whether the meshes turn: `zUpToYUp` turns each a quarter turn about X, as a kernel's recipe
+         * build does, so `(x, y, z)` becomes `(x, z, -y)`; `keep` leaves them. `yUpToZUp` is refused.
+         * @default keep
          */
-        adjustZtoY?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the meshes turn as `upAxis` `zUpToYUp` turns them; false, its old default, decides
+         * nothing. True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
     }
 
     /**

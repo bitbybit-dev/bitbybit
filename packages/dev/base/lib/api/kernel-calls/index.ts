@@ -12,3 +12,4 @@ export * from "./hashing";
 export * from "./unknown-values";
 export * from "./kernel-steps";
 export * from "./settings";
+export { checkedUpAxis } from "./up-axis-aliases";

@@ -68,6 +68,7 @@ export const drawingDtoOf = (drawing: ReadDrawing): Inputs.IO.DxfDrawingDto => {
     const parts = new Map<string, Inputs.IO.DrawingPartDto>();
     let fitSplines = 0;
     let flatArcs = 0;
+    let simplified = 0;
     for (const entity of drawing.entities) {
         const key = `${entity.style.layer}\n${entity.style.color}\n${entity.style.lineType}`;
         const part = parts.get(key) ?? { layer: entity.style.layer, color: entity.style.color, lineType: entity.style.lineType, paths: [] };
@@ -79,13 +80,35 @@ export const drawingDtoOf = (drawing: ReadDrawing): Inputs.IO.DxfDrawingDto => {
         if (segments.length > 0) {
             part.paths.push({ segments });
         }
+        if (entity.text !== undefined) {
+            const { value, ...placed } = entity.text;
+            const texts = part.texts ?? [];
+            part.texts = texts;
+            texts.push({ text: value, ...placed });
+        }
+        if (entity.hatch !== undefined) {
+            const { boundaries, pattern, angle, spacing } = entity.hatch;
+            const paths = boundaries.map(loop => {
+                const read = loop.flatMap(segmentDtos);
+                const kept = read.filter((dto): dto is DxfSegment => dto !== undefined);
+                flatArcs += read.length - kept.length;
+                return { segments: kept };
+            }).filter(path => path.segments.length > 0);
+            simplified += entity.hatch.simplified ? 1 : 0;
+            if (paths.length > 0) {
+                const hatches = part.hatches ?? [];
+                part.hatches = hatches;
+                hatches.push({ boundaries: paths, pattern, angle, spacing });
+            }
+        }
     }
+    const simplifiedWarning = `${simplified} ${simplified === 1 ? "hatch has" : "hatches have"} a pattern other than single, paired or crossed lines; ${simplified === 1 ? "it is" : "they are"} read as single lines.`;
     const fitWarning = `${fitSplines} ${fitSplines === 1 ? "spline is" : "splines are"} given only by fit points, which need a kernel to interpolate; they were left out here, and occt.io.loadDxf reads them.`;
     const flatWarning = `${flatArcs} ${flatArcs === 1 ? "arc" : "arcs"} could not be drawn: a radius, a plane or a sweep is missing.`;
     return {
-        parts: [...parts.values()].filter(part => part.paths.length > 0),
+        parts: [...parts.values()].filter(part => part.paths.length > 0 || part.texts !== undefined || part.hatches !== undefined),
         unit: drawing.unit,
         version: drawing.version,
-        warnings: [...drawing.warnings, ...(fitSplines === 0 ? [] : [fitWarning]), ...(flatArcs === 0 ? [] : [flatWarning])],
+        warnings: [...drawing.warnings, ...(fitSplines === 0 ? [] : [fitWarning]), ...(flatArcs === 0 ? [] : [flatWarning]), ...(simplified === 0 ? [] : [simplifiedWarning])],
     };
 };

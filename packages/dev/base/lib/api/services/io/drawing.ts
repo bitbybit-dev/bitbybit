@@ -1,8 +1,18 @@
 import * as Inputs from "../../inputs";
 import type * as Resolved from "../../resolved-inputs";
 import { resolveDto } from "../../kernel-calls";
+import { simplex } from "../../models/simplex";
+import { clippedHatchLinesOf, hatchLinesOf, hatchOutlinesOf } from "../helpers/files/drawing/drawing-hatch";
+import { drawingHatchOf, drawingTextOf, positiveNumber } from "../helpers/files/drawing/drawing-model";
+import { scaledDrawingParts } from "../helpers/files/drawing/drawing-scale";
+import { textStrokesOf } from "../helpers/files/drawing/drawing-text";
+import { dimensionExtentOf, dimensionPictureOf } from "../helpers/files/drawing/drawing-dimension";
+import { strokeFontInk } from "../helpers/text/stroke-font";
 import type { Dxf } from "./dxf";
 import type { Svg } from "./svg";
+
+const HATCH_BOUNDS_TOLERANCE = 0.01;
+const MEASURED_AT: Inputs.Base.Point2 = [0, 0];
 
 /**
  * Builds drawings as data, for any file format: segments of every kind, paths joined from segments,
@@ -158,6 +168,248 @@ export class Drawing {
     part(inputs: Inputs.IO.DrawingPartDto): Inputs.IO.DrawingPartDto {
         const resolved = resolveDto(Inputs.IO.DrawingPartDto, inputs) as Resolved.IO.DrawingPartDto;
         return resolved;
+    }
+
+    /**
+     * Scales drawing parts about the origin, returning new parts and leaving the given ones unchanged.
+     *
+     * Points, radii, axes, text heights, hatch spacings and line weights are multiplied by `factor`;
+     * angles, bulges, knots and weights stay. Scale before writing with `io.dxf.dxfCreate` or
+     * `io.svg.svgCreate`: their `unit` labels the drawing and never scales it. A factor not above 0
+     * throws.
+     * @param inputs - The parts and the factor
+     * @returns New parts, scaled
+     * @group drawing
+     * @shortname scale parts
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const plate = bitbybit.io.drawing.part({ layer: "cut", paths: [{ segments: [{ center: [0, 0], radius: 25.4 }] }], lineWeight: 0.5 });
+     * const inches = bitbybit.io.drawing.scaleParts({ parts: [plate], factor: 1 / 25.4 });
+     * const dxf = bitbybit.io.dxf.dxfCreate({ dxfPathsParts: inches, unit: Bit.Inputs.Base.unitOfLengthEnum.inch });
+     * ```
+     */
+    scaleParts(inputs: Inputs.IO.DrawingScalePartsDto): Inputs.IO.DrawingPartDto[] {
+        const resolved = resolveDto(Inputs.IO.DrawingScalePartsDto, inputs) as Resolved.IO.DrawingScalePartsDto;
+        return scaledDrawingParts(resolved.parts, resolved.factor, "parts");
+    }
+
+    /**
+     * Makes a line of text for a drawing part's `texts`, in the single-line stroke font.
+     *
+     * The text is placed by a point on its baseline; `anchor` says whether that point is its start,
+     * middle or end, `rotation` turns it and `widthFactor` narrows or widens its letters.
+     * @param inputs - The text, its position and height, its anchor, its angle and its width factor
+     * @returns The text
+     * @group drawing
+     * @shortname text
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const title = bitbybit.io.drawing.text({ text: "BRACKET", position: [20, 10], height: 5 });
+     * const notes = bitbybit.io.drawing.part({ layer: "text", paths: [], texts: [title], lineWeight: 0.35 });
+     * ```
+     */
+    text(inputs: Inputs.IO.DrawingTextDto): Inputs.IO.DrawingTextDto {
+        const resolved = resolveDto(Inputs.IO.DrawingTextDto, inputs) as Resolved.IO.DrawingTextDto;
+        return resolved;
+    }
+
+    /**
+     * Makes a hatched region for a drawing part's `hatches`: what the boundaries enclose, filled with
+     * a pattern of lines or with solid ink.
+     *
+     * A boundary inside another cuts a hole, and a boundary whose ends do not meet is closed by a
+     * straight line.
+     * @param inputs - The boundary paths, the pattern, and the angle and spacing of its lines
+     * @returns The hatch
+     * @group drawing
+     * @shortname hatch
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const outline = bitbybit.io.drawing.polylineSegment({ points: [[0, 0], [40, 0], [40, 30], [0, 30]], closed: true });
+     * const bore = bitbybit.io.drawing.circleSegment({ center: [20, 15], radius: 6 });
+     * const cut = bitbybit.io.drawing.hatch({ boundaries: [{ segments: [outline] }, { segments: [bore] }], angle: 45, spacing: 3 });
+     * const section = bitbybit.io.drawing.part({ layer: "hatch", paths: [], hatches: [cut], lineWeight: 0.18 });
+     * ```
+     */
+    hatch(inputs: Inputs.IO.DrawingHatchDto): Inputs.IO.DrawingHatchDto {
+        const resolved = resolveDto(Inputs.IO.DrawingHatchDto, inputs) as Resolved.IO.DrawingHatchDto;
+        return resolved;
+    }
+
+    /**
+     * Gives the lines of a hatch's pattern, each from side to side of the box around its
+     * boundaries, for a renderer that draws them itself and clips them to the region.
+     *
+     * The lines stand where `io.svg.svgCreate` and `io.dxf.dxfCreate` put them, each whole. `solid`
+     * gives none, and a spacing too fine for the region throws.
+     * @param inputs - The boundary paths, the pattern, and the angle and spacing of its lines
+     * @returns The lines, each a start and an end point
+     * @group drawing
+     * @shortname hatch lines
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const outline = bitbybit.io.drawing.polylineSegment({ points: [[0, 0], [40, 0], [40, 30], [0, 30]], closed: true });
+     * const lines = bitbybit.io.drawing.hatchLines({ boundaries: [{ segments: [outline] }], angle: 45, spacing: 3 });
+     * ```
+     */
+    hatchLines(inputs: Inputs.IO.DrawingHatchDto): Inputs.Base.Segment2[] {
+        const resolved = resolveDto(Inputs.IO.DrawingHatchDto, inputs) as Resolved.IO.DrawingHatchDto;
+        return hatchLinesOf(drawingHatchOf(resolved, ""), HATCH_BOUNDS_TOLERANCE, "spacing");
+    }
+
+    /**
+     * Gives the lines of a hatch's pattern clipped to its region, for a renderer that draws them
+     * itself.
+     *
+     * Inside follows the even-odd rule over every boundary, as `io.svg.svgCreate` fills a hatch, and
+     * curves are followed within `tolerance`. The lines stand where `hatchLines` puts them. `solid`
+     * gives none; a spacing too fine for the region throws.
+     * @param inputs - The boundary paths, the pattern, the angle and spacing of its lines, and the tolerance for curves
+     * @returns The pieces of the lines inside the region, each a start and an end point
+     * @group drawing
+     * @shortname clipped hatch lines
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const outline = bitbybit.io.drawing.polylineSegment({ points: [[0, 0], [40, 0], [40, 30], [0, 30]], closed: true });
+     * const bore = bitbybit.io.drawing.circleSegment({ center: [20, 15], radius: 6 });
+     * const lines = bitbybit.io.drawing.clippedHatchLines({ boundaries: [{ segments: [outline] }, { segments: [bore] }], angle: 45, spacing: 3, tolerance: 0.01 });
+     * ```
+     */
+    clippedHatchLines(inputs: Inputs.IO.DrawingHatchRegionDto): Inputs.Base.Segment2[] {
+        const resolved = resolveDto(Inputs.IO.DrawingHatchRegionDto, inputs) as Resolved.IO.DrawingHatchRegionDto;
+        const tolerance = positiveNumber(resolved.tolerance, "tolerance");
+        return clippedHatchLinesOf(drawingHatchOf(resolved, ""), tolerance, "spacing");
+    }
+
+    /**
+     * Gives the outlines of a hatch's region as closed loops of points, curves followed within
+     * `tolerance`, for a renderer that fills the region itself.
+     *
+     * Each loop lists every corner once. Fill them under the even-odd rule, as
+     * `mesh.triangulateLoops` does, to keep the holes open.
+     * Example: a circle of radius 5 at tolerance 0.01 -> one loop of 50 points
+     * @param inputs - The boundary paths and the tolerance for curves; the pattern, angle and spacing play no part
+     * @returns The loops, each a list of points
+     * @group drawing
+     * @shortname hatch outlines
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const outline = bitbybit.io.drawing.polylineSegment({ points: [[0, 0], [40, 0], [40, 30], [0, 30]], closed: true });
+     * const bore = bitbybit.io.drawing.circleSegment({ center: [20, 15], radius: 6 });
+     * const loops = bitbybit.io.drawing.hatchOutlines({ boundaries: [{ segments: [outline] }, { segments: [bore] }], tolerance: 0.01 });
+     * ```
+     */
+    hatchOutlines(inputs: Inputs.IO.DrawingHatchRegionDto): Inputs.Base.Point2[][] {
+        const resolved = resolveDto(Inputs.IO.DrawingHatchRegionDto, inputs) as Resolved.IO.DrawingHatchRegionDto;
+        const tolerance = positiveNumber(resolved.tolerance, "tolerance");
+        return hatchOutlinesOf(drawingHatchOf(resolved, ""), tolerance);
+    }
+
+    /**
+     * Measures a drawing text: its length along the baseline, and how far the font's ink reaches
+     * above and below it.
+     *
+     * The width is what `io.svg.svgCreate` draws and `io.dxf.dxfCreate` fits the text to; the
+     * position is not needed to measure it. A text that is not one line throws.
+     * Example: 'I' at height 21 -> width 8, above 25, below 7
+     * @param inputs - The text with its height and width factor
+     * @returns The width, and the reach of the font's ink above and below the baseline
+     * @group drawing
+     * @shortname text size
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const size = bitbybit.io.drawing.textSize({ text: "SECTION A-A", position: [0, 0], height: 3.5 });
+     * const cellWidth = size.width + 2;
+     * ```
+     */
+    textSize(inputs: Inputs.IO.DrawingTextDto): Inputs.IO.DrawingTextSizeDto {
+        const resolved = resolveDto(Inputs.IO.DrawingTextDto, inputs) as Resolved.IO.DrawingTextDto;
+        const text = drawingTextOf({ ...resolved, position: resolved.position ?? MEASURED_AT }, "");
+        const ink = strokeFontInk(simplex);
+        return { width: text.width, above: ink.highest * text.height, below: -ink.lowest * text.height };
+    }
+
+    /**
+     * Draws a drawing text as the strokes of its letters, each a list of points in the drawing's
+     * coordinates, placed, turned and narrowed as the text says.
+     *
+     * These are the strokes `io.svg.svgCreate` writes. A text that is not one line throws.
+     * Example: 'I' at height 21 from [10, 20] -> one stroke, [[14, 41, 0], [14, 20, 0]]
+     * @param inputs - The text, its position and height, its anchor, its angle and its width factor
+     * @returns The strokes, each a list of points
+     * @group drawing
+     * @shortname text strokes
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const strokes = bitbybit.io.drawing.textStrokes({ text: "A-A", position: [0, 0], height: 5, anchor: "middle" });
+     * ```
+     */
+    textStrokes(inputs: Inputs.IO.DrawingTextDto): Inputs.Base.Point3[][] {
+        const resolved = resolveDto(Inputs.IO.DrawingTextDto, inputs) as Resolved.IO.DrawingTextDto;
+        return textStrokesOf(drawingTextOf(resolved, ""));
+    }
+
+    /**
+     * Draws a dimension in the drawing's plane: its dimension line or arc, its extension lines, filled
+     * arrowheads touching them, and its value in the stroke font.
+     *
+     * The text reads from left to right or from bottom to top, past the line's end when the line is
+     * too short for it; arrows go outside a span too short for them.
+     * @param inputs - What the dimension measures, its points, its tolerance and the size of its text and arrows
+     * @returns The lines, the arrowheads to fill, the text as strokes and as a drawing text, and the box they fill
+     * @group drawing
+     * @shortname dimension picture
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const picture = bitbybit.io.drawing.dimensionPicture({ kind: Bit.Inputs.IO.dimensionKindEnum.linear, start: [0, 0], end: [60, 0], offset: 12, upperTolerance: 0.1, lowerTolerance: 0.1 });
+     * const edges = bitbybit.io.drawing.part({ layer: "dimensions", paths: [...picture.lines, ...picture.textStrokes].map(points => ({ segments: [{ points }] })) });
+     * ```
+     */
+    dimensionPicture(inputs: Inputs.IO.DrawingDimensionDto): Inputs.IO.DrawingDimensionPictureDto {
+        const resolved = resolveDto(Inputs.IO.DrawingDimensionDto, inputs) as Resolved.IO.DrawingDimensionDto;
+        return dimensionPictureOf(resolved);
+    }
+
+    /**
+     * Measures the box a dimension's picture fills, the box `dimensionPicture` gives, without drawing
+     * the letters.
+     *
+     * The box holds the whole height the stroke font's letters may reach, so a layout can make room
+     * before drawing.
+     * Example: a linear dimension from [0, 0] to [60, 0] at offset 12 -> min [0, 0.875], max [60, 17.04]
+     * @param inputs - What the dimension measures, its points, its tolerance and the size of its text and arrows
+     * @returns The lowest and highest corners of the box
+     * @group drawing
+     * @shortname dimension extent
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const box = bitbybit.io.drawing.dimensionExtent({ kind: Bit.Inputs.IO.dimensionKindEnum.diameter, start: [0, 0], end: [5, 0] });
+     * const width = box.max[0] - box.min[0];
+     * ```
+     */
+    dimensionExtent(inputs: Inputs.IO.DrawingDimensionDto): Inputs.IO.DrawingExtentDto {
+        const resolved = resolveDto(Inputs.IO.DrawingDimensionDto, inputs) as Resolved.IO.DrawingDimensionDto;
+        return dimensionExtentOf(resolved);
     }
 
     /**

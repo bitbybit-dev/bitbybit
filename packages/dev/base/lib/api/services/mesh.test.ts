@@ -5,7 +5,7 @@ import { Point } from "./point";
 import { Polyline } from "./polyline";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
-import type * as Inputs from "../inputs";
+import * as Inputs from "../inputs";
 import { MeshBitByBit } from "./mesh";
 import { TOLERANCE, UnitTestHelper } from "../unit-test-helper";
 import { Line } from "./line";
@@ -506,6 +506,53 @@ describe("Mesh unit tests", () => {
             expect(triangles[0]![0]).not.toBe(points[0]);
             expect(none).toEqual([]);
             expect(points).toEqual([[0, 0, 0], [1, 0, 0], [0, 1, 0]]);
+        });
+    });
+
+    describe("triangulateLoops", () => {
+        const outer: Inputs.Base.Point3[] = [[-2, -2, 0], [2, -2, 0], [2, 2, 0], [-2, 2, 0]];
+        const inner: Inputs.Base.Point3[] = [[-1, -1, 0], [1, -1, 0], [1, 1, 0], [-1, 1, 0]];
+        const areaOf = (triangles: Inputs.Base.Mesh3): number => triangles.reduce((sum, [a, b, c]) => {
+            const n = vector.cross({ first: vector.sub({ first: b, second: a }), second: vector.sub({ first: c, second: a }) });
+            return sum + n[2]! / 2;
+        }, 0);
+
+        it("should fill the ring between two loops under the even-odd rule it takes by default", () => {
+            // Act
+            const ring = meshBitByBit.triangulateLoops({ loops: [inner, outer] });
+
+            // Assert
+            expect(areaOf(ring)).toBeCloseTo(12, 12);
+            expect(ring.every(([a, b, c]) => [a, b, c].some(([x, y]) => Math.abs(x) > 1 || Math.abs(y) > 1))).toBe(true);
+        });
+
+        it("should fill both loops solid under the non-zero rule when they run the same way", () => {
+            // Act
+            const solid = meshBitByBit.triangulateLoops({ loops: [outer, inner], fillRule: Inputs.Base.loopFillRuleEnum.nonZero });
+
+            // Assert
+            expect(areaOf(solid)).toBeCloseTo(16, 12);
+        });
+
+        it("should refuse a fill rule it does not know, the helper's own spelling included", () => {
+            // Act
+            const lower = (): Inputs.Base.Mesh3 => meshBitByBit.triangulateLoops({ loops: [outer, inner], fillRule: "nonzero" as Inputs.Base.loopFillRuleEnum });
+
+            // Assert
+            expect(lower).toThrow("`fillRule` is nonzero, which is none of evenOdd, nonZero.");
+        });
+
+        it("should give new points and leave the loops as they were", () => {
+            // Arrange
+            const loops = [outer, inner];
+            const before = JSON.stringify(loops);
+
+            // Act
+            const ring = meshBitByBit.triangulateLoops({ loops });
+
+            // Assert
+            expect(ring.flat().some((corner) => corner === outer[0] || corner === inner[0])).toBe(false);
+            expect(JSON.stringify(loops)).toBe(before);
         });
     });
 

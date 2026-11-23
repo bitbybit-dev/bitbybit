@@ -1,0 +1,24 @@
+NOTICE - third-party material in @bitbybit-dev/base
+===================================================
+
+The TypeScript and JavaScript in this package are MIT-licensed (see LICENSE). It carries the font
+data below, which keeps its own terms.
+
+1. Hershey fonts
+   Terms:   the Hershey Fonts may be used by anyone for any purpose, commercial or otherwise,
+            provided that the acknowledgements below are distributed with the font data, and
+            that the data is not converted into the format distributed by the U.S. NTIS. These
+            are the terms in full; there is no separate license text.
+   Acknowledgements:
+            - The Hershey Fonts were originally created by Dr. A. V. Hershey while working at the
+              U. S. National Bureau of Standards.
+            - The format of the Font data in this distribution was originally created by James
+              Hurt, Cognition, Inc., 900 Technology Park Drive, Billerica, MA 01821
+              (mit-eddie!ci-dandelion!hurt).
+   Source:  http://paulbourke.net/dataformats/hershey/, by way of the OpenJSCAD project
+            (https://github.com/jscad/OpenJSCAD.org), which publishes the data under the MIT
+            License.
+   Usage:   the strokes and advance widths of the simplex font (lib/api/models/simplex.js), which
+            the text services draw and measure single-line text with.
+
+For questions about licensing, contact info@bitbybit.dev.

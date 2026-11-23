@@ -1,3 +1,5 @@
+import type { DxfMeasurement } from "./dxf-tables";
+
 export const DXF_FIRST_HANDLE = 0x20;
 export const DXF_INSUNITS: Readonly<Record<string, string>> = { in: "1", mm: "4", cm: "5", m: "6" };
 export const DXF_IMPERIAL_MEASUREMENT = "0";
@@ -35,3 +37,16 @@ export const DXF_CLOSED_FLAG = 1;
 export const DXF_RATIONAL_FLAG = 4;
 export const DXF_POLYLINE_3D_FLAG = 8;
 export const DXF_MAX_NAME_LENGTH = 255;
+export const DXF_LINE_WEIGHTS = [0, 5, 9, 13, 15, 18, 20, 25, 30, 35, 40, 50, 53, 60, 70, 80, 90, 100, 106, 120, 140, 158, 200, 211];
+export const DXF_LINE_WEIGHTS_PER_MILLIMETRE = 100;
+export const DXF_TEXT_STYLE = "Standard";
+export const DXF_CODED_BACKSLASH = "\\U+005C";
+export const DXF_CHARACTER_CODE_START = /\\(?=[UM]\+)/g;
+export const DXF_FIT_JUSTIFICATION = "5";
+export const DXF_POLYLINE_BOUNDARY = "3";
+export const DXF_HATCH_NAMES: Readonly<Record<string, string>> = { solid: "SOLID", ansi31: "ANSI31", ansi32: "ANSI32", ansi37: "ANSI37" };
+export const DXF_HATCH_NATIVE_ANGLE = 45;
+export const DXF_HATCH_NATIVE_SPACING: Readonly<Record<DxfMeasurement, Readonly<Record<string, number>>>> = {
+    imperial: { solid: 1, ansi31: 0.125, ansi32: 0.375, ansi37: 0.125 },
+    metric: { solid: 1, ansi31: 3.175, ansi32: 9.525, ansi37: 3.175 },
+};
