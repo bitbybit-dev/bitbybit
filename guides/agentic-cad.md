@@ -14,7 +14,7 @@ This page is written for two readers: people deciding how to build a 3D or CAD p
 
 ## What we believe
 
-Agents write the code. Bitbybit provides verified geometry algorithms and, where it is needed, hosted compute. The free packages are the vocabulary that everyone learns, human or agent: one dotted API (`bitbybit.occt.shapes.solid.createBox`, `bitbybit.manifold.booleans.union`, ...) that reads the same in a browser, on a server and in the online editors.
+Agents write the code. Bitbybit provides verified geometry algorithms and, where it is needed, hosted compute. The free packages are the vocabulary that everyone learns, human or agent: one dotted API (`bitbybit.occt.shapes.solid.createBox`, `bitbybit.manifold.manifold.booleans.union`, ...) that reads the same in a browser, on a server and in the online editors.
 
 An agent that knows the API from memory guesses. An agent that looks it up gets the exact signature, defaults and examples for the version your project has installed. That lookup is what the MCP server is for.
 

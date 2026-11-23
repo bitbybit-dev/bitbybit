@@ -61,7 +61,7 @@ A few members differ between the two. Only the worker has `occt.deleteShape`, `o
 - **Y is up.** The ground is the XZ plane. A box's `height` runs along Y, a cylinder grows along its `direction`, `[0, 1, 0]` unless given, and a rectangle or circle wire lies flat on the ground unless its `direction`, the normal of its plane, says otherwise. Manifold and JSCAD build along Z instead: their cylinders stand on the XY plane.
 - **Shapes nest.** A vertex is a point, an edge a curve between vertices, a wire a chain of edges, a face a surface bounded by wires, a shell faces joined at their edges, a solid the volume a closed shell bounds, and a compound a group of shapes kept apart. Each method says which kinds it takes and gives: `operations.extrude` turns a face into a solid, but a wire only into a shell.
 - **Units are plain numbers.** Model in whichever unit the part is drawn in; angles are degrees, and tolerances are in the model's units. A file says its unit only when told it: give `io.saveShapeSTEP` the `unit` the part is modelled in (`Bit.Inputs.Base.unitOfLengthEnum.inch`, say) and it is written at its true size, in millimetres; `io.loadSTEPorIGES` takes the `unit` to bring a file in at, and `io.fileLengthUnit` tells the unit a STEP or IGES file states.
-- **Right-handed.** OpenCascade is right-handed, as three.js and PlayCanvas are. A Babylon.js scene is left-handed and draws the kernel's numbers as they are, which is the mirror image of the model. Set the conventions once, `await bitbybit.setConventions(1)` after `init` or `conventions: 1` in the options of `initBitByBit`, and the library speaks the engine's own coordinate system: a file matches the screen, and a shape that names a hand, a thread or a helix's `clockwise`, shows that hand. Left out, the libraries behave as they did before the setting existed, so an existing app never changes on its own.
+- **Right-handed.** OpenCascade is right-handed, as three.js and PlayCanvas are; a Babylon.js scene is left-handed. Set the conventions level once, `conventions: 1` in the options of `initBitByBit`, so that files, text and named hands follow the engine; the section on coordinate systems below says what it changes.
 - **Colours** are hex strings such as `"#ff8000"`, or arrays of three numbers from 0 to 1.
 
 ## The order to build a part in
@@ -160,6 +160,17 @@ Each check is one call. Run them after any step that may have gone wrong:
 - `shapes.solid.debugInfo` reports in one answer how many faces and edges a solid has, its area and its volume. Its `valid` is false only for an empty shape; it does not check the geometry, so use `shapeFix.isValid` for that.
 - `shapes.solid.getSolidVolume` and `analysis.measure.tightBoundingBox` measure. Compare them with what the part should be: a cut that misses its shape, or a face whose hole was wound the wrong way, changes the volume by the wrong amount or not at all, without an error. The tight box follows the exact geometry; the older `operations.boundingBoxOfShape` can be loose around curved faces and is deprecated.
 - A method that cannot do what it was asked throws and says why, such as a fillet the faces beside an edge cannot hold. Read the message, change the input and run again.
+
+## Coordinate systems
+
+OpenCascade, Manifold and JSCAD are right-handed, as three.js and PlayCanvas are. A Babylon.js scene is left-handed unless it is made right-handed (`scene.useRightHandedSystem = true`) before anything is drawn in it. How files, text and shapes that name a hand map between the kernel and the engine is set once per app, by the conventions level:
+
+- **Level 1, for every new app**: `conventions: 1` in the options of `initBitByBit`, or `await bitbybit.setConventions(1)` once `init` has run. The library then speaks the engine's own coordinate system. A file it writes is a true right-handed file that shows what the screen shows; a file it reads looks as it does in the program that made it, except an assembly document read with `occt.assembly.manager.loadStepToDoc`, which keeps the file's right-handed numbers; IFC models, recipes and design documents are built as their data describes them; and a shape that names a hand, a thread or a helix's `clockwise`, shows that hand.
+- **Left out, or level 0**: the libraries behave as they did before levels existed, so an existing app never changes when it updates the packages.
+- **The scene decides.** The coordinate system is the one the scene had when it was given to `init`, and `bitbybit.engineSettings()` gives the settings that fit it. Make a Babylon.js scene right-handed when it is created; code that switches it later also calls `bitbybit.setSettings` with the new system, or files and text keep the old one.
+- **Without an engine**, a program that runs a kernel itself sets it on that kernel: `occt.settings = { coordinateSystem: Inputs.Base.coordinateSystemEnum.rightHanded }`, with `Inputs` from `@bitbybit-dev/base`.
+
+`describe` shows a "Conventions level" section on every operation a level may change, saying what each level changes; a whole service carries it when any of its operations may change, and an open-source operation without the section gives the same at every level. Boxes, booleans, fillets, sweeps and the drawings of them never change, and neither does the way a rotation turns.
 
 ## Drawing and exporting a part
 
