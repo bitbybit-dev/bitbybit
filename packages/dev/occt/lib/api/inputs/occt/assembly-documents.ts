@@ -1,4 +1,4 @@
-import type { Base } from "@bitbybit-dev/base";
+import { Base } from "@bitbybit-dev/base";
 import type * as Models from "../../models";
 import { upAxisEnum } from "./enums";
 
@@ -359,34 +359,14 @@ export class CreateImportedPartDto {
 }
 
 /**
- * A document, a label and a color for `assembly.manager.setDocLabelColor`.
+ * A document and a color, shared by `SetDocLabelColorDto` and `SetDocLabelColorsDto`.
  */
-export class SetDocLabelColorDto<T> {
-    constructor(
-        document?: T,
-        label?: string,
-        r?: number,
-        g?: number,
-        b?: number,
-        a?: number
-    ) {
-        if (document !== undefined) { this.document = document; }
-        if (label !== undefined) { this.label = label; }
-        if (r !== undefined) { this.r = r; }
-        if (g !== undefined) { this.g = g; }
-        if (b !== undefined) { this.b = b; }
-        if (a !== undefined) { this.a = a; }
-    }
+export abstract class SetDocLabelColorSharedDto<T> {
     /**
      * The document from `buildAssemblyDocument` or `loadStepToDoc`.
      * @default undefined
      */
     document!: T;
-    /**
-     * The label of the part, instance or assembly to color, such as `0:1:1:1`.
-     * @default undefined
-     */
-    label!: string;
     /**
      * The red channel, from 0 to 1.
      * @default 0.5
@@ -422,19 +402,83 @@ export class SetDocLabelColorDto<T> {
 }
 
 /**
- * A document, a label and a name for `assembly.manager.setDocLabelName`.
+ * A document, a label and a color for `assembly.manager.setDocLabelColor`.
  */
-export class SetDocLabelNameDto<T> {
-    constructor(document?: T, label?: string, name?: string) {
+export class SetDocLabelColorDto<T> extends SetDocLabelColorSharedDto<T> {
+    constructor(
+        document?: T,
+        label?: string,
+        r?: number,
+        g?: number,
+        b?: number,
+        a?: number
+    ) {
+        super();
         if (document !== undefined) { this.document = document; }
         if (label !== undefined) { this.label = label; }
-        if (name !== undefined) { this.name = name; }
+        if (r !== undefined) { this.r = r; }
+        if (g !== undefined) { this.g = g; }
+        if (b !== undefined) { this.b = b; }
+        if (a !== undefined) { this.a = a; }
     }
+    /**
+     * The label of the part, instance or assembly to color, such as `0:1:1:1`.
+     * @default undefined
+     */
+    label!: string;
+}
+
+/**
+ * A document, labels and one color for `assembly.manager.setDocLabelColors`, which gives every
+ * label the color in one change.
+ * @beta
+ */
+export class SetDocLabelColorsDto<T> extends SetDocLabelColorSharedDto<T> {
+    constructor(
+        document?: T,
+        labels?: string[],
+        r?: number,
+        g?: number,
+        b?: number,
+        a?: number
+    ) {
+        super();
+        if (document !== undefined) { this.document = document; }
+        if (labels !== undefined) { this.labels = labels; }
+        if (r !== undefined) { this.r = r; }
+        if (g !== undefined) { this.g = g; }
+        if (b !== undefined) { this.b = b; }
+        if (a !== undefined) { this.a = a; }
+    }
+    /**
+     * The labels of the parts, instances or assemblies to color, such as `0:1:1:1`; each takes the
+     * one color.
+     * @default undefined
+     */
+    labels!: string[];
+}
+
+/**
+ * The document labels are renamed in, shared by `SetDocLabelNameDto` and `SetDocLabelNamesDto`.
+ */
+export abstract class SetDocLabelNameSharedDto<T> {
     /**
      * The document from `buildAssemblyDocument` or `loadStepToDoc`.
      * @default undefined
      */
     document!: T;
+}
+
+/**
+ * A document, a label and a name for `assembly.manager.setDocLabelName`.
+ */
+export class SetDocLabelNameDto<T> extends SetDocLabelNameSharedDto<T> {
+    constructor(document?: T, label?: string, name?: string) {
+        super();
+        if (document !== undefined) { this.document = document; }
+        if (label !== undefined) { this.label = label; }
+        if (name !== undefined) { this.name = name; }
+    }
     /**
      * The label of the part, instance or assembly to rename, such as `0:1:1:1`.
      * @default undefined
@@ -445,6 +489,30 @@ export class SetDocLabelNameDto<T> {
      * @default Renamed
      */
     name?: string | undefined = "Renamed";
+}
+
+/**
+ * A document, labels and a name for each for `assembly.manager.setDocLabelNames`, which renames
+ * every label in one change.
+ * @beta
+ */
+export class SetDocLabelNamesDto<T> extends SetDocLabelNameSharedDto<T> {
+    constructor(document?: T, labels?: string[], names?: string[]) {
+        super();
+        if (document !== undefined) { this.document = document; }
+        if (labels !== undefined) { this.labels = labels; }
+        if (names !== undefined) { this.names = names; }
+    }
+    /**
+     * The labels of the parts, instances or assemblies to rename, such as `0:1:1:1`.
+     * @default undefined
+     */
+    labels!: string[];
+    /**
+     * The new name of each label in `labels`, in the same order; the lists are equally long.
+     * @default undefined
+     */
+    names!: string[];
 }
 
 /**
@@ -460,6 +528,43 @@ export class DocumentQueryDto<T> {
      * @default undefined
      */
     document!: T;
+}
+
+/**
+ * A document and how closely the curves of its annotations are followed, for
+ * `assembly.query.getDocumentAnnotations`. Experimental: what that method gives back may still change.
+ * @beta
+ */
+export class DocumentAnnotationsDto<T> {
+    constructor(document?: T, deflection?: number, upAxis?: Base.upAxisConversionEnum) {
+        if (document !== undefined) { this.document = document; }
+        if (deflection !== undefined) { this.deflection = deflection; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
+    }
+    /**
+     * The document from `loadStepToDoc` or another loader, holding the annotations a STEP AP242
+     * file brings along.
+     * @default undefined
+     */
+    document!: T;
+    /**
+     * How far, in the document's units, a curved annotation line may stray from its curve; smaller
+     * draws circles and arcs with more points, up to about 130 points a circle.
+     * @default 0.1
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
+     * @step 0.01
+     */
+    deflection?: number | undefined = 0.1;
+    /**
+     * Whether the annotations and saved views turn, as `docToMesh` with the same `upAxis` turns the
+     * parts: `zUpToYUp` from Z-up into Y-up, `yUpToZUp` into Z-up, and `keep` leaves the
+     * document's axes.
+     * @default keep
+     * @beta
+     */
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
 }
 
 /**
@@ -588,11 +693,11 @@ export class ExportDocumentToGltfDto<T> {
      */
     meshAngle?: number | undefined = 0.5;
     /**
-     * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
-     * speed.
-     * @default false
+     * When true, flat and cylindrical faces get vertices inside them, not only along their edges;
+     * when false, triangles can cut straight across a wide cylindrical face such as a bore.
+     * @default true
      */
-    internalVerticesMode?: boolean | undefined = false;
+    internalVerticesMode?: boolean | undefined = true;
     /**
      * When true, an extra pass refines triangles that bulge beyond the deflection, at the cost of
      * speed.

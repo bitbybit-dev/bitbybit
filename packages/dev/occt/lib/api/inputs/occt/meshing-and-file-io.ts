@@ -7,7 +7,7 @@ import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum, surfaceAnalysisEn
  * add each face's iso curves and a surface analysis value at every vertex.
  */
 export class ShapeToMeshDto<T> {
-    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
+    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number, upAxis?: Base.upAxisConversionEnum) {
         if (shape !== undefined) { this.shape = shape; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -22,6 +22,7 @@ export class ShapeToMeshDto<T> {
         if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
         if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
         if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The shape to triangulate.
@@ -63,11 +64,19 @@ export class ShapeToMeshDto<T> {
      */
     precisionShare?: number | undefined = 0;
     /**
-     * When true, the mesh is made Z-up for tools that treat Z as up: turned a quarter about X under
-     * right-handed conventions, with Y and Z swapped otherwise.
-     * @default false
+     * `yUpToZUp` makes the mesh Z-up for tools that treat Z as up, turned about X when right-handed,
+     * else with Y and Z swapped; `keep` leaves it. `zUpToYUp` is refused.
+     * @default keep
      */
-    adjustYtoZ?: boolean | undefined = false;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+    /**
+     * When true, the mesh turns as `upAxis` `yUpToZUp` does; false, its old default, decides nothing.
+     * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustYtoZ?: boolean | undefined;
     /**
      * When true, each face and edge entry also carries its area or length, center of mass, surface
      * or curve type, tolerance and neighbors, at extra cost.
@@ -127,11 +136,12 @@ export class ShapeToMeshDto<T> {
  * shape as three points.
  */
 export class ShapeFacesToPolygonPointsDto<T> {
-    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, reversedPoints?: boolean) {
+    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, reversedPoints?: boolean, upAxis?: Base.upAxisConversionEnum) {
         if (shape !== undefined) { this.shape = shape; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
         if (reversedPoints !== undefined) { this.reversedPoints = reversedPoints; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The shape to triangulate.
@@ -149,11 +159,19 @@ export class ShapeFacesToPolygonPointsDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, the points are made Z-up for tools that treat Z as up: turned a quarter about X under
-     * right-handed conventions, with Y and Z swapped otherwise.
-     * @default false
+     * `yUpToZUp` makes the points Z-up for tools that treat Z as up, turned about X when right-handed,
+     * else with Y and Z swapped; `keep` leaves them. `zUpToYUp` is refused.
+     * @default keep
      */
-    adjustYtoZ?: boolean | undefined = false;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+    /**
+     * When true, the points turn as `upAxis` `yUpToZUp` does; false, its old default, decides nothing.
+     * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustYtoZ?: boolean | undefined;
     /**
      * When true, the three points of each triangle come in the opposite order, for tools that wind
      * triangles the other way.
@@ -191,7 +209,7 @@ export class ShapeToManifoldMeshDto<T> {
  * settings, iso curves and surface analysis included.
  */
 export class ShapesToMeshesDto<T> {
-    constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
+    constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number, upAxis?: Base.upAxisConversionEnum) {
         if (shapes !== undefined) { this.shapes = shapes; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -206,6 +224,7 @@ export class ShapesToMeshesDto<T> {
         if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
         if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
         if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The shapes to triangulate, one mesh per shape.
@@ -247,11 +266,19 @@ export class ShapesToMeshesDto<T> {
      */
     precisionShare?: number | undefined = 0;
     /**
-     * When true, the meshes are made Z-up for tools that treat Z as up: turned a quarter about X under
-     * right-handed conventions, with Y and Z swapped otherwise.
-     * @default false
+     * `yUpToZUp` makes the meshes Z-up for tools that treat Z as up, turned about X when right-handed,
+     * else with Y and Z swapped; `keep` leaves them. `zUpToYUp` is refused.
+     * @default keep
      */
-    adjustYtoZ?: boolean | undefined = false;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+    /**
+     * When true, the meshes turn as `upAxis` `yUpToZUp` does; false, its old default, decides nothing.
+     * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustYtoZ?: boolean | undefined;
     /**
      * When true, each face and edge entry also carries its area or length, center of mass, surface
      * or curve type, tolerance and neighbors, at extra cost.
@@ -311,7 +338,7 @@ export class ShapesToMeshesDto<T> {
  * shapes into one mesh with the document's colors.
  */
 export class DocToMeshDto<U> {
-    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean) {
+    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean, upAxis?: Base.upAxisConversionEnum) {
         if (document !== undefined) { this.document = document; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -321,6 +348,7 @@ export class DocToMeshDto<U> {
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
         if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
         if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The assembly document whose top-level shapes are meshed together; their face colors end up in
@@ -354,11 +382,19 @@ export class DocToMeshDto<U> {
      */
     relativeDeflection?: boolean | undefined = false;
     /**
-     * When true, the mesh is made Z-up for tools that treat Z as up: turned a quarter about X under
-     * right-handed conventions, with Y and Z swapped otherwise.
-     * @default false
+     * `zUpToYUp` turns the mesh from the file's Z-up into Y-up, as `io.loadSTEPorIGES` turns a
+     * shape; `yUpToZUp` makes it Z-up for tools that treat Z as up; `keep` leaves it.
+     * @default keep
      */
-    adjustYtoZ?: boolean | undefined = false;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+    /**
+     * When true, the mesh turns as `upAxis` `yUpToZUp` does; false, its old default, decides nothing.
+     * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustYtoZ?: boolean | undefined;
     /**
      * When true, each face and edge entry also carries its area or length, center of mass, surface
      * or curve type, tolerance, neighbors and ids, at extra cost.
@@ -389,7 +425,7 @@ export class DocToMeshDto<U> {
  * shape into its own mesh with the document's colors.
  */
 export class DocToMeshesDto<U> {
-    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean) {
+    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean, upAxis?: Base.upAxisConversionEnum) {
         if (document !== undefined) { this.document = document; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -399,6 +435,7 @@ export class DocToMeshesDto<U> {
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
         if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
         if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The assembly document whose top-level shapes are meshed one by one; each shape's face colors
@@ -432,11 +469,19 @@ export class DocToMeshesDto<U> {
      */
     relativeDeflection?: boolean | undefined = false;
     /**
-     * When true, the meshes are made Z-up for tools that treat Z as up: turned a quarter about X under
-     * right-handed conventions, with Y and Z swapped otherwise.
-     * @default false
+     * `zUpToYUp` turns the meshes from the file's Z-up into Y-up, as `io.loadSTEPorIGES` turns a
+     * shape; `yUpToZUp` makes them Z-up for tools that treat Z as up; `keep` leaves them.
+     * @default keep
      */
-    adjustYtoZ?: boolean | undefined = false;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+    /**
+     * When true, the meshes turn as `upAxis` `yUpToZUp` does; false, its old default, decides nothing.
+     * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustYtoZ?: boolean | undefined;
     /**
      * When true, each face and edge entry also carries its area or length, center of mass, surface
      * or curve type, tolerance, neighbors and ids, at extra cost.
@@ -467,12 +512,13 @@ export class DocToMeshesDto<U> {
  * file.
  */
 export class SaveStepDto<T> {
-    constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean, unit?: Base.unitOfLengthEnum) {
+    constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean, unit?: Base.unitOfLengthEnum, upAxis?: Base.upAxisConversionEnum) {
         if (shape !== undefined) { this.shape = shape; }
         if (fileName !== undefined) { this.fileName = fileName; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
         if (unit !== undefined) { this.unit = unit; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The shape written to the file.
@@ -485,13 +531,21 @@ export class SaveStepDto<T> {
      */
     fileName?: string | undefined = "shape.step";
     /**
-     * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
-     * what the screen shows either way; without them this swaps Y and Z.
-     * @default false
+     * `yUpToZUp` writes the file Z-up for CAD programs, Y and Z swapped when no conventions are set;
+     * `keep` writes the model's axes. `zUpToYUp` is refused.
+     * @default keep
      */
-    adjustYtoZ?: boolean | undefined = false;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
     /**
-     * When true, `adjustYtoZ` turns the shape 90 degrees about X instead of swapping, for a
+     * When true, the file is turned as `upAxis` `yUpToZUp` does; false, its old default, decides
+     * nothing. True wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustYtoZ?: boolean | undefined;
+    /**
+     * When true, `upAxis` `yUpToZUp` turns the shape 90 degrees about X instead of swapping, for a
      * right-handed scene.
      * @deprecated Set the conventions once instead, `bitbybit.setConventions(1)`, which maps
      * every file for the engine in use.
@@ -516,13 +570,14 @@ export class SaveStepDto<T> {
  * writes it as an STL file.
  */
 export class SaveStlDto<T> {
-    constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, binary?: boolean) {
+    constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, binary?: boolean, upAxis?: Base.upAxisConversionEnum) {
         if (shape !== undefined) { this.shape = shape; }
         if (fileName !== undefined) { this.fileName = fileName; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
         if (binary !== undefined) { this.binary = binary; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The shape written to the file.
@@ -541,11 +596,19 @@ export class SaveStlDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
-     * what the screen shows either way; without them this swaps Y and Z.
-     * @default false
+     * `yUpToZUp` writes the file Z-up for CAD programs, Y and Z swapped when no conventions are set;
+     * `keep` writes the model's axes. `zUpToYUp` is refused.
+     * @default keep
      */
-    adjustYtoZ?: boolean | undefined = false;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+    /**
+     * When true, the file is turned as `upAxis` `yUpToZUp` does; false, its old default, decides
+     * nothing. True wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustYtoZ?: boolean | undefined;
     /**
      * When true, a browser download of the file is started where that is possible; the kernel
      * itself only returns the text or the bytes.
@@ -820,11 +883,12 @@ export class SvgLayersDto<T> {
  * a shape.
  */
 export class ImportStepIgesFromTextDto {
-    constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
+    constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum, upAxis?: Base.upAxisConversionEnum) {
         if (text !== undefined) { this.text = text; }
         if (fileType !== undefined) { this.fileType = fileType; }
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
         if (unit !== undefined) { this.unit = unit; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The full text of the STEP or IGES file.
@@ -837,10 +901,19 @@ export class ImportStepIgesFromTextDto {
      */
     fileType?: fileTypeEnum | undefined = fileTypeEnum.step;
     /**
-     * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
-     * @default true
+     * Whether the shape turns: `zUpToYUp` turns the file's Z-up into this library's Y-up, and `keep`
+     * leaves the file's axes. `yUpToZUp` is refused.
+     * @default zUpToYUp
      */
-    adjustZtoY?: boolean | undefined = true;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+    /**
+     * When false, the shape keeps its axes as `keep` does; true, its old default, decides nothing.
+     * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustZtoY?: boolean | undefined;
     /**
      * The unit the shape comes back in, scaled from whatever unit the file is written in.
      * @default millimetre
@@ -851,10 +924,11 @@ export class ImportStepIgesFromTextDto {
  * A STEP or IGES file for the core `occt.io.loadSTEPorIGES`, which reads it into a shape.
  */
 export class ImportStepIgesDto {
-    constructor(assetFile?: File, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
+    constructor(assetFile?: File, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum, upAxis?: Base.upAxisConversionEnum) {
         if (assetFile !== undefined) { this.assetFile = assetFile; }
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
         if (unit !== undefined) { this.unit = unit; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The file to read; its extension decides whether it is STEP or IGES.
@@ -862,10 +936,19 @@ export class ImportStepIgesDto {
      */
     assetFile!: File;
     /**
-     * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
-     * @default true
+     * Whether the shape turns: `zUpToYUp` turns the file's Z-up into this library's Y-up, and `keep`
+     * leaves the file's axes. `yUpToZUp` is refused.
+     * @default zUpToYUp
      */
-    adjustZtoY?: boolean | undefined = true;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+    /**
+     * When false, the shape keeps its axes as `keep` does; true, its old default, decides nothing.
+     * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustZtoY?: boolean | undefined;
     /**
      * The unit the shape comes back in, scaled from whatever unit the file is written in.
      * @default millimetre
@@ -878,11 +961,12 @@ export class ImportStepIgesDto {
  * into a shape.
  */
 export class LoadStepOrIgesDto {
-    constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
+    constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum, upAxis?: Base.upAxisConversionEnum) {
         if (filetext !== undefined) { this.filetext = filetext; }
         if (fileName !== undefined) { this.fileName = fileName; }
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
         if (unit !== undefined) { this.unit = unit; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The file's text for `.step`, `.stp`, `.iges` and `.igs`, or an ArrayBuffer for the compressed
@@ -897,10 +981,19 @@ export class LoadStepOrIgesDto {
      */
     fileName?: string | undefined = "shape.step";
     /**
-     * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
-     * @default true
+     * Whether the shape turns: `zUpToYUp` turns the file's Z-up into this library's Y-up, and `keep`
+     * leaves the file's axes. `yUpToZUp` is refused.
+     * @default zUpToYUp
      */
-    adjustZtoY?: boolean | undefined = true;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+    /**
+     * When false, the shape keeps its axes as `keep` does; true, its old default, decides nothing.
+     * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustZtoY?: boolean | undefined;
     /**
      * The unit the shape comes back in, scaled from whatever unit the file is written in.
      * `io.fileLengthUnit` tells which that is.
@@ -984,11 +1077,11 @@ export class ConvertStepToGltfDto {
      */
     meshRelative?: boolean | undefined = true;
     /**
-     * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
-     * speed.
-     * @default false
+     * When true, flat and cylindrical faces get vertices inside them, not only along their edges;
+     * when false, triangles can cut straight across a wide cylindrical face such as a bore.
+     * @default true
      */
-    internalVerticesMode?: boolean | undefined = false;
+    internalVerticesMode?: boolean | undefined = true;
     /**
      * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
      * speed.
@@ -1192,11 +1285,11 @@ export class ConvertStepToGltfAdvancedDto {
     meshRelative?: boolean | undefined = true;
 
     /**
-     * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
-     * speed.
-     * @default false
+     * When true, flat and cylindrical faces get vertices inside them, not only along their edges;
+     * when false, triangles can cut straight across a wide cylindrical face such as a bore.
+     * @default true
      */
-    internalVerticesMode?: boolean | undefined = false;
+    internalVerticesMode?: boolean | undefined = true;
 
     /**
      * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
@@ -1255,10 +1348,19 @@ export class ConvertStepToGltfAdvancedDto {
     transformFormat?: gltfTransformFormatEnum | undefined = gltfTransformFormatEnum.compact;
 
     /**
-     * When true, the file's Z-up is turned into glTF's Y-up; false keeps Z up.
-     * @default true
+     * Whether the model turns: `zUpToYUp` turns the file's Z-up into glTF's Y-up, and `keep` keeps
+     * Z up. `yUpToZUp` is refused.
+     * @default zUpToYUp
      */
-    adjustZtoY?: boolean | undefined = true;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+    /**
+     * When false, the model keeps its axes as `keep` does; true, its old default, decides nothing.
+     * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustZtoY?: boolean | undefined;
 
     /**
      * A factor applied to the whole model, such as 0.001 to turn millimeters into meters; 1 keeps

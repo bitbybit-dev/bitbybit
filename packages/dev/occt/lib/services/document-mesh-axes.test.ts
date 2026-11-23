@@ -4,6 +4,8 @@ import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService } from "../occ-service";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
+import { InputError } from "@bitbybit-dev/base";
+import { shapeInModelAxes } from "./base/file-axes";
 
 const { leftHanded, rightHanded } = Inputs.Base.coordinateSystemEnum;
 
@@ -184,5 +186,40 @@ describe("OCCT document meshes: which axis lands where", () => {
 
         // Assert
         expect(readingOf(mesh)).toEqual(before);
+    });
+
+    it.each([
+        ["no coordinate system", undefined, [3, 7, 5]],
+        ["a left-handed system", leftHanded, [3, 7, 5]],
+        ["a right-handed system", rightHanded, [3, 7, -5]],
+    ] as [string, System, Point][])("should stand a Z-up document Y-up in %s as io.loadSTEPorIGES turns the shape it reads, facing out", (_name, system, centre) => {
+        // Arrange
+        inSystem(system);
+        const document = documentOf(marker());
+        const loaded = shapeInModelAxes(occHelper, marker(), true);
+
+        // Act
+        const mesh = occt.docToMesh({ document, precision: 0.01, upAxis: Inputs.Base.upAxisConversionEnum.zUpToYUp, computeMetadata: true });
+        const meshes = occt.docToMeshes({ document, precision: 0.01, upAxis: Inputs.Base.upAxisConversionEnum.zUpToYUp, computeMetadata: true });
+
+        // Assert
+        const corners = mesh.faceList.flatMap(face => inTriples(face.vertexCoord));
+        expect(rounded([0, 1, 2].map(axis => (Math.min(...corners.map(corner => corner[axis]!)) + Math.max(...corners.map(corner => corner[axis]!))) / 2))).toEqual(centre);
+        expect(readingOf(mesh)).toEqual(readingOf(occt.shapeToMesh({ shape: loaded, precision: 0.01, computeMetadata: true })));
+        expect(meshes.map(readingOf)).toEqual([readingOf(mesh)]);
+        expect(volumeOf(mesh)).toBeCloseTo(0.24, 4);
+    });
+
+    it("should refuse turning a document both ways at once", () => {
+        // Arrange
+        const document = documentOf(marker());
+
+        // Act
+        const both = (): Mesh => occt.docToMesh({ document, upAxis: Inputs.Base.upAxisConversionEnum.zUpToYUp, adjustYtoZ: true });
+
+        // Assert
+        expect(both).toThrow(InputError);
+        expect(both).toThrow("`upAxis`");
+        expect(both).toThrow("`adjustYtoZ`");
     });
 });

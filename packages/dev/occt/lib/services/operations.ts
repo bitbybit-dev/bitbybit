@@ -9,9 +9,11 @@ import { viewOntoGround } from "./base/file-axes";
 import { eachShape, keptBehind, sliceAlongFrames, splitAlongFrame } from "./base/frame-cuts";
 import { withHistories, withHistory } from "./base/history";
 import { released } from "./base/release";
-import { checkedFrame, checkedFrames, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "./base/input-checks";
+import { checkedChoice, checkedFlag, checkedFrame, checkedFrames, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "./base/input-checks";
+import { hatchedSectionOf } from "./base/hatched-sections";
 import { withKernelErrorsRead, withKernelRefusals } from "./base/kernel-refusals";
 
+const HATCH_PATTERNS: readonly Inputs.IO.hatchPatternEnum[] = Object.values(Inputs.IO.hatchPatternEnum);
 const SPINE_OUT_OF_PLANE = /SweepEvolved: the spine does not lie in a plane/;
 const PERSPECTIVE_FROM_A_MESH = /HiddenLines: a perspective needs the exact algorithm/;
 const EYE_INSIDE_THE_SHAPE = /HiddenLines: the shape reaches the eye or lies behind it/;
@@ -1261,6 +1263,47 @@ export class OCCTOperations {
     }
 
     /**
+     * Cuts shapes with the plane of a frame and hatches the cut faces in one call: for each shape its
+     * cut faces, their hatch lines as edges, and each face's hatch as drawing data in the frame's
+     * coordinates.
+     *
+     * The hatches write to DXF or SVG beside `hiddenLines` of the same frame, and `bitbybit.draw`
+     * draws the result. Experimental.
+     * @param inputs - The shapes, the frame, the hatch pattern, angle and spacing, and the tolerances
+     * @returns The frame and, for each shape in order, its angle and its hatched cut faces
+     * @group divisions
+     * @shortname hatched section by frame
+     * @drawable true
+     * @beta
+     * @example
+     * ```typescript
+     * const section = await bitbybit.occt.operations.hatchedSectionByFrame({
+     *     shapes: [housing, shaft],
+     *     frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] },
+     *     pattern: Bit.Inputs.IO.hatchPatternEnum.ansi31,
+     *     angle: 45,
+     *     spacing: 2,
+     * });
+     * const hatches = section.shapes.flatMap(cut => cut.caps.map(cap => cap.hatch));
+     * const dxf = await bitbybit.occt.io.dxfCreate({ pathsParts: [{ layer: "hatch", paths: [], hatches }] });
+     * ```
+     */
+    hatchedSectionByFrame(inputs: Inputs.OCCT.HatchedSectionByFrameDto<TopoDS_Shape>): Models.OCCT.HatchedSection<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.HatchedSectionByFrameDto, inputs) as Resolved.OCCT.HatchedSectionByFrameDto<TopoDS_Shape>;
+        const shapes = checkedShapes(resolved.shapes);
+        const checked = checkedFrame(resolved.frame, "frame");
+        const frame = this.och.base.frame.create({ origin: checked.origin, normal: checked.normal, direction: checked.direction });
+        return hatchedSectionOf(this.och, shapes, frame, {
+            pattern: checkedChoice(resolved.pattern, HATCH_PATTERNS, "pattern"),
+            angle: checkedNumber(resolved.angle, "angle"),
+            spacing: checkedWithin(resolved.spacing, "spacing", { above: 0 }),
+            neighbourAngles: checkedFlag(resolved.neighbourAngles, "neighbourAngles"),
+            curveTolerance: checkedWithin(resolved.curveTolerance, "curveTolerance", { above: 0 }),
+            tolerance: checkedNumber(resolved.tolerance, "tolerance", 0),
+        });
+    }
+
+    /**
      * Cuts a face into pieces along edges or wires lying on it, like scoring a sheet.
      *
      * A cutter cuts only where it lies on the face, and a closed loop inside it cuts out the region it
@@ -1326,16 +1369,61 @@ export class OCCTOperations {
      *     hiddenEdges: true,
      *     focus: 0,
      *     precision: 0.01,
+     *     tidy: false,
      * });
      * ```
      */
     hiddenLines(inputs: Inputs.OCCT.HiddenLinesDto<TopoDS_Shape>): Models.OCCT.HiddenLinesResult<TopoDS_Compound> {
         const resolved = resolveDto(Inputs.OCCT.HiddenLinesDto, inputs) as Resolved.OCCT.HiddenLinesDto<TopoDS_Shape>;
-        const shape = checkedShape(resolved.shape);
-        const frame = checkedFrame(resolved.frame, "frame");
-        const focus = checkedNumber(resolved.focus, "focus", 0);
-        const precision = resolved.exact ? 0 : checkedWithin(resolved.precision, "precision", { above: 0 });
-        const drawing = withKernelRefusals(this.och.occ, () => this.och.occ.HiddenLines(shape, numbersOfFrames([frame]), resolved.exact, resolved.smoothEdges, resolved.hiddenEdges, focus, precision), message => {
+        const drawing = this.viewDrawn(resolved, (shape, view, focus, precision) => this.och.occ.HiddenLines(shape, view, resolved.exact, resolved.smoothEdges, resolved.hiddenEdges, resolved.tidy, focus, precision));
+        return { visible: this.ontoGround(drawing.visible), hidden: this.ontoGround(drawing.hidden) };
+    }
+
+    /**
+     * Draws a shape as `hiddenLines` does, with the edges sorted by kind, so a drawing can give
+     * each its own line weight.
+     *
+     * `sharp` holds the edges where faces meet at an angle, `outline` the silhouettes of curved
+     * faces and `smooth` the edges where faces meet without a crease; `hiddenSharp`,
+     * `hiddenOutline` and `hiddenSmooth` hold the same where faces cover them.
+     * @param inputs - The shape, the view frame and the drawing options
+     * @returns Six compounds of edges on the XZ plane: three kinds seen and the same three hidden
+     * @group views
+     * @shortname hidden lines by kind
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { sharp, outline, hiddenSharp, hiddenOutline } = await bitbybit.occt.operations.hiddenLinesByKind({
+     *     shape: part,
+     *     frame: { origin: [0, 0, 0], normal: [1, 1, 1], direction: [1, 0, -1] },
+     *     exact: true,
+     *     smoothEdges: false,
+     *     hiddenEdges: true,
+     *     focus: 0,
+     *     precision: 0.01,
+     *     tidy: false,
+     * });
+     * ```
+     */
+    hiddenLinesByKind(inputs: Inputs.OCCT.HiddenLinesDto<TopoDS_Shape>): Models.OCCT.HiddenLinesByKindResult<TopoDS_Compound> {
+        const resolved = resolveDto(Inputs.OCCT.HiddenLinesDto, inputs) as Resolved.OCCT.HiddenLinesDto<TopoDS_Shape>;
+        const drawing = this.viewDrawn(resolved, (shape, view, focus, precision) => this.och.occ.HiddenLinesByKind(shape, view, resolved.exact, resolved.smoothEdges, resolved.hiddenEdges, resolved.tidy, focus, precision));
+        return {
+            sharp: this.ontoGround(drawing.sharp),
+            outline: this.ontoGround(drawing.outline),
+            smooth: this.ontoGround(drawing.smooth),
+            hiddenSharp: this.ontoGround(drawing.hiddenSharp),
+            hiddenOutline: this.ontoGround(drawing.hiddenOutline),
+            hiddenSmooth: this.ontoGround(drawing.hiddenSmooth),
+        };
+    }
+
+    private viewDrawn<T>(inputs: Resolved.OCCT.HiddenLinesDto<TopoDS_Shape>, draw: (shape: TopoDS_Shape, view: number[], focus: number, precision: number) => T): T {
+        const shape = checkedShape(inputs.shape);
+        const frame = checkedFrame(inputs.frame, "frame");
+        const focus = checkedNumber(inputs.focus, "focus", 0);
+        const precision = inputs.exact ? 0 : checkedWithin(inputs.precision, "precision", { above: 0 });
+        return withKernelRefusals(this.och.occ, () => draw(shape, numbersOfFrames([frame]), focus, precision), message => {
             if (PERSPECTIVE_FROM_A_MESH.test(message)) {
                 return new InputError("`exact` is false, and only the exact algorithm draws a perspective: set `exact` to true, or `focus` to 0 for a parallel view.", "exact");
             }
@@ -1343,7 +1431,6 @@ export class OCCTOperations {
                 ? new InputError(`\`focus\` is ${focus}, which puts the eye inside the shape or leaves part of it behind the eye: give a focus that keeps the whole shape in front of the eye, or 0 for a parallel view.`, "focus")
                 : undefined;
         });
-        return { visible: this.ontoGround(drawing.visible), hidden: this.ontoGround(drawing.hidden) };
     }
 
     private offsetAdvancedWithHistory(inputs: Resolved.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {

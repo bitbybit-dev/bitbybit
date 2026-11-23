@@ -196,7 +196,7 @@ describe("OCCT io drawing paths with exact curves", () => {
     };
 
     const viewPolylines = (shape: TopoDS_Shape): Point3[][][] => {
-        const lines = occt.HiddenLines(shape, numbersOfFrames([OBLIQUE_VIEW]), true, false, true, 0, VIEW_PRECISION);
+        const lines = occt.HiddenLines(shape, numbersOfFrames([OBLIQUE_VIEW]), true, false, true, false, 0, VIEW_PRECISION);
         try {
             return [lines.hidden, lines.visible].map(drawing => {
                 occt.BRepLib_BuildCurves3d(drawing);

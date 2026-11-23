@@ -332,15 +332,26 @@ describe("OCCT history twins against their plain operations", () => {
             expect(occt.shapes.face.getFaces({ shape: fused }).map(face => occt.shapes.face.getFaceArea({ shape: face }))).toEqual(Array(6).fill(expect.closeTo(100, 6)));
         });
 
-        it("should refuse, or give a valid solid, when it rounds every edge of a box with a radius past half its side", () => {
+        it("should refuse, or give a solid inside the box it rounds with a volume a solid there can have, when it rounds every edge of a box with a radius past half its side, plain and twin alike", () => {
             // Arrange
             const shape = cube(10);
+            const around = occt.operations.boundingBoxOfShape({ shape });
+            const slack = 1e-6;
+            const fits = (made: TopoDS_Shape): boolean => {
+                const box = occt.operations.boundingBoxOfShape({ shape: made });
+                const inside = box.min.every((value, axis) => value >= around.min[axis]! - slack) && box.max.every((value, axis) => value <= around.max[axis]! + slack);
+                const volume = oracles.volume(made);
+                return inside && volume > 0 && volume <= around.size.reduce((product, side) => product * side, 1);
+            };
 
             // Act
-            const rounded = outcomeOf(() => occt.fillets.filletEdges({ shape, radius: 5.5 }));
+            const rounded = [
+                outcomeOf(() => occt.fillets.filletEdges({ shape, radius: 5.5 })),
+                outcomeOf(() => occt.fillets.filletEdgesWithHistory({ shape, radius: 5.5 }).shape),
+            ];
 
             // Assert
-            expect(rounded.value === undefined || occt.shapeFix.isValid({ shape: rounded.value })).toBe(true);
+            expect(rounded.map(outcome => outcome.value === undefined || fits(outcome.value))).toEqual([true, true]);
         });
     });
 });

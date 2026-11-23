@@ -1,4 +1,4 @@
-import type { Base } from "@bitbybit-dev/base";
+import { Base } from "@bitbybit-dev/base";
 import type { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 import { dxfAcadVersionEnum } from "./enums";
 
@@ -39,10 +39,11 @@ export class SewWithReportDto<T> {
  * or one face that carries the whole mesh.
  */
 export class LoadStlDto {
-    constructor(stlData?: string | ArrayBuffer | Uint8Array | File | Blob, asFaces?: boolean, adjustZtoY?: boolean) {
+    constructor(stlData?: string | ArrayBuffer | Uint8Array | File | Blob, asFaces?: boolean, adjustZtoY?: boolean, upAxis?: Base.upAxisConversionEnum) {
         if (stlData !== undefined) { this.stlData = stlData; }
         if (asFaces !== undefined) { this.asFaces = asFaces; }
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The STL file, ASCII or binary: the text of an ASCII file, or the file as ArrayBuffer,
@@ -57,10 +58,19 @@ export class LoadStlDto {
      */
     asFaces?: boolean | undefined = false;
     /**
-     * When true, the file's Z-up is turned into this library's Y-up.
-     * @default true
+     * Whether the shape turns: `zUpToYUp` turns the file's Z-up into this library's Y-up, and `keep`
+     * leaves the file's axes. `yUpToZUp` is refused.
+     * @default zUpToYUp
      */
-    adjustZtoY?: boolean | undefined = true;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+    /**
+     * When false, the shape keeps its axes as `keep` does; true, its old default, decides nothing.
+     * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustZtoY?: boolean | undefined;
 }
 
 /**
@@ -264,12 +274,13 @@ export class DxfShapesResult<T> {
  * writes it as an OBJ file with the material library its `mtllib` line names.
  */
 export class SaveObjDto<T> {
-    constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean) {
+    constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, upAxis?: Base.upAxisConversionEnum) {
         if (shape !== undefined) { this.shape = shape; }
         if (fileName !== undefined) { this.fileName = fileName; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The shape written to the file.
@@ -292,11 +303,19 @@ export class SaveObjDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
-     * what the screen shows either way; without them this swaps Y and Z.
-     * @default false
+     * `yUpToZUp` writes the file Z-up for CAD programs, Y and Z swapped when no conventions are set;
+     * `keep` writes the model's axes. `zUpToYUp` is refused.
+     * @default keep
      */
-    adjustYtoZ?: boolean | undefined = false;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+    /**
+     * When true, the file is turned as `upAxis` `yUpToZUp` does; false, its old default, decides
+     * nothing. True wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustYtoZ?: boolean | undefined;
     /**
      * When true, a browser download of the OBJ file and of any material library is started where
      * that is possible; the kernel itself only returns the texts.
@@ -310,12 +329,13 @@ export class SaveObjDto<T> {
  * writes it as an ASCII PLY file with normals.
  */
 export class SavePlyDto<T> {
-    constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean) {
+    constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, upAxis?: Base.upAxisConversionEnum) {
         if (shape !== undefined) { this.shape = shape; }
         if (fileName !== undefined) { this.fileName = fileName; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The shape written to the file.
@@ -337,11 +357,19 @@ export class SavePlyDto<T> {
      */
     precision?: number | undefined = 0.01;
     /**
-     * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
-     * what the screen shows either way; without them this swaps Y and Z.
-     * @default false
+     * `yUpToZUp` writes the file Z-up for CAD programs, Y and Z swapped when no conventions are set;
+     * `keep` writes the model's axes. `zUpToYUp` is refused.
+     * @default keep
      */
-    adjustYtoZ?: boolean | undefined = false;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+    /**
+     * When true, the file is turned as `upAxis` `yUpToZUp` does; false, its old default, decides
+     * nothing. True wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustYtoZ?: boolean | undefined;
     /**
      * When true, a browser download of the file is started where that is possible; the kernel
      * itself only returns the text.

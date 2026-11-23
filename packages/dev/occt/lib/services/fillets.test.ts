@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import type { BitbybitOcctModule, ClassHandle, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
+import { InputError } from "@bitbybit-dev/base";
 import * as Inputs from "../api/inputs";
 import { OCCTFillets } from "./fillets";
 import { OCCTEdge, OCCTFace, OCCTSolid, OCCTWire } from "./shapes";
@@ -561,6 +562,192 @@ describe("OCCT fillets unit tests", () => {
         filRes.delete();
         faces.forEach(f => f.delete());
         edge.delete();
+    });
+
+    const SLAB = 0.002;
+    const cornerRadiusAt = (shape: TopoDS_Shape, along: TopoDS_Edge, fraction: number): number => {
+        const [from, to] = [occHelper.edgesService.startPointOnEdge({ shape: along }), occHelper.edgesService.endPointOnEdge({ shape: along })];
+        const axis = [0, 1, 2].find(at => from[at] !== to[at])!;
+        const sides: Inputs.Base.Point3 = [4, 4, 4];
+        const center: Inputs.Base.Point3 = [0, 0, 0];
+        sides[axis] = SLAB;
+        center[axis] = from[axis]! + (to[axis]! - from[axis]!) * fraction;
+        const slab = occHelper.solidsService.createBox({ width: sides[0], height: sides[1], length: sides[2], center, originOnCenter: true });
+        const pieces = occHelper.booleansService.intersection({ shapes: [shape, slab], keepEdges: false });
+        const area = pieces.reduce((sum, piece) => sum + solid.getSolidVolume({ shape: piece }), 0) / SLAB;
+        [slab, ...pieces].forEach(made => made.delete());
+        return Math.sqrt((4 - area) / (1 - Math.PI / 4));
+    };
+
+    it("should give each of two radii at the fraction of the edge's length asked, as a section there shows, rather than at the edge's ends", () => {
+        // Arrange
+        const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
+        const cubeEdge = occHelper.shapeGettersService.getEdges({ shape: cube })[0]!;
+
+        // Act
+        const filleted = fillets.filletEdgeVariableRadius({ shape: cube, edge: cubeEdge, radiusList: [0.1, 0.3], paramsU: [0.3, 0.7] });
+
+        // Assert
+        expect([0.3, 0.7].map(fraction => cornerRadiusAt(filleted, cubeEdge, fraction))).toEqual([expect.closeTo(0.1, 4), expect.closeTo(0.3, 4)]);
+        expect(solid.getSolidVolume({ shape: filleted })).toBeCloseTo(7.979069170055784, 9);
+        [cube, cubeEdge, filleted].forEach(made => made.delete());
+    });
+
+    it("should give each of three radii off the ends of the edge at its own fraction of the edge's length", () => {
+        // Arrange
+        const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
+        const cubeEdge = occHelper.shapeGettersService.getEdges({ shape: cube })[0]!;
+
+        // Act
+        const filleted = fillets.filletEdgeVariableRadius({ shape: cube, edge: cubeEdge, radiusList: [0.1, 0.3, 0.2], paramsU: [0.2, 0.5, 0.8] });
+
+        // Assert
+        expect([0.2, 0.5, 0.8].map(fraction => cornerRadiusAt(filleted, cubeEdge, fraction))).toEqual([expect.closeTo(0.1, 4), expect.closeTo(0.3, 4), expect.closeTo(0.2, 4)]);
+        expect(solid.getSolidVolume({ shape: filleted })).toBeCloseTo(7.981133927715228, 9);
+        [cube, cubeEdge, filleted].forEach(made => made.delete());
+    });
+
+    it("should give each radius at its fraction of a curved edge's length, which lies away from that fraction of its parameter, as a section across the edge there shows", () => {
+        // Arrange
+        const ellipse = occHelper.entitiesService.createEllipse(1.5, 4, [0, 0, 0], [0, 0, 1], Inputs.OCCT.typeSpecificityEnum.face);
+        const prism = occHelper.operationsService.extrude({ shape: ellipse, direction: [0, 0, 2] });
+        const lower = occHelper.solidsService.createBox({ width: 10, height: 5, length: 4, center: [0, -2.5, 1], originOnCenter: true });
+        const half = occHelper.booleansService.difference({ shape: prism, shapes: [lower], keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
+        const edges = occHelper.shapeGettersService.getEdges({ shape: half });
+        const arc = edges.find(candidate => {
+            const middle = occHelper.edgesService.pointOnEdgeAtParam({ shape: candidate, param: 0.5 });
+            return Math.abs(middle[2] - 2) < 1e-6 && middle[1] > 1;
+        })!;
+        const forward = arc.Oriented(occt.TopAbs_Orientation.FORWARD);
+        const curve = occt.CastToEdge(forward);
+        const length = occHelper.edgesService.getEdgeLength({ shape: curve });
+        const sectionArea = (shape: TopoDS_Shape, fraction: number): number => {
+            const at = occHelper.edgesService.pointOnEdgeAtLength({ shape: curve, length: fraction * length });
+            const along = occHelper.edgesService.tangentOnEdgeAtLength({ shape: curve, length: fraction * length });
+            const slab = occHelper.solidsService.createBox({ width: SLAB, height: 8, length: 8, center: [0, 0, 0], originOnCenter: true });
+            const turned = occHelper.transformsService.rotate({ shape: slab, axis: [0, 0, 1], angle: Math.atan2(along[1], along[0]) * 180 / Math.PI });
+            const placed = occHelper.transformsService.translate({ shape: turned, translation: at });
+            const pieces = occHelper.booleansService.intersection({ shapes: [shape, placed], keepEdges: false });
+            const area = pieces.reduce((sum, piece) => sum + solid.getSolidVolume({ shape: piece }), 0) / SLAB;
+            [slab, turned, placed, ...pieces].forEach(made => made.delete());
+            return area;
+        };
+        const radiusAt = (filleted: TopoDS_Shape, fraction: number): number => Math.sqrt((sectionArea(half, fraction) - sectionArea(filleted, fraction)) / (1 - Math.PI / 4));
+        const apart = (fraction: number): number => occHelper.base.point.distance({
+            startPoint: occHelper.edgesService.pointOnEdgeAtLength({ shape: curve, length: fraction * length }),
+            endPoint: occHelper.edgesService.pointOnEdgeAtParam({ shape: curve, param: fraction }),
+        });
+
+        // Act
+        const filleted = fillets.filletEdgeVariableRadius({ shape: half, edge: arc, radiusList: [0.1, 0.25, 0.1, 0.25], paramsU: [0, 0.3, 0.6, 1] });
+
+        // Assert
+        expect([apart(0.3), apart(0.6)].every(distance => distance > 0.3)).toBe(true);
+        expect([0.3, 0.6].map(fraction => radiusAt(filleted, fraction))).toEqual([expect.closeTo(0.25, 3), expect.closeTo(0.1, 3)]);
+        [ellipse, prism, lower, half, ...edges, forward, curve, filleted].forEach(made => made.delete());
+    });
+
+    it("should refuse a position outside 0 to 1 before the kernel runs, naming the list and the place in it", () => {
+        // Arrange
+        const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
+        const cubeEdges = occHelper.shapeGettersService.getEdges({ shape: cube });
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (error) {
+                return error;
+            }
+            return "nothing was refused";
+        };
+
+        // Act
+        const refusals = [
+            refusalOf(() => fillets.filletEdgeVariableRadius({ shape: cube, edge: cubeEdges[0]!, radiusList: [0.1, 0.2, 0.3], paramsU: [0, 50, 100] })),
+            refusalOf(() => fillets.filletEdgesSameVariableRadius({ shape: cube, edges: [cubeEdges[0]!, cubeEdges[1]!], radiusList: [0.1, 0.2], paramsU: [-0.5, 1] })),
+            refusalOf(() => fillets.filletEdgesVariableRadius({ shape: cube, edges: [cubeEdges[0]!, cubeEdges[1]!], radiusLists: [[0.1, 0.2], [0.1, 0.2]], paramsULists: [[0, 1], [0, Number.NaN]] })),
+        ];
+
+        // Assert
+        expect(refusals).toEqual([
+            new InputError("`paramsU[1]` is 50, but a position is a fraction of the edge's length, from 0 to 1.", "paramsU[1]"),
+            new InputError("`paramsU[0]` is -0.5, but a position is a fraction of the edge's length, from 0 to 1.", "paramsU[0]"),
+            new InputError("`paramsULists[1][1]` is NaN, but a position is a fraction of the edge's length, from 0 to 1.", "paramsULists[1][1]"),
+        ]);
+        expect(refusals.map(refusal => (refusal as InputError).property)).toEqual(["paramsU[1]", "paramsU[0]", "paramsULists[1][1]"]);
+        [cube, ...cubeEdges].forEach(made => made.delete());
+    });
+
+    it("should refuse a radius that is not a finite number above 0 before the kernel runs, naming the radius or its place in its list", () => {
+        // Arrange
+        const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
+        const cubeEdges = occHelper.shapeGettersService.getEdges({ shape: cube });
+        const [first, second] = [cubeEdges[0]!, cubeEdges[1]!];
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (error) {
+                return error;
+            }
+            return "nothing was refused";
+        };
+
+        // Act
+        const refusals = [
+            refusalOf(() => fillets.filletEdgeVariableRadius({ shape: cube, edge: first, radiusList: [0.2, 0], paramsU: [0, 1] })),
+            refusalOf(() => fillets.filletEdgesSameVariableRadius({ shape: cube, edges: [first, second], radiusList: [-0.1, 0.2], paramsU: [0, 1] })),
+            refusalOf(() => fillets.filletEdgesVariableRadius({ shape: cube, edges: [first, second], radiusLists: [[0.1, 0.2], [0.1, Number.NaN]], paramsULists: [[0, 1], [0, 1]] })),
+            refusalOf(() => fillets.filletEdges({ shape: cube, radius: 0 })),
+            refusalOf(() => fillets.filletEdges({ shape: cube, radius: 0.1, radiusList: [0.1, -1], indexes: [0, 3] })),
+            refusalOf(() => fillets.filletEdges({ shape: cube, radius: -0.1, indexes: [0, 3] })),
+            refusalOf(() => fillets.filletEdgesList({ shape: cube, edges: [first, second], radiusList: [Number.POSITIVE_INFINITY, 0.1] })),
+            refusalOf(() => fillets.filletEdgesListOneRadius({ shape: cube, edges: [first, second], radius: -2 })),
+        ];
+
+        // Assert
+        expect(refusals).toEqual([
+            new InputError("`radiusList[1]` is 0, but a radius is a finite number above 0.", "radiusList[1]"),
+            new InputError("`radiusList[0]` is -0.1, but a radius is a finite number above 0.", "radiusList[0]"),
+            new InputError("`radiusLists[1][1]` is NaN, but a radius is a finite number above 0.", "radiusLists[1][1]"),
+            new InputError("`radius` is 0, but a radius is a finite number above 0.", "radius"),
+            new InputError("`radiusList[1]` is -1, but a radius is a finite number above 0.", "radiusList[1]"),
+            new InputError("`radius` is -0.1, but a radius is a finite number above 0.", "radius"),
+            new InputError("`radiusList[0]` is Infinity, but a radius is a finite number above 0.", "radiusList[0]"),
+            new InputError("`radius` is -2, but a radius is a finite number above 0.", "radius"),
+        ]);
+        expect(refusals.map(refusal => (refusal as InputError).property)).toEqual(["radiusList[1]", "radiusList[0]", "radiusLists[1][1]", "radius", "radiusList[1]", "radius", "radiusList[0]", "radius"]);
+        [cube, ...cubeEdges].forEach(made => made.delete());
+    });
+
+    it("should refuse a position given again with another radius, naming the second, and keep one given again with the same radius", () => {
+        // Arrange
+        const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
+        const cubeEdges = occHelper.shapeGettersService.getEdges({ shape: cube });
+        const [first, second] = [cubeEdges[0]!, cubeEdges[1]!];
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (error) {
+                return error;
+            }
+            return "nothing was refused";
+        };
+
+        // Act
+        const refusals = [
+            refusalOf(() => fillets.filletEdgeVariableRadius({ shape: cube, edge: first, radiusList: [0.1, 0.3], paramsU: [0.5, 0.5] })),
+            refusalOf(() => fillets.filletEdgesSameVariableRadius({ shape: cube, edges: [first, second], radiusList: [0.1, 0.2, 0.3], paramsU: [0, 1, 0] })),
+            refusalOf(() => fillets.filletEdgesVariableRadius({ shape: cube, edges: [first, second], radiusLists: [[0.1, 0.2], [0.1, 0.2, 0.1]], paramsULists: [[0, 1], [0, 0.4, 0.4]] })),
+        ];
+        const repeated = fillets.filletEdgeVariableRadius({ shape: cube, edge: first, radiusList: [0.1, 0.2, 0.2], paramsU: [0, 1, 1] });
+
+        // Assert
+        expect(refusals).toEqual([
+            new InputError("`paramsU[1]` gives the position 0.5 again, after `paramsU[0]`, with another radius; a position along the edge has one radius.", "paramsU[1]"),
+            new InputError("`paramsU[2]` gives the position 0 again, after `paramsU[0]`, with another radius; a position along the edge has one radius.", "paramsU[2]"),
+            new InputError("`paramsULists[1][2]` gives the position 0.4 again, after `paramsULists[1][1]`, with another radius; a position along the edge has one radius.", "paramsULists[1][2]"),
+        ]);
+        expect(occt.ShapeIsValid(repeated)).toBe(true);
+        [cube, ...cubeEdges, repeated].forEach(made => made.delete());
     });
 
     it("should release every shape its vertex walks are handed", () => {

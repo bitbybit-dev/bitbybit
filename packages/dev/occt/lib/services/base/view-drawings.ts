@@ -37,7 +37,7 @@ const viewPathsOf = (occ: BitbybitOcctModule, och: OccHelper, drawing: TopoDS_Co
 };
 
 export const viewParts = (occ: BitbybitOcctModule, och: OccHelper, view: CheckedView, drawHidden: boolean): IO.DrawingPartDto[] => {
-    const lines = occ.HiddenLines(view.shape, numbersOfFrames([view.frame]), true, false, drawHidden, 0, view.precision);
+    const lines = occ.HiddenLines(view.shape, numbersOfFrames([view.frame]), true, false, drawHidden, false, 0, view.precision);
     try {
         const visible: IO.DrawingPartDto = { layer: "visible", color: "#000000", paths: viewPathsOf(occ, och, lines.visible, view.precision) };
         return drawHidden

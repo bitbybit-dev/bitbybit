@@ -31,6 +31,7 @@ export const targets = [
             "brep-graph-corners-and-draft",
             "meshing-and-file-io",
             "assembly-documents",
+            "assembly-pmi",
             "faces-2d-curves-and-decorative-wires",
             "dimensions-and-shaped-solids",
             "paths-and-svg",

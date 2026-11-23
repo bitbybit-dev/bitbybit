@@ -17,7 +17,7 @@ import { groundPathsOf, svgModelOf } from "./base/drawing-layers";
 import { withKernelErrorsRead } from "./base/kernel-refusals";
 import { kernelObjects, released } from "./base/release";
 import { DxfLoader } from "./base/dxf-loader";
-import { followsCoordinateSystem, shapeInFileAxes, shapeInModelAxes, stlInFileAxes, stlInModelAxes } from "./base/file-axes";
+import { followsCoordinateSystem, shapeInFileAxes, shapeInModelAxes, stlInFileAxes, stlInModelAxes, turnedFromZUp, turnedToZUp } from "./base/file-axes";
 
 const BREP_HEADER = /^\s*(DBRep_DrawableShape\s+)?CASCADE Topology V\d/;
 
@@ -27,9 +27,9 @@ const BREP_ENDING = /\r?\nTShapes \d+\r?\n[\s\S]*\r?\n[+\-ie]\d+ \d+\s*$/;
  * Reading and writing OpenCascade shapes in exchange formats: STEP, IGES, STL, BREP and DXF in; STEP,
  * STL, BREP, OBJ, PLY, SVG and DXF out; STEP to glTF conversion with the assembly tree, colors and names
  * preserved, and a STEP assembly structure as JSON. Files travel as text or binary data, never as
- * paths. CAD files stand Z up while this library models Y up, so the `adjustYtoZ` and `adjustZtoY`
- * flags turn a shape between the two. With the conventions set every file shows what the screen
- * shows; without them the flags swap Y and Z, which mirrors the shape.
+ * paths. CAD files stand Z up while this library models Y up, so `upAxis` turns a shape between the
+ * two. With the conventions set every file shows what the screen shows; without them a turn swaps Y
+ * and Z, which mirrors the shape.
  */
 export class OCCTIO {
     private readonly dxfLoader: DxfLoader;
@@ -44,7 +44,7 @@ export class OCCTIO {
     /**
      * Writes a shape as STEP, the exchange format for exact CAD geometry, and returns its text.
      *
-     * With `adjustYtoZ` true the file is Z-up, as CAD programs expect: with the conventions set it
+     * With `upAxis` `yUpToZUp` the file is Z-up, as CAD programs expect: with the conventions set it
      * shows what the screen shows, and without them Y and Z are swapped. The file is in
      * millimetres, a shape in another `unit` scaled to them.
      * @param inputs - The shape, the file name, the axis adjustment, the unit and the download options
@@ -54,13 +54,13 @@ export class OCCTIO {
      * @drawable false
      * @example
      * ```typescript
-     * const step = await bitbybit.occt.io.saveShapeSTEPAndReturn({ shape: box, fileName: "box.step", adjustYtoZ: true, tryDownload: false });
+     * const step = await bitbybit.occt.io.saveShapeSTEPAndReturn({ shape: box, fileName: "box.step", upAxis: Bit.Inputs.Base.upAxisConversionEnum.yUpToZUp, tryDownload: false });
      * ```
      */
     saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<TopoDS_Shape>): string {
         const resolved = resolveDto(Inputs.OCCT.SaveStepDto, inputs) as Resolved.OCCT.SaveStepDto<TopoDS_Shape>;
         const millimetres = this.och.base.math.millimetresPerUnit({ unit: resolved.unit });
-        const adjustedShape = shapeInFileAxes(this.och, resolved.shape, resolved.adjustYtoZ, resolved.fromRightHanded);
+        const adjustedShape = shapeInFileAxes(this.och, resolved.shape, turnedToZUp(resolved.upAxis), resolved.fromRightHanded);
         const scaledShape = millimetres === 1 ? undefined : released(adjustedShape === undefined ? [] : [adjustedShape], () => this.och.transformsService.scaleFromCenter({ shape: adjustedShape ?? resolved.shape, factor: millimetres, center: [0, 0, 0] }));
         const writer = new this.occ.STEPControl_Writer();
         try {
@@ -91,7 +91,7 @@ export class OCCTIO {
      * text, or its bytes when `binary` is true.
      *
      * `precision` is the meshing tolerance in model units, smaller following curves more closely.
-     * With the conventions set the file shows what the screen shows, Z-up with `adjustYtoZ`.
+     * With the conventions set the file shows what the screen shows, Z-up under `yUpToZUp`.
      * `fileName` and `tryDownload` matter only for a download.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment, the form and the download options
      * @returns The STL file as text, or as bytes when `binary` is true
@@ -100,14 +100,15 @@ export class OCCTIO {
      * @drawable false
      * @example
      * ```typescript
-     * const stl = await bitbybit.occt.io.saveShapeStlAndReturn({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: false });
-     * const bytes = await bitbybit.occt.io.saveShapeStlAndReturn({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: false, binary: true });
+     * const stl = await bitbybit.occt.io.saveShapeStlAndReturn({ shape: box, fileName: "box.stl", precision: 0.01, upAxis: Bit.Inputs.Base.upAxisConversionEnum.yUpToZUp, tryDownload: false });
+     * const bytes = await bitbybit.occt.io.saveShapeStlAndReturn({ shape: box, fileName: "box.stl", precision: 0.01, upAxis: Bit.Inputs.Base.upAxisConversionEnum.yUpToZUp, tryDownload: false, binary: true });
      * ```
      */
     saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<TopoDS_Shape>): string | Uint8Array {
         const resolved = resolveDto(Inputs.OCCT.SaveStlDto, inputs) as Resolved.OCCT.SaveStlDto<TopoDS_Shape>;
         const shape = checkedShape(resolved.shape);
         const precision = checkedNumber(resolved.precision, "precision", SMALLEST_MESH_DEFLECTION);
+        const zUp = turnedToZUp(resolved.upAxis);
         const fileName = "x";
         const { own, releaseAll } = kernelObjects();
         try {
@@ -118,8 +119,7 @@ export class OCCTIO {
             if (!writer.Write(transferShape, fileName)) {
                 throw (new Error("Failed when writing stl file."));
             }
-            const bytes = this.occ.FS.readFile("/" + fileName) as Uint8Array;
-            const turned = stlInFileAxes(this.och, bytes, resolved.adjustYtoZ);
+            const turned = stlInFileAxes(this.och, this.occ.FS.readFile("/" + fileName) as Uint8Array, zUp);
             return resolved.binary ? turned : new TextDecoder().decode(turned);
         } finally {
             this.removeFile("/" + fileName);
@@ -176,7 +176,7 @@ export class OCCTIO {
      * the file's text.
      *
      * `precision` is the meshing tolerance in model units and coordinates keep six decimals. With
-     * the conventions set the file shows what the screen shows, Z-up with `adjustYtoZ`. `mtl` stays
+     * the conventions set the file shows what the screen shows, Z-up under `yUpToZUp`. `mtl` stays
      * empty, since a shape carries no colors; `assembly.manager.exportDocumentToObj` writes colored
      * parts.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
@@ -186,7 +186,7 @@ export class OCCTIO {
      * @drawable false
      * @example
      * ```typescript
-     * const files = await bitbybit.occt.io.saveShapeObjAndReturn({ shape: box, fileName: "box.obj", precision: 0.01, adjustYtoZ: false, tryDownload: false });
+     * const files = await bitbybit.occt.io.saveShapeObjAndReturn({ shape: box, fileName: "box.obj", precision: 0.01, upAxis: Bit.Inputs.Base.upAxisConversionEnum.keep, tryDownload: false });
      * console.log(files.obj);
      * ```
      */
@@ -195,7 +195,7 @@ export class OCCTIO {
         const shape = checkedShape(resolved.shape);
         const precision = checkedNumber(resolved.precision, "precision", SMALLEST_MESH_DEFLECTION);
         const name = objNameOf(resolved.fileName, "fileName");
-        return this.writtenAsDocument(shape, resolved.adjustYtoZ, name, document => {
+        return this.writtenAsDocument(shape, turnedToZUp(resolved.upAxis), name, document => {
             const files = this.occ.ExportDocumentToObj(document, precision, name);
             return { obj: files.obj, mtl: files.mtl };
         });
@@ -207,7 +207,7 @@ export class OCCTIO {
      *
      * Coordinates keep six significant digits, so past 1000 units they keep two decimals.
      * `precision` is the meshing tolerance in model units. With the conventions set the file shows
-     * what the screen shows, Z-up with `adjustYtoZ`.
+     * what the screen shows, Z-up under `yUpToZUp`.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns The PLY file as text
      * @group io
@@ -215,14 +215,14 @@ export class OCCTIO {
      * @drawable false
      * @example
      * ```typescript
-     * const ply = await bitbybit.occt.io.saveShapePlyAndReturn({ shape: box, fileName: "box.ply", precision: 0.01, adjustYtoZ: false, tryDownload: false });
+     * const ply = await bitbybit.occt.io.saveShapePlyAndReturn({ shape: box, fileName: "box.ply", precision: 0.01, upAxis: Bit.Inputs.Base.upAxisConversionEnum.keep, tryDownload: false });
      * ```
      */
     saveShapePly(inputs: Inputs.OCCT.SavePlyDto<TopoDS_Shape>): string {
         const resolved = resolveDto(Inputs.OCCT.SavePlyDto, inputs) as Resolved.OCCT.SavePlyDto<TopoDS_Shape>;
         const shape = checkedShape(resolved.shape);
         const precision = checkedNumber(resolved.precision, "precision", SMALLEST_MESH_DEFLECTION);
-        return this.writtenAsDocument(shape, resolved.adjustYtoZ, "shape", document => this.occ.ExportDocumentToPly(document, precision));
+        return this.writtenAsDocument(shape, turnedToZUp(resolved.upAxis), "shape", document => this.occ.ExportDocumentToPly(document, precision));
     }
 
     /**
@@ -327,15 +327,15 @@ export class OCCTIO {
      *
      * The extension of `fileName` decides the kind: `.step`, `.stp`, `.stpz` are STEP, `.iges`,
      * `.igs`, `.igz` are IGES. `filetext` is text, or an ArrayBuffer for compressed and binary forms;
-     * `adjustZtoY` turns Z-up into Y-up. The shape comes back in `unit`. An unreadable file gives
+     * `upAxis` `zUpToYUp` turns Z-up into Y-up. The shape comes back in `unit`. An unreadable file gives
      * undefined.
      * @param inputs - The file content, its name with extension, the axis adjustment and the unit
      * @returns The shape, or undefined when the file could not be read
      */
     loadSTEPorIGES(inputs: Inputs.OCCT.LoadStepOrIgesDto): TopoDS_Shape | undefined {
         const resolved = resolveDto(Inputs.OCCT.LoadStepOrIgesDto, inputs) as Resolved.OCCT.LoadStepOrIgesDto;
-        const fileName = resolved.fileName;
-        const fileText = resolved.filetext;
+        const zUp = turnedFromZUp(resolved.upAxis);
+        const { fileName, filetext: fileText } = resolved;
         const millimetres = this.och.base.math.millimetresPerUnit({ unit: resolved.unit });
         const fileType = stepOrIgesKindOf(fileName);
         
@@ -386,7 +386,7 @@ export class OCCTIO {
             }
         }
         
-        const turned = shapeInModelAxes(this.och, stepShape, resolved.adjustZtoY);
+        const turned = shapeInModelAxes(this.och, stepShape, zUp);
         if (millimetres === 1) {
             return turned;
         }
@@ -426,7 +426,7 @@ export class OCCTIO {
      * that carries the whole mesh.
      *
      * With `asFaces` true the faces share their corners' edges in a compound that
-     * `shapeFix.sewWithReport` can join into a shell. `adjustZtoY` turns Z-up into Y-up, and a file
+     * `shapeFix.sewWithReport` can join into a shell. `upAxis` `zUpToYUp` turns Z-up into Y-up, and a file
      * without triangles is refused.
      * @param inputs - The STL file, the face option and the axis adjustment
      * @returns A compound of triangular faces, or one face that carries the mesh
@@ -435,14 +435,14 @@ export class OCCTIO {
      * @drawable true
      * @example
      * ```typescript
-     * const mesh = await bitbybit.occt.io.loadStl({ stlData: stlText, asFaces: true, adjustZtoY: true });
+     * const mesh = await bitbybit.occt.io.loadStl({ stlData: stlText, asFaces: true, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp });
      * const sewn = await bitbybit.occt.shapeFix.sewWithReport({ shapes: [mesh], tolerance: 1e-6 });
      * ```
      */
     loadStl(inputs: Inputs.OCCT.LoadStlDto): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.LoadStlDto, inputs) as Resolved.OCCT.LoadStlDto;
         const bytes = bytesOfFile(resolved.stlData, "stlData");
-        return this.occ.ReadStlFromBytes(stlInModelAxes(this.och, bytes, resolved.adjustZtoY), resolved.asFaces);
+        return this.occ.ReadStlFromBytes(stlInModelAxes(this.och, bytes, turnedFromZUp(resolved.upAxis)), resolved.asFaces);
     }
 
     /**
@@ -655,7 +655,7 @@ export class OCCTIO {
      * @drawable false
      * @example
      * ```typescript
-     * const glb = await bitbybit.occt.io.convertStepToGltf({ stepData: stepText, meshPrecision: 0.005, meshAngle: 0.5, meshRelative: true, internalVerticesMode: false, controlSurfaceDeflection: false });
+     * const glb = await bitbybit.occt.io.convertStepToGltf({ stepData: stepText, meshPrecision: 0.005, meshAngle: 0.5, meshRelative: true, internalVerticesMode: true, controlSurfaceDeflection: false });
      * ```
      */
     convertStepToGltf(inputs: Inputs.OCCT.ConvertStepToGltfDto): Uint8Array {
@@ -735,12 +735,13 @@ export class OCCTIO {
      * options.readNames = true;
      * options.meshDeflection = 0.005;
      * options.mergeFaces = true;
-     * options.adjustZtoY = true;
+     * options.upAxis = Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp;
      * const glb = await bitbybit.occt.io.convertStepToGltfAdvanced(options);
      * ```
      */
     convertStepToGltfAdvanced(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedDto): Uint8Array {
         const resolved = resolveDto(Inputs.OCCT.ConvertStepToGltfAdvancedDto, inputs) as Resolved.OCCT.ConvertStepToGltfAdvancedDto;
+        const zUp = turnedFromZUp(resolved.upAxis);
         try {
             const stepData = resolved.stepData;
             let result: Uint8Array;
@@ -772,7 +773,7 @@ export class OCCTIO {
                     nodeNameFormatNum,
                     meshNameFormatNum,
                     transformFormatNum,
-                    resolved.adjustZtoY,
+                    zUp,
                     resolved.scale
                 ));
             } else if (stepData instanceof ArrayBuffer) {
@@ -798,7 +799,7 @@ export class OCCTIO {
                     nodeNameFormatNum,
                     meshNameFormatNum,
                     transformFormatNum,
-                    resolved.adjustZtoY,
+                    zUp,
                     resolved.scale
                 ));
             } else if (typeof stepData === "string") {
@@ -826,7 +827,7 @@ export class OCCTIO {
                     nodeNameFormatNum,
                     meshNameFormatNum,
                     transformFormatNum,
-                    resolved.adjustZtoY,
+                    zUp,
                     resolved.scale
                 ));
             } else {
@@ -933,6 +934,7 @@ export class OCCTIO {
      */
     convertStepToGltfAdvancedWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto): Uint8Array {
         const resolved = resolveDto(Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto, inputs) as Resolved.OCCT.ConvertStepToGltfAdvancedWithDracoDto;
+        const zUp = turnedFromZUp(resolved.upAxis);
         try {
             const stepData = resolved.stepData;
             let binaryData: Uint8Array;
@@ -973,7 +975,7 @@ export class OCCTIO {
                 nodeNameFormatNum,
                 meshNameFormatNum,
                 transformFormatNum,
-                resolved.adjustZtoY,
+                zUp,
                 resolved.scale,
                 resolved.useDraco,
                 resolved.dracoCompressionLevel,
@@ -1064,9 +1066,9 @@ export class OCCTIO {
         }
     }
 
-    private unmeshedCopy(shape: TopoDS_Shape, adjustYtoZ: boolean): TopoDS_Shape {
+    private unmeshedCopy(shape: TopoDS_Shape, zUp: boolean): TopoDS_Shape {
         if (followsCoordinateSystem(this.och)) {
-            const inFile = shapeInFileAxes(this.och, shape, adjustYtoZ, false);
+            const inFile = shapeInFileAxes(this.och, shape, zUp, false);
             try {
                 return this.occ.BRepBuilderAPI_Copy_Shape(inFile ?? shape, false);
             } finally {
@@ -1074,7 +1076,7 @@ export class OCCTIO {
             }
         }
         const copy = this.occ.BRepBuilderAPI_Copy_Shape(shape, false);
-        if (!adjustYtoZ) {
+        if (!zUp) {
             return copy;
         }
         const swap = new this.occ.gp_Trsf();
@@ -1087,8 +1089,8 @@ export class OCCTIO {
         return placed;
     }
 
-    private writtenAsDocument<R>(shape: TopoDS_Shape, adjustYtoZ: boolean, name: string, write: (document: Handle_TDocStd_Document) => R): R {
-        const copy = this.unmeshedCopy(shape, adjustYtoZ);
+    private writtenAsDocument<R>(shape: TopoDS_Shape, zUp: boolean, name: string, write: (document: Handle_TDocStd_Document) => R): R {
+        const copy = this.unmeshedCopy(shape, zUp);
         try {
             const structure = JSON.stringify({ parts: [{ id: "shape", shapeIndex: 0, name }], nodes: [] });
             const document = this.occ.BuildAssemblyDocument(structure, [copy], undefined, []);

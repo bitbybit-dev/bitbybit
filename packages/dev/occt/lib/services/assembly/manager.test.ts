@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
+import { InputError } from "@bitbybit-dev/base";
 import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
@@ -8,6 +9,8 @@ import { OCCTSolid } from "../shapes";
 import type * as Models from "../../api/models";
 import * as Inputs from "../../api/inputs";
 import type * as Resolved from "../../api/resolved-inputs";
+
+const MISSING: unknown = undefined;
 
 describe("OCCTAssemblyManager unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -688,10 +691,36 @@ describe("OCCTAssemblyManager unit tests", () => {
             });
 
             // Assert
-            expect(result).toBe(true);
+            expect(result).toBe(document);
             const color = query.getLabelColor({ document: document, label });
             expect(color.hasColor).toBe(true);
             expect(color.b).toBeCloseTo(1, 1);
+        });
+
+        it("should refuse a label the document does not have and leave the document as it was", () => {
+            // Arrange
+            const box = solid.createBox({ width: 10, height: 10, length: 10, center: [0, 0, 0] });
+            shapesToClean.push(box);
+            const part = manager.createPart({ id: "box", shape: box, name: "Box" });
+            const structure = manager.combineStructure({ parts: [part], nodes: [], clearDocument: false });
+            document = manager.buildAssemblyDocument({ structure });
+            const made = document;
+            const label = query.getDocumentParts({ document: made })[0]!.label;
+
+            // Act
+            const act = (): unknown => manager.setDocLabelColor({ document: made, label: "0:1:1:99", r: 0, g: 0, b: 1, a: 1 });
+
+            // Assert
+            expect(act).toThrow(new InputError("`label` is \"0:1:1:99\", which names no label of the document.", "label"));
+            expect(query.getLabelColor({ document: made, label }).b).not.toBeCloseTo(1, 1);
+        });
+
+        it("should refuse a document that is missing", () => {
+            // Act
+            const act = (): unknown => manager.setDocLabelColor({ document: MISSING as Handle_TDocStd_Document, label: "0:1:1:1", r: 0, g: 0, b: 1, a: 1 });
+
+            // Assert
+            expect(act).toThrow(new InputError("`document` is missing or empty, as a load or a build that failed can leave it.", "document"));
         });
     });
 
@@ -730,9 +759,196 @@ describe("OCCTAssemblyManager unit tests", () => {
             });
 
             // Assert
-            expect(result).toBe(true);
+            expect(result).toBe(document);
             const info = query.getLabelInfo({ document: document, label: label! });
             expect(info.name).toBe("NewName");
+        });
+
+        it("should refuse a label the document does not have and leave the document as it was", () => {
+            // Arrange
+            const box = solid.createBox({ width: 10, height: 10, length: 10, center: [0, 0, 0] });
+            shapesToClean.push(box);
+            const part = manager.createPart({ id: "box", shape: box, name: "OldName" });
+            const structure = manager.combineStructure({ parts: [part], nodes: [], clearDocument: false });
+            document = manager.buildAssemblyDocument({ structure });
+            const made = document;
+
+            // Act
+            const act = (): unknown => manager.setDocLabelName({ document: made, label: "0:1:1:99", name: "NewName" });
+
+            // Assert
+            expect(act).toThrow(new InputError("`label` is \"0:1:1:99\", which names no label of the document.", "label"));
+            expect(query.getDocumentParts({ document: made }).map(p => p.name)).toEqual(["OldName"]);
+        });
+
+        it("should refuse a document that is missing", () => {
+            // Act
+            const act = (): unknown => manager.setDocLabelName({ document: MISSING as Handle_TDocStd_Document, label: "0:1:1:1", name: "NewName" });
+
+            // Assert
+            expect(act).toThrow(new InputError("`document` is missing or empty, as a load or a build that failed can leave it.", "document"));
+        });
+    });
+
+    describe("setDocLabelColors and setDocLabelNames", () => {
+        const withParts = (use: (document: Handle_TDocStd_Document, labels: string[]) => void): void => {
+            const boxes = [0, 20, 40].map(x => solid.createBox({ width: 10, height: 10, length: 10, center: [x, 0, 0] }));
+            const parts = boxes.map((shape, at) => manager.createPart({ id: `box${at}`, shape, name: `Box ${at}` }));
+            const document = manager.buildAssemblyDocument({ structure: manager.combineStructure({ parts, nodes: [], clearDocument: false }) });
+            try {
+                use(document, query.getDocumentParts({ document }).filter(part => part.type === "part").map(part => part.label));
+            } finally {
+                [...boxes, document].forEach(made => made.delete());
+            }
+        };
+        const blueOf = (document: Handle_TDocStd_Document, labels: readonly string[]): number[] => labels.map(label => Math.round(query.getLabelColor({ document, label }).b * 100) / 100);
+        const namesOf = (document: Handle_TDocStd_Document, labels: readonly string[]): string[] => labels.map(label => query.getLabelInfo({ document, label }).name);
+
+        it("should color every label given with the one color in one call, answering the document", () => {
+            withParts((document, labels) => {
+                // Act
+                const result = manager.setDocLabelColors({ document, labels: [labels[0]!, labels[2]!], r: 0, g: 0, b: 1, a: 1 });
+
+                // Assert
+                expect(result).toBe(document);
+                expect(blueOf(document, [labels[0]!, labels[2]!])).toEqual([1, 1]);
+                expect(query.getLabelColor({ document, label: labels[1]! }).b).not.toBeCloseTo(1, 1);
+            });
+        });
+
+        it("should give every label given the name at its place in one call, answering the document", () => {
+            withParts((document, labels) => {
+                // Act
+                const result = manager.setDocLabelNames({ document, labels: [labels[2]!, labels[0]!], names: ["Right", "Left"] });
+
+                // Assert
+                expect(result).toBe(document);
+                expect(namesOf(document, labels)).toEqual(["Left", "Box 1", "Right"]);
+            });
+        });
+
+        it("should answer the document unchanged for no labels", () => {
+            withParts((document, labels) => {
+                // Act
+                const colored = manager.setDocLabelColors({ document, labels: [], r: 0, g: 0, b: 1, a: 1 });
+                const named = manager.setDocLabelNames({ document, labels: [], names: [] });
+
+                // Assert
+                expect([colored, named]).toEqual([document, document]);
+                expect(namesOf(document, labels)).toEqual(["Box 0", "Box 1", "Box 2"]);
+                expect(labels.map(label => query.getLabelColor({ document, label }).b)).not.toContain(1);
+            });
+        });
+
+        it("should refuse a label the document does not have, naming its place, and change no label", () => {
+            withParts((document, labels) => {
+                // Arrange
+                const blueBefore = blueOf(document, labels);
+
+                // Act
+                const colors = (): unknown => manager.setDocLabelColors({ document, labels: [labels[0]!, "0:1:1:99"], r: 0, g: 0, b: 1, a: 1 });
+                const names = (): unknown => manager.setDocLabelNames({ document, labels: [labels[0]!, labels[1]!, "0:1:1:99"], names: ["A", "B", "C"] });
+
+                // Assert
+                expect(colors).toThrow(new InputError("`labels[1]` is \"0:1:1:99\", which names no label of the document.", "labels[1]"));
+                expect(names).toThrow(new InputError("`labels[2]` is \"0:1:1:99\", which names no label of the document.", "labels[2]"));
+                expect(blueOf(document, labels)).toEqual(blueBefore);
+                expect(namesOf(document, labels)).toEqual(["Box 0", "Box 1", "Box 2"]);
+            });
+        });
+
+        it("should refuse names that are not one for each label, and a label given again with another name, renaming none", () => {
+            withParts((document, labels) => {
+                // Act
+                const fewer = (): unknown => manager.setDocLabelNames({ document, labels: [labels[0]!, labels[1]!], names: ["A"] });
+                const twice = (): unknown => manager.setDocLabelNames({ document, labels: [labels[0]!, labels[1]!, labels[0]!], names: ["A", "B", "C"] });
+                const same = manager.setDocLabelNames({ document, labels: [labels[1]!, labels[1]!], names: ["Middle", "Middle"] });
+
+                // Assert
+                expect(fewer).toThrow(new InputError("`names` holds 1 name for 2 labels; give one name for each label, in the same order.", "names"));
+                expect(twice).toThrow(new InputError(`\`labels[2]\` gives ${labels[0]!} again, after \`labels[0]\`, with another name; a label takes one name.`, "labels[2]"));
+                expect(same).toBe(document);
+                expect(namesOf(document, labels)).toEqual(["Box 0", "Middle", "Box 2"]);
+            });
+        });
+
+        it("should refuse a name that is not text, and names that are not a list, before it renames any label", () => {
+            withParts((document, labels) => {
+                // Arrange
+                const notText: unknown = 5;
+                const nothing: unknown = null;
+                const notAList: unknown = "Left";
+
+                // Act
+                const number = (): unknown => manager.setDocLabelNames({ document, labels: [labels[0]!, labels[1]!], names: ["Partly renamed", notText as string] });
+                const missing = (): unknown => manager.setDocLabelNames({ document, labels: [labels[0]!], names: [nothing as string] });
+                const text = (): unknown => manager.setDocLabelNames({ document, labels: [labels[0]!], names: notAList as string[] });
+
+                // Assert
+                expect(number).toThrow(new InputError("`names[1]` is 5, but a name is text.", "names[1]"));
+                expect(missing).toThrow(new InputError("`names[0]` is null, but a name is text.", "names[0]"));
+                expect(text).toThrow(new InputError("`names` must be a list of names, one for each label, in the same order.", "names"));
+                expect(namesOf(document, labels)).toEqual(["Box 0", "Box 1", "Box 2"]);
+            });
+        });
+
+        it("should refuse, singly and in lists, a label that is no part, instance or assembly, such as the document's root or the label above its shapes, changing nothing", () => {
+            withParts((document, labels) => {
+                // Arrange
+                const blueBefore = blueOf(document, labels);
+
+                // Act
+                const refusals = [
+                    (): unknown => manager.setDocLabelColors({ document, labels: [labels[0]!, "0:1"], r: 0, g: 0, b: 1, a: 1 }),
+                    (): unknown => manager.setDocLabelNames({ document, labels: ["0"], names: ["Root"] }),
+                    (): unknown => manager.setDocLabelColor({ document, label: "0:1:1", r: 0, g: 0, b: 1, a: 1 }),
+                    (): unknown => manager.setDocLabelName({ document, label: "0:1", name: "Main" }),
+                ].map(refused => {
+                    try {
+                        refused();
+                        return "changed";
+                    } catch (error) {
+                        return `${(error as InputError).property}: ${(error as Error).message}`;
+                    }
+                });
+
+                // Assert
+                expect(refusals).toEqual([
+                    "labels[1]: `labels[1]` is \"0:1\", which names no part, instance or assembly of the document.",
+                    "labels[0]: `labels[0]` is \"0\", which names no part, instance or assembly of the document.",
+                    "label: `label` is \"0:1:1\", which names no part, instance or assembly of the document.",
+                    "label: `label` is \"0:1\", which names no part, instance or assembly of the document.",
+                ]);
+                expect(blueOf(document, labels)).toEqual(blueBefore);
+                expect(query.getLabelInfo({ document, label: "0:1" }).name).not.toBe("Main");
+            });
+        });
+
+        it("should read a label spelled another way as the label it names, so one label given twice with two names is refused however it is spelled", () => {
+            withParts((document, labels) => {
+                // Arrange
+                const respelled = labels[0]!.replace("0:1:", "0:01:");
+
+                // Act
+                const twice = (): unknown => manager.setDocLabelNames({ document, labels: [labels[0]!, respelled], names: ["First", "Second"] });
+                const colored = manager.setDocLabelColors({ document, labels: [respelled], r: 0, g: 0, b: 1, a: 1 });
+
+                // Assert
+                expect(twice).toThrow(new InputError(`\`labels[1]\` gives ${labels[0]!} again, after \`labels[0]\`, with another name; a label takes one name.`, "labels[1]"));
+                expect(namesOf(document, labels)).toEqual(["Box 0", "Box 1", "Box 2"]);
+                expect([colored, blueOf(document, [labels[0]!])]).toEqual([document, [1]]);
+            });
+        });
+
+        it("should refuse a document that is missing", () => {
+            // Act
+            const colors = (): unknown => manager.setDocLabelColors({ document: MISSING as Handle_TDocStd_Document, labels: ["0:1:1:1"], r: 0, g: 0, b: 1, a: 1 });
+            const names = (): unknown => manager.setDocLabelNames({ document: MISSING as Handle_TDocStd_Document, labels: ["0:1:1:1"], names: ["A"] });
+
+            // Assert
+            const missing = new InputError("`document` is missing or empty, as a load or a build that failed can leave it.", "document");
+            expect(colors).toThrow(missing);
+            expect(names).toThrow(missing);
         });
     });
 
@@ -885,6 +1101,7 @@ describe("OCCTAssemblyManager unit tests", () => {
         const shapesToClean: TopoDS_Shape[] = [];
 
         afterEach(() => {
+            vi.restoreAllMocks();
             if (document && !document.IsNull()) {
                 document.delete();
                 document = null;
@@ -924,6 +1141,29 @@ describe("OCCTAssemblyManager unit tests", () => {
             
             const version = new DataView(glbData.buffer).getUint32(4, true);
             expect(version).toBe(2);
+        });
+
+        it.each([
+            ["ExportDocumentToGltf", (doc: Handle_TDocStd_Document, choice: { internalVerticesMode?: boolean }): unknown => manager.exportDocumentToGltf({ document: doc, ...choice })],
+            ["ExportDocumentToGltfWithDraco", (doc: Handle_TDocStd_Document, choice: { internalVerticesMode?: boolean }): unknown => manager.exportDocumentToGltfWithDraco({ document: doc, ...choice })],
+        ] as const)("should ask %s for vertices inside flat and cylindrical faces when the caller does not say, so a bore is not crossed by triangles", (kernelFunction, exportDocument) => {
+            // Arrange
+            const box = solid.createBox({ width: 10, height: 10, length: 10, center: [0, 0, 0] });
+            shapesToClean.push(box);
+            const part = manager.createPart({ id: "box", shape: box, name: "MeshedBox" });
+            const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
+            document = manager.buildAssemblyDocument({ structure: manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false }) });
+            const kernel = vi.spyOn(occt, kernelFunction).mockReturnValue(new Uint8Array([1]));
+
+            // Act
+            exportDocument(document, {});
+            exportDocument(document, { internalVerticesMode: true });
+            exportDocument(document, { internalVerticesMode: false });
+
+            // Assert
+            const [unsaid, inside, edgesOnly] = kernel.mock.calls;
+            expect(unsaid).toEqual(inside);
+            expect(unsaid).not.toEqual(edgesOnly);
         });
 
         it("should export document with custom mesh settings", () => {

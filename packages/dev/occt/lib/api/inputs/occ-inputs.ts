@@ -140,8 +140,11 @@ export namespace OCCT {
      * A handle to an OpenCascade document - the container used for assemblies, holding a shape
      * hierarchy along with names, colors and placements. This is what STEP assembly import and export
      * work against, as opposed to a single loose shape.
+     *
+     * Like a shape handle it is a small reference to an object the kernel holds, tagged as a document
+     * so a draw call knows it from a shape; free it with `assembly.manager.deleteDocument`.
      */
-    export type TDocStdDocumentPointer = { hash: number, type: "occ-entity" };
+    export type TDocStdDocumentPointer = { hash: number, type: "occ-document" };
 
     /**
      * Any shape handle, whatever its kind - vertex, edge, wire, face, shell, solid or compound.
@@ -4072,13 +4075,14 @@ export namespace OCCT {
          */
         edge!: U;
         /**
-         * The radius in model units at each position in `paramsU`; the lists must have the same length.
+         * The radius in model units, above 0, at each position in `paramsU`; the lists must have the
+         * same length.
          * @default undefined
          */
         radiusList!: number[];
         /**
-         * Where each radius applies: the first position is the curve's start, the last its end, those
-         * between fractions of its parameter, which match its length only on lines and arcs.
+         * Where each radius applies: a fraction of the edge's length from the start of its curve, 0 to 1,
+         * in any order; an end without one takes the nearest radius.
          * @default undefined
          */
         paramsU!: number[];
@@ -4111,8 +4115,8 @@ export namespace OCCT {
          */
         radiusLists!: number[][];
         /**
-         * One list per edge of positions, read as in `filletEdgeVariableRadius` (first and last at the
-         * ends of the edge's curve), each pairing with the matching list in `radiusLists`.
+         * One list of positions per edge, each a fraction of that edge's own length as
+         * `filletEdgeVariableRadius` reads it, pairing with the matching list in `radiusLists`.
          * @default undefined
          */
         paramsULists!: number[][];
@@ -4140,13 +4144,14 @@ export namespace OCCT {
         edges!: U[];
 
         /**
-         * The radius in model units at each position in `paramsU`; the lists must have the same length.
+         * The radius in model units, above 0, at each position in `paramsU`; the lists must have the
+         * same length.
          * @default undefined
          */
         radiusList!: number[];
         /**
-         * Where each radius applies on every edge, read as for `filletEdgeVariableRadius`: first and
-         * last positions at the curve's ends, those between along its parameter.
+         * Where each radius applies on every edge, read as for `filletEdgeVariableRadius`: a fraction of
+         * each edge's own length from the start of its curve.
          * @default undefined
          */
         paramsU!: number[];
@@ -8078,6 +8083,8 @@ export namespace OCCT {
         /**
          * The rounding radius, in model units.
          * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
          * @step 0.1
          */
         radius?: number | undefined = 1;
@@ -8130,6 +8137,8 @@ export namespace OCCT {
         /**
          * How far the bevel reaches back from the corner along its edges, in model units.
          * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
          * @step 0.1
          */
         distance?: number | undefined = 1;
@@ -8362,7 +8371,7 @@ export namespace OCCT {
      * add each face's iso curves and a surface analysis value at every vertex.
      */
     export class ShapeToMeshDto<T> {
-        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
+        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number, upAxis?: Base.upAxisConversionEnum) {
             if (shape !== undefined) { this.shape = shape; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8377,6 +8386,7 @@ export namespace OCCT {
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
             if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The shape to triangulate.
@@ -8418,11 +8428,19 @@ export namespace OCCT {
          */
         precisionShare?: number | undefined = 0;
         /**
-         * When true, the mesh is made Z-up for tools that treat Z as up: turned a quarter about X under
-         * right-handed conventions, with Y and Z swapped otherwise.
-         * @default false
+         * `yUpToZUp` makes the mesh Z-up for tools that treat Z as up, turned about X when right-handed,
+         * else with Y and Z swapped; `keep` leaves it. `zUpToYUp` is refused.
+         * @default keep
          */
-        adjustYtoZ?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the mesh turns as `upAxis` `yUpToZUp` does; false, its old default, decides nothing.
+         * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustYtoZ?: boolean | undefined;
         /**
          * When true, each face and edge entry also carries its area or length, center of mass, surface
          * or curve type, tolerance and neighbors, at extra cost.
@@ -8482,11 +8500,12 @@ export namespace OCCT {
      * shape as three points.
      */
     export class ShapeFacesToPolygonPointsDto<T> {
-        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, reversedPoints?: boolean) {
+        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, reversedPoints?: boolean, upAxis?: Base.upAxisConversionEnum) {
             if (shape !== undefined) { this.shape = shape; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
             if (reversedPoints !== undefined) { this.reversedPoints = reversedPoints; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The shape to triangulate.
@@ -8504,11 +8523,19 @@ export namespace OCCT {
          */
         precision?: number | undefined = 0.01;
         /**
-         * When true, the points are made Z-up for tools that treat Z as up: turned a quarter about X under
-         * right-handed conventions, with Y and Z swapped otherwise.
-         * @default false
+         * `yUpToZUp` makes the points Z-up for tools that treat Z as up, turned about X when right-handed,
+         * else with Y and Z swapped; `keep` leaves them. `zUpToYUp` is refused.
+         * @default keep
          */
-        adjustYtoZ?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the points turn as `upAxis` `yUpToZUp` does; false, its old default, decides nothing.
+         * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustYtoZ?: boolean | undefined;
         /**
          * When true, the three points of each triangle come in the opposite order, for tools that wind
          * triangles the other way.
@@ -8546,7 +8573,7 @@ export namespace OCCT {
      * settings, iso curves and surface analysis included.
      */
     export class ShapesToMeshesDto<T> {
-        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number) {
+        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean, precisionShare?: number, upAxis?: Base.upAxisConversionEnum) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8561,6 +8588,7 @@ export namespace OCCT {
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
             if (precisionShare !== undefined) { this.precisionShare = precisionShare; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The shapes to triangulate, one mesh per shape.
@@ -8602,11 +8630,19 @@ export namespace OCCT {
          */
         precisionShare?: number | undefined = 0;
         /**
-         * When true, the meshes are made Z-up for tools that treat Z as up: turned a quarter about X under
-         * right-handed conventions, with Y and Z swapped otherwise.
-         * @default false
+         * `yUpToZUp` makes the meshes Z-up for tools that treat Z as up, turned about X when right-handed,
+         * else with Y and Z swapped; `keep` leaves them. `zUpToYUp` is refused.
+         * @default keep
          */
-        adjustYtoZ?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the meshes turn as `upAxis` `yUpToZUp` does; false, its old default, decides nothing.
+         * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustYtoZ?: boolean | undefined;
         /**
          * When true, each face and edge entry also carries its area or length, center of mass, surface
          * or curve type, tolerance and neighbors, at extra cost.
@@ -8666,7 +8702,7 @@ export namespace OCCT {
      * shapes into one mesh with the document's colors.
      */
     export class DocToMeshDto<U> {
-        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean) {
+        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean, upAxis?: Base.upAxisConversionEnum) {
             if (document !== undefined) { this.document = document; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8676,6 +8712,7 @@ export namespace OCCT {
             if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The assembly document whose top-level shapes are meshed together; their face colors end up in
@@ -8709,11 +8746,19 @@ export namespace OCCT {
          */
         relativeDeflection?: boolean | undefined = false;
         /**
-         * When true, the mesh is made Z-up for tools that treat Z as up: turned a quarter about X under
-         * right-handed conventions, with Y and Z swapped otherwise.
-         * @default false
+         * `zUpToYUp` turns the mesh from the file's Z-up into Y-up, as `io.loadSTEPorIGES` turns a
+         * shape; `yUpToZUp` makes it Z-up for tools that treat Z as up; `keep` leaves it.
+         * @default keep
          */
-        adjustYtoZ?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the mesh turns as `upAxis` `yUpToZUp` does; false, its old default, decides nothing.
+         * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustYtoZ?: boolean | undefined;
         /**
          * When true, each face and edge entry also carries its area or length, center of mass, surface
          * or curve type, tolerance, neighbors and ids, at extra cost.
@@ -8744,7 +8789,7 @@ export namespace OCCT {
      * shape into its own mesh with the document's colors.
      */
     export class DocToMeshesDto<U> {
-        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean) {
+        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean, upAxis?: Base.upAxisConversionEnum) {
             if (document !== undefined) { this.document = document; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8754,6 +8799,7 @@ export namespace OCCT {
             if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
             if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
             if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The assembly document whose top-level shapes are meshed one by one; each shape's face colors
@@ -8787,11 +8833,19 @@ export namespace OCCT {
          */
         relativeDeflection?: boolean | undefined = false;
         /**
-         * When true, the meshes are made Z-up for tools that treat Z as up: turned a quarter about X under
-         * right-handed conventions, with Y and Z swapped otherwise.
-         * @default false
+         * `zUpToYUp` turns the meshes from the file's Z-up into Y-up, as `io.loadSTEPorIGES` turns a
+         * shape; `yUpToZUp` makes them Z-up for tools that treat Z as up; `keep` leaves them.
+         * @default keep
          */
-        adjustYtoZ?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the meshes turn as `upAxis` `yUpToZUp` does; false, its old default, decides nothing.
+         * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustYtoZ?: boolean | undefined;
         /**
          * When true, each face and edge entry also carries its area or length, center of mass, surface
          * or curve type, tolerance, neighbors and ids, at extra cost.
@@ -8822,12 +8876,13 @@ export namespace OCCT {
      * file.
      */
     export class SaveStepDto<T> {
-        constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean, unit?: Base.unitOfLengthEnum) {
+        constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean, unit?: Base.unitOfLengthEnum, upAxis?: Base.upAxisConversionEnum) {
             if (shape !== undefined) { this.shape = shape; }
             if (fileName !== undefined) { this.fileName = fileName; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
             if (unit !== undefined) { this.unit = unit; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The shape written to the file.
@@ -8840,13 +8895,21 @@ export namespace OCCT {
          */
         fileName?: string | undefined = "shape.step";
         /**
-         * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
-         * what the screen shows either way; without them this swaps Y and Z.
-         * @default false
+         * `yUpToZUp` writes the file Z-up for CAD programs, Y and Z swapped when no conventions are set;
+         * `keep` writes the model's axes. `zUpToYUp` is refused.
+         * @default keep
          */
-        adjustYtoZ?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
         /**
-         * When true, `adjustYtoZ` turns the shape 90 degrees about X instead of swapping, for a
+         * When true, the file is turned as `upAxis` `yUpToZUp` does; false, its old default, decides
+         * nothing. True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustYtoZ?: boolean | undefined;
+        /**
+         * When true, `upAxis` `yUpToZUp` turns the shape 90 degrees about X instead of swapping, for a
          * right-handed scene.
          * @deprecated Set the conventions once instead, `bitbybit.setConventions(1)`, which maps
          * every file for the engine in use.
@@ -8871,13 +8934,14 @@ export namespace OCCT {
      * writes it as an STL file.
      */
     export class SaveStlDto<T> {
-        constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, binary?: boolean) {
+        constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, binary?: boolean, upAxis?: Base.upAxisConversionEnum) {
             if (shape !== undefined) { this.shape = shape; }
             if (fileName !== undefined) { this.fileName = fileName; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
             if (binary !== undefined) { this.binary = binary; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The shape written to the file.
@@ -8896,11 +8960,19 @@ export namespace OCCT {
          */
         precision?: number | undefined = 0.01;
         /**
-         * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
-         * what the screen shows either way; without them this swaps Y and Z.
-         * @default false
+         * `yUpToZUp` writes the file Z-up for CAD programs, Y and Z swapped when no conventions are set;
+         * `keep` writes the model's axes. `zUpToYUp` is refused.
+         * @default keep
          */
-        adjustYtoZ?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the file is turned as `upAxis` `yUpToZUp` does; false, its old default, decides
+         * nothing. True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustYtoZ?: boolean | undefined;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
          * itself only returns the text or the bytes.
@@ -9175,11 +9247,12 @@ export namespace OCCT {
      * a shape.
      */
     export class ImportStepIgesFromTextDto {
-        constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
+        constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum, upAxis?: Base.upAxisConversionEnum) {
             if (text !== undefined) { this.text = text; }
             if (fileType !== undefined) { this.fileType = fileType; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
             if (unit !== undefined) { this.unit = unit; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The full text of the STEP or IGES file.
@@ -9192,10 +9265,19 @@ export namespace OCCT {
          */
         fileType?: fileTypeEnum | undefined = fileTypeEnum.step;
         /**
-         * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
-         * @default true
+         * Whether the shape turns: `zUpToYUp` turns the file's Z-up into this library's Y-up, and `keep`
+         * leaves the file's axes. `yUpToZUp` is refused.
+         * @default zUpToYUp
          */
-        adjustZtoY?: boolean | undefined = true;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+        /**
+         * When false, the shape keeps its axes as `keep` does; true, its old default, decides nothing.
+         * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
         /**
          * The unit the shape comes back in, scaled from whatever unit the file is written in.
          * @default millimetre
@@ -9206,10 +9288,11 @@ export namespace OCCT {
      * A STEP or IGES file for the core `occt.io.loadSTEPorIGES`, which reads it into a shape.
      */
     export class ImportStepIgesDto {
-        constructor(assetFile?: File, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
+        constructor(assetFile?: File, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum, upAxis?: Base.upAxisConversionEnum) {
             if (assetFile !== undefined) { this.assetFile = assetFile; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
             if (unit !== undefined) { this.unit = unit; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The file to read; its extension decides whether it is STEP or IGES.
@@ -9217,10 +9300,19 @@ export namespace OCCT {
          */
         assetFile!: File;
         /**
-         * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
-         * @default true
+         * Whether the shape turns: `zUpToYUp` turns the file's Z-up into this library's Y-up, and `keep`
+         * leaves the file's axes. `yUpToZUp` is refused.
+         * @default zUpToYUp
          */
-        adjustZtoY?: boolean | undefined = true;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+        /**
+         * When false, the shape keeps its axes as `keep` does; true, its old default, decides nothing.
+         * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
         /**
          * The unit the shape comes back in, scaled from whatever unit the file is written in.
          * @default millimetre
@@ -9233,11 +9325,12 @@ export namespace OCCT {
      * into a shape.
      */
     export class LoadStepOrIgesDto {
-        constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum) {
+        constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean, unit?: Base.unitOfLengthEnum, upAxis?: Base.upAxisConversionEnum) {
             if (filetext !== undefined) { this.filetext = filetext; }
             if (fileName !== undefined) { this.fileName = fileName; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
             if (unit !== undefined) { this.unit = unit; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The file's text for `.step`, `.stp`, `.iges` and `.igs`, or an ArrayBuffer for the compressed
@@ -9252,10 +9345,19 @@ export namespace OCCT {
          */
         fileName?: string | undefined = "shape.step";
         /**
-         * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
-         * @default true
+         * Whether the shape turns: `zUpToYUp` turns the file's Z-up into this library's Y-up, and `keep`
+         * leaves the file's axes. `yUpToZUp` is refused.
+         * @default zUpToYUp
          */
-        adjustZtoY?: boolean | undefined = true;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+        /**
+         * When false, the shape keeps its axes as `keep` does; true, its old default, decides nothing.
+         * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
         /**
          * The unit the shape comes back in, scaled from whatever unit the file is written in.
          * `io.fileLengthUnit` tells which that is.
@@ -9339,11 +9441,11 @@ export namespace OCCT {
          */
         meshRelative?: boolean | undefined = true;
         /**
-         * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
-         * speed.
-         * @default false
+         * When true, flat and cylindrical faces get vertices inside them, not only along their edges;
+         * when false, triangles can cut straight across a wide cylindrical face such as a bore.
+         * @default true
          */
-        internalVerticesMode?: boolean | undefined = false;
+        internalVerticesMode?: boolean | undefined = true;
         /**
          * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
          * speed.
@@ -9547,11 +9649,11 @@ export namespace OCCT {
         meshRelative?: boolean | undefined = true;
 
         /**
-         * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
-         * speed.
-         * @default false
+         * When true, flat and cylindrical faces get vertices inside them, not only along their edges;
+         * when false, triangles can cut straight across a wide cylindrical face such as a bore.
+         * @default true
          */
-        internalVerticesMode?: boolean | undefined = false;
+        internalVerticesMode?: boolean | undefined = true;
 
         /**
          * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
@@ -9610,10 +9712,19 @@ export namespace OCCT {
         transformFormat?: gltfTransformFormatEnum | undefined = gltfTransformFormatEnum.compact;
 
         /**
-         * When true, the file's Z-up is turned into glTF's Y-up; false keeps Z up.
-         * @default true
+         * Whether the model turns: `zUpToYUp` turns the file's Z-up into glTF's Y-up, and `keep` keeps
+         * Z up. `yUpToZUp` is refused.
+         * @default zUpToYUp
          */
-        adjustZtoY?: boolean | undefined = true;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+        /**
+         * When false, the model keeps its axes as `keep` does; true, its old default, decides nothing.
+         * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
 
         /**
          * A factor applied to the whole model, such as 0.001 to turn millimeters into meters; 1 keeps
@@ -10053,34 +10164,14 @@ export namespace OCCT {
     }
 
     /**
-     * A document, a label and a color for `assembly.manager.setDocLabelColor`.
+     * A document and a color, shared by `SetDocLabelColorDto` and `SetDocLabelColorsDto`.
      */
-    export class SetDocLabelColorDto<T> {
-        constructor(
-            document?: T,
-            label?: string,
-            r?: number,
-            g?: number,
-            b?: number,
-            a?: number
-        ) {
-            if (document !== undefined) { this.document = document; }
-            if (label !== undefined) { this.label = label; }
-            if (r !== undefined) { this.r = r; }
-            if (g !== undefined) { this.g = g; }
-            if (b !== undefined) { this.b = b; }
-            if (a !== undefined) { this.a = a; }
-        }
+    export abstract class SetDocLabelColorSharedDto<T> {
         /**
          * The document from `buildAssemblyDocument` or `loadStepToDoc`.
          * @default undefined
          */
         document!: T;
-        /**
-         * The label of the part, instance or assembly to color, such as `0:1:1:1`.
-         * @default undefined
-         */
-        label!: string;
         /**
          * The red channel, from 0 to 1.
          * @default 0.5
@@ -10116,19 +10207,83 @@ export namespace OCCT {
     }
 
     /**
-     * A document, a label and a name for `assembly.manager.setDocLabelName`.
+     * A document, a label and a color for `assembly.manager.setDocLabelColor`.
      */
-    export class SetDocLabelNameDto<T> {
-        constructor(document?: T, label?: string, name?: string) {
+    export class SetDocLabelColorDto<T> extends SetDocLabelColorSharedDto<T> {
+        constructor(
+            document?: T,
+            label?: string,
+            r?: number,
+            g?: number,
+            b?: number,
+            a?: number
+        ) {
+            super();
             if (document !== undefined) { this.document = document; }
             if (label !== undefined) { this.label = label; }
-            if (name !== undefined) { this.name = name; }
+            if (r !== undefined) { this.r = r; }
+            if (g !== undefined) { this.g = g; }
+            if (b !== undefined) { this.b = b; }
+            if (a !== undefined) { this.a = a; }
         }
+        /**
+         * The label of the part, instance or assembly to color, such as `0:1:1:1`.
+         * @default undefined
+         */
+        label!: string;
+    }
+
+    /**
+     * A document, labels and one color for `assembly.manager.setDocLabelColors`, which gives every
+     * label the color in one change.
+     * @beta
+     */
+    export class SetDocLabelColorsDto<T> extends SetDocLabelColorSharedDto<T> {
+        constructor(
+            document?: T,
+            labels?: string[],
+            r?: number,
+            g?: number,
+            b?: number,
+            a?: number
+        ) {
+            super();
+            if (document !== undefined) { this.document = document; }
+            if (labels !== undefined) { this.labels = labels; }
+            if (r !== undefined) { this.r = r; }
+            if (g !== undefined) { this.g = g; }
+            if (b !== undefined) { this.b = b; }
+            if (a !== undefined) { this.a = a; }
+        }
+        /**
+         * The labels of the parts, instances or assemblies to color, such as `0:1:1:1`; each takes the
+         * one color.
+         * @default undefined
+         */
+        labels!: string[];
+    }
+
+    /**
+     * The document labels are renamed in, shared by `SetDocLabelNameDto` and `SetDocLabelNamesDto`.
+     */
+    export abstract class SetDocLabelNameSharedDto<T> {
         /**
          * The document from `buildAssemblyDocument` or `loadStepToDoc`.
          * @default undefined
          */
         document!: T;
+    }
+
+    /**
+     * A document, a label and a name for `assembly.manager.setDocLabelName`.
+     */
+    export class SetDocLabelNameDto<T> extends SetDocLabelNameSharedDto<T> {
+        constructor(document?: T, label?: string, name?: string) {
+            super();
+            if (document !== undefined) { this.document = document; }
+            if (label !== undefined) { this.label = label; }
+            if (name !== undefined) { this.name = name; }
+        }
         /**
          * The label of the part, instance or assembly to rename, such as `0:1:1:1`.
          * @default undefined
@@ -10139,6 +10294,30 @@ export namespace OCCT {
          * @default Renamed
          */
         name?: string | undefined = "Renamed";
+    }
+
+    /**
+     * A document, labels and a name for each for `assembly.manager.setDocLabelNames`, which renames
+     * every label in one change.
+     * @beta
+     */
+    export class SetDocLabelNamesDto<T> extends SetDocLabelNameSharedDto<T> {
+        constructor(document?: T, labels?: string[], names?: string[]) {
+            super();
+            if (document !== undefined) { this.document = document; }
+            if (labels !== undefined) { this.labels = labels; }
+            if (names !== undefined) { this.names = names; }
+        }
+        /**
+         * The labels of the parts, instances or assemblies to rename, such as `0:1:1:1`.
+         * @default undefined
+         */
+        labels!: string[];
+        /**
+         * The new name of each label in `labels`, in the same order; the lists are equally long.
+         * @default undefined
+         */
+        names!: string[];
     }
 
     /**
@@ -10154,6 +10333,43 @@ export namespace OCCT {
          * @default undefined
          */
         document!: T;
+    }
+
+    /**
+     * A document and how closely the curves of its annotations are followed, for
+     * `assembly.query.getDocumentAnnotations`. Experimental: what that method gives back may still change.
+     * @beta
+     */
+    export class DocumentAnnotationsDto<T> {
+        constructor(document?: T, deflection?: number, upAxis?: Base.upAxisConversionEnum) {
+            if (document !== undefined) { this.document = document; }
+            if (deflection !== undefined) { this.deflection = deflection; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
+        }
+        /**
+         * The document from `loadStepToDoc` or another loader, holding the annotations a STEP AP242
+         * file brings along.
+         * @default undefined
+         */
+        document!: T;
+        /**
+         * How far, in the document's units, a curved annotation line may stray from its curve; smaller
+         * draws circles and arcs with more points, up to about 130 points a circle.
+         * @default 0.1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.01
+         */
+        deflection?: number | undefined = 0.1;
+        /**
+         * Whether the annotations and saved views turn, as `docToMesh` with the same `upAxis` turns the
+         * parts: `zUpToYUp` from Z-up into Y-up, `yUpToZUp` into Z-up, and `keep` leaves the
+         * document's axes.
+         * @default keep
+         * @beta
+         */
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
     }
 
     /**
@@ -10282,11 +10498,11 @@ export namespace OCCT {
          */
         meshAngle?: number | undefined = 0.5;
         /**
-         * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
-         * speed.
-         * @default false
+         * When true, flat and cylindrical faces get vertices inside them, not only along their edges;
+         * when false, triangles can cut straight across a wide cylindrical face such as a bore.
+         * @default true
          */
-        internalVerticesMode?: boolean | undefined = false;
+        internalVerticesMode?: boolean | undefined = true;
         /**
          * When true, an extra pass refines triangles that bulge beyond the deflection, at the cost of
          * speed.
@@ -10408,6 +10624,425 @@ export namespace OCCT {
         dracoUnifiedQuantization?: boolean | undefined = false;
     }
 
+    /**
+     * Which shape of a part a dimension, datum or tolerance refers to: the whole `part`, or one `face`,
+     * `edge` or `vertex` of it.
+     * @beta
+     */
+    export enum pmiShapeKindEnum {
+        part = "part",
+        face = "face",
+        edge = "edge",
+        vertex = "vertex",
+    }
+
+    /**
+     * What a dimension states, under the names `assembly.query.getDocumentPmi` reads back:
+     * `linearDistance` and `angle` measure from one shape to another, `diameter`, `radius` and
+     * `curveLength` the size of one.
+     * @beta
+     */
+    export enum pmiDimensionTypeEnum {
+        linearDistance = "Location_LinearDistance",
+        angle = "Location_Angular",
+        diameter = "Size_Diameter",
+        radius = "Size_Radius",
+        curveLength = "Size_CurveLength",
+    }
+
+    /**
+     * What a geometric tolerance controls, under the names `assembly.query.getDocumentPmi` reads back.
+     * `flatness`, `circularity` and `cylindricity` refer to no datum, `perpendicularity` and
+     * `parallelism` need one, `position` and `profileOfSurface` take either.
+     * @beta
+     */
+    export enum pmiToleranceTypeEnum {
+        flatness = "Flatness",
+        circularity = "CircularityOrRoundness",
+        cylindricity = "Cylindricity",
+        profileOfSurface = "ProfileOfSurface",
+        perpendicularity = "Perpendicularity",
+        parallelism = "Parallelism",
+        position = "Position",
+    }
+
+    /**
+     * The material condition a tolerance applies at: `none`, or at the `maximum` or the `least`
+     * material of its feature, the circled M or L after its value.
+     * @beta
+     */
+    export enum pmiMaterialConditionEnum {
+        none = "none",
+        maximum = "maximum",
+        least = "least",
+    }
+
+    /**
+     * One shape of a part in a document, for the `shapeRefs` of `assembly.manager.createPmiDimension`,
+     * `createPmiDatum` and `createPmiTolerance`, and for `createPmiShape`, which describes one;
+     * `assembly.query.getDocumentPmi` gives the same form.
+     * @beta
+     */
+    export class PmiShapeDto {
+        constructor(part?: string, kind?: pmiShapeKindEnum, index?: number) {
+            if (part !== undefined) { this.part = part; }
+            if (kind !== undefined) { this.kind = kind; }
+            if (index !== undefined) { this.index = index; }
+        }
+        /**
+         * The label of the part, such as `0:1:1:1`, as `assembly.query.getDocumentParts` lists it: a
+         * part, not an assembly or an instance that places one.
+         * @default undefined
+         */
+        part!: string;
+        /**
+         * Whether the whole part is meant, or one face, edge or vertex of it.
+         * @default face
+         */
+        kind?: pmiShapeKindEnum | undefined = pmiShapeKindEnum.face;
+        /**
+         * Which face, edge or vertex, counting from 0 as `shapes.face.getFace`, `shapes.edge.getEdge`
+         * and `shapes.vertex.getVertices` count them on the part's shape; the whole part ignores it.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        index?: number | undefined = 0;
+    }
+
+    /**
+     * A presentation drawn by the caller, in the part's own axes and units: its name, plane, text point,
+     * lines and filled marks. An annotation `assembly.query.getDocumentAnnotations` read is one as it is.
+     * @beta
+     */
+    export class PmiPresentationDto {
+        constructor(plane?: Base.Frame, textPoint?: Base.Point3, lines?: Base.Point3[][], fills?: Base.Point3[][], name?: string) {
+            if (plane !== undefined) { this.plane = plane; }
+            if (textPoint !== undefined) { this.textPoint = textPoint; }
+            if (lines !== undefined) { this.lines = lines; }
+            if (fills !== undefined) { this.fills = fills; }
+            if (name !== undefined) { this.name = name; }
+        }
+        /**
+         * The plane it is drawn in: its `origin`, its `normal` facing the reader and its X axis
+         * `direction`. A text point and fills need one.
+         * @default undefined
+         * @optional true
+         */
+        plane?: Base.Frame | undefined;
+        /**
+         * Where its text is attached, inside the box of its lines and fills: a STEP file keeps this
+         * point as the plane's origin. Left out, it is the plane's origin.
+         * @default undefined
+         * @optional true
+         */
+        textPoint?: Base.Point3 | undefined;
+        /**
+         * Its lines, each a polyline of two or more points, no two neighbours in one place.
+         * @default undefined
+         * @optional true
+         */
+        lines?: Base.Point3[][] | undefined;
+        /**
+         * Its filled marks: closed loops of three or more points in the plane, the first not repeated; a
+         * loop inside another is a hole, and loops never cross.
+         * @default undefined
+         * @optional true
+         */
+        fills?: Base.Point3[][] | undefined;
+        /**
+         * The name readers show for it; left out, the item's own `name`.
+         * @default undefined
+         * @optional true
+         */
+        name?: string | undefined;
+    }
+
+    /**
+     * A dimension for `assembly.manager.createPmiDimension` and `addDocumentPmi`: what it states, the
+     * shapes it measures, and where its picture is drawn, in the part's own axes and units.
+     * @beta
+     */
+    export class PmiDimensionDto {
+        constructor(type?: pmiDimensionTypeEnum, value?: number, shapeRefs?: PmiShapeDto[], otherShapeRefs?: PmiShapeDto[], upperTolerance?: number, lowerTolerance?: number, name?: string, start?: Base.Point3, end?: Base.Point3, normal?: Base.Vector3, direction?: Base.Vector3, offset?: number, textHeight?: number, decimalPlaces?: number, presentation?: PmiPresentationDto) {
+            if (type !== undefined) { this.type = type; }
+            if (value !== undefined) { this.value = value; }
+            if (shapeRefs !== undefined) { this.shapeRefs = shapeRefs; }
+            if (otherShapeRefs !== undefined) { this.otherShapeRefs = otherShapeRefs; }
+            if (upperTolerance !== undefined) { this.upperTolerance = upperTolerance; }
+            if (lowerTolerance !== undefined) { this.lowerTolerance = lowerTolerance; }
+            if (name !== undefined) { this.name = name; }
+            if (start !== undefined) { this.start = start; }
+            if (end !== undefined) { this.end = end; }
+            if (normal !== undefined) { this.normal = normal; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (offset !== undefined) { this.offset = offset; }
+            if (textHeight !== undefined) { this.textHeight = textHeight; }
+            if (decimalPlaces !== undefined) { this.decimalPlaces = decimalPlaces; }
+            if (presentation !== undefined) { this.presentation = presentation; }
+        }
+        /**
+         * What the dimension states; `linearDistance` and `angle` need `otherShapeRefs`, the sizes take
+         * none.
+         * @default linearDistance
+         */
+        type?: pmiDimensionTypeEnum | undefined = pmiDimensionTypeEnum.linearDistance;
+        /**
+         * The nominal value, in the document's length unit, or in degrees for an `angle`.
+         * @default undefined
+         * @minimum 0
+         */
+        value!: number;
+        /**
+         * The shapes it measures, or measures from, each a part and one face, edge or vertex of it.
+         * @default undefined
+         */
+        shapeRefs!: PmiShapeDto[];
+        /**
+         * The shapes a `linearDistance` or an `angle` measures to; an empty list counts as none.
+         * @default undefined
+         * @optional true
+         */
+        otherShapeRefs?: PmiShapeDto[] | undefined;
+        /**
+         * How far above the value the measure may lie, in degrees for an `angle`. Left out with
+         * `lowerTolerance`, there is no tolerance; left out alone, it is 0.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         */
+        upperTolerance?: number | undefined;
+        /**
+         * How far below the value the measure may lie, as an amount. Left out with `upperTolerance`, the
+         * dimension has no tolerance; left out alone, it is 0.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         */
+        lowerTolerance?: number | undefined;
+        /**
+         * The name of the picture `start` and `end` draw, which readers show and `getDocumentAnnotations`
+         * reads back; a `presentation` without a name of its own takes it.
+         * @default undefined
+         * @optional true
+         */
+        name?: string | undefined;
+        /**
+         * For `linearDistance` and `curveLength` the first point measured, for the others the center of
+         * the circle or angle; without it and `end`, nothing is drawn.
+         * @default undefined
+         * @optional true
+         */
+        start?: Base.Point3 | undefined;
+        /**
+         * For `linearDistance` and `curveLength` the second point measured; for `diameter` and `radius` a
+         * point of the circle; for an `angle` a point on its first arm, where the arc passes.
+         * @default undefined
+         * @optional true
+         */
+        end?: Base.Point3 | undefined;
+        /**
+         * The picture's plane normal, facing the reader; an angle turns counterclockwise about it. Left
+         * out, +Z, or -Y when `start` to `end` runs along Z.
+         * @default undefined
+         * @optional true
+         */
+        normal?: Base.Vector3 | undefined;
+        /**
+         * For `linearDistance`, the direction the distance is measured along; left out, from `start` to
+         * `end`. Other types ignore it.
+         * @default undefined
+         * @optional true
+         */
+        direction?: Base.Vector3 | undefined;
+        /**
+         * For `linearDistance` and `curveLength`, how far the dimension line stands from `start`, to the
+         * left of the measured direction seen from `normal`; negative puts it right.
+         * @default 10
+         * @minimum -Infinity
+         * @maximum Infinity
+         */
+        offset?: number | undefined = 10;
+        /**
+         * The height of the picture's digits, in the document's length unit; its arrows are as long.
+         * @default 3.5
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        textHeight?: number | undefined = 3.5;
+        /**
+         * How many decimals the picture writes the value with; trailing zeros are dropped.
+         * @default 2
+         * @minimum 0
+         * @maximum 15
+         * @step 1
+         */
+        decimalPlaces?: number | undefined = 2;
+        /**
+         * A presentation drawn by the caller, or an annotation read back, used instead of the picture
+         * `start` and `end` draw; one with no lines and no fills counts as none.
+         * @default undefined
+         * @optional true
+         */
+        presentation?: PmiPresentationDto | undefined;
+    }
+
+    /**
+     * A datum for `assembly.manager.createPmiDatum` and `addDocumentPmi`: its letter and the shapes it
+     * is taken from. A tolerance added in the same call must refer to it.
+     * @beta
+     */
+    export class PmiDatumDto {
+        constructor(letter?: string, shapeRefs?: PmiShapeDto[], name?: string, presentation?: PmiPresentationDto) {
+            if (letter !== undefined) { this.letter = letter; }
+            if (shapeRefs !== undefined) { this.shapeRefs = shapeRefs; }
+            if (name !== undefined) { this.name = name; }
+            if (presentation !== undefined) { this.presentation = presentation; }
+        }
+        /**
+         * One to three capital letters, A to Z, naming one datum in the document; a letter it already
+         * has is given again only on that datum's shapes.
+         * @default A
+         */
+        letter?: string | undefined = "A";
+        /**
+         * The shapes the datum is taken from.
+         * @default undefined
+         */
+        shapeRefs!: PmiShapeDto[];
+        /**
+         * The name of its `presentation`, when that has none of its own.
+         * @default undefined
+         * @optional true
+         */
+        name?: string | undefined;
+        /**
+         * A presentation drawn by the caller, or an annotation read back; left out, or with no lines and
+         * no fills, the datum is written without one.
+         * @default undefined
+         * @optional true
+         */
+        presentation?: PmiPresentationDto | undefined;
+    }
+
+    /**
+     * A geometric tolerance for `assembly.manager.createPmiTolerance` and `addDocumentPmi`: what it
+     * controls, its value, the shapes it applies to and the datums it refers to.
+     * @beta
+     */
+    export class PmiToleranceDto {
+        constructor(type?: pmiToleranceTypeEnum, value?: number, shapeRefs?: PmiShapeDto[], datumLetters?: string[], diameterZone?: boolean, material?: pmiMaterialConditionEnum, name?: string, presentation?: PmiPresentationDto) {
+            if (type !== undefined) { this.type = type; }
+            if (value !== undefined) { this.value = value; }
+            if (shapeRefs !== undefined) { this.shapeRefs = shapeRefs; }
+            if (datumLetters !== undefined) { this.datumLetters = datumLetters; }
+            if (diameterZone !== undefined) { this.diameterZone = diameterZone; }
+            if (material !== undefined) { this.material = material; }
+            if (name !== undefined) { this.name = name; }
+            if (presentation !== undefined) { this.presentation = presentation; }
+        }
+        /**
+         * What the tolerance controls.
+         * @default flatness
+         */
+        type?: pmiToleranceTypeEnum | undefined = pmiToleranceTypeEnum.flatness;
+        /**
+         * The width of its tolerance zone, in the document's length unit.
+         * @default undefined
+         * @minimum 0
+         */
+        value!: number;
+        /**
+         * The shapes it applies to.
+         * @default undefined
+         */
+        shapeRefs!: PmiShapeDto[];
+        /**
+         * The letters of the datums it refers to, primary first, at most three, each given in the same
+         * call, a datum the document has again on its own shapes.
+         * @default undefined
+         * @optional true
+         */
+        datumLetters?: string[] | undefined;
+        /**
+         * When true, the zone is a cylinder, written with the diameter sign before the value; only
+         * `position`, `perpendicularity` and `parallelism` take it.
+         * @default false
+         */
+        diameterZone?: boolean | undefined = false;
+        /**
+         * The material condition it applies at; only `position`, `perpendicularity` and `parallelism`
+         * take one other than `none`.
+         * @default none
+         */
+        material?: pmiMaterialConditionEnum | undefined = pmiMaterialConditionEnum.none;
+        /**
+         * The name of its `presentation`, when that has none of its own.
+         * @default undefined
+         * @optional true
+         */
+        name?: string | undefined;
+        /**
+         * A presentation drawn by the caller, or an annotation read back; left out, or with no lines and
+         * no fills, the tolerance is written without one.
+         * @default undefined
+         * @optional true
+         */
+        presentation?: PmiPresentationDto | undefined;
+    }
+
+    /**
+     * A document and the dimensions, datums and tolerances `assembly.manager.addDocumentPmi` adds to it,
+     * all at once or none of them; what `assembly.query.getDocumentPmi` reads fits each list.
+     * @beta
+     */
+    export class AddDocumentPmiDto<T> {
+        constructor(document?: T, dimensions?: PmiDimensionDto[], datums?: PmiDatumDto[], tolerances?: PmiToleranceDto[]) {
+            if (document !== undefined) { this.document = document; }
+            if (dimensions !== undefined) { this.dimensions = dimensions; }
+            if (datums !== undefined) { this.datums = datums; }
+            if (tolerances !== undefined) { this.tolerances = tolerances; }
+        }
+        /**
+         * The document from `buildAssemblyDocument` or `loadStepToDoc`.
+         * @default undefined
+         */
+        document!: T;
+        /**
+         * Dimensions to write, each from `createPmiDimension` or given as an object.
+         * @default undefined
+         * @optional true
+         */
+        dimensions?: PmiDimensionDto[] | undefined;
+        /**
+         * The datums to add; each must be referred to by one of `tolerances`.
+         * @default undefined
+         * @optional true
+         */
+        datums?: PmiDatumDto[] | undefined;
+        /**
+         * The geometric tolerances to add.
+         * @default undefined
+         * @optional true
+         */
+        tolerances?: PmiToleranceDto[] | undefined;
+    }
+
+    /**
+     * A document whose dimensions, datums and tolerances `assembly.manager.removeDocumentPmi` removes.
+     * @beta
+     */
+    export class RemoveDocumentPmiDto<T> {
+        constructor(document?: T) {
+            if (document !== undefined) { this.document = document; }
+        }
+        /**
+         * The document from `buildAssemblyDocument` or `loadStepToDoc`.
+         * @default undefined
+         */
+        document!: T;
+    }
     /**
      * Shapes for `shapes.compound.makeCompound`, which packs them into one compound without joining
      * their geometry.
@@ -15008,6 +15643,78 @@ export namespace OCCT {
         keep?: sectionKeepEnum | undefined = sectionKeepEnum.behindAll;
     }
     /**
+     * Shapes, the frame whose plane cuts them and how the cut faces are hatched, for
+     * `operations.hatchedSectionByFrame`, which gives each shape's cut faces with their hatch as edges
+     * and as drawing data.
+     * @beta
+     */
+    export class HatchedSectionByFrameDto<T> {
+        constructor(shapes?: T[], frame?: Base.Frame, pattern?: IO.hatchPatternEnum, angle?: number, spacing?: number, neighbourAngles?: boolean, curveTolerance?: number, tolerance?: number) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (pattern !== undefined) { this.pattern = pattern; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (spacing !== undefined) { this.spacing = spacing; }
+            if (neighbourAngles !== undefined) { this.neighbourAngles = neighbourAngles; }
+            if (curveTolerance !== undefined) { this.curveTolerance = curveTolerance; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * The shapes to cut, such as the parts of an assembly; each gives its own cut faces.
+         * @default undefined
+         */
+        shapes!: T[];
+        /**
+         * The plane to cut along, through the frame's origin square to its normal, which points at the
+         * side taken away; the hatch data takes its direction as X.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * What the cut faces are filled with: single lines, pairs, crossed lines or solid ink.
+         * @default ansi31
+         */
+        pattern?: IO.hatchPatternEnum | undefined = IO.hatchPatternEnum.ansi31;
+        /**
+         * The angle of the hatch lines in degrees, counterclockwise from the frame's direction.
+         * @default 45
+         */
+        angle?: number | undefined = 45;
+        /**
+         * The distance between the hatch lines, in model units.
+         * @default 3
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        spacing?: number | undefined = 3;
+        /**
+         * When true, a shape whose cut faces come within `spacing` of an earlier shape's is hatched at
+         * another angle, `angle` plus 90, 30, 120, 60 or 150.
+         * @default true
+         */
+        neighbourAngles?: boolean | undefined = true;
+        /**
+         * How far, in model units, a curved cut edge may stray from the straight pieces the hatch lines
+         * are clipped against.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.001
+         */
+        curveTolerance?: number | undefined = 0.01;
+        /**
+         * How close the ends of two section edges must lie to be joined into one wire, in model units.
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-7;
+    }
+    /**
      * A face and the edges or wires that cut it for `operations.splitFaceByWires`, which returns the
      * pieces of the face.
      */
@@ -15029,11 +15736,12 @@ export namespace OCCT {
         wires!: U[];
     }
     /**
-     * A shape, a view frame and drawing options for `operations.hiddenLines`, which draws the edges seen
-     * from the frame and the edges hidden behind faces, flat on the XZ plane.
+     * A shape, a view frame and drawing options for `operations.hiddenLines` and
+     * `operations.hiddenLinesByKind`, which draw the edges seen from the frame and the edges hidden
+     * behind faces, flat on the XZ plane.
      */
     export class HiddenLinesDto<T> {
-        constructor(shape?: T, frame?: Base.Frame, exact?: boolean, smoothEdges?: boolean, hiddenEdges?: boolean, focus?: number, precision?: number) {
+        constructor(shape?: T, frame?: Base.Frame, exact?: boolean, smoothEdges?: boolean, hiddenEdges?: boolean, focus?: number, precision?: number, tidy?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (frame !== undefined) { this.frame = frame; }
             if (exact !== undefined) { this.exact = exact; }
@@ -15041,6 +15749,7 @@ export namespace OCCT {
             if (hiddenEdges !== undefined) { this.hiddenEdges = hiddenEdges; }
             if (focus !== undefined) { this.focus = focus; }
             if (precision !== undefined) { this.precision = precision; }
+            if (tidy !== undefined) { this.tidy = tidy; }
         }
         /**
          * The shape to draw.
@@ -15066,8 +15775,8 @@ export namespace OCCT {
          */
         smoothEdges?: boolean | undefined = false;
         /**
-         * When true, the edges that faces cover are collected in `hidden`; when false, `hidden` stays
-         * empty.
+         * When true, the edges that faces cover are drawn too; when false, the hidden part of the
+         * result stays empty.
          * @default true
          */
         hiddenEdges?: boolean | undefined = true;
@@ -15090,6 +15799,12 @@ export namespace OCCT {
          * @step 0.001
          */
         precision?: number | undefined = 0.01;
+        /**
+         * When true, the drawing is tidied: a curve seen edge-on becomes a line, and a hidden edge
+         * lying wholly under other edges is left out.
+         * @default false
+         */
+        tidy?: boolean | undefined = false;
     }
     /**
      * A shape, the frames to drill at and the size of the holes for `features.holes`;
@@ -15601,10 +16316,11 @@ export namespace OCCT {
      * or one face that carries the whole mesh.
      */
     export class LoadStlDto {
-        constructor(stlData?: string | ArrayBuffer | Uint8Array | File | Blob, asFaces?: boolean, adjustZtoY?: boolean) {
+        constructor(stlData?: string | ArrayBuffer | Uint8Array | File | Blob, asFaces?: boolean, adjustZtoY?: boolean, upAxis?: Base.upAxisConversionEnum) {
             if (stlData !== undefined) { this.stlData = stlData; }
             if (asFaces !== undefined) { this.asFaces = asFaces; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The STL file, ASCII or binary: the text of an ASCII file, or the file as ArrayBuffer,
@@ -15619,10 +16335,19 @@ export namespace OCCT {
          */
         asFaces?: boolean | undefined = false;
         /**
-         * When true, the file's Z-up is turned into this library's Y-up.
-         * @default true
+         * Whether the shape turns: `zUpToYUp` turns the file's Z-up into this library's Y-up, and `keep`
+         * leaves the file's axes. `yUpToZUp` is refused.
+         * @default zUpToYUp
          */
-        adjustZtoY?: boolean | undefined = true;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+        /**
+         * When false, the shape keeps its axes as `keep` does; true, its old default, decides nothing.
+         * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
     }
 
     /**
@@ -15826,12 +16551,13 @@ export namespace OCCT {
      * writes it as an OBJ file with the material library its `mtllib` line names.
      */
     export class SaveObjDto<T> {
-        constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean) {
+        constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, upAxis?: Base.upAxisConversionEnum) {
             if (shape !== undefined) { this.shape = shape; }
             if (fileName !== undefined) { this.fileName = fileName; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The shape written to the file.
@@ -15854,11 +16580,19 @@ export namespace OCCT {
          */
         precision?: number | undefined = 0.01;
         /**
-         * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
-         * what the screen shows either way; without them this swaps Y and Z.
-         * @default false
+         * `yUpToZUp` writes the file Z-up for CAD programs, Y and Z swapped when no conventions are set;
+         * `keep` writes the model's axes. `zUpToYUp` is refused.
+         * @default keep
          */
-        adjustYtoZ?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the file is turned as `upAxis` `yUpToZUp` does; false, its old default, decides
+         * nothing. True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustYtoZ?: boolean | undefined;
         /**
          * When true, a browser download of the OBJ file and of any material library is started where
          * that is possible; the kernel itself only returns the texts.
@@ -15872,12 +16606,13 @@ export namespace OCCT {
      * writes it as an ASCII PLY file with normals.
      */
     export class SavePlyDto<T> {
-        constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean) {
+        constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, upAxis?: Base.upAxisConversionEnum) {
             if (shape !== undefined) { this.shape = shape; }
             if (fileName !== undefined) { this.fileName = fileName; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The shape written to the file.
@@ -15899,11 +16634,19 @@ export namespace OCCT {
          */
         precision?: number | undefined = 0.01;
         /**
-         * When true, the file is written Z-up for CAD programs. With the conventions set, the file shows
-         * what the screen shows either way; without them this swaps Y and Z.
-         * @default false
+         * `yUpToZUp` writes the file Z-up for CAD programs, Y and Z swapped when no conventions are set;
+         * `keep` writes the model's axes. `zUpToYUp` is refused.
+         * @default keep
          */
-        adjustYtoZ?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the file is turned as `upAxis` `yUpToZUp` does; false, its old default, decides
+         * nothing. True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustYtoZ?: boolean | undefined;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
          * itself only returns the text.
@@ -16514,12 +17257,13 @@ export namespace OCCT {
      * @beta
      */
     export class BuildRecipeDto {
-        constructor(recipe?: Base.Recipe, adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number) {
+        constructor(recipe?: Base.Recipe, adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, upAxis?: Base.upAxisConversionEnum) {
             if (recipe !== undefined) { this.recipe = recipe; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
             if (emptyWhenFailed !== undefined) { this.emptyWhenFailed = emptyWhenFailed; }
             if (facetedMeshes !== undefined) { this.facetedMeshes = facetedMeshes; }
             if (maxTriangles !== undefined) { this.maxTriangles = maxTriangles; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The recipe: steps such as polygons, extrusions and cuts, and the roots to build from them, as
@@ -16528,11 +17272,19 @@ export namespace OCCT {
          */
         recipe!: Base.Recipe;
         /**
-         * When true, each shape turns a quarter turn about X so the recipe's Z points along Y, which is
-         * up when drawn: `(x, y, z)` becomes `(x, z, -y)`.
-         * @default false
+         * `zUpToYUp` turns each shape a quarter turn about X so the recipe's Z points along Y, and
+         * `(x, y, z)` becomes `(x, z, -y)`; `keep` leaves them. `yUpToZUp` is refused.
+         * @default keep
          */
-        adjustZtoY?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the shapes turn as `upAxis` `zUpToYUp` does; false, its old default, decides nothing.
+         * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
         /**
          * When true, a root that cannot be built comes back as an empty compound and an opening that
          * cannot is left uncut; when false, either stops the build.

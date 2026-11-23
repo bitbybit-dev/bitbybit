@@ -16,7 +16,11 @@ export type OcctFailureDetails = {
     "occt.fillet.failed": undefined;
     "occt.fillet.failedOnEdges": EdgeFailureDetails;
     "occt.fillet.failedAtCorners": CornerFailureDetails;
+    "occt.fillet.insideOut": undefined;
+    "occt.fillet.historyUnnumbered": undefined;
     "occt.chamfer.failed": undefined;
+    "occt.chamfer.insideOut": undefined;
+    "occt.chamfer.historyUnnumbered": undefined;
     "occt.offset.failed": undefined;
     "occt.thickSolid.failed": undefined;
     "occt.loft.failed": undefined;
@@ -49,7 +53,11 @@ export const OCCT_FAILURES: Readonly<Record<OcctFailureCode, string>> = {
     "occt.fillet.failed": "The fillet could not be built. A radius may be too large for the faces beside an edge, or the edges may meet at a corner the fillet cannot round.",
     "occt.fillet.failedOnEdges": "The fillet could not be built at these edges of the shape, counted from 0: {edges}. A radius may be too large for the faces beside them, or the edges may meet at a corner the fillet cannot round.",
     "occt.fillet.failedAtCorners": "The fillet could not round these corners, counted from 1: {corners}. The radius may be too large for the edges that meet there.",
+    "occt.fillet.insideOut": "The fillet came out inside out, OCCT having turned some of its faces the wrong way, and turning them back did not give a sound solid. Try another radius, or round the edges in smaller groups.",
+    "occt.fillet.historyUnnumbered": "The fillet came out inside out and was turned right, but its faces could then not be matched one to one to those its history names. Round the edges without the history, or in smaller groups.",
     "occt.chamfer.failed": "The chamfer could not be built. A distance may be too large for the faces beside an edge, or the edges may meet at a corner the chamfer cannot cut.",
+    "occt.chamfer.insideOut": "The chamfer came out inside out, OCCT having turned some of its faces the wrong way, and turning them back did not give a sound solid. Try another distance, or cut the edges in smaller groups.",
+    "occt.chamfer.historyUnnumbered": "The chamfer came out inside out and was turned right, but its faces could then not be matched one to one to those its history names. Cut the edges without the history, or in smaller groups.",
     "occt.offset.failed": "The offset could not be built. An inward offset may be larger than the shape allows, or a corner may be too sharp for the join type.",
     "occt.thickSolid.failed": "The thick solid could not be built. The thickness may be larger than the shape allows, or a corner may be too sharp for the join type.",
     "occt.loft.failed": "The loft could not be built. The sections may not fit together, such as open and closed wires mixed, or may lie so that the surface through them crosses itself.",

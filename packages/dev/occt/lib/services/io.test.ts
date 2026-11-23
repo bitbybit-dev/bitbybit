@@ -1227,6 +1227,42 @@ describe("OCCT io unit tests", () => {
         });
     });
 
+    describe("a glTF conversion that does not say how flat and cylindrical faces are meshed", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        type MeshingChoice = { internalVerticesMode?: boolean };
+
+        const stepBytes = (): Uint8Array => {
+            const box = solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] });
+            const step = io.saveShapeSTEP({ shape: box, fileName: "box.step", adjustYtoZ: false });
+            box.delete();
+            return new TextEncoder().encode(step);
+        };
+
+        it.each([
+            ["ConvertStepToGltfFromBinary", (stepData: Uint8Array, choice: MeshingChoice): unknown => io.convertStepToGltf({ stepData, ...choice })],
+            ["ConvertStepToGltfFromBinaryAdvanced", (stepData: Uint8Array, choice: MeshingChoice): unknown => io.convertStepToGltfAdvanced({ stepData, ...choice })],
+            ["ConvertStepToGltfFromBinaryWithDraco", (stepData: Uint8Array, choice: MeshingChoice): unknown => io.convertStepToGltfWithDraco({ stepData, ...choice })],
+            ["ConvertStepToGltfFromBinaryAdvancedWithDraco", (stepData: Uint8Array, choice: MeshingChoice): unknown => io.convertStepToGltfAdvancedWithDraco({ stepData, ...choice })],
+        ] as const)("should ask %s for vertices inside those faces, so a bore is not crossed by triangles", (kernelFunction, convert) => {
+            // Arrange
+            const stepData = stepBytes();
+            const kernel = vi.spyOn(occt, kernelFunction).mockReturnValue(new Uint8Array([1]));
+
+            // Act
+            convert(stepData, {});
+            convert(stepData, { internalVerticesMode: true });
+            convert(stepData, { internalVerticesMode: false });
+
+            // Assert
+            const [unsaid, inside, edgesOnly] = kernel.mock.calls;
+            expect(unsaid).toEqual(inside);
+            expect(unsaid).not.toEqual(edgesOnly);
+        });
+    });
+
     describe("a trap inside a writer or a conversion", () => {
         afterEach(() => {
             vi.restoreAllMocks();

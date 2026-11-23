@@ -9,6 +9,7 @@ export * from "@bitbybit-dev/base/lib/api/resolved-inputs";
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace OCCT {
+    export type AddDocumentPmiDto<T> = Inputs.OCCT.AddDocumentPmiDto<T>;
     export type AlignAndTranslateDto<T> = WithDefaults<Inputs.OCCT.AlignAndTranslateDto<T>, "direction" | "center">;
     export type AlignAndTranslateShapesDto<T> = WithDefaults<Inputs.OCCT.AlignAndTranslateShapesDto<T>, "directions" | "centers">;
     export type AlignDto<T> = WithDefaults<Inputs.OCCT.AlignDto<T>, "fromOrigin" | "fromDirection" | "toOrigin" | "toDirection">;
@@ -59,7 +60,7 @@ export namespace OCCT {
     export type BSplinesDto = WithDefaults<Inputs.OCCT.BSplinesDto, "returnCompound">;
     export type BuildAssemblyDocumentDto<T, D> = Inputs.OCCT.BuildAssemblyDocumentDto<T, D>;
     export type BuildRecipeDocumentDto = WithDefaults<Inputs.OCCT.BuildRecipeDocumentDto, "name" | "groupBy" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
-    export type BuildRecipeDto = WithDefaults<Inputs.OCCT.BuildRecipeDto, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
+    export type BuildRecipeDto = WithDefaults<Inputs.OCCT.BuildRecipeDto, "upAxis" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
     export type Chamfer2dVertexDto<T> = WithDefaults<Inputs.OCCT.Chamfer2dVertexDto<T>, "distance" | "angle">;
     export type ChamferCornerByPointDto<T> = WithDefaults<Inputs.OCCT.ChamferCornerByPointDto<T>, "points" | "distance" | "angle" | "snapTolerance" | "mode">;
     export type ChamferDto<T> = WithDefaults<Inputs.OCCT.ChamferDto<T>, "distance">;
@@ -92,8 +93,8 @@ export namespace OCCT {
     export type ConstraintTanLinesFromPtToCircleDto<T> = WithDefaults<Inputs.OCCT.ConstraintTanLinesFromPtToCircleDto<T>, "tolerance" | "positionResult" | "circleRemainder">;
     export type ConstraintTanLinesFromTwoPtsToCircleDto<T> = WithDefaults<Inputs.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<T>, "tolerance" | "positionResult" | "circleRemainder">;
     export type ConstraintTanLinesOnTwoCirclesDto<T> = WithDefaults<Inputs.OCCT.ConstraintTanLinesOnTwoCirclesDto<T>, "tolerance" | "positionResult" | "circleRemainders">;
-    export type ConvertStepToGltfAdvancedDto = WithDefaults<Inputs.OCCT.ConvertStepToGltfAdvancedDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "adjustZtoY" | "scale">;
-    export type ConvertStepToGltfAdvancedWithDracoDto = WithDefaults<Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "adjustZtoY" | "scale" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    export type ConvertStepToGltfAdvancedDto = WithDefaults<Inputs.OCCT.ConvertStepToGltfAdvancedDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "upAxis" | "scale">;
+    export type ConvertStepToGltfAdvancedWithDracoDto = WithDefaults<Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "upAxis" | "scale" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
     export type ConvertStepToGltfDto = WithDefaults<Inputs.OCCT.ConvertStepToGltfDto, "meshPrecision" | "meshAngle" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection">;
     export type ConvertStepToGltfWithDracoDto = WithDefaults<Inputs.OCCT.ConvertStepToGltfWithDracoDto, "meshPrecision" | "meshAngle" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
     export type CounterboredHolesDto<T> = WithDefaults<Inputs.OCCT.CounterboredHolesDto<T>, "diameter" | "depth" | "tipAngle" | "counterboreDiameter" | "counterboreDepth">;
@@ -151,8 +152,9 @@ export namespace OCCT {
     export type DivideDto<T> = WithDefaults<Inputs.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     export type DivideShapesDto<T> = WithDefaults<Inputs.OCCT.DivideShapesDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     export type DivideSharedDto = WithDefaults<Inputs.OCCT.DivideSharedDto, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
-    export type DocToMeshDto<U> = WithDefaults<Inputs.OCCT.DocToMeshDto<U>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
-    export type DocToMeshesDto<U> = WithDefaults<Inputs.OCCT.DocToMeshesDto<U>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    export type DocToMeshDto<U> = WithDefaults<Inputs.OCCT.DocToMeshDto<U>, "precision" | "angularDeflection" | "relativeDeflection" | "upAxis" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    export type DocToMeshesDto<U> = WithDefaults<Inputs.OCCT.DocToMeshesDto<U>, "precision" | "angularDeflection" | "relativeDeflection" | "upAxis" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    export type DocumentAnnotationsDto<T> = WithDefaults<Inputs.OCCT.DocumentAnnotationsDto<T>, "deflection" | "upAxis">;
     export type DocumentLabelQueryDto<T> = Inputs.OCCT.DocumentLabelQueryDto<T>;
     export type DocumentQueryDto<T> = Inputs.OCCT.DocumentQueryDto<T>;
     export type DowelPinDto = WithDefaults<Inputs.OCCT.DowelPinDto, "diameter" | "length">;
@@ -231,6 +233,7 @@ export namespace OCCT {
     export type Geom2dSegmentDto = WithDefaults<Inputs.OCCT.Geom2dSegmentDto, "start" | "end">;
     export type Geom2dTrimmedCurveDto<T> = WithDefaults<Inputs.OCCT.Geom2dTrimmedCurveDto<T>, "u1" | "u2" | "sense" | "adjustPeriodic">;
     export type GeomCylindricalSurfaceDto = WithDefaults<Inputs.OCCT.GeomCylindricalSurfaceDto, "radius" | "center" | "direction">;
+    export type HatchedSectionByFrameDto<T> = WithDefaults<Inputs.OCCT.HatchedSectionByFrameDto<T>, "pattern" | "angle" | "spacing" | "neighbourAngles" | "curveTolerance" | "tolerance">;
     export type HBeamProfileDto = WithDefaults<Inputs.OCCT.HBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
     export type HBeamProfileSolidDto = WithDefaults<Inputs.OCCT.HBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
     export type Heart2DDto = WithDefaults<Inputs.OCCT.Heart2DDto, "center" | "direction" | "rotation" | "sizeApprox">;
@@ -239,12 +242,12 @@ export namespace OCCT {
     export type HelixWireByTurnsDto = WithDefaults<Inputs.OCCT.HelixWireByTurnsDto, "radius" | "pitch" | "numTurns" | "center" | "direction" | "clockwise" | "tolerance">;
     export type HelixWireDto = WithDefaults<Inputs.OCCT.HelixWireDto, "radius" | "pitch" | "height" | "center" | "direction" | "clockwise" | "tolerance">;
     export type HexagonsInGridDto = WithDefaults<Inputs.OCCT.HexagonsInGridDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight">;
-    export type HiddenLinesDto<T> = WithDefaults<Inputs.OCCT.HiddenLinesDto<T>, "exact" | "smoothEdges" | "hiddenEdges" | "focus" | "precision">;
+    export type HiddenLinesDto<T> = WithDefaults<Inputs.OCCT.HiddenLinesDto<T>, "exact" | "smoothEdges" | "hiddenEdges" | "focus" | "precision" | "tidy">;
     export type HolesDto<T> = WithDefaults<Inputs.OCCT.HolesDto<T>, "diameter" | "depth" | "tipAngle">;
     export type IBeamProfileDto = WithDefaults<Inputs.OCCT.IBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
     export type IBeamProfileSolidDto = WithDefaults<Inputs.OCCT.IBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
-    export type ImportStepIgesDto = WithDefaults<Inputs.OCCT.ImportStepIgesDto, "adjustZtoY" | "unit">;
-    export type ImportStepIgesFromTextDto = WithDefaults<Inputs.OCCT.ImportStepIgesFromTextDto, "fileType" | "adjustZtoY" | "unit">;
+    export type ImportStepIgesDto = WithDefaults<Inputs.OCCT.ImportStepIgesDto, "upAxis" | "unit">;
+    export type ImportStepIgesFromTextDto = WithDefaults<Inputs.OCCT.ImportStepIgesFromTextDto, "fileType" | "upAxis" | "unit">;
     export type InterpolateSymmetricDto = WithDefaults<Inputs.OCCT.InterpolateSymmetricDto, "tolerance">;
     export type InterpolateWiresDto = WithDefaults<Inputs.OCCT.InterpolateWiresDto, "returnCompound">;
     export type InterpolationDto = WithDefaults<Inputs.OCCT.InterpolationDto, "periodic" | "tolerance" | "parametrization">;
@@ -274,9 +277,9 @@ export namespace OCCT {
     export type LoadDxfDto = WithDefaults<Inputs.OCCT.LoadDxfDto, "makeFaces" | "joinTolerance" | "includeHiddenLayers">;
     export type LoadGltfToDocDto = Inputs.OCCT.LoadGltfToDocDto;
     export type LoadObjToDocDto = Inputs.OCCT.LoadObjToDocDto;
-    export type LoadStepOrIgesDto = WithDefaults<Inputs.OCCT.LoadStepOrIgesDto, "fileName" | "adjustZtoY" | "unit">;
+    export type LoadStepOrIgesDto = WithDefaults<Inputs.OCCT.LoadStepOrIgesDto, "fileName" | "upAxis" | "unit">;
     export type LoadStepToDocDto = Inputs.OCCT.LoadStepToDocDto;
-    export type LoadStlDto = WithDefaults<Inputs.OCCT.LoadStlDto, "asFaces" | "adjustZtoY">;
+    export type LoadStlDto = WithDefaults<Inputs.OCCT.LoadStlDto, "asFaces" | "upAxis">;
     export type LoadSVGDto = WithDefaults<Inputs.OCCT.LoadSVGDto, "svg" | "faceStrategy" | "makeRibbons" | "includeInvisible" | "joinSegments" | "tolerance" | "scale" | "flipY" | "alignment" | "direction" | "center" | "keepOrigin">;
     export type LoftAdvancedDto<T> = WithDefaults<Inputs.OCCT.LoftAdvancedDto<T>, "makeSolid" | "closed" | "periodic" | "straight" | "nrPeriodicSections" | "useSmoothing" | "maxUDegree" | "tolerance" | "parType">;
     export type LoftDto<T> = WithDefaults<Inputs.OCCT.LoftDto<T>, "makeSolid">;
@@ -323,6 +326,11 @@ export namespace OCCT {
     export type PipeWithScalingDto<T, U> = WithDefaults<Inputs.OCCT.PipeWithScalingDto<T, U>, "params" | "scales" | "makeSolid">;
     export type PlaceByMatricesDto<T> = Inputs.OCCT.PlaceByMatricesDto<T>;
     export type PlaceOnFramesDto<T> = Inputs.OCCT.PlaceOnFramesDto<T>;
+    export type PmiDatumDto = WithDefaults<Inputs.OCCT.PmiDatumDto, "letter">;
+    export type PmiDimensionDto = WithDefaults<Inputs.OCCT.PmiDimensionDto, "type" | "offset" | "textHeight" | "decimalPlaces">;
+    export type PmiPresentationDto = Inputs.OCCT.PmiPresentationDto;
+    export type PmiShapeDto = WithDefaults<Inputs.OCCT.PmiShapeDto, "kind" | "index">;
+    export type PmiToleranceDto = WithDefaults<Inputs.OCCT.PmiToleranceDto, "type" | "diameterZone" | "material">;
     export type PointDto = WithDefaults<Inputs.OCCT.PointDto, "point">;
     export type PointsDto = Inputs.OCCT.PointsDto;
     export type PointsOnWireAtEqualLengthDto<T> = WithDefaults<Inputs.OCCT.PointsOnWireAtEqualLengthDto<T>, "length" | "tryNext" | "includeFirst" | "includeLast">;
@@ -348,6 +356,7 @@ export namespace OCCT {
     export type RebuildCurveDegreeDto<T> = WithDefaults<Inputs.OCCT.RebuildCurveDegreeDto<T>, "degree" | "tolerance">;
     export type RebuildFaceDegreeDto<T> = WithDefaults<Inputs.OCCT.RebuildFaceDegreeDto<T>, "uDegree" | "vDegree" | "tolerance" | "keepTrim">;
     export type RectangleDto = WithDefaults<Inputs.OCCT.RectangleDto, "width" | "length" | "center" | "direction">;
+    export type RemoveDocumentPmiDto<T> = Inputs.OCCT.RemoveDocumentPmiDto<T>;
     export type RemoveFacesDto<T> = Inputs.OCCT.RemoveFacesDto<T>;
     export type RevolvedFeatureDto<T, U> = WithDefaults<Inputs.OCCT.RevolvedFeatureDto<T, U>, "sketchFaceIndex" | "axisOrigin" | "axisDirection" | "angle">;
     export type RevolveDto<T> = WithDefaults<Inputs.OCCT.RevolveDto<T>, "angle" | "direction" | "copy">;
@@ -365,10 +374,10 @@ export namespace OCCT {
     export type SaveBrepBinaryDto<T> = WithDefaults<Inputs.OCCT.SaveBrepBinaryDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
     export type SaveBrepDto<T> = WithDefaults<Inputs.OCCT.SaveBrepDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
     export type SaveDxfDto<T> = WithDefaults<Inputs.OCCT.SaveDxfDto<T>, "drawHidden" | "precision" | "acadVersion" | "fileName" | "tryDownload">;
-    export type SaveObjDto<T> = WithDefaults<Inputs.OCCT.SaveObjDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
-    export type SavePlyDto<T> = WithDefaults<Inputs.OCCT.SavePlyDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
-    export type SaveStepDto<T> = WithDefaults<Inputs.OCCT.SaveStepDto<T>, "fileName" | "adjustYtoZ" | "fromRightHanded" | "tryDownload" | "unit">;
-    export type SaveStlDto<T> = WithDefaults<Inputs.OCCT.SaveStlDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload" | "binary">;
+    export type SaveObjDto<T> = WithDefaults<Inputs.OCCT.SaveObjDto<T>, "fileName" | "precision" | "upAxis" | "tryDownload">;
+    export type SavePlyDto<T> = WithDefaults<Inputs.OCCT.SavePlyDto<T>, "fileName" | "precision" | "upAxis" | "tryDownload">;
+    export type SaveStepDto<T> = WithDefaults<Inputs.OCCT.SaveStepDto<T>, "fileName" | "upAxis" | "fromRightHanded" | "tryDownload" | "unit">;
+    export type SaveStlDto<T> = WithDefaults<Inputs.OCCT.SaveStlDto<T>, "fileName" | "precision" | "upAxis" | "tryDownload" | "binary">;
     export type SaveSvgDto<T> = WithDefaults<Inputs.OCCT.SaveSvgDto<T>, "drawHidden" | "precision" | "fileName" | "tryDownload">;
     export type Scale3DDto<T> = WithDefaults<Inputs.OCCT.Scale3DDto<T>, "scale" | "center">;
     export type Scale3DShapesDto<T> = WithDefaults<Inputs.OCCT.Scale3DShapesDto<T>, "scales" | "centers">;
@@ -397,19 +406,23 @@ export namespace OCCT {
     export type SelectTangentChainDto<T> = WithDefaults<Inputs.OCCT.SelectTangentChainDto<T>, "angle">;
     export type SelfIntersectionsDto<T> = WithDefaults<Inputs.OCCT.SelfIntersectionsDto<T>, "precision">;
     export type SetDocLabelColorDto<T> = WithDefaults<Inputs.OCCT.SetDocLabelColorDto<T>, "r" | "g" | "b" | "a">;
+    export type SetDocLabelColorsDto<T> = WithDefaults<Inputs.OCCT.SetDocLabelColorsDto<T>, "r" | "g" | "b" | "a">;
+    export type SetDocLabelColorSharedDto<T> = WithDefaults<Inputs.OCCT.SetDocLabelColorSharedDto<T>, "r" | "g" | "b" | "a">;
     export type SetDocLabelNameDto<T> = WithDefaults<Inputs.OCCT.SetDocLabelNameDto<T>, "name">;
+    export type SetDocLabelNamesDto<T> = Inputs.OCCT.SetDocLabelNamesDto<T>;
+    export type SetDocLabelNameSharedDto<T> = Inputs.OCCT.SetDocLabelNameSharedDto<T>;
     export type SewDto<T> = WithDefaults<Inputs.OCCT.SewDto<T>, "tolerance">;
     export type SewWithReportDto<T> = WithDefaults<Inputs.OCCT.SewWithReportDto<T>, "tolerance" | "nonManifold">;
     export type ShapeDto<T> = Inputs.OCCT.ShapeDto<T>;
-    export type ShapeFacesToPolygonPointsDto<T> = WithDefaults<Inputs.OCCT.ShapeFacesToPolygonPointsDto<T>, "precision" | "adjustYtoZ" | "reversedPoints">;
+    export type ShapeFacesToPolygonPointsDto<T> = WithDefaults<Inputs.OCCT.ShapeFacesToPolygonPointsDto<T>, "precision" | "upAxis" | "reversedPoints">;
     export type ShapeFromPathDto = WithDefaults<Inputs.OCCT.ShapeFromPathDto, "makeFaces" | "joinSegments" | "tolerance" | "scale" | "flipY" | "origin">;
     export type ShapeIndexDto<T> = WithDefaults<Inputs.OCCT.ShapeIndexDto<T>, "index">;
     export type ShapesDto<T> = Inputs.OCCT.ShapesDto<T>;
     export type ShapeShapesDto<T, U> = Inputs.OCCT.ShapeShapesDto<T, U>;
-    export type ShapesToMeshesDto<T> = WithDefaults<Inputs.OCCT.ShapesToMeshesDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
+    export type ShapesToMeshesDto<T> = WithDefaults<Inputs.OCCT.ShapesToMeshesDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "upAxis" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
     export type ShapeToDxfPathsDto<T> = WithDefaults<Inputs.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength" | "exactCurves">;
     export type ShapeToManifoldMeshDto<T> = WithDefaults<Inputs.OCCT.ShapeToManifoldMeshDto<T>, "precision">;
-    export type ShapeToMeshDto<T> = WithDefaults<Inputs.OCCT.ShapeToMeshDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
+    export type ShapeToMeshDto<T> = WithDefaults<Inputs.OCCT.ShapeToMeshDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "upAxis" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
     export type ShapeTransformQueryDto<T> = Inputs.OCCT.ShapeTransformQueryDto<T>;
     export type ShapeWithToleranceDto<T> = WithDefaults<Inputs.OCCT.ShapeWithToleranceDto<T>, "tolerance">;
     export type SimpleAngularDimensionDto = WithDefaults<Inputs.OCCT.SimpleAngularDimensionDto, "direction1" | "direction2" | "center" | "radius" | "offsetFromCenter" | "extraSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "radians" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelRotation" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
