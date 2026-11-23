@@ -37,7 +37,7 @@ export function convertFile(occt: OCCTService, file: string, text: string, optio
     const edges = occt.shapes.edge.getEdges({ shape }).length;
     const volume = occt.shapes.solid.getSolidsVolumes({ shapes: solids }).reduce((sum, v) => sum + v, 0);
     const bbox = occt.analysis.measure.tightBoundingBox({ shape });
-    const glb = occt.io.convertStepToGltf({ stepData: text, meshPrecision: options.meshPrecision, meshAngle: 0.5, meshRelative: true, internalVerticesMode: false, controlSurfaceDeflection: false });
+    const glb = occt.io.convertStepToGltf({ stepData: text, meshPrecision: options.meshPrecision, meshAngle: 0.5, meshRelative: true, internalVerticesMode: true, controlSurfaceDeflection: false });
     const stl = options.stl ? asciiStl(occt.io.saveShapeStl({ shape, fileName: file, precision: options.stlPrecision, adjustYtoZ: true, tryDownload: false, binary: false })) : null;
     return {
         glb,

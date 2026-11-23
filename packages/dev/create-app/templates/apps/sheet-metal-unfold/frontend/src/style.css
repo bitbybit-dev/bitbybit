@@ -272,20 +272,20 @@ body {
   cursor: default;
 }
 
-.bends {
+table.bends {
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
   margin-top: 8px;
 }
 
-.bends th, .bends td {
+table.bends th, table.bends td {
   text-align: right;
   padding: 3px 4px;
   border-bottom: 1px solid var(--line);
   color: var(--muted);
 }
 
-.bends th:first-child, .bends td:first-child {
+table.bends th:first-child, table.bends td:first-child {
   text-align: left;
 }

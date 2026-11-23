@@ -1,4 +1,4 @@
-import type { IndexExample, IndexField, IndexMember, IndexParam } from "./index-types.js";
+import type { Engine, IndexConventionChange, IndexEngineDoc, IndexExample, IndexField, IndexMember, IndexParam } from "./index-types.js";
 import type { NamedType } from "./index-reader.js";
 import { TIER_MEANING } from "./descriptions.js";
 
@@ -36,6 +36,33 @@ function renderParam(param: IndexParam): string[] {
 
 function renderExample(example: IndexExample): string {
     return ["```typescript", example.code, "```"].join("\n");
+}
+
+function renderConventions(changes: readonly IndexConventionChange[]): string[] {
+    if (changes.length === 0) {
+        return [];
+    }
+    return [
+        "## Conventions level",
+        "",
+        "A conventions level may change what it gives: it is among the operations, or in a service, whose results depend on the level the library runs by. Set the level with `bitbybit.setConventions`, or `conventions` in the options of `initBitByBit`; left unset, the library behaves as it did before levels existed. Describe setConventions for more.",
+        ...changes.map((change) => `- From level ${change.level}: ${change.change}`),
+        "",
+    ];
+}
+
+function renderEngineDocs(engineDocs: Partial<Record<Engine, IndexEngineDoc>>): string[] {
+    return [
+        "Each engine documents it differently:",
+        "",
+        ...Object.entries(engineDocs).flatMap(([engine, { doc, examples }]) => [
+            `### ${engine}`,
+            "",
+            doc,
+            "",
+            ...examples.flatMap((code) => [renderExample({ path: "", code }), ""]),
+        ]),
+    ];
 }
 
 function renderTypes(types: readonly NamedType[]): string[] {
@@ -79,11 +106,14 @@ export function renderMember(member: IndexMember, version: string, examples: Ind
     if (member.engineSignatures) {
         lines.push("Signature by engine:", ...Object.entries(member.engineSignatures).map(([engine, signature]) => `- ${engine}: \`${signature ?? "none"}\``), "");
     }
-    if (member.doc) {
+    if (member.engineDocs) {
+        lines.push(...renderEngineDocs(member.engineDocs));
+    } else if (member.doc) {
         lines.push(member.doc, "");
     } else if (member.summary) {
         lines.push(member.summary, "");
     }
+    lines.push(...renderConventions(member.conventions ?? []));
     if (member.params.length > 0) {
         lines.push("## Parameters", "");
         for (const param of member.params) {
@@ -105,7 +135,7 @@ export function renderMember(member: IndexMember, version: string, examples: Ind
         lines.push(`## Returns`, "", `\`${member.returns}\`${member.async ? " (async)" : ""}`, "");
     }
     lines.push(...renderTypes(types));
-    if (examples.length > 0) {
+    if (examples.length > 0 && !member.engineDocs) {
         lines.push("## Examples", "", ...examples.map(renderExample), "");
     }
     if (member.docUrl) {

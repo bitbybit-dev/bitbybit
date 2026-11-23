@@ -1,7 +1,12 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+// CAD Cloud writes Draco-compressed glTF, so the loader needs a Draco decoder (served from jsDelivr for the installed three.js)
+const DRACO_DECODERS = `https://cdn.jsdelivr.net/npm/three@0.${THREE.REVISION}.0/examples/jsm/libs/draco/gltf/`;
+const dracoLoader = new DRACOLoader().setDecoderPath(DRACO_DECODERS);
 
 interface ViewerProps {
     url: string | null;
@@ -100,7 +105,7 @@ export function Viewer({ url, urls }: ViewerProps) {
                 }
                 const buffer = await res.arrayBuffer();
 
-                const loader = new GLTFLoader();
+                const loader = new GLTFLoader().setDRACOLoader(dracoLoader);
                 loader.parse(
                     buffer,
                     "",
@@ -127,8 +132,9 @@ export function Viewer({ url, urls }: ViewerProps) {
 
                         scene.add(gltf.scene);
 
-                        // Fit camera to model
-                        const box = new THREE.Box3().setFromObject(gltf.scene);
+                        // Fit camera to every model shown so far
+                        const box = new THREE.Box3();
+                        scene.children.filter((c) => c.type === "Group").forEach((c) => box.expandByObject(c));
                         const center = box.getCenter(new THREE.Vector3());
                         const size = box.getSize(new THREE.Vector3());
                         const maxDim = Math.max(size.x, size.y, size.z);

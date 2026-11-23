@@ -14,7 +14,7 @@ npm run lint               # the lint rules, at error, across both
 
 | | |
 |---|---|
-| What runs in the browser | building the channel, measuring it, the flat-length estimate, the STEP download of the part, the DXF of the flat pattern once it is back |
+| What runs in the browser | building the channel, measuring it, the flat-length estimate, the STEP download of the part, the DXF of the flat pattern once it is back, its bend lines on a layer of their own |
 | What runs on CAD Cloud | the unfold itself: one call from `backend/src/cloud.ts` to the Pro endpoint, returning the flat pattern and the bend report |
 | Plan needed | any [CAD Cloud plan](https://bitbybit.dev/cad-cloud); the key needs the `cad`, `files` and `tasks` scopes; every unfold is one metered task |
 | Where keys live | [Bitbybit Studio](https://studio.bitbybit.dev/keys/billing), which also shows the tasks this app ran |
@@ -28,7 +28,7 @@ Why a backend at all: the browser could not hold the key without exposing it. Th
 | File | Role |
 |---|---|
 | `frontend/src/model.ts` | the channel as a rounded centre line swept with the sheet's section, with mounting holes in the base and a slot in each flange where they fit, its volume, the K-factor estimate |
-| `frontend/src/flat.ts` | reads the cloud's report: bend lines and a summary |
+| `frontend/src/flat.ts` | reads the cloud's report: the bend lines on the flat pattern and a summary |
 | `frontend/src/cloud-access.ts` | the access state: ready, locked without a key, backend unreachable, error |
 | `frontend/src/main.ts` | scene, kernel, rebuilds, the unfold call, the two views, the downloads |
 | `backend/src/app.ts`, `backend/src/cloud.ts` | the unfold route and the gateway over the CAD Cloud SDK |

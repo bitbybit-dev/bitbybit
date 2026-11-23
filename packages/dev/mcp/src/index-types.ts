@@ -24,6 +24,16 @@ export interface IndexParam {
     fields?: IndexField[];
 }
 
+export interface IndexEngineDoc {
+    doc: string;
+    examples: string[];
+}
+
+export interface IndexConventionChange {
+    level: number;
+    change: string;
+}
+
 export interface IndexMember {
     path: string;
     kind: MemberKind;
@@ -50,6 +60,8 @@ export interface IndexMember {
     engineSignatures?: Partial<Record<Engine, string | null>>;
     cloudSummary?: string;
     cloudParams?: IndexParam[];
+    conventions?: IndexConventionChange[];
+    engineDocs?: Partial<Record<Engine, IndexEngineDoc>>;
 }
 
 export interface IndexEnum {

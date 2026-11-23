@@ -29,7 +29,7 @@ export const DESCRIPTIONS: Readonly<Record<ToolName, { title: string; descriptio
     list_namespace: {
         title: "List a namespace",
         description:
-            "The members one level below a namespace path, for example occt.shapes, each with its kind and summary. Without a path, the top-level namespaces. " +
+            "The members one level below a namespace path, for example occt.shapes, each with its kind and summary. Without a path, the top-level namespaces and the methods of the bitbybit object itself, such as setConventions. " +
             "Use it to discover what exists before searching for details.",
     },
     get_examples: {
@@ -43,7 +43,7 @@ export const DESCRIPTIONS: Readonly<Record<ToolName, { title: string; descriptio
         description:
             "Sections of the public guides: building with Bitbybit (what runs in the browser, on a server, on a lightweight backend, and what needs CAD Cloud), writing geometry with the kernels (which kernel to use, the order to build a part in, choosing edges, checking and exporting shapes), writing design documents (parametric models as JSON: parameters, sketches, features, references, parts and assemblies), and writing IFC building models (storeys, walls and their joins, doors, windows, slabs, roofs, rooms, properties and quantities). " +
             "Without a topic it lists the sections. Read \"integrate\" before recommending where geometry should run: the npm packages are the default, and CAD Cloud is for algorithms that exist only there or compute the caller cannot provide. " +
-            "Read \"geometry\" before writing geometry code, \"design\" before writing a design document, and \"ifc\" before writing an IFC model.",
+            "Read \"geometry\" before writing geometry code, \"coordinates\" before setting the library up or writing files, \"design\" before writing a design document, and \"ifc\" before writing an IFC model.",
     },
     search: {
         title: "Search",
@@ -64,5 +64,6 @@ export const SERVER_INSTRUCTIONS =
     "Tiers matter: oss members are in the MIT npm packages and run anywhere; platform-pro members exist only inside bitbybit.dev; cloud-pro members run only on Bitbybit CAD Cloud with an API key. " +
     "When asked where geometry should run, read get_guide(\"integrate\") first: the packages alone are the default, and CAD Cloud is the answer only for algorithms that exist only there or for compute the caller cannot provide. " +
     "Before writing geometry code with the occt, manifold or jscad kernels, read get_guide(\"geometry\"), then get_guide(\"part-order\") and get_guide(\"geometry-mistakes\"). " +
+    "Before setting the library up in an app, or writing code that reads or writes files, read get_guide(\"coordinates\"): a new app sets the conventions level it describes, and describe says what that level changes in each operation. " +
     "Before writing a design document, a parametric model as JSON that occt.design builds, read get_guide(\"design\") and the sections it lists. " +
     "Before writing an IFC building model with the ifc namespace, read get_guide(\"ifc\"), then get_guide(\"ifc-order\") and get_guide(\"ifc-mistakes\").";

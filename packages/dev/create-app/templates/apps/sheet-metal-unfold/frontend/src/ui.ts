@@ -141,6 +141,7 @@ export function mountUi(root: HTMLElement, initial: PartParams, handlers: UiHand
                 : summary.problems.join("; ");
             table.innerHTML = ready
                 ? `<tr><th>Bend</th><th>Angle</th><th>Inner r</th><th>Allowance</th></tr>` +
+                  summary.bendRows.map((bend, index) => `<tr><td>${String(index + 1)}</td><td>${bend.angleDeg.toFixed(1)}&deg;</td><td>${bend.innerRadius.toFixed(2)}</td><td>${bend.allowance.toFixed(2)}</td></tr>`).join("") +
                   summary.problems.map((problem) => `<tr><td colspan="4">${problem}</td></tr>`).join("")
                 : "";
         },

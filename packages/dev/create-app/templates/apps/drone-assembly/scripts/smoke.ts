@@ -129,7 +129,7 @@ if (tree.totalNodes !== expectedNodes) problems.push(`the hierarchy has ${tree.t
 const legs = (await occt.assembly.query.getDocumentParts({ document })).find((entry) => entry.name === "Leg");
 if (legs?.instanceCount !== 4) problems.push(`the leg sub-assembly is placed ${legs?.instanceCount ?? 0} times, not 4`);
 
-const glb = await occt.assembly.manager.exportDocumentToGltf({ document, meshDeflection: 0.05, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: true, forceUVExport: false, fileName: "drone.glb", tryDownload: false });
+const glb = await occt.assembly.manager.exportDocumentToGltf({ document, meshDeflection: 0.05, meshAngle: 0.5, internalVerticesMode: true, controlSurfaceDeflection: false, mergeFaces: true, forceUVExport: false, fileName: "drone.glb", tryDownload: false });
 if (new TextDecoder().decode(glb.subarray(0, 4)) !== "glTF") problems.push("the GLB export does not start with the glTF magic");
 const zUp = await buildDocument(occt, model, Z_UP);
 const step = await occt.assembly.manager.exportDocumentToStep({ document: zUp.document, fileName: "drone.step", author: "smoke", organization: "smoke", compress: false, tryDownload: false });
