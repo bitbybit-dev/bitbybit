@@ -9,8 +9,8 @@ export * from "@bitbybit-dev/base/lib/api/resolved-inputs";
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace Manifold {
-    export type BuildRecipeDto = WithDefaults<Inputs.Manifold.BuildRecipeDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed">;
-    export type BuildRecipeMeshesDto = WithDefaults<Inputs.Manifold.BuildRecipeMeshesDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed" | "minSharpAngle">;
+    export type BuildRecipeDto = WithDefaults<Inputs.Manifold.BuildRecipeDto, "circularSegments" | "upAxis" | "emptyWhenFailed">;
+    export type BuildRecipeMeshesDto = WithDefaults<Inputs.Manifold.BuildRecipeMeshesDto, "circularSegments" | "upAxis" | "emptyWhenFailed" | "minSharpAngle">;
     export type CalculateCurvatureDto<T> = WithDefaults<Inputs.Manifold.CalculateCurvatureDto<T>, "gaussianIdx" | "meanIdx">;
     export type CalculateNormalsDto<T> = WithDefaults<Inputs.Manifold.CalculateNormalsDto<T>, "normalIdx" | "minSharpAngle">;
     export type CircleDto = WithDefaults<Inputs.Manifold.CircleDto, "radius" | "circularSegments">;
@@ -60,7 +60,7 @@ export namespace Manifold {
     export type RayCastDto<T> = WithDefaults<Inputs.Manifold.RayCastDto<T>, "origin" | "endpoint">;
     export type RecipeMeshesDto = Inputs.Manifold.RecipeMeshesDto;
     export type RecipeMeshPlacementDto = Inputs.Manifold.RecipeMeshPlacementDto;
-    export type RecipeSurfaceMeshesDto = WithDefaults<Inputs.Manifold.RecipeSurfaceMeshesDto, "adjustZtoY">;
+    export type RecipeSurfaceMeshesDto = WithDefaults<Inputs.Manifold.RecipeSurfaceMeshesDto, "upAxis">;
     export type RectangleDto = WithDefaults<Inputs.Manifold.RectangleDto, "length" | "height" | "center">;
     export type RevolveDto<T> = WithDefaults<Inputs.Manifold.RevolveDto<T>, "revolveDegrees" | "matchProfile" | "circularSegments">;
     export type RotateCrossSectionDto<T> = WithDefaults<Inputs.Manifold.RotateCrossSectionDto<T>, "degrees">;

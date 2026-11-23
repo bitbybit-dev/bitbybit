@@ -2,8 +2,8 @@
 import { constraintKinds as k, DtoConstraints, DtoRegistry } from "@bitbybit-dev/base";
 import * as Inputs from "./inputs";
 
-const Manifold_BuildRecipeDto: DtoConstraints = { recipe: k.required(k.opaque), circularSegments: k.between(k.number, { min: 3 }), adjustZtoY: k.boolean, emptyWhenFailed: k.boolean };
-const Manifold_BuildRecipeMeshesDto: DtoConstraints = { recipe: k.required(k.opaque), circularSegments: k.between(k.number, { min: 3 }), adjustZtoY: k.boolean, emptyWhenFailed: k.boolean, minSharpAngle: k.between(k.number, { min: 0, max: 180 }) };
+const Manifold_BuildRecipeDto: DtoConstraints = { recipe: k.required(k.opaque), circularSegments: k.between(k.number, { min: 3 }), upAxis: k.oneOf(["keep", "zUpToYUp", "yUpToZUp"]), adjustZtoY: k.boolean, emptyWhenFailed: k.boolean };
+const Manifold_BuildRecipeMeshesDto: DtoConstraints = { recipe: k.required(k.opaque), circularSegments: k.between(k.number, { min: 3 }), upAxis: k.oneOf(["keep", "zUpToYUp", "yUpToZUp"]), adjustZtoY: k.boolean, emptyWhenFailed: k.boolean, minSharpAngle: k.between(k.number, { min: 0, max: 180 }) };
 const Manifold_CalculateCurvatureDto: DtoConstraints = { manifold: k.required(k.opaque), gaussianIdx: k.between(k.number, { min: 0 }), meanIdx: k.between(k.number, { min: 0 }) };
 const Manifold_CalculateNormalsDto: DtoConstraints = { manifold: k.required(k.opaque), normalIdx: k.between(k.number, { min: 0 }), minSharpAngle: k.between(k.number, { min: 0 }) };
 const Manifold_CircleDto: DtoConstraints = { radius: k.between(k.number, { min: 0 }), circularSegments: k.between(k.number, { min: 0 }) };
@@ -46,7 +46,7 @@ const Manifold_MirrorCrossSectionDto: DtoConstraints = { crossSection: k.require
 const Manifold_MirrorDto: DtoConstraints = { manifold: k.required(k.opaque), normal: k.vector3 };
 const Manifold_OffsetDto: DtoConstraints = { crossSection: k.required(k.opaque), delta: k.number, joinType: k.oneOf(["Square", "Round", "Miter", "Bevel"]), miterLimit: k.between(k.number, { min: 2 }), circularSegments: k.between(k.number, { min: 0 }) };
 const Manifold_RayCastDto: DtoConstraints = { manifold: k.required(k.opaque), origin: k.point3, endpoint: k.point3 };
-const Manifold_RecipeSurfaceMeshesDto: DtoConstraints = { recipe: k.required(k.opaque), roots: k.list(k.number), adjustZtoY: k.boolean };
+const Manifold_RecipeSurfaceMeshesDto: DtoConstraints = { recipe: k.required(k.opaque), roots: k.list(k.number), upAxis: k.oneOf(["keep", "zUpToYUp", "yUpToZUp"]), adjustZtoY: k.boolean };
 const Manifold_RectangleDto: DtoConstraints = { length: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), center: k.boolean };
 const Manifold_RevolveDto: DtoConstraints = { crossSection: k.required(k.opaque), revolveDegrees: k.between(k.number, { min: 0, exclusiveMin: true }), matchProfile: k.boolean, circularSegments: k.between(k.number, { min: 0 }) };
 const Manifold_RotateCrossSectionDto: DtoConstraints = { crossSection: k.required(k.opaque), degrees: k.number };

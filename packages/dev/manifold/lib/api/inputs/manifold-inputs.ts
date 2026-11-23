@@ -1997,11 +1997,12 @@ export namespace Manifold {
      * @beta
      */
     export class BuildRecipeDto {
-        constructor(recipe?: Base.Recipe, circularSegments?: number, adjustZtoY?: boolean, emptyWhenFailed?: boolean) {
+        constructor(recipe?: Base.Recipe, circularSegments?: number, adjustZtoY?: boolean, emptyWhenFailed?: boolean, upAxis?: Base.upAxisConversionEnum) {
             if (recipe !== undefined) { this.recipe = recipe; }
             if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
             if (emptyWhenFailed !== undefined) { this.emptyWhenFailed = emptyWhenFailed; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The recipe: steps such as polygons, extrusions and cuts, and the roots to build from them, as
@@ -2019,11 +2020,19 @@ export namespace Manifold {
          */
         circularSegments?: number | undefined = 32;
         /**
-         * When true, each solid turns a quarter turn about X so the recipe's Z points along Y, which is
-         * up when drawn: `(x, y, z)` becomes `(x, z, -y)`.
-         * @default false
+         * `zUpToYUp` turns each solid a quarter turn about X so the recipe's Z points along Y, and
+         * `(x, y, z)` becomes `(x, z, -y)`; `keep` leaves them. `yUpToZUp` is refused.
+         * @default keep
          */
-        adjustZtoY?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the solids turn as `upAxis` `zUpToYUp` does; false, its old default, decides nothing.
+         * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
         /**
          * When true, a root that cannot be built, such as an open mesh, comes back empty, and an
          * opening that cannot is left uncut; when false, both stop the build.
@@ -2039,10 +2048,11 @@ export namespace Manifold {
      * @beta
      */
     export class RecipeSurfaceMeshesDto {
-        constructor(recipe?: Base.Recipe, roots?: number[], adjustZtoY?: boolean) {
+        constructor(recipe?: Base.Recipe, roots?: number[], adjustZtoY?: boolean, upAxis?: Base.upAxisConversionEnum) {
             if (recipe !== undefined) { this.recipe = recipe; }
             if (roots !== undefined) { this.roots = roots; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The recipe: steps such as polygons, extrusions and triangle meshes, and the roots to build
@@ -2058,11 +2068,19 @@ export namespace Manifold {
          */
         roots?: number[] | undefined;
         /**
-         * When true, each mesh turns a quarter turn about X so the recipe's Z points along Y, as
-         * `recipes.build` turns its solids: `(x, y, z)` becomes `(x, z, -y)`.
-         * @default false
+         * Whether the meshes turn: `zUpToYUp` turns each a quarter turn about X so the recipe's Z points
+         * along Y, as `recipes.build` turns its solids; `keep` leaves them. `yUpToZUp` is refused.
+         * @default keep
          */
-        adjustZtoY?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the meshes turn as `upAxis` `zUpToYUp` does; false, its old default, decides nothing.
+         * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
     }
 
     /**
@@ -2072,12 +2090,13 @@ export namespace Manifold {
      * @beta
      */
     export class BuildRecipeMeshesDto {
-        constructor(recipe?: Base.Recipe, circularSegments?: number, adjustZtoY?: boolean, emptyWhenFailed?: boolean, minSharpAngle?: number) {
+        constructor(recipe?: Base.Recipe, circularSegments?: number, adjustZtoY?: boolean, emptyWhenFailed?: boolean, minSharpAngle?: number, upAxis?: Base.upAxisConversionEnum) {
             if (recipe !== undefined) { this.recipe = recipe; }
             if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
             if (emptyWhenFailed !== undefined) { this.emptyWhenFailed = emptyWhenFailed; }
             if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The recipe: steps such as polygons, extrusions and cuts, and the roots to draw from them, as
@@ -2094,11 +2113,19 @@ export namespace Manifold {
          */
         circularSegments?: number | undefined = 32;
         /**
-         * When true, every placement turns a quarter turn about X so the recipe's Z points along Y,
-         * which is up when drawn: `(x, y, z)` becomes `(x, z, -y)`.
-         * @default false
+         * Whether the placements turn: `zUpToYUp` turns each a quarter turn about X so the recipe's Z
+         * points along Y, which is up when drawn; `keep` leaves them. `yUpToZUp` is refused.
+         * @default keep
          */
-        adjustZtoY?: boolean | undefined = false;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+        /**
+         * When true, the placements turn as `upAxis` `zUpToYUp` does; false, its old default, decides
+         * nothing. True wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
         /**
          * When true, a root that cannot be built draws as its surface if it is triangles alone, else
          * draws nothing; when false, it stops the build.
