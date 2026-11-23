@@ -135,16 +135,17 @@ export class OCCTAssemblyManager {
      * Deletes an assembly document and frees the memory it holds.
      *
      * A document built with `buildAssemblyDocument` or loaded with `loadStepToDoc` stays in memory
-     * until this is called, so delete it once its shapes and exports have been read.
+     * until deleted; deleting it deletes the documents its changes made too, and deleting one of
+     * those, such as `setDocLabelColor` answers, frees that one alone, which is made again when read.
      * @param inputs - The document to delete
-     * @returns Nothing; the document handle is no longer valid afterwards
+     * @returns Nothing; a document deleted with every change made from it can no longer be read
      * @group lifecycle
      * @shortname delete document
      * @drawable false
      * @example
      * ```typescript
      * const doc = await bitbybit.occt.assembly.manager.buildAssemblyDocument({ structure });
-     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
+     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: true, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
      * await bitbybit.occt.assembly.manager.deleteDocument({ document: doc });
      * ```
      */

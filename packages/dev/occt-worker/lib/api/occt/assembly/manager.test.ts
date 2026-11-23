@@ -5,7 +5,7 @@ import type { AnchorRecord } from "../../__mocks__/test-helpers";
 import { AnsweringWorker, recordDownloads } from "../../__mocks__/test-helpers";
 import { Inputs } from "@bitbybit-dev/occt";
 
-const A_DOCUMENT: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-entity" };
+const A_DOCUMENT: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-document" };
 
 type Pointer = Inputs.OCCT.TDocStdDocumentPointer;
 const stepInputs = (over: Partial<Inputs.OCCT.ExportDocumentToStepDto<Pointer>>): Inputs.OCCT.ExportDocumentToStepDto<Pointer> =>

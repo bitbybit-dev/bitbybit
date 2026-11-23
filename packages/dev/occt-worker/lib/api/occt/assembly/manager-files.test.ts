@@ -6,7 +6,7 @@ import { AnsweringWorker, recordDownloads } from "../../__mocks__/test-helpers";
 import type { Models } from "@bitbybit-dev/occt";
 import { Inputs } from "@bitbybit-dev/occt";
 
-const A_DOCUMENT: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-entity" };
+const A_DOCUMENT: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-document" };
 const OBJ_FILES: Models.OCCT.ObjFiles = { obj: "mtllib frame.mtl\ng frame\nv 0 0 0\n", mtl: "newmtl red\nKd 1 0 0\n" };
 const PLY_TEXT = "ply";
 

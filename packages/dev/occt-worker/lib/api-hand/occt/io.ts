@@ -12,7 +12,7 @@ export class OCCTIO {
      * Writes a shape as STEP, the exchange format for exact CAD geometry, and starts a browser
      * download of the file.
      *
-     * With `adjustYtoZ` true the file is Z-up: with the conventions set it shows what the screen
+     * With `upAxis` `yUpToZUp` the file is Z-up: with the conventions set it shows what the screen
      * shows, without them Y and Z are swapped. The file is in millimetres;
      * `saveShapeSTEPAndReturn` returns the text.
      * @param inputs - The shape, the file name, the axis adjustment, the unit and the download options
@@ -22,7 +22,7 @@ export class OCCTIO {
      * @drawable false
      * @example
      * ```typescript
-     * await bitbybit.occt.io.saveShapeSTEP({ shape: box, fileName: "box.step", adjustYtoZ: true, tryDownload: true });
+     * await bitbybit.occt.io.saveShapeSTEP({ shape: box, fileName: "box.step", upAxis: Bit.Inputs.Base.upAxisConversionEnum.yUpToZUp, tryDownload: true });
      * ```
      */
     async saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
@@ -44,7 +44,7 @@ export class OCCTIO {
      * download of the file.
      *
      * `precision` is the meshing tolerance in model units and `binary` writes the smaller binary
-     * form. With the conventions set the file shows what the screen shows, Z-up with `adjustYtoZ`.
+     * form. With the conventions set the file shows what the screen shows, Z-up under `yUpToZUp`.
      * `saveShapeStlAndReturn` gives the file instead.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment, the form and the download options
      * @returns Nothing; the download starts when the file is ready
@@ -53,7 +53,7 @@ export class OCCTIO {
      * @drawable false
      * @example
      * ```typescript
-     * await bitbybit.occt.io.saveShapeStl({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: true, binary: true });
+     * await bitbybit.occt.io.saveShapeStl({ shape: box, fileName: "box.stl", precision: 0.01, upAxis: Bit.Inputs.Base.upAxisConversionEnum.yUpToZUp, tryDownload: true, binary: true });
      * ```
      */
     async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
@@ -165,7 +165,7 @@ export class OCCTIO {
      * browser download of the file.
      *
      * `precision` is the meshing tolerance in model units. With the conventions set the file shows
-     * what the screen shows, Z-up with `adjustYtoZ`. The file name may hold no spaces or slashes;
+     * what the screen shows, Z-up under `yUpToZUp`. The file name may hold no spaces or slashes;
      * `saveShapeObjAndReturn` gives the text instead.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns Nothing; the download starts when the file is ready
@@ -174,7 +174,7 @@ export class OCCTIO {
      * @drawable false
      * @example
      * ```typescript
-     * await bitbybit.occt.io.saveShapeObj({ shape: box, fileName: "box.obj", precision: 0.01, adjustYtoZ: false, tryDownload: true });
+     * await bitbybit.occt.io.saveShapeObj({ shape: box, fileName: "box.obj", precision: 0.01, upAxis: Bit.Inputs.Base.upAxisConversionEnum.keep, tryDownload: true });
      * ```
      */
     async saveShapeObj(inputs: Inputs.OCCT.SaveObjDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
@@ -198,7 +198,7 @@ export class OCCTIO {
      * download of the file.
      *
      * `precision` is the meshing tolerance in model units. With the conventions set the file shows
-     * what the screen shows, Z-up with `adjustYtoZ`. `fileName` names the download and
+     * what the screen shows, Z-up under `yUpToZUp`. `fileName` names the download and
      * `tryDownload` false skips it; `saveShapePlyAndReturn` gives the text instead.
      * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
      * @returns Nothing; the download starts when the file is ready
@@ -207,7 +207,7 @@ export class OCCTIO {
      * @drawable false
      * @example
      * ```typescript
-     * await bitbybit.occt.io.saveShapePly({ shape: box, fileName: "box.ply", precision: 0.01, adjustYtoZ: false, tryDownload: true });
+     * await bitbybit.occt.io.saveShapePly({ shape: box, fileName: "box.ply", precision: 0.01, upAxis: Bit.Inputs.Base.upAxisConversionEnum.keep, tryDownload: true });
      * ```
      */
     async saveShapePly(inputs: Inputs.OCCT.SavePlyDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {

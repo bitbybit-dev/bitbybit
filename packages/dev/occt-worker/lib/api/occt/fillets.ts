@@ -133,9 +133,9 @@ export class OCCTFillets {
     /**
      * Rounds one edge of a shape with a radius that changes along it.
      *
-     * `radiusList` holds the radius at each `paramsU` position; the first and last stand for the
-     * start and end of the edge's curve, whatever its orientation, and the radius may overshoot
-     * between positions. The lists must be equally long, or an error is thrown.
+     * `radiusList` holds the radius at each `paramsU` position, a fraction of the edge's length from
+     * its curve's start, whatever its orientation; between positions it may overshoot. A position
+     * outside 0 to 1, a radius not above 0 or one position with two radii is refused.
      * @param inputs - The shape, its edge, the radii and the positions along the edge they apply at
      * @returns The shape with the rounded edge
      * @group 3d fillets

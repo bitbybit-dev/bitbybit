@@ -131,14 +131,14 @@ export class OCCTAssemblyQuery {
     }
 
     /**
-     * Reads the product manufacturing information a document holds, as a STEP AP242 file brings it:
-     * dimensions, geometric tolerances and the datums they refer to.
+     * Reads the product manufacturing information a document holds: dimensions, geometric tolerances
+     * and the datums they refer to, each under its own label.
      *
-     * Each entry names its shapes by label, which `getShapeFromLabel` reads. Lengths are in the
-     * document's unit, millimeters for a loaded STEP file, and angles in degrees; a document without
-     * any gives empty lists.
+     * Each entry names its shapes by label, which `getShapeFromLabel` reads, and in `shapeRefs` as the
+     * part and index `manager.addDocumentPmi` takes. Lengths are in the document's unit, angles in
+     * degrees; a document without any gives empty lists.
      * @param inputs - The document
-     * @returns The dimensions, the tolerances and the datums
+     * @returns The dimensions, the tolerances and the datums, each with its label
      * @group query
      * @shortname get PMI
      * @drawable false
@@ -150,5 +150,29 @@ export class OCCTAssemblyQuery {
      */
     getDocumentPmi(inputs: Inputs.OCCT.DocumentQueryDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Models.OCCT.DocumentPmi> {
         return this.occWorkerManager.genericCallToWorkerPromise("assembly.query.getDocumentPmi", inputs);
+    }
+
+    /**
+     * Reads the dimensions, tolerances and datums a document carries as a STEP AP242 file draws
+     * them, and the views the file saved.
+     *
+     * Each has its plane, its lines as polylines and its letters as loops to fill even-odd, in the
+     * document's axes and units or turned Y-up; a part placed twice shows its annotations twice.
+     * Experimental.
+     * @param inputs - The document and how closely curved lines follow their curves
+     * @returns The annotations, the saved views and how many of each were left out
+     * @group query
+     * @shortname get annotations
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const doc = await bitbybit.occt.assembly.manager.loadStepToDoc({ stepData });
+     * const pmi = await bitbybit.occt.assembly.query.getDocumentAnnotations({ document: doc, deflection: 0.05 });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: pmi });
+     * ```
+     */
+    getDocumentAnnotations(inputs: Inputs.OCCT.DocumentAnnotationsDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Models.OCCT.DocumentAnnotations> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.query.getDocumentAnnotations", inputs);
     }
 }

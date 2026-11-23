@@ -7,8 +7,8 @@ import { resolveDto } from "@bitbybit-dev/base";
 /**
  * Building and changing assembly documents: describe parts, assembly nodes and instance nodes one
  * object at a time, combine them into a structure, and build a document from it; or load a STEP,
- * glTF or OBJ file into a document. Then recolor and rename labels, update or remove parts, and
- * export to STEP, glTF, OBJ or PLY. A document is an in-memory handle that stays alive until it is
+ * glTF or OBJ file into a document. Then recolor and rename labels, update or remove parts, add
+ * dimensions, datums and tolerances, and export to STEP, glTF, OBJ or PLY. A document is an in-memory handle that stays alive until it is
  * deleted, so build once and query or export as often as needed.
  */
 export class OCCTAssemblyManager {
@@ -167,7 +167,7 @@ export class OCCTAssemblyManager {
      * ```typescript
      * const structure = await bitbybit.occt.assembly.manager.combineStructure({ parts: [part], nodes: [root, first], clearDocument: false });
      * const doc = await bitbybit.occt.assembly.manager.buildAssemblyDocument({ structure });
-     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
+     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: true, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
      * ```
      */
     buildAssemblyDocument(inputs: Inputs.OCCT.BuildAssemblyDocumentDto<Inputs.OCCT.TopoDSShapePointer, Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
@@ -191,6 +191,8 @@ export class OCCTAssemblyManager {
      * ```typescript
      * const doc = await bitbybit.occt.assembly.manager.loadStepToDoc({ stepData: stepText });
      * const parts = await bitbybit.occt.assembly.query.getDocumentParts({ document: doc });
+     * const options = bitbybit.draw.optionsOcctDocument({ drawAnnotations: true });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: doc, options });
      * ```
      */
     async loadStepToDoc(inputs: Inputs.OCCT.LoadStepToDocDto): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
@@ -251,43 +253,258 @@ export class OCCTAssemblyManager {
      * Colors a label of a document, a part, instance or assembly, with red, green, blue and alpha
      * from 0 to 1.
      *
-     * The color is kept when the document is exported to STEP or glTF.
+     * It answers the colored document, which an export or a read given it shows, STEP and glTF
+     * included. A label that names no part, instance or assembly of the document is refused;
+     * `setDocLabelColors` colors many labels in one change.
      * @param inputs - The document, the label and the four color channels
-     * @returns True when the color was set
+     * @returns The colored document
      * @group modify
      * @shortname set label color
      * @drawable false
      * @example
      * ```typescript
-     * const done = await bitbybit.occt.assembly.manager.setDocLabelColor({ document: doc, label: "0:1:1:1", r: 1, g: 0, b: 0, a: 1 });
+     * const colored = await bitbybit.occt.assembly.manager.setDocLabelColor({ document: doc, label: "0:1:1:1", r: 1, g: 0, b: 0, a: 1 });
+     * const step = await bitbybit.occt.assembly.manager.exportDocumentToStep({ document: colored });
      * ```
      */
-    setDocLabelColor(inputs: Inputs.OCCT.SetDocLabelColorDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<boolean> {
+    setDocLabelColor(inputs: Inputs.OCCT.SetDocLabelColorDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setDocLabelColor", inputs);
     }
 
     /**
      * Renames a label of a document, a part, instance or assembly.
+     *
+     * It answers the renamed document, which an export or a read given it shows. A label that names
+     * no part, instance or assembly of the document is refused; `setDocLabelNames` renames many
+     * labels in one change.
      * @param inputs - The document, the label and the new name
-     * @returns True when the name was set
+     * @returns The renamed document
      * @group modify
      * @shortname set label name
      * @drawable false
      * @example
      * ```typescript
-     * const done = await bitbybit.occt.assembly.manager.setDocLabelName({ document: doc, label: "0:1:1:1", name: "Left bracket" });
+     * const renamed = await bitbybit.occt.assembly.manager.setDocLabelName({ document: doc, label: "0:1:1:1", name: "Left bracket" });
+     * const tree = await bitbybit.occt.assembly.query.getAssemblyHierarchy({ document: renamed });
      * ```
      */
-    setDocLabelName(inputs: Inputs.OCCT.SetDocLabelNameDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<boolean> {
+    setDocLabelName(inputs: Inputs.OCCT.SetDocLabelNameDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setDocLabelName", inputs);
+    }
+
+    /**
+     * Colors many labels of a document, parts, instances or assemblies, with one color in one
+     * change.
+     *
+     * It answers the colored document as `setDocLabelColor` does, one change for the whole list. A
+     * label that names no part, instance or assembly is refused before any is colored; an empty
+     * list answers the document as it was.
+     * @param inputs - The document, the labels and the four color channels
+     * @returns The colored document
+     * @group modify
+     * @shortname set labels color
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const parts = await bitbybit.occt.assembly.query.getDocumentParts({ document: doc });
+     * const labels = parts.filter(part => part.type === "part").map(part => part.label);
+     * const colored = await bitbybit.occt.assembly.manager.setDocLabelColors({ document: doc, labels, r: 1, g: 0, b: 0, a: 1 });
+     * ```
+     */
+    setDocLabelColors(inputs: Inputs.OCCT.SetDocLabelColorsDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setDocLabelColors", inputs);
+    }
+
+    /**
+     * Renames many labels of a document, parts, instances or assemblies, in one change.
+     *
+     * `names` holds each label's new name, in the order of `labels`. A label that is no part,
+     * instance or assembly, a name that is not text, a count unlike the labels' or a label given two
+     * names is refused before any is renamed.
+     * @param inputs - The document, the labels and the new name of each
+     * @returns The renamed document
+     * @group modify
+     * @shortname set labels name
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const renamed = await bitbybit.occt.assembly.manager.setDocLabelNames({ document: doc, labels: ["0:1:1:1", "0:1:1:2"], names: ["Left bracket", "Right bracket"] });
+     * const tree = await bitbybit.occt.assembly.query.getAssemblyHierarchy({ document: renamed });
+     * ```
+     */
+    setDocLabelNames(inputs: Inputs.OCCT.SetDocLabelNamesDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setDocLabelNames", inputs);
+    }
+
+    /**
+     * Describes one shape of a part for a dimension, datum or tolerance: the part's label and which
+     * face, edge or vertex of it.
+     *
+     * Faces, edges and vertices count from 0 as `shapes.face.getFace`, `shapes.edge.getEdge` and
+     * `shapes.vertex.getVertices` count them on the part's shape, which `assembly.query.getShapeFromLabel`
+     * reads; `kind` `part` means the whole part.
+     * @param inputs - The part's label, whether a face, edge, vertex or the whole part is meant, and its index
+     * @returns The shape, ready for the `shapeRefs` of `createPmiDimension`, `createPmiDatum` and `createPmiTolerance`
+     * @group pmi
+     * @shortname pmi shape
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const top = await bitbybit.occt.assembly.manager.createPmiShape({ part: "0:1:1:1", kind: Bit.Inputs.OCCT.pmiShapeKindEnum.face, index: 5 });
+     * const bottom = await bitbybit.occt.assembly.manager.createPmiShape({ part: "0:1:1:1", kind: Bit.Inputs.OCCT.pmiShapeKindEnum.face, index: 4 });
+     * ```
+     */
+    createPmiShape(inputs: Inputs.OCCT.PmiShapeDto): Promise<Inputs.OCCT.PmiShapeDto> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.createPmiShape", inputs);
+    }
+
+    /**
+     * Describes a dimension for `addDocumentPmi`: what it states, its value and tolerance, the
+     * shapes it measures, and where its picture is drawn.
+     *
+     * With `start` and `end` the picture is drawn as `io.drawing.dimensionPicture` draws it, in the
+     * plane `normal` faces, in the part's own axes; a `presentation` replaces it. Nothing is written
+     * until `addDocumentPmi`.
+     * @param inputs - The type, the value, the tolerance, the shapes and how the picture is drawn
+     * @returns The dimension, ready for `addDocumentPmi`
+     * @group pmi
+     * @shortname pmi dimension
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const thickness = await bitbybit.occt.assembly.manager.createPmiDimension({
+     *     type: Bit.Inputs.OCCT.pmiDimensionTypeEnum.linearDistance, value: 15, upperTolerance: 0.1, lowerTolerance: 0.1,
+     *     shapeRefs: [{ part: "0:1:1:1", index: 5 }], otherShapeRefs: [{ part: "0:1:1:1", index: 4 }],
+     *     start: [30, 0, 15], end: [30, 0, 0], normal: [0, -1, 0], offset: 12,
+     * });
+     * ```
+     */
+    createPmiDimension(inputs: Inputs.OCCT.PmiDimensionDto): Promise<Inputs.OCCT.PmiDimensionDto> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.createPmiDimension", inputs);
+    }
+
+    /**
+     * Describes a datum for `addDocumentPmi`: its letter and the shapes it is taken from.
+     *
+     * A tolerance in the same call must refer to it by letter, as a STEP file keeps a datum only
+     * through its tolerances. A letter names one datum in a document, given again only on its
+     * shapes. Nothing is written until `addDocumentPmi`.
+     * @param inputs - The letter, the shapes and an optional presentation
+     * @returns The datum, ready for `addDocumentPmi`
+     * @group pmi
+     * @shortname pmi datum
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const datumA = await bitbybit.occt.assembly.manager.createPmiDatum({ letter: "A", shapeRefs: [{ part: "0:1:1:1", index: 4 }] });
+     * ```
+     */
+    createPmiDatum(inputs: Inputs.OCCT.PmiDatumDto): Promise<Inputs.OCCT.PmiDatumDto> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.createPmiDatum", inputs);
+    }
+
+    /**
+     * Describes a geometric tolerance for `addDocumentPmi`: what it controls, its value, the shapes
+     * it applies to and the letters of the datums it refers to, primary first.
+     *
+     * Only `position`, `perpendicularity` and `parallelism` take a diameter zone or a material
+     * condition. Nothing is written until `addDocumentPmi`.
+     * @param inputs - The type, the value, the shapes, the datum letters, the zone and material condition and an optional presentation
+     * @returns The tolerance, ready for `addDocumentPmi`
+     * @group pmi
+     * @shortname pmi tolerance
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const position = await bitbybit.occt.assembly.manager.createPmiTolerance({
+     *     type: Bit.Inputs.OCCT.pmiToleranceTypeEnum.position, value: 0.1, shapeRefs: [{ part: "0:1:1:1", index: 7 }],
+     *     datumLetters: ["A", "B", "C"], diameterZone: true, material: Bit.Inputs.OCCT.pmiMaterialConditionEnum.maximum,
+     * });
+     * ```
+     */
+    createPmiTolerance(inputs: Inputs.OCCT.PmiToleranceDto): Promise<Inputs.OCCT.PmiToleranceDto> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.createPmiTolerance", inputs);
+    }
+
+    /**
+     * Adds dimensions, datums and tolerances to a document as product manufacturing
+     * information, all of them or, when one is refused, none.
+     *
+     * Each names a part's faces, edges or vertices. It answers the changed document, which
+     * `exportDocumentToStep` writes as STEP AP242 with their pictures; `assembly.query.getDocumentPmi`
+     * lists the items with their labels, as taken here. Calls add up until `removeDocumentPmi`.
+     * @param inputs - The document and the dimensions, datums and tolerances to add
+     * @returns The document with the items added
+     * @group pmi
+     * @shortname add PMI
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const measured = await bitbybit.occt.assembly.manager.addDocumentPmi({
+     *     document: doc,
+     *     dimensions: [{ type: Bit.Inputs.OCCT.pmiDimensionTypeEnum.diameter, value: 10, shapeRefs: [{ part: "0:1:1:1", index: 7 }], start: [30, 20, 15], end: [35, 20, 15] }],
+     *     datums: [{ letter: "A", shapeRefs: [{ part: "0:1:1:1", index: 4 }] }],
+     *     tolerances: [{ type: Bit.Inputs.OCCT.pmiToleranceTypeEnum.perpendicularity, value: 0.02, shapeRefs: [{ part: "0:1:1:1", index: 7 }], datumLetters: ["A"] }],
+     * });
+     * const labels = (await bitbybit.occt.assembly.query.getDocumentPmi({ document: measured })).dimensions.map(d => d.label);
+     * const step = await bitbybit.occt.assembly.manager.exportDocumentToStep({ document: measured });
+     * ```
+     * @example
+     * ```typescript
+     * const pmi = await bitbybit.occt.assembly.query.getDocumentPmi({ document: source });
+     * const { annotations } = await bitbybit.occt.assembly.query.getDocumentAnnotations({ document: source });
+     * const shown = new Map(annotations.map(annotation => [annotation.label, annotation]));
+     * const measured = await bitbybit.occt.assembly.manager.addDocumentPmi({
+     *     document: copy,
+     *     dimensions: pmi.dimensions.map(d => ({ ...d, type: d.type as Bit.Inputs.OCCT.pmiDimensionTypeEnum, presentation: shown.get(d.label) })),
+     *     datums: pmi.datums.map(d => ({ ...d, presentation: shown.get(d.label) })),
+     *     tolerances: pmi.tolerances.map(t => ({ ...t, type: t.type as Bit.Inputs.OCCT.pmiToleranceTypeEnum, presentation: shown.get(t.label) })),
+     * });
+     * ```
+     */
+    addDocumentPmi(inputs: Inputs.OCCT.AddDocumentPmiDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.addDocumentPmi", inputs);
+    }
+
+    /**
+     * Removes every dimension, datum and geometric tolerance from a document, with their pictures and
+     * the saved views that showed only them.
+     *
+     * It answers the document without them, which exports as one that never held PMI and which
+     * `addDocumentPmi` writes into as into a fresh one.
+     * @param inputs - The document
+     * @returns The document without its PMI
+     * @group pmi
+     * @shortname remove PMI
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const cleared = await bitbybit.occt.assembly.manager.removeDocumentPmi({ document: doc });
+     * const measured = await bitbybit.occt.assembly.manager.addDocumentPmi({
+     *     document: cleared,
+     *     dimensions: [{ type: Bit.Inputs.OCCT.pmiDimensionTypeEnum.diameter, value: 12, shapeRefs: [{ part: "0:1:1:1", index: 7 }] }],
+     * });
+     * ```
+     */
+    removeDocumentPmi(inputs: Inputs.OCCT.RemoveDocumentPmiDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.removeDocumentPmi", inputs);
     }
 
     /**
      * Writes an assembly document as a STEP file with its hierarchy, names and colors, and returns
      * the file's bytes.
      *
-     * `author` and `organization` go into the file header; `compress` writes gzip-compressed STEP-Z
-     * instead. Failure throws an error.
+     * `compress` writes gzip-compressed STEP-Z. A document holding dimensions, datums or tolerances is
+     * written as STEP AP242 with them and their pictures, those of each part in that part's own
+     * context and units.
      * @param inputs - The document, the file name, the header details, the compression flag and the download option
      * @returns The STEP file as bytes
      * @group export
@@ -332,7 +549,7 @@ export class OCCTAssemblyManager {
      * @drawable false
      * @example
      * ```typescript
-     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
+     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: true, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
      * ```
      */
     async exportDocumentToGltf(inputs: Inputs.OCCT.ExportDocumentToGltfDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Uint8Array> {
@@ -469,16 +686,17 @@ export class OCCTAssemblyManager {
      * Deletes an assembly document and frees the memory it holds.
      *
      * A document built with `buildAssemblyDocument` or loaded with `loadStepToDoc` stays in memory
-     * until this is called, so delete it once its shapes and exports have been read.
+     * until deleted; deleting it deletes the documents its changes made too, and deleting one of
+     * those, such as `setDocLabelColor` answers, frees that one alone, which is made again when read.
      * @param inputs - The document to delete
-     * @returns Nothing; the document handle is no longer valid afterwards
+     * @returns Nothing; a document deleted with every change made from it can no longer be read
      * @group lifecycle
      * @shortname delete document
      * @drawable false
      * @example
      * ```typescript
      * const doc = await bitbybit.occt.assembly.manager.buildAssemblyDocument({ structure });
-     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
+     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: true, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
      * await bitbybit.occt.assembly.manager.deleteDocument({ document: doc });
      * ```
      */

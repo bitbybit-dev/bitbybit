@@ -81,11 +81,27 @@ and nothing else.
   before the cleanup existed. A delete refused later, for any reason, still frees what it can and is
   thrown. `occ-worker-lifetimes.test.ts` pins the shared cases, both clears and the older worker
   through a real worker, `design-scripts.test.ts` which shapes go when.
-- **Retention is bounded by a count, not by memory.** Only two things bound it: the count threshold in
-  `startedTheRun`, which clears everything once more than `CACHE_THRESHOLD` hashes have been used, and
-  the delete commands (`deleteShape`, `deleteShapes`, `deleteDocument`, `cleanAllCache`). An entry a
-  later run no longer uses stays until one of them frees it, so the threshold is the only automatic
-  bound on WASM memory growth across a long session.
+- **An assembly document is a value.** The calls `DOCUMENT_CHANGING_FUNCTIONS` names make a version,
+  answered as a reference keyed from the call's key; the document a creating call made is never
+  changed. How a reference reads is stamped on each call by the manager (`setDocumentReferences`):
+  a version always reads exactly, and a document as made reads the latest version of the run under
+  `latest` (the default) or itself under `exact`. A version is a recipe (`DocumentVersions`): at most
+  `MAX_DOCUMENT_VERSIONS_KEPT` per document and `MAX_DOCUMENT_VERSION_LABELS` labels of all are kept as
+  kernel objects, one copy of a whole document each weighed by the labels it holds, PMI included, and
+  the rest are made again from their changes when read, a version whose change named shapes only
+  while they are cached; a `latest` change of the run's latest version takes its object over instead
+  of copying, and gets it back when it refuses its inputs.
+  A kernel method that takes a document goes into that list or `DOCUMENT_READING_FUNCTIONS`, or
+  `constants.test.ts` fails. `releaseDocumentVersions` frees versions a caller no longer holds,
+  `deleteDocument` frees one version, or given the document as made the document with every version
+  (`ARCHITECTURE.md`, "Assembly documents are values").
+- **Retention is bounded by a count, not by memory.** Only two things bound the cache's entries: the
+  count threshold in `startedTheRun`, which clears everything once more than `CACHE_THRESHOLD` hashes
+  have been used, and the delete commands (`deleteShape`, `deleteShapes`, `deleteDocument`,
+  `cleanAllCache`). An entry a later run no longer uses stays until one of them frees it, so the
+  threshold is the only automatic bound on WASM memory growth across a long session. Document versions
+  are the exception: they are bounded by their own store, counted in labels, because each is a whole
+  document copy that one hash would hide.
 
   It counts hashes because hashes are what this side can see. What one hash costs in WASM memory is
   unknowable from here - a point or a hundred-megabyte assembly - so no threshold in hashes can be

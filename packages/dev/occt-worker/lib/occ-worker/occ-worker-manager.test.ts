@@ -6,7 +6,7 @@ import { stateWithin } from "../../../__test__/kernel-workers";
 import { OccStateEnum } from "./occ-state.enum";
 import type { OccInfo } from "./occ-info";
 
-type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
+type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string; documentReferences?: string };
 type WorkerAnswer = "occ-initialised" | "busy" | { progressWords: Int32Array; stepWords?: Int32Array } | { steps: { done: number; total: number } } | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel" | "cancelled"; code?: string; details?: Record<string, unknown>; stack?: string };
 
 class RecordingWorker extends EventTarget implements Worker {
@@ -147,7 +147,7 @@ describe("OCCTWorkerManager unit tests", () => {
                 { functionName: "setSettings", inputs: { coordinateSystem: "leftHanded" } },
                 { functionName: "shapes.solid.createSphere", inputs: {} },
             ]);
-            expect(Object.keys(posted[1] as PostedCall).sort()).toEqual(["action", "uid"]);
+            expect(Object.keys(posted[1] as PostedCall).sort()).toEqual(["action", "documentReferences", "uid"]);
         });
 
         it("should tell the worker to go back to no settings with empty inputs", () => {
@@ -853,6 +853,50 @@ describe("OCCTWorkerManager unit tests", () => {
 
             // Assert
             expect((posted[0] as PostedCall).action).toEqual({ functionName: "startedTheRun", inputs: {} });
+        });
+
+    });
+
+    describe("document references", () => {
+        it("should send every call reading document references as the latest version of the run, until told otherwise", () => {
+            // Act
+            void manager.genericCallToWorkerPromise("assembly.query.getDocumentPmi", {});
+
+            // Assert
+            expect([manager.documentReferences, (posted[0] as PostedCall).documentReferences]).toEqual(["latest", "latest"]);
+        });
+
+        it("should send each call with the way of reading document references in force when it was sent", () => {
+            // Act
+            manager.setDocumentReferences("exact");
+            void manager.genericCallToWorkerPromise("assembly.query.getDocumentPmi", {});
+            void manager.startedTheRun();
+            manager.setDocumentReferences("latest");
+            void manager.genericCallToWorkerPromise("assembly.query.getDocumentPmi", {});
+
+            // Assert
+            expect(posted.map(call => call.documentReferences)).toEqual(["exact", "exact", "latest"]);
+            expect(manager.documentReferences).toBe("latest");
+        });
+
+        it("should refuse a way of reading document references it does not know, and keep the one in force", () => {
+            // Arrange
+            manager.setDocumentReferences("exact");
+
+            // Act & Assert
+            expect(() => manager.setDocumentReferences("newest" as "exact")).toThrow(expect.objectContaining({ name: "InputError", message: expect.stringContaining("`references` is \"newest\"; it is latest or exact") }));
+            expect(manager.documentReferences).toBe("exact");
+        });
+
+        it("should post the versions to release as a list of their references", () => {
+            // Arrange
+            const versions = [{ type: "occ-document" as const, hash: 1 }, { type: "occ-document" as const, hash: 2 }];
+
+            // Act
+            void manager.releaseDocumentVersions(versions);
+
+            // Assert
+            expect((posted[0] as PostedCall).action).toEqual({ functionName: "releaseDocumentVersions", inputs: { documents: versions } });
         });
     });
 

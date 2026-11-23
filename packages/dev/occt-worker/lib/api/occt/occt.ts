@@ -91,7 +91,7 @@ export class OCCT {
      * faces.
      *
      * `precision` is the meshing tolerance in model units: smaller values follow curved surfaces
-     * more closely and give more triangles. `adjustYtoZ` makes the points Z-up for tools that treat
+     * more closely and give more triangles. `upAxis` `yUpToZUp` makes the points Z-up for tools that treat
      * Z as up, and `reversedPoints` flips the winding of each triangle.
      * @param inputs - The shape, the meshing precision and the axis and winding options
      * @returns One list of three points per triangle
@@ -100,7 +100,7 @@ export class OCCT {
      * @drawable false
      * @example
      * ```typescript
-     * const triangles = await bitbybit.occt.shapeFacesToPolygonPoints({ shape: sphere, precision: 0.01, adjustYtoZ: false, reversedPoints: false });
+     * const triangles = await bitbybit.occt.shapeFacesToPolygonPoints({ shape: sphere, precision: 0.01, upAxis: Bit.Inputs.Base.upAxisConversionEnum.keep, reversedPoints: false });
      * ```
      */
     shapeFacesToPolygonPoints(inputs: Inputs.OCCT.ShapeFacesToPolygonPointsDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[][]> {

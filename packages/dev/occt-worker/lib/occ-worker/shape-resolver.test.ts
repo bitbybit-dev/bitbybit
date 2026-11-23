@@ -271,6 +271,7 @@ describe("Result Serializer Unit Tests", () => {
                 isOCCTObject: mockIsOCCTObject.fn as CacheHelper["isOCCTObject"],
                 isShape: mockIsShape.fn as CacheHelper["isShape"],
                 isEntityHandle: mockIsEntityHandle.fn as CacheHelper["isEntityHandle"],
+                isDocumentHandle: (obj: unknown): boolean => mockIsEntityHandle.fn(obj) && typeof (obj as Record<string, unknown>)["Main"] === "function",
             };
             resultSerializer = new ResultSerializer(mockCacheHelper as CacheHelper);
         });
@@ -636,17 +637,39 @@ describe("Shape Resolver edge cases", () => {
             expect(result.list).not.toBe(posted.list);
         });
 
-        it("should resolve an entity reference to the handle the cache holds", () => {
+        it("should resolve a document reference to the document the cache holds", () => {
             // Arrange
             const handle = { kernel: "document" };
             cacheHelper.addToCache(9, handle);
             const resolver = new ShapeResolver(cacheHelper);
 
             // Act
-            const result = resolver.resolveShapeReferences({ document: { type: "occ-entity", hash: 9 } });
+            const result = resolver.resolveShapeReferences({ document: { type: "occ-document", hash: 9 } });
 
             // Assert
             expect(result.document).toBe(handle);
+        });
+
+        it("should say which document is missing when its hash is not in the cache", () => {
+            // Arrange
+            const resolver = new ShapeResolver(cacheHelper);
+
+            // Act & Assert
+            expect(() => resolver.resolveShapeReferences({ document: { type: "occ-document", hash: 999 } }))
+                .toThrow("Document with hash 999 not found in cache");
+        });
+
+        it("should resolve an entity reference to the handle the cache holds", () => {
+            // Arrange
+            const handle = { kernel: "curve" };
+            cacheHelper.addToCache(8, handle);
+            const resolver = new ShapeResolver(cacheHelper);
+
+            // Act
+            const result = resolver.resolveShapeReferences({ curve: { type: "occ-entity", hash: 8 } });
+
+            // Assert
+            expect(result.curve).toBe(handle);
         });
 
         it("should say which entity is missing when its hash is not in the cache", () => {
@@ -654,22 +677,35 @@ describe("Shape Resolver edge cases", () => {
             const resolver = new ShapeResolver(cacheHelper);
 
             // Act & Assert
-            expect(() => resolver.resolveShapeReferences({ document: { type: "occ-entity", hash: 999 } }))
+            expect(() => resolver.resolveShapeReferences({ curve: { type: "occ-entity", hash: 999 } }))
                 .toThrow("Entity with hash 999 not found in cache");
         });
     });
 
     describe("serializeResult", () => {
-        it("should send an assembly document back as an entity reference", () => {
+        it("should send an assembly document back as a document reference", () => {
             // Arrange
             const serializer = new ResultSerializer(cacheHelper);
-            const handle = { $$: {}, hash: "doc-1" };
+            const handle = { $$: {}, hash: "doc-1", Main: (): unknown => ({}), IsNull: (): boolean => false };
 
             // Act
-            const result = serializer.serializeResult(handle);
+            const result = serializer.serializeResult({ document: handle, documents: [handle] });
 
             // Assert
-            expect(result).toEqual({ type: "occ-entity", hash: "doc-1" });
+            expect(result).toEqual({ document: { type: "occ-document", hash: "doc-1" }, documents: [{ type: "occ-document", hash: "doc-1" }] });
+        });
+
+        it("should send any other kernel object that is not a shape back as an entity reference", () => {
+            // Arrange
+            const serializer = new ResultSerializer(cacheHelper);
+            const curve = { $$: {}, hash: "curve-1", IsNull: (): boolean => false };
+            const label = { $$: {}, hash: "label-1", Main: (): unknown => ({}) };
+
+            // Act
+            const result = serializer.serializeResult({ curve, label });
+
+            // Assert
+            expect(result).toEqual({ curve: { type: "occ-entity", hash: "curve-1" }, label: { type: "occ-entity", hash: "label-1" } });
         });
 
         it("should hand a buffer back untouched rather than walking it into an empty object", () => {

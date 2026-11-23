@@ -1,7 +1,7 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import type { CacheHelper } from "./cache-helper";
-import type { MeshRetention } from "./constants";
-import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES, isShapeReference } from "./constants";
+import type { DocumentReferences, MeshRetention } from "./constants";
+import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES, isDocumentReference, isShapeReference } from "./constants";
 import type { ShapeResolver } from "./shape-resolver";
 import { Inputs, releaseDesignCaches } from "@bitbybit-dev/occt";
 import type { OccHelper, OCCTService, TopoDS_Shape } from "@bitbybit-dev/occt";
@@ -46,6 +46,8 @@ export interface CommandResult {
  * CommandContext provides dependencies needed by command handlers.
  */
 export interface CommandContext {
+    /** How the call reads a reference to an assembly document */
+    documentReferences: DocumentReferences;
     /** The OpenCascade service instance */
     openCascade: OCCTService;
     /** The meshing the service runs on, for the drawing layouts the service does not offer */
@@ -133,7 +135,7 @@ export const CommandHandlers: Record<string, CommandHandler> = {
      * Resolves the document and shape from cache and converts them to coloured mesh data.
      */
     [ReservedFunctions.DOC_TO_MESH]: (inputs, context): CommandResult => {
-        const resolvedInputs = context.shapeResolver.resolveShapeReferences(inputs);
+        const resolvedInputs = context.shapeResolver.resolveShapeReferences(context.cacheHelper.documents.atVersionsRead(inputs, context.documentReferences));
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = context.openCascade.docToMesh(resolvedInputs as any);
         return { handled: true, result };
@@ -144,7 +146,7 @@ export const CommandHandlers: Record<string, CommandHandler> = {
      * Resolves the document from cache and converts each of its free shapes to coloured mesh data.
      */
     [ReservedFunctions.DOC_TO_MESHES]: (inputs, context): CommandResult => {
-        const resolvedInputs = context.shapeResolver.resolveShapeReferences(inputs);
+        const resolvedInputs = context.shapeResolver.resolveShapeReferences(context.cacheHelper.documents.atVersionsRead(inputs, context.documentReferences));
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = context.openCascade.docToMeshes(resolvedInputs as any);
         return { handled: true, result };
@@ -196,21 +198,41 @@ export const CommandHandlers: Record<string, CommandHandler> = {
     },
 
     /**
-     * Handles assembly document deletion from cache. A document handle lives in the same cache
-     * as shapes; releasing it here frees the OCCT object and forgets the reference, exactly as
-     * shape deletion does. Previously this was dispatched to a kernel method that does not exist.
+     * Deletes an assembly document. Given as its creating call answered it, the document is freed with
+     * every version its changes made and they are forgotten; given a version, only that version's
+     * kernel object is freed, and the version is made again from its change when something reads it
+     * (`CacheHelper.cleanDocument`). A document a call named but the cache no longer holds is passed over.
      */
     [ReservedFunctions.DELETE_DOCUMENT]: (inputs, context): CommandResult => {
-        const documentRef = inputs["document"] as { hash: number | string };
-        context.cacheHelper.cleanCacheForHash(documentRef.hash as string);
+        const document = inputs["document"];
+        if (!isDocumentReference(document)) {
+            throw new InputError("`document` is not an assembly document reference.", "document");
+        }
+        context.cacheHelper.cleanDocument(document.hash);
         return { handled: true, result: {} };
     },
 
     /**
-     * Handles the start of a new run.
-     * Cleans cache if threshold is exceeded.
+     * Frees the kernel objects of the document versions given, which a caller no longer holds; each
+     * stays answerable and is made again from its change when something reads it. A document as its
+     * creating call made it, or anything else that is no version, is passed over: only
+     * `deleteDocument` frees those.
+     */
+    [ReservedFunctions.RELEASE_DOCUMENT_VERSIONS]: (inputs, context): CommandResult => {
+        const documents = inputs["documents"];
+        if (!Array.isArray(documents)) {
+            throw new InputError("`documents` is not a list of assembly document references.", "documents");
+        }
+        documents.filter(isDocumentReference).forEach(document => context.cacheHelper.documents.release(document.hash));
+        return { handled: true, result: {} };
+    },
+
+    /**
+     * Handles the start of a new run: no document reference reads a version under `latest` until a
+     * change of the run makes one, and the whole cache is cleaned once the threshold is exceeded.
      */
     [ReservedFunctions.STARTED_THE_RUN]: (_inputs, context): CommandResult => {
+        context.cacheHelper.documents.beginRun();
         if (Object.keys(context.cacheHelper.usedHashes).length > CACHE_THRESHOLD) {
             context.kernel.ReleaseKeptMeshes();
             context.cacheHelper.cleanAllCache();
