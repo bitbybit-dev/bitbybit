@@ -91,6 +91,6 @@
         "vitest": "4.1.12"
     },
     "dependencies": {
-        "@cfworker/json-schema": "4.1.1"
+        "@cfworker/json-schema": "4.1.6"
     }
 }
