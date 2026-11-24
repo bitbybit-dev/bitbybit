@@ -58,6 +58,7 @@ describe("the reserved command handlers", () => {
         pending = [];
         openCascade.plugins = { dependencies: {} };
         context = {
+            documentReferences: "latest",
             openCascade,
             meshing: occHelper.meshingService,
             kernel: occt,
@@ -224,7 +225,7 @@ describe("the reserved command handlers", () => {
             cacheDocument("doc-1");
 
             // Act
-            const result = run(ReservedFunctions.DOC_TO_MESH, { document: { type: "occ-entity", hash: "doc-1" }, precision: 0.01, adjustYtoZ: false });
+            const result = run(ReservedFunctions.DOC_TO_MESH, { document: { type: "occ-document", hash: "doc-1" }, precision: 0.01, adjustYtoZ: false });
 
             // Assert
             expect(result.handled).toBe(true);
@@ -232,8 +233,8 @@ describe("the reserved command handlers", () => {
         });
 
         it("should say which document is missing when the cache no longer holds it", () => {
-            expect(() => run(ReservedFunctions.DOC_TO_MESH, { document: { type: "occ-entity", hash: "gone" } }))
-                .toThrow("Entity with hash gone not found in cache");
+            expect(() => run(ReservedFunctions.DOC_TO_MESH, { document: { type: "occ-document", hash: "gone" } }))
+                .toThrow("Document with hash gone not found in cache");
         });
     });
 
@@ -243,7 +244,7 @@ describe("the reserved command handlers", () => {
             cacheDocument("doc-1");
 
             // Act
-            const result = run(ReservedFunctions.DOC_TO_MESHES, { document: { type: "occ-entity", hash: "doc-1" }, precision: 0.01, adjustYtoZ: false });
+            const result = run(ReservedFunctions.DOC_TO_MESHES, { document: { type: "occ-document", hash: "doc-1" }, precision: 0.01, adjustYtoZ: false });
 
             // Assert
             expect(result.result).toHaveLength(1);
@@ -374,11 +375,33 @@ describe("the reserved command handlers", () => {
             cacheHelper.addToCache("doc-1", { hash: "doc-1" });
 
             // Act
-            const result = run(ReservedFunctions.DELETE_DOCUMENT, { document: { hash: "doc-1" } });
+            const result = run(ReservedFunctions.DELETE_DOCUMENT, { document: { type: "occ-document", hash: "doc-1" } });
 
             // Assert
             expect(cacheHelper.checkCache("doc-1")).toBeNull();
             expect(result).toEqual({ handled: true, result: {} });
+        });
+
+        it("should refuse a document that is no document reference, as an input error on document", () => {
+            expect(() => run(ReservedFunctions.DELETE_DOCUMENT, { document: { hash: "doc-1" } })).toThrow(expect.objectContaining({ name: "InputError", property: "document" }));
+        });
+    });
+
+    describe("releaseDocumentVersions", () => {
+        it("should answer with nothing, passing over what is no document version", () => {
+            // Arrange
+            cacheHelper.addToCache("doc-1", { hash: "doc-1" });
+
+            // Act
+            const result = run(ReservedFunctions.RELEASE_DOCUMENT_VERSIONS, { documents: [{ type: "occ-document", hash: "doc-1" }, { type: "occ-shape", hash: "box" }] });
+
+            // Assert
+            expect(result).toEqual({ handled: true, result: {} });
+            expect(cacheHelper.checkCache("doc-1")).toEqual({ hash: "doc-1" });
+        });
+
+        it("should refuse documents that are no list, as an input error on documents", () => {
+            expect(() => run(ReservedFunctions.RELEASE_DOCUMENT_VERSIONS, { documents: { type: "occ-document", hash: "doc-1" } })).toThrow(expect.objectContaining({ name: "InputError", property: "documents" }));
         });
     });
 

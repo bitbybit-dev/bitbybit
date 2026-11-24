@@ -1,6 +1,7 @@
 import type * as Inputs from "../../../inputs";
 import type { NurbsCurveForm } from "./nurbs-forms";
 import type { EllipseArc2 } from "../geometry/ellipse-arcs";
+import type { WorkBudget } from "../files/work-budget";
 import { add3, distance2, dot3, length3, scale3 } from "../geometry/vectors";
 import { BULGE_TURN_SHARE, FRAME_AXES, LEAST_RELATIVE_TOLERANCE, PIECE_SLACK, QUARTER_TURN } from "./conic-arcs.constants";
 
@@ -34,11 +35,12 @@ export const conicArcOfEllipseArc = (arc: EllipseArc2): ConicArc => {
     };
 };
 
-export const conicArcSamples = (arc: ConicArc, tolerance: number): Point3[] => {
+export const conicArcSamples = (arc: ConicArc, tolerance: number, budget?: WorkBudget): Point3[] => {
     const radius = Math.max(length3(arc.frame.xAxis), length3(arc.frame.yAxis));
     const relative = Math.max(tolerance / radius, LEAST_RELATIVE_TOLERANCE);
     const step = relative >= 1 ? QUARTER_TURN : Math.min(QUARTER_TURN, 2 * Math.acos(1 - relative));
-    const count = Math.max(1, Math.ceil(Math.abs(arc.sweep) / step));
+    const wanted = Math.max(1, Math.ceil(Math.abs(arc.sweep) / step));
+    const count = budget === undefined || budget.spend(wanted + 1) ? wanted : 1;
     return Array.from({ length: count + 1 }, (_, at) => ellipseFramePoint(arc.frame, arc.start + (arc.sweep * at) / count));
 };
 
@@ -72,6 +74,8 @@ export const bulgeArcOf = (start: Point3, end: Point3, bulge: number): ConicArc 
         sweep: BULGE_TURN_SHARE * Math.atan(bulge),
     };
 };
+
+export const bulgeOfSweep = (sweep: number): number => Math.tan(sweep / BULGE_TURN_SHARE);
 
 export const conicArcExtremes = (arc: ConicArc, axes: readonly number[] = FRAME_AXES): Point3[] => {
     const from = Math.min(arc.start, arc.start + arc.sweep);

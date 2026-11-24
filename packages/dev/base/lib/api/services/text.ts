@@ -5,6 +5,7 @@ import type { Point } from "./point";
 import { resolveDto } from "../kernel-calls";
 import type { BitbybitSettings } from "../kernel-calls/settings";
 import { pointOnGround } from "./helpers/files/ground-axes";
+import { strokeGlyph } from "./helpers/text/stroke-font";
 import type * as Resolved from "../resolved-inputs";
 
 type Line = { width: number, height: number, chars: Models.Text.VectorCharData[] };
@@ -641,9 +642,9 @@ export class TextBitByBit {
     /**
      * Draws one character as line paths with a simple stroke font.
      *
-     * The paths lie flat on the XZ plane, scaled so the character is `height` tall, and are
-     * returned with the character's width and height. An unknown character is drawn as a question
-     * mark.
+     * The paths lie flat on the XZ plane, the character `height` tall, and come with its width and
+     * height. Accented Latin letters are drawn with their marks, other unknown characters as a
+     * question mark.
      * Example: 'A' at height 10 -> the strokes of an A, 10 units tall
      * @param inputs - The character, its height and its offsets
      * @returns The character's width, height and stroke paths as lists of points
@@ -660,30 +661,11 @@ export class TextBitByBit {
         const {
             xOffset, yOffset, font, input, height, extrudeOffset
         } = this.vectorParamsChar(resolved);
-        let code = input.charCodeAt(0);
-        if (!code || !font[code]) {
-            code = 63;
-        }
-        const glyph = ([] as (number | undefined)[]).concat(font[code]);
+        const glyph = strokeGlyph(font, input.charCodeAt(0));
         const ratio = (height - extrudeOffset) / font.height;
         const extrudeYOffset = (extrudeOffset / 2);
-        const width = (glyph.shift() as number) * ratio;
-        const paths: Inputs.Base.Point3[][] = [];
-        let polyline: Inputs.Base.Point3[] = [];
-        for (let i = 0, il = glyph.length; i < il; i += 2) {
-            const gx = ratio * (glyph[i] as number) + xOffset;
-            const gy = ratio * (glyph[i + 1] as number) + yOffset + extrudeYOffset;
-            if (glyph[i] !== undefined) {
-                polyline.push(this.onGround(gx, gy));
-                continue;
-            }
-            paths.push(polyline);
-            polyline = [];
-            i--;
-        }
-        if (polyline.length) {
-            paths.push(polyline);
-        }
+        const width = glyph.advance * ratio;
+        const paths = glyph.strokes.map(stroke => stroke.map(([x, y]) => this.onGround(ratio * x + xOffset, ratio * y + yOffset + extrudeYOffset)));
         return { width, height, paths };
     }
 

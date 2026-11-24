@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { KernelObject } from "./kernel-object-types";
-import { kernelObjectsIn, releaseMadeObjects } from "./kernel-objects";
+import { isDocumentHandle, kernelObjectsIn, releaseMadeObjects } from "./kernel-objects";
 
 interface FakeKernelObject extends KernelObject {
     readonly name: string;
@@ -97,5 +97,19 @@ describe("the kernel objects a cancelled call made", () => {
         // Assert
         expect(act).not.toThrow();
         expect(made.deletes).toBe(1);
+    });
+});
+
+describe("telling an assembly document handle from anything else", () => {
+    it("should take a kernel handle with the document's Main and IsNull, and nothing that is not an object, a shape or a plain record", () => {
+        // Arrange
+        const document = { $$: {}, Main: (): object => ({}), IsNull: (): boolean => false };
+        const shape = { ...document, ShapeType: (): number => 0 };
+
+        // Act
+        const taken = [document, shape, { Main: document.Main, IsNull: document.IsNull }, null, 7, "document"].map(isDocumentHandle);
+
+        // Assert
+        expect(taken).toEqual([true, false, false, false, false, false]);
     });
 });

@@ -263,7 +263,7 @@ async function start(): Promise<void> {
         const manager = bitbybit.occt.assembly.manager;
         const bytes = await withDocument(current, format === "step" ? Z_UP : undefined, ({ document }) => format === "step"
             ? manager.exportDocumentToStep({ document, fileName: `${name}.step`, author: "Drone assembly", organization: "bitbybit.dev", compress: false, tryDownload: false })
-            : manager.exportDocumentToGltf({ document, meshDeflection: 0.05, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: true, forceUVExport: false, fileName: `${name}.glb`, tryDownload: false }));
+            : manager.exportDocumentToGltf({ document, meshDeflection: 0.05, meshAngle: 0.5, internalVerticesMode: true, controlSurfaceDeflection: false, mergeFaces: true, forceUVExport: false, fileName: `${name}.glb`, tryDownload: false }));
         downloadBlob(new Blob([bytes as BlobPart], { type: format === "step" ? "application/step" : "model/gltf-binary" }), `${name}.${format}`);
         ui.setStatus(`${format.toUpperCase()} downloaded: ${(bytes.byteLength / 1024).toFixed(0)} kB with the part tree, names and colours.`);
     }

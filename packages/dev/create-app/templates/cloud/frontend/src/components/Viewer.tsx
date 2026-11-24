@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactElement } from "react";
 import * as THREE from "three";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
@@ -13,9 +14,11 @@ interface ViewerScene {
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
     controls: OrbitControls;
+    loader: GLTFLoader;
 }
 
 const MODEL_SPACING = 15;
+const DRACO_DECODERS = `https://cdn.jsdelivr.net/npm/three@0.${THREE.REVISION}.0/examples/jsm/libs/draco/gltf/`;
 
 export function Viewer({ url, urls }: ViewerProps): ReactElement {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -62,7 +65,10 @@ export function Viewer({ url, urls }: ViewerProps): ReactElement {
             renderer.render(scene, camera);
         };
 
-        sceneRef.current = { scene, camera, renderer, controls };
+        const draco = new DRACOLoader().setDecoderPath(DRACO_DECODERS);
+        const loader = new GLTFLoader().setDRACOLoader(draco);
+
+        sceneRef.current = { scene, camera, renderer, controls, loader };
         animate();
 
         const handleResize = (): void => {
@@ -76,6 +82,7 @@ export function Viewer({ url, urls }: ViewerProps): ReactElement {
             window.removeEventListener("resize", handleResize);
             cancelAnimationFrame(animationId);
             renderer.dispose();
+            draco.dispose();
             container.removeChild(renderer.domElement);
             sceneRef.current = null;
         };
@@ -83,7 +90,7 @@ export function Viewer({ url, urls }: ViewerProps): ReactElement {
 
     useEffect(() => {
         if (!sceneRef.current) return;
-        const { scene, camera, controls } = sceneRef.current;
+        const { scene, camera, controls, loader } = sceneRef.current;
 
         for (const group of scene.children.filter((child) => child.type === "Group")) scene.remove(group);
 
@@ -97,7 +104,7 @@ export function Viewer({ url, urls }: ViewerProps): ReactElement {
                 console.error("[Viewer] proxy fetch failed:", response.status);
                 return;
             }
-            const gltf = await new GLTFLoader().parseAsync(await response.arrayBuffer(), "");
+            const gltf = await loader.parseAsync(await response.arrayBuffer(), "");
             if (allUrls.length > 1) gltf.scene.position.x += startX + index * MODEL_SPACING;
 
             gltf.scene.traverse((child) => {
@@ -114,7 +121,8 @@ export function Viewer({ url, urls }: ViewerProps): ReactElement {
 
             scene.add(gltf.scene);
 
-            const box = new THREE.Box3().setFromObject(gltf.scene);
+            const box = new THREE.Box3();
+            for (const shown of scene.children.filter((child) => child.type === "Group")) box.expandByObject(shown);
             const center = box.getCenter(new THREE.Vector3());
             const size = box.getSize(new THREE.Vector3());
             const maxDim = Math.max(size.x, size.y, size.z);

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import { isRecord } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 
 function javaStringHash(str: string): number {
@@ -1212,6 +1213,56 @@ describe("CacheHelper unit tests", () => {
             expect(raw).not.toContain(String(first.$$.ptr));
             expect(cacheHelper.computeHash({ functionName: "test", inputs: { shape: second } }))
                 .toBe(cacheHelper.computeHash({ functionName: "test", inputs: { shape: first } }));
+        });
+    });
+
+    describe("telling an assembly document from the other kernel objects", () => {
+        it("should take a document handle for a document, and for an entity that is not a shape", () => {
+            // Arrange
+            const document = new occt.Handle_TDocStd_Document();
+
+            // Act
+            const isDocument = cacheHelper.isDocumentHandle(document);
+            const isEntity = cacheHelper.isEntityHandle(document);
+            document.delete();
+
+            // Assert
+            expect(isDocument).toBe(true);
+            expect(isEntity).toBe(true);
+        });
+
+        it("should not take another handle, a point, a shape or a plain object for a document", () => {
+            // Arrange
+            const curve = new occt.Handle_Geom_Curve();
+            const attribute = new occt.Handle_TDF_Attribute();
+            const point = new occt.gp_Pnt(0, 0, 0);
+            const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
+            const shape = vertex.Vertex();
+            const lookalike = { Main: (): unknown => ({}), IsNull: (): boolean => false };
+
+            // Act
+            const taken = [curve, attribute, point, shape, lookalike].map(candidate => cacheHelper.isDocumentHandle(candidate));
+            [curve, attribute, point, vertex, shape].forEach(handle => handle.delete());
+
+            // Assert
+            expect(taken).toEqual([false, false, false, false, false]);
+        });
+
+        it("should find the document's label and the handle's null test together on no other class the kernel binds", () => {
+            // Arrange
+            const bound = Object.entries(occt as object) as [string, unknown][];
+            const prototypeOf = (value: unknown): Record<string, unknown> | undefined => {
+                const prototype: unknown = typeof value === "function" ? Reflect.get(value, "prototype") : undefined;
+                return isRecord(prototype) ? prototype : undefined;
+            };
+
+            // Act
+            const classes = bound
+                .filter(([, value]) => typeof prototypeOf(value)?.["Main"] === "function" && typeof prototypeOf(value)?.["IsNull"] === "function")
+                .map(([name]) => name);
+
+            // Assert
+            expect(classes).toEqual(["Handle_TDocStd_Document"]);
         });
     });
 

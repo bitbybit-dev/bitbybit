@@ -107,6 +107,26 @@ describe("describe", () => {
         expect(result.text).toContain("## Examples");
     });
 
+    it("says what a conventions level changes in a member whose result depends on it, in the text and the record", async () => {
+        // Act
+        const result = await call("describe", { path: "advanced.text3d.create" });
+
+        // Assert
+        const member = structured(result)["member"] as { conventions?: { level: number }[] };
+        expect(member.conventions?.map((change) => change.level)).toEqual([1]);
+        expect(result.text).toContain("- From level 1: 3D text: reads the right way round");
+    });
+
+    it("describes a method of the bitbybit object itself, written with the object in front or without", async () => {
+        // Act
+        const written = await call("describe", { path: "bitbybit.setConventions" });
+        const bare = await call("describe", { path: "setConventions" });
+
+        // Assert
+        expect((structured(written)["member"] as { path: string }).path).toBe("setConventions");
+        expect(bare.text).toBe(written.text);
+    });
+
     it("lists the types a member returns in its answer, by full name", async () => {
         // Act
         const result = await call("describe", { path: "ifc.model.summary" });
@@ -236,6 +256,15 @@ describe("list_namespace", () => {
         expect(listed).toContain("math");
         expect(listed).toContain("occtPro");
         expect(listed).not.toContain("cloud.unfold.solidToFlat");
+    });
+
+    it("lists the methods of the bitbybit object beside the roots, each with its kind", async () => {
+        // Act
+        const result = await call("list_namespace", {});
+
+        // Assert
+        expect(paths(structured(result)["members"])).toContain("setConventions");
+        expect(result.text).toContain("- setConventions (method): Sets the settings");
     });
 
     it("lists a namespace the index carries only through its members", async () => {

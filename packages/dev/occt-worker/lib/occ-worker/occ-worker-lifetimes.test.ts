@@ -276,6 +276,52 @@ describe("the worker's kernel objects and heap across many calls", () => {
         expect(bytesPerCall).toBeLessThan(MOST_BYTES_PER_CALL);
     });
 
+    it("should hand an assembly document across as a document reference, take it back in later calls and free it when the caller deletes it", async () => {
+        // Arrange
+        const manager = new OCCTWorkerManager();
+        manager.setOccWorker(new KernelWorker());
+        const box = await manager.genericCallToWorkerPromise<WorkerReference>("shapes.solid.createBox", LUG_BOX);
+        const part = await manager.genericCallToWorkerPromise("assembly.manager.createPart", { id: "box", shape: box, name: "Box" });
+        const node = await manager.genericCallToWorkerPromise("assembly.manager.createInstanceNode", { id: "placed", partId: "box", name: "Placed" });
+        const structure = await manager.genericCallToWorkerPromise("assembly.manager.combineStructure", { parts: [part], nodes: [node], clearDocument: false });
+        const opened = openWindow();
+
+        // Act
+        let built: WorkerReference;
+        let parts: unknown;
+        let mesh: { faceList: unknown[] };
+        let afterDelete: unknown;
+        try {
+            built = await manager.genericCallToWorkerPromise<WorkerReference>("assembly.manager.buildAssemblyDocument", { structure });
+            parts = await manager.genericCallToWorkerPromise("assembly.query.getDocumentParts", { document: built });
+            mesh = await manager.genericCallToWorkerPromise<{ faceList: unknown[] }>("docToMesh", { document: built, precision: 0.1, adjustYtoZ: false });
+            await manager.genericCallToWorkerPromise("deleteDocument", { document: built });
+            afterDelete = await manager.genericCallToWorkerPromise("docToMesh", { document: built, precision: 0.1, adjustYtoZ: false }).catch(messageOf);
+        } finally {
+            opened.close();
+        }
+
+        // Assert
+        expect([box.type, built.type]).toEqual(["occ-shape", "occ-document"]);
+        expect(parts).toEqual([expect.objectContaining({ name: "Box", type: "part" }), expect.objectContaining({ name: "Assembly", type: "assembly" })]);
+        expect(mesh.faceList).toHaveLength(6);
+        expect(afterDelete).toContain(`Document with hash ${built.hash} not found in cache`);
+        expect(namesOf(opened.made().filter(handle => !handle.isDeleted())).filter(name => name === "Handle_TDocStd_Document")).toEqual([]);
+    });
+
+    it("should hand a kernel object that is neither a shape nor a document across as an entity reference", async () => {
+        // Arrange
+        const manager = new OCCTWorkerManager();
+        manager.setOccWorker(new KernelWorker());
+
+        // Act
+        const ellipse = await manager.genericCallToWorkerPromise<WorkerReference>("geom.curves.geom2dEllipse", { center: [0, 0], direction: [1, 0], radiusMinor: 1, radiusMajor: 2, sense: false });
+
+        // Assert
+        expect(ellipse.type).toBe("occ-entity");
+        expect(cacheHelper.checkCache(ellipse.hash)).not.toBeNull();
+    });
+
     it("should keep in the worker's cache no shape of the builds and scripts before the last one once the caller deletes the shapes the last build handed back", async () => {
         // Arrange
         const manager = new OCCTWorkerManager();

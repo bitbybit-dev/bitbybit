@@ -90,12 +90,59 @@ describe("OCCT design features beyond the first slice", () => {
         it("should let a later feature reach the edges between two roles", () => {
             // Arrange
             const document = gearDocument({ id: "tipBevel", type: "chamfer", body: "gear", distance: 0.2, edges: { between: [{ of: "gear", role: "end" }, { of: "gear", role: "tip" }], count: 20 } });
+            const unbored = { ...document, features: document.features.map(feature => feature.type === "operation" ? { ...feature, params: { ...feature.params, bore: 0 } } : feature) };
 
             // Act
-            const result = occt.design.build({ document });
+            const result = occt.design.build({ document: unbored });
 
             // Assert
             expect(statuses(result)).toEqual(["ok", "ok"]);
+        });
+
+        it("should mend the solid OCCT turns inside out when it chamfers or rounds a bored gear's tips, inside the gear's box and with every face named by its role", () => {
+            // Arrange
+            const tips: Models.OCCT.DesignEdgeReference = { between: [{ of: "gear", role: "end" }, { of: "gear", role: "tip" }], count: 20 };
+            const gear = occt.design.build({ document: gearDocument() }).parts[0]!;
+            const around = occt.analysis.measure.tightBoundingBox({ shape: gear.shape });
+
+            // Act
+            const chamfered = occt.design.build({ document: gearDocument({ id: "tipBevel", type: "chamfer", body: "gear", distance: 0.2, edges: tips }) });
+            const rounded = occt.design.build({ document: gearDocument({ id: "tipRound", type: "fillet", body: "gear", radius: 0.2, edges: tips }) });
+
+            // Assert
+            const mended = (result: Models.OCCT.DesignBuildResult<TopoDS_Shape>, made: string): unknown => {
+                const part = result.parts[0]!;
+                const box = occt.analysis.measure.tightBoundingBox({ shape: part.shape });
+                return {
+                    statuses: statuses(result),
+                    valid: occt.shapeFix.isValid({ shape: part.shape }),
+                    lost: volume(gear.shape) - volume(part.shape),
+                    inside: box.min.every((value, axis) => value >= around.min[axis]! - 1e-6) && box.max.every((value, axis) => value <= around.max[axis]! + 1e-6),
+                    roles: [facesNamed(part, "gear:tip").length, facesNamed(part, "gear:bore").length, facesNamed(part, made).length],
+                    unnamed: part.faceNames.filter(names => names.length === 0).length,
+                };
+            };
+            const bores = facesNamed(gear, "gear:bore").length;
+            expect(mended(chamfered, "tipBevel:bevel")).toEqual({ statuses: ["ok", "ok"], valid: true, lost: expect.closeTo(0.59, 1), inside: true, roles: [20, bores, 20], unnamed: 0 });
+            expect(mended(rounded, "tipRound:round")).toEqual({ statuses: ["ok", "ok"], valid: true, lost: expect.closeTo(0.25, 1), inside: true, roles: [20, bores, 20], unnamed: 0 });
+        });
+
+        it("should hand back the mended solid from the plain chamfer and fillet of a bored gear's tips, valid, no larger than the gear and inside its box", () => {
+            // Arrange
+            const gear = occt.design.build({ document: gearDocument() }).parts[0]!;
+            const indexes = occt.select.edges.between({ shape: gear.shape, indexes: facesNamed(gear, "gear:end"), otherIndexes: facesNamed(gear, "gear:tip") });
+            const around = occt.analysis.measure.tightBoundingBox({ shape: gear.shape });
+
+            // Act
+            const made = [occt.fillets.chamferEdges({ shape: gear.shape, distance: 0.2, indexes }), occt.fillets.filletEdges({ shape: gear.shape, radius: 0.2, indexes })];
+
+            // Assert
+            expect(indexes).toHaveLength(20);
+            expect(made.map(shape => {
+                const box = occt.analysis.measure.tightBoundingBox({ shape });
+                const inside = box.min.every((value, axis) => value >= around.min[axis]! - 1e-6) && box.max.every((value, axis) => value <= around.max[axis]! + 1e-6);
+                return [occt.shapeFix.isValid({ shape }), volume(shape) > 0 && volume(shape) < volume(gear.shape), inside];
+            })).toEqual([[true, true, true], [true, true, true]]);
         });
     });
 

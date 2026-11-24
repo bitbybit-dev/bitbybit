@@ -5,7 +5,7 @@ import * as Inputs from "../../inputs/manifold-inputs";
 import type * as Resolved from "../../resolved-inputs";
 import { executeRecipe } from "./recipe-executor";
 import { recipeMeshes } from "./recipe-meshes";
-import { rootPlacingOf } from "./recipe-placing";
+import { rootPlacingOf, turnedFromZUp } from "./recipe-placing";
 
 const MIN_CIRCLE_SIDES = 3;
 const MAX_SHARP_ANGLE = 180;
@@ -42,7 +42,7 @@ export class ManifoldRecipes {
      * @example
      * ```typescript
      * const recipe = await bitbybit.ifc.geometry.recipe({ model });
-     * const solids = await bitbybit.manifold.recipes.build({ recipe, adjustZtoY: true, emptyWhenFailed: true });
+     * const solids = await bitbybit.manifold.recipes.build({ recipe, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp, emptyWhenFailed: true });
      * ```
      */
     build(inputs: Inputs.Manifold.BuildRecipeDto): Manifold3D.Manifold[] {
@@ -51,7 +51,7 @@ export class ManifoldRecipes {
         if (!Number.isSafeInteger(resolved.circularSegments) || resolved.circularSegments < MIN_CIRCLE_SIDES) {
             throw new RangeError(`A circle needs at least ${MIN_CIRCLE_SIDES} sides, got ${resolved.circularSegments}`);
         }
-        return executeRecipe(this.manifold, recipe, resolved.circularSegments, rootPlacingOf(this.settings().coordinateSystem, resolved.adjustZtoY), resolved.emptyWhenFailed);
+        return executeRecipe(this.manifold, recipe, resolved.circularSegments, rootPlacingOf(this.settings().coordinateSystem, turnedFromZUp(resolved.upAxis)), resolved.emptyWhenFailed);
     }
 
     /**
@@ -68,7 +68,7 @@ export class ManifoldRecipes {
      * @example
      * ```typescript
      * const recipe = await bitbybit.ifc.geometry.recipe({ model });
-     * const { meshes, placements } = await bitbybit.manifold.recipes.meshes({ recipe, adjustZtoY: true, emptyWhenFailed: true });
+     * const { meshes, placements } = await bitbybit.manifold.recipes.meshes({ recipe, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp, emptyWhenFailed: true });
      * ```
      */
     meshes(inputs: Inputs.Manifold.BuildRecipeMeshesDto): Inputs.Manifold.RecipeMeshesDto {
@@ -96,15 +96,15 @@ export class ManifoldRecipes {
      * @drawable true
      * @example
      * ```typescript
-     * const solids = await bitbybit.manifold.recipes.build({ recipe, adjustZtoY: true, emptyWhenFailed: true });
+     * const solids = await bitbybit.manifold.recipes.build({ recipe, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp, emptyWhenFailed: true });
      * const meshes = await bitbybit.manifold.manifold.manifoldsToMeshes({ manifolds: solids });
      * const open = meshes.flatMap((mesh, index) => mesh.triVerts.length === 0 ? [index] : []);
-     * const surfaces = await bitbybit.manifold.recipes.surfaceMeshes({ recipe, roots: open, adjustZtoY: true });
+     * const surfaces = await bitbybit.manifold.recipes.surfaceMeshes({ recipe, roots: open, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp });
      * ```
      */
     surfaceMeshes(inputs: Inputs.Manifold.RecipeSurfaceMeshesDto): Inputs.Manifold.DecomposedManifoldMeshDto[] {
         const resolved = resolveDto(Inputs.Manifold.RecipeSurfaceMeshesDto, inputs) as Resolved.Manifold.RecipeSurfaceMeshesDto;
-        return this.recipes.surfaceMeshes({ recipe: resolved.recipe, roots: resolved.roots, adjustZtoY: resolved.adjustZtoY }).map((mesh) => ({
+        return this.recipes.surfaceMeshes({ recipe: resolved.recipe, roots: resolved.roots, upAxis: resolved.upAxis }).map((mesh) => ({
             numProp: POSITION_PROPERTIES,
             vertProperties: mesh?.positions ?? new Float32Array(0),
             triVerts: mesh?.indices ?? new Uint32Array(0),

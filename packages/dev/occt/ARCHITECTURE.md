@@ -138,6 +138,20 @@ face twice from the kernel, which is kept once; a shape too thin to slice gives 
 One call refuses to cut more than 100000 slices (`MOST_SLICES`): a step too small for the shape, or
 for its distance from the origin, would otherwise loop for a very long time.
 
+**A hatched section is one call over the existing cut.** `operations.hatchedSectionByFrame` (`@beta`,
+`lib/services/base/hatched-sections.ts`) slices each shape with the frame's plane through
+`SliceByFrames`, as `sectionByFrames` does, and for each cut face moves it onto the ground (the
+frame's direction onto X, the normal crossed with the direction onto Z, through base's
+`frame.matrixFromTo`) and traces it with the drawing tracer (`DrawingService.pathsOfShape`, exact
+curves within `curveTolerance`). That trace is the face's hatch in the frame's coordinates, the same
+coordinates `hiddenLines` of the frame draws in, so the two write to one DXF or SVG. The hatch lines
+are base's `io.drawing.clippedHatchLines` of that hatch, lifted back with `frame.pointsToWorld` and
+made into line edges, one compound per face. With `neighbourAngles` the shapes are hatched in list
+order, each at the first of `angle` plus 0, 90, 30, 120, 60 and 150 that no earlier shape whose cut
+faces come within `spacing` of its own has (a box test first, then the kernel's distance), so all
+the faces of a shape share its angle and adjacent parts differ, as ISO 128-50 asks. The frame comes
+back squared (`frame.create`), which is the frame the hatch coordinates are in.
+
 ## Clashes
 
 - `analysis.clashes.betweenShapes` measures a pair exactly only when it cannot be ruled out more
@@ -268,6 +282,110 @@ for its distance from the origin, would otherwise loop for a very long time.
   relative to it.
 - The kernel writes product manufacturing information as JSON, where a value JSON cannot hold (an
   infinite or undefined number) is null; it is read back as NaN.
+- **Annotations come in two texts.** `getDocumentPmi` reads the values (`DocumentPmiJson`);
+  `getDocumentAnnotations` (`@beta`) reads how they are drawn (`DocumentAnnotationsJson`): each
+  annotation's plane, text point, `lines` (polylines, flat x, y, z in the kernel's text) and `fills`
+  (letters as closed loops under the even-odd rule, the rims of the file's triangles), `facing`, and
+  the saved views with the annotation labels each shows. Both name an annotation by its label, so
+  the two join on it. The kernel's own JSON is in the kernel layer's `BitbybitXCAF.md`.
+- **Annotations are read in the document's own axes and units**, the call passing no turn and a
+  scale of 1: that is where `getShapeFromLabel` and `docToMesh` (with `adjustYtoZ` false) put the
+  parts, so a drawing of both lines up. `adjustZtoY` on both turns them together from the file's
+  Z-up into Y-up by the matrix `io.loadSTEPorIGES` turns a shape by (`documentInModelAxes`: a
+  quarter turn about X in a right-handed system, Y and Z swapped otherwise): the mesh after the
+  kernel made it (`meshTurnedBy`, which winds each triangle the other way when the matrix mirrors, so
+  the faces keep facing out), the annotations and the saved views through the same placer that
+  places a product's copies. An annotation of a component comes from the kernel in its
+  product's axes with one matrix per placement of the product; `lib/services/assembly/annotations.ts`
+  moves a copy to each placement through base's `point.transformPoints`, directions turned and made
+  unit length, and numbers the copies `instance` in the product tree's order. A free shape's product
+  has the one identity placement, so its annotations come once, with `product` and `instance` 0; an
+  annotation that belongs to no product comes as written, without either.
+- The rims the kernel writes run against the way their triangles face (`facing` is the side the
+  letters read from); base's `mesh.triangulateLoops` fills them under the even-odd rule all the same,
+  and the renderers draw the letters two-sided.
+- **PMI is written in one call, all or nothing** (`@beta`, since 2026-11-22). `assembly.manager.addDocumentPmi`
+  takes typed dimensions, datums and tolerances (`createPmiDimension`, `createPmiDatum`,
+  `createPmiTolerance`, each of their `shapeRefs` a `createPmiShape`), checks what it can (the item kinds, a whole
+  index in range, a picture's two ends and its plane) and hands one JSON to the kernel's
+  `AddDocumentPmiJson`, which refuses the whole text or adds every item; a kernel refusal comes back
+  as an `InputError` naming the item (`datums[0]`, `dimensions[1].shapeRefs[0]`), so the document is never
+  left half written. It answers the document it wrote into, as `setDocLabelColor` and
+  `setDocLabelName` do, so the changed document is what a caller passes on to an export or a read; the
+  labels the items got are `getDocumentPmi`'s to list. One call rather than three because the kernel's rules cross the lists: a
+  tolerance's frame names letters of datums in the same text, and a datum no tolerance refers to is
+  refused, since OCCT's STEP reader keeps a datum only through the tolerances that refer to it. The
+  builders follow the neighbouring `createPart` and `combineStructure`: they describe, the last call
+  writes. `lib/services/assembly/pmi.ts` holds the writer, its kernel JSON types `pmi-types.ts`.
+- **A shape is named the way the open API numbers it.** The kernel numbers a part's faces, edges and
+  vertices each once, in `TopExp::MapShapes` order. `shapes.edge.getEdge` counts the same way
+  (`EdgeAt` over the distinct edges), so an edge index goes to the kernel as it is. `shapes.face.getFace`
+  and `shapes.vertex.getVertices` count every occurrence the walk meets: the same order for the faces of
+  a solid or a shell, where each face occurs once, but a box's corner occurs six times among its
+  vertices. So a face or vertex index is taken to the shape at that place in the counting the user has
+  and then to its place in the kernel's distinct list (`IsSame`); `manager-pmi.test.ts` pins that every
+  occurrence of one corner lands on the one vertex the kernel labels.
+- **What is read can be written.** `getDocumentPmi` names every shape twice: by label entry, as the
+  kernel gives it, and in `shapeRefs` / `otherShapeRefs` as the `PmiShapeDto` the writer takes; a
+  tolerance adds `datumLetters`, `diameterZone` and `material`, a datum `letter`. The kernel's
+  `DocumentPmiJson` gives only the entries, so `PmiShapeNamer` (`pmi-shape-refs.ts`) works the rest
+  out: an entry that is a part's label (`GetDocumentPartsFromDoc`, type `part`) is the whole part;
+  otherwise its part is the longest leading run of its tags that is a part's label (a sub-shape label
+  sits under its part), its kind is the shape's type, and its index is the first place the shape takes
+  (`IsSame`, narrowed by `TopoDS_Shape_HashCode`) in the counting the writer reads it back in - the
+  part's `FacesOf(shape, false)`, `EdgesOf(shape, true)` or `VerticesOf(shape, false)` - so it lands on
+  the same `TopExp::MapShapes` place when written. A list is empty when one of its shapes is no part,
+  face, edge or vertex of one (a component, a wire), and the writer refuses an empty list. On the
+  write side the DTOs use the same names, a `PmiPresentationDto` is what `getDocumentAnnotations`
+  reads (its plane optional, its own `name` kept, one with no lines and no fills counting as none),
+  and a datum letter names one datum in a document. A STEP file holds one datum per letter for all
+  its parts: the export writes a second `A` (another face, or another part) as the first, and ties the
+  tolerances that named it to that one, so the writer (`pmi-datum-letters.ts`) refuses before the
+  kernel runs a letter given twice in one call, a letter the document already has on other shapes
+  (naming that datum), and a tolerance naming a letter the call does not give. The kernel links a
+  frame only to the datums of its own call, so a datum the document holds is given again on its own
+  shapes: the kernel lists datum labels of one letter on the same shapes as one datum, with every
+  frame naming the listed label, and the STEP file writes it once (`manager-pmi.test.ts` pins both
+  sides, and what the kernel makes of `A` on two parts). The kernel lists every datum of a document
+  once, a STEP file's too, so what is read never repeats one. Read, then write, is the type cast to its enum and each annotation joined by
+  label (`manager-pmi.test.ts` reads a STEP file the API wrote, writes it into a fresh document of the
+  same part shape, writes that to STEP and reads the same PMI and pictures).
+- **PMI is removed in one call too.** `assembly.manager.removeDocumentPmi` hands the document to the
+  kernel's `RemoveDocumentPmiJson`, which takes out every dimension, tolerance and datum (a datum's
+  further labels included) with their pictures, and the saved views that showed nothing else, and
+  answers the document. The document then writes the STEP text of one that never held
+  PMI, and the kernel sets its label counters back, so `addDocumentPmi` after it gives the labels, the
+  PMI and the STEP text of a first add (`manager-pmi.test.ts` pins all three): calls of
+  `addDocumentPmi` add up, and remove, then add, writes a document's PMI again. Here, in the
+  package, every change is made in place on the document given. Through the worker a document is a
+  value: a call that changes one makes a new version of it, which the call answers and which always
+  reads as that change left it, and the document as its creating call made it is never changed; a
+  script's reference to that document reads the latest version of the run, and a run begun with
+  `startedTheRun` starts from the document as made. A script run again therefore writes its PMI once,
+  whether or not it removes first, and its STEP export holds what that run wrote
+  (`occt-worker/ARCHITECTURE.md`, "Assembly documents are values").
+- **A dimension draws its own picture** when it has `start` and `end`: base's
+  `io.drawing.dimensionPicture` draws it in a plane - the `normal` given, or +Z, or -Y when `start` to
+  `end` runs along Z - whose X axis is the measured direction, and every point is lifted into that
+  plane with `frame.pointsToWorld`. Its lines and text strokes become the presentation's lines, its
+  arrowheads the fills, and the plane is stated at the text point, which is what a STEP file keeps
+  as the plane's origin anyway. A caller's own `presentation` replaces the picture; without either the
+  dimension has none. Datums and tolerances take a caller's presentation only: no frame or datum
+  symbol is drawn for them yet.
+- **The STEP export writes AP242 with the PMI** when a document holds any, and is unchanged
+  otherwise (the kernel layer's `BitbybitIO.md`). The PMI of each part is stated in that part's own
+  context and units, so PMI on several parts reads back on each, and PMI without a dimension takes
+  the part's units (`manager-pmi.test.ts` reads both back). An angle's plus and minus tolerance is in
+  degrees, as its value is.
+- The tests make their own PMI. `query-pmi.test.ts` adds STEP entities to a box the kernel wrote -
+  semantic dimensions, tolerances and a datum, a tessellated presentation (a curve set and a ring of
+  triangles) with its annotation plane, a polyline presentation, a size type, a range, a value too
+  large to hold and a saved view (`CAMERA_MODEL_D3` in a `DRAUGHTING_MODEL`), which the kernel does not
+  write. `manager-pmi.test.ts` writes them through the API: `lib/__test__/pmi-block.ts` builds a 60 x 40 x
+  15 block with a bore 10 through and a counterbore 18 x 6 deep, adds seven dimensions, datums A, B and C
+  and seven tolerances, writes STEP and reads it back, and every value, type, face, datum frame, zone,
+  material condition, plane, text point, line segment and arrowhead comes back. No third-party test
+  file is needed for the open tests.
 - The kernel's validity report numbers each kind of sub-shape in its distinct list, each sub-shape
   once, while the getters of vertices, wires, faces, shells and solids count every occurrence.
   `shapeFix` maps a reported index to the first occurrence, grouping occurrences by the kernel's

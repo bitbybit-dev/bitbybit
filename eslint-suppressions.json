@@ -252,9 +252,6 @@
     "@typescript-eslint/explicit-function-return-type": {
       "count": 1
     },
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 1
-    },
     "bitbybit/no-inline-object-types": {
       "count": 3
     }
@@ -679,7 +676,7 @@
   },
   "packages/dev/occt-worker/lib/occ-worker/command-handlers.ts": {
     "bitbybit/no-inline-object-types": {
-      "count": 3
+      "count": 2
     }
   },
   "packages/dev/occt-worker/lib/occ-worker/design-scripts.ts": {
@@ -813,11 +810,6 @@
     },
     "bitbybit/no-inline-object-types": {
       "count": 3
-    }
-  },
-  "packages/dev/occt/lib/services/assembly/query.ts": {
-    "bitbybit/no-inline-object-types": {
-      "count": 2
     }
   },
   "packages/dev/occt/lib/services/base/converter.service.ts": {

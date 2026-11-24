@@ -5,7 +5,7 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { BitByBitBase, Inputs, initBitByBit, initThreeJS, type InitBitByBitOptions } from "@bitbybit-dev/threejs";
 import { accessFromResponse, renderAccess } from "./cloud-access";
 import { downloadBlob } from "./exports";
-import { bendLines, summarize, toScene, type UnfoldResult } from "./flat";
+import { bendLines, summarize, toPattern, type UnfoldResult, type Vec3 } from "./flat";
 import { buildModel, defaultParams, type PartModel, type PartParams } from "./model";
 import { mountPoint, mountUi, type ExportFormat, type View } from "./ui";
 
@@ -108,8 +108,8 @@ async function start(): Promise<void> {
             lineOptions.colours = "#f0cebb";
             lineOptions.size = 2;
             for (const [start, end] of bendLines(flat.result.report)) {
-                const lifted = (point: ReturnType<typeof toScene>): ReturnType<typeof toScene> => [point[0], point[1] + LAYOUT_LIFT + 0.1, point[2]];
-                flat.drawn.push(await bitbybit.draw.drawAnyAsync({ entity: { points: [lifted(toScene(start)), lifted(toScene(end))] }, options: lineOptions }));
+                const lifted = (point: Vec3): Vec3 => [point[0], point[1] + LAYOUT_LIFT + 0.1, point[2]];
+                flat.drawn.push(await bitbybit.draw.drawAnyAsync({ entity: { points: [lifted(start), lifted(end)] }, options: lineOptions }));
             }
             const summary = summarize(flat.result.report);
             frame(Math.max(summary.flatWidth ?? 100, summary.flatHeight ?? 100), 0);
@@ -172,9 +172,9 @@ async function start(): Promise<void> {
         } else if (format === "flat-dxf" && flat) {
             const paths = await bitbybit.occt.io.shapeToDxfPaths({ shape: flat.shape, angularDeflection: 0.1, curvatureDeflection: 0.1, minimumOfPoints: 2, uTolerance: 1e-9, minimumLength: 1e-7 });
             const cut = await bitbybit.occt.io.dxfPathsWithLayer({ paths, layer: "cut", color: "#000000" });
-            const bends = bendLines(flat.result.report).map(([start, end]) => ({ segments: [{ points: [[start[0], start[1]], [end[0], end[1]]] as [number, number][], closed: false }] }));
-            const bendLayer = await bitbybit.occt.io.dxfPathsWithLayer({ paths: bends, layer: "bend", color: "#ff0000" });
-            await bitbybit.occt.io.dxfCreate({ pathsParts: [cut, bendLayer], colorFormat: Inputs.OCCT.dxfColorFormatEnum.aci, acadVersion: Inputs.OCCT.dxfAcadVersionEnum.AC1009, fileName: `${name}-flat.dxf`, tryDownload: true });
+            const bends = bendLines(flat.result.report).map(([start, end]) => ({ segments: [{ points: [toPattern(start), toPattern(end)], closed: false }] }));
+            const pathsParts = bends.length > 0 ? [cut, await bitbybit.occt.io.dxfPathsWithLayer({ paths: bends, layer: "bend", color: "#ff0000" })] : [cut];
+            await bitbybit.occt.io.dxfCreate({ pathsParts, colorFormat: Inputs.OCCT.dxfColorFormatEnum.aci, acadVersion: Inputs.OCCT.dxfAcadVersionEnum.AC1009, fileName: `${name}-flat.dxf`, tryDownload: true });
         }
     }
 

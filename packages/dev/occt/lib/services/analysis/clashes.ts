@@ -118,7 +118,7 @@ export class OCCTAnalysisClashes {
         return {
             box: once(() => placedBox(box(), undefined)),
             meshable: once(() => meshableSolid(this.occ, shape)),
-            mesh: once(() => refinedMeshes(precision => trianglesOf(this.och.meshingService.shapeToMesh({ shape, precision, adjustYtoZ: false, computeMetadata: false, keepMeshData: false })), meshErrorFrom(box()))),
+            mesh: once(() => refinedMeshes(precision => trianglesOf(this.och.meshingService.shapeToMesh({ shape, precision, upAxis: Inputs.Base.upAxisConversionEnum.keep, computeMetadata: false, keepMeshData: false })), meshErrorFrom(box()))),
             states: points => classifiedStates(this.occ, shape, points),
         };
     }

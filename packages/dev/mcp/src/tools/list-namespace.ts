@@ -43,7 +43,10 @@ export const listNamespace: ToolDefinition<typeof input, DocsContext> = {
         }
         const children = resolved.reader.children(path);
         const members = children.map((member) => ({ path: member.path, kind: member.kind, tier: member.tier, summary: member.summary, engines: member.engines }));
-        const heading = path ? `${path}${parent?.summary ? `: ${parent.summary}` : ""}` : `Top-level namespaces of the Bitbybit API ${resolved.version}`;
+        const rootMethods = !path && children.some((member) => member.kind !== "namespace");
+        const heading = path
+            ? `${path}${parent?.summary ? `: ${parent.summary}` : ""}`
+            : `The top level of the Bitbybit API ${resolved.version}: its namespaces${rootMethods ? ", and the methods of the bitbybit object itself" : ""}`;
         const text = [heading, ...children.map(renderLine)].join("\n");
         return ok(text, { version: resolved.version, path: path ?? null, members });
     },

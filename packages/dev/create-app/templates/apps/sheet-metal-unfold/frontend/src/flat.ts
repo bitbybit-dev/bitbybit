@@ -1,4 +1,5 @@
 export type Vec3 = [number, number, number];
+export type Vec2 = [number, number];
 
 export interface UnfoldBend {
     angleDeg: number;
@@ -8,6 +9,9 @@ export interface UnfoldBend {
     bendLineLength: number;
     lineStart: Vec3;
     lineEnd: Vec3;
+    flatLineStart?: Vec3;
+    flatLineEnd?: Vec3;
+    flatLineMid?: Vec3;
     direction: "up" | "down";
 }
 
@@ -30,10 +34,17 @@ export interface UnfoldResult {
     downloads: { format: string; downloadUrl: string; filename: string }[];
 }
 
+export interface BendRow {
+    angleDeg: number;
+    innerRadius: number;
+    allowance: number;
+}
+
 export interface FlatSummary {
     solids: number;
     unfolded: number;
     bends: number;
+    bendRows: BendRow[];
     thickness: number | null;
     flatArea: number;
     flatWidth: number | null;
@@ -42,12 +53,16 @@ export interface FlatSummary {
     problems: string[];
 }
 
-export function bendLines(report: UnfoldSolidReport[]): [Vec3, Vec3][] {
-    return report.flatMap((solid) => (solid.ok && solid.bends ? solid.bends.map((bend): [Vec3, Vec3] => [bend.lineStart, bend.lineEnd]) : []));
+function flatLineOf(bend: UnfoldBend): [Vec3, Vec3][] {
+    return bend.flatLineStart && bend.flatLineEnd ? [[bend.flatLineStart, bend.flatLineEnd]] : [];
 }
 
-export function toScene([x, y, z]: Vec3): Vec3 {
-    return [x, z, -y];
+export function bendLines(report: UnfoldSolidReport[]): [Vec3, Vec3][] {
+    return report.flatMap((solid) => (solid.ok && solid.bends ? solid.bends.flatMap(flatLineOf) : []));
+}
+
+export function toPattern([x, , z]: Vec3): Vec2 {
+    return [x, -z];
 }
 
 export function summarize(report: UnfoldSolidReport[]): FlatSummary {
@@ -61,6 +76,7 @@ export function summarize(report: UnfoldSolidReport[]): FlatSummary {
         solids: report.length,
         unfolded: unfolded.length,
         bends: bends.length,
+        bendRows: bends.map(({ angleDeg, innerRadius, allowance }) => ({ angleDeg, innerRadius, allowance })),
         thickness: first?.thickness ?? null,
         flatArea: unfolded.reduce((sum, solid) => sum + (solid.flatArea ?? 0), 0),
         flatWidth: width,

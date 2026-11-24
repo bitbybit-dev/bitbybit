@@ -9,10 +9,15 @@ export type { Asset, CSV, JSON, JSCAD, Manifold, IFC, OCCT, Tag, Time, Verb, Col
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace Draw {
+    export type DrawAnnotationsOptions = WithDefaults<Inputs.Draw.DrawAnnotationsOptions, "annotationColour" | "annotationWidth" | "annotationsFilled">;
     export type DrawAny<U, E extends Inputs.Draw.Entity = Inputs.Draw.Entity> = Inputs.Draw.DrawAny<U, E>;
     export type DrawBasicGeometryOptions = WithDefaults<Inputs.Draw.DrawBasicGeometryOptions, "colours" | "colorMapStrategy" | "size" | "opacity" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "arrowSize" | "arrowAngle">;
+    export type DrawEdgesOptions = WithDefaults<Inputs.Draw.DrawEdgesOptions, "edgeColour" | "edgeWidth" | "edgeOpacity">;
     export type DrawFrameOptions = WithDefaults<Inputs.Draw.DrawFrameOptions, "size" | "colorX" | "colorY" | "colorZ" | "drawPlane" | "colorPlane" | "lineWidth" | "updatable">;
+    export type DrawHatchedSectionOptions = WithDefaults<Inputs.Draw.DrawHatchedSectionOptions, "precision" | "faceColour" | "drawEdges" | "hatchColour" | "hatchWidth">;
     export type DrawManifoldOrCrossSectionOptions = WithDefaults<Inputs.Draw.DrawManifoldOrCrossSectionOptions, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "minSharpAngle" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    export type DrawMeshingOptions = WithDefaults<Inputs.Draw.DrawMeshingOptions, "precision" | "angularDeflection" | "relativeDeflection" | "forceFaceDeflection" | "allowQualityDecrease">;
+    export type DrawOcctDocumentOptions = WithDefaults<Inputs.Draw.DrawOcctDocumentOptions, "upAxis" | "drawEdges" | "drawAnnotations">;
     export type DrawOcctShapeOptions = WithDefaults<Inputs.Draw.DrawOcctShapeOptions, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "vertexColour" | "edgeWidth" | "edgeWidthBySize" | "vertexSize" | "drawEdges" | "drawFaces" | "drawVertices" | "precision" | "angularDeflection" | "relativeDeflection" | "precisionShare" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "edgeArrowSize" | "edgeArrowAngle" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     export type DrawRecipeMeshesOptions = WithDefaults<Inputs.Draw.DrawRecipeMeshesOptions, "elementKey" | "instancing" | "minInstances" | "maxBatchVertices" | "defaultColour" | "defaultOpacity" | "metallic" | "roughness">;
     export type GenericPBRMaterialDto = WithDefaults<Inputs.Draw.GenericPBRMaterialDto, "name" | "baseColor" | "metallic" | "roughness" | "alpha" | "emissiveColor" | "emissiveIntensity" | "zOffset" | "zOffsetUnits" | "alphaMode" | "alphaCutoff" | "doubleSided" | "wireframe" | "unlit">;

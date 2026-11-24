@@ -13,23 +13,47 @@ from two parts:
   This package's license does not restrict your rights under them.
 
 1. Open CASCADE Technology (OCCT)
+   The Bitbybit OCCT Kernel uses the Open CASCADE Technology software library and is based on
+   facilities it provides. OCCT and its use are covered by the GNU Lesser General Public License
+   v2.1 with the Open CASCADE exception.
+
+   Copyright: (c) OPEN CASCADE SAS and the other copyright holders named in the headers of the
+            OCCT source files.
    License: GNU Lesser General Public License v2.1 with the Open CASCADE exception (version 1.0)
-   Source:  https://github.com/bitbybit-dev/OCCT (branch bitbybit-main), the OCCT source the
-            kernel is compiled from; a fork of https://github.com/Open-Cascade-SAS/OCCT
    Text:    licenses/LGPL-2.1.txt, licenses/OCCT-LGPL-exception.txt
+   Warranty: OCCT is distributed without any warranty; see sections 15 and 16 of
+            licenses/LGPL-2.1.txt.
+   Source:  https://github.com/bitbybit-dev/OCCT, the OCCT source the kernel is compiled from: a
+            fork of https://github.com/Open-Cascade-SAS/OCCT whose history shows every change we
+            made to it. The commit each build was compiled from is tagged
+            kernel-<first release that shipped the build> there and named in the build's
+            relinking kit; the source at that commit is also published as one archive, the
+            release occt-source-<commit> of
+            https://github.com/bitbybit-dev/bitbybit-assets/releases.
    Usage:   compiled to WebAssembly and statically linked with the Bitbybit kernel layer in each of
             the three builds above.
 
+   Your rights: you may modify OCCT, use your modified OCCT in the kernel, and reverse-engineer
+   the kernel to debug such modifications. Nothing in this package's license restricts that.
+
    Relinking with a modified OCCT: because OCCT and the kernel layer are linked into one
-   WebAssembly file, using a modified OCCT means relinking that file. Each build's relinking kit
+   WebAssembly file, using a modified OCCT means relinking that file. A build's relinking kit
    holds the materials to do so - the kernel layer as compiled object files, the Draco build the
    kernel links, the script that builds OCCT for WebAssembly from the source above, the link
-   command and the toolchain version - and is published free of charge beside the build, as the
-   release relink-kit-<kernel file name without .wasm> of
-   https://github.com/bitbybit-dev/bitbybit-assets/releases. Each kit names the exact OCCT commit
-   its build was compiled from. For any build of this package whose kit is not there, write to
-   info@bitbybit.dev and we will provide it; this offer is valid for at least three years after we
-   last distribute that build. The kernel layer in a kit is MIT-licensed, like the kernel.
+   command and the toolchain version. The kit of every build released in version 1.5.0 or later
+   of this package is published free of charge, as the release
+   relink-kit-<kernel file name without .wasm> of
+   https://github.com/bitbybit-dev/bitbybit-assets/releases; the kit of an earlier build is
+   provided under the offer below. The kernel layer in a kit is MIT-licensed, like the kernel.
+
+   Written offer: for every build of the Bitbybit OCCT Kernel released in version 1.1.0 or later
+   of this package, wherever we distribute it - in this package, on the Bitbybit CDN or anywhere
+   else - we will give anyone who has that build, free of charge, the complete source code of the
+   OCCT it was compiled from, with our changes and the scripts that build it, and the build's
+   relinking kit. Write to info@bitbybit.dev and name the kernel file. This offer is valid for at
+   least three years after we last distribute that build, and it holds whether or not the
+   releases above are still published. About a build of an earlier version, write to the same
+   address.
 
 2. Draco 3D data compression
    License: Apache License 2.0
@@ -54,5 +78,22 @@ from two parts:
    Text:    licenses/Emscripten-MIT-NCSA.txt
    Usage:   the JavaScript glue files bitbybit-dev-occt*/bitbybit-dev-occt*.js are emscripten
             output; the compiler's runtime library is embedded in them and in the wasm.
+
+6. Hershey fonts
+   Terms:   the Hershey Fonts may be used by anyone for any purpose, commercial or otherwise,
+            provided that the acknowledgements below are distributed with the font data, and
+            that the data is not converted into the format distributed by the U.S. NTIS. These
+            are the terms in full; there is no separate license text.
+   Acknowledgements:
+            - The Hershey Fonts were originally created by Dr. A. V. Hershey while working at the
+              U. S. National Bureau of Standards.
+            - The format of the Font data in this distribution was originally created by James
+              Hurt, Cognition, Inc., 900 Technology Park Drive, Billerica, MA 01821
+              (mit-eddie!ci-dandelion!hurt).
+   Source:  http://paulbourke.net/dataformats/hershey/, by way of the OpenJSCAD project
+            (https://github.com/jscad/OpenJSCAD.org), which publishes the data under the MIT
+            License. The font's strokes are in @bitbybit-dev/base.
+   Usage:   the advance widths of the simplex font's characters are compiled into the kernel,
+            which measures the width of a line of text with them.
 
 For questions about licensing, contact info@bitbybit.dev.

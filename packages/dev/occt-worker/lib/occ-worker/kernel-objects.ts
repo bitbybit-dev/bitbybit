@@ -4,6 +4,14 @@ function isKernelObject(value: unknown): value is KernelObject {
     return typeof value === "object" && value !== null && (value as Partial<KernelObject>).$$ !== undefined && typeof (value as Partial<KernelObject>).delete === "function";
 }
 
+export function isDocumentHandle(value: unknown): boolean {
+    if (typeof value !== "object" || value === null) {
+        return false;
+    }
+    const handle = value as Record<string, unknown>;
+    return handle["$$"] !== undefined && typeof handle["ShapeType"] !== "function" && typeof handle["Main"] === "function" && typeof handle["IsNull"] === "function";
+}
+
 export function kernelObjectsIn(value: unknown, found: Set<KernelObject> = new Set(), seen: Set<object> = new Set()): Set<KernelObject> {
     if (typeof value !== "object" || value === null || seen.has(value) || ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
         return found;

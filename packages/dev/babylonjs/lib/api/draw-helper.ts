@@ -2,9 +2,9 @@ import * as BABYLON from "@babylonjs/core";
 import type { Context } from "./context";
 import { markAsBackFace } from "./back-faces";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, checkDrawableMesh, checkKeptDesignMesh, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookedMeshOf, designDrawPlanOf, designMeshesOf, designMeshingTextOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
-import type { KeptDesignMesh, DrawableShapeMesh } from "@bitbybit-dev/core";
-import type { FaceLook, LookGroup, PartPlacement, MeshData, MeshPart, GrowingMeshData } from "@bitbybit-dev/core";
+import { DrawHelperCore, annotationsDrawingOf, annotationsInView, checkDrawableMesh, documentAnnotationsInputs, documentMeshInputs, hatchedSectionDrawingOf, checkKeptDesignMesh, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookedMeshOf, designDrawPlanOf, designMeshesOf, designMeshingTextOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
+import type { AnnotationsDrawing, DocumentDrawing, FlatTriangles, HatchedSectionDrawing, KeptDesignMesh, DrawableShapeMesh } from "@bitbybit-dev/core";
+import type { FaceLook, LookGroup, LookSpan, PartPlacement, MeshData, MeshPart, GrowingMeshData } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import type { Vector } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
@@ -241,28 +241,7 @@ export class DrawHelper extends DrawHelperCore {
         useClockWiseSideOrientation = true,
         skipWindingReversal = false
     ): BABYLON.Mesh {
-        const isRightHanded = this.context.scene.useRightHandedSystem === true;
-        
-        const materialKey = `${backFaceColour}-back${useClockWiseSideOrientation ? "" : "-jscad"}${isRightHanded ? "-scene-rh" : ""}`;
-        const backMaterial = this.getOrCreateMaterial(materialKey, backFaceOpacity, zOffset + 0.1, () => {
-            const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("backFaceMaterial"), this.context.scene);
-            mat.baseColor = BABYLON.Color3.FromHexString(backFaceColour);
-            mat.metallic = this.colourMetallic();
-            mat.roughness = this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE);
-            mat.alpha = backFaceOpacity;
-            mat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
-            mat.backFaceCulling = true;
-            mat.doubleSided = false;
-            
-            if (isRightHanded) {
-                mat.sideOrientation = BABYLON.Material.CounterClockWiseSideOrientation;
-            } else if (useClockWiseSideOrientation) {
-                mat.sideOrientation = BABYLON.Material.ClockWiseSideOrientation;
-            }
-            
-            mat.zOffset = zOffset + 0.1;
-            return mat;
-        });
+        const backMaterial = this.backFaceMaterial(backFaceColour, backFaceOpacity, zOffset, useClockWiseSideOrientation);
 
         const backFaceMeshData = skipWindingReversal
             ? this.mergeMeshParts(meshDataConverted, { flipNormals: true })
@@ -282,6 +261,57 @@ export class DrawHelper extends DrawHelperCore {
         markAsBackFace(mesh);
 
         return mesh;
+    }
+
+    private lookedBackFaceMesh(source: DrawableShapeMesh, looks: readonly LookGroup[], backFaceOpacity: number, zOffset: number): BABYLON.Mesh {
+        const { positions, normals, indices, looks: drawn } = lookedMeshOf(source, looks, { flipNormals: true, reverseWinding: true });
+        const mesh = new BABYLON.Mesh(this.generateEntityId("backFaceSurface"), this.context.scene);
+        const vertexData = new BABYLON.VertexData();
+        vertexData.positions = positions;
+        vertexData.normals = normals;
+        vertexData.indices = indices;
+        vertexData.applyToMesh(mesh, false);
+        this.wearLooks(mesh, drawn, drawn.map(look => this.backFaceMaterial(look.group.look.color, look.group.look.opacity * backFaceOpacity, zOffset)));
+        mesh.isPickable = false;
+        markAsBackFace(mesh);
+        return mesh;
+    }
+
+    private wearLooks(mesh: BABYLON.Mesh, drawn: readonly LookSpan[], materials: readonly BABYLON.Material[]): void {
+        if (materials.length === 1) {
+            mesh.material = materials[0]!;
+        } else if (materials.length > 1) {
+            const multi = new BABYLON.MultiMaterial(this.generateEntityId("lookMaterials"), this.context.scene);
+            multi.subMaterials = [...materials];
+            mesh.material = multi;
+            freeWithItsLastUser(multi, mesh);
+            mesh.subMeshes = [];
+            drawn.forEach((span, materialIndex) => new BABYLON.SubMesh(materialIndex, span.vertexStart, span.vertexCount, span.indexStart, span.indexCount, mesh));
+        }
+    }
+
+    private backFaceMaterial(backFaceColour: string, backFaceOpacity: number, zOffset: number, useClockWiseSideOrientation = true): BABYLON.PBRMetallicRoughnessMaterial {
+        const isRightHanded = this.context.scene.useRightHandedSystem === true;
+        const materialKey = `${backFaceColour}-back${useClockWiseSideOrientation ? "" : "-jscad"}${isRightHanded ? "-scene-rh" : ""}`;
+        return this.getOrCreateMaterial(materialKey, backFaceOpacity, zOffset + 0.1, () => {
+            const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("backFaceMaterial"), this.context.scene);
+            mat.baseColor = BABYLON.Color3.FromHexString(backFaceColour);
+            mat.metallic = this.colourMetallic();
+            mat.roughness = this.colourRoughness(BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE);
+            mat.alpha = backFaceOpacity;
+            mat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
+            mat.backFaceCulling = true;
+            mat.doubleSided = false;
+            
+            if (isRightHanded) {
+                mat.sideOrientation = BABYLON.Material.CounterClockWiseSideOrientation;
+            } else if (useClockWiseSideOrientation) {
+                mat.sideOrientation = BABYLON.Material.ClockWiseSideOrientation;
+            }
+            
+            mat.zOffset = zOffset + 0.1;
+            return mat;
+        });
     }
     
     createOrUpdateSurfacesMesh(
@@ -1188,6 +1218,114 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
+     * Meshes an assembly document in the worker as one mesh carrying the document's colors, turned
+     * turned by `upAxis`, from the file's Z-up into Y-up by default, or with `keep` in the
+     * document's own axes, where `assembly.query.getShapeFromLabel` puts its shapes.
+     * @param document - The document the OCCT kernel holds
+     * @param options - The drawing options, whose meshing settings mesh the document
+     * @returns The mesh of every part the document places
+     * @beta
+     */
+    async documentMesh(document: Inputs.OCCT.TDocStdDocumentPointer, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): Promise<DrawableShapeMesh> {
+        return this.occWorkerManager.genericCallToWorkerPromise<DrawableShapeMesh>("docToMesh", documentMeshInputs(document, options));
+    }
+
+    /**
+     * Reads the annotations of an assembly document in the worker, as
+     * `occt.assembly.query.getDocumentAnnotations` does, at the drawing's precision and turned by
+     * `upAxis` as `documentMesh` turns the parts.
+     * @param document - The document the OCCT kernel holds
+     * @param options - The drawing options, whose precision and `upAxis` are read
+     * @returns The annotations and the saved views
+     * @beta
+     */
+    documentAnnotations(document: Inputs.OCCT.TDocStdDocumentPointer, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): Promise<Models.OCCT.DocumentAnnotations> {
+        return this.occWorkerManager.genericCallToWorkerPromise<Models.OCCT.DocumentAnnotations>("assembly.query.getDocumentAnnotations", documentAnnotationsInputs(document, options));
+    }
+
+    /**
+     * Draws the annotations `occt.assembly.query.getDocumentAnnotations` read, or with
+     * `annotationsView` only those that saved view shows.
+     * @param annotations - The annotations and saved views of a document
+     * @param options - The drawing options, of which the annotation settings are read
+     * @returns A node holding the lines and the letters, added to the scene
+     * @beta
+     */
+    drawDocumentAnnotations(annotations: Models.OCCT.DocumentAnnotations, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): BABYLON.Mesh {
+        return this.drawAnnotations(annotationsDrawingOf(annotationsInView(annotations, options.annotationsView), options.annotationsFilled), options);
+    }
+
+    /**
+     * Draws annotations as a PMI viewer shows them: their lines as greased lines `annotationWidth`
+     * wide and their letters filled, both in `annotationColour`, unlit and seen from either side, and
+     * hidden by the model in front of them like any geometry.
+     * @param drawing - The lines and the filled letters, as `annotationsDrawingOf` gives them
+     * @param options - The drawing options, of which the annotation settings are read
+     * @returns A node holding the lines and the letters, added to the scene
+     * @beta
+     */
+    drawAnnotations(drawing: AnnotationsDrawing, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): BABYLON.Mesh {
+        const container = new BABYLON.Mesh(this.generateEntityId("annotations"), this.context.scene);
+        container.isVisible = false;
+        const lines = this.drawPolylines(undefined, drawing.lines, false, options.annotationWidth, 1, options.annotationColour);
+        if (lines) {
+            lines.parent = container;
+        }
+        if (drawing.indices.length > 0) {
+            this.flatFill("annotationLetters", drawing, options.annotationColour).parent = container;
+        }
+        return container;
+    }
+
+    /**
+     * Draws a hatched section as a drawing shows a cut: the cut faces filled in `faceColour` with
+     * `drawFaces`, their outlines in `edgeColour` and `edgeWidth` with `drawEdges`, and the hatch
+     * lines, and any solid hatch, in `hatchColour`, the lines `hatchWidth` wide. Fills are unlit and
+     * seen from either side, lifted a hair along the frame's normal so they show over the cut faces
+     * of the shapes the section was cut from, and cast no shadow.
+     * @param section - What `occt.operations.hatchedSectionByFrame` returns
+     * @param options - The drawing options; `precision` is how closely curved cut edges are followed
+     * @returns A node holding the fills and the lines, added to the scene
+     * @beta
+     */
+    drawHatchedSection(section: Models.OCCT.HatchedSection<Inputs.OCCT.TopoDSShapePointer>, options: Resolved.Draw.DrawOcctShapeOptions & HatchedSectionDrawing): BABYLON.Mesh {
+        const drawing = hatchedSectionDrawingOf(section, options.precision);
+        const container = new BABYLON.Mesh(this.generateEntityId("hatchedSection"), this.context.scene);
+        container.isVisible = false;
+        container.metadata = { shadows: false };
+        if (options.drawFaces && drawing.faces.indices.length > 0) {
+            this.flatFill("sectionFaces", drawing.faces, options.faceColour).parent = container;
+        }
+        if (drawing.ink.indices.length > 0) {
+            this.flatFill("sectionInk", drawing.ink, options.hatchColour).parent = container;
+        }
+        const lines = this.drawPolylines(undefined, drawing.lines, false, options.hatchWidth, 1, options.hatchColour);
+        if (lines) {
+            lines.parent = container;
+        }
+        const outlines = options.drawEdges ? this.drawPolylines(undefined, drawing.outlines, false, options.edgeWidth, options.edgeOpacity, options.edgeColour) : undefined;
+        if (outlines) {
+            outlines.parent = container;
+        }
+        return container;
+    }
+
+    private flatFill(name: string, triangles: FlatTriangles, colour: string): BABYLON.Mesh {
+        const mesh = new BABYLON.Mesh(this.generateEntityId(name), this.context.scene);
+        const vertexData = new BABYLON.VertexData();
+        vertexData.positions = triangles.positions;
+        vertexData.indices = triangles.indices;
+        vertexData.applyToMesh(mesh, false);
+        const material = new BABYLON.StandardMaterial(this.generateEntityId(`${name}Material`), this.context.scene);
+        material.disableLighting = true;
+        material.emissiveColor = BABYLON.Color3.FromHexString(colour);
+        material.backFaceCulling = false;
+        mesh.material = material;
+        freeWithItsLastUser(material, mesh);
+        return mesh;
+    }
+
+    /**
      * Draws a kernel shape in its appearance: one mesh whose faces take their looks, a sub-mesh and a
      * material each, its back faces when asked, and its edges once, each in its color.
      * @param entity - The shape with its appearance
@@ -1350,17 +1488,7 @@ export class DrawHelper extends DrawHelperCore {
         vertexData.normals = normals;
         vertexData.indices = indices;
         vertexData.applyToMesh(mesh, false);
-        const materials = drawn.map(look => this.lookMaterial(look.group.look, faceOpacity, zOffset));
-        if (materials.length === 1) {
-            mesh.material = materials[0]!;
-        } else if (materials.length > 1) {
-            const multi = new BABYLON.MultiMaterial(this.generateEntityId("lookMaterials"), this.context.scene);
-            multi.subMaterials = materials;
-            mesh.material = multi;
-            freeWithItsLastUser(multi, mesh);
-            mesh.subMeshes = [];
-            drawn.forEach((span, materialIndex) => new BABYLON.SubMesh(materialIndex, span.vertexStart, span.vertexCount, span.indexStart, span.indexCount, mesh));
-        }
+        this.wearLooks(mesh, drawn, drawn.map(look => this.lookMaterial(look.group.look, faceOpacity, zOffset)));
         mesh.isPickable = false;
         mesh.metadata = { faceRanges };
         return mesh;
@@ -1485,20 +1613,21 @@ export class DrawHelper extends DrawHelperCore {
                 };
             });
 
+            const colorGroups = decomposedMesh.colorGroups;
+            const looks = !analysisColors && !resolvedOptions.faceMaterial && colorGroups && Object.keys(colorGroups).length > 0
+                ? lookGroupsOfColors(colorGroups, decomposedMesh.faceList.map(face => face.faceIndex), hex)
+                : undefined;
+
             let backFaceMesh: BABYLON.Mesh | undefined;
             if (resolved.drawTwoSided !== false) {
-                backFaceMesh = this.createBackFaceMesh(
-                    meshData,
-                    resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                    resolved.backFaceOpacity,
-                    zOffset
-                );
+                backFaceMesh = looks === undefined
+                    ? this.createBackFaceMesh(meshData, resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE, resolved.backFaceOpacity, zOffset)
+                    : this.lookedBackFaceMesh(decomposedMesh, looks, resolved.backFaceOpacity, zOffset);
             }
 
-            const colorGroups = decomposedMesh.colorGroups;
-            const mesh = !analysisColors && !resolvedOptions.faceMaterial && colorGroups && Object.keys(colorGroups).length > 0
-                ? this.lookedMesh(decomposedMesh, lookGroupsOfColors(colorGroups, decomposedMesh.faceList.map(face => face.faceIndex), hex), alpha, zOffset)
-                : this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
+            const mesh = looks === undefined
+                ? this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false)
+                : this.lookedMesh(decomposedMesh, looks, alpha, zOffset);
             mesh.parent = shapeMesh;
 
             if (backFaceMesh) {

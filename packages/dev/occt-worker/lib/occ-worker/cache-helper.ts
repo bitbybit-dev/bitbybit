@@ -1,9 +1,41 @@
 import { hashOfBytes, hashOfText } from "@bitbybit-dev/base";
+import type { BitbybitSettings } from "@bitbybit-dev/base";
 import type { Models } from "@bitbybit-dev/occt";
+import type { DocumentReference, DocumentReferences } from "./constants";
+import { createDocumentReference } from "./constants";
+import type { DocumentKernel } from "./document-versions";
+import { DocumentVersions } from "./document-versions";
+import type { Handle_TDocStd_Document } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import { isDocumentHandle } from "./kernel-objects";
 
 type ItemList = { itemHashes: (string | number)[] };
 
+type MadeVersion = { madeVersion: string | number };
+
+/**
+ * A call that changes an assembly document, as the worker keys it: its dotted path, its inputs, every
+ * document reference in them naming the version it reads, and the settings it runs under.
+ */
+export interface ChangeCall {
+    /** The dotted path of the change */
+    functionName: string;
+    /** Its inputs as keyed */
+    inputs: Record<string, unknown>;
+    /** The settings it runs under, nothing when none are set */
+    settings: BitbybitSettings | undefined;
+}
+
+/** The document a change applies to: the input that names it and the reference it holds. */
+export interface DocumentChange {
+    /** The input that names the document */
+    property: string;
+    /** The reference to the version, or the document as made, the change applies to */
+    document: DocumentReference;
+}
+
 const isItemList = (entry: unknown): entry is ItemList => typeof entry === "object" && entry !== null && "itemHashes" in entry && Array.isArray(entry.itemHashes);
+
+const isMadeVersion = (entry: unknown): entry is MadeVersion => typeof entry === "object" && entry !== null && "madeVersion" in entry;
 
 const PLAIN_KEY = /^[A-Za-z_$][\w$]*$/;
 
@@ -14,6 +46,15 @@ export class CacheHelper {
     usedHashes: Record<string, string | number> = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     argCache: Record<string, any> = {};
+    /** The versions of assembly documents the changes made (`DocumentVersions`) */
+    readonly documents = new DocumentVersions({
+        original: hash => this.checkCache(hash),
+        forgetCall: hash => {
+            delete this.argCache[hash];
+            delete this.usedHashes[hash];
+        },
+        holds: hash => this.checkCache(hash) != null,
+    });
     private answers = new Map<string, number>();
     private currentEpoch = CacheHelper.beginEpoch();
 
@@ -25,6 +66,11 @@ export class CacheHelper {
         return this.currentEpoch;
     }
 
+    /** Gives the cache the kernel it copies assembly documents with and makes their versions again on. */
+    useDocumentKernel(kernel: DocumentKernel): void {
+        this.documents.useKernel(kernel);
+    }
+
     cleanAllCache(): void {
         const allCacheKeys = Object.keys(this.argCache);
 
@@ -33,6 +79,7 @@ export class CacheHelper {
         this.argCache = {};
         this.usedHashes = {};
         this.answers.clear();
+        this.documents.clear();
         this.currentEpoch = CacheHelper.beginEpoch();
     }
 
@@ -40,6 +87,58 @@ export class CacheHelper {
         this.freeEntry(this.argCache[hash]);
         delete this.argCache[hash];
         delete this.usedHashes[hash];
+        this.documents.release(hash);
+    }
+
+    /**
+     * Deletes an assembly document. Given the document as its creating call answered it, it frees it
+     * with every version its changes made, versions of versions included, and forgets them, so a
+     * call naming one afterwards finds it only once a call has made it again. Given a version, it
+     * frees that version's kernel object alone: the document and its other versions stay, and the
+     * version is made again from its change when something reads it.
+     */
+    cleanDocument(hash: string | number): void {
+        if (this.documents.has(hash)) {
+            this.documents.release(hash);
+            return;
+        }
+        this.documents.forgetFamily(hash);
+        this.cleanCacheForHash(String(hash));
+    }
+
+    /**
+     * The kernel object an assembly document reference names: a document a creating call made, or a
+     * version, kept or made again from its changes; null when it is in neither.
+     */
+    documentAt(hash: string | number): unknown {
+        return this.documents.documentAt(hash) ?? this.checkCache(hash);
+    }
+
+    /**
+     * Answers a call that changes the document `change` names with a reference to the version it
+     * makes, keyed from the call's key. A version made before by the same call on the same version is
+     * answered without running anything; otherwise `run` runs the change on the version read, or on
+     * a copy of it (`DocumentVersions.make`). Either way, with `latest` it is the version the
+     * document as made reads from now on in the run.
+     * @param args - The call as keyed
+     * @param change - The document it changes
+     * @param references - How the call reads document references
+     * @param run - Runs the change on a document and answers what it answered
+     */
+    changeOp(args: ChangeCall, change: DocumentChange, references: DocumentReferences, run: (document: Handle_TDocStd_Document) => unknown): DocumentReference {
+        const callHash = this.computeHash(args);
+        this.usedHashes[callHash] = callHash;
+        const version = this.itemHash(callHash, "version");
+        if (!isMadeVersion(this.checkCache(callHash)) || !this.documents.has(version)) {
+            const parent = this.documentAt(change.document.hash);
+            if (parent == null) {
+                throw new Error(`Document with hash ${change.document.hash} not found in cache. The cache may have been cleaned. Please regenerate the object.`);
+            }
+            this.documents.make({ version, call: callHash, parent: change.document.hash, functionName: args.functionName, property: change.property, inputs: args.inputs, settings: args.settings ?? {}, references }, parent as Handle_TDocStd_Document, run);
+            this.addToCache(callHash, { madeVersion: version });
+        }
+        this.documents.answered(version, references);
+        return createDocumentReference(version);
     }
 
     /** Counts one answer that carried each of the shapes whose hashes are given, each counted once. */
@@ -90,6 +189,15 @@ export class CacheHelper {
                obj !== null && 
                obj.$$ !== undefined && 
                typeof obj.ShapeType !== "function";
+    }
+
+    /**
+     * Checks if an object is a handle to an assembly document (`Handle_TDocStd_Document`): a
+     * non-shape entity handle with the document's `Main()` label and the handle's `IsNull()`, which
+     * no other class the kernel binds has together.
+     */
+    isDocumentHandle(obj: unknown): boolean {
+        return isDocumentHandle(obj);
     }
 
     /** Hashes input arguments and checks the cache for that hash.
@@ -265,7 +373,7 @@ export class CacheHelper {
     /** Returns the cached object if it exists and is valid, or null otherwise. */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     checkCache(hash: string | number): any {
-        const cachedShape = this.argCache[hash];
+        const cachedShape = this.argCache[hash] ?? this.documents.objectAt(hash);
         if (!cachedShape) {
             return null;
         }

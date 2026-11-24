@@ -7,10 +7,12 @@ import type { NurbsCurveForm } from "../../curves/nurbs-forms";
 import { unitOf } from "../../geometry/frame-axes";
 import { radiansOf } from "../../geometry/scalars";
 import { distance3, dot3 } from "../../geometry/vectors";
-import type { DrawingArc, DrawingCircle, DrawingEllipse, DrawingLine, DrawingPart, DrawingPath, DrawingPolyline, DrawingSegment, DrawingSpline } from "./drawing-types";
+import { simplex } from "../../../../models/simplex";
+import { strokeTextAdvance } from "../../text/stroke-font";
+import type { DrawingArc, DrawingCircle, DrawingEllipse, DrawingHatch, DrawingLine, DrawingPart, DrawingPath, DrawingPolyline, DrawingSegment, DrawingSpline, DrawingText, DrawingTextAnchor } from "./drawing-types";
 import {
-    DEFAULT_LAYER, DEFAULT_SPLINE_DEGREE, FIRST_PRINTABLE_CODE, FORBIDDEN_LAYER_CHARACTERS, FULL_TURN_DEGREES, HIGHEST_SPLINE_DEGREE, LARGEST_NUMBER, LEAST_WEIGHT,
-    PERPENDICULAR_COSINE, POINT_SIZES, SAME_POINT,
+    CONTROL_CHARACTER, DEFAULT_LAYER, DEFAULT_SPLINE_DEGREE, FIRST_PRINTABLE_CODE, FORBIDDEN_LAYER_CHARACTERS, FULL_TURN_DEGREES, HIGHEST_SPLINE_DEGREE, LARGEST_NUMBER,
+    LEAST_WEIGHT, LONGEST_TEXT, PERPENDICULAR_COSINE, POINT_SIZES, SAME_POINT, TEXT_ANCHORS,
 } from "./drawing.constants";
 import { DXF_MAX_NAME_LENGTH } from "../dxf/dxf.constants";
 
@@ -20,12 +22,15 @@ type SegmentInput = Inputs.IO.DrawingPathDto["segments"][number];
 
 const PLUS_Z: Vec3 = [0, 0, 1];
 const LINE_TYPES = new Set<string>(Object.values(Inputs.IO.lineTypeEnum));
+const HATCH_PATTERNS = new Set<string>(Object.values(Inputs.IO.hatchPatternEnum));
+const TEXT_DEFAULTS = new Inputs.IO.DrawingTextDto();
+const HATCH_DEFAULTS = new Inputs.IO.DrawingHatchDto();
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
 
-const isDrawable = (value: unknown): value is number => typeof value === "number" && Math.abs(value) < LARGEST_NUMBER;
+export const isDrawable = (value: unknown): value is number => typeof value === "number" && Math.abs(value) < LARGEST_NUMBER;
 
-const finiteNumber = (value: unknown, property: string): number => {
+export const finiteNumber = (value: unknown, property: string): number => {
     if (!isDrawable(value)) {
         throw new InputError(`\`${property}\` must be a finite number below ${LARGEST_NUMBER} in size.`, property);
     }
@@ -194,29 +199,48 @@ const ellipseOf = (segment: Record<string, unknown>, property: string): DrawingE
     };
 };
 
+export const segmentKindOf = (segment: unknown): DrawingSegment["kind"] | undefined => {
+    if (!isRecord(segment)) {
+        return undefined;
+    }
+    if (segment["majorAxis"] !== undefined) {
+        return "ellipse";
+    }
+    if (segment["center"] !== undefined && (segment["startAngle"] !== undefined || segment["endAngle"] !== undefined)) {
+        return "arc";
+    }
+    if (segment["center"] !== undefined && segment["radius"] !== undefined) {
+        return "circle";
+    }
+    if (segment["start"] !== undefined && segment["end"] !== undefined) {
+        return "line";
+    }
+    if (Array.isArray(segment["points"])) {
+        return "polyline";
+    }
+    return Array.isArray(segment["controlPoints"]) ? "spline" : undefined;
+};
+
 const segmentOf = (segment: SegmentInput | undefined, property: string): DrawingSegment => {
     if (!isRecord(segment)) {
         throw new InputError(`\`${property}\` must be a segment.`, property);
     }
-    if (segment["majorAxis"] !== undefined) {
-        return ellipseOf(segment, property);
+    switch (segmentKindOf(segment)) {
+        case "ellipse":
+            return ellipseOf(segment, property);
+        case "arc":
+            return arcOf(segment, property);
+        case "circle":
+            return circleOf(segment, property);
+        case "line":
+            return lineOf(segment, property);
+        case "polyline":
+            return polylineOf(segment, property);
+        case "spline":
+            return splineOf(segment, property);
+        case undefined:
+            throw new InputError(`\`${property}\` is not a line, arc, circle, polyline, spline or ellipse segment.`, property);
     }
-    if (segment["center"] !== undefined && (segment["startAngle"] !== undefined || segment["endAngle"] !== undefined)) {
-        return arcOf(segment, property);
-    }
-    if (segment["center"] !== undefined && segment["radius"] !== undefined) {
-        return circleOf(segment, property);
-    }
-    if (segment["start"] !== undefined && segment["end"] !== undefined) {
-        return lineOf(segment, property);
-    }
-    if (Array.isArray(segment["points"])) {
-        return polylineOf(segment, property);
-    }
-    if (Array.isArray(segment["controlPoints"])) {
-        return splineOf(segment, property);
-    }
-    throw new InputError(`\`${property}\` is not a line, arc, circle, polyline, spline or ellipse segment.`, property);
 };
 
 const layerOf = (value: unknown, property: string): string => {
@@ -258,6 +282,65 @@ export const drawingPathOf = (path: Inputs.IO.DrawingPathDto | undefined, proper
     return { segments: path.segments.map((segment, at) => segmentOf(segment, `${property}.segments[${at}]`)) };
 };
 
+const listOf = (value: unknown, property: string, what: string): unknown[] => {
+    if (value === undefined || value === null) {
+        return [];
+    }
+    if (!Array.isArray(value)) {
+        throw new InputError(`\`${property}\` must be a list of ${what}.`, property);
+    }
+    return value as unknown[];
+};
+
+export const drawingTextOf = (text: unknown, property: string): DrawingText => {
+    const named = (name: string): string => property === "" ? name : `${property}.${name}`;
+    if (!isRecord(text) || typeof text["text"] !== "string") {
+        throw new InputError(`\`${named("text")}\` must be a text.`, named("text"));
+    }
+    const value = text["text"];
+    if (value.length > LONGEST_TEXT) {
+        throw new InputError(`\`${named("text")}\` is ${value.length} characters long; a line of text holds at most ${LONGEST_TEXT}.`, named("text"));
+    }
+    if (CONTROL_CHARACTER.test(value)) {
+        throw new InputError(`\`${named("text")}\` holds a line break or another control character; a text is one line.`, named("text"));
+    }
+    const anchor = text["anchor"] ?? TEXT_DEFAULTS.anchor;
+    if (typeof anchor !== "string" || !TEXT_ANCHORS.has(anchor)) {
+        throw new InputError(`\`${named("anchor")}\` must be one of ${[...TEXT_ANCHORS].join(", ")}.`, named("anchor"));
+    }
+    const height = positiveNumber(text["height"] ?? TEXT_DEFAULTS.height, named("height"));
+    const widthFactor = positiveNumber(text["widthFactor"] ?? TEXT_DEFAULTS.widthFactor, named("widthFactor"));
+    const rotationDegrees = finiteNumber(text["rotation"] ?? TEXT_DEFAULTS.rotation, named("rotation"));
+    return {
+        value,
+        position: pointOf(text["position"], named("position")),
+        height,
+        anchor: anchor as DrawingTextAnchor,
+        rotation: radiansOf(rotationDegrees),
+        rotationDegrees,
+        widthFactor,
+        width: strokeTextAdvance(simplex, value) * height * widthFactor,
+    };
+};
+
+export const drawingHatchOf = (hatch: unknown, property: string): DrawingHatch => {
+    const named = (name: string): string => property === "" ? name : `${property}.${name}`;
+    if (!isRecord(hatch) || !Array.isArray(hatch["boundaries"]) || hatch["boundaries"].length === 0) {
+        throw new InputError(`\`${named("boundaries")}\` must be a list of at least one path.`, named("boundaries"));
+    }
+    const pattern = hatch["pattern"] ?? HATCH_DEFAULTS.pattern;
+    if (typeof pattern !== "string" || !HATCH_PATTERNS.has(pattern)) {
+        throw new InputError(`\`${named("pattern")}\` must be one of ${[...HATCH_PATTERNS].join(", ")}.`, named("pattern"));
+    }
+    const boundaries = hatch["boundaries"] as (Inputs.IO.DrawingPathDto | undefined)[];
+    return {
+        boundaries: boundaries.map((path, at) => drawingPathOf(path, `${named("boundaries")}[${at}]`)),
+        pattern: pattern as Inputs.IO.hatchPatternEnum,
+        angle: finiteNumber(hatch["angle"] ?? HATCH_DEFAULTS.angle, named("angle")),
+        spacing: positiveNumber(hatch["spacing"] ?? HATCH_DEFAULTS.spacing, named("spacing")),
+    };
+};
+
 export const drawingPartsOf = (parts: readonly unknown[] | undefined, property: string): DrawingPart[] => {
     if (!Array.isArray(parts)) {
         throw new InputError(`\`${property}\` must be a list of path parts.`, property);
@@ -272,7 +355,10 @@ export const drawingPartsOf = (parts: readonly unknown[] | undefined, property: 
             layer: layerOf(part["layer"] ?? DEFAULT_LAYER, `${where}.layer`),
             color: colorOf(part["color"] ?? "#000000", `${where}.color`),
             lineType: lineTypeOf(part["lineType"], `${where}.lineType`),
+            lineWeight: part["lineWeight"] === undefined || part["lineWeight"] === null ? undefined : positiveNumber(part["lineWeight"], `${where}.lineWeight`),
             paths: paths.map((path, index) => drawingPathOf(path, `${where}.paths[${index}]`)),
+            texts: listOf(part["texts"], `${where}.texts`, "texts").map((text, index) => drawingTextOf(text, `${where}.texts[${index}]`)),
+            hatches: listOf(part["hatches"], `${where}.hatches`, "hatches").map((hatch, index) => drawingHatchOf(hatch, `${where}.hatches[${index}]`)),
         };
     });
 };

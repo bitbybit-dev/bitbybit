@@ -21,6 +21,34 @@ export namespace IO {
     }
 
     /**
+     * What a hatch fills its region with: `solid` ink, or lines `spacing` apart - `ansi31` one run
+     * of lines, `ansi32` lines in pairs a third of the spacing apart, `ansi37` two runs crossing at
+     * right angles.
+     *
+     * The second line of each `ansi32` pair is drawn whole, where the ANSI32 of CAD programs dashes
+     * it; a DXF file names the pattern ANSI32 at its standard scale.
+     * @beta
+     */
+    export enum hatchPatternEnum {
+        solid = "solid",
+        ansi31 = "ansi31",
+        ansi32 = "ansi32",
+        ansi37 = "ansi37",
+    }
+
+    /**
+     * What a dimension measures: a `linear` distance between two points, the `diameter` or the
+     * `radius` of a circle, or the `angle` between two arms that meet at a point.
+     * @beta
+     */
+    export enum dimensionKindEnum {
+        linear = "linear",
+        diameter = "diameter",
+        radius = "radius",
+        angular = "angular",
+    }
+
+    /**
      * A straight line in a drawing path, from `start` to `end`. Points may carry a Z coordinate; one
      * without it lies at Z 0.
      */
@@ -268,15 +296,184 @@ export namespace IO {
     }
 
     /**
-     * A part of a drawing: paths drawn on one layer with one color and one line type, which
-     * `io.dxf.dxfCreate` writes as DXF and `io.svg.svgCreate` as SVG.
+     * A line of text, in the stroke font `text.vectorText` draws.
+     *
+     * SVG draws its strokes; DXF writes a text fitted to their width. Accented Latin letters are
+     * drawn; a character the font lacks is a question mark, an emoji two.
+     * @beta
+     */
+    export class DrawingTextDto {
+        constructor(text?: string, position?: Base.Point2 | Base.Point3, height?: number, anchor?: "start" | "middle" | "end", rotation?: number, widthFactor?: number) {
+            if (text !== undefined) { this.text = text; }
+            if (position !== undefined) { this.position = position; }
+            if (height !== undefined) { this.height = height; }
+            if (anchor !== undefined) { this.anchor = anchor; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (widthFactor !== undefined) { this.widthFactor = widthFactor; }
+        }
+        /**
+         * The text, one line of it: a control character, such as a line break, a tab or U+0085, is
+         * refused; a line separator is drawn as a question mark.
+         * @default undefined
+         */
+        text!: string;
+        /**
+         * The point on the baseline the text is placed by; `anchor` says which point of the line it is.
+         * @default undefined
+         */
+        position!: Base.Point2 | Base.Point3;
+        /**
+         * The height of a capital letter, in drawing units.
+         * @default 3.5
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        height?: number | undefined = 3.5;
+        /**
+         * Which point of the baseline `position` is: where the text starts, its middle or its end.
+         * @default start
+         */
+        anchor?: "start" | "middle" | "end" | undefined = "start";
+        /**
+         * The angle of the baseline in degrees, counterclockwise from the X axis.
+         * @default 0
+         */
+        rotation?: number | undefined = 0;
+        /**
+         * How wide the letters are drawn against their natural width: below 1 narrows a text to fit a
+         * cell, above 1 widens it.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        widthFactor?: number | undefined = 1;
+    }
+
+    /**
+     * The room a drawing text takes, as `io.drawing.textSize` measures it.
+     * @beta
+     */
+    export class DrawingTextSizeDto {
+        /**
+         * The length of the text along its baseline, in drawing units.
+         * @default undefined
+         */
+        width!: number;
+        /**
+         * How far the font's highest ink rises above the baseline: a little more than `height`, which
+         * marks over capitals and tall signs use.
+         * @default undefined
+         */
+        above!: number;
+        /**
+         * How far the font's lowest ink drops below the baseline, where the tail of a `g` or a `y` ends.
+         * @default undefined
+         */
+        below!: number;
+    }
+
+    /**
+     * A hatched region of a drawing part: what its boundaries enclose, filled with a pattern.
+     *
+     * A boundary inside another cuts a hole, and one whose ends do not meet is closed by a
+     * straight line.
+     * @beta
+     */
+    export class DrawingHatchDto {
+        constructor(boundaries?: DrawingPathDto[], pattern?: hatchPatternEnum, angle?: number, spacing?: number) {
+            if (boundaries !== undefined) { this.boundaries = boundaries; }
+            if (pattern !== undefined) { this.pattern = pattern; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (spacing !== undefined) { this.spacing = spacing; }
+        }
+        /**
+         * The closed paths that bound the region, in the drawing's XY plane.
+         * @default undefined
+         */
+        boundaries!: DrawingPathDto[];
+        /**
+         * What the region is filled with.
+         * @default ansi31
+         */
+        pattern?: hatchPatternEnum | undefined = hatchPatternEnum.ansi31;
+        /**
+         * The angle of the pattern's lines in degrees, counterclockwise from the X axis; `solid`
+         * ignores it.
+         * @default 45
+         */
+        angle?: number | undefined = 45;
+        /**
+         * The distance between the pattern's lines, in drawing units; `solid` ignores it. DXF writes
+         * it as a scale of the pattern in `acad.pat` for an inch drawing, in `acadiso.pat` otherwise.
+         * @default 3
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        spacing?: number | undefined = 3;
+    }
+
+    /**
+     * A hatch and how closely its curved boundaries are followed, for `io.drawing.clippedHatchLines`,
+     * which clips the pattern's lines to the region, and `io.drawing.hatchOutlines`, which gives the
+     * region's outlines as points.
+     * @beta
+     */
+    export class DrawingHatchRegionDto {
+        constructor(boundaries?: DrawingPathDto[], pattern?: hatchPatternEnum, angle?: number, spacing?: number, tolerance?: number) {
+            if (boundaries !== undefined) { this.boundaries = boundaries; }
+            if (pattern !== undefined) { this.pattern = pattern; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (spacing !== undefined) { this.spacing = spacing; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * The closed paths that bound the region, in the drawing's XY plane; a boundary inside another
+         * cuts a hole, and one inside that hole is filled again.
+         * @default undefined
+         */
+        boundaries!: DrawingPathDto[];
+        /**
+         * What the region is filled with; `solid` has no lines.
+         * @default ansi31
+         */
+        pattern?: hatchPatternEnum | undefined = hatchPatternEnum.ansi31;
+        /**
+         * The angle of the pattern's lines in degrees, counterclockwise from the X axis.
+         * @default 45
+         */
+        angle?: number | undefined = 45;
+        /**
+         * The distance between the pattern's lines, in drawing units.
+         * @default 3
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        spacing?: number | undefined = 3;
+        /**
+         * How far, in drawing units, the outline may stray from a curved boundary: arcs, circles,
+         * ellipses and splines become straight pieces this close to the curve.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.001
+         */
+        tolerance?: number | undefined = 0.01;
+    }
+
+    /**
+     * A part of a drawing: paths, texts and hatches on one layer, in one color, line type and line
+     * weight, which `io.dxf.dxfCreate` writes as DXF and `io.svg.svgCreate` as SVG.
      */
     export class DrawingPartDto {
-        constructor(layer?: string, color?: Base.Color, paths?: DrawingPathDto[], lineType?: lineTypeEnum) {
+        constructor(layer?: string, color?: Base.Color, paths?: DrawingPathDto[], lineType?: lineTypeEnum, lineWeight?: number, texts?: DrawingTextDto[], hatches?: DrawingHatchDto[]) {
             if (layer !== undefined) { this.layer = layer; }
             if (color !== undefined) { this.color = color; }
             if (paths !== undefined) { this.paths = paths; }
             if (lineType !== undefined) { this.lineType = lineType; }
+            if (lineWeight !== undefined) { this.lineWeight = lineWeight; }
+            if (texts !== undefined) { this.texts = texts; }
+            if (hatches !== undefined) { this.hatches = hatches; }
         }
         /**
          * The layer the paths go on. Parts may share a layer, which takes the first part's color and
@@ -299,6 +496,227 @@ export namespace IO {
          * @default continuous
          */
         lineType?: lineTypeEnum | undefined = lineTypeEnum.continuous;
+        /**
+         * How wide the part's lines and text strokes are, in drawing units. Left out, the writer's own
+         * width is used: the drawing's `strokeWidth` in SVG, the layer's in DXF.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @beta
+         */
+        lineWeight?: number | undefined;
+        /**
+         * Lines of text on the part's layer, in its color.
+         * @default undefined
+         * @optional true
+         * @beta
+         */
+        texts?: DrawingTextDto[] | undefined;
+        /**
+         * Hatched regions on the part's layer, in its color.
+         * @default undefined
+         * @optional true
+         * @beta
+         */
+        hatches?: DrawingHatchDto[] | undefined;
+    }
+
+    /**
+     * Drawing parts and the one factor `io.drawing.scaleParts` scales them by about the origin, such
+     * as 1/25.4 to turn a drawing in millimetres into inches before writing it.
+     * @beta
+     */
+    export class DrawingScalePartsDto {
+        constructor(parts?: DrawingPartDto[], factor?: number) {
+            if (parts !== undefined) { this.parts = parts; }
+            if (factor !== undefined) { this.factor = factor; }
+        }
+        /**
+         * The parts to scale; they stay as they are and scaled copies come back.
+         * @default undefined
+         */
+        parts!: DrawingPartDto[];
+        /**
+         * What every length is multiplied by: 2 doubles the drawing, 25.4 turns inches into
+         * millimetres.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        factor?: number | undefined = 1;
+    }
+
+    /**
+     * A dimension in the drawing's plane for `io.drawing.dimensionPicture`, which draws it, and
+     * `io.drawing.dimensionExtent`, which measures the box it fills: what it measures, between which
+     * points, and the size of its text and arrows.
+     * @beta
+     */
+    export class DrawingDimensionDto {
+        constructor(kind?: dimensionKindEnum, start?: Base.Point2, end?: Base.Point2, direction?: Base.Vector2, offset?: number, angle?: number, value?: number, decimalPlaces?: number, upperTolerance?: number, lowerTolerance?: number, textHeight?: number, arrowLength?: number) {
+            if (kind !== undefined) { this.kind = kind; }
+            if (start !== undefined) { this.start = start; }
+            if (end !== undefined) { this.end = end; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (offset !== undefined) { this.offset = offset; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (value !== undefined) { this.value = value; }
+            if (decimalPlaces !== undefined) { this.decimalPlaces = decimalPlaces; }
+            if (upperTolerance !== undefined) { this.upperTolerance = upperTolerance; }
+            if (lowerTolerance !== undefined) { this.lowerTolerance = lowerTolerance; }
+            if (textHeight !== undefined) { this.textHeight = textHeight; }
+            if (arrowLength !== undefined) { this.arrowLength = arrowLength; }
+        }
+        /**
+         * What the dimension measures; it decides what `start`, `end`, `offset` and `angle` mean.
+         * @default linear
+         */
+        kind?: dimensionKindEnum | undefined = dimensionKindEnum.linear;
+        /**
+         * For `linear`, the first point measured; for `diameter`, `radius` and `angular`, the center of
+         * the circle or the point where the two arms of the angle meet.
+         * @default undefined
+         */
+        start!: Base.Point2;
+        /**
+         * For `linear`, the second point measured; for `diameter` and `radius`, a point on the circle; for
+         * `angular`, a point on the first arm, where the arc passes.
+         * @default undefined
+         */
+        end!: Base.Point2;
+        /**
+         * For `linear`, the direction measured along, such as [1, 0] for a horizontal dimension; left
+         * out, from `start` to `end`. Other kinds ignore it.
+         * @default undefined
+         * @optional true
+         */
+        direction?: Base.Vector2 | undefined;
+        /**
+         * For `linear`, how far the dimension line stands from `start`, in drawing units, to the left of
+         * `direction`; negative puts it right. Other kinds ignore it.
+         * @default 10
+         * @minimum -Infinity
+         * @maximum Infinity
+         */
+        offset?: number | undefined = 10;
+        /**
+         * For `angular`, the angle in degrees from the first arm, the one through `end`,
+         * counterclockwise to the second arm. Other kinds ignore it.
+         * @default 90
+         * @minimum 0
+         * @maximum 360
+         * @exclusiveMinimum true
+         * @exclusiveMaximum true
+         */
+        angle?: number | undefined = 90;
+        /**
+         * The number written; left out, the one measured. A diameter is written after the diameter
+         * sign, a radius after R, an angle before the degree sign.
+         * @default undefined
+         * @optional true
+         */
+        value?: number | undefined;
+        /**
+         * How many decimals the value keeps; trailing zeros are dropped, so 15.50 shows as 15.5.
+         * @default 2
+         * @minimum 0
+         * @maximum 15
+         * @step 1
+         */
+        decimalPlaces?: number | undefined = 2;
+        /**
+         * How far above the value the measure may lie, written `+0.1`, or `±0.1` when equal to
+         * `lowerTolerance`; 0 when only `lowerTolerance` is given.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         */
+        upperTolerance?: number | undefined;
+        /**
+         * How far below the value the measure may lie, as an amount, written `-0.05`; 0 when only
+         * `upperTolerance` is given. Without either, no tolerance is written.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         */
+        lowerTolerance?: number | undefined;
+        /**
+         * The height of the text's digits, in drawing units; the gaps around the lines are sized from it.
+         * @default 3.5
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        textHeight?: number | undefined = 3.5;
+        /**
+         * The length of each arrowhead, in drawing units; each is a third as wide as it is long. Left
+         * out, it is `textHeight`.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @exclusiveMinimum true
+         */
+        arrowLength?: number | undefined;
+    }
+
+    /**
+     * The box a dimension's picture fills, as `io.drawing.dimensionExtent` and
+     * `io.drawing.dimensionPicture` measure it, by its lowest and highest corner.
+     * @beta
+     */
+    export class DrawingExtentDto {
+        /**
+         * The corner with the least X and the least Y.
+         * @default undefined
+         */
+        min!: Base.Point2;
+        /**
+         * The corner with the greatest X and the greatest Y.
+         * @default undefined
+         */
+        max!: Base.Point2;
+    }
+
+    /**
+     * A dimension drawn by `io.drawing.dimensionPicture`: its lines, its arrowheads as loops to
+     * fill, its text as strokes and as a drawing text, and the box all of it fills.
+     * @beta
+     */
+    export class DrawingDimensionPictureDto {
+        /**
+         * The dimension line, or its arc, and the extension lines, each a polyline of two or more
+         * points without two neighbours in one place.
+         * @default undefined
+         */
+        lines!: Base.Point2[][];
+        /**
+         * The arrowheads, each a closed triangle running counterclockwise, its first point not repeated;
+         * the first point of each is its tip.
+         * @default undefined
+         */
+        fills!: Base.Point2[][];
+        /**
+         * The text's letters as strokes, each a polyline of two or more points, as
+         * `io.drawing.textStrokes` draws `text`.
+         * @default undefined
+         */
+        textStrokes!: Base.Point2[][];
+        /**
+         * The text as a drawing text, placed and turned so it reads from left to right or from bottom
+         * to top, for a drawing part's `texts`.
+         * @default undefined
+         */
+        text!: DrawingTextDto;
+        /**
+         * The middle of the box the text fills.
+         * @default undefined
+         */
+        textPoint!: Base.Point2;
+        /**
+         * The box the lines, the arrowheads and the text fill together.
+         * @default undefined
+         */
+        extent!: DrawingExtentDto;
     }
 
     /**
@@ -367,15 +785,17 @@ export namespace IO {
 
     /**
      * A whole DXF drawing for `io.dxf.dxfCreate`: its path parts by layer and color, and the color
-     * format, the version and the unit to write.
+     * format, the version and the unit to write. In inches it is marked imperial, so hatch scales
+     * count from inch patterns.
      */
     export class DxfModelDto {
-        constructor(dxfPathsParts?: DrawingPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base.unitOfLengthEnum, curveTolerance?: number) {
+        constructor(dxfPathsParts?: DrawingPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base.unitOfLengthEnum, curveTolerance?: number, lineTypeScale?: number) {
             if (dxfPathsParts !== undefined) { this.dxfPathsParts = dxfPathsParts; }
             if (colorFormat !== undefined) { this.colorFormat = colorFormat; }
             if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
             if (unit !== undefined) { this.unit = unit; }
             if (curveTolerance !== undefined) { this.curveTolerance = curveTolerance; }
+            if (lineTypeScale !== undefined) { this.lineTypeScale = lineTypeScale; }
         }
         /**
          * Array of path parts, each containing paths with segments
@@ -409,6 +829,16 @@ export namespace IO {
          * @exclusiveMinimum true
          */
         curveTolerance?: number | undefined = 0.01;
+        /**
+         * The length of one unit of a dash pattern, in drawing units: `hidden` is 2 units of dash
+         * and 1 of gap. Left out, a two-hundredth of the drawing's size.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @beta
+         */
+        lineTypeScale?: number | undefined;
     }
 
     /**
@@ -439,7 +869,8 @@ export namespace IO {
      */
     export class DxfDrawingDto {
         /**
-         * The parts, one for each layer, color and line type that holds anything, each entity one path.
+         * The parts, one for each layer, color and line type that holds anything: each entity one path,
+         * each text and hatch in its part's `texts` and `hatches`.
          * @default undefined
          */
         parts!: DrawingPartDto[];
@@ -466,12 +897,13 @@ export namespace IO {
      * unit that gives it its true size, and how wide the lines and the border are.
      */
     export class SvgModelDto {
-        constructor(parts?: DrawingPartDto[], unit?: Base.unitOfLengthEnum, strokeWidth?: number, margin?: number, tolerance?: number) {
+        constructor(parts?: DrawingPartDto[], unit?: Base.unitOfLengthEnum, strokeWidth?: number, margin?: number, tolerance?: number, lineTypeScale?: number) {
             if (parts !== undefined) { this.parts = parts; }
             if (unit !== undefined) { this.unit = unit; }
             if (strokeWidth !== undefined) { this.strokeWidth = strokeWidth; }
             if (margin !== undefined) { this.margin = margin; }
             if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (lineTypeScale !== undefined) { this.lineTypeScale = lineTypeScale; }
         }
         /**
          * The parts of the drawing; each layer becomes a group that Inkscape reads as a layer.
@@ -510,16 +942,27 @@ export namespace IO {
          * @exclusiveMinimum true
          */
         tolerance?: number | undefined = 0.01;
+        /**
+         * The length of one unit of a dash pattern, in drawing units: `hidden` is 2 units of dash
+         * and 1 of gap. Left out, a two-hundredth of the drawing's size.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @beta
+         */
+        lineTypeScale?: number | undefined;
     }
 
     /**
      * One drawing path for `io.svg.pathData`, and how its coordinates are written.
      */
     export class SvgPathDataDto {
-        constructor(path?: DrawingPathDto, flipY?: boolean, tolerance?: number) {
+        constructor(path?: DrawingPathDto, flipY?: boolean, tolerance?: number, cubicsOnly?: boolean) {
             if (path !== undefined) { this.path = path; }
             if (flipY !== undefined) { this.flipY = flipY; }
             if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (cubicsOnly !== undefined) { this.cubicsOnly = cubicsOnly; }
         }
         /**
          * The path to write as SVG path data.
@@ -540,6 +983,13 @@ export namespace IO {
          * @exclusiveMinimum true
          */
         tolerance?: number | undefined = 0.01;
+        /**
+         * When true, every curve is written as cubic Beziers (`C`), arcs within `tolerance`, for
+         * renderers that draw only lines and cubics.
+         * @default false
+         * @beta
+         */
+        cubicsOnly?: boolean | undefined = false;
     }
 
     /**

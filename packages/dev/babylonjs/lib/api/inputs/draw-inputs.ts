@@ -14,11 +14,11 @@ export namespace Draw {
 
     /**
      * The union of every option shape a draw call accepts. Which one applies depends on what is being
-     * drawn - basic geometry, a Manifold solid or cross section, an OCCT shape, or a node - and the
-     * draw API picks the right one from the entity you pass. Reach for the specific option class when
-     * you want type checking on the fields.
+     * drawn - basic geometry, a Manifold solid or cross section, an OCCT shape, an assembly document,
+     * a hatched section, or a node - and the draw API picks the right one from the entity you pass.
+     * Reach for the specific option class when you want type checking on the fields.
      */
-    export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions | DrawFrameOptions | DrawRecipeMeshesOptions;
+    export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions | DrawFrameOptions | DrawRecipeMeshesOptions | DrawOcctDocumentOptions | DrawHatchedSectionOptions;
     /**
      * A kernel shape with the looks to draw it in: a base look for the whole shape and groups of
      * faces that override it, by the face indexes `shapes.face.getFaces` gives, with the colors of
@@ -38,10 +38,12 @@ export namespace Draw {
     /**
      * Everything a draw call will accept: points, lines, segments and polylines; Verb curves and
      * surfaces; the handles the OCCT, Manifold and JSCAD kernels return; kernel shapes with their
-     * appearance and what `occt.design.build` returns; tags; a BabylonJS node, which draws as an axis
-     * triad; whatever a layer above these packages has taught the call to draw; and a list of any one
-     * of them. This union is what makes one draw call able to render anything these packages produce
-     * without you having to say which kind it is.
+     * appearance and what `occt.design.build` returns; an assembly document and the annotations
+     * `occt.assembly.query.getDocumentAnnotations` reads from one; a hatched section from
+     * `occt.operations.hatchedSectionByFrame`; tags; a BabylonJS node, which
+     * draws as an axis triad; whatever a layer above these packages has taught the call to draw;
+     * and a list of any one of them. This union is what makes one draw call able to render
+     * anything these packages produce without you having to say which kind it is.
      *
      * A design build draws every placement as a thin instance. Drawn again into the mesh it returned,
      * passed as `babylonMesh`, with the same parts at the same component paths, it only moves them, so
@@ -73,6 +75,9 @@ export namespace Draw {
         | ShapeWithAppearance
         | Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>
         | Models.OCCT.DesignSection<Inputs.OCCT.TopoDSShapePointer>
+        | Inputs.OCCT.TDocStdDocumentPointer
+        | Models.OCCT.DocumentAnnotations
+        | Models.OCCT.HatchedSection<Inputs.OCCT.TopoDSShapePointer>
         | Inputs.OCCT.DecomposedMeshDto
         | Inputs.Manifold.ManifoldPointer
         | Inputs.Manifold.CrossSectionPointer
@@ -882,6 +887,269 @@ export namespace Draw {
     }
 
     /**
+     * Built by `draw.optionsMeshing` for the `meshing` of `DrawOcctDocumentOptions`: how closely the
+     * triangles of an assembly document follow its curved faces. Left out, these defaults apply.
+     * @beta
+     */
+    export class DrawMeshingOptions {
+        constructor(precision?: number, angularDeflection?: number, relativeDeflection?: boolean, forceFaceDeflection?: boolean, allowQualityDecrease?: boolean) {
+            if (precision !== undefined) { this.precision = precision; }
+            if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+            if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
+            if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+            if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
+        }
+        /**
+         * The largest distance, in model units, the triangles and edge lines may stray from the curved
+         * faces; smaller is finer and heavier.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.01
+         * @beta
+         */
+        precision?: number | undefined = 0.01;
+        /**
+         * The largest angle, in radians, a curved face may turn between neighboring triangles; smaller
+         * follows curvature more closely with more triangles.
+         * @default 0.5
+         * @minimum 0.001
+         * @maximum 3.14159
+         * @step 0.05
+         * @beta
+         */
+        angularDeflection?: number | undefined = 0.5;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         * @default false
+         * @beta
+         */
+        relativeDeflection?: boolean | undefined = false;
+        /**
+         * When true, every face is meshed at exactly `precision`; when false, a face's precision is
+         * raised to the average of its edges' and to twice its tolerance.
+         * @default false
+         * @beta
+         */
+        forceFaceDeflection?: boolean | undefined = false;
+        /**
+         * When true, a part already meshed more finely may be meshed again at the coarser `precision`.
+         * @default true
+         * @beta
+         */
+        allowQualityDecrease?: boolean | undefined = true;
+    }
+
+    /**
+     * Built by `draw.optionsEdges` for the `edges` of `DrawOcctDocumentOptions` and
+     * `DrawHatchedSectionOptions`: the color, width and opacity of the edge lines. Left out, these
+     * defaults apply.
+     * @beta
+     */
+    export class DrawEdgesOptions {
+        constructor(edgeColour?: Base.Color, edgeWidth?: number, edgeOpacity?: number) {
+            if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
+            if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
+            if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
+        }
+        /**
+         * The color of the edge lines, as a hex string.
+         * @default #000000
+         * @beta
+         */
+        edgeColour?: Base.Color | undefined = "#000000";
+        /**
+         * The width of the edge lines, a hundredth of it in model units.
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         * @beta
+         */
+        edgeWidth?: number | undefined = 2;
+        /**
+         * How opaque the edge lines are, from 0 for invisible to 1 for opaque.
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         * @beta
+         */
+        edgeOpacity?: number | undefined = 1;
+    }
+
+    /**
+     * Built by `draw.optionsAnnotations` for the `annotations` of `DrawOcctDocumentOptions`: which
+     * saved view's dimensions, tolerances and datums are drawn, and in what color and width. Left
+     * out, these defaults apply.
+     * @beta
+     */
+    export class DrawAnnotationsOptions {
+        constructor(annotationsView?: string, annotationColour?: Base.Color, annotationWidth?: number, annotationsFilled?: boolean) {
+            if (annotationsView !== undefined) { this.annotationsView = annotationsView; }
+            if (annotationColour !== undefined) { this.annotationColour = annotationColour; }
+            if (annotationWidth !== undefined) { this.annotationWidth = annotationWidth; }
+            if (annotationsFilled !== undefined) { this.annotationsFilled = annotationsFilled; }
+        }
+        /**
+         * The name of a view the file saved, such as `FRONT`, whose annotations alone are drawn; left
+         * out, all are. A name no saved view bears is refused.
+         * @default undefined
+         * @optional true
+         * @beta
+         */
+        annotationsView?: string | undefined;
+        /**
+         * The color of the annotations' lines and letters, as a hex string.
+         * @default #0047ab
+         * @beta
+         */
+        annotationColour?: Base.Color | undefined = "#0047ab";
+        /**
+         * The width of the annotations' lines, a hundredth of it in model units, as an edge's is.
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         * @beta
+         */
+        annotationWidth?: number | undefined = 2;
+        /**
+         * When true, the annotations' letters are filled, as a PMI viewer shows them; when false only
+         * their outlines are drawn, the lighter choice for a document with many annotations.
+         * @default true
+         * @beta
+         */
+        annotationsFilled?: boolean | undefined = true;
+    }
+
+    /**
+     * Built by `draw.optionsOcctDocument` for an assembly document and for the annotations
+     * `occt.assembly.query.getDocumentAnnotations` reads: how the document turns, how it is meshed,
+     * and whether its edges and annotations are drawn. Its faces, front and back, always show the
+     * document's colors.
+     * @beta
+     */
+    export class DrawOcctDocumentOptions {
+        constructor(upAxis?: Base.upAxisConversionEnum, meshing?: DrawMeshingOptions, drawEdges?: boolean, edges?: DrawEdgesOptions, drawAnnotations?: boolean, annotations?: DrawAnnotationsOptions) {
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
+            if (meshing !== undefined) { this.meshing = meshing; }
+            if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
+            if (edges !== undefined) { this.edges = edges; }
+            if (drawAnnotations !== undefined) { this.drawAnnotations = drawAnnotations; }
+            if (annotations !== undefined) { this.annotations = annotations; }
+        }
+        /**
+         * How the document and its annotations turn: `zUpToYUp` from the file's Z-up into Y-up, as
+         * `occt.io.loadSTEPorIGES` turns a shape, `yUpToZUp` into Z-up, and `keep` leaves its own axes.
+         * @default zUpToYUp
+         * @beta
+         */
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+        /**
+         * How finely the document is meshed, as `draw.optionsMeshing` builds it; left out, its defaults.
+         * @default undefined
+         * @optional true
+         * @beta
+         */
+        meshing?: DrawMeshingOptions | undefined;
+        /**
+         * When false, the edges of the parts are not drawn.
+         * @default true
+         * @beta
+         */
+        drawEdges?: boolean | undefined = true;
+        /**
+         * The color, width and opacity of the edges, as `draw.optionsEdges` builds them; left out, its
+         * defaults.
+         * @default undefined
+         * @optional true
+         * @beta
+         */
+        edges?: DrawEdgesOptions | undefined;
+        /**
+         * When true, the document's dimensions, tolerances and datums are drawn with it, as a STEP
+         * AP242 file shows them.
+         * @default false
+         * @beta
+         */
+        drawAnnotations?: boolean | undefined = false;
+        /**
+         * Which annotations are drawn and how, as `draw.optionsAnnotations` builds them; left out, its
+         * defaults.
+         * @default undefined
+         * @optional true
+         * @beta
+         */
+        annotations?: DrawAnnotationsOptions | undefined;
+    }
+
+    /**
+     * Built by `draw.optionsHatchedSection` for what `occt.operations.hatchedSectionByFrame` returns:
+     * the cut faces in `faceColour`, their outlines as `edges` sets them, and the hatch lines in their
+     * own color and width, curves followed within `precision`.
+     * @beta
+     */
+    export class DrawHatchedSectionOptions {
+        constructor(precision?: number, faceColour?: Base.Color, drawEdges?: boolean, edges?: DrawEdgesOptions, hatchColour?: Base.Color, hatchWidth?: number) {
+            if (precision !== undefined) { this.precision = precision; }
+            if (faceColour !== undefined) { this.faceColour = faceColour; }
+            if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
+            if (edges !== undefined) { this.edges = edges; }
+            if (hatchColour !== undefined) { this.hatchColour = hatchColour; }
+            if (hatchWidth !== undefined) { this.hatchWidth = hatchWidth; }
+        }
+        /**
+         * The largest distance, in model units, the outlines of the cut faces may stray from their
+         * curves; smaller is finer and heavier.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.01
+         * @beta
+         */
+        precision?: number | undefined = 0.01;
+        /**
+         * The color of the cut faces, as a hex string.
+         * @default #ffffff
+         * @beta
+         */
+        faceColour?: Base.Color | undefined = "#ffffff";
+        /**
+         * When false, the outlines of the cut faces are not drawn.
+         * @default true
+         * @beta
+         */
+        drawEdges?: boolean | undefined = true;
+        /**
+         * The color, width and opacity of the outlines, as `draw.optionsEdges` builds them; left out,
+         * its defaults.
+         * @default undefined
+         * @optional true
+         * @beta
+         */
+        edges?: DrawEdgesOptions | undefined;
+        /**
+         * The color of the hatch lines, and of the regions a solid hatch fills, as a hex string.
+         * @default #000000
+         * @beta
+         */
+        hatchColour?: Base.Color | undefined = "#000000";
+        /**
+         * The width of the hatch lines, in the unit the edges' width is given in.
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         * @beta
+         */
+        hatchWidth?: number | undefined = 1;
+    }
+
+    /**
      * Feeds `draw.optionsOcctShapeSimple`: the most used OCCT drawing options, precision, face and edge
      * colors and the two-sided rendering. Every option it leaves out takes the default
      * `draw.optionsOcctShape` gives.
@@ -1569,6 +1837,9 @@ export namespace Draw {
         recipeMeshes = "recipeMeshes",
         tag = "tag",
         tags = "tags",
+        occtDocument = "occtDocument",
+        occtAnnotations = "occtAnnotations",
+        occtHatchedSection = "occtHatchedSection",
     }
     /**
      * The look `bitbybit.draw` gives what a script draws without options of its own, set once on the

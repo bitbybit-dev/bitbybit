@@ -1,4 +1,4 @@
-import { placesRecipeRoots, recipeRootInModelAxes } from "../base/file-axes";
+import { placesRecipeRoots, recipeRootInModelAxes, turnedFromZUp } from "../base/file-axes";
 import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type { Base } from "@bitbybit-dev/base";
@@ -50,13 +50,13 @@ export class OCCTRecipes {
      * @example
      * ```typescript
      * const recipe = await bitbybit.ifc.geometry.recipe({ model });
-     * const shapes = await bitbybit.occt.recipes.build({ recipe, adjustZtoY: true, emptyWhenFailed: true });
+     * const shapes = await bitbybit.occt.recipes.build({ recipe, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp, emptyWhenFailed: true });
      * ```
      */
     build(inputs: Inputs.OCCT.BuildRecipeDto): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.BuildRecipeDto, inputs) as Resolved.OCCT.BuildRecipeDto;
         const recipe = this.och.base.recipes.read({ recipe: resolved.recipe });
-        const built = this.run(recipe, recipe.roots, resolved.adjustZtoY, resolved.facetedMeshes, resolved.maxTriangles);
+        const built = this.run(recipe, recipe.roots, turnedFromZUp(resolved.upAxis), resolved.facetedMeshes, resolved.maxTriangles);
         const failed = this.firstFailure(built);
         if (failed && !resolved.emptyWhenFailed) {
             built.shapes.forEach((shape) => shape?.delete());

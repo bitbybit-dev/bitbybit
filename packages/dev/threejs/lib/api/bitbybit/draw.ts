@@ -1,6 +1,6 @@
 import * as THREEJS from "three";
 import type { Tag } from "@bitbybit-dev/core";
-import { DrawCore, checkDrawableMesh } from "@bitbybit-dev/core";
+import { DrawCore, checkDrawableMesh, documentDrawOptionsOf, hatchedSectionDrawOptionsOf } from "@bitbybit-dev/core";
 import * as Inputs from "../inputs";
 import type { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
 import type { Context } from "../context";
@@ -97,6 +97,9 @@ export class Draw extends DrawCore {
             occtShapeWithAppearance: (i) => this.handleShapeWithAppearance(i),
             occtShapesWithAppearance: (i) => this.handleShapesWithAppearance(i),
             designBuild: (i) => this.handleDesignBuild(i),
+            occtDocument: (i) => this.handleAsync(i, new Inputs.Draw.DrawOcctDocumentOptions(), (options) => this.drawHelper.drawDocument(i.entity as Inputs.OCCT.TDocStdDocumentPointer, documentDrawOptionsOf(this.occtOptions({}), options, Inputs.Draw)), Inputs.Draw.drawingTypes.occtDocument),
+            documentAnnotations: (i) => this.handleAsync(i, new Inputs.Draw.DrawOcctDocumentOptions(), (options) => Promise.resolve(this.drawHelper.drawDocumentAnnotations(i.entity as Models.OCCT.DocumentAnnotations, documentDrawOptionsOf(this.occtOptions({}), options, Inputs.Draw))), Inputs.Draw.drawingTypes.occtAnnotations),
+            hatchedSection: (i) => this.handleAsync(i, new Inputs.Draw.DrawHatchedSectionOptions(), (options) => Promise.resolve(this.drawHelper.drawHatchedSection(i.entity as Models.OCCT.HatchedSection<Inputs.OCCT.TopoDSShapePointer>, hatchedSectionDrawOptionsOf(this.occtOptions({}), options, Inputs.Draw))), Inputs.Draw.drawingTypes.occtHatchedSection),
             jscadMeshes: (i, e) => this.detectJscadMeshes(e) ? this.handleJscadMeshes(i, e) : Promise.resolve(undefined),
             manifoldShape: (i) => this.handleManifoldShape(i),
             manifoldShapes: (i) => this.handleManifoldShapes(i),
@@ -250,6 +253,106 @@ export class Draw extends DrawCore {
      */
     optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
         return resolveDto(Inputs.Draw.DrawOcctShapeOptions, inputs);
+    }
+
+    /**
+     * Builds the drawing options for an assembly document, as `occt.assembly.manager.loadStepToDoc`
+     * returns it: how it turns, how finely it is meshed, and whether its edges and its dimensions,
+     * tolerances and datums are drawn, with defaults for what is left out.
+     *
+     * Faces show the document's own colors, an uncolored part grey; the annotations
+     * `occt.assembly.query.getDocumentAnnotations` reads take these options too.
+     * @param inputs - The options to start from
+     * @returns The drawing options
+     * @group document options
+     * @shortname occt document
+     * @beta
+     * @example
+     * ```typescript
+     * const document = await bitbybit.occt.assembly.manager.loadStepToDoc({ stepData });
+     * const meshing = bitbybit.draw.optionsMeshing({ precision: 0.05 });
+     * const annotations = bitbybit.draw.optionsAnnotations({ annotationColour: "#0047ab", annotationsFilled: true });
+     * const options = bitbybit.draw.optionsOcctDocument({ upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp, meshing, drawAnnotations: true, annotations });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: document, options });
+     * ```
+     */
+    optionsOcctDocument(inputs: Inputs.Draw.DrawOcctDocumentOptions): Inputs.Draw.DrawOcctDocumentOptions {
+        return resolveDto(Inputs.Draw.DrawOcctDocumentOptions, inputs);
+    }
+
+    /**
+     * Builds how finely an assembly document is meshed for drawing, for the `meshing` of
+     * `optionsOcctDocument`, with defaults for what is left out.
+     * @param inputs - The meshing settings to start from
+     * @returns The meshing settings
+     * @group document options
+     * @shortname meshing
+     * @beta
+     * @example
+     * ```typescript
+     * const meshing = bitbybit.draw.optionsMeshing({ precision: 0.05, angularDeflection: 0.3 });
+     * const options = bitbybit.draw.optionsOcctDocument({ meshing });
+     * ```
+     */
+    optionsMeshing(inputs: Inputs.Draw.DrawMeshingOptions): Inputs.Draw.DrawMeshingOptions {
+        return resolveDto(Inputs.Draw.DrawMeshingOptions, inputs);
+    }
+
+    /**
+     * Builds the color, width and opacity of the edge lines, for the `edges` of
+     * `optionsOcctDocument` and `optionsHatchedSection`, with defaults for what is left out.
+     * @param inputs - The edge settings to start from
+     * @returns The edge settings
+     * @group document options
+     * @shortname edges
+     * @beta
+     * @example
+     * ```typescript
+     * const edges = bitbybit.draw.optionsEdges({ edgeColour: "#333333", edgeWidth: 1, edgeOpacity: 1 });
+     * const options = bitbybit.draw.optionsOcctDocument({ drawEdges: true, edges });
+     * ```
+     */
+    optionsEdges(inputs: Inputs.Draw.DrawEdgesOptions): Inputs.Draw.DrawEdgesOptions {
+        return resolveDto(Inputs.Draw.DrawEdgesOptions, inputs);
+    }
+
+    /**
+     * Builds which of a document's dimensions, tolerances and datums are drawn and how, for the
+     * `annotations` of `optionsOcctDocument`, with defaults for what is left out.
+     * @param inputs - The annotation settings to start from
+     * @returns The annotation settings
+     * @group document options
+     * @shortname annotations
+     * @beta
+     * @example
+     * ```typescript
+     * const annotations = bitbybit.draw.optionsAnnotations({ annotationsView: "FRONT", annotationColour: "#0047ab", annotationWidth: 2, annotationsFilled: true });
+     * const options = bitbybit.draw.optionsOcctDocument({ drawAnnotations: true, annotations });
+     * ```
+     */
+    optionsAnnotations(inputs: Inputs.Draw.DrawAnnotationsOptions): Inputs.Draw.DrawAnnotationsOptions {
+        return resolveDto(Inputs.Draw.DrawAnnotationsOptions, inputs);
+    }
+
+    /**
+     * Builds the drawing options for a hatched section, as `occt.operations.hatchedSectionByFrame`
+     * returns it: the cut faces in `faceColour`, their outlines as `edges` sets them, and the hatch
+     * lines in their own color and width, with defaults for what is left out.
+     * @param inputs - The options to start from
+     * @returns The drawing options
+     * @group document options
+     * @shortname hatched section
+     * @beta
+     * @example
+     * ```typescript
+     * const section = await bitbybit.occt.operations.hatchedSectionByFrame({ shapes: [housing], frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] } });
+     * const edges = bitbybit.draw.optionsEdges({ edgeColour: "#000000", edgeWidth: 2 });
+     * const options = bitbybit.draw.optionsHatchedSection({ faceColour: "#ffffff", edges, hatchColour: "#000000", hatchWidth: 1 });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: section, options });
+     * ```
+     */
+    optionsHatchedSection(inputs: Inputs.Draw.DrawHatchedSectionOptions): Inputs.Draw.DrawHatchedSectionOptions {
+        return resolveDto(Inputs.Draw.DrawHatchedSectionOptions, inputs);
     }
 
     /**
@@ -806,20 +909,14 @@ export class Draw extends DrawCore {
     }
 
     private handle(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (options: Inputs.Draw.DrawOptions) => THREEJS.Group, type: Inputs.Draw.drawingTypes): THREEJS.Group {
-        let options = inputs.options ? inputs.options : defaultOptions;
-        if (!inputs.options && inputs.group && inputs.group.userData["options"]) {
-            options = inputs.group.userData["options"];
-        }
+        const options: Inputs.Draw.DrawOptions = inputs.options ?? inputs.group?.userData["options"] ?? defaultOptions;
         const result = action(options);
         this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, result);
         return result;
     }
 
     private async handleAsync<T extends THREEJS.Group | undefined>(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (options: Inputs.Draw.DrawOptions) => Promise<T>, type: Inputs.Draw.drawingTypes): Promise<T> {
-        let options = inputs.options ? inputs.options : defaultOptions;
-        if (!inputs.options && inputs.group && inputs.group.userData["options"]) {
-            options = inputs.group.userData["options"];
-        }
+        const options: Inputs.Draw.DrawOptions = inputs.options ?? inputs.group?.userData["options"] ?? defaultOptions;
         const result = action(options);
         return result.then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, r);

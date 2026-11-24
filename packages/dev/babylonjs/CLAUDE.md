@@ -129,6 +129,11 @@ The shared draw rules live in `core`'s `CLAUDE.md`. What Babylon itself forces:
   too (`bitbybit.setSettings`); otherwise
   the next `setConventions` and `clearAllDrawn` both put back the system the scene was given to
   `init` in.
+- **A document's annotations are hung under its mesh after the shadow casters are added.**
+  `ShadowGenerator.addShadowCaster` takes a mesh's descendants with it, so annotations parented
+  first would cast shadows; that is why the document's orchestration sits in `draw.ts`, where the
+  shadows are applied, while three.js and PlayCanvas, which add no casters there, keep it in the
+  helper (`drawDocument`). The annotations drawn on their own carry `metadata.shadows` false.
 - **A back face never goes into a file.** A shape drawn two-sided is two meshes, the surface and a
   back-face child wound the other way, which a file would hold as every wall twice. The one place
   that makes a back face marks it (`markAsBackFace`, `metadata.backFace`, kept by a clone and read

@@ -1,29 +1,26 @@
 import * as Inputs from "../../../../inputs";
 import { InputError } from "../../../../kernel-calls";
 import { hexOfChannels } from "../../color/color-forms";
-import { angleWithinTurn } from "../../curves/conic-arcs";
-import { composeAxes, pointToWorld, unitOf, WORLD_AXES } from "../../geometry/frame-axes";
+import { composeAxes, WORLD_AXES } from "../../geometry/frame-axes";
 import type { FrameAxes } from "../../geometry/frame-axes";
 import { radiansOf } from "../../geometry/scalars";
-import { cross3, length3, scale3 } from "../../geometry/vectors";
+import { scale3 } from "../../geometry/vectors";
 import { ocsAxesOf } from "../drawing/drawing-geometry";
-import { DEFAULT_SPLINE_DEGREE } from "../drawing/drawing.constants";
 import { WorkBudget } from "../work-budget";
 import { ACI_PALETTE } from "./dxf-colors";
+import { placedHatch, placedText, planarTurnOf, readHatchOf, readTextOf } from "./dxf-reader-annotations";
 import { mappedSegments, rotationAboutZ, scaling, translation } from "./dxf-reader-geometry";
-import type { DxfEntityRecord, DxfGroup, ReadDrawing, ReadEntity, ReadLayer, ReadSegment, ReadStyle } from "./dxf-reader-types";
+import { readSegmentsOf, recordNormalOf, recordPointOf, segmentWork } from "./dxf-reader-segments";
+import type { DxfEntityRecord, DxfGroup, OwnSegments, ReadDrawing, ReadEntity, ReadHatch, ReadLayer, ReadStyle, ReadText } from "./dxf-reader-types";
 import {
-    BLACK, BY_BLOCK, BY_LAYER, BYTE, CONIC_WORK, COPY_WORK, DEGREES_PER_TURN, DRAWN_ENTITIES, ENTITY_WORK, FROZEN_FLAG, GREEN_SHIFT, GROUP, INSERT_WORK_CEILING,
-    INSERT_WORK_FLOOR, INSERT_WORK_PER_CHARACTER, LINE_WORK, MAX_FIT_POINTS, MAX_INSERT_DEPTH, MAX_LISTED_NAMES, MAX_SPLINE_DEGREE, MESH_FLAG, PAPER_SPACE,
-    PERIODIC_FLAG, POLYFACE_FLAG, RED_SHIFT, SPLINE_FRAME_VERTEX_FLAG, UNIT_CODES, UNIT_NAMES, XREF_FLAGS, Y_OFFSET, Z_OFFSET,
+    ANNOTATED_ENTITIES, BLACK, BY_BLOCK, BY_LAYER, BYTE, COPY_WORK, DRAWN_ENTITIES, ENTITY_WORK, FROZEN_FLAG, GREEN_SHIFT, GROUP, IMPERIAL_UNIT_CODES, INSERT_WORK_CEILING,
+    INSERT_WORK_FLOOR, INSERT_WORK_PER_CHARACTER, MAX_INSERT_DEPTH, MAX_LISTED_NAMES, PAPER_SPACE, RED_SHIFT, UNIT_CODES, UNIT_NAMES, XREF_FLAGS,
 } from "./dxf-reader.constants";
-import {
-    DXF_CLOSED_FLAG, DXF_EXTRUSION_CODES, DXF_MAX_NAME_LENGTH, DXF_OTHER_POINT_CODES, DXF_POINT_CODES, DXF_POLYLINE_3D_FLAG, DXF_RATIONAL_FLAG, DXF_WHITE_OR_BLACK,
-} from "./dxf.constants";
-import { decodedText, dxfGroupsOf, numberIn, numberOf, numbersOf, recordsOf, textOf } from "./dxf-tokens";
+import type { DxfMeasurement } from "./dxf-tables";
+import { DXF_IMPERIAL_MEASUREMENT, DXF_MAX_NAME_LENGTH, DXF_POINT_CODES, DXF_WHITE_OR_BLACK } from "./dxf.constants";
+import { decodedText, dxfGroupsOf, headerGroupOf, numberIn, numberOf, recordsOf, sectionsOf, textOf } from "./dxf-tokens";
 
 type Point3 = Inputs.Base.Point3;
-type Vec3 = Inputs.Base.Vector3;
 
 interface Block {
     readonly base: Point3;
@@ -52,11 +49,11 @@ interface OwnStyle {
     readonly lineType: Inputs.IO.lineTypeEnum;
 }
 
-interface OwnSegments {
-    readonly segments: readonly ReadSegment[];
+interface OwnAnnotation {
+    readonly text: ReadText | undefined;
+    readonly hatch: ReadHatch | undefined;
     readonly work: number;
     readonly flaw: string | undefined;
-    readonly skipped: string | undefined;
 }
 
 interface Placement {
@@ -74,7 +71,6 @@ interface InsertPlan {
     readonly placement: Placement | undefined;
 }
 
-const FULL_TURN = 2 * Math.PI;
 const HIGH_SURROGATES = /[\uD800-\uDBFF]$/;
 const DEEP_INSERTS_NOTE = `Block inserts nested deeper than ${MAX_INSERT_DEPTH} were left out.`;
 
@@ -92,24 +88,17 @@ const hexOfAci = (index: number): string => {
     return hexOfChannels([byteOf(rgb[0]), byteOf(rgb[1]), byteOf(rgb[2])]);
 };
 
-const segmentWork = (segment: ReadSegment): number => {
-    switch (segment.kind) {
-        case "line":
-            return LINE_WORK;
-        case "conic":
-            return CONIC_WORK;
-        case "spline":
-            return segment.curve.points.length;
-        case "fit":
-            return segment.points.length;
-        default:
-            return segment.points.length + segment.bulges.filter(bulge => bulge !== 0).length;
+const hatchWork = (hatch: ReadHatch): number => hatch.boundaries.reduce((total, loop) => loop.reduce((sum, segment) => sum + segmentWork(segment), total), 0);
+
+const ownAnnotation = (type: string, read: ReadText | ReadHatch | string | undefined): OwnAnnotation => {
+    if (typeof read === "string") {
+        return { text: undefined, hatch: undefined, work: 0, flaw: `${type}\n${read}` };
     }
+    if (read === undefined) {
+        return { text: undefined, hatch: undefined, work: 0, flaw: undefined };
+    }
+    return "value" in read ? { text: read, hatch: undefined, work: read.value.length, flaw: undefined } : { text: undefined, hatch: read, work: hatchWork(read), flaw: undefined };
 };
-
-const drawn = (segments: ReadSegment[]): OwnSegments => ({ segments, work: segments.reduce((total, segment) => total + segmentWork(segment), 0), flaw: undefined, skipped: undefined });
-
-const flawOf = (type: string, reason: string): OwnSegments => ({ segments: [], work: 0, flaw: `${type}\n${reason}`, skipped: undefined });
 
 const lineTypeOf = (name: string): Inputs.IO.lineTypeEnum => {
     const upper = name.toUpperCase();
@@ -128,51 +117,16 @@ const lineTypeOf = (name: string): Inputs.IO.lineTypeEnum => {
     return Inputs.IO.lineTypeEnum.continuous;
 };
 
-const pointOf = (record: DxfEntityRecord, codes: readonly number[], fallback: Point3 = [0, 0, 0]): Point3 =>
-    [numberOf(record, codes[0]!, fallback[0]), numberOf(record, codes[1]!, fallback[1]), numberOf(record, codes[2]!, fallback[2])];
-
-const normalOf = (record: DxfEntityRecord): Vec3 => unitOf(pointOf(record, DXF_EXTRUSION_CODES, [0, 0, 1])) ?? [0, 0, 1];
-
-const pointsOf = (record: DxfEntityRecord, xCode: number): Point3[] => {
-    const points: Point3[] = [];
-    for (const group of record.groups) {
-        if (group.code === xCode) {
-            points.push([numberIn(group), 0, 0]);
-        } else if (group.code === xCode + Y_OFFSET && points.length > 0) {
-            points[points.length - 1]![1] = numberIn(group);
-        } else if (group.code === xCode + Z_OFFSET && points.length > 0) {
-            points[points.length - 1]![2] = numberIn(group);
-        }
-    }
-    return points;
-};
-
-const sectionsOf = (groups: readonly DxfGroup[]): Map<string, DxfGroup[]> => {
-    const sections = new Map<string, DxfGroup[]>();
-    let current: DxfGroup[] | undefined;
-    for (let at = 0; at < groups.length; at++) {
-        const group = groups[at]!;
-        if (group.code === 0 && group.value.trim() === "SECTION") {
-            current = [];
-            sections.set(groups[at + 1]?.value.trim() ?? "", current);
-            at++;
-        } else if (group.code === 0 && group.value.trim() === "ENDSEC") {
-            current = undefined;
-        } else {
-            current?.push(group);
-        }
-    }
-    return sections;
-};
-
-const headerGroupOf = (header: readonly DxfGroup[], name: string): DxfGroup | undefined => {
-    const at = header.findIndex(group => group.code === GROUP.variable && group.value.trim() === name);
-    return at < 0 ? undefined : header[at + 1];
-};
-
 const shownName = (name: string): string => name.slice(0, DXF_MAX_NAME_LENGTH);
 
 const plural = (count: number, one: string, many: string): string => (count === 1 ? one : many);
+
+const measurementOf = (stated: DxfGroup | undefined, unitCode: number): DxfMeasurement => {
+    if (stated !== undefined) {
+        return numberIn(stated) === Number(DXF_IMPERIAL_MEASUREMENT) ? "imperial" : "metric";
+    }
+    return IMPERIAL_UNIT_CODES.has(unitCode) ? "imperial" : "metric";
+};
 
 class DxfReading {
     private readonly layers = new Map<string, ReadLayer>();
@@ -186,20 +140,25 @@ class DxfReading {
     private readonly ownStyles = new Map<DxfEntityRecord, OwnStyle>();
     private readonly styles = new Map<DxfEntityRecord, Map<ReadStyle | undefined, ReadStyle | undefined>>();
     private readonly ownSegments = new Map<DxfEntityRecord, OwnSegments>();
+    private readonly ownAnnotations = new Map<DxfEntityRecord, OwnAnnotation>();
     private readonly inserts = new Map<DxfEntityRecord, InsertPlan>();
     private readonly contentWork = new Map<Block, number[]>();
     private readonly budget: WorkBudget;
     private hiddenCount = 0;
     private leftOutInserts = 0;
     private cutNames = 0;
+    private measurement: DxfMeasurement = "metric";
 
-    constructor(private readonly includeHidden: boolean, inputSize: number) {
+    constructor(private readonly includeHidden: boolean, inputSize: number, private readonly annotated: boolean) {
         this.budget = WorkBudget.forInput(inputSize, INSERT_WORK_PER_CHARACTER, INSERT_WORK_FLOOR, INSERT_WORK_CEILING);
     }
 
     read(text: string): ReadDrawing {
         const sections = sectionsOf(dxfGroupsOf(text));
         const header = sections.get("HEADER") ?? [];
+        const unitGroup = headerGroupOf(header, "$INSUNITS");
+        const unitCode = unitGroup === undefined ? 0 : numberIn(unitGroup);
+        this.measurement = measurementOf(headerGroupOf(header, "$MEASUREMENT"), unitCode);
         this.readLayers(sections.get("TABLES") ?? []);
         this.readBlocks(sections.get("BLOCKS") ?? []);
         if (!sections.has("ENTITIES")) {
@@ -211,8 +170,6 @@ class DxfReading {
         for (const record of modelSpace) {
             this.readEntity(record, { map: WORLD_AXES, inherited: undefined, depth: 0 });
         }
-        const unitGroup = headerGroupOf(header, "$INSUNITS");
-        const unitCode = unitGroup === undefined ? 0 : numberIn(unitGroup);
         const unit = UNIT_CODES.get(unitCode);
         const unitName = UNIT_NAMES.get(unitCode);
         if (unit === undefined && unitName !== undefined) {
@@ -243,7 +200,7 @@ class DxfReading {
     private skippedWarnings(): string[] {
         const kinds = [...this.skipped];
         const listed = kinds.slice(0, MAX_LISTED_NAMES).map(([type, count]) =>
-            `${count} ${shownName(type)} ${plural(count, "entity was", "entities were")} left out: only lines, arcs, circles, ellipses, polylines, splines and block inserts are drawn.`);
+            `${count} ${shownName(type)} ${plural(count, "entity was", "entities were")} left out: only lines, arcs, circles, ellipses, polylines, splines${this.annotated ? ", texts, hatches" : ""} and block inserts are drawn.`);
         const rest = kinds.slice(MAX_LISTED_NAMES);
         if (rest.length === 0) {
             return listed;
@@ -299,7 +256,7 @@ class DxfReading {
         let open: OpenBlock | undefined;
         for (const record of recordsOf(blocks)) {
             if (record.type === "BLOCK") {
-                open = { name: this.nameOf(decodedText(textOf(record, GROUP.name))), base: pointOf(record, DXF_POINT_CODES), entities: [], external: (numberOf(record, GROUP.flags, 0) & XREF_FLAGS) !== 0 };
+                open = { name: this.nameOf(decodedText(textOf(record, GROUP.name))), base: recordPointOf(record, DXF_POINT_CODES), entities: [], external: (numberOf(record, GROUP.flags, 0) & XREF_FLAGS) !== 0 };
             } else if (record.type === "ENDBLK") {
                 if (open !== undefined) {
                     this.blocks.set(open.name.toUpperCase(), { base: open.base, entities: open.entities, external: open.external });
@@ -382,7 +339,40 @@ class DxfReading {
         this.skipped.set(type, (this.skipped.get(type) ?? 0) + 1);
     }
 
+    private flaw(flaw: string): void {
+        this.flawed.set(flaw, (this.flawed.get(flaw) ?? 0) + 1);
+    }
+
+    private ownAnnotationOf(record: DxfEntityRecord, keep: boolean): OwnAnnotation {
+        return this.remembered(this.ownAnnotations, record, keep, () => ownAnnotation(record.type, record.type === "TEXT" ? readTextOf(record) : readHatchOf(record, this.measurement)));
+    }
+
+    private readAnnotation(record: DxfEntityRecord, context: Context): void {
+        const style = this.styleOf(record, context);
+        if (style === undefined) {
+            this.hiddenCount++;
+            return;
+        }
+        const turn = planarTurnOf(context.map);
+        if (turn === undefined) {
+            this.flaw(`${record.type}\nit sits in a mirrored or unevenly scaled block insert`);
+            return;
+        }
+        const own = this.ownAnnotationOf(record, context.depth > 0);
+        if (own.flaw !== undefined) {
+            this.flaw(own.flaw);
+        } else if (own.text !== undefined) {
+            this.entities.push({ style, segments: [], text: placedText(own.text, turn, context.map) });
+        } else if (own.hatch !== undefined) {
+            this.entities.push({ style, segments: [], hatch: placedHatch(own.hatch, turn, context.map, context.map !== WORLD_AXES) });
+        }
+    }
+
     private readEntity(record: DxfEntityRecord, context: Context): void {
+        if (this.annotated && ANNOTATED_ENTITIES.has(record.type)) {
+            this.readAnnotation(record, context);
+            return;
+        }
         if (!DRAWN_ENTITIES.has(record.type)) {
             this.skip(record.type);
             return;
@@ -398,7 +388,7 @@ class DxfReading {
         }
         const own = this.ownSegmentsOf(record, context.depth > 0);
         if (own.flaw !== undefined) {
-            this.flawed.set(own.flaw, (this.flawed.get(own.flaw) ?? 0) + 1);
+            this.flaw(own.flaw);
         }
         if (own.skipped !== undefined) {
             this.skip(own.skipped);
@@ -417,7 +407,7 @@ class DxfReading {
             if (block === undefined || block.external) {
                 return { name, block, placement: undefined };
             }
-            const placed = composeAxes(ocsAxesOf(normalOf(record)), translation(pointOf(record, DXF_POINT_CODES)));
+            const placed = composeAxes(ocsAxesOf(recordNormalOf(record)), translation(recordPointOf(record, DXF_POINT_CODES)));
             const turned = rotationAboutZ(radiansOf(numberOf(record, GROUP.rotation, 0)));
             return {
                 name,
@@ -441,6 +431,9 @@ class DxfReading {
     private entityWork(record: DxfEntityRecord, depth: number): number {
         if (record.type === "INSERT") {
             return this.capped(ENTITY_WORK + this.copiesWork(this.insertPlanOf(record, true), depth));
+        }
+        if (this.annotated && ANNOTATED_ENTITIES.has(record.type)) {
+            return ENTITY_WORK + this.ownAnnotationOf(record, true).work;
         }
         if (!DRAWN_ENTITIES.has(record.type)) {
             return ENTITY_WORK;
@@ -520,124 +513,13 @@ class DxfReading {
     }
 
     private ownSegmentsOf(record: DxfEntityRecord, keep: boolean): OwnSegments {
-        return this.remembered(this.ownSegments, record, keep, () => {
-            switch (record.type) {
-                case "LINE":
-                    return drawn([{ kind: "line", start: pointOf(record, DXF_POINT_CODES), end: pointOf(record, DXF_OTHER_POINT_CODES) }]);
-                case "CIRCLE":
-                case "ARC":
-                    return drawn([this.circleOf(record)]);
-                case "ELLIPSE":
-                    return this.ellipseOf(record);
-                case "LWPOLYLINE":
-                    return this.lightPolylineOf(record);
-                case "POLYLINE":
-                    return this.heavyPolylineOf(record);
-                default:
-                    return this.splineOf(record);
-            }
-        });
-    }
-
-    private circleOf(record: DxfEntityRecord): ReadSegment {
-        const axes = ocsAxesOf(normalOf(record));
-        const radius = numberOf(record, GROUP.radius, 0);
-        const angleOf = (code: number): number => radiansOf(angleWithinTurn(numberOf(record, code, 0), DEGREES_PER_TURN));
-        const start = record.type === "ARC" ? angleOf(GROUP.startAngle) : 0;
-        const end = record.type === "ARC" ? angleOf(GROUP.endAngle) : FULL_TURN;
-        const turn = angleWithinTurn(end - start, FULL_TURN);
-        return {
-            kind: "conic",
-            center: pointToWorld(axes, pointOf(record, DXF_POINT_CODES)),
-            xAxis: scale3(axes.x, radius),
-            yAxis: scale3(axes.y, radius),
-            start,
-            sweep: turn === 0 ? FULL_TURN : turn,
-        };
-    }
-
-    private ellipseOf(record: DxfEntityRecord): OwnSegments {
-        const major = pointOf(record, DXF_OTHER_POINT_CODES);
-        const minor = unitOf(cross3(normalOf(record), major));
-        if (minor === undefined || length3(major) === 0) {
-            return flawOf("ELLIPSE", "its major axis has no length or runs along its extrusion");
-        }
-        const start = angleWithinTurn(numberOf(record, GROUP.startParameter, 0), FULL_TURN);
-        const end = numberOf(record, GROUP.endParameter, FULL_TURN);
-        const turn = angleWithinTurn(end - start, FULL_TURN);
-        return drawn([{ kind: "conic", center: pointOf(record, DXF_POINT_CODES), xAxis: major, yAxis: scale3(minor, length3(major) * numberOf(record, GROUP.ratio, 1)), start, sweep: turn === 0 ? FULL_TURN : turn }]);
-    }
-
-    private lightPolylineOf(record: DxfEntityRecord): OwnSegments {
-        const axes = ocsAxesOf(normalOf(record));
-        const elevation = numberOf(record, GROUP.elevation, 0);
-        const points: Point3[] = [];
-        const bulges: number[] = [];
-        for (const group of record.groups) {
-            if (group.code === GROUP.x) {
-                points.push([numberIn(group), 0, elevation]);
-                bulges.push(0);
-            } else if (group.code === GROUP.y && points.length > 0) {
-                points[points.length - 1]![1] = numberIn(group);
-            } else if (group.code === GROUP.bulge && bulges.length > 0) {
-                bulges[bulges.length - 1] = numberIn(group);
-            }
-        }
-        return this.polylineOf(record.type, points.map(point => pointToWorld(axes, point)), bulges, (numberOf(record, GROUP.flags, 0) & DXF_CLOSED_FLAG) !== 0, normalOf(record));
-    }
-
-    private heavyPolylineOf(record: DxfEntityRecord): OwnSegments {
-        const flags = numberOf(record, GROUP.flags, 0);
-        if ((flags & (POLYFACE_FLAG | MESH_FLAG)) !== 0) {
-            return { segments: [], work: 0, flaw: undefined, skipped: "POLYLINE mesh" };
-        }
-        const vertices = record.vertices.filter(vertex => (numberOf(vertex, GROUP.flags, 0) & SPLINE_FRAME_VERTEX_FLAG) === 0);
-        const closed = (flags & DXF_CLOSED_FLAG) !== 0;
-        if ((flags & DXF_POLYLINE_3D_FLAG) !== 0) {
-            return this.polylineOf(record.type, vertices.map(vertex => pointOf(vertex, DXF_POINT_CODES)), vertices.map(() => 0), closed, [0, 0, 1]);
-        }
-        const axes = ocsAxesOf(normalOf(record));
-        const elevation = numberOf(record, GROUP.elevationZ, 0);
-        const points = vertices.map(vertex => pointToWorld(axes, [numberOf(vertex, GROUP.x, 0), numberOf(vertex, GROUP.y, 0), elevation]));
-        return this.polylineOf(record.type, points, vertices.map(vertex => numberOf(vertex, GROUP.bulge, 0)), closed, normalOf(record));
-    }
-
-    private polylineOf(type: string, points: Point3[], bulges: number[], closed: boolean, normal: Vec3): OwnSegments {
-        if (points.length < 2) {
-            return flawOf(type, "it has fewer than two points");
-        }
-        return drawn([{ kind: "polyline", points, bulges, closed, normal }]);
-    }
-
-    private splineOf(record: DxfEntityRecord): OwnSegments {
-        const flags = numberOf(record, GROUP.flags, 0);
-        const degree = numberOf(record, GROUP.degree, DEFAULT_SPLINE_DEGREE);
-        if (degree > MAX_SPLINE_DEGREE) {
-            return flawOf("SPLINE", `its degree is above ${MAX_SPLINE_DEGREE}, the highest a kernel curve takes`);
-        }
-        const controls = pointsOf(record, GROUP.controlX);
-        const knots = numbersOf(record, GROUP.knot);
-        if (controls.length > degree && knots.length === controls.length + degree + 1 && degree >= 1 && Number.isInteger(degree)) {
-            const weights = numbersOf(record, GROUP.weight);
-            const rational = (flags & DXF_RATIONAL_FLAG) !== 0 && weights.length === controls.length && weights.every(weight => weight > 0);
-            return drawn([{ kind: "spline", curve: { degree, points: controls, weights: rational ? weights : controls.map(() => 1), knots } }]);
-        }
-        const fits = pointsOf(record, GROUP.fitX);
-        if (fits.length > MAX_FIT_POINTS) {
-            return flawOf("SPLINE", `it has more than ${MAX_FIT_POINTS} fit points, more than one spline is interpolated through`);
-        }
-        if (fits.length >= 2) {
-            const start = pointsOf(record, GROUP.startTangentX)[0];
-            const end = pointsOf(record, GROUP.endTangentX)[0];
-            return drawn([{ kind: "fit", points: fits, startTangent: start, endTangent: end, closed: (flags & (DXF_CLOSED_FLAG | PERIODIC_FLAG)) !== 0 }]);
-        }
-        return flawOf("SPLINE", "it holds neither control points with knots to match nor two fit points");
+        return this.remembered(this.ownSegments, record, keep, () => readSegmentsOf(record));
     }
 }
 
-export const readDxfDrawing = (text: string, includeHidden: boolean): ReadDrawing => {
+export const readDxfDrawing = (text: string, includeHidden: boolean, annotated = false): ReadDrawing => {
     if (typeof includeHidden !== "boolean") {
         throw new InputError(`\`includeHiddenLayers\` must be true or false, and is of type ${typeof includeHidden}.`, "includeHiddenLayers");
     }
-    return new DxfReading(includeHidden, typeof text === "string" ? text.length : 0).read(text);
+    return new DxfReading(includeHidden, typeof text === "string" ? text.length : 0, annotated).read(text);
 };

@@ -47,6 +47,9 @@
         "bulgeArcOf": {
             "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
         },
+        "bulgeOfSweep": {
+            "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
+        },
         "conicArcAsNurbs": {
             "internal": "curve forms behind the DXF and SVG writers; a public NURBS API is decided with the curves package (ARCHITECTURE.md, \"What could leave base\")"
         },
@@ -124,6 +127,14 @@
             "internal": "file-format plumbing: the one work limit each DXF and SVG write gets, sized by the numbers its drawing holds"
         }
     },
+    "files/drawing/drawing-dimension.ts": {
+        "dimensionExtentOf": {
+            "exposedAs": "io.drawing.dimensionExtent"
+        },
+        "dimensionPictureOf": {
+            "exposedAs": "io.drawing.dimensionPicture"
+        }
+    },
     "files/drawing/drawing-geometry.ts": {
         "bulgeArcOfSpan": {
             "internal": "file-format plumbing: the drawing model's checked segments as the curve forms the DXF and SVG writers draw"
@@ -140,11 +151,17 @@
         "ellipseArcOf": {
             "internal": "file-format plumbing: the drawing model's checked segments as the curve forms the DXF and SVG writers draw"
         },
+        "meetsReversed": {
+            "internal": "file-format plumbing: the one rule by which the SVG writer joins a path's strokes and the DXF writer a hatch's boundary loops, so both draw the same region"
+        },
         "ocsAxesOf": {
             "internal": "DXF's arbitrary axis algorithm, the object coordinate system an entity's extrusion names: file-format plumbing behind the DXF writer and reader"
         },
         "patternUnitOf": {
             "internal": "file-format plumbing: the one dash unit the DXF and SVG writers share"
+        },
+        "pointsMeet": {
+            "internal": "file-format plumbing: the one rule by which the SVG writer joins a path's strokes and the DXF writer a hatch's boundary loops, so both draw the same region"
         },
         "polylineSpanEnd": {
             "internal": "file-format plumbing: the drawing model's checked segments as the curve forms the DXF and SVG writers draw"
@@ -156,15 +173,82 @@
             "internal": "file-format plumbing: the drawing model's checked segments as the curve forms the DXF and SVG writers draw"
         }
     },
+    "files/drawing/drawing-hatch.ts": {
+        "clippedHatchLinesOf": {
+            "exposedAs": "io.drawing.clippedHatchLines"
+        },
+        "hatchFamiliesOf": {
+            "internal": "file-format plumbing: where each run of a hatch pattern's lines lies, one placement for io.drawing.hatchLines, io.drawing.clippedHatchLines, the DXF definition lines and the SVG pattern"
+        },
+        "hatchLinesOf": {
+            "exposedAs": "io.drawing.hatchLines"
+        },
+        "hatchOutlinesOf": {
+            "exposedAs": "io.drawing.hatchOutlines"
+        }
+    },
+    "files/drawing/drawing-loops.ts": {
+        "drawingLoopsOf": {
+            "internal": "file-format plumbing: a hatch's boundary paths joined into closed loops of points and bulges for the DXF writer, behind io.dxf.dxfCreate, and flattened behind io.drawing.hatchOutlines"
+        }
+    },
     "files/drawing/drawing-model.ts": {
+        "drawingHatchOf": {
+            "internal": "input guards: the drawing model checked and normalised where it arrives, behind io.dxf.dxfCreate and io.svg"
+        },
         "drawingPartsOf": {
             "internal": "input guards: the drawing model checked and normalised where it arrives, behind io.dxf.dxfCreate and io.svg"
         },
         "drawingPathOf": {
             "internal": "input guards: the drawing model checked and normalised where it arrives, behind io.dxf.dxfCreate and io.svg"
         },
+        "drawingTextOf": {
+            "internal": "input guards: the drawing model checked and normalised where it arrives, behind io.dxf.dxfCreate and io.svg"
+        },
+        "finiteNumber": {
+            "internal": "an input guard the drawing model and the dimension picture share: a number within the drawing model's range, refused with the input's name where it arrives"
+        },
+        "isDrawable": {
+            "internal": "an input guard the drawing model and the dimension picture share: a number within the drawing model's range, refused with the input's name where it arrives"
+        },
         "positiveNumber": {
             "internal": "an input guard the DXF and SVG writers share for their tolerances and line width"
+        },
+        "segmentKindOf": {
+            "internal": "input guards: the one rule that tells a drawing segment's kind from the properties it carries, for the checks behind io.dxf.dxfCreate and io.svg and for io.drawing.scaleParts"
+        }
+    },
+    "files/drawing/drawing-scale.ts": {
+        "scaledDrawingParts": {
+            "exposedAs": "io.drawing.scaleParts"
+        }
+    },
+    "files/drawing/drawing-text.ts": {
+        "textCornersOf": {
+            "internal": "file-format plumbing: the box a drawing text's ink fills, which the DXF extents and the SVG view box are grown by"
+        },
+        "textEndOf": {
+            "internal": "file-format plumbing: the ends of a drawing text's baseline, which the DXF writer fits its TEXT entity between"
+        },
+        "textInked": {
+            "internal": "file-format plumbing: whether a drawing text draws anything, so the DXF and SVG writers leave a blank one out of the file and its extents alike"
+        },
+        "textStartOf": {
+            "internal": "file-format plumbing: the ends of a drawing text's baseline, which the DXF writer fits its TEXT entity between"
+        },
+        "textStrokesOf": {
+            "exposedAs": "io.drawing.textStrokes"
+        }
+    },
+    "files/dxf/dxf-annotations.ts": {
+        "dxfTextValue": {
+            "internal": "file-format plumbing: the DXF entities a drawing's texts and hatches are written as, behind io.dxf.dxfCreate"
+        },
+        "writeHatch": {
+            "internal": "file-format plumbing: the DXF entities a drawing's texts and hatches are written as, behind io.dxf.dxfCreate"
+        },
+        "writeText": {
+            "internal": "file-format plumbing: the DXF entities a drawing's texts and hatches are written as, behind io.dxf.dxfCreate"
         }
     },
     "files/dxf/dxf-colors.ts": {
@@ -179,6 +263,12 @@
         }
     },
     "files/dxf/dxf-entities.ts": {
+        "isModern": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: the entity records of each segment"
+        },
+        "openEntity": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: the entity records of each segment"
+        },
         "writeSegment": {
             "internal": "file-format plumbing behind io.dxf.dxfCreate: the entity records of each segment"
         }
@@ -191,6 +281,26 @@
     "files/dxf/dxf-generator.ts": {
         "DxfGenerator": {
             "internal": "the DXF writer behind io.dxf.dxfCreate"
+        }
+    },
+    "files/dxf/dxf-reader-annotations.ts": {
+        "placedHatch": {
+            "internal": "file-format plumbing: the texts and hatches of a DXF file read into the drawing model, behind io.dxf.dxfRead"
+        },
+        "placedText": {
+            "internal": "file-format plumbing: the texts and hatches of a DXF file read into the drawing model, behind io.dxf.dxfRead"
+        },
+        "plainDxfText": {
+            "internal": "file-format plumbing: the texts and hatches of a DXF file read into the drawing model, behind io.dxf.dxfRead"
+        },
+        "planarTurnOf": {
+            "internal": "file-format plumbing: the texts and hatches of a DXF file read into the drawing model, behind io.dxf.dxfRead"
+        },
+        "readHatchOf": {
+            "internal": "file-format plumbing: the texts and hatches of a DXF file read into the drawing model, behind io.dxf.dxfRead"
+        },
+        "readTextOf": {
+            "internal": "file-format plumbing: the texts and hatches of a DXF file read into the drawing model, behind io.dxf.dxfRead"
         }
     },
     "files/dxf/dxf-reader-dtos.ts": {
@@ -224,12 +334,29 @@
             "internal": "file-format plumbing behind io.dxf.dxfRead and occt.io.loadDxf: a block insert's mapping as frame axes and the read segments under it"
         }
     },
+    "files/dxf/dxf-reader-segments.ts": {
+        "readSegmentsOf": {
+            "internal": "file-format plumbing: the segments each drawn DXF entity kind is read as, with the work each costs against the reader's insert budget, behind io.dxf.dxfRead and occt.io.loadDxf"
+        },
+        "recordNormalOf": {
+            "internal": "file-format plumbing: the segments each drawn DXF entity kind is read as, with the work each costs against the reader's insert budget, behind io.dxf.dxfRead and occt.io.loadDxf"
+        },
+        "recordPointOf": {
+            "internal": "file-format plumbing: the segments each drawn DXF entity kind is read as, with the work each costs against the reader's insert budget, behind io.dxf.dxfRead and occt.io.loadDxf"
+        },
+        "segmentWork": {
+            "internal": "file-format plumbing: the segments each drawn DXF entity kind is read as, with the work each costs against the reader's insert budget, behind io.dxf.dxfRead and occt.io.loadDxf"
+        }
+    },
     "files/dxf/dxf-reader.ts": {
         "readDxfDrawing": {
             "internal": "the DXF reader behind io.dxf.dxfRead and occt.io.loadDxf"
         }
     },
     "files/dxf/dxf-tables.ts": {
+        "dxfMeasurementOf": {
+            "internal": "file-format plumbing behind io.dxf.dxfCreate: the measurement a unit states in the header, which also picks the pattern file a hatch's scale is read against"
+        },
         "writeBlocks": {
             "internal": "file-format plumbing behind io.dxf.dxfCreate: the sections and tables around the entities"
         },
@@ -264,6 +391,9 @@
         "dxfGroupsOf": {
             "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
         },
+        "headerGroupOf": {
+            "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
+        },
         "numberIn": {
             "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
         },
@@ -274,6 +404,9 @@
             "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
         },
         "recordsOf": {
+            "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
+        },
+        "sectionsOf": {
             "internal": "file-format plumbing behind the DXF reader: the text as group codes, values and records"
         },
         "textOf": {
@@ -632,6 +765,11 @@
             "internal": "a caller's length converted into a table's own unit and rounded to the table's resolution, so a size rounded in another unit still matches its row"
         }
     },
+    "geometry/loop-fill.ts": {
+        "filledLoopTriangles": {
+            "exposedAs": "mesh.triangulateLoops"
+        }
+    },
     "geometry/matrices.ts": {
         "composed": {
             "exposedAs": "transforms.combine"
@@ -692,16 +830,16 @@
             "internal": "the box sweep that narrows the drawing readers' outline nesting and crossing tests to the pairs that can touch"
         },
         "filledRegions2": {
-            "internal": "how the SVG and DXF readers turn nested closed outlines into faces with holes under the SVG fill rules; a public method waits for a caller outside the readers"
+            "internal": "how the SVG and DXF readers and `mesh.triangulateLoops` turn nested closed outlines into faces with holes under a fill rule"
         },
         "interiorPoint2": {
-            "internal": "how the SVG and DXF readers turn nested closed outlines into faces with holes under the SVG fill rules; a public method waits for a caller outside the readers"
+            "internal": "how the SVG and DXF readers and `mesh.triangulateLoops` turn nested closed outlines into faces with holes under a fill rule"
         },
         "nestedOutlines2": {
-            "internal": "how the SVG and DXF readers turn nested closed outlines into faces with holes under the SVG fill rules; a public method waits for a caller outside the readers"
+            "internal": "how the SVG and DXF readers and `mesh.triangulateLoops` turn nested closed outlines into faces with holes under a fill rule"
         },
         "nestingOutlineOf2": {
-            "internal": "how the SVG and DXF readers turn nested closed outlines into faces with holes under the SVG fill rules; a public method waits for a caller outside the readers"
+            "internal": "how the SVG and DXF readers and `mesh.triangulateLoops` turn nested closed outlines into faces with holes under a fill rule"
         },
         "outlinesCross2": {
             "internal": "how the SVG and DXF readers turn nested closed outlines into faces with holes under the SVG fill rules; a public method waits for a caller outside the readers"
@@ -931,6 +1069,20 @@
         },
         "triangleTree": {
             "internal": "the acceleration structure the mesh queries build; users ask the query, not for the tree"
+        }
+    },
+    "text/stroke-font.ts": {
+        "strokeFontInk": {
+            "internal": "file-format plumbing: a line of drawing text measured and drawn in font units, behind io.drawing.textSize and io.drawing.textStrokes"
+        },
+        "strokeGlyph": {
+            "exposedAs": "text.vectorChar"
+        },
+        "strokeTextAdvance": {
+            "internal": "file-format plumbing: a line of drawing text measured and drawn in font units, behind io.drawing.textSize and io.drawing.textStrokes"
+        },
+        "strokeTextStrokes": {
+            "internal": "file-format plumbing: a line of drawing text measured and drawn in font units, behind io.drawing.textSize and io.drawing.textStrokes"
         }
     }
 }

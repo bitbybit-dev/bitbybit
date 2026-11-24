@@ -157,9 +157,9 @@ export class Dxf {
     /**
      * Reads a DXF file into path parts by layer, color and line type, the model `dxfCreate` writes.
      *
-     * Lines, arcs, circles, ellipses, polylines and splines are read exactly in the file's
-     * coordinates, block inserts expanded. Text, dimensions and hatches are left out and named in
-     * `warnings`; splines given only by fit points are read by `occt.io.loadDxf`.
+     * Lines, arcs, circles, ellipses, polylines and splines are read exactly, block inserts
+     * expanded, with single-line texts and hatches. Multi-line text and dimensions are named in
+     * `warnings`; `occt.io.loadDxf` reads splines given only by fit points.
      * @param inputs - The DXF file, as text or bytes, and whether hidden layers are read
      * @returns The drawing's parts, unit, version and warnings
      * @group dxf
@@ -173,7 +173,7 @@ export class Dxf {
      */
     dxfRead(inputs: Inputs.IO.DxfReadDto): Inputs.IO.DxfDrawingDto {
         const resolved = resolveDto(Inputs.IO.DxfReadDto, inputs) as Resolved.IO.DxfReadDto;
-        return drawingDtoOf(readDxfDrawing(dxfTextOf(resolved.dxf, "dxf"), resolved.includeHiddenLayers));
+        return drawingDtoOf(readDxfDrawing(dxfTextOf(resolved.dxf, "dxf"), resolved.includeHiddenLayers, true));
     }
 
 }

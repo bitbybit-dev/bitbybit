@@ -18,7 +18,8 @@ become packages of their own, which their service-only surface keeps cheap.
 `lib/api/services/helpers/` is internal: not exported from the services barrel, and reached by direct
 import from the few places that need it, grouped by domain - `geometry/` (vectors, scalars, matrices,
 frame axes, arcs, polygons, paths, triangulation), `mesh/`, `curves/` (NURBS evaluation, adaptive
-surface meshing), `color/` and `files/` (zip, gzip, inflate, crc32, glb, stl, and the drawing model with its
+surface meshing), `color/`, `text/` (the stroke font: glyphs, composed accents, advances and ink) and
+`files/` (zip, gzip, inflate, crc32, glb, stl, and the drawing model with its
 DXF and SVG writers and readers, whose public classes are the `io` service). A helper never sits loose beside
 them. The helper itself is not public API, the service method that wraps it is: base is the toolbox
 people building 3D apps reach for, so a generic helper is exposed (DTO, JSDoc, example) and a service

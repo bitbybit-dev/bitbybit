@@ -19,6 +19,7 @@ describe("kernel-calls barrel", () => {
             "callByPath",
             "checkStructure",
             "checkedSettings",
+            "checkedUpAxis",
             "constraintKinds",
             "custom",
             "defineRules",

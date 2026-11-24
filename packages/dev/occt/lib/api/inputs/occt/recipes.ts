@@ -1,4 +1,4 @@
-import type { Base } from "@bitbybit-dev/base";
+import { Base } from "@bitbybit-dev/base";
 
 /**
  * A recipe for `recipes.build`, with whether Z turns into Y, whether a root that cannot be built
@@ -7,12 +7,13 @@ import type { Base } from "@bitbybit-dev/base";
  * @beta
  */
 export class BuildRecipeDto {
-    constructor(recipe?: Base.Recipe, adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number) {
+    constructor(recipe?: Base.Recipe, adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, upAxis?: Base.upAxisConversionEnum) {
         if (recipe !== undefined) { this.recipe = recipe; }
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
         if (emptyWhenFailed !== undefined) { this.emptyWhenFailed = emptyWhenFailed; }
         if (facetedMeshes !== undefined) { this.facetedMeshes = facetedMeshes; }
         if (maxTriangles !== undefined) { this.maxTriangles = maxTriangles; }
+        if (upAxis !== undefined) { this.upAxis = upAxis; }
     }
     /**
      * The recipe: steps such as polygons, extrusions and cuts, and the roots to build from them, as
@@ -21,11 +22,19 @@ export class BuildRecipeDto {
      */
     recipe!: Base.Recipe;
     /**
-     * When true, each shape turns a quarter turn about X so the recipe's Z points along Y, which is
-     * up when drawn: `(x, y, z)` becomes `(x, z, -y)`.
-     * @default false
+     * `zUpToYUp` turns each shape a quarter turn about X so the recipe's Z points along Y, and
+     * `(x, y, z)` becomes `(x, z, -y)`; `keep` leaves them. `yUpToZUp` is refused.
+     * @default keep
      */
-    adjustZtoY?: boolean | undefined = false;
+    upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.keep;
+    /**
+     * When true, the shapes turn as `upAxis` `zUpToYUp` does; false, its old default, decides nothing.
+     * True wins over `upAxis` at its default; beside another chosen turn it is refused.
+     * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+     * @default undefined
+     * @optional true
+     */
+    adjustZtoY?: boolean | undefined;
     /**
      * When true, a root that cannot be built comes back as an empty compound and an opening that
      * cannot is left uncut; when false, either stops the build.

@@ -9,6 +9,7 @@ import type { ManifoldService } from "../../manifold-service";
 import { ManifoldRecipes } from "./recipes";
 
 const { leftHanded, rightHanded } = BaseInputs.Base.coordinateSystemEnum;
+const { keep, zUpToYUp, yUpToZUp } = BaseInputs.Base.upAxisConversionEnum;
 
 type System = BaseInputs.Base.coordinateSystemEnum | undefined;
 type Bounds = number[][];
@@ -27,13 +28,13 @@ const TURNED_TO_Y_UP: Bounds = [[10, 30, -21], [12, 33, -20]];
 const Y_AND_Z_SWAPPED: Bounds = [[10, 30, 20], [12, 33, 21]];
 const X_MIRRORED: Bounds = [[-12, 20, 30], [-10, 21, 33]];
 
-const CASES: [string, System, boolean, Bounds][] = [
-    ["as the recipe says with no coordinate system, as it always has", undefined, false, AS_THE_RECIPE_SAYS],
-    ["turned to y up with no coordinate system, as it always has", undefined, true, TURNED_TO_Y_UP],
-    ["as the recipe says in a right-handed system", rightHanded, false, AS_THE_RECIPE_SAYS],
-    ["turned to y up in a right-handed system", rightHanded, true, TURNED_TO_Y_UP],
-    ["with its x mirrored in a left-handed system", leftHanded, false, X_MIRRORED],
-    ["with y and z swapped in a left-handed system when its z is up", leftHanded, true, Y_AND_Z_SWAPPED],
+const CASES: [string, System, BaseInputs.Base.upAxisConversionEnum, Bounds][] = [
+    ["as the recipe says with no coordinate system, as it always has", undefined, keep, AS_THE_RECIPE_SAYS],
+    ["turned to y up with no coordinate system, as it always has", undefined, zUpToYUp, TURNED_TO_Y_UP],
+    ["as the recipe says in a right-handed system", rightHanded, keep, AS_THE_RECIPE_SAYS],
+    ["turned to y up in a right-handed system", rightHanded, zUpToYUp, TURNED_TO_Y_UP],
+    ["with its x mirrored in a left-handed system", leftHanded, keep, X_MIRRORED],
+    ["with y and z swapped in a left-handed system when its z is up", leftHanded, zUpToYUp, Y_AND_Z_SWAPPED],
 ];
 
 function moved(x: number, y = 0, z = 0): Base.TransformMatrix {
@@ -103,13 +104,13 @@ describe("Manifold recipes in a coordinate system", () => {
     };
     const liftedBox = (): Base.Recipe => recipeOf(BOX, [rootOf(1, moved(10, 20, 30))]);
 
-    describe.each(CASES)("a root placed %s", (_name, system, adjustZtoY, bounds) => {
+    describe.each(CASES)("a root placed %s", (_name, system, upAxis, bounds) => {
         it("should build its solid there, valid and of its own volume", () => {
             // Arrange
             inSystem(system);
 
             // Act
-            const [solid] = manifold.recipes.build({ recipe: liftedBox(), adjustZtoY });
+            const [solid] = manifold.recipes.build({ recipe: liftedBox(), upAxis });
 
             // Assert
             try {
@@ -126,7 +127,7 @@ describe("Manifold recipes in a coordinate system", () => {
             inSystem(system);
 
             // Act
-            const { meshes, placements } = manifold.recipes.meshes({ recipe: liftedBox(), adjustZtoY });
+            const { meshes, placements } = manifold.recipes.meshes({ recipe: liftedBox(), upAxis });
 
             // Assert
             const mesh = meshes[placements[0]!.mesh]!;
@@ -138,11 +139,11 @@ describe("Manifold recipes in a coordinate system", () => {
             // Arrange
             inSystem(system);
             const recipe = liftedTriangle();
-            const asPlaced = placedBySystem(system, adjustZtoY);
+            const asPlaced = placedBySystem(system, upAxis === zUpToYUp);
 
             // Act
-            const { meshes, placements } = manifold.recipes.meshes({ recipe, adjustZtoY, emptyWhenFailed: true });
-            const [surface] = manifold.recipes.surfaceMeshes({ recipe, roots: [0], adjustZtoY });
+            const { meshes, placements } = manifold.recipes.meshes({ recipe, upAxis, emptyWhenFailed: true });
+            const [surface] = manifold.recipes.surfaceMeshes({ recipe, roots: [0], upAxis });
 
             // Assert
             expect(boundsOfPoints(placedPointsOf(meshes[placements[0]!.mesh]!, placements[0]!.matrix))).toEqual(asPlaced);
@@ -205,6 +206,18 @@ describe("Manifold recipes in a coordinate system", () => {
 
         // Assert
         expect(boundsOfPoints(placedPointsOf(meshes[placements[0]!.mesh]!, placements[0]!.matrix))).toEqual(placedBySystem(system, adjustZtoY));
+    });
+
+    it("should refuse yUpToZUp, which no recipe is built, meshed or read with", () => {
+        // Act
+        const building = (): unknown => manifold.recipes.build({ recipe: liftedBox(), upAxis: yUpToZUp });
+        const meshing = (): unknown => manifold.recipes.meshes({ recipe: liftedBox(), upAxis: yUpToZUp });
+        const reading = (): unknown => manifold.recipes.surfaceMeshes({ recipe: liftedBox(), upAxis: yUpToZUp });
+
+        // Assert
+        expect(building).toThrow("`upAxis`");
+        expect(meshing).toThrow("`upAxis`");
+        expect(reading).toThrow("`upAxis`");
     });
 
     it("should build a root as the recipe says when the recipes were made without settings", () => {

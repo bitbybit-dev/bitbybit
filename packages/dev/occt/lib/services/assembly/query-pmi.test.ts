@@ -7,6 +7,8 @@ import { OCCTAssemblyManager } from "./manager";
 import { OCCTAssemblyQuery } from "./query";
 import { OCCTSolid } from "../shapes";
 import { OCCTIO } from "../io";
+import * as Inputs from "../../api/inputs";
+import type * as Models from "../../api/models";
 
 const MISSING: unknown = undefined;
 
@@ -96,6 +98,48 @@ describe("OCCT assembly query reading product manufacturing information", () => 
         ]);
     };
 
+    const stepWithPresentations = (): string => {
+        const step = stepWithPmi();
+        const ids = idsOf(step);
+        const thickness = /(#\d+) = DIMENSIONAL_SIZE\(#\d+,'thickness'\);/.exec(step)![1]!;
+        const flatness = /(#\d+) = FLATNESS_TOLERANCE\(/.exec(step)![1]!;
+        return withEntities(step, id => [
+            `${id(0)} = COORDINATES_LIST('',4,((0.,0.,35.),(10.,0.,35.),(10.,5.,35.),(12.,5.,35.)));`,
+            `${id(1)} = TESSELLATED_CURVE_SET('',${id(0)},((1,2,3,4)));`,
+            `${id(2)} = COORDINATES_LIST('',8,((1.,1.,35.),(5.,1.,35.),(5.,5.,35.),(1.,5.,35.),(2.,2.,35.),(4.,2.,35.),(4.,4.,35.),(2.,4.,35.)));`,
+            `${id(3)} = COMPLEX_TRIANGULATED_SURFACE_SET('',${id(2)},8,(),(),(),((1,2,6),(1,6,5),(2,3,7),(2,7,6),(3,4,8),(3,8,7),(4,1,5),(4,5,8)));`,
+            `${id(4)} = TESSELLATED_GEOMETRIC_SET('',(${id(1)},${id(3)}));`,
+            `${id(5)} = TESSELLATED_ANNOTATION_OCCURRENCE('thickness note',(${id(6)}),${id(4)});`,
+            `${id(6)} = PRESENTATION_STYLE_ASSIGNMENT((${id(7)}));`,
+            `${id(7)} = CURVE_STYLE('',${id(8)},POSITIVE_LENGTH_MEASURE(0.1),${id(9)});`,
+            `${id(8)} = DRAUGHTING_PRE_DEFINED_CURVE_FONT('continuous');`,
+            `${id(9)} = COLOUR_RGB('',0.,0.,0.);`,
+            `${id(10)} = DRAUGHTING_MODEL('',(${id(5)}),${ids.context});`,
+            `${id(11)} = DRAUGHTING_MODEL_ITEM_ASSOCIATION('PMI representation to presentation link','',${thickness},${id(10)},${id(5)});`,
+            `${id(12)} = DIRECTION('',(0.,0.,1.));`,
+            `${id(13)} = DIRECTION('',(1.,0.,0.));`,
+            `${id(14)} = CARTESIAN_POINT('',(0.,0.,35.));`,
+            `${id(15)} = AXIS2_PLACEMENT_3D('',${id(14)},${id(12)},${id(13)});`,
+            `${id(16)} = PLANE('',${id(15)});`,
+            `${id(17)} = ANNOTATION_PLANE('',(${id(6)}),${id(16)},(${id(5)}));`,
+            `${id(18)} = CARTESIAN_POINT('',(0.,30.,0.));`,
+            `${id(19)} = CARTESIAN_POINT('',(10.,30.,0.));`,
+            `${id(20)} = POLYLINE('',(${id(18)},${id(19)}));`,
+            `${id(21)} = GEOMETRIC_CURVE_SET('',(${id(20)}));`,
+            `${id(22)} = ANNOTATION_CURVE_OCCURRENCE('flatness frame',(${id(6)}),${id(21)});`,
+            `${id(23)} = DRAUGHTING_MODEL('',(${id(22)}),${ids.context});`,
+            `${id(24)} = DRAUGHTING_MODEL_ITEM_ASSOCIATION('PMI representation to presentation link','',${flatness},${id(23)},${id(22)});`,
+            `${id(25)} = CARTESIAN_POINT('',(5.,10.,100.));`,
+            `${id(26)} = DIRECTION('',(0.,0.,-1.));`,
+            `${id(27)} = DIRECTION('',(1.,0.,0.));`,
+            `${id(28)} = AXIS2_PLACEMENT_3D('',${id(25)},${id(26)},${id(27)});`,
+            `${id(29)} = PLANAR_BOX('',80.,60.,${id(28)});`,
+            `${id(30)} = VIEW_VOLUME(.PARALLEL.,${id(25)},0.,0.,.F.,0.,.F.,.F.,${id(29)});`,
+            `${id(31)} = CAMERA_MODEL_D3('FRONT',${id(28)},${id(30)});`,
+            `${id(32)} = DRAUGHTING_MODEL('FRONT',(${id(22)},${id(31)}),${ids.context});`,
+        ]);
+    };
+
     const stepWithAnEndlessRadius = (): string => {
         const step = stepOfBrick();
         const ids = idsOf(step);
@@ -178,6 +222,25 @@ describe("OCCT assembly query reading product manufacturing information", () => 
             document.delete();
         });
 
+        it("should name every shape also as the part and the face index getFace gives, the form addDocumentPmi takes, and each datum and frame by letter", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPmi() });
+            const part = query.getDocumentParts({ document }).find(entry => entry.type === "part")!.label;
+            const face = (index: number): Inputs.OCCT.PmiShapeDto => ({ part, kind: Inputs.OCCT.pmiShapeKindEnum.face, index });
+
+            // Act
+            const pmi = query.getDocumentPmi({ document });
+
+            // Assert
+            expect(pmi.dimensions.map(dimension => [dimension.shapeRefs, dimension.otherShapeRefs])).toEqual([[[face(0)], []], [[face(4)], [face(5)]]]);
+            expect(pmi.tolerances.map(tolerance => [tolerance.shapeRefs, tolerance.datumLetters, tolerance.diameterZone, tolerance.material])).toEqual([
+                [[face(1)], [], false, Inputs.OCCT.pmiMaterialConditionEnum.none],
+                [[face(3)], ["A"], false, Inputs.OCCT.pmiMaterialConditionEnum.none],
+            ]);
+            expect(pmi.datums.map(datum => [datum.letter, datum.shapeRefs])).toEqual([["A", [face(2)]]]);
+            document.delete();
+        });
+
         it("should give every entry a label of its own", () => {
             // Arrange
             const document = manager.loadStepToDoc({ stepData: stepWithPmi() });
@@ -218,6 +281,187 @@ describe("OCCT assembly query reading product manufacturing information", () => 
         it("should refuse a document that is missing", () => {
             // Act
             const act = (): unknown => query.getDocumentPmi({ document: MISSING as Handle_TDocStd_Document });
+
+            // Assert
+            expect(act).toThrow(new InputError("`document` is missing or empty, as a load or a build that failed can leave it.", "document"));
+        });
+    });
+
+    describe("getDocumentAnnotations", () => {
+        it("should list the annotations by the labels getDocumentPmi gives them, dimensions first, then tolerances, then datums", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPmi() });
+            const pmi = query.getDocumentPmi({ document });
+
+            // Act
+            const annotations = query.getDocumentAnnotations({ document }).annotations;
+
+            // Assert
+            expect(annotations.map(annotation => [annotation.label, annotation.kind])).toEqual([
+                ...pmi.dimensions.map(dimension => [dimension.label, "dimension"]),
+                ...pmi.tolerances.map(tolerance => [tolerance.label, "tolerance"]),
+                ...pmi.datums.map(datum => [datum.label, "datum"]),
+            ]);
+            document.delete();
+        });
+
+        it("should read each annotation's type and value, a datum's letter as its type", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPmi() });
+
+            // Act
+            const annotations = query.getDocumentAnnotations({ document }).annotations;
+
+            // Assert
+            expect(annotations.map(annotation => annotation.type)).toEqual(["Size_Thickness", "Location_LinearDistance", "Flatness", "Parallelism", "A"]);
+            annotations.map(annotation => annotation.value).forEach((value, at) => expect(value).toBeCloseTo([20, 10, 0.02, 0.03, 0][at]!, 12));
+            document.delete();
+        });
+
+        it("should count the shapes each annotation refers to, both sides of a distance", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPmi() });
+
+            // Act
+            const annotations = query.getDocumentAnnotations({ document }).annotations;
+
+            // Assert
+            expect(annotations.map(annotation => annotation.attached)).toEqual([1, 2, 1, 1, 1]);
+            document.delete();
+        });
+
+        it("should give the annotations of a file of one part to its one product, placed once where it stands", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPmi() });
+
+            // Act
+            const annotations = query.getDocumentAnnotations({ document }).annotations;
+
+            // Assert
+            expect(annotations.map(annotation => [annotation.product, annotation.instance])).toEqual(annotations.map(() => [0, 0]));
+            document.delete();
+        });
+
+        it("should give annotations without lines or letters for a file that carries no presentation", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPmi() });
+
+            // Act
+            const annotations = query.getDocumentAnnotations({ document, deflection: 0.01 }).annotations;
+
+            // Assert
+            expect(annotations.every(annotation => annotation.lines.length === 0 && annotation.fills.length === 0 && annotation.facing === undefined)).toBe(true);
+            document.delete();
+        });
+
+        it("should read a tessellated presentation's lines as one polyline and its letters as the loops their triangles rim, in its plane", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPresentations() });
+
+            // Act
+            const [thickness] = query.getDocumentAnnotations({ document }).annotations;
+
+            // Assert
+            expect(thickness!.name).toBe("thickness note");
+            expect(thickness!.lines).toEqual([[[0, 0, 35], [10, 0, 35], [10, 5, 35], [12, 5, 35]]]);
+            expect(thickness!.fills.map(loop => loop.length)).toEqual([4, 4]);
+            expect(thickness!.fills.flat().every(([, , z]) => z === 35)).toBe(true);
+            expect(thickness!.facing).toEqual([0, 0, 1]);
+            expect(thickness!.plane!.origin).toEqual([0, 0, 35]);
+            expect(thickness!.plane!.normal).toEqual([0, 0, 1]);
+            expect(thickness!.plane!.direction.map(value => value + 0)).toEqual([1, 0, 0]);
+            expect(thickness!.textPoint).toEqual([0, 0, 35]);
+            document.delete();
+        });
+
+        it("should give letter loops that base fills under the even-odd rule to exactly the ring the file's triangles cover", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPresentations() });
+            const [thickness] = query.getDocumentAnnotations({ document }).annotations;
+
+            // Act
+            const filled = occHelper.base.mesh.triangulateLoops({ loops: thickness!.fills });
+
+            // Assert
+            const area = filled.reduce((sum, [a, b, c]) => sum + ((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])) / 2, 0);
+            expect(Math.abs(area)).toBeCloseTo(16 - 4, 12);
+            document.delete();
+        });
+
+        it("should read a curve presentation as a polyline with the point its text is attached at", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPresentations() });
+
+            // Act
+            const flatness = query.getDocumentAnnotations({ document }).annotations.find(annotation => annotation.type === "Flatness");
+
+            // Assert
+            expect(flatness).toMatchObject({ name: "flatness frame", lines: [[[0, 30, 0], [10, 30, 0]]], fills: [], textPoint: [5, 30, 0] });
+            expect(flatness!.facing).toBeUndefined();
+            document.delete();
+        });
+
+        it("should read a saved view with where it looks from and the labels of the annotations it shows", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPresentations() });
+            const flatness = query.getDocumentPmi({ document }).tolerances[0]!;
+
+            // Act
+            const views = query.getDocumentAnnotations({ document }).views;
+
+            // Assert
+            expect(views).toHaveLength(1);
+            expect(views[0]).toMatchObject({ name: "FRONT", isParallel: true, eye: [5, 10, 100], direction: [0, 0, -1], up: [0, -1, 0], width: 80, height: 60, annotations: [flatness.label] });
+            expect(views[0]!.label).not.toBe("");
+            document.delete();
+        });
+
+        it("should give no annotations, no views and nothing left out for a document without any", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepOfBrick() });
+
+            // Act
+            const read = query.getDocumentAnnotations({ document });
+
+            // Assert
+            expect(read).toEqual({ annotations: [], views: [], leftOut: { annotations: 0, views: 0 } });
+            document.delete();
+        });
+
+        it("should turn the annotations and the saved view Y-up with adjustZtoY, swapping Y and Z without conventions and turning a quarter in a right-handed system", () => {
+            // Arrange
+            const document = manager.loadStepToDoc({ stepData: stepWithPresentations() });
+            const read = (system: Inputs.Base.coordinateSystemEnum | undefined, upAxis = Inputs.Base.upAxisConversionEnum.zUpToYUp): Models.OCCT.DocumentAnnotations => {
+                occHelper.base.settings = system === undefined ? {} : { coordinateSystem: system };
+                try {
+                    return query.getDocumentAnnotations({ document, upAxis });
+                } finally {
+                    occHelper.base.settings = {};
+                }
+            };
+            const clean = (values: number[]): number[] => values.map(value => value + 0);
+
+            // Act
+            const swapped = read(undefined);
+            const turned = read(Inputs.Base.coordinateSystemEnum.rightHanded);
+            const toZUp = read(Inputs.Base.coordinateSystemEnum.rightHanded, Inputs.Base.upAxisConversionEnum.yUpToZUp);
+            const asWritten = query.getDocumentAnnotations({ document });
+
+            // Assert
+            expect(swapped.annotations[0]!.lines).toEqual([[[0, 35, 0], [10, 35, 0], [10, 35, 5], [12, 35, 5]]]);
+            expect(clean(swapped.annotations[0]!.facing!)).toEqual([0, 1, 0]);
+            expect(swapped.views[0]).toMatchObject({ eye: [5, 100, 10], direction: [0, -1, 0], up: [0, 0, -1], annotations: asWritten.views[0]!.annotations });
+            expect(turned.annotations[0]!.lines[0]!.map(clean)).toEqual([[0, 35, 0], [10, 35, 0], [10, 35, -5], [12, 35, -5]]);
+            expect(clean(turned.views[0]!.eye)).toEqual([5, 100, -10]);
+            expect(clean(turned.views[0]!.up)).toEqual([0, 0, 1]);
+            expect(toZUp.annotations[0]!.lines[0]!.map(clean)).toEqual([[0, -35, 0], [10, -35, 0], [10, -35, 5], [12, -35, 5]]);
+            expect(asWritten.annotations[0]!.lines).toEqual([[[0, 0, 35], [10, 0, 35], [10, 5, 35], [12, 5, 35]]]);
+            document.delete();
+        });
+
+        it("should refuse a document that is missing", () => {
+            // Act
+            const act = (): unknown => query.getDocumentAnnotations({ document: MISSING as Handle_TDocStd_Document });
 
             // Assert
             expect(act).toThrow(new InputError("`document` is missing or empty, as a load or a build that failed can leave it.", "document"));

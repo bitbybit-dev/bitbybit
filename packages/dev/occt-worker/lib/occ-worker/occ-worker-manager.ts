@@ -1,8 +1,9 @@
 import type { BitbybitSettings, KernelFailureDetails, KernelFailureKind, KernelSteps } from "@bitbybit-dev/base";
-import { KernelCallError, SettingsRelay } from "@bitbybit-dev/base";
+import { InputError, KernelCallError, SettingsRelay } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
 import type { OccInfo } from "./occ-info";
-import type { MeshRetention } from "./constants";
+import type { DocumentReference, DocumentReferences, MeshRetention } from "./constants";
+import { DOCUMENT_REFERENCES } from "./constants";
 import { OccStateEnum } from "./occ-state.enum";
 import type { OCCTWorkerMock } from "./occ-worker-mock";
 
@@ -50,6 +51,7 @@ export class OCCTWorkerManager {
     private stepWords: Int32Array | undefined;
     private progressTimer: ReturnType<typeof setInterval> | undefined;
     private lastProgress = "";
+    private references: DocumentReferences = "latest";
     private readonly settingsRelay = new SettingsRelay((settings) => this.genericCallToWorkerPromise("setSettings", settings), (reason) => this.settingsRefused(reason));
 
     /** True when calls can be cancelled and report progress: the worker shared its progress words. */
@@ -68,6 +70,31 @@ export class OCCTWorkerManager {
         }
         Atomics.store(this.progressWords, STOP_REQUEST_WORD, 1);
         return true;
+    }
+
+    /**
+     * How every call sent from now on reads a reference to an assembly document. A reference to a
+     * version, what a call that changes a document answers, always reads exactly that version. With
+     * `latest`, the default, a reference to a document as its creating call answered it reads the
+     * version the last change sent under `latest` made of it in the run: a script that changes a
+     * document and then exports it, ignoring what the change answered, exports the change, and each
+     * run, begun with `startedTheRun`, starts from the documents as they were made. With `exact` that
+     * reference reads the document as made, so two branches of a dataflow graph made from one
+     * document never see each other's change, and running one branch again gives what running every
+     * call again gives. The worker keeps no way of reading of its own: each call carries the one in
+     * force when it was sent.
+     * @param references - `latest` or `exact`
+     */
+    setDocumentReferences(references: DocumentReferences): void {
+        if (!DOCUMENT_REFERENCES.includes(references)) {
+            throw new InputError(`\`references\` is ${JSON.stringify(references)}; it is ${DOCUMENT_REFERENCES.join(" or ")}.`, "references");
+        }
+        this.references = references;
+    }
+
+    /** How the calls sent now read a reference to an assembly document (`setDocumentReferences`). */
+    get documentReferences(): DocumentReferences {
+        return this.references;
     }
 
     occWorkerAlreadyInitialised(): boolean {
@@ -218,6 +245,7 @@ export class OCCTWorkerManager {
                     inputs: inputs as Record<string, unknown>,
                 },
                 uid,
+                documentReferences: this.references,
             });
         } catch (error) {
             this.promisesMade = this.promisesMade.filter(i => i.uid !== uid);
@@ -234,12 +262,26 @@ export class OCCTWorkerManager {
     }
 
     /**
-     * Tells the worker a run is starting; await it before the run executes. The worker keeps its cache
-     * from one run to the next, and drops all of it here once more than its threshold of 10,000 hashes
-     * has been used - the only automatic bound on the kernel memory the cache holds.
+     * Tells the worker a run is starting; await it before the run executes. Under `latest`
+     * (`setDocumentReferences`) every assembly document is read again as its creating call made it
+     * until a change of the run makes a version of it, so a run made again starts from the
+     * documents as made, not from what the run before changed. The worker keeps its cache from one
+     * run to the next, and drops all of it here once more than its threshold of 10,000 hashes has
+     * been used.
      */
     startedTheRun(): Promise<void> {
         return this.genericCallToWorkerPromise("startedTheRun", {});
+    }
+
+    /**
+     * Frees the kernel objects of document versions the caller no longer holds, as a dataflow graph
+     * does once no node's output names them. Each stays answerable: a call that reads one makes it
+     * again from the change that made it. A document as its creating call made it is left alone;
+     * `deleteDocument` frees that, with every version of it.
+     * @param documents - References to the versions, as the changes answered them
+     */
+    releaseDocumentVersions(documents: readonly DocumentReference[]): Promise<void> {
+        return this.genericCallToWorkerPromise("releaseDocumentVersions", { documents: [...documents] });
     }
 
     /**

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type * as Inputs from "../../api/inputs";
-import { meshTurnedToZUp } from "./mesh-z-up";
+import { meshTurnedBy, meshTurnedToZUp } from "./mesh-z-up";
 
 const mesh = (): Inputs.OCCT.DecomposedMeshDto => ({
     faceList: [{
@@ -96,5 +96,22 @@ describe("meshTurnedToZUp", () => {
 
         // Assert
         expect(answer).toBe(refused);
+    });
+
+    it("should reverse each triangle's winding when the turn mirrors, so the faces keep facing out", () => {
+        // Arrange
+        const swapped: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1];
+        const two = { ...mesh(), faceList: [{ ...mesh().faceList[0]!, triIndexes: [0, 1, 2, 2, 1, 0] }] };
+
+        // Act
+        const turned = meshTurnedBy(two, swapped);
+        const rotated = meshTurnedBy(two, [1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1]);
+
+        // Assert
+        expect(turned.faceList[0]!.triIndexes).toEqual([0, 2, 1, 2, 0, 1]);
+        expect(turned.faceList[0]!.vertexCoord).toEqual([1, 3, 2, 4, 6, 5]);
+        expect(turned.faceList[0]!.normalCoord).toEqual([0, 0, 1, 0, 1, 0]);
+        expect(rotated.faceList[0]!.triIndexes).toEqual([0, 1, 2, 2, 1, 0]);
+        expect(two.faceList[0]!.triIndexes).toEqual([0, 1, 2, 2, 1, 0]);
     });
 });

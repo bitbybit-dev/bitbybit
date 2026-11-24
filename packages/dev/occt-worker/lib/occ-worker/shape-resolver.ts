@@ -1,6 +1,8 @@
 import { callByPath } from "@bitbybit-dev/base";
 import type { CacheHelper } from "./cache-helper";
-import { isShapeReference, isEntityReference, createShapeReference, createEntityReference } from "./constants";
+import { isShapeReference, isEntityReference, isDocumentReference, createShapeReference, createEntityReference, createDocumentReference } from "./constants";
+
+const REFERENCE_NAMES = { shape: "Shape", document: "Document", entity: "Entity" } as const;
 
 /**
  * ShapeResolver handles the recursive resolution of shape and document references in input objects.
@@ -16,7 +18,10 @@ export class ShapeResolver {
     constructor(private readonly cacheHelper: CacheHelper) {}
 
     /**
-     * Recursively resolves all shape and document references in the given value.
+     * Recursively resolves all shape and document references in the given value. A document
+     * reference resolves to exactly the document or version it names, a version made again from its
+     * changes when it is not kept (`CacheHelper.documentAt`); a reference that reads another version
+     * is rewritten before it gets here (`DocumentVersions.atVersionsRead`).
      * 
      * @param value - Any value that may contain shape/document references at any nesting level
      * @returns The value with all references replaced by actual cached objects
@@ -51,6 +56,10 @@ export class ShapeResolver {
             return this.resolveFromCache(value.hash, "shape");
         }
 
+        if (isDocumentReference(value)) {
+            return this.found(this.cacheHelper.documentAt(value.hash), value.hash, "document");
+        }
+
         if (isEntityReference(value)) {
             return this.resolveFromCache(value.hash, "entity");
         }
@@ -62,11 +71,14 @@ export class ShapeResolver {
         return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, this.resolveRecursively(item)]));
     }
 
-    private resolveFromCache(hash: number | string, type: "shape" | "entity"): unknown {
-        const cached = this.cacheHelper.checkCache(hash);
+    private resolveFromCache(hash: number | string, type: keyof typeof REFERENCE_NAMES): unknown {
+        return this.found(this.cacheHelper.checkCache(hash), hash, type);
+    }
+
+    private found(cached: unknown, hash: number | string, type: keyof typeof REFERENCE_NAMES): unknown {
         if (!cached) {
             throw new Error(
-                `${type === "shape" ? "Shape" : "Entity"} with hash ${hash} not found in cache. ` +
+                `${REFERENCE_NAMES[type]} with hash ${hash} not found in cache. ` +
                 "The cache may have been cleaned. Please regenerate the object."
             );
         }
@@ -83,6 +95,7 @@ export class ShapeResolver {
  * This class provides methods to serialize various result types:
  * - Single shapes -> ShapeReference
  * - Assembly documents -> DocumentReference
+ * - Other non-shape kernel objects -> EntityReference
  * - Arrays of shapes  
  * - ObjectDefinition structures (compound shapes with associated data)
  * - Arbitrary nested structures containing shapes/documents
@@ -128,6 +141,10 @@ export class ResultSerializer {
             return this.shapeReference((value as { hash: number | string }).hash, carried);
         }
 
+        if (this.cacheHelper.isDocumentHandle(value) && !Array.isArray(value)) {
+            return createDocumentReference((value as CachedHandle).hash);
+        }
+
         if (this.cacheHelper.isEntityHandle(value) && !Array.isArray(value)) {
             return createEntityReference((value as { hash: number | string }).hash);
         }
@@ -167,6 +184,10 @@ export class ResultSerializer {
             })),
         };
     }
+}
+
+interface CachedHandle {
+    hash: number | string;
 }
 
 interface ObjectDefinitionLike {

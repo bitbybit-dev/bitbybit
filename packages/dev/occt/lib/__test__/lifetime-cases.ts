@@ -8,6 +8,10 @@ import type { Act, Arranged, CaseNotes, LifetimeCases } from "./lifetime-cases-t
 export function lifetimeCases(occt: () => OCCTService, och: () => OccHelper): LifetimeCases {
     const box = (size = 10): TopoDS_Shape => occt().shapes.solid.createBox({ width: size, length: size, height: size, center: [0, 0, 0] });
     const ball = (): TopoDS_Shape => occt().shapes.solid.createSphere({ radius: 6, center: [5, 5, 5] });
+    const boredGearTips = (): { shape: TopoDS_Shape; indexes: number[] } => {
+        const { shape, roles } = occt().parts.mechanical.gears.spurGearWithRoles({ module: 2, teeth: 20, width: 6, bore: 8 });
+        return { shape, indexes: occt().select.edges.between({ shape, indexes: roles["end"]!, otherIndexes: roles["tip"]! }) };
+    };
     const rectangleWire = (): TopoDS_Wire => occt().shapes.wire.createRectangleWire({ width: 8, length: 4, center: [0, 0, 0], direction: [0, 1, 0] });
     const rectangleFace = (): TopoDS_Face => occt().shapes.face.createRectangleFace({ width: 8, length: 4, center: [0, 0, 0], direction: [0, 1, 0] });
     const circleWire = (radius: number, x: number): TopoDS_Wire => occt().shapes.wire.createCircleWire({ radius, center: [x, 0, 0], direction: [0, 1, 0] });
@@ -48,6 +52,8 @@ export function lifetimeCases(occt: () => OCCTService, och: () => OccHelper): Li
         ["thickening a rectangle face", () => { const shape = rectangleFace(); return () => occt().operations.makeThickSolidSimple({ shape, offset: 1 }); }],
         ["rounding every edge of a box", () => { const shape = box(); return () => occt().fillets.filletEdges({ shape, radius: 1 }); }],
         ["bevelling every edge of a box", () => { const shape = box(); return () => occt().fillets.chamferEdges({ shape, distance: 1 }); }],
+        ["rounding the tips of a bored gear, which OCCT makes inside out", () => { const { shape, indexes } = boredGearTips(); return () => occt().fillets.filletEdges({ shape, radius: 0.2, indexes }); }],
+        ["bevelling the tips of a bored gear, which OCCT makes inside out, with history", () => { const { shape, indexes } = boredGearTips(); return () => occt().fillets.chamferEdgesWithHistory({ shape, distance: 0.2, indexes }); }],
         ["cutting a ball out of a box", () => { const shape = box(); const shapes = [ball()]; return () => occt().booleans.difference({ shape, shapes, keepEdges: false }); }],
         ["splitting a box with a face across it", () => { const shape = box(); const shapes = [occt().shapes.face.createRectangleFace({ width: 20, length: 20, center: [0, 0, 0], direction: [1, 0, 0] })]; return () => occt().operations.splitShapeWithShapes({ shape, shapes, localFuzzyTolerance: 1e-7, nonDestructive: false }); }, splittingWorksOnItsInputs],
         ["lofting through circle wires", () => { const shapes = [circleWire(2, 0), occt().shapes.wire.createCircleWire({ radius: 1, center: [0, 5, 0], direction: [0, 1, 0] })]; return () => occt().operations.loft({ shapes, makeSolid: true }); }],
@@ -174,6 +180,10 @@ export function lifetimeCases(occt: () => OCCTService, och: () => OccHelper): Li
         ["revolving a face about an axis with no length", () => { const shape = occt().shapes.face.createSquareFace({ size: 2, center: [5, 0, 0], direction: [0, 0, 1] }); return () => occt().operations.revolve({ shape, angle: 90, direction: [0, 0, 0], copy: false }); }, { refusedBy: { kind: "input", property: "direction" } }],
         ["rounding the edges of a lone face", () => { const shape = rectangleFace(); return () => occt().fillets.filletEdges({ shape, radius: 0.1 }); }, { refusedBy: { kind: "operation", code: "occt.fillet.failed" } }],
         ["bevelling the edges of a lone face", () => { const shape = rectangleFace(); return () => occt().fillets.chamferEdges({ shape, distance: 0.1 }); }, { refusedBy: { kind: "operation", code: "occt.chamfer.failed" } }],
+        ["rounding the corner of a box nearest a point with a radius of 0", () => { const shape = box(); return () => occt().corners.filletCornerByPoint({ shape, points: [[5, 5, 5]], radius: 0 }); }, { refusedBy: { kind: "input", property: "radius" } }],
+        ["rounding the corner of a box nearest a point with a radius that is not a number", () => { const shape = box(); return () => occt().corners.filletCornerByPoint({ shape, points: [[5, 5, 5]], radius: notANumber }); }, { refusedBy: { kind: "input", property: "radius" } }],
+        ["bevelling the corner of a box nearest a point by a distance below 0", () => { const shape = box(); return () => occt().corners.chamferCornerByPoint({ shape, points: [[5, 5, 5]], distance: -1 }); }, { refusedBy: { kind: "input", property: "distance" } }],
+        ["bevelling the corner of a box nearest a point by an endless distance", () => { const shape = box(); return () => occt().corners.chamferCornerByPoint({ shape, points: [[5, 5, 5]], distance: Number.POSITIVE_INFINITY }); }, { refusedBy: { kind: "input", property: "distance" } }],
         ["rounding two edges by index with one radius listed", () => { const shape = box(); return () => occt().fillets.filletEdges({ shape, indexes: [0, 1], radiusList: [0.5] }); }, { refusedBy: { kind: "input", property: "radiusList" } }],
         ["bevelling two edges by index with one distance listed", () => { const shape = box(); return () => occt().fillets.chamferEdges({ shape, indexes: [0, 1], distanceList: [0.5] }); }, { refusedBy: { kind: "input", property: "distanceList" } }],
         ["bevelling an edge by distance and angle without its face", () => { const shape = box(); const edge = occt().shapes.edge.getEdge({ shape, index: 0 }); const inputs = { shape, edge, distance: 0.5, angle: 45 } as Inputs.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>; return () => occt().fillets.chamferEdgeDistAngle(inputs); }, { refusedBy: { kind: "input", property: "face" } }],

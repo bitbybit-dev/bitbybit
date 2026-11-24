@@ -33,7 +33,7 @@ export class OCCTRecipes {
      * @example
      * ```typescript
      * const recipe = await bitbybit.ifc.geometry.recipe({ model });
-     * const shapes = await bitbybit.occt.recipes.build({ recipe, adjustZtoY: true, emptyWhenFailed: true });
+     * const shapes = await bitbybit.occt.recipes.build({ recipe, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp, emptyWhenFailed: true });
      * ```
      */
     build(inputs: Inputs.OCCT.BuildRecipeDto): Promise<Inputs.OCCT.TopoDSShapePointer[]> {

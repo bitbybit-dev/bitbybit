@@ -3,14 +3,15 @@ import { resolve } from "node:path";
 import { occtDtoRegistry } from "@bitbybit-dev/occt";
 import { jscadDtoRegistry } from "@bitbybit-dev/jscad";
 import { manifoldDtoRegistry } from "@bitbybit-dev/manifold";
-import { CONVENTIONS_SURFACE, conventionSensitiveMentions, isConventionSensitive } from "./conventions-surface";
+import { CURRENT_CONVENTIONS } from "@bitbybit-dev/base";
+import { CONVENTION_CHANGES, CONVENTIONS_SURFACE, conventionSensitiveMentions, isConventionSensitive } from "./conventions-surface";
 import type { OperationRoot } from "./__test__/coordinate-system-readers";
 import { operationsReachingTheSetting } from "./__test__/coordinate-system-readers";
 
 type Registry = Record<string, { constraints?: Record<string, unknown> }>;
 
 const REGISTRIES: [string, Registry][] = [["occt", occtDtoRegistry], ["jscad", jscadDtoRegistry], ["manifold", manifoldDtoRegistry]];
-const NAMES_AN_UP_AXIS_OR_A_HAND = ["adjustYtoZ", "adjustZtoY", "fromRightHanded", "clockwise", "helixAngle"];
+const NAMES_AN_UP_AXIS_OR_A_HAND = ["upAxis", "adjustYtoZ", "adjustZtoY", "fromRightHanded", "clockwise", "helixAngle"];
 const TURN_SENSE_IN_A_FLAT_PLANE = ["jscad.path.appendArc"];
 
 const PACKAGES = resolve(process.cwd(), "..");
@@ -70,6 +71,33 @@ describe("the operations a conventions level changes", () => {
 
         // Assert
         expect(unknown).toEqual([]);
+    });
+
+    it("should describe every operation once for each level that changes it, a service entry counting for every operation under it", () => {
+        // Act
+        const listed = CONVENTION_CHANGES.flatMap((change) => change.entries.map((entry) => ({ level: change.level, entry })));
+        const overlapping = listed.flatMap((one, at) => listed
+            .filter((other, otherAt) => otherAt !== at && other.level === one.level && (other.entry === one.entry || (one.entry.endsWith(".") && other.entry.startsWith(one.entry))))
+            .map((other) => `level ${one.level}: ${one.entry} and ${other.entry}`));
+
+        // Assert
+        expect(overlapping).toEqual([]);
+    });
+
+    it("should make each change at a level from 1 to the newest the libraries know", () => {
+        // Act
+        const levels = CONVENTION_CHANGES.map((change) => change.level);
+
+        // Assert
+        expect(levels.filter((level) => !Number.isSafeInteger(level) || level < 1 || level > CURRENT_CONVENTIONS)).toEqual([]);
+    });
+
+    it("should say what each change is about before what changes, and change something", () => {
+        // Act
+        const unworded = CONVENTION_CHANGES.filter((change) => change.entries.length === 0 || !/^[A-Z0-9][^:]+: \S/.test(change.change));
+
+        // Assert
+        expect(unworded).toEqual([]);
     });
 
     describe("reaching the coordinate system", () => {

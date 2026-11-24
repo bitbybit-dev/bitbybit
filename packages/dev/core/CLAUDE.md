@@ -134,7 +134,10 @@ that it delegates.
 
 `lib/api/conventions-surface.ts` lists every operation whose results depend on the conventions
 level, as dotted paths (one ending in a dot stands for a whole service), with `isConventionSensitive`
-for a path and `conventionSensitiveMentions` for source code. Content that uses none of them runs the
+for a path and `conventionSensitiveMentions` for source code. The list is written once, as
+`CONVENTION_CHANGES`: each level's changes in words, with the operations each one changes, and
+`CONVENTIONS_SURFACE` is their entries. A new operation on the surface therefore comes with the
+sentence that tells a reader what the level changes in it. Content that uses none of them runs the
 same at every level. Three guards keep it true: every registered operation whose inputs name an up
 axis or a hand must be on it, every entry must exist, and every public operation whose code reaches a
 read of the coordinate-system setting must be on it. That last one follows the calls with the type

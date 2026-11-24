@@ -1145,6 +1145,36 @@ export class OCCTOperations {
     }
 
     /**
+     * Cuts shapes with the plane of a frame and hatches the cut faces in one call: for each shape its
+     * cut faces, their hatch lines as edges, and each face's hatch as drawing data in the frame's
+     * coordinates.
+     *
+     * The hatches write to DXF or SVG beside `hiddenLines` of the same frame, and `bitbybit.draw`
+     * draws the result. Experimental.
+     * @param inputs - The shapes, the frame, the hatch pattern, angle and spacing, and the tolerances
+     * @returns The frame and, for each shape in order, its angle and its hatched cut faces
+     * @group divisions
+     * @shortname hatched section by frame
+     * @drawable true
+     * @beta
+     * @example
+     * ```typescript
+     * const section = await bitbybit.occt.operations.hatchedSectionByFrame({
+     *     shapes: [housing, shaft],
+     *     frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] },
+     *     pattern: Bit.Inputs.IO.hatchPatternEnum.ansi31,
+     *     angle: 45,
+     *     spacing: 2,
+     * });
+     * const hatches = section.shapes.flatMap(cut => cut.caps.map(cap => cap.hatch));
+     * const dxf = await bitbybit.occt.io.dxfCreate({ pathsParts: [{ layer: "hatch", paths: [], hatches }] });
+     * ```
+     */
+    hatchedSectionByFrame(inputs: Inputs.OCCT.HatchedSectionByFrameDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.HatchedSection<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.hatchedSectionByFrame", inputs);
+    }
+
+    /**
      * Cuts a face into pieces along edges or wires lying on it, like scoring a sheet.
      *
      * A cutter cuts only where it lies on the face, and a closed loop inside it cuts out the region it
@@ -1206,10 +1236,41 @@ export class OCCTOperations {
      *     hiddenEdges: true,
      *     focus: 0,
      *     precision: 0.01,
+     *     tidy: false,
      * });
      * ```
      */
     hiddenLines(inputs: Inputs.OCCT.HiddenLinesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.HiddenLinesResult<Inputs.OCCT.TopoDSCompoundPointer>> {
         return this.occWorkerManager.genericCallToWorkerPromise("operations.hiddenLines", inputs);
+    }
+
+    /**
+     * Draws a shape as `hiddenLines` does, with the edges sorted by kind, so a drawing can give
+     * each its own line weight.
+     *
+     * `sharp` holds the edges where faces meet at an angle, `outline` the silhouettes of curved
+     * faces and `smooth` the edges where faces meet without a crease; `hiddenSharp`,
+     * `hiddenOutline` and `hiddenSmooth` hold the same where faces cover them.
+     * @param inputs - The shape, the view frame and the drawing options
+     * @returns Six compounds of edges on the XZ plane: three kinds seen and the same three hidden
+     * @group views
+     * @shortname hidden lines by kind
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { sharp, outline, hiddenSharp, hiddenOutline } = await bitbybit.occt.operations.hiddenLinesByKind({
+     *     shape: part,
+     *     frame: { origin: [0, 0, 0], normal: [1, 1, 1], direction: [1, 0, -1] },
+     *     exact: true,
+     *     smoothEdges: false,
+     *     hiddenEdges: true,
+     *     focus: 0,
+     *     precision: 0.01,
+     *     tidy: false,
+     * });
+     * ```
+     */
+    hiddenLinesByKind(inputs: Inputs.OCCT.HiddenLinesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.HiddenLinesByKindResult<Inputs.OCCT.TopoDSCompoundPointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.hiddenLinesByKind", inputs);
     }
 }

@@ -1,13 +1,17 @@
-import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, Handle_TDocStd_Document } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper, OCCTService, occtDtoRegistry, occtDtoRules, readKernelException } from "@bitbybit-dev/occt";
 import type { BitbybitSettings } from "@bitbybit-dev/base";
-import { InputError, describeKernelFailure, prepareKernelCall, setKernelStepSink, settingsCacheKey } from "@bitbybit-dev/base";
+import { InputError, describeKernelFailure, isRecord, prepareKernelCall, setKernelStepSink, settingsCacheKey } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
-import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
+import type { DocumentChange } from "./cache-helper";
+import type { DocumentReferences } from "./constants";
+import { WorkerMessages, NON_CACHEABLE_FUNCTIONS, DOCUMENT_CHANGING_FUNCTIONS, DOCUMENT_REFERENCES, isDocumentReference } from "./constants";
+import type { DocumentKernel, VersionRecipe } from "./document-versions";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
 import type { CommandContext, PostMessage } from "./command-handlers";
 import { getCommandHandler } from "./command-handlers";
 import { releaseMadeObjects } from "./kernel-objects";
+import type { KernelPmiItems } from "./kernel-object-types";
 
 let kernel: BitbybitOcctModule;
 let openCascade: OCCTService;
@@ -75,6 +79,12 @@ export type DataInput = {
      * Unique identifier used to match responses with their corresponding requests.
      */
     uid: string;
+
+    /**
+     * How the call reads a reference to an assembly document (`DocumentReferences`); `latest` when
+     * left out, as from a manager that predates it.
+     */
+    documentReferences?: DocumentReferences | undefined;
 };
 
 const tellPlugins = (given: BitbybitSettings): void => {
@@ -118,6 +128,7 @@ export const initializationComplete = (
     lostKernel = undefined;
     restartKernel = restart;
     cacheHelper = new CacheHelper();
+    cacheHelper.useDocumentKernel(documentKernel);
 
     occHelper = new OccHelper(occ);
     occHelper.base.settings = settings;
@@ -159,8 +170,9 @@ export const initializationComplete = (
     return cacheHelper;
 };
 
-function createCommandContext(): CommandContext {
+function createCommandContext(documentReferences: DocumentReferences): CommandContext {
     return {
+        documentReferences,
         openCascade,
         meshing: occHelper.meshingService,
         kernel,
@@ -226,22 +238,85 @@ function postHandedOver(message: Parameters<PostMessage>[0], transfer: ArrayBuff
     }
 }
 
+const WEBASSEMBLY_TRAP = "RuntimeError";
+
+const documentReferencesOf = (given: unknown): DocumentReferences => {
+    if (given === undefined) {
+        return "latest";
+    }
+    const known = DOCUMENT_REFERENCES.find(references => references === given);
+    if (known === undefined) {
+        throw new InputError(`\`documentReferences\` is ${JSON.stringify(given)}; it is ${DOCUMENT_REFERENCES.join(" or ")}, or left out for latest.`, "documentReferences");
+    }
+    return known;
+};
+
+function documentChangedBy(functionName: string, inputs: unknown): DocumentChange | undefined {
+    const property = DOCUMENT_CHANGING_FUNCTIONS.get(functionName);
+    const document = property !== undefined && isRecord(inputs) ? inputs[property] : undefined;
+    return property !== undefined && isDocumentReference(document) ? { property, document } : undefined;
+}
+
+function computedBy(functionName: string, resolvedInputs: unknown): unknown {
+    const computed = functionPathResolver.callFunction(openCascade, functionName, resolvedInputs);
+    if (stopRequested()) {
+        releaseMadeObjects(computed, resolvedInputs);
+        throw new CallStopped();
+    }
+    return computed;
+}
+
+function changedBy(functionName: string, inputs: Record<string, unknown>, property: string, document: Handle_TDocStd_Document): unknown {
+    const others = Object.fromEntries(Object.entries(inputs).filter(([key]) => key !== property));
+    return computedBy(functionName, { ...shapeResolver.resolveShapeReferences(others), [property]: document });
+}
+
+function underSettings<T>(given: BitbybitSettings, run: () => T): T {
+    const before = settings;
+    if (JSON.stringify(given) === JSON.stringify(before)) {
+        return run();
+    }
+    occHelper.base.settings = given;
+    tellPlugins(given);
+    try {
+        return run();
+    } finally {
+        occHelper.base.settings = before;
+        tellPlugins(before);
+    }
+}
+
+function labelsOf(document: Handle_TDocStd_Document): number {
+    const pmi = JSON.parse(kernel.DocumentPmiJson(document)) as KernelPmiItems;
+    const pmiLabels = pmi.dimensions.length + pmi.tolerances.length + pmi.datums.length;
+    return openCascade.assembly.query.getDocumentParts({ document })
+        .reduce((labels, part) => labels + 1 + part.instanceCount, pmiLabels);
+}
+
+const documentKernel: DocumentKernel = {
+    copy: (document: Handle_TDocStd_Document): Handle_TDocStd_Document => kernel.CopyDocument(document),
+    replay: (recipe: VersionRecipe, document: Handle_TDocStd_Document): unknown => underSettings(recipe.settings, () => changedBy(recipe.functionName, recipe.inputs, recipe.property, document)),
+    weigh: labelsOf,
+};
+
 function executeStandardFunction(
     action: DataInput["action"],
+    references: DocumentReferences,
     carried: Set<string | number>
 ): unknown {
     const call = prepareKernelCall("OCCT", occtDtoRegistry, action.functionName, action.inputs, occtDtoRules);
+    const inputs = cacheHelper.documents.atVersionsRead(call.inputs as Record<string, unknown>, references);
+    const change = documentChangedBy(action.functionName, inputs);
 
-    const res = cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs, settings: settingsCacheKey(settings) }, () => {
-        call.reportIssues();
-        const resolvedInputs = shapeResolver.resolveShapeReferences(call.inputs);
-        const computed = functionPathResolver.callFunction(openCascade, action.functionName, resolvedInputs);
-        if (stopRequested()) {
-            releaseMadeObjects(computed, resolvedInputs);
-            throw new CallStopped();
-        }
-        return computed;
-    });
+    const res = change === undefined
+        ? cacheHelper.cacheOp({ functionName: action.functionName, inputs, settings: settingsCacheKey(settings) }, () => {
+            call.reportIssues();
+            return computedBy(action.functionName, shapeResolver.resolveShapeReferences(inputs));
+        })
+        : cacheHelper.changeOp({ functionName: action.functionName, inputs, settings: settingsCacheKey(settings) }, change, references, document => {
+            call.reportIssues();
+            return changedBy(action.functionName, inputs, change.property, document);
+        });
 
     return resultSerializer.serializeResult(res, carried);
 }
@@ -282,6 +357,8 @@ export const onMessageInput = (
     let transfer: ArrayBuffer[] | undefined;
     let started = "";
     const carried = new Set<string | number>();
+    const calledOn = cacheHelper;
+    calledOn.documents.beginCall();
 
     try {
         if (typeof d.action?.functionName !== "string" || d.action.functionName === "") {
@@ -289,15 +366,16 @@ export const onMessageInput = (
         }
         const { functionName, inputs } = d.action;
         started = functionName;
+        const references = documentReferencesOf(d.documentReferences);
 
         const commandHandler = getCommandHandler(functionName);
 
         if (commandHandler) {
-            const commandResult = commandHandler(inputs, createCommandContext());
+            const commandResult = commandHandler(inputs, createCommandContext(references));
             result = commandResult.result;
             transfer = commandResult.transfer;
         } else if (!NON_CACHEABLE_FUNCTIONS.has(functionName)) {
-            result = executeStandardFunction(d.action, carried);
+            result = executeStandardFunction(d.action, references, carried);
         }
 
         if (stopRequested()) {
@@ -309,7 +387,11 @@ export const onMessageInput = (
             postMessage({ uid: d.uid, result });
         }
         cacheHelper.countAnswer(carried);
+        cacheHelper.documents.settleCall();
     } catch (e) {
+        if (!(e instanceof Error && e.name === WEBASSEMBLY_TRAP)) {
+            calledOn.documents.abandonCall();
+        }
         const cancelled = (): void => postMessage({ uid: d.uid, result: undefined, error: `OCCT '${started}' was cancelled before it finished; nothing it made was kept.`, errorKind: "cancelled" });
         if (e instanceof CallStopped) {
             cancelled();

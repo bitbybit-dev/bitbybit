@@ -31,7 +31,7 @@ export class ManifoldRecipes {
      * @example
      * ```typescript
      * const recipe = await bitbybit.ifc.geometry.recipe({ model });
-     * const solids = await bitbybit.manifold.recipes.build({ recipe, adjustZtoY: true, emptyWhenFailed: true });
+     * const solids = await bitbybit.manifold.recipes.build({ recipe, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp, emptyWhenFailed: true });
      * ```
      */
     build(inputs: Inputs.Manifold.BuildRecipeDto): Promise<Inputs.Manifold.ManifoldPointer[]> {
@@ -52,7 +52,7 @@ export class ManifoldRecipes {
      * @example
      * ```typescript
      * const recipe = await bitbybit.ifc.geometry.recipe({ model });
-     * const { meshes, placements } = await bitbybit.manifold.recipes.meshes({ recipe, adjustZtoY: true, emptyWhenFailed: true });
+     * const { meshes, placements } = await bitbybit.manifold.recipes.meshes({ recipe, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp, emptyWhenFailed: true });
      * ```
      */
     meshes(inputs: Inputs.Manifold.BuildRecipeMeshesDto): Promise<Inputs.Manifold.RecipeMeshesDto> {
@@ -72,10 +72,10 @@ export class ManifoldRecipes {
      * @drawable true
      * @example
      * ```typescript
-     * const solids = await bitbybit.manifold.recipes.build({ recipe, adjustZtoY: true, emptyWhenFailed: true });
+     * const solids = await bitbybit.manifold.recipes.build({ recipe, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp, emptyWhenFailed: true });
      * const meshes = await bitbybit.manifold.manifold.manifoldsToMeshes({ manifolds: solids });
      * const open = meshes.flatMap((mesh, index) => mesh.triVerts.length === 0 ? [index] : []);
-     * const surfaces = await bitbybit.manifold.recipes.surfaceMeshes({ recipe, roots: open, adjustZtoY: true });
+     * const surfaces = await bitbybit.manifold.recipes.surfaceMeshes({ recipe, roots: open, upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp });
      * ```
      */
     surfaceMeshes(inputs: Inputs.Manifold.RecipeSurfaceMeshesDto): Promise<Inputs.Manifold.DecomposedManifoldMeshDto[]> {

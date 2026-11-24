@@ -340,7 +340,7 @@ describe("assembly names", () => {
             const renamed = manager.setDocLabelName({ document, label: definition!.label, name: "Holder" });
 
             // Assert
-            expect(renamed).toBe(true);
+            expect(renamed).toBe(document);
             const instances = query.getAssemblyHierarchy({ document }).nodes.filter(n => n.refersToPart);
             expect(instances.map(n => n.name)).toEqual(["Left bracket", "Holder (2)", "Holder"]);
             expect(instances.map(n => n.definitionName)).toEqual(["Holder", "Holder", "Holder"]);

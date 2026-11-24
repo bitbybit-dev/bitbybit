@@ -1,5 +1,5 @@
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import type * as Inputs from "../../api/inputs";
+import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { release } from "../base/release";
 import { readKernelException } from "../../kernel-exception";
@@ -36,7 +36,7 @@ function clashItemOf(entry: PlacedPart, context: ClashContext): ClashItem {
     return {
         box: once(() => placedBox(knownBox(context.boxes, entry.hash, entry.shape, context.occ), entry.world)),
         meshable: once(() => context.store.meshable(entry.hash, () => meshableSolid(context.occ, entry.shape))),
-        mesh: once(() => refinedMeshes(error => context.store.mesh(`${entry.hash}\n${String(error)}`, () => trianglesOf(context.occt.shapeToMesh({ shape: entry.shape, precision: error, adjustYtoZ: false, computeMetadata: false, keepMeshData: false }))), meshErrorFrom(knownBox(context.boxes, entry.hash, entry.shape, context.occ)), entry.world)),
+        mesh: once(() => refinedMeshes(error => context.store.mesh(`${entry.hash}\n${String(error)}`, () => trianglesOf(context.occt.shapeToMesh({ shape: entry.shape, precision: error, upAxis: Inputs.Base.upAxisConversionEnum.keep, computeMetadata: false, keepMeshData: false }))), meshErrorFrom(knownBox(context.boxes, entry.hash, entry.shape, context.occ)), entry.world)),
         states: points => classifiedStates(context.occ, entry.shape, local === undefined ? points : points.map(point => movedPoint(local, point))),
     };
 }

@@ -147,6 +147,9 @@ for (const { dir, fromDist } of [...distProjects, ...rootProjects]) {
         fail(`npm ${run("npm", ["--version"]).trim()} answered \`npm pack --json\` in a shape this does not understand: ${JSON.stringify(packOutput).slice(0, 200)}`);
     }
     const shipped = packed.files.map((f) => f.path);
+    if (existsSync(join(dir, "NOTICE")) && !shipped.includes("NOTICE")) {
+        fail(`${manifest.name} has a NOTICE its tarball lacks - the third-party terms it names must ship with the package`);
+    }
     const leaked = shipped.filter((f) => f.endsWith(".tsbuildinfo") || f.endsWith(".npmignore") || f.startsWith("coverage/") || f.startsWith("babel.config"));
     if (leaked.length) {
         fail(`${manifest.name} ships build-only files: ${leaked.join(", ")}`);

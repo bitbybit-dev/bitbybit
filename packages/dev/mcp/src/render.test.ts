@@ -82,6 +82,58 @@ describe("renderMember", () => {
         // Assert
         expect(text).toContain("- predefinedType?: wallPredefinedTypeEnum; default \"standard\"; one of standard = \"STANDARD\", solidWall = \"SOLIDWALL\"");
     });
+
+    it("says what each conventions level changes in a member whose result depends on it, after its prose and before its parameters", () => {
+        // Arrange
+        const fileWriter = member({
+            path: "occt.io.saveShapeSTEP",
+            doc: "Writes a STEP file.",
+            params: [{ name: "inputs", type: "SaveStepDto", optional: false }],
+            conventions: [
+                { level: 1, change: "Files you import and export: a file holds what the screen shows." },
+                { level: 2, change: "Units: a file states its unit." },
+            ],
+        });
+
+        // Act
+        const text = renderMember(fileWriter, "9.9.9", []);
+
+        // Assert
+        expect(text).toContain("## Conventions level");
+        expect(text).toContain("`bitbybit.setConventions`");
+        expect(text).toContain("- From level 1: Files you import and export: a file holds what the screen shows.\n- From level 2: Units: a file states its unit.");
+        expect(text.indexOf("Writes a STEP file.")).toBeLessThan(text.indexOf("## Conventions level"));
+        expect(text.indexOf("## Conventions level")).toBeLessThan(text.indexOf("## Parameters"));
+    });
+
+    it("gives each engine's documentation and examples in place of one engine's, when the engines document a member differently", () => {
+        // Arrange
+        const init = member({
+            path: "init",
+            doc: "Connects the library to a BabylonJS scene.",
+            engineDocs: {
+                babylonjs: { doc: "Connects the library to a BabylonJS scene.", examples: ["bitbybit.init(scene, occtWorker);"] },
+                playcanvas: { doc: "Connects the library to a PlayCanvas application.", examples: ["bitbybit.init(app, app.root, occtWorker);"] },
+            },
+        });
+
+        // Act
+        const text = renderMember(init, "9.9.9", [{ path: "init", code: "bitbybit.init(scene, occtWorker);" }]);
+
+        // Assert
+        expect(text).toContain("### playcanvas\n\nConnects the library to a PlayCanvas application.");
+        expect(text).toContain("bitbybit.init(app, app.root, occtWorker);");
+        expect(text).not.toContain("## Examples");
+        expect(text.split("Connects the library to a BabylonJS scene.").length).toBe(2);
+    });
+
+    it("says nothing of conventions for a member that gives the same at every level", () => {
+        // Act
+        const text = renderMember(member({ conventions: [] }), "9.9.9", []);
+
+        // Assert
+        expect(text).not.toContain("onventions");
+    });
 });
 
 describe("IndexReader", () => {

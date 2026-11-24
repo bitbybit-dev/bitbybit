@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
 import { OCCTService } from "@bitbybit-dev/occt";
 import { buildModel, clampParams, defaultParams, flatLengthEstimate, profileArea, removedVolume, type Occt, type PartParams } from "../src/model.ts";
-import { bendLines, summarize, toScene, type UnfoldSolidReport } from "../src/flat.ts";
+import { bendLines, summarize, toPattern, type UnfoldSolidReport, type Vec3 } from "../src/flat.ts";
 import { accessFromResponse, NO_KEY_CODE } from "../src/cloud-access.ts";
 
 interface PartCheck {
@@ -50,18 +50,26 @@ async function check(name: string, params: PartParams): Promise<PartCheck> {
     return { valid, faces: info.nbFaces, volume: round(model.volume), holes: model.mounting.baseHoles.length, slots: model.mounting.flangeSlots.length, bends: estimate.bends, flatEstimate: round(estimate.total) };
 }
 
+const flatBBox: [number, number, number, number] = [0, 0, 150.2, 60];
 const report: UnfoldSolidReport[] = [
-    { solidIndex: 0, ok: true, thickness: 2, kFactor: 0.44, flatBBox: [0, 0, 150.2, 60], flatArea: 9012, bends: [
-        { angleDeg: 90, innerRadius: 2, allowance: 4.52, bendDeduction: 3.48, bendLineLength: 60, lineStart: [30, 0, 0], lineEnd: [30, 60, 0], direction: "up" },
-        { angleDeg: 90, innerRadius: 2, allowance: 4.52, bendDeduction: 3.48, bendLineLength: 60, lineStart: [120.2, 0, 0], lineEnd: [120.2, 60, 0], direction: "up" },
+    { solidIndex: 0, ok: true, thickness: 2, kFactor: 0.44, flatBBox, flatArea: 9012, bends: [
+        { angleDeg: 90, innerRadius: 2, allowance: 4.52, bendDeduction: 3.48, bendLineLength: 60, lineStart: [-38, 2, -30], lineEnd: [-38, 2, 30], flatLineStart: [30, 0, 0], flatLineEnd: [30, 0, -60], flatLineMid: [30, 0, -30], direction: "up" },
+        { angleDeg: 90, innerRadius: 2, allowance: 4.52, bendDeduction: 3.48, bendLineLength: 60, lineStart: [38, 2, -30], lineEnd: [38, 2, 30], flatLineStart: [120.2, 0, 0], flatLineEnd: [120.2, 0, -60], flatLineMid: [120.2, 0, -30], direction: "up" },
+        { angleDeg: 90, innerRadius: 2, allowance: 4.52, bendDeduction: 3.48, bendLineLength: 60, lineStart: [38, 40, -30], lineEnd: [38, 40, 30], direction: "up" },
     ] },
     { solidIndex: 1, ok: false, error: "no constant thickness found" },
 ];
 const lines = bendLines(report);
 const summary = summarize(report);
-if (lines.length !== 2) problems.push(`${lines.length} bend lines from a report with two bends`);
-if (JSON.stringify(toScene([1, 2, 3])) !== JSON.stringify([1, 3, -2])) problems.push("the flat frame is not mapped onto the ground plane");
-if (summary.unfolded !== 1 || summary.bends !== 2 || summary.problems.length !== 1 || round(summary.developedLength ?? 0) !== 150.2) problems.push(`the summary is ${JSON.stringify(summary)}`);
+const onFlat = (point: Vec3): boolean => {
+    const [x, y] = toPattern(point);
+    return Math.abs(point[1]) < 1e-9 && x >= flatBBox[0] && x <= flatBBox[2] && y >= flatBBox[1] && y <= flatBBox[3];
+};
+if (lines.length !== 2) problems.push(`${lines.length} bend lines from a report with two bends on the flat and one the layout cut`);
+if (!lines.every(([start, end]) => onFlat(start) && onFlat(end))) problems.push(`the bend lines ${JSON.stringify(lines)} do not lie on the flat pattern ${JSON.stringify(flatBBox)}`);
+if (!lines.every(([start, end]) => Math.abs(Math.hypot(end[0] - start[0], end[1] - start[1], end[2] - start[2]) - 60) < 1e-9)) problems.push("a bend line is not as long as its bend");
+if (JSON.stringify(toPattern([1, 2, 3])) !== JSON.stringify([1, -3])) problems.push("the ground frame is not mapped onto the flat pattern's own XY");
+if (summary.unfolded !== 1 || summary.bends !== 3 || summary.bendRows.length !== 3 || summary.problems.length !== 1 || round(summary.developedLength ?? 0) !== 150.2) problems.push(`the summary is ${JSON.stringify(summary)}`);
 
 const locked = accessFromResponse(503, { code: NO_KEY_CODE, error: "no key" });
 const ready = accessFromResponse(200, { taskId: "t" });

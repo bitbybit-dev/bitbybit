@@ -132,11 +132,12 @@ package that needs it on a hot path, in one folder per domain:
 
 | Folder | What it holds |
 |---|---|
-| `geometry/` | `vectors` (2D and 3D tuple operations), `scalars` (degree conversion, interpolation, rounding), `matrices` (composition, rigid inverses, the 3x3 eigen solve), `frame-axes` (frames squared, points and vectors moved between a frame and the world, a frame as a matrix), `arcs` (the circle through three points), `ellipse-arcs` (an SVG arc from its end points to its centre, and an elliptical arc's exact image under an affine map), `polygons` (signed area, winding, point in polygon, rounded corners), `polygon-nesting` (boxes, crossings, interior points, and nested outlines filled by the SVG fill rules), `paths` (sweep frames along a polyline, rounded paths), `triangulation` and `vector-grid` (duplicates under a tolerance) |
+| `geometry/` | `vectors` (2D and 3D tuple operations), `scalars` (degree conversion, interpolation, rounding), `matrices` (composition, rigid inverses, the 3x3 eigen solve), `frame-axes` (frames squared, points and vectors moved between a frame and the world, a frame as a matrix), `arcs` (the circle through three points), `ellipse-arcs` (an SVG arc from its end points to its centre, and an elliptical arc's exact image under an affine map), `polygons` (signed area, winding, point in polygon, rounded corners), `polygon-nesting` (boxes, crossings, interior points, and nested outlines filled by the SVG fill rules), `loop-fill` (loops in one plane filled by a fill rule), `paths` (sweep frames along a polyline, rounded paths), `triangulation` and `vector-grid` (duplicates under a tolerance) |
 | `mesh/` | measures (signed volume), normals (smooth and creased), orientation and winding repair, primitives (icosphere, frustum) and proximity trees; the normals and the winding work on indexed meshes, `Base.IndexedMesh` in public |
 | `curves/` | `nurbs` (B-spline curve and surface evaluation), `nurbs-forms` (knot insertion, clamping, Bezier pieces), `bezier-pieces` (rational Bezier evaluation, cubic fitting and sampling within a tolerance), `conic-arcs` (circle and ellipse arcs: points, exact bounds, sampling, rational quadratic form, bulges) and `surface-triangulation` (adaptive meshing of a curved face) |
 | `color/` | the sRGB conversions |
-| `files/` | the zip and gzip readers over one inflater, the stored zip writer, crc32, and the drawing writers: `drawing/` (the model both read), `dxf/` and `svg/`, which also holds the one SVG path data reader (numbers, commands, arcs to centre form, sampling) |
+| `text/` | the single-line stroke font: its glyphs, the Latin letters it composes from a base letter and a mark, and the advances and ink reach a line of text is measured by, behind `text.vectorChar`, `text.vectorText` and the drawing texts |
+| `files/` | the zip and gzip readers over one inflater, the stored zip writer, crc32, and the drawing writers: `drawing/` (the model both read, and a dimension's picture), `dxf/` and `svg/`, which also holds the one SVG path data reader (numbers, commands, arcs to centre form, sampling) |
 
 **The readers take untrusted files, so they bound what a file can cost.** An archive's sizes are
 claims, and deflate can legitimately expand about a thousand times, so `inflateRaw` refuses a claimed
@@ -152,7 +153,7 @@ return tuples and flat arrays, never DTOs: a service call builds an object per c
 its defaults each time, which costs 10 to 300 times the arithmetic, and a file reader calls these per
 vertex. The services are the public face of the same code - `Frame` moves points through
 `frame-axes`, `Vector.cross` is `cross3`, `transforms.combine` is `composed`, `polyline.sweepFrames`
-is `transportedAxes`, and `mesh.triangulatePolygon`, `mesh.icosphere`, `polyline.polygonArea` and
+is `transportedAxes`, `mesh.triangulateLoops` is `filledLoopTriangles`, and `mesh.triangulatePolygon`, `mesh.icosphere`, `polyline.polygonArea` and
 `point.arcThroughThreePoints` wrap the rest - so the helpers themselves stay internal and can change
 shape freely.
 
@@ -190,6 +191,14 @@ deprecated).
   ear is left it clips a flat one, and then any one, which keeps every edge of every loop in the
   result. A face with no area becomes a fan of flat triangles for the same reason. The triangles face
   the way the outline turns; holes may be given either way round.
+- **`filledLoopTriangles` fills loops whose roles nobody names**, as the letters of a STEP file's
+  annotations come: rims of triangles in no order and no agreed direction. It projects every loop on
+  the plane of the largest one's Newell normal, lets `polygon-nesting` decide which loop lies inside
+  which (`nestedOutlines2`, narrowed by `overlappingBoxPairs2`) and which are filled under the rule
+  (`filledRegions2`, the readers' code), and cuts each filled outline with its holes by
+  `triangulateFace`. Every triangle faces the largest loop's way, an outline wound the other way
+  being reversed first. It returns corner indexes into the flat positions it was given, which is what
+  a renderer uploads; `mesh.triangulateLoops` turns them into triangles of points.
 - **An arc through three points runs from the first through the second to the third**, about the
   normal of the three, so the same formula serves points in a plane and in space. Points on one line,
   or two at one place, fix no circle and give nothing.
@@ -432,10 +441,52 @@ finer than a millionth of the drawing's larger side, nor an arc finer than a bil
 radius, whatever the tolerance; a circle, arc or ellipse standing edge-on to the plan is drawn as
 the lines through the turning points of its shadow.
 
+**Hatches a renderer draws itself.** `io.drawing.hatchLines` gives the pattern's lines whole, from
+side to side of the box around the boundaries; `io.drawing.clippedHatchLines` gives the pieces of
+them inside the region, and `io.drawing.hatchOutlines` the region's outlines as closed loops of
+points, so a 3D renderer can draw a hatch without a file. Both flatten the boundaries the way the
+DXF writer joins them (`drawingLoopsOf`: segments whose ends meet become one loop, a loop whose ends
+do not meet is closed straight), bulges sampled as arcs within the DTO's `tolerance`. Inside is the
+even-odd rule over every loop, the rule the SVG writer fills a hatch by: an edge crosses a line when
+one of its ends lies above the line and the other on or below it, so a line through a vertex is
+crossed once or not at all and the crossings along each line pair up. The lines
+stand at the offsets `hatchFamiliesOf` gives every writer, measured from the drawing's origin, so a
+pattern runs on unbroken across neighbouring regions of one angle and spacing. The tests hold the
+result to an area oracle: the pieces' summed length times the spacing is the region's area, holes
+taken out, within the spacing times the boundary's length (the chord length along the lines varies
+by at most the boundary's length, so a sample every spacing errs by at most that) plus the
+boundary's length times the tolerance for the flattening.
+
+**A dimension's picture** (`@beta`, since 2026-11-22). `io.drawing.dimensionPicture` draws a linear,
+diameter, radius or angular dimension in the drawing's plane as plain numbers - polylines, arrowheads
+as closed counterclockwise triangles whose first corner is the tip, the value in the stroke font as
+strokes and as a drawing text - and `io.drawing.dimensionExtent` gives the box of the same layout
+without drawing the letters (`lib/api/services/helpers/files/drawing/drawing-dimension.ts`). The kernels draw nothing: OCCT's
+PMI writer lifts this picture into a dimension's plane, and any renderer or file writer can take it
+as it is. It is not `occt.dimensions`, which builds kernel wires with open arrows and no diameter,
+radius or tolerance, and whose output is a shape, not numbers. The layout follows the drawing
+standards' habits, sized from the text height `h`: extension lines start `h/4` off the measured
+points and run `h/2` past the dimension line; arrowheads are `arrowLength` long (`h` unless given)
+and a third as wide; the text stands `h/4` clear of the line, its descenders included, turned to
+read from left to right or from bottom to top (a rotation in (-90, 90] degrees), and an angle's text
+stands outside its arc. A span shorter than two and a half arrowheads (one and a quarter for a
+radius's single arrow) takes its arrows outside, pointing in, the line running one and a half
+arrowheads past each tip, and a text wider than the room between the arrows goes past the line's
+end, the line extended under it. Values are rounded to `decimalPlaces` and lose trailing zeros;
+tolerances keep six places, written `+0.1/-0.05`, or `±0.1` when equal; a diameter is written after the
+diameter sign (U+2300, which the font draws), a radius after R, an angle before the degree sign. The
+property test (`drawing-dimension-properties.test.ts`, fast-check, seeded) holds every kind to its
+contract over random points, sizes and tolerances: every point inside the extent `dimensionExtent`
+gives, the text point inside what is drawn, the text upright and along its line or across its arc's
+middle, every arrow tip on its extension line or on the measured circle, the two arrowheads apart,
+and no line with two neighbouring points in one place, which the OCCT kernel refuses in a
+presentation.
+
 ### DXF
 
 `files/dxf/` builds the file as a list of lines joined once; spreading a list into `push` overflowed
-the stack past about 25,000 vertices, and a test writes half a million. `AC1015` (AutoCAD 2000) is
+the stack past about 25,000 vertices, and a test writes half a million. The SVG writer and the hatch
+boundary loops append the same way, element by element, for the same reason. `AC1015` (AutoCAD 2000) is
 the default and writes what AutoCAD requires of that version: every table with a handle, an owner
 of 0 and its subclass markers, the records LTYPE ByBlock, ByLayer and CONTINUOUS, layer 0, the STYLE
 and DIMSTYLE Standard (a DIMSTYLE record's handle is group 105), the APPID ACAD, the BLOCK_RECORD
@@ -462,6 +513,13 @@ each entity also carries its part's colour and, when not continuous, its line ty
 when its layer's line type is not. Dashes are
 scaled to the drawing: a two-hundredth of its larger side in plan is the pattern's unit, one
 `patternUnitOf` for DXF and SVG, so a deep drawing dashes alike in both.
+
+A hatch (AC1015 only) names its pattern with an angle and a scale and carries the pattern's lines as
+well, so a program that draws the lines and one that rebuilds the pattern from its name draw the same
+hatch. The scale counts from the pattern file a CAD program takes for the drawing's measurement:
+`acad.pat`'s inch patterns (ANSI31 0.125 apart) when the unit is inches, which also writes
+`$MEASUREMENT` 0, and `acadiso.pat`'s millimetre ones (ANSI31 3.175) for any other unit or none
+(`DXF_HATCH_NATIVE_SPACING`, one rule in `dxfMeasurementOf` for the header and the scale).
 
 ### What other programs make of the files
 
@@ -504,15 +562,16 @@ that differ only in case one layer as in DXF.
 `occt.io.loadDxf` builds the same reading into shapes. Both take the file as text or as bytes:
 `dxf-file-text.ts` reads bytes that are UTF-8 as UTF-8, bytes of a file from AutoCAD 2007 on (`AC1021`)
 as UTF-8 too, and older bytes in the code page the header's `$DWGCODEPAGE` names, or as Windows-1252.
-The reader is four files in `files/dxf/`:
+The reader is six files in `files/dxf/`:
 
 - `dxf-tokens.ts` splits the text into group code and value pairs and the pairs into records, the
   VERTEX records of an old POLYLINE attached to it. It accepts a byte order mark and CRLF or CR line
   ends, refuses a binary DXF, and refuses a code or a number it cannot read, naming the line. A
   `\U+XXXX` escape is exactly four hex digits, one UTF-16 code unit, so a letter after it stays a
   letter and no escape can name a character that does not exist.
-- `dxf-reader.ts` reads the HEADER (`$ACADVER`, and `$INSUNITS` for mm, cm, m and in, a code that is
-  not a number refused; another unit is read as drawn, with a warning), the LAYER table (colour, line type, frozen or switched off) and the
+- `dxf-reader.ts` reads the HEADER (`$ACADVER`, `$INSUNITS` for mm, cm, m and in, a code that is
+  not a number refused; another unit is read as drawn, with a warning; and `$MEASUREMENT` for
+  hatches), the LAYER table (colour, line type, frozen or switched off) and the
   BLOCKS, then walks ENTITIES: LINE, ARC, CIRCLE, ELLIPSE, LWPOLYLINE, POLYLINE (2D with bulges, or
   3D; meshes are left out), SPLINE (control points with knots and weights, or fit points alone) and
   INSERT.
@@ -533,6 +592,17 @@ The reader is four files in `files/dxf/`:
   - Paper space, frozen and switched-off layers (unless `includeHiddenLayers`) and every other entity
     kind are left out, each kind counted in one warning; at most five skipped kinds, missing blocks
     or external references are named, the rest counted together.
+- `dxf-reader-segments.ts` reads the segments of each drawn entity kind and what each costs against
+  the insert limit, worked out once per record.
+- `dxf-reader-annotations.ts` reads TEXT and HATCH for `io.dxf.dxfRead` (`occt.io.loadDxf` leaves them
+  out): a text placed by its horizontal and vertical alignment on the baseline the stroke font draws
+  from, a hatch's polyline and edge boundaries with the pattern its definition lines or its name give.
+  A pattern known only by name and scale counts from `acad.pat`'s inch spacing when the file measures
+  in imperial units - its `$MEASUREMENT`, or when it states none its `$INSUNITS` (inches, feet, miles,
+  microinches, mils and yards, the units ezdxf marks imperial) - and from `acadiso.pat`'s otherwise.
+  Both are read once per record in a block, and each copy costs the insert limit its characters or
+  its boundary's segments. One the reader cannot draw, a hatch spline edge above degree 25 included,
+  is named in a warning.
 - `dxf-reader-geometry.ts` holds the mappings, frame axes composed and applied by
   `geometry/frame-axes.ts` (an insert's axes scaled and turned, so only the world-ward functions
   apply), bulges as exact arcs, and `principalConicOf`, which turns a conic given by any two
@@ -698,7 +768,7 @@ with an `InputError` naming its input.
 
 | Limit | Counted in | Size | Past it |
 |---|---|---|---|
-| Block inserts (`dxf-reader.constants.ts`) | 2 per entity a copy places, plus its points (a line or conic 2, a polyline 1 per point and 1 per bulged span, a spline 1 per control or fit point), plus 1 per array copy | min(1,000,000, max(500,000, 16 x the file's characters)) | the top-level insert that does not fit is left out, with one warning |
+| Block inserts (`dxf-reader.constants.ts`) | 2 per entity a copy places, plus its points (a line or conic 2, a polyline 1 per point and 1 per bulged span, a spline 1 per control or fit point; a text 1 per character, a hatch its boundary's segments counted so), plus 1 per array copy | min(1,000,000, max(500,000, 16 x the file's characters)) | the top-level insert that does not fit is left out, with one warning |
 | Insert nesting | levels | 16 | deeper inserts left out, with one note |
 | Layer, block and line-type names | UTF-16 code units | 255, AutoCAD's limit | read: cut to 255 with one warning; written: refused |
 | Spline degree | degree | 25, OCCT's highest | read: left out as a spline that cannot be drawn; written: refused |

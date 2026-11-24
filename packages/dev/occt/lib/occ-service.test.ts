@@ -24,7 +24,7 @@ describe("OCCT service unit tests", () => {
         const meshDef = service.shapeToMesh({shape: sphere, precision: 0.01, adjustYtoZ: false});
         expect(meshDef).toBeDefined();
         expect(meshDef.faceList.length).toBe(1);
-        expect(meshDef.faceList[0]!.vertexCoord.length).toBe(15318);
+        expect(meshDef.faceList[0]!.vertexCoord.length).toBe(15381);
         expect(meshDef.faceList[0]!.vertexCoord[0]).toEqual(6.123233995736766e-16);
         expect(meshDef.faceList[0]!.vertexCoord[1]).toEqual(-1.4997597826618578e-31);
         expect(meshDef.faceList[0]!.vertexCoord[2]).toEqual(10);
@@ -37,7 +37,7 @@ describe("OCCT service unit tests", () => {
         const meshDef = service.shapeToMesh({shape: sphere, precision: 0.01, adjustYtoZ: true});
         expect(meshDef).toBeDefined();
         expect(meshDef.faceList.length).toBe(1);
-        expect(meshDef.faceList[0]!.vertexCoord.length).toBe(15318);
+        expect(meshDef.faceList[0]!.vertexCoord.length).toBe(15381);
         expect(meshDef.faceList[0]!.vertexCoord[0]).toEqual(6.123233995736766e-16);
         expect(meshDef.faceList[0]!.vertexCoord[1]).toEqual(10);
         expect(meshDef.faceList[0]!.vertexCoord[2]).toEqual(-1.1102230246251567e-15);
@@ -56,7 +56,7 @@ describe("OCCT service unit tests", () => {
         expect(meshDef.length).toBe(2);
         const sphereDef = meshDef[0]!;
         expect(sphereDef.faceList.length).toBe(1);
-        expect(sphereDef.faceList[0]!.vertexCoord.length).toBe(15318);
+        expect(sphereDef.faceList[0]!.vertexCoord.length).toBe(15381);
         expect(sphereDef.faceList[0]!.vertexCoord[0]).toEqual(6.123233995736766e-16);
         expect(sphereDef.faceList[0]!.vertexCoord[1]).toEqual(10);
         expect(sphereDef.faceList[0]!.vertexCoord[2]).toEqual(-1.1102230246251567e-15);

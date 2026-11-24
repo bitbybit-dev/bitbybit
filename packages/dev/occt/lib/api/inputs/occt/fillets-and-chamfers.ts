@@ -159,13 +159,14 @@ export class FilletEdgeVariableRadiusDto<T, U> {
      */
     edge!: U;
     /**
-     * The radius in model units at each position in `paramsU`; the lists must have the same length.
+     * The radius in model units, above 0, at each position in `paramsU`; the lists must have the
+     * same length.
      * @default undefined
      */
     radiusList!: number[];
     /**
-     * Where each radius applies: the first position is the curve's start, the last its end, those
-     * between fractions of its parameter, which match its length only on lines and arcs.
+     * Where each radius applies: a fraction of the edge's length from the start of its curve, 0 to 1,
+     * in any order; an end without one takes the nearest radius.
      * @default undefined
      */
     paramsU!: number[];
@@ -198,8 +199,8 @@ export class FilletEdgesVariableRadiusDto<T, U> {
      */
     radiusLists!: number[][];
     /**
-     * One list per edge of positions, read as in `filletEdgeVariableRadius` (first and last at the
-     * ends of the edge's curve), each pairing with the matching list in `radiusLists`.
+     * One list of positions per edge, each a fraction of that edge's own length as
+     * `filletEdgeVariableRadius` reads it, pairing with the matching list in `radiusLists`.
      * @default undefined
      */
     paramsULists!: number[][];
@@ -227,13 +228,14 @@ export class FilletEdgesSameVariableRadiusDto<T, U> {
     edges!: U[];
 
     /**
-     * The radius in model units at each position in `paramsU`; the lists must have the same length.
+     * The radius in model units, above 0, at each position in `paramsU`; the lists must have the
+     * same length.
      * @default undefined
      */
     radiusList!: number[];
     /**
-     * Where each radius applies on every edge, read as for `filletEdgeVariableRadius`: first and
-     * last positions at the curve's ends, those between along its parameter.
+     * Where each radius applies on every edge, read as for `filletEdgeVariableRadius`: a fraction of
+     * each edge's own length from the start of its curve.
      * @default undefined
      */
     paramsU!: number[];

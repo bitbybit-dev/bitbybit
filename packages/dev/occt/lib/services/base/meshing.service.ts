@@ -3,12 +3,12 @@ import * as Inputs from "../../api/inputs";
 import type { WiresService } from "./wires.service";
 import type { TransformsService } from "./transforms.service";
 import type { BaseBitByBit } from "@bitbybit-dev/base";
-import { InputError } from "@bitbybit-dev/base";
+import { checkedUpAxis, InputError } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { decodeMeshArrays, decodeMeshBuffers, decodePolylines, meshBuffersFromLists, type MeshArrays, type MeshContents } from "./mesh-arrays";
-import { meshTurnedToZUp } from "./mesh-z-up";
-import { shapeTurnedToZUp, TURNED_TO_Z_UP } from "./file-axes";
+import { meshTurnedBy } from "./mesh-z-up";
+import { documentTurnOf, EVERY_UP_AXIS, shapeTurnedToZUp, turnedToZUp, TURNED_TO_Z_UP } from "./file-axes";
 import type { WithIsoCurves } from "./mesh-arrays-types";
 import { checkedChoice, checkedDirection, checkedNumber, checkedShapes, checkedWhole } from "./input-checks";
 import { degreesOf } from "@bitbybit-dev/base/lib/api/services/helpers/geometry/scalars";
@@ -76,16 +76,17 @@ export class MeshingService {
         private readonly transformsService: TransformsService,
     ) { }
 
-    private forZUpConsumer<M>(resolved: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>, meshOf: (inputs: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>) => M): M {
-        if (!resolved.adjustYtoZ || this.base.settings.coordinateSystem !== Inputs.Base.coordinateSystemEnum.rightHanded) {
-            return meshOf(resolved);
+    private forZUpConsumer<M>(resolved: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>, meshOf: (inputs: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>, swapped: boolean) => M): M {
+        const zUp = turnedToZUp(resolved.upAxis);
+        if (!zUp || this.base.settings.coordinateSystem !== Inputs.Base.coordinateSystemEnum.rightHanded) {
+            return meshOf(resolved, zUp);
         }
         const draftDirection = resolved.surfaceAnalysis === Inputs.OCCT.surfaceAnalysisEnum.draftAngle
             ? turnedVector(TURNED_TO_Z_UP, checkedDirection(resolved.draftDirection, "draftDirection"))
             : resolved.draftDirection;
         const turned = shapeTurnedToZUp(this.transformsService, resolved.shape);
         try {
-            return meshOf({ ...resolved, shape: turned, adjustYtoZ: false, draftDirection });
+            return meshOf({ ...resolved, shape: turned, draftDirection }, false);
         } finally {
             turned.delete();
         }
@@ -95,7 +96,7 @@ export class MeshingService {
         const def = this.shapeToMesh({
             shape: inputs.shape,
             precision: inputs.precision,
-            adjustYtoZ: inputs.adjustYtoZ,
+            upAxis: inputs.upAxis,
             computeMetadata: false,
         });
         const res: Inputs.Base.Point3[][] = [];
@@ -132,7 +133,7 @@ export class MeshingService {
             angularDeflection: inputs.angularDeflection,
             relativeDeflection: inputs.relativeDeflection,
             precisionShare: inputs.precisionShare,
-            adjustYtoZ: inputs.adjustYtoZ,
+            upAxis: inputs.upAxis,
             computeMetadata: inputs.computeMetadata,
             keepMeshData: inputs.keepMeshData,
             allowQualityDecrease: inputs.allowQualityDecrease,
@@ -157,7 +158,7 @@ export class MeshingService {
         if (!resolved.shape || resolved.shape.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
-        return this.forZUpConsumer(this.sizedFor(resolved), sized => this.bufferedMesh(sized, decodeMeshArrays) ?? this.jsonMesh(sized));
+        return this.forZUpConsumer(this.sizedFor(resolved), (sized, swapped) => this.bufferedMesh(sized, swapped, decodeMeshArrays) ?? this.jsonMesh(sized, swapped));
     }
 
     shapeToMeshBuffers(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshBuffersDto {
@@ -165,7 +166,7 @@ export class MeshingService {
         if (!resolved.shape || resolved.shape.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
-        return this.forZUpConsumer(this.sizedFor(resolved), sized => this.bufferedMesh(sized, decodeMeshBuffers) ?? meshBuffersFromLists(this.jsonMesh(sized)));
+        return this.forZUpConsumer(this.sizedFor(resolved), (sized, swapped) => this.bufferedMesh(sized, swapped, decodeMeshBuffers) ?? meshBuffersFromLists(this.jsonMesh(sized, swapped)));
     }
 
     shapesToMeshBuffers(inputs: Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshBuffersDto[] {
@@ -173,7 +174,7 @@ export class MeshingService {
         return this.eachShapeOf(resolved).map(shape => this.shapeToMeshBuffers(shape));
     }
 
-    private bufferedMesh<M extends WithIsoCurves>(resolved: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>, decode: (arrays: MeshArrays, contents: MeshContents) => M): M | undefined {
+    private bufferedMesh<M extends WithIsoCurves>(resolved: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>, swapped: boolean, decode: (arrays: MeshArrays, contents: MeshContents) => M): M | undefined {
         const fineness = this.checkedFineness(resolved);
         const isoCurvesU = checkedWhole(resolved.isoCurvesU, "isoCurvesU", 0, MOST_ISO_CURVES);
         const isoCurvesV = checkedWhole(resolved.isoCurvesV, "isoCurvesV", 0, MOST_ISO_CURVES);
@@ -186,7 +187,7 @@ export class MeshingService {
         const arrays = this.meshArrays(meshCall(
             resolved.shape,
             resolved.precision,
-            resolved.adjustYtoZ,
+            swapped,
             resolved.computeMetadata,
             resolved.keepMeshData,
             resolved.allowQualityDecrease,
@@ -199,16 +200,16 @@ export class MeshingService {
         const mesh = decode(arrays, contents);
         if (isoCurvesU + isoCurvesV > 0 && this.kernelHas("IsoCurvePolylines")) {
             const polylines = this.occ.IsoCurvePolylines(resolved.shape, isoCurvesU, isoCurvesV, resolved.precision);
-            mesh.isoCurveList = decodePolylines(copied(polylines.points, Float64Array), copied(polylines.counts, Int32Array), resolved.adjustYtoZ);
+            mesh.isoCurveList = decodePolylines(copied(polylines.points, Float64Array), copied(polylines.counts, Int32Array), swapped);
         }
         return mesh;
     }
 
-    private jsonMesh(resolved: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto {
+    private jsonMesh(resolved: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>, swapped: boolean): Inputs.OCCT.DecomposedMeshDto {
         const json = this.occ.ShapeToMeshJson(
             resolved.shape,
             resolved.precision,
-            resolved.adjustYtoZ,
+            swapped,
             resolved.computeMetadata,
             resolved.keepMeshData,
             resolved.allowQualityDecrease,
@@ -308,14 +309,14 @@ export class MeshingService {
         }
     }
 
-    private documentMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>, index: number, fineness: Fineness): Inputs.OCCT.DecomposedMeshDto | undefined {
+    private documentMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>, index: number, fineness: Fineness, swapped: boolean): Inputs.OCCT.DecomposedMeshDto | undefined {
         const contents = { colors: true, metadata: inputs.computeMetadata };
         const meshCall = this.occ.DocumentToMeshBuffers.bind(this.occ) as (...args: unknown[]) => MeshBuffers;
         const arrays = this.meshArrays(meshCall(
             inputs.document.get(),
             index,
             inputs.precision,
-            inputs.adjustYtoZ,
+            swapped,
             inputs.computeMetadata,
             inputs.keepMeshData,
             inputs.allowQualityDecrease,
@@ -325,23 +326,29 @@ export class MeshingService {
         return arrays ? decodeMeshArrays(arrays, contents) : undefined;
     }
 
-    private turnsDocumentMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>): boolean {
-        return inputs.adjustYtoZ && this.base.settings.coordinateSystem === Inputs.Base.coordinateSystemEnum.rightHanded;
+    private swapsDocumentInKernel(upAxis: Inputs.Base.upAxisConversionEnum): boolean {
+        return upAxis === Inputs.Base.upAxisConversionEnum.yUpToZUp && this.base.settings.coordinateSystem !== Inputs.Base.coordinateSystemEnum.rightHanded;
     }
 
     docToMeshes(inputs: Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
-        return this.turnsDocumentMesh(inputs)
-            ? this.documentMeshes({ ...inputs, adjustYtoZ: false }).map(meshTurnedToZUp)
-            : this.documentMeshes(inputs);
+        const upAxis = checkedUpAxis(inputs.upAxis, EVERY_UP_AXIS);
+        const swapped = this.swapsDocumentInKernel(upAxis);
+        const turn = swapped ? undefined : documentTurnOf(upAxis, this.base.settings.coordinateSystem);
+        return turn === undefined
+            ? this.documentMeshes(inputs, swapped)
+            : this.documentMeshes(inputs, false).map(mesh => meshTurnedBy(mesh, turn));
     }
 
     docToMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto {
-        return this.turnsDocumentMesh(inputs)
-            ? meshTurnedToZUp(this.documentAsOneMesh({ ...inputs, adjustYtoZ: false }))
-            : this.documentAsOneMesh(inputs);
+        const upAxis = checkedUpAxis(inputs.upAxis, EVERY_UP_AXIS);
+        const swapped = this.swapsDocumentInKernel(upAxis);
+        const turn = swapped ? undefined : documentTurnOf(upAxis, this.base.settings.coordinateSystem);
+        return turn === undefined
+            ? this.documentAsOneMesh(inputs, swapped)
+            : meshTurnedBy(this.documentAsOneMesh(inputs, false), turn);
     }
 
-    private documentMeshes(inputs: Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
+    private documentMeshes(inputs: Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>, swapped: boolean): Inputs.OCCT.DecomposedMeshDto[] {
         const doc = inputs.document;
         if (!doc || typeof doc.get !== "function" || typeof doc.IsNull !== "function" || doc.IsNull()) {
             return [];
@@ -352,7 +359,7 @@ export class MeshingService {
             const count = this.occ.DocumentFreeShapeCount(doc.get());
             const meshes: Inputs.OCCT.DecomposedMeshDto[] = [];
             for (let index = 0; index < count; index++) {
-                const mesh = this.documentMesh(inputs, index, fineness);
+                const mesh = this.documentMesh(inputs, index, fineness, swapped);
                 if (!mesh) {
                     break;
                 }
@@ -365,7 +372,7 @@ export class MeshingService {
         const json = this.occ.DocumentToMeshesJson(
             doc.get(),
             inputs.precision,
-            inputs.adjustYtoZ,
+            swapped,
             inputs.computeMetadata,
             inputs.keepMeshData,
             inputs.allowQualityDecrease,
@@ -374,7 +381,7 @@ export class MeshingService {
         return JSON.parse(json) as Inputs.OCCT.DecomposedMeshDto[];
     }
 
-    private documentAsOneMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto {
+    private documentAsOneMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>, swapped: boolean): Inputs.OCCT.DecomposedMeshDto {
         const doc = inputs.document;
         if (!doc || typeof doc.get !== "function" || typeof doc.IsNull !== "function" || doc.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
@@ -382,7 +389,7 @@ export class MeshingService {
        
         const fineness = this.checkedFineness(inputs);
         if (this.kernelHasMeshBuffers()) {
-            const mesh = this.documentMesh(inputs, -1, fineness);
+            const mesh = this.documentMesh(inputs, -1, fineness, swapped);
             if (mesh) {
                 return mesh;
             }
@@ -390,7 +397,7 @@ export class MeshingService {
         const json = this.occ.DocumentToMeshJson(
             doc.get(),
             inputs.precision,
-            inputs.adjustYtoZ,
+            swapped,
             inputs.computeMetadata,
             inputs.keepMeshData,
             inputs.allowQualityDecrease,
@@ -403,8 +410,8 @@ export class MeshingService {
         const shape1 = inputs.shape1;
         const shape2 = inputs.shape2;
 
-        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
-        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1, upAxis: Inputs.Base.upAxisConversionEnum.keep, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2, upAxis: Inputs.Base.upAxisConversionEnum.keep, reversedPoints: false }) as Inputs.Base.Mesh3;
 
         const res = this.base.mesh.meshMeshIntersectionPolylines({
             mesh1, mesh2
@@ -433,8 +440,8 @@ export class MeshingService {
         const shape1 = inputs.shape1;
         const shape2 = inputs.shape2;
 
-        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
-        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1, upAxis: Inputs.Base.upAxisConversionEnum.keep, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2, upAxis: Inputs.Base.upAxisConversionEnum.keep, reversedPoints: false }) as Inputs.Base.Mesh3;
 
         return this.base.mesh.meshMeshIntersectionPoints({ mesh1, mesh2 });
     }

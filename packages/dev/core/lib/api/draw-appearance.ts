@@ -333,16 +333,18 @@ function faceRangesOf(faces: readonly LookMeshFace[]): FaceRange[] {
 
 /**
  * The faces of each look merged into flat arrays, in the order of `groups`, with where each face's
- * triangles are. Indices count from the first vertex of their look.
+ * triangles are. Indices count from the first vertex of their look. With `flipNormals` and
+ * `reverseWinding` the arrays are the back of the faces, for a renderer that draws it apart.
  * @param mesh - The mesh whose faces are merged
  * @param groups - The looks and their faces
+ * @param merge - Whether to turn the normals round and wind every triangle the other way
  * @returns One merged mesh per look
  */
-export function lookMeshesOf(mesh: LookMeshSource, groups: readonly LookGroup[]): LookMesh[] {
+export function lookMeshesOf(mesh: LookMeshSource, groups: readonly LookGroup[], merge: Pick<MeshMerge, "flipNormals" | "reverseWinding"> = {}): LookMesh[] {
     const faces = facesOfLooks(mesh, groups);
     return groups.map((group, at) => {
         const present = faces[at]!;
-        const { positions, normals, indices } = mergedMeshBuffers(present.map(meshPartOf));
+        const { positions, normals, indices } = mergedMeshBuffers(present.map(meshPartOf), merge);
         return { group, positions, normals, indices, faceRanges: faceRangesOf(present) };
     });
 }
@@ -353,13 +355,14 @@ export function lookMeshesOf(mesh: LookMeshSource, groups: readonly LookGroup[])
  * order, with where each look's vertices and indices sit and where each face's triangles are,
  * counted from the start of the whole mesh. A look whose faces hold no triangles is left out, since
  * nothing would wear its material. With `reverseWinding` every triangle is wound the other way, for
- * an engine that reads them clockwise; the normals stay as the faces give them.
+ * an engine that reads them clockwise; with `flipNormals` the normals are turned round, as the back
+ * of the faces needs them, and otherwise they stay as the faces give them.
  * @param mesh - The mesh whose faces are merged
  * @param groups - The looks and their faces
- * @param winding - Whether to wind every triangle the other way
+ * @param winding - Whether to wind every triangle the other way and whether to turn the normals round
  * @returns The merged mesh, the span of each look it holds and the range of each face
  */
-export function lookedMeshOf(mesh: LookMeshSource, groups: readonly LookGroup[], winding: Pick<MeshMerge, "reverseWinding"> = {}): LookedMesh {
+export function lookedMeshOf(mesh: LookMeshSource, groups: readonly LookGroup[], winding: Pick<MeshMerge, "flipNormals" | "reverseWinding"> = {}): LookedMesh {
     const faces = facesOfLooks(mesh, groups);
     const drawn = groups.flatMap((group, at) => faces[at]!.some(face => face.triIndexes.length > 0) ? [{ group, faces: faces[at]! }] : []);
     const drawnFaces = drawn.flatMap(look => look.faces);

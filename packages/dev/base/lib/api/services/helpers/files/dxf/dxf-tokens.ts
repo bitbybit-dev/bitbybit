@@ -1,6 +1,6 @@
 import { InputError } from "../../../../kernel-calls";
 import type { DxfEntityRecord, DxfGroup } from "./dxf-reader-types";
-import { BINARY_SENTINEL, QUOTED_LENGTH } from "./dxf-reader.constants";
+import { BINARY_SENTINEL, GROUP, QUOTED_LENGTH } from "./dxf-reader.constants";
 import { DXF_HEX_RADIX } from "./dxf.constants";
 
 export const dxfGroupsOf = (text: string): DxfGroup[] => {
@@ -80,3 +80,26 @@ export const numbersOf = (record: DxfEntityRecord, code: number): number[] =>
 
 export const decodedText = (value: string): string =>
     value.replace(/\\U\+([0-9A-Fa-f]{4})/g, (_match, hex: string) => String.fromCharCode(parseInt(hex, DXF_HEX_RADIX)));
+
+export const sectionsOf = (groups: readonly DxfGroup[]): Map<string, DxfGroup[]> => {
+    const sections = new Map<string, DxfGroup[]>();
+    let current: DxfGroup[] | undefined;
+    for (let at = 0; at < groups.length; at++) {
+        const group = groups[at]!;
+        if (group.code === 0 && group.value.trim() === "SECTION") {
+            current = [];
+            sections.set(groups[at + 1]?.value.trim() ?? "", current);
+            at++;
+        } else if (group.code === 0 && group.value.trim() === "ENDSEC") {
+            current = undefined;
+        } else {
+            current?.push(group);
+        }
+    }
+    return sections;
+};
+
+export const headerGroupOf = (header: readonly DxfGroup[], name: string): DxfGroup | undefined => {
+    const at = header.findIndex(group => group.code === GROUP.variable && group.value.trim() === name);
+    return at < 0 ? undefined : header[at + 1];
+};

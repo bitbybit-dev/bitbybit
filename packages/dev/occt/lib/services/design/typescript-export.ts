@@ -445,7 +445,7 @@ class Exporter {
         const data = `assets[${JSON.stringify(feature.asset)}]`;
         const call = trace.format === "brep" ? `occt.io.loadBrep({ brepData: ${data} as string })`
             : trace.format === "brep-binary" ? `occt.io.loadBrepBinary({ brepData: ${data} as Uint8Array })`
-                : `occt.io.loadSTEPorIGES({ filetext: ${data} as string | ArrayBuffer, fileName: "asset.${trace.format}", adjustZtoY: false${this.run.unit === Inputs.Base.unitOfLengthEnum.millimetre ? "" : `, unit: ${this.unitCode()}`} })`;
+                : `occt.io.loadSTEPorIGES({ filetext: ${data} as string | ArrayBuffer, fileName: "asset.${trace.format}", upAxis: Bit.Inputs.Base.upAxisConversionEnum.keep${this.run.unit === Inputs.Base.unitOfLengthEnum.millimetre ? "" : `, unit: ${this.unitCode()}`} })`;
         if (feature.child === undefined) {
             this.line(`let ${name} = await ${call};`);
             return;

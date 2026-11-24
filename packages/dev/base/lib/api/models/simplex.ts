@@ -1,7 +1,16 @@
 /*
  * Hershey vector font data, taken from http://paulbourke.net/dataformats/hershey/ by way of the
  * OpenJSCAD project (https://github.com/jscad/OpenJSCAD.org), which publishes it under the MIT
- * License. The notice travels with the data.
+ * License. The Hershey Fonts may be used by anyone for any purpose, provided that these
+ * acknowledgements are distributed with the font data, and that the data is not converted into the
+ * format distributed by the U.S. NTIS:
+ *
+ * - The Hershey Fonts were originally created by Dr. A. V. Hershey while working at the
+ *   U. S. National Bureau of Standards.
+ * - The format of the Font data in this distribution was originally created by James Hurt,
+ *   Cognition, Inc., 900 Technology Park Drive, Billerica, MA 01821 (mit-eddie!ci-dandelion!hurt).
+ *
+ * The package's NOTICE carries the same.
  */
 
 /**
@@ -17,6 +26,8 @@
  *
  * Keys are code points, not indices, so the map is sparse and reaches past ASCII: 176 is the degree
  * symbol. A code point the font does not carry has no entry, which is why lookups are optional.
+ * An accented Latin letter has no entry either: the text service composes it from its letter's
+ * entry and a mark it holds for every font.
  */
 export type VectorFont = { height: number } & { [code: number]: (number | undefined)[] };
 

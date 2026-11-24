@@ -1,8 +1,8 @@
 
 import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, checkDrawableMesh, checkKeptDesignMesh, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, designMeshingTextOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
-import type { KeptDesignMesh, DrawableShapeMesh } from "@bitbybit-dev/core";
+import { DrawHelperCore, annotationsDrawingOf, annotationsInView, checkDrawableMesh, documentAnnotationsInputs, documentMeshInputs, hatchedSectionDrawingOf, checkKeptDesignMesh, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, designMeshingTextOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
+import type { AnnotationsDrawing, DocumentDrawing, FlatTriangles, HatchedSectionDrawing, KeptDesignMesh, DrawableShapeMesh } from "@bitbybit-dev/core";
 import type { FaceLook, FaceRange, LookMesh, MeshPart, PartPlacement } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import type { JSCADText } from "@bitbybit-dev/jscad-worker";
@@ -25,6 +25,9 @@ function float32ViewOf(locked: ArrayBuffer | ArrayBufferView): Float32Array {
 }
 
 const MIRRORED_AXIS_END = 3;
+const BACK_FACE_DEPTH_OFFSET = 0.1;
+const BACK_FACE_METALNESS = 0.4;
+const BACK_FACE_GLOSS = 0.2;
 
 type PolylineEntity = Inputs.Draw.PolylineEntity;
 
@@ -713,6 +716,139 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
+     * Meshes an assembly document in the worker as one mesh carrying the document's colors, turned
+     * turned by `upAxis`, from the file's Z-up into Y-up by default, or with `keep` in the
+     * document's own axes, where `assembly.query.getShapeFromLabel` puts its shapes.
+     * @param document - The document the OCCT kernel holds
+     * @param options - The drawing options, whose meshing settings mesh the document
+     * @returns The mesh of every part the document places
+     * @beta
+     */
+    async documentMesh(document: Inputs.OCCT.TDocStdDocumentPointer, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): Promise<DrawableShapeMesh> {
+        return this.occWorkerManager.genericCallToWorkerPromise<DrawableShapeMesh>("docToMesh", documentMeshInputs(document, options));
+    }
+
+    /**
+     * Reads the annotations of an assembly document in the worker, as
+     * `occt.assembly.query.getDocumentAnnotations` does, at the drawing's precision and turned by
+     * `upAxis` as `documentMesh` turns the parts.
+     * @param document - The document the OCCT kernel holds
+     * @param options - The drawing options, whose precision and `upAxis` are read
+     * @returns The annotations and the saved views
+     * @beta
+     */
+    documentAnnotations(document: Inputs.OCCT.TDocStdDocumentPointer, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): Promise<Models.OCCT.DocumentAnnotations> {
+        return this.occWorkerManager.genericCallToWorkerPromise<Models.OCCT.DocumentAnnotations>("assembly.query.getDocumentAnnotations", documentAnnotationsInputs(document, options));
+    }
+
+    /**
+     * Draws an assembly document, turned by `upAxis`, its parts in
+     * the document's colors, and with
+     * `drawAnnotations` its annotations inside the same entity. The annotations are read and laid out
+     * before anything is drawn, so a view name no saved view bears leaves nothing in the scene.
+     * @param document - The document the OCCT kernel holds
+     * @param options - The drawing options
+     * @returns The entity holding the document, added to the scene
+     * @beta
+     */
+    async drawDocument(document: Inputs.OCCT.TDocStdDocumentPointer, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): Promise<pc.Entity> {
+        const [mesh, annotations] = await Promise.all([
+            this.documentMesh(document, options),
+            options.drawAnnotations ? this.documentAnnotations(document, options) : undefined,
+        ]);
+        const drawing = annotations === undefined ? undefined : annotationsDrawingOf(annotationsInView(annotations, options.annotationsView), options.annotationsFilled);
+        const drawn = await this.handleDecomposedMesh(options, mesh, options);
+        if (drawing !== undefined) {
+            this.drawAnnotations(drawing, options).reparent(drawn);
+        }
+        return drawn;
+    }
+
+    /**
+     * Draws the annotations `occt.assembly.query.getDocumentAnnotations` read, or with
+     * `annotationsView` only those that saved view shows.
+     * @param annotations - The annotations and saved views of a document
+     * @param options - The drawing options, of which the annotation settings are read
+     * @returns An entity holding the lines and the letters, added to the scene
+     * @beta
+     */
+    drawDocumentAnnotations(annotations: Models.OCCT.DocumentAnnotations, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): pc.Entity {
+        return this.drawAnnotations(annotationsDrawingOf(annotationsInView(annotations, options.annotationsView), options.annotationsFilled), options);
+    }
+
+    /**
+     * Draws annotations as a PMI viewer shows them: their lines one pixel wide, as this renderer
+     * draws every line, and their letters filled, both in `annotationColour`, unlit and seen from
+     * either side, and hidden by the model in front of them like any geometry.
+     * @param drawing - The lines and the filled letters, as `annotationsDrawingOf` gives them
+     * @param options - The drawing options, of which the annotation settings are read
+     * @returns An entity holding the lines and the letters, added to the scene
+     * @beta
+     */
+    drawAnnotations(drawing: AnnotationsDrawing, options: Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing): pc.Entity {
+        const group = new pc.Entity(this.generateEntityId("annotations"));
+        this.context.scene.addChild(group);
+        const lines = this.drawPolylines(undefined, drawing.lines, false, options.annotationWidth, 1, options.annotationColour);
+        if (lines) {
+            group.addChild(lines);
+        }
+        if (drawing.indices.length > 0) {
+            group.addChild(this.flatFill("annotationLetters", drawing, options.annotationColour));
+        }
+        return group;
+    }
+
+    /**
+     * Draws a hatched section as a drawing shows a cut: the cut faces filled in `faceColour` with
+     * `drawFaces`, their outlines in `edgeColour` with `drawEdges`, and the hatch lines, and any
+     * solid hatch, in `hatchColour`. Lines are one pixel wide, as this renderer draws every line, so
+     * `hatchWidth` and `edgeWidth` change nothing here. Fills are unlit and seen from either side,
+     * lifted a hair along the frame's normal so they show over the cut faces of the shapes the
+     * section was cut from, and nothing casts a shadow.
+     * @param section - What `occt.operations.hatchedSectionByFrame` returns
+     * @param options - The drawing options; `precision` is how closely curved cut edges are followed
+     * @returns An entity holding the fills and the lines, added to the scene
+     * @beta
+     */
+    drawHatchedSection(section: Models.OCCT.HatchedSection<Inputs.OCCT.TopoDSShapePointer>, options: Resolved.Draw.DrawOcctShapeOptions & HatchedSectionDrawing): pc.Entity {
+        const drawing = hatchedSectionDrawingOf(section, options.precision);
+        const group = new pc.Entity(this.generateEntityId("hatchedSection"));
+        this.context.scene.addChild(group);
+        if (options.drawFaces && drawing.faces.indices.length > 0) {
+            group.addChild(this.flatFill("sectionFaces", drawing.faces, options.faceColour));
+        }
+        if (drawing.ink.indices.length > 0) {
+            group.addChild(this.flatFill("sectionInk", drawing.ink, options.hatchColour));
+        }
+        const lines = this.drawPolylines(undefined, drawing.lines, false, options.hatchWidth, 1, options.hatchColour);
+        if (lines) {
+            group.addChild(lines);
+        }
+        const outlines = options.drawEdges ? this.drawPolylines(undefined, drawing.outlines, false, options.edgeWidth, options.edgeOpacity, options.edgeColour) : undefined;
+        if (outlines) {
+            group.addChild(outlines);
+        }
+        return group;
+    }
+
+    private flatFill(name: string, triangles: FlatTriangles, colour: string): pc.Entity {
+        const mesh = new pc.Mesh(this.context.app.graphicsDevice);
+        mesh.setPositions(triangles.positions);
+        mesh.setIndices(triangles.indices);
+        mesh.update(pc.PRIMITIVE_TRIANGLES);
+        const material = new pc.StandardMaterial();
+        material.name = this.generateEntityId(`${name}Material`);
+        material.diffuse = new pc.Color(0, 0, 0);
+        material.emissive = this.hexToColor(colour);
+        material.useLighting = false;
+        material.cull = pc.CULLFACE_NONE;
+        material.update();
+        const filled = new pc.Entity(this.generateEntityId(name));
+        filled.addComponent("render", { meshInstances: [new pc.MeshInstance(mesh, material)], castShadows: false });
+        return filled;
+    }
+
+    /**
      * Draws a kernel shape in its appearance: one entity whose faces take their looks, a mesh
      * instance and a material each, its back faces when asked, and its edges once, each in its color.
      * @param entity - The shape with its appearance
@@ -885,6 +1021,43 @@ export class DrawHelper extends DrawHelperCore {
         return entity;
     }
 
+    private lookedBackFaceEntity(lookMeshes: readonly LookMesh[], backFaceOpacity: number, zOffset: number): pc.Entity {
+        const group = new pc.Entity(this.generateEntityId("backFaceSurface"));
+        const entity = new pc.Entity(this.generateEntityId("backFaceSurfaceChild"));
+        entity.addComponent("render", {
+            meshInstances: lookMeshes.filter(look => look.indices.length > 0).map(look => {
+                const mesh = new pc.Mesh(this.context.app.graphicsDevice);
+                mesh.setPositions(look.positions);
+                mesh.setNormals(look.normals);
+                mesh.setIndices(look.indices);
+                mesh.update(pc.PRIMITIVE_TRIANGLES);
+                return new pc.MeshInstance(mesh, this.lookBackFaceMaterial(look.group.look, backFaceOpacity, zOffset));
+            }),
+        });
+        group.addChild(entity);
+        return group;
+    }
+
+    private lookBackFaceMaterial(look: FaceLook, backFaceOpacity: number, zOffset: number): pc.StandardMaterial {
+        const opacity = look.opacity * backFaceOpacity;
+        return this.getOrCreateMaterial(`look-back:${look.color}`, opacity, zOffset + BACK_FACE_DEPTH_OFFSET, () => {
+            const material = new pc.StandardMaterial();
+            material.name = this.generateEntityId("backFaceMaterial");
+            material.diffuse = this.hexToColor(look.color);
+            material.metalness = BACK_FACE_METALNESS;
+            material.gloss = BACK_FACE_GLOSS;
+            material.opacity = opacity;
+            if (opacity < 1) {
+                material.blendType = pc.BLEND_NORMAL;
+                material.depthWrite = false;
+            }
+            material.depthBias = zOffset + BACK_FACE_DEPTH_OFFSET;
+            material.slopeDepthBias = zOffset + BACK_FACE_DEPTH_OFFSET;
+            material.update();
+            return material;
+        });
+    }
+
     private lookMaterial(look: FaceLook, faceOpacity: number, zOffset: number): pc.StandardMaterial {
         const opacity = look.opacity * faceOpacity;
         return this.getOrCreateMaterial(`look:${look.color}:${look.metallic ?? "-"}:${look.roughness ?? "-"}:${look.emissive ?? "-"}:${look.emissiveStrength ?? "-"}`, opacity, zOffset, () => {
@@ -1034,19 +1207,17 @@ export class DrawHelper extends DrawHelperCore {
             });
 
             const colorGroups = decomposedMesh.colorGroups;
-            const mesh = !analysisColors && !resolvedOptions.faceMaterial && colorGroups && Object.keys(colorGroups).length > 0
-                ? this.lookedEntity(lookMeshesOf(decomposedMesh, lookGroupsOfColors(colorGroups, decomposedMesh.faceList.map(face => face.faceIndex), hex)), alpha, zOffset)
-                : this.createOrUpdateSurfacesMesh(meshData, undefined, false, pbr, false, false);
-            shapeGroup.addChild(mesh);
+            const looks = !analysisColors && !resolvedOptions.faceMaterial && colorGroups && Object.keys(colorGroups).length > 0
+                ? lookGroupsOfColors(colorGroups, decomposedMesh.faceList.map(face => face.faceIndex), hex)
+                : undefined;
+            shapeGroup.addChild(looks === undefined
+                ? this.createOrUpdateSurfacesMesh(meshData, undefined, false, pbr, false, false)
+                : this.lookedEntity(lookMeshesOf(decomposedMesh, looks), alpha, zOffset));
 
             if (resolved.drawTwoSided !== false) {
-                const backFaceMesh = this.createBackFaceMesh(
-                    meshData, 
-                    resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE, 
-                    resolved.backFaceOpacity,
-                    zOffset
-                );
-                shapeGroup.addChild(backFaceMesh);
+                shapeGroup.addChild(looks === undefined
+                    ? this.createBackFaceMesh(meshData, resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE, resolved.backFaceOpacity, zOffset)
+                    : this.lookedBackFaceEntity(lookMeshesOf(decomposedMesh, looks, { flipNormals: true, reverseWinding: true }), resolved.backFaceOpacity, zOffset));
             }
         }
         if (resolved.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {

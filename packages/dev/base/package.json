@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/base",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "description": "Bit By Bit Developers Base CAD Library to Program Geometry",
     "homepage": "https://docs.bitbybit.dev/modules/Bit",
     "main": "index.js",
@@ -52,7 +52,7 @@
         "clean-dist": "shx rm -rf dist",
         "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
         "copy-package": "node ../../../scripts/dist-manifest.mjs",
-        "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
+        "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist && shx cp -R ./NOTICE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "test": "vitest run",
         "test:coverage": "vitest run --coverage",

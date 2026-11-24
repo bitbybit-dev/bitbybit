@@ -54,15 +54,46 @@ export interface ReadFitSpline {
 
 export type ReadSegment = ReadLine | ReadConic | ReadPolyline | ReadSpline | ReadFitSpline;
 
+export interface OwnSegments {
+    readonly segments: readonly ReadSegment[];
+    readonly work: number;
+    readonly flaw: string | undefined;
+    readonly skipped: string | undefined;
+}
+
 export interface ReadStyle {
     readonly layer: string;
     readonly color: string;
     readonly lineType: Inputs.IO.lineTypeEnum;
 }
 
+export interface PlanarTurn {
+    readonly scale: number;
+    readonly rotation: number;
+}
+
+export interface ReadText {
+    readonly value: string;
+    readonly position: Point3;
+    readonly height: number;
+    readonly anchor: "start" | "middle" | "end";
+    readonly rotation: number;
+    readonly widthFactor: number;
+}
+
+export interface ReadHatch {
+    readonly boundaries: readonly (readonly ReadSegment[])[];
+    readonly pattern: Inputs.IO.hatchPatternEnum;
+    readonly angle: number;
+    readonly spacing: number;
+    readonly simplified: boolean;
+}
+
 export interface ReadEntity {
     readonly style: ReadStyle;
     readonly segments: readonly ReadSegment[];
+    readonly text?: ReadText;
+    readonly hatch?: ReadHatch;
 }
 
 export interface ReadLayer {

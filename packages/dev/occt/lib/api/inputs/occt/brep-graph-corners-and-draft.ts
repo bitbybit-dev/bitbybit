@@ -90,6 +90,8 @@ export class FilletCornerByPointDto<T> {
     /**
      * The rounding radius, in model units.
      * @default 1
+     * @minimum 0
+     * @exclusiveMinimum true
      * @step 0.1
      */
     radius?: number | undefined = 1;
@@ -142,6 +144,8 @@ export class ChamferCornerByPointDto<T> {
     /**
      * How far the bevel reaches back from the corner along its edges, in model units.
      * @default 1
+     * @minimum 0
+     * @exclusiveMinimum true
      * @step 0.1
      */
     distance?: number | undefined = 1;

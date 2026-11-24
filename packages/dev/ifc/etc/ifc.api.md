@@ -86,6 +86,12 @@ export namespace Base {
         start: Base.Point3;
         end: Base.Point3;
     };
+    export enum loopFillRuleEnum {
+        // (undocumented)
+        evenOdd = "evenOdd",
+        // (undocumented)
+        nonZero = "nonZero"
+    }
     export type Material = any;
     export type Mesh3 = Triangle3[];
     export type MeshWindingPieces = {
@@ -377,6 +383,14 @@ export namespace Base {
         metre = "m",
         // (undocumented)
         millimetre = "mm"
+    }
+    export enum upAxisConversionEnum {
+        // (undocumented)
+        keep = "keep",
+        // (undocumented)
+        yUpToZUp = "yUpToZUp",
+        // (undocumented)
+        zUpToYUp = "zUpToYUp"
     }
     export type Vector2 = [number, number];
     export type Vector3 = [number, number, number];
@@ -1803,13 +1817,15 @@ export namespace IFC {
         propertySets?: boolean | undefined;
     }
     export class GeometryToShapesDto<T> {
-        constructor(model?: T, elements?: string[], adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number);
+        constructor(model?: T, elements?: string[], adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, upAxis?: Base.upAxisConversionEnum);
+        // @deprecated
         adjustZtoY?: boolean | undefined;
         elements?: string[] | undefined;
         emptyWhenFailed?: boolean | undefined;
         facetedMeshes?: boolean | undefined;
         maxTriangles?: number | undefined;
         model: T;
+        upAxis?: Base.upAxisConversionEnum | undefined;
     }
     export class GeometryToStepDto<T> {
         constructor(model?: T, elements?: string[], name?: string, fileName?: string, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, compress?: boolean, tryDownload?: boolean, groupByClass?: boolean, propertySets?: boolean);
@@ -2146,7 +2162,7 @@ namespace IFC_2 {
     // (undocumented)
     type GeometryToDocumentDto<T> = WithDefaults<Inputs.IFC.GeometryToDocumentDto<T>, "name" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "groupByClass" | "propertySets">;
     // (undocumented)
-    type GeometryToShapesDto<T> = WithDefaults<Inputs.IFC.GeometryToShapesDto<T>, "adjustZtoY" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
+    type GeometryToShapesDto<T> = WithDefaults<Inputs.IFC.GeometryToShapesDto<T>, "upAxis" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles">;
     // (undocumented)
     type GeometryToStepDto<T> = WithDefaults<Inputs.IFC.GeometryToStepDto<T>, "name" | "fileName" | "emptyWhenFailed" | "facetedMeshes" | "maxTriangles" | "compress" | "tryDownload" | "groupByClass" | "propertySets">;
     // (undocumented)
@@ -2429,6 +2445,17 @@ export class IFCWindows {
 
 // @public
 export namespace IO {
+    // @beta
+    export enum dimensionKindEnum {
+        // (undocumented)
+        angular = "angular",
+        // (undocumented)
+        diameter = "diameter",
+        // (undocumented)
+        linear = "linear",
+        // (undocumented)
+        radius = "radius"
+    }
     export class DrawingArcSegmentDto {
         constructor(center?: Base.Point2 | Base.Point3, radius?: number, startAngle?: number, endAngle?: number, normal?: Base.Vector3);
         center: Base.Point2 | Base.Point3;
@@ -2443,6 +2470,31 @@ export namespace IO {
         normal?: Base.Vector3 | undefined;
         radius: number;
     }
+    // @beta
+    export class DrawingDimensionDto {
+        constructor(kind?: dimensionKindEnum, start?: Base.Point2, end?: Base.Point2, direction?: Base.Vector2, offset?: number, angle?: number, value?: number, decimalPlaces?: number, upperTolerance?: number, lowerTolerance?: number, textHeight?: number, arrowLength?: number);
+        angle?: number | undefined;
+        arrowLength?: number | undefined;
+        decimalPlaces?: number | undefined;
+        direction?: Base.Vector2 | undefined;
+        end: Base.Point2;
+        kind?: dimensionKindEnum | undefined;
+        lowerTolerance?: number | undefined;
+        offset?: number | undefined;
+        start: Base.Point2;
+        textHeight?: number | undefined;
+        upperTolerance?: number | undefined;
+        value?: number | undefined;
+    }
+    // @beta
+    export class DrawingDimensionPictureDto {
+        extent: DrawingExtentDto;
+        fills: Base.Point2[][];
+        lines: Base.Point2[][];
+        text: DrawingTextDto;
+        textPoint: Base.Point2;
+        textStrokes: Base.Point2[][];
+    }
     export class DrawingEllipseSegmentDto {
         constructor(center?: Base.Point2 | Base.Point3, majorAxis?: Base.Vector2 | Base.Vector3, ratio?: number, startParameter?: number, endParameter?: number, normal?: Base.Vector3);
         center: Base.Point2 | Base.Point3;
@@ -2452,17 +2504,47 @@ export namespace IO {
         ratio: number;
         startParameter?: number | undefined;
     }
+    // @beta
+    export class DrawingExtentDto {
+        max: Base.Point2;
+        min: Base.Point2;
+    }
+    // @beta
+    export class DrawingHatchDto {
+        constructor(boundaries?: DrawingPathDto[], pattern?: hatchPatternEnum, angle?: number, spacing?: number);
+        angle?: number | undefined;
+        boundaries: DrawingPathDto[];
+        pattern?: hatchPatternEnum | undefined;
+        spacing?: number | undefined;
+    }
+    // @beta
+    export class DrawingHatchRegionDto {
+        constructor(boundaries?: DrawingPathDto[], pattern?: hatchPatternEnum, angle?: number, spacing?: number, tolerance?: number);
+        angle?: number | undefined;
+        boundaries: DrawingPathDto[];
+        pattern?: hatchPatternEnum | undefined;
+        spacing?: number | undefined;
+        tolerance?: number | undefined;
+    }
     export class DrawingLineSegmentDto {
         constructor(start?: Base.Point2 | Base.Point3, end?: Base.Point2 | Base.Point3);
         end: Base.Point2 | Base.Point3;
         start: Base.Point2 | Base.Point3;
     }
     export class DrawingPartDto {
-        constructor(layer?: string, color?: Base.Color, paths?: DrawingPathDto[], lineType?: lineTypeEnum);
+        // Warning: (ae-incompatible-release-tags) The symbol "__constructor" is marked as @public, but its signature references "IO" which is marked as @beta
+        // Warning: (ae-incompatible-release-tags) The symbol "__constructor" is marked as @public, but its signature references "IO" which is marked as @beta
+        constructor(layer?: string, color?: Base.Color, paths?: DrawingPathDto[], lineType?: lineTypeEnum, lineWeight?: number, texts?: DrawingTextDto[], hatches?: DrawingHatchDto[]);
         color?: Base.Color | undefined;
+        // @beta
+        hatches?: DrawingHatchDto[] | undefined;
         layer?: string | undefined;
         lineType?: lineTypeEnum | undefined;
+        // @beta
+        lineWeight?: number | undefined;
         paths: DrawingPathDto[];
+        // @beta
+        texts?: DrawingTextDto[] | undefined;
     }
     export class DrawingPathDto {
         constructor(segments?: (DrawingLineSegmentDto | DrawingArcSegmentDto | DrawingCircleSegmentDto | DrawingPolylineSegmentDto | DrawingSplineSegmentDto | DrawingEllipseSegmentDto)[]);
@@ -2474,6 +2556,12 @@ export namespace IO {
         closed?: boolean | undefined;
         points: (Base.Point2 | Base.Point3)[];
     }
+    // @beta
+    export class DrawingScalePartsDto {
+        constructor(parts?: DrawingPartDto[], factor?: number);
+        factor?: number | undefined;
+        parts: DrawingPartDto[];
+    }
     export class DrawingSplineSegmentDto {
         constructor(controlPoints?: (Base.Point2 | Base.Point3)[], degree?: number, closed?: boolean, knots?: number[], weights?: number[]);
         closed?: boolean | undefined;
@@ -2481,6 +2569,22 @@ export namespace IO {
         degree?: number | undefined;
         knots?: number[] | undefined;
         weights?: number[] | undefined;
+    }
+    // @beta
+    export class DrawingTextDto {
+        constructor(text?: string, position?: Base.Point2 | Base.Point3, height?: number, anchor?: "start" | "middle" | "end", rotation?: number, widthFactor?: number);
+        anchor?: "start" | "middle" | "end" | undefined;
+        height?: number | undefined;
+        position: Base.Point2 | Base.Point3;
+        rotation?: number | undefined;
+        text: string;
+        widthFactor?: number | undefined;
+    }
+    // @beta
+    export class DrawingTextSizeDto {
+        above: number;
+        below: number;
+        width: number;
     }
     // @deprecated
     export class DxfArcSegmentDto extends DrawingArcSegmentDto {
@@ -2501,11 +2605,13 @@ export namespace IO {
     export class DxfLineSegmentDto extends DrawingLineSegmentDto {
     }
     export class DxfModelDto {
-        constructor(dxfPathsParts?: DrawingPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base.unitOfLengthEnum, curveTolerance?: number);
+        constructor(dxfPathsParts?: DrawingPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015", unit?: Base.unitOfLengthEnum, curveTolerance?: number, lineTypeScale?: number);
         acadVersion?: "AC1009" | "AC1015" | undefined;
         colorFormat?: "aci" | "truecolor" | undefined;
         curveTolerance?: number | undefined;
         dxfPathsParts: DrawingPartDto[];
+        // @beta
+        lineTypeScale?: number | undefined;
         unit?: Base.unitOfLengthEnum | undefined;
     }
     // @deprecated
@@ -2537,6 +2643,17 @@ export namespace IO {
         svg: string;
         warnings: string[];
     }
+    // @beta
+    export enum hatchPatternEnum {
+        // (undocumented)
+        ansi31 = "ansi31",
+        // (undocumented)
+        ansi32 = "ansi32",
+        // (undocumented)
+        ansi37 = "ansi37",
+        // (undocumented)
+        solid = "solid"
+    }
     export enum lineTypeEnum {
         // (undocumented)
         center = "center",
@@ -2556,7 +2673,9 @@ export namespace IO {
         warnings: string[];
     }
     export class SvgModelDto {
-        constructor(parts?: DrawingPartDto[], unit?: Base.unitOfLengthEnum, strokeWidth?: number, margin?: number, tolerance?: number);
+        constructor(parts?: DrawingPartDto[], unit?: Base.unitOfLengthEnum, strokeWidth?: number, margin?: number, tolerance?: number, lineTypeScale?: number);
+        // @beta
+        lineTypeScale?: number | undefined;
         margin?: number | undefined;
         parts: DrawingPartDto[];
         strokeWidth?: number | undefined;
@@ -2564,7 +2683,9 @@ export namespace IO {
         unit?: Base.unitOfLengthEnum | undefined;
     }
     export class SvgPathDataDto {
-        constructor(path?: DrawingPathDto, flipY?: boolean, tolerance?: number);
+        constructor(path?: DrawingPathDto, flipY?: boolean, tolerance?: number, cubicsOnly?: boolean);
+        // @beta
+        cubicsOnly?: boolean | undefined;
         flipY?: boolean | undefined;
         path: DrawingPathDto;
         tolerance?: number | undefined;
@@ -2597,7 +2718,17 @@ namespace IO_2 {
     // (undocumented)
     type DrawingCircleSegmentDto = Inputs_2.IO.DrawingCircleSegmentDto;
     // (undocumented)
+    type DrawingDimensionDto = WithDefaults<Inputs_2.IO.DrawingDimensionDto, "kind" | "offset" | "angle" | "decimalPlaces" | "textHeight">;
+    // (undocumented)
+    type DrawingDimensionPictureDto = Inputs_2.IO.DrawingDimensionPictureDto;
+    // (undocumented)
     type DrawingEllipseSegmentDto = WithDefaults<Inputs_2.IO.DrawingEllipseSegmentDto, "startParameter" | "endParameter">;
+    // (undocumented)
+    type DrawingExtentDto = Inputs_2.IO.DrawingExtentDto;
+    // (undocumented)
+    type DrawingHatchDto = WithDefaults<Inputs_2.IO.DrawingHatchDto, "pattern" | "angle" | "spacing">;
+    // (undocumented)
+    type DrawingHatchRegionDto = WithDefaults<Inputs_2.IO.DrawingHatchRegionDto, "pattern" | "angle" | "spacing" | "tolerance">;
     // (undocumented)
     type DrawingLineSegmentDto = Inputs_2.IO.DrawingLineSegmentDto;
     // (undocumented)
@@ -2607,7 +2738,13 @@ namespace IO_2 {
     // (undocumented)
     type DrawingPolylineSegmentDto = WithDefaults<Inputs_2.IO.DrawingPolylineSegmentDto, "closed">;
     // (undocumented)
+    type DrawingScalePartsDto = WithDefaults<Inputs_2.IO.DrawingScalePartsDto, "factor">;
+    // (undocumented)
     type DrawingSplineSegmentDto = WithDefaults<Inputs_2.IO.DrawingSplineSegmentDto, "degree" | "closed">;
+    // (undocumented)
+    type DrawingTextDto = WithDefaults<Inputs_2.IO.DrawingTextDto, "height" | "anchor" | "rotation" | "widthFactor">;
+    // (undocumented)
+    type DrawingTextSizeDto = Inputs_2.IO.DrawingTextSizeDto;
     // (undocumented)
     type DxfArcSegmentDto = Inputs_2.IO.DxfArcSegmentDto;
     // (undocumented)
@@ -2639,7 +2776,7 @@ namespace IO_2 {
     // (undocumented)
     type SvgModelDto = WithDefaults<Inputs_2.IO.SvgModelDto, "tolerance">;
     // (undocumented)
-    type SvgPathDataDto = WithDefaults<Inputs_2.IO.SvgPathDataDto, "flipY" | "tolerance">;
+    type SvgPathDataDto = WithDefaults<Inputs_2.IO.SvgPathDataDto, "flipY" | "tolerance" | "cubicsOnly">;
     // (undocumented)
     type SvgReadDto = WithDefaults<Inputs_2.IO.SvgReadDto, "includeInvisible">;
     // (undocumented)
@@ -3471,6 +3608,11 @@ export namespace Mesh {
         triangle1: Base.Triangle3;
         triangle2: Base.Triangle3;
     }
+    export class TriangulateLoopsDto {
+        constructor(loops?: Base.Point3[][], fillRule?: Base.loopFillRuleEnum);
+        fillRule?: Base.loopFillRuleEnum | undefined;
+        loops: Base.Point3[][];
+    }
 }
 
 // @public
@@ -3505,6 +3647,8 @@ namespace Mesh_2 {
     type TriangleToleranceDto = WithDefaults<Inputs_2.Mesh.TriangleToleranceDto, "tolerance">;
     // (undocumented)
     type TriangleTriangleToleranceDto = WithDefaults<Inputs_2.Mesh.TriangleTriangleToleranceDto, "tolerance">;
+    // (undocumented)
+    type TriangulateLoopsDto = WithDefaults<Inputs_2.Mesh.TriangulateLoopsDto, "fillRule">;
 }
 
 // @public
@@ -3907,10 +4051,12 @@ export namespace Recipes {
         recipe: Base.Recipe;
     }
     export class RecipeSurfaceMeshesDto {
-        constructor(recipe?: Base.Recipe, roots?: number[], adjustZtoY?: boolean);
+        constructor(recipe?: Base.Recipe, roots?: number[], adjustZtoY?: boolean, upAxis?: Base.upAxisConversionEnum);
+        // @deprecated
         adjustZtoY?: boolean | undefined;
         recipe: Base.Recipe;
         roots?: number[] | undefined;
+        upAxis?: Base.upAxisConversionEnum | undefined;
     }
 }
 
@@ -3921,7 +4067,7 @@ namespace Recipes_2 {
     // (undocumented)
     type RecipeSourceDto = WithDefaults<Inputs_2.Recipes.RecipeSourceDto, "node">;
     // (undocumented)
-    type RecipeSurfaceMeshesDto = WithDefaults<Inputs_2.Recipes.RecipeSurfaceMeshesDto, "adjustZtoY">;
+    type RecipeSurfaceMeshesDto = WithDefaults<Inputs_2.Recipes.RecipeSurfaceMeshesDto, "upAxis">;
 }
 
 declare namespace Resolved {

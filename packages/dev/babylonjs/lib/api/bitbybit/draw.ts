@@ -4,7 +4,8 @@ import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../inputs";
 import type { BabylonNode } from "./babylon/node";
 import type { Tag } from "@bitbybit-dev/core";
-import { DrawCore, checkDrawableMesh } from "@bitbybit-dev/core";
+import { DrawCore, annotationsDrawingOf, annotationsInView, checkDrawableMesh, documentDrawOptionsOf, hatchedSectionDrawOptionsOf } from "@bitbybit-dev/core";
+import type { DocumentDrawing, HatchedSectionDrawing } from "@bitbybit-dev/core";
 import type { Context } from "../context";
 import { GridMaterial } from "@babylonjs/materials";
 import type { DrawHelper } from "../draw-helper";
@@ -122,11 +123,27 @@ export class Draw extends DrawCore {
     }
 
     private mergedOcctShapeOptions(inputs: Inputs.Draw.DrawAny): Resolved.Draw.DrawOcctShapeOptions {
+        return this.occtOptions(this.givenOcctOptions(inputs));
+    }
+
+    private mergedOcctDocumentOptions(given: Inputs.Draw.DrawOptions): Resolved.Draw.DrawOcctShapeOptions & DocumentDrawing {
+        return documentDrawOptionsOf(this.occtOptions({}), given, Inputs.Draw);
+    }
+
+    private mergedHatchedSectionOptions(given: Inputs.Draw.DrawOptions): Resolved.Draw.DrawOcctShapeOptions & HatchedSectionDrawing {
+        return hatchedSectionDrawOptionsOf(this.occtOptions({}), given, Inputs.Draw);
+    }
+
+    private givenOrDrawnOptions(inputs: Inputs.Draw.DrawAny, builtIn: Inputs.Draw.DrawOptions): Inputs.Draw.DrawOptions {
+        return inputs.options ?? inputs.babylonMesh?.metadata?.options ?? builtIn;
+    }
+
+    private givenOcctOptions(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawOptions {
         let options = this.withDefaults(inputs.options as Inputs.Draw.DrawOcctShapeOptions | undefined, new Inputs.Draw.DrawOcctShapeOptions(), this.context.drawDefaults?.occt);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        return this.occtOptions(options);
+        return options;
     }
 
     private withDefaults<T extends object>(given: T | null | undefined, builtIn: T, defaults: Partial<T> | undefined): T {
@@ -320,6 +337,9 @@ export class Draw extends DrawCore {
             occtShapeWithAppearance: (i) => this.handleShapeWithAppearance(i),
             occtShapesWithAppearance: (i) => this.handleShapesWithAppearance(i),
             designBuild: (i) => this.handleDesignBuild(i),
+            occtDocument: (i) => this.handleOcctDocument(i),
+            documentAnnotations: (i) => this.handleDocumentAnnotations(i),
+            hatchedSection: (i) => this.handleHatchedSection(i),
             jscadMeshes: (i, e) => this.detectJscadMeshes(e) ? this.handleJscadMeshes(i, e) : Promise.resolve(undefined),
             manifoldShape: (i) => this.handleManifoldShape(i),
             manifoldShapes: (i) => this.handleManifoldShapes(i),
@@ -483,6 +503,106 @@ export class Draw extends DrawCore {
      */
     optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
         return resolveDto(Inputs.Draw.DrawOcctShapeOptions, inputs);
+    }
+
+    /**
+     * Builds the drawing options for an assembly document, as `occt.assembly.manager.loadStepToDoc`
+     * returns it: how it turns, how finely it is meshed, and whether its edges and its dimensions,
+     * tolerances and datums are drawn, with defaults for what is left out.
+     *
+     * Faces show the document's own colors, an uncolored part grey; the annotations
+     * `occt.assembly.query.getDocumentAnnotations` reads take these options too.
+     * @param inputs - The options to start from
+     * @returns The drawing options
+     * @group document options
+     * @shortname occt document
+     * @beta
+     * @example
+     * ```typescript
+     * const document = await bitbybit.occt.assembly.manager.loadStepToDoc({ stepData });
+     * const meshing = bitbybit.draw.optionsMeshing({ precision: 0.05 });
+     * const annotations = bitbybit.draw.optionsAnnotations({ annotationColour: "#0047ab", annotationsFilled: true });
+     * const options = bitbybit.draw.optionsOcctDocument({ upAxis: Bit.Inputs.Base.upAxisConversionEnum.zUpToYUp, meshing, drawAnnotations: true, annotations });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: document, options });
+     * ```
+     */
+    optionsOcctDocument(inputs: Inputs.Draw.DrawOcctDocumentOptions): Inputs.Draw.DrawOcctDocumentOptions {
+        return resolveDto(Inputs.Draw.DrawOcctDocumentOptions, inputs);
+    }
+
+    /**
+     * Builds how finely an assembly document is meshed for drawing, for the `meshing` of
+     * `optionsOcctDocument`, with defaults for what is left out.
+     * @param inputs - The meshing settings to start from
+     * @returns The meshing settings
+     * @group document options
+     * @shortname meshing
+     * @beta
+     * @example
+     * ```typescript
+     * const meshing = bitbybit.draw.optionsMeshing({ precision: 0.05, angularDeflection: 0.3 });
+     * const options = bitbybit.draw.optionsOcctDocument({ meshing });
+     * ```
+     */
+    optionsMeshing(inputs: Inputs.Draw.DrawMeshingOptions): Inputs.Draw.DrawMeshingOptions {
+        return resolveDto(Inputs.Draw.DrawMeshingOptions, inputs);
+    }
+
+    /**
+     * Builds the color, width and opacity of the edge lines, for the `edges` of
+     * `optionsOcctDocument` and `optionsHatchedSection`, with defaults for what is left out.
+     * @param inputs - The edge settings to start from
+     * @returns The edge settings
+     * @group document options
+     * @shortname edges
+     * @beta
+     * @example
+     * ```typescript
+     * const edges = bitbybit.draw.optionsEdges({ edgeColour: "#333333", edgeWidth: 1, edgeOpacity: 1 });
+     * const options = bitbybit.draw.optionsOcctDocument({ drawEdges: true, edges });
+     * ```
+     */
+    optionsEdges(inputs: Inputs.Draw.DrawEdgesOptions): Inputs.Draw.DrawEdgesOptions {
+        return resolveDto(Inputs.Draw.DrawEdgesOptions, inputs);
+    }
+
+    /**
+     * Builds which of a document's dimensions, tolerances and datums are drawn and how, for the
+     * `annotations` of `optionsOcctDocument`, with defaults for what is left out.
+     * @param inputs - The annotation settings to start from
+     * @returns The annotation settings
+     * @group document options
+     * @shortname annotations
+     * @beta
+     * @example
+     * ```typescript
+     * const annotations = bitbybit.draw.optionsAnnotations({ annotationsView: "FRONT", annotationColour: "#0047ab", annotationWidth: 2, annotationsFilled: true });
+     * const options = bitbybit.draw.optionsOcctDocument({ drawAnnotations: true, annotations });
+     * ```
+     */
+    optionsAnnotations(inputs: Inputs.Draw.DrawAnnotationsOptions): Inputs.Draw.DrawAnnotationsOptions {
+        return resolveDto(Inputs.Draw.DrawAnnotationsOptions, inputs);
+    }
+
+    /**
+     * Builds the drawing options for a hatched section, as `occt.operations.hatchedSectionByFrame`
+     * returns it: the cut faces in `faceColour`, their outlines as `edges` sets them, and the hatch
+     * lines in their own color and width, with defaults for what is left out.
+     * @param inputs - The options to start from
+     * @returns The drawing options
+     * @group document options
+     * @shortname hatched section
+     * @beta
+     * @example
+     * ```typescript
+     * const section = await bitbybit.occt.operations.hatchedSectionByFrame({ shapes: [housing], frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] } });
+     * const edges = bitbybit.draw.optionsEdges({ edgeColour: "#000000", edgeWidth: 2 });
+     * const options = bitbybit.draw.optionsHatchedSection({ faceColour: "#ffffff", edges, hatchColour: "#000000", hatchWidth: 1 });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: section, options });
+     * ```
+     */
+    optionsHatchedSection(inputs: Inputs.Draw.DrawHatchedSectionOptions): Inputs.Draw.DrawHatchedSectionOptions {
+        return resolveDto(Inputs.Draw.DrawHatchedSectionOptions, inputs);
     }
 
     /**
@@ -1132,6 +1252,44 @@ export class Draw extends DrawCore {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occtShapes, options, r);
             return r;
         });
+    }
+
+    private async handleOcctDocument(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
+        const given = this.givenOrDrawnOptions(inputs, new Inputs.Draw.DrawOcctDocumentOptions());
+        const options = this.mergedOcctDocumentOptions(given);
+        const document = inputs.entity as Inputs.OCCT.TDocStdDocumentPointer;
+        const [mesh, annotations] = await Promise.all([
+            this.drawHelper.documentMesh(document, options),
+            options.drawAnnotations ? this.drawHelper.documentAnnotations(document, options) : undefined,
+        ]);
+        const drawing = annotations === undefined ? undefined : annotationsDrawingOf(annotationsInView(annotations, options.annotationsView), options.annotationsFilled);
+        if (options.drawFaces) {
+            checkDrawableMesh(mesh);
+        }
+        const sized = this.drawHelper.withEdgeWidthSized(options, [mesh]);
+        const drawn = await this.drawHelper.handleDecomposedMesh(sized, mesh, sized);
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occtDocument, given, drawn);
+        if (drawing !== undefined) {
+            this.drawHelper.drawAnnotations(drawing, options).parent = drawn;
+        }
+        return drawn;
+    }
+
+    private handleDocumentAnnotations(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
+        const given = this.givenOrDrawnOptions(inputs, new Inputs.Draw.DrawOcctDocumentOptions());
+        const options = this.mergedOcctDocumentOptions(given);
+        const drawn = this.drawHelper.drawDocumentAnnotations(inputs.entity as Models.OCCT.DocumentAnnotations, options);
+        drawn.metadata = { shadows: false };
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occtAnnotations, given, drawn);
+        return Promise.resolve(drawn);
+    }
+
+    private handleHatchedSection(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
+        const given = this.givenOrDrawnOptions(inputs, new Inputs.Draw.DrawHatchedSectionOptions());
+        const options = this.mergedHatchedSectionOptions(given);
+        const drawn = this.drawHelper.drawHatchedSection(inputs.entity as Models.OCCT.HatchedSection<Inputs.OCCT.TopoDSShapePointer>, options);
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occtHatchedSection, given, drawn);
+        return Promise.resolve(drawn);
     }
 
     private handleJscadMesh(inputs: Inputs.Draw.DrawAny, mesh: Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3) {

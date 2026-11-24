@@ -35,6 +35,11 @@ export const GUIDE_ALIASES: Readonly<Record<string, string>> = {
     sketch: "sketches",
     assembly: "assemblies",
     "design-mistakes": "mistakes-to-avoid",
+    coordinates: "coordinate-systems",
+    handedness: "coordinate-systems",
+    "right-handed": "coordinate-systems",
+    "left-handed": "coordinate-systems",
+    conventions: "coordinate-systems",
     geometry: "geometry-in-bitbybit",
     cad: "geometry-in-bitbybit",
     occt: "how-the-bitbybit-occt-kernel-thinks",
@@ -71,7 +76,7 @@ export const GUIDE_ALIASES: Readonly<Record<string, string>> = {
 const MAX_TOPIC_LENGTH = 128;
 
 const input = z.object({
-    topic: z.string().max(MAX_TOPIC_LENGTH).optional().describe("A section id or a short name such as integrate, browser, backend, server-side, pro, start, geometry, part-order, geometry-mistakes, design, references, assembly, ifc, ifc-order, ifc-mistakes; omit to list the sections"),
+    topic: z.string().max(MAX_TOPIC_LENGTH).optional().describe("A section id or a short name such as integrate, browser, backend, server-side, pro, start, geometry, part-order, geometry-mistakes, coordinates, design, references, assembly, ifc, ifc-order, ifc-mistakes; omit to list the sections"),
 });
 
 function findSection(guides: readonly GuideSection[], topic: string): GuideSection | undefined {

@@ -180,7 +180,13 @@
       "weight": null,
       "examples": [],
       "group": "create",
-      "drawable": true
+      "drawable": true,
+      "conventions": [
+        {
+          "level": 1,
+          "change": "3D text: reads the right way round in a right-handed engine too."
+        }
+      ]
     },
     {
       "path": "babylon",
@@ -1830,6 +1836,34 @@
       "endpoint": "/api/v1/cad/pipeline",
       "httpMethod": "POST",
       "scope": "cad"
+    },
+    {
+      "path": "setConventions",
+      "kind": "method",
+      "name": "setConventions",
+      "className": "BitByBitBase",
+      "signature": "setConventions(level: number): Promise<BitbybitSettings>",
+      "async": true,
+      "params": [
+        {
+          "name": "level",
+          "type": "number",
+          "optional": false
+        }
+      ],
+      "returns": "BitbybitSettings",
+      "summary": "Sets the settings that content saved with a conventions level runs by: 0 for the behaviour from before settings existed, 1 for the scene's own coordinate system.",
+      "doc": "Sets the settings that content saved with a conventions level runs by: 0 for the behaviour\nfrom before settings existed, 1 for the scene's own coordinate system.",
+      "docUrl": null,
+      "engines": [
+        "babylonjs",
+        "threejs",
+        "playcanvas"
+      ],
+      "tier": "oss",
+      "onApi3d": false,
+      "weight": null,
+      "examples": []
     },
     {
       "path": "verb",

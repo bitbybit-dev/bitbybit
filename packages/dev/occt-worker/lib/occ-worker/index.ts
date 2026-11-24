@@ -1,5 +1,6 @@
 export * from "./cache-helper";
 export * from "./constants";
+export * from "./document-versions";
 export * from "./shape-resolver";
 export * from "./command-handlers";
 export * from "./occ-info";

@@ -8,7 +8,7 @@ import type { DrawingArc, DrawingCircle, DrawingEllipse, DrawingLine, DrawingPol
 import { LINE_TYPE_PATTERNS, SAME_POINT } from "../drawing/drawing.constants";
 import { nearestAciIndex, trueColorOf } from "./dxf-colors";
 import type { DxfText } from "./dxf-text";
-import type { DxfVersion } from "./dxf-tables";
+import type { DxfMeasurement, DxfVersion } from "./dxf-tables";
 import { DXF_CLOSED_FLAG, DXF_EXTRUSION_CODES, DXF_KNOT_TOLERANCE, DXF_OTHER_POINT_CODES, DXF_POINT_CODES, DXF_POLYLINE_3D_FLAG, DXF_RATIONAL_FLAG, DXF_TURN_SLACK } from "./dxf.constants";
 
 type Point3 = Inputs.Base.Point3;
@@ -18,6 +18,7 @@ export interface DxfEntityStyle {
     readonly layer: string;
     readonly color: string;
     readonly lineType: Inputs.IO.lineTypeEnum | undefined;
+    readonly lineWeight: number | undefined;
 }
 
 export interface DxfEntityContext {
@@ -26,17 +27,18 @@ export interface DxfEntityContext {
     readonly owner: string;
     readonly colorFormat: "aci" | "truecolor";
     readonly curveTolerance: number;
+    readonly measurement: DxfMeasurement;
 }
 
 const PLANAR_FLAG = 8;
 const VERTEX_3D_FLAG = "32";
 const PLUS_Z: Vec3 = [0, 0, 1];
 
-const isModern = (context: DxfEntityContext): boolean => context.version === "AC1015";
+export const isModern = (context: DxfEntityContext): boolean => context.version === "AC1015";
 
 const isPlusZ = (normal: Vec3): boolean => normal[0] === 0 && normal[1] === 0 && normal[2] > 0;
 
-const openEntity = (context: DxfEntityContext, kind: string, style: DxfEntityStyle, owner = context.owner): string => {
+export const openEntity = (context: DxfEntityContext, kind: string, style: DxfEntityStyle, owner = context.owner): string => {
     const text = context.text;
     text.pair("0", kind);
     let handle = "";
@@ -53,6 +55,9 @@ const openEntity = (context: DxfEntityContext, kind: string, style: DxfEntitySty
     text.pair("62", String(nearestAciIndex(style.color)));
     if (isModern(context) && context.colorFormat === "truecolor") {
         text.pair("420", String(trueColorOf(style.color)));
+    }
+    if (isModern(context) && style.lineWeight !== undefined) {
+        text.pair("370", String(style.lineWeight));
     }
     return handle;
 };

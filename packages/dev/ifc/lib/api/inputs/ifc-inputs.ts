@@ -3012,13 +3012,14 @@ export namespace IFC {
      * model's recipe as OpenCascade shapes.
      */
     export class GeometryToShapesDto<T> {
-        constructor(model?: T, elements?: string[], adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number) {
+        constructor(model?: T, elements?: string[], adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number, upAxis?: Base.upAxisConversionEnum) {
             if (model !== undefined) { this.model = model; }
             if (elements !== undefined) { this.elements = elements; }
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
             if (emptyWhenFailed !== undefined) { this.emptyWhenFailed = emptyWhenFailed; }
             if (facetedMeshes !== undefined) { this.facetedMeshes = facetedMeshes; }
             if (maxTriangles !== undefined) { this.maxTriangles = maxTriangles; }
+            if (upAxis !== undefined) { this.upAxis = upAxis; }
         }
         /**
          * The model whose elements are built.
@@ -3033,11 +3034,19 @@ export namespace IFC {
          */
         elements?: string[] | undefined;
         /**
-         * When true, the shapes turn a quarter turn about X so the model's Z points along Y, which is up
-         * when drawn: `(x, y, z)` becomes `(x, z, -y)`.
-         * @default true
+         * `zUpToYUp` turns the shapes a quarter turn about X so the model's Z points along Y, and
+         * `(x, y, z)` becomes `(x, z, -y)`; `keep` leaves them. `yUpToZUp` is refused.
+         * @default zUpToYUp
          */
-        adjustZtoY?: boolean | undefined = true;
+        upAxis?: Base.upAxisConversionEnum | undefined = Base.upAxisConversionEnum.zUpToYUp;
+        /**
+         * When false, the shapes keep their axes as `keep` does; true, its old default, decides nothing.
+         * False wins over `upAxis` at its default; beside another chosen turn it is refused.
+         * @deprecated Give `upAxis` instead; this flag goes in the next major version.
+         * @default undefined
+         * @optional true
+         */
+        adjustZtoY?: boolean | undefined;
         /**
          * When true, an element that cannot be built comes back as an empty compound and the others are
          * built; when false, it stops the build.

@@ -378,6 +378,1179 @@ export const schemaBundle = {
       },
       "additionalProperties": false
     },
+    "DrawingAnnotatedProduct": {
+      "type": "object",
+      "properties": {
+        "product": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999
+        },
+        "instance": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999
+        },
+        "addViews": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingBalloons": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "section": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{1,2}$"
+        },
+        "items": {
+          "minItems": 1,
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "item": {
+                "type": "string",
+                "maxLength": 24,
+                "minLength": 1
+              },
+              "parts": {
+                "minItems": 1,
+                "maxItems": 10000,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9999
+                }
+              }
+            },
+            "required": [
+              "item",
+              "parts"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingDrawBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
+        "plan": {
+          "$ref": "#/$defs/DrawingPlan"
+        },
+        "planFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outputs": {
+          "$ref": "#/$defs/DrawingOutputOptions"
+        },
+        "onlySheets": {
+          "$ref": "#/$defs/DrawingOnlySheets"
+        },
+        "modelFromTask": {
+          "type": "string",
+          "pattern": "^task_[A-Za-z0-9-]{1,59}$"
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingFlat": {
+      "type": "object",
+      "properties": {
+        "kFactor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "thickness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "auto": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingFrame": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            },
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            },
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            }
+          ]
+        },
+        "normal": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            },
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            },
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            }
+          ]
+        },
+        "direction": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            },
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            },
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            }
+          ]
+        }
+      },
+      "required": [
+        "normal",
+        "direction"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingHatch": {
+      "type": "object",
+      "properties": {
+        "pattern": {
+          "type": "string",
+          "enum": [
+            "ansi31",
+            "ansi32",
+            "ansi37",
+            "solid"
+          ]
+        },
+        "angle": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360
+        },
+        "spacing": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 50
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingHoleTable": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "minItems": 1,
+          "maxItems": 500,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingHoleTableRow"
+          }
+        }
+      },
+      "required": [
+        "rows"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingHoleTableRow": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "x": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "y": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "size": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "depth": {
+          "type": "string",
+          "maxLength": 24
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingInspectBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fileUnit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
+        "plan": {
+          "$ref": "#/$defs/DrawingPlan"
+        },
+        "planFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "modelFromTask": {
+          "type": "string",
+          "pattern": "^task_[A-Za-z0-9-]{1,59}$"
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingLeftMark": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "callout": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "balloon": {
+          "type": "string",
+          "maxLength": 24
+        }
+      },
+      "required": [
+        "view"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingOnlySheets": {
+      "minItems": 1,
+      "maxItems": 500,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 499
+      }
+    },
+    "DrawingOutputOptions": {
+      "type": "object",
+      "properties": {
+        "formats": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "svg",
+              "dxf",
+              "pdf"
+            ]
+          }
+        }
+      },
+      "required": [
+        "formats"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingPartsList": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "minItems": 1,
+          "maxItems": 500,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingPartsListRow"
+          }
+        },
+        "alone": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "rows"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingPartsListRow": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "quantity": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "sheet": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "product": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingPlan": {
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "$ref": "#/$defs/DrawingSheet"
+        },
+        "units": {
+          "type": "string",
+          "enum": [
+            "mm",
+            "in"
+          ]
+        },
+        "decimals": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "front": {
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "annotations"
+            },
+            {
+              "$ref": "#/$defs/DrawingFrame"
+            }
+          ]
+        },
+        "parts": {
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "all"
+            },
+            {
+              "minItems": 1,
+              "maxItems": 10000,
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9999
+              }
+            }
+          ]
+        },
+        "views": {
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingView"
+          }
+        },
+        "sections": {
+          "maxItems": 6,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingSection"
+          }
+        },
+        "lines": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "enum": [
+                "auto",
+                "exact",
+                "sight",
+                "mesh"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "titleBlock": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/$defs/DrawingTitleBlock"
+            }
+          ]
+        },
+        "revisions": {
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingRevision"
+          }
+        },
+        "dimensions": {
+          "anyOf": [
+            {
+              "type": "boolean",
+              "const": false
+            },
+            {
+              "type": "string",
+              "const": "auto"
+            },
+            {
+              "type": "string",
+              "const": "ordinate"
+            }
+          ]
+        },
+        "holes": {
+          "anyOf": [
+            {
+              "type": "boolean",
+              "const": false
+            },
+            {
+              "type": "string",
+              "const": "auto"
+            }
+          ]
+        },
+        "holeTable": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/$defs/DrawingHoleTable"
+            }
+          ]
+        },
+        "flat": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "const": "auto"
+            },
+            {
+              "$ref": "#/$defs/DrawingFlat"
+            }
+          ]
+        },
+        "annotations": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/$defs/DrawingAnnotatedProduct"
+            }
+          ]
+        },
+        "shared": {
+          "$ref": "#/$defs/DrawingShared"
+        },
+        "partsList": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/$defs/DrawingPartsList"
+            }
+          ]
+        },
+        "balloons": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/$defs/DrawingBalloons"
+            }
+          ]
+        },
+        "sheets": {
+          "anyOf": [
+            {
+              "minItems": 1,
+              "maxItems": 500,
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/DrawingSetSheet"
+              }
+            },
+            {
+              "$ref": "#/$defs/DrawingSetRule"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingRevision": {
+      "type": "object",
+      "properties": {
+        "mark": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "date": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "by": {
+          "type": "string",
+          "maxLength": 120
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingScale": {
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "denominator": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingSection": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{1,2}$"
+        },
+        "frame": {
+          "$ref": "#/$defs/DrawingFrame"
+        },
+        "shownOn": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "hatch": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/$defs/DrawingHatch"
+            }
+          ]
+        },
+        "scale": {
+          "$ref": "#/$defs/DrawingScale"
+        }
+      },
+      "required": [
+        "label",
+        "frame"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingSetRule": {
+      "type": "object",
+      "properties": {
+        "auto": {
+          "type": "string",
+          "enum": [
+            "structure",
+            "parts",
+            "assemblies"
+          ]
+        },
+        "overview": {
+          "type": "boolean"
+        },
+        "turned": {
+          "type": "boolean"
+        },
+        "most": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        }
+      },
+      "required": [
+        "auto"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingSetSheet": {
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "$ref": "#/$defs/DrawingSheet"
+        },
+        "units": {
+          "type": "string",
+          "enum": [
+            "mm",
+            "in"
+          ]
+        },
+        "decimals": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "front": {
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "annotations"
+            },
+            {
+              "$ref": "#/$defs/DrawingFrame"
+            }
+          ]
+        },
+        "parts": {
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "all"
+            },
+            {
+              "minItems": 1,
+              "maxItems": 10000,
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9999
+              }
+            }
+          ]
+        },
+        "views": {
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingView"
+          }
+        },
+        "sections": {
+          "maxItems": 6,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingSection"
+          }
+        },
+        "lines": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "enum": [
+                "auto",
+                "exact",
+                "sight",
+                "mesh"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "titleBlock": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/$defs/DrawingTitleBlock"
+            }
+          ]
+        },
+        "revisions": {
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingRevision"
+          }
+        },
+        "dimensions": {
+          "anyOf": [
+            {
+              "type": "boolean",
+              "const": false
+            },
+            {
+              "type": "string",
+              "const": "auto"
+            },
+            {
+              "type": "string",
+              "const": "ordinate"
+            }
+          ]
+        },
+        "holes": {
+          "anyOf": [
+            {
+              "type": "boolean",
+              "const": false
+            },
+            {
+              "type": "string",
+              "const": "auto"
+            }
+          ]
+        },
+        "holeTable": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/$defs/DrawingHoleTable"
+            }
+          ]
+        },
+        "flat": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "const": "auto"
+            },
+            {
+              "$ref": "#/$defs/DrawingFlat"
+            }
+          ]
+        },
+        "annotations": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/$defs/DrawingAnnotatedProduct"
+            }
+          ]
+        },
+        "shared": {
+          "$ref": "#/$defs/DrawingShared"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "product": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "turned": {
+          "type": "boolean"
+        },
+        "pagination": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "partsList": {
+          "anyOf": [
+            {
+              "type": "boolean",
+              "const": false
+            },
+            {
+              "$ref": "#/$defs/DrawingPartsList"
+            }
+          ]
+        },
+        "balloons": {
+          "anyOf": [
+            {
+              "type": "boolean",
+              "const": false
+            },
+            {
+              "$ref": "#/$defs/DrawingBalloons"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingShared": {
+      "type": "object",
+      "properties": {
+        "views": {
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingView"
+          }
+        },
+        "marks": {
+          "maxItems": 500,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingSharedMark"
+          }
+        },
+        "elsewhere": {
+          "maxItems": 500,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrawingLeftMark"
+          }
+        },
+        "notes": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingSharedMark": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "callout": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "balloon": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "at": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            },
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            },
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            }
+          ]
+        },
+        "centre": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            },
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            },
+            {
+              "type": "number",
+              "minimum": -1000000000,
+              "maximum": 1000000000
+            }
+          ]
+        }
+      },
+      "required": [
+        "view",
+        "at"
+      ],
+      "additionalProperties": false
+    },
+    "DrawingSheet": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "A0",
+                "A1",
+                "A2",
+                "A3",
+                "A4",
+                "ANSI-A",
+                "ANSI-B",
+                "ANSI-C",
+                "ANSI-D",
+                "ANSI-E"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "width": {
+                  "type": "number",
+                  "minimum": 50,
+                  "maximum": 5000
+                },
+                "height": {
+                  "type": "number",
+                  "minimum": 50,
+                  "maximum": 5000
+                }
+              },
+              "required": [
+                "width",
+                "height"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "orientation": {
+          "type": "string",
+          "enum": [
+            "landscape",
+            "portrait"
+          ]
+        },
+        "projection": {
+          "type": "string",
+          "enum": [
+            "first-angle",
+            "third-angle"
+          ]
+        },
+        "scale": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "fill",
+                "auto"
+              ]
+            },
+            {
+              "$ref": "#/$defs/DrawingScale"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingTitleBlock": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "number": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "material": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "revision": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "date": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "drawnBy": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "checkedBy": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "approvedBy": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "documentType": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "finish": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "custom": {
+          "maxItems": 6,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "caption": {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              "value": {
+                "type": "string",
+                "maxLength": 120
+              }
+            },
+            "required": [
+              "caption"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "sheet": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "quantity": {
+          "type": "string",
+          "maxLength": 24
+        }
+      },
+      "additionalProperties": false
+    },
+    "DrawingView": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "front",
+            "top",
+            "bottom",
+            "left",
+            "right",
+            "back",
+            "isometric"
+          ]
+        },
+        "frame": {
+          "$ref": "#/$defs/DrawingFrame"
+        },
+        "saved": {
+          "type": "string",
+          "maxLength": 120,
+          "minLength": 1
+        },
+        "hiddenLines": {
+          "type": "boolean"
+        },
+        "smoothEdges": {
+          "type": "boolean"
+        },
+        "scale": {
+          "$ref": "#/$defs/DrawingScale"
+        },
+        "caption": {
+          "type": "string",
+          "maxLength": 120
+        }
+      },
+      "additionalProperties": false
+    },
     "ExecuteBody": {
       "type": "object",
       "properties": {
@@ -752,6 +1925,9 @@ export const schemaBundle = {
         },
         "adjustYtoZ": {
           "type": "boolean"
+        },
+        "unit": {
+          "$ref": "#/$defs/LengthUnit"
         }
       },
       "required": [
@@ -1327,6 +2503,9 @@ export const schemaBundle = {
         },
         "adjustYtoZ": {
           "type": "boolean"
+        },
+        "unit": {
+          "$ref": "#/$defs/LengthUnit"
         }
       },
       "required": [

@@ -1,4 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
+import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 import { featureExtentEnum, sectionKeepEnum } from "./enums";
 
 /**
@@ -153,6 +154,78 @@ export class CutByFramesDto<T> {
     keep?: sectionKeepEnum | undefined = sectionKeepEnum.behindAll;
 }
 /**
+ * Shapes, the frame whose plane cuts them and how the cut faces are hatched, for
+ * `operations.hatchedSectionByFrame`, which gives each shape's cut faces with their hatch as edges
+ * and as drawing data.
+ * @beta
+ */
+export class HatchedSectionByFrameDto<T> {
+    constructor(shapes?: T[], frame?: Base.Frame, pattern?: IO.hatchPatternEnum, angle?: number, spacing?: number, neighbourAngles?: boolean, curveTolerance?: number, tolerance?: number) {
+        if (shapes !== undefined) { this.shapes = shapes; }
+        if (frame !== undefined) { this.frame = frame; }
+        if (pattern !== undefined) { this.pattern = pattern; }
+        if (angle !== undefined) { this.angle = angle; }
+        if (spacing !== undefined) { this.spacing = spacing; }
+        if (neighbourAngles !== undefined) { this.neighbourAngles = neighbourAngles; }
+        if (curveTolerance !== undefined) { this.curveTolerance = curveTolerance; }
+        if (tolerance !== undefined) { this.tolerance = tolerance; }
+    }
+    /**
+     * The shapes to cut, such as the parts of an assembly; each gives its own cut faces.
+     * @default undefined
+     */
+    shapes!: T[];
+    /**
+     * The plane to cut along, through the frame's origin square to its normal, which points at the
+     * side taken away; the hatch data takes its direction as X.
+     * @default undefined
+     */
+    frame!: Base.Frame;
+    /**
+     * What the cut faces are filled with: single lines, pairs, crossed lines or solid ink.
+     * @default ansi31
+     */
+    pattern?: IO.hatchPatternEnum | undefined = IO.hatchPatternEnum.ansi31;
+    /**
+     * The angle of the hatch lines in degrees, counterclockwise from the frame's direction.
+     * @default 45
+     */
+    angle?: number | undefined = 45;
+    /**
+     * The distance between the hatch lines, in model units.
+     * @default 3
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
+     * @step 0.1
+     */
+    spacing?: number | undefined = 3;
+    /**
+     * When true, a shape whose cut faces come within `spacing` of an earlier shape's is hatched at
+     * another angle, `angle` plus 90, 30, 120, 60 or 150.
+     * @default true
+     */
+    neighbourAngles?: boolean | undefined = true;
+    /**
+     * How far, in model units, a curved cut edge may stray from the straight pieces the hatch lines
+     * are clipped against.
+     * @default 0.01
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
+     * @step 0.001
+     */
+    curveTolerance?: number | undefined = 0.01;
+    /**
+     * How close the ends of two section edges must lie to be joined into one wire, in model units.
+     * @default 1e-7
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.00001
+     */
+    tolerance?: number | undefined = 1e-7;
+}
+/**
  * A face and the edges or wires that cut it for `operations.splitFaceByWires`, which returns the
  * pieces of the face.
  */
@@ -174,11 +247,12 @@ export class SplitFaceByWiresDto<T, U> {
     wires!: U[];
 }
 /**
- * A shape, a view frame and drawing options for `operations.hiddenLines`, which draws the edges seen
- * from the frame and the edges hidden behind faces, flat on the XZ plane.
+ * A shape, a view frame and drawing options for `operations.hiddenLines` and
+ * `operations.hiddenLinesByKind`, which draw the edges seen from the frame and the edges hidden
+ * behind faces, flat on the XZ plane.
  */
 export class HiddenLinesDto<T> {
-    constructor(shape?: T, frame?: Base.Frame, exact?: boolean, smoothEdges?: boolean, hiddenEdges?: boolean, focus?: number, precision?: number) {
+    constructor(shape?: T, frame?: Base.Frame, exact?: boolean, smoothEdges?: boolean, hiddenEdges?: boolean, focus?: number, precision?: number, tidy?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
         if (frame !== undefined) { this.frame = frame; }
         if (exact !== undefined) { this.exact = exact; }
@@ -186,6 +260,7 @@ export class HiddenLinesDto<T> {
         if (hiddenEdges !== undefined) { this.hiddenEdges = hiddenEdges; }
         if (focus !== undefined) { this.focus = focus; }
         if (precision !== undefined) { this.precision = precision; }
+        if (tidy !== undefined) { this.tidy = tidy; }
     }
     /**
      * The shape to draw.
@@ -211,8 +286,8 @@ export class HiddenLinesDto<T> {
      */
     smoothEdges?: boolean | undefined = false;
     /**
-     * When true, the edges that faces cover are collected in `hidden`; when false, `hidden` stays
-     * empty.
+     * When true, the edges that faces cover are drawn too; when false, the hidden part of the
+     * result stays empty.
      * @default true
      */
     hiddenEdges?: boolean | undefined = true;
@@ -235,6 +310,12 @@ export class HiddenLinesDto<T> {
      * @step 0.001
      */
     precision?: number | undefined = 0.01;
+    /**
+     * When true, the drawing is tidied: a curve seen edge-on becomes a line, and a hidden edge
+     * lying wholly under other edges is left out.
+     * @default false
+     */
+    tidy?: boolean | undefined = false;
 }
 /**
  * A shape, the frames to drill at and the size of the holes for `features.holes`;

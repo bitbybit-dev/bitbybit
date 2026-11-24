@@ -7,9 +7,10 @@ import { OCCTAssemblyQuery } from "./query";
  * Assemblies as OpenCascade documents: a document holds parts, the sub-assemblies that group them
  * and the instances that place them, with names, colors and placements, the way a STEP assembly
  * does. `manager` builds documents step by step from parts and nodes, loads STEP, glTF and OBJ files
- * into them, changes labels and exports to STEP, glTF, OBJ and PLY; `query` reads parts, shapes,
- * colors, placements, the hierarchy and the dimensions and tolerances back out. Every label in a
- * document is addressed by its label id string. A document stays in memory until it is deleted.
+ * into them, changes labels, adds dimensions, datums and tolerances, and exports to STEP, glTF, OBJ
+ * and PLY; `query` reads parts, shapes, colors, placements, the hierarchy and the dimensions and
+ * tolerances back out. Every label in a document is addressed by its label id string. A document
+ * stays in memory until it is deleted.
  * @example
  * ```typescript
  * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
@@ -19,7 +20,7 @@ import { OCCTAssemblyQuery } from "./query";
  * const structure = await bitbybit.occt.assembly.manager.combineStructure({ parts: [part], nodes: [root, instance], clearDocument: false });
  * const doc = await bitbybit.occt.assembly.manager.buildAssemblyDocument({ structure });
  * const parts = await bitbybit.occt.assembly.query.getDocumentParts({ document: doc });
- * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
+ * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: true, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
  * await bitbybit.occt.assembly.manager.deleteDocument({ document: doc });
  * ```
  */

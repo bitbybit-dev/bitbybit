@@ -125,5 +125,5 @@ MIT © [Bit By Bit Developers](https://bitbybit.dev): the TypeScript and JavaScr
 the Bitbybit OCCT Kernel it ships (WebAssembly, built on OCCT). The kernel is closed source: each of its
 builds links OCCT (LGPL-2.1 with the Open CASCADE exception) and other open-source components with the
 Bitbybit kernel layer, C++ whose source is not published. `NOTICE` lists the components, `licenses/`
-reproduces their license texts, and `NOTICE` also says how to get the materials to relink the kernel with
-a modified OCCT.
+reproduces their license texts, and `NOTICE` also says where the OCCT source of each build is, how to get
+the materials to relink the kernel with a modified OCCT, and carries our written offer of both.

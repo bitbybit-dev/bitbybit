@@ -7,13 +7,40 @@ import { stlWithAxes } from "@bitbybit-dev/base/lib/api/services/helpers/files/s
 import { stlAxesInFile, stlAxesInModel } from "@bitbybit-dev/base/lib/api/services/helpers/files/stl-axes";
 import { meshMatrixInFile, meshMatrixInModel } from "@bitbybit-dev/base/lib/api/services/helpers/files/mesh-file-axes";
 import { pointOnGround } from "@bitbybit-dev/base/lib/api/services/helpers/files/ground-axes";
+import { checkedUpAxis } from "@bitbybit-dev/base";
 
 const { leftHanded, rightHanded } = Inputs.Base.coordinateSystemEnum;
+const { keep, zUpToYUp, yUpToZUp } = Inputs.Base.upAxisConversionEnum;
 
 const QUARTER_TURN = 90;
 const HALF_TURN = 180;
 
 export const TURNED_TO_Z_UP = meshMatrixInFile(rightHanded, true);
+
+export const EVERY_UP_AXIS: readonly Inputs.Base.upAxisConversionEnum[] = [keep, zUpToYUp, yUpToZUp];
+
+export function turnedToZUp(upAxis: unknown): boolean {
+    return checkedUpAxis(upAxis, [keep, yUpToZUp]) === yUpToZUp;
+}
+
+export function turnedFromZUp(upAxis: unknown): boolean {
+    return checkedUpAxis(upAxis, [keep, zUpToYUp]) === zUpToYUp;
+}
+
+export function documentTurnOf(upAxis: unknown, system: Inputs.Base.coordinateSystemEnum | undefined): Inputs.Base.TransformMatrix | undefined {
+    switch (checkedUpAxis(upAxis, EVERY_UP_AXIS)) {
+        case zUpToYUp:
+            return documentInModelAxes(system);
+        case yUpToZUp:
+            return meshMatrixInFile(system ?? leftHanded, true);
+        default:
+            return undefined;
+    }
+}
+
+export function documentInModelAxes(system: Inputs.Base.coordinateSystemEnum | undefined): Inputs.Base.TransformMatrix {
+    return meshMatrixInModel(system ?? leftHanded, true);
+}
 
 export function shapeTurnedToZUp(transforms: TransformsService, shape: TopoDS_Shape): TopoDS_Shape {
     return transforms.rotate({ shape, axis: [1, 0, 0], angle: QUARTER_TURN });

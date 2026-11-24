@@ -24,6 +24,48 @@ renderer never asks about a kind it registered no handler for - a renderer witho
 simply leaves the node entries out of its handler map. A handler that needs the narrowed entity runs
 its check again rather than casting; re-running a check is cheaper than a cast that could be wrong.
 
+## Documents and their annotations
+
+An assembly document drawn whole (`occtDocument`, the reference the worker gives a document handle,
+`{ type: "occ-document" }`, which no other kernel object carries) is meshed by the worker's
+`docToMesh` with `adjustYtoZ` false and the options' `adjustZtoY` (true by default, as
+`occt.io.loadSTEPorIGES` turns the shapes it reads), so its parts stand Y-up, or in the document's
+own axes, and wear its colours through the mesh's colour groups, and is drawn as any decomposed mesh
+is. Its options are each renderer's `DrawOcctDocumentOptions` (`draw.optionsOcctDocument`): the
+shape's meshing and colours with the document's own settings beside them, so a plain shape's
+`DrawOcctShapeOptions` carries nothing that means nothing for it; a hatched section likewise takes
+`DrawHatchedSectionOptions`. With `drawAnnotations` the renderer also asks
+the worker for `assembly.query.getDocumentAnnotations` with the same `adjustZtoY`, at the options'
+`precision` (`documentMeshInputs` and `documentAnnotationsInputs` are the one place each is asked
+for), and draws them inside the document's node: both are turned by the kernel alike, so they line
+up without a transform.
+
+What a renderer draws of annotations is worked out here, once: `annotationsInView` keeps the
+annotations a named saved view shows (and refuses a name no view bears, naming the views there
+are), and `annotationsDrawingOf` turns them into polylines and, for filled letters, one triangle
+buffer through base's `filledLoopTriangles` under the even-odd rule; with `annotationsFilled` false
+the letters' loops join the polylines, closed. Both run before anything is drawn, so a refusal
+leaves nothing in the scene. The renderers draw the lines as their edges are drawn (width and all),
+and the letters unlit, two-sided and depth-tested, so the model hides what stands behind it as a
+PMI viewer does; annotations cast no shadow. The saved views stay data: `views` carries each
+view's eye, direction and up for a script that wants to point its camera.
+
+## Hatched sections
+
+What `occt.operations.hatchedSectionByFrame` returns (`hatchedSection`, detected by its `frame` and
+its `shapes` of `caps` each carrying a `hatch`) is drawn from its data alone, with no call to the
+worker: `hatchedSectionDrawingOf` hands every cap's hatch and the section's frame to
+`hatchesDrawingOf`, which reads each hatch through base's drawing model, fills its outlines under the
+even-odd rule (`filledLoopTriangles`), clips its pattern with `clippedHatchLinesOf` and places all of
+it with the frame's axes. Pattern hatches fill `faces`, solid ones `ink`. The fills are lifted a
+thousandth of the hatches' size along the normal, toward the side the cut took away, and the lines
+and outlines twice that, so they show over the cut faces of the shapes drawn beside them and the
+lines over their fill, in every renderer, without a depth bias of each engine's own. The renderers
+draw the faces in `faceColour` with `drawFaces`, the outlines as edges with `drawEdges`, and the
+lines and ink in `hatchColour`, the lines `hatchWidth` wide in the unit of `edgeWidth`; fills are
+unlit and two-sided, and nothing of a section casts a shadow. `hatchesDrawingOf` takes any hatches
+in any frame, which is how a drawing's hatches read from a DXF can be drawn the same way.
+
 ## JSCAD paths
 
 A JSCAD `Path2` is drawn as a polyline through `pathToPolylinePoints`, which corrects three things a

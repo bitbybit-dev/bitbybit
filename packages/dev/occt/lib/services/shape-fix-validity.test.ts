@@ -85,7 +85,15 @@ describe("OCCT shape fix validity report and free boundaries", () => {
 
         it("should tell a fillet too large for the faces beside its edges is not, though the kernel built it", () => {
             // Arrange
-            const rounded = new OCCTFillets(occt, occHelper).filletEdges({ shape: box(), radius: 6 });
+            const shape = box();
+            const maker = new occt.BRepFilletAPI_MakeFillet(shape, occt.ChFi3d_FilletShape.Rational);
+            occHelper.iteratorService.forEachEdge(shape, (_index, edge) => {
+                maker.Add(6, edge);
+                edge.delete();
+            });
+            maker.Build();
+            const rounded = maker.Shape();
+            maker.delete();
 
             // Act
             const valid = shapeFix.isValid({ shape: rounded });

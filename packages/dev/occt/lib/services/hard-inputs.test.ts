@@ -102,15 +102,15 @@ describe("OCCT operations on the inputs real models give them", () => {
             expect(oracles.counts(rounded).faces).toBe(9);
         });
 
-        it("should refuse a radius of 0 and below as a fillet it could not build at any edge", () => {
+        it("should refuse a radius of 0 and below before the kernel runs, naming the radius", () => {
             // Act
             const zero = outcomeOf(() => occt.fillets.filletEdges({ shape: box(), radius: 0 }));
             const below = outcomeOf(() => occt.fillets.filletEdges({ shape: box(), radius: -1 }));
 
             // Assert
             expect([zero.thrown, below.thrown]).toEqual([
-                expect.objectContaining({ name: "KernelOperationError", code: "occt.fillet.failedOnEdges" }),
-                expect.objectContaining({ name: "KernelOperationError", code: "occt.fillet.failedOnEdges" }),
+                expect.objectContaining({ name: "InputError", property: "radius", message: "`radius` is 0, but a radius is a finite number above 0." }),
+                expect.objectContaining({ name: "InputError", property: "radius", message: "`radius` is -1, but a radius is a finite number above 0." }),
             ]);
         });
 
@@ -201,7 +201,7 @@ describe("OCCT operations on the inputs real models give them", () => {
             expect(validOrRefused(hollowed)).toMatch(/^not valid, holding 833\.3/);
         });
 
-        it("should refuse an offset, a fillet and a loft whose solid OCCT leaves without a volume a solid can have", () => {
+        it("should refuse an offset and a loft whose solid OCCT leaves without a volume a solid can have, and a fillet whose solid leaves the box it rounds", () => {
             // Arrange
             const ring = circle(2, 0);
 

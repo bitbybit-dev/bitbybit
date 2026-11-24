@@ -61,7 +61,7 @@ describe("OCCTRecipes", () => {
         documents.splice(0).forEach((document) => document.delete());
     });
 
-    function built(recipe: Base.Recipe, options: { adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number } = {}): TopoDS_Shape[] {
+    function built(recipe: Base.Recipe, options: { upAxis?: Inputs.Base.upAxisConversionEnum, adjustZtoY?: boolean, emptyWhenFailed?: boolean, facetedMeshes?: boolean, maxTriangles?: number } = {}): TopoDS_Shape[] {
         const result = recipes.build({ recipe, ...options });
         shapes.push(...result);
         return result;
@@ -103,20 +103,28 @@ describe("OCCTRecipes", () => {
         });
 
         it.each([
-            ["swap Y and Z of a Z-up recipe in a left-handed system", leftHanded, true, [[0, 0, 0], [4, 3, 2]]],
-            ["turn a Z-up recipe a quarter about X in a right-handed system, as ever", rightHanded, true, [[0, 0, -2], [4, 3, 0]]],
-            ["mirror X of a recipe taken as it is in a left-handed system", leftHanded, false, [[-4, 0, 0], [0, 2, 3]]],
-            ["leave a recipe taken as it is alone in a right-handed system", rightHanded, false, [[0, 0, 0], [4, 2, 3]]],
-        ])("should %s", (_name, system, adjustZtoY, expected) => {
+            ["swap Y and Z of a Z-up recipe in a left-handed system", leftHanded, Inputs.Base.upAxisConversionEnum.zUpToYUp, [[0, 0, 0], [4, 3, 2]]],
+            ["turn a Z-up recipe a quarter about X in a right-handed system, as ever", rightHanded, Inputs.Base.upAxisConversionEnum.zUpToYUp, [[0, 0, -2], [4, 3, 0]]],
+            ["mirror X of a recipe taken as it is in a left-handed system", leftHanded, Inputs.Base.upAxisConversionEnum.keep, [[-4, 0, 0], [0, 2, 3]]],
+            ["leave a recipe taken as it is alone in a right-handed system", rightHanded, Inputs.Base.upAxisConversionEnum.keep, [[0, 0, 0], [4, 2, 3]]],
+        ])("should %s", (_name, system, upAxis, expected) => {
             // Arrange
             occHelper.base.settings = { coordinateSystem: system };
 
             // Act
-            const [box] = built(recipeOf(BOX, [rootOf(1)]), { adjustZtoY });
+            const [box] = built(recipeOf(BOX, [rootOf(1)]), { upAxis });
 
             // Assert
             expect(cornersOf(box!)).toEqual(expected);
             expect(volumeOf(box!)).toBeCloseTo(24, 9);
+        });
+
+        it("should refuse yUpToZUp, which no recipe is built with", () => {
+            // Act
+            const building = (): unknown => built(recipeOf(BOX, [rootOf(1)]), { upAxis: Inputs.Base.upAxisConversionEnum.yUpToZUp });
+
+            // Assert
+            expect(building).toThrow("`upAxis`");
         });
 
         it("should place a moved root after its own matrix in a left-handed system", () => {

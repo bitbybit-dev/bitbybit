@@ -275,6 +275,75 @@ describe("Draw DTO unit tests", () => {
         });
     });
 
+    describe("DrawOcctDocumentOptions and DrawHatchedSectionOptions", () => {
+        const DOCUMENT_ONLY = ["upAxis", "meshing", "edges", "drawAnnotations", "annotations"];
+        const SECTION_ONLY = ["hatchColour", "hatchWidth"];
+
+        it("should leave a plain shape's options without any document or section setting", () => {
+            // Act
+            const shape = new Draw.DrawOcctShapeOptions();
+
+            // Assert
+            expect([...DOCUMENT_ONLY, ...SECTION_ONLY].filter(name => name in shape)).toEqual([]);
+        });
+
+        it("should hold only the document's own settings, turned Y-up, edges on and annotations off, its pieces left out", () => {
+            // Act
+            const document = new Draw.DrawOcctDocumentOptions();
+
+            // Assert
+            expect(document).not.toBeInstanceOf(Draw.DrawOcctShapeOptions);
+            expect(Object.keys(document)).toEqual(["upAxis", "drawEdges", "drawAnnotations"]);
+            expect(document.upAxis).toBe(Base.upAxisConversionEnum.zUpToYUp);
+            expect(document.drawEdges).toBe(true);
+            expect(document.drawAnnotations).toBe(false);
+        });
+
+        it("should take the document's settings and pieces in its constructor", () => {
+            // Arrange
+            const meshing = new Draw.DrawMeshingOptions(0.2);
+            const edges = new Draw.DrawEdgesOptions("#333333");
+            const annotations = new Draw.DrawAnnotationsOptions("FRONT");
+
+            // Act
+            const document = new Draw.DrawOcctDocumentOptions(Base.upAxisConversionEnum.keep, meshing, false, edges, true, annotations);
+
+            // Assert
+            expect(document).toEqual({ upAxis: Base.upAxisConversionEnum.keep, meshing, drawEdges: false, edges, drawAnnotations: true, annotations });
+        });
+
+        it("should give each piece its defaults, and take what is given in its constructor", () => {
+            // Act
+            const meshing = new Draw.DrawMeshingOptions();
+            const edges = new Draw.DrawEdgesOptions();
+            const annotations = new Draw.DrawAnnotationsOptions();
+            const given = [new Draw.DrawMeshingOptions(0.2, 0.1, true, true, false), new Draw.DrawEdgesOptions("#333333", 4, 0.5), new Draw.DrawAnnotationsOptions("FRONT", "#ff0000", 3, false)];
+
+            // Assert
+            expect(meshing).toEqual({ precision: 0.01, angularDeflection: 0.5, relativeDeflection: false, forceFaceDeflection: false, allowQualityDecrease: true });
+            expect(edges).toEqual({ edgeColour: "#000000", edgeWidth: 2, edgeOpacity: 1 });
+            expect(annotations).toEqual({ annotationColour: "#0047ab", annotationWidth: 2, annotationsFilled: true });
+            expect(given).toEqual([
+                { precision: 0.2, angularDeflection: 0.1, relativeDeflection: true, forceFaceDeflection: true, allowQualityDecrease: false },
+                { edgeColour: "#333333", edgeWidth: 4, edgeOpacity: 0.5 },
+                { annotationsView: "FRONT", annotationColour: "#ff0000", annotationWidth: 3, annotationsFilled: false },
+            ]);
+        });
+
+        it("should hold only the section's own settings, white faces, edges on and a black hatch one wide", () => {
+            // Act
+            const section = new Draw.DrawHatchedSectionOptions();
+            const edges = new Draw.DrawEdgesOptions("#333333");
+            const given = new Draw.DrawHatchedSectionOptions(0.5, "#eeeeee", false, edges, "#00ff00", 3);
+
+            // Assert
+            expect(section).not.toBeInstanceOf(Draw.DrawOcctShapeOptions);
+            expect(section).toEqual({ precision: 0.01, faceColour: "#ffffff", drawEdges: true, hatchColour: "#000000", hatchWidth: 1 });
+            expect(given).toEqual({ precision: 0.5, faceColour: "#eeeeee", drawEdges: false, edges, hatchColour: "#00ff00", hatchWidth: 3 });
+            expect(DOCUMENT_ONLY.filter(name => name in section && name !== "edges")).toEqual([]);
+        });
+    });
+
     describe("DrawBasicGeometryOptions", () => {
         it("should set properties from constructor parameters", () => {
             // Arrange

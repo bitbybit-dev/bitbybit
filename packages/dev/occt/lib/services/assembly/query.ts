@@ -5,27 +5,19 @@ import type * as Models from "../../api/models";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import { checkedDocument } from "../base/file-data";
-
-type KernelPmiDimension = {
-    entry: string;
-    type: string;
-    name: string;
-    value: number | null;
-    upperTolerance?: number | null;
-    lowerTolerance?: number | null;
-    lowerBound?: number | null;
-    upperBound?: number | null;
-    shapes: string[];
-    otherShapes: string[];
-};
-
-type KernelPmi = {
-    dimensions: KernelPmiDimension[];
-    tolerances: { entry: string; type: string; name: string; value: number | null; shapes: string[]; datums: string[] }[];
-    datums: { entry: string; name: string; shapes: string[] }[];
-};
+import { documentTurnOf } from "../base/file-axes";
+import { documentAnnotationsOf, documentAnnotationsTurned } from "./annotations";
+import type { KernelAnnotations } from "./annotations-types";
+import type { KernelReadPmi } from "./pmi-types";
+import { PmiShapeNamer } from "./pmi-shape-refs";
+import { kernelObjects } from "../base/release";
 
 const finiteOrNaN = (value: number | null): number => value ?? NaN;
+
+const MATERIAL_CONDITIONS: Readonly<Record<"maximum" | "least", Inputs.OCCT.pmiMaterialConditionEnum>> = {
+    maximum: Inputs.OCCT.pmiMaterialConditionEnum.maximum,
+    least: Inputs.OCCT.pmiMaterialConditionEnum.least,
+};
 
 /**
  * Reading an assembly document: the parts and sub-assemblies it holds, the shape behind a label, a
@@ -38,7 +30,7 @@ export class OCCTAssemblyQuery {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        _och: OccHelper
+        private readonly och: OccHelper
     ) { }
 
     /**
@@ -162,14 +154,14 @@ export class OCCTAssemblyQuery {
     }
 
     /**
-     * Reads the product manufacturing information a document holds, as a STEP AP242 file brings it:
-     * dimensions, geometric tolerances and the datums they refer to.
+     * Reads the product manufacturing information a document holds: dimensions, geometric tolerances
+     * and the datums they refer to, each under its own label.
      *
-     * Each entry names its shapes by label, which `getShapeFromLabel` reads. Lengths are in the
-     * document's unit, millimeters for a loaded STEP file, and angles in degrees; a document without
-     * any gives empty lists.
+     * Each entry names its shapes by label, which `getShapeFromLabel` reads, and in `shapeRefs` as the
+     * part and index `manager.addDocumentPmi` takes. Lengths are in the document's unit, angles in
+     * degrees; a document without any gives empty lists.
      * @param inputs - The document
-     * @returns The dimensions, the tolerances and the datums
+     * @returns The dimensions, the tolerances and the datums, each with its label
      * @group query
      * @shortname get PMI
      * @drawable false
@@ -181,34 +173,78 @@ export class OCCTAssemblyQuery {
      */
     getDocumentPmi(inputs: Inputs.OCCT.DocumentQueryDto<Handle_TDocStd_Document>): Models.OCCT.DocumentPmi {
         const resolved = resolveDto(Inputs.OCCT.DocumentQueryDto, inputs) as Resolved.OCCT.DocumentQueryDto<Handle_TDocStd_Document>;
-        const pmi = JSON.parse(this.occ.DocumentPmiJson(checkedDocument(resolved.document, "document"))) as KernelPmi;
-        return {
-            dimensions: pmi.dimensions.map(dimension => ({
-                label: dimension.entry,
-                type: dimension.type,
-                name: dimension.name,
-                value: finiteOrNaN(dimension.value),
-                ...(dimension.upperTolerance === undefined ? {} : { upperTolerance: finiteOrNaN(dimension.upperTolerance) }),
-                ...(dimension.lowerTolerance === undefined ? {} : { lowerTolerance: finiteOrNaN(dimension.lowerTolerance) }),
-                ...(dimension.lowerBound === undefined ? {} : { lowerBound: finiteOrNaN(dimension.lowerBound) }),
-                ...(dimension.upperBound === undefined ? {} : { upperBound: finiteOrNaN(dimension.upperBound) }),
-                shapes: dimension.shapes,
-                otherShapes: dimension.otherShapes,
-            })),
-            tolerances: pmi.tolerances.map(tolerance => ({
-                label: tolerance.entry,
-                type: tolerance.type,
-                name: tolerance.name,
-                value: finiteOrNaN(tolerance.value),
-                shapes: tolerance.shapes,
-                datums: tolerance.datums,
-            })),
-            datums: pmi.datums.map(datum => ({
-                label: datum.entry,
-                name: datum.name,
-                shapes: datum.shapes,
-            })),
-        };
+        const document = checkedDocument(resolved.document, "document");
+        const pmi = JSON.parse(this.occ.DocumentPmiJson(document)) as KernelReadPmi;
+        const { own, releaseAll } = kernelObjects();
+        try {
+            const namer = new PmiShapeNamer(this.occ, document, own);
+            const letterOf = new Map(pmi.datums.map(datum => [datum.entry, datum.name]));
+            return {
+                dimensions: pmi.dimensions.map(dimension => ({
+                    label: dimension.entry,
+                    type: dimension.type,
+                    name: dimension.name,
+                    value: finiteOrNaN(dimension.value),
+                    ...(dimension.upperTolerance === undefined ? {} : { upperTolerance: finiteOrNaN(dimension.upperTolerance) }),
+                    ...(dimension.lowerTolerance === undefined ? {} : { lowerTolerance: finiteOrNaN(dimension.lowerTolerance) }),
+                    ...(dimension.lowerBound === undefined ? {} : { lowerBound: finiteOrNaN(dimension.lowerBound) }),
+                    ...(dimension.upperBound === undefined ? {} : { upperBound: finiteOrNaN(dimension.upperBound) }),
+                    shapes: dimension.shapes,
+                    otherShapes: dimension.otherShapes,
+                    shapeRefs: namer.refsOf(dimension.shapes),
+                    otherShapeRefs: namer.refsOf(dimension.otherShapes),
+                })),
+                tolerances: pmi.tolerances.map(tolerance => ({
+                    label: tolerance.entry,
+                    type: tolerance.type,
+                    name: tolerance.name,
+                    value: finiteOrNaN(tolerance.value),
+                    shapes: tolerance.shapes,
+                    datums: tolerance.datums,
+                    shapeRefs: namer.refsOf(tolerance.shapes),
+                    datumLetters: tolerance.datums.map(datum => letterOf.get(datum) ?? ""),
+                    diameterZone: tolerance.zone === "diameter",
+                    material: tolerance.material === undefined ? Inputs.OCCT.pmiMaterialConditionEnum.none : MATERIAL_CONDITIONS[tolerance.material],
+                })),
+                datums: pmi.datums.map(datum => ({
+                    label: datum.entry,
+                    name: datum.name,
+                    shapes: datum.shapes,
+                    letter: datum.name,
+                    shapeRefs: namer.refsOf(datum.shapes),
+                })),
+            };
+        } finally {
+            releaseAll();
+        }
+    }
+
+    /**
+     * Reads the dimensions, tolerances and datums a document carries as a STEP AP242 file draws
+     * them, and the views the file saved.
+     *
+     * Each has its plane, its lines as polylines and its letters as loops to fill even-odd, in the
+     * document's axes and units or turned Y-up; a part placed twice shows its annotations twice.
+     * Experimental.
+     * @param inputs - The document and how closely curved lines follow their curves
+     * @returns The annotations, the saved views and how many of each were left out
+     * @group query
+     * @shortname get annotations
+     * @drawable false
+     * @beta
+     * @example
+     * ```typescript
+     * const doc = await bitbybit.occt.assembly.manager.loadStepToDoc({ stepData });
+     * const pmi = await bitbybit.occt.assembly.query.getDocumentAnnotations({ document: doc, deflection: 0.05 });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: pmi });
+     * ```
+     */
+    getDocumentAnnotations(inputs: Inputs.OCCT.DocumentAnnotationsDto<Handle_TDocStd_Document>): Models.OCCT.DocumentAnnotations {
+        const resolved = resolveDto(Inputs.OCCT.DocumentAnnotationsDto, inputs) as Resolved.OCCT.DocumentAnnotationsDto<Handle_TDocStd_Document>;
+        const turn = documentTurnOf(resolved.upAxis, this.och.base.settings.coordinateSystem);
+        const text = this.occ.DocumentAnnotationsJson(checkedDocument(resolved.document, "document"), resolved.deflection, [], 1);
+        const annotations = documentAnnotationsOf(JSON.parse(text) as KernelAnnotations, this.och.base);
+        return turn === undefined ? annotations : documentAnnotationsTurned(annotations, turn, this.och.base);
     }
 
 }

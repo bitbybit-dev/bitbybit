@@ -44,6 +44,8 @@ export namespace Base {
     export type basicAlignmentEnum = BaseTypes.basicAlignmentEnum;
     export const unitOfLengthEnum = BaseTypes.unitOfLengthEnum;
     export type unitOfLengthEnum = BaseTypes.unitOfLengthEnum;
+    export const upAxisConversionEnum = BaseTypes.upAxisConversionEnum;
+    export type upAxisConversionEnum = BaseTypes.upAxisConversionEnum;
 
     /**
      * Defines how colors are mapped to entities when there are more entities than colors.

@@ -121,8 +121,11 @@ export type TopoDSCompoundPointer = { hash: number, type: "occ-shape" };
  * A handle to an OpenCascade document - the container used for assemblies, holding a shape
  * hierarchy along with names, colors and placements. This is what STEP assembly import and export
  * work against, as opposed to a single loose shape.
+ *
+ * Like a shape handle it is a small reference to an object the kernel holds, tagged as a document
+ * so a draw call knows it from a shape; free it with `assembly.manager.deleteDocument`.
  */
-export type TDocStdDocumentPointer = { hash: number, type: "occ-entity" };
+export type TDocStdDocumentPointer = { hash: number, type: "occ-document" };
 
 /**
  * Any shape handle, whatever its kind - vertex, edge, wire, face, shell, solid or compound.

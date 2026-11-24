@@ -360,7 +360,7 @@ function loaded(format: ImportFormat, asset: Models.OCCT.DesignAsset, data: stri
     } else if (format === "brep") {
         shape = run.occt.io.loadBrep({ brepData: typeof data === "string" ? data : new TextDecoder().decode(data) });
     } else {
-        shape = run.occt.io.loadSTEPorIGES({ filetext: typeof data === "string" ? data : new Uint8Array(data).buffer, fileName: `asset.${format}`, adjustZtoY: false, unit: run.unit });
+        shape = run.occt.io.loadSTEPorIGES({ filetext: typeof data === "string" ? data : new Uint8Array(data).buffer, fileName: `asset.${format}`, upAxis: Inputs.Base.upAxisConversionEnum.keep, unit: run.unit });
     }
     if (shape === undefined) {
         throw new DesignProblem(pointer(path, "asset"), `"${asset.uri}" holds no shape`);

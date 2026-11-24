@@ -1554,6 +1554,146 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cad/pro/drawing/draw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Drawing - draw a sheet or a set of sheets
+         * @description Proprietary 2D drawing sheets from a 3D model: lays out views of the parts of an uploaded STEP file on a standard or custom sheet, lined up with a base view at a scale that fits, with hidden lines dashed, sections with their cuts hatched and a title block; when the plan asks, also dimensions, holes with a hole table, a parts list with balloons, the flat pattern of a sheet-metal part, the annotations the file stores (AP242) and a revision table. A plan is one sheet or a set: a list of sheets, or a rule that makes one from the file's product structure. Every setting has a default, so a body with only 'stepFileId' draws a default sheet; POST /api/v1/cad/pro/drawing/inspect returns the plan with every setting spelled out. A plan too large for the body is uploaded as a JSON file and named by 'planFileId'. The paper is measured in millimetres; the lengths a sheet prints are in its 'units', millimetres or decimal inches, the STEP file's own unit when the plan names none, and a set in inches is written as a DXF and an SVG in inches, while its PDF keeps the paper's millimetres. Requires the 'cad' API key scope. Returns 202 with a task ID; the sheets come in the requested formats (PDF when left out, a page for each sheet; DXF and SVG with the sheets side by side), a format that cannot be written is left out and named in the task metadata's 'outputsLeftOut' with the reason, and the DrawingSetReport (the plan with every sheet written out, each sheet's place, report and, on a continuation sheet, its pagination, the warnings) is delivered as the metadata result. The task metadata also sums what the sheets report of how they read: 'floors' (the readability floors broken), 'continued' (the continuation sheets) and 'exactEstimate' (the seconds the exact method was predicted to take on CAD Cloud for the sheets drawn by sight), each only when reported.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["DrawingDrawBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/drawing/inspect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Drawing - read a model without drawing it
+         * @description Reads the model of an uploaded STEP file as a drawing would, without drawing: how many parts it holds and its size, the first sheet's plan with every setting resolved, whether its views fit and the layout they take, the scale each standard sheet would allow, sections the model could be cut by, the views the file saved, every part with its name, and every sheet of the plan written out. The set's plan, edited or as it is, is ready to send to POST /api/v1/cad/pro/drawing/draw. Requires the 'cad' API key scope. Returns 202 with a task ID; the DrawingInspection is delivered as the metadata result.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["DrawingInspectBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/files/upload": {
         parameters: {
             query?: never;
@@ -2459,7 +2599,7 @@ export interface components {
             meshAngle?: components["schemas"]["MeshAngle"];
             /** @description Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units. */
             meshRelative?: boolean;
-            /** @description Add interior vertices for better curved face fidelity (slower, set false for speed). */
+            /** @description Mesh flat and cylindrical faces with vertices inside them, not only along their edges (default true). With false, triangles can cut straight across a wide cylindrical face such as a bore. */
             internalVerticesMode?: boolean;
             /** @description Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed). */
             controlSurfaceDeflection?: boolean;
@@ -2493,7 +2633,7 @@ export interface components {
             meshParallel?: boolean;
             /** @description Use size-aware relative deflection per face. When true, meshDeflection is a fraction of each edge's length. Set to false for absolute deflection in model units. */
             meshRelative?: boolean;
-            /** @description Add interior vertices for better curved face fidelity (slower, set false for speed). */
+            /** @description Mesh flat and cylindrical faces with vertices inside them, not only along their edges (default true). With false, triangles can cut straight across a wide cylindrical face such as a bore. */
             internalVerticesMode?: boolean;
             /** @description Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed). */
             controlSurfaceDeflection?: boolean;
@@ -2540,7 +2680,7 @@ export interface components {
             meshAngle?: components["schemas"]["MeshAngle"];
             /** @description Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units. */
             meshRelative?: boolean;
-            /** @description Add interior vertices for better curved face fidelity (slower, set false for speed). */
+            /** @description Mesh flat and cylindrical faces with vertices inside them, not only along their edges (default true). With false, triangles can cut straight across a wide cylindrical face such as a bore. */
             internalVerticesMode?: boolean;
             /** @description Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed). */
             controlSurfaceDeflection?: boolean;
@@ -2738,7 +2878,7 @@ export interface components {
             /** @constant */
             mode: "free";
         };
-        /** @description Which formats the nested sheets and the flat patterns are written in, and their mesh quality. */
+        /** @description Which formats the nested sheets and the flat patterns are written in, their mesh quality, and the unit of the DXF and SVG cut files. */
         UnfoldAndNestOutputOptions: {
             /** @description Output formats to generate; each gives a separate downloadable result. The nested sheets come in the formats of NestingOutputFormat, and 'flat-meshes' gives each solid's flat pattern triangulated where it was unfolded, tagged with its solidIndex, for showing beside the model; a flat that could not be meshed has no mesh there but is nested all the same, and its unfold report entry says why in 'meshError'. Give 'step' or 'stpz', not both. */
             formats: ("step" | "stpz" | "decomposed-mesh" | "gltf" | "dxf" | "svg" | "outlines" | "flat-meshes")[];
@@ -2748,6 +2888,8 @@ export interface components {
             gltfMeshPrecision?: components["schemas"]["MeshPrecision"];
             /** @description Turns the decomposed-mesh and flat-meshes outputs from Y-up, as the server models, to Z-up. It applies to those two only: a STEP output is always written Z-up, and a glTF output is always Y-up, as glTF asks. */
             adjustYtoZ?: boolean;
+            /** @description The unit the 'dxf' and 'svg' cut files are written in: 'mm' (millimetres, the default), 'cm' (centimetres), 'm' (metres) or 'in' (inches). The drawing is scaled into it and each file states it, a DXF in its header ($INSUNITS) and an SVG in its width and height, so CAD and cutting software open it at its true size. It changes those two files only. A 'step' or 'stpz' file stays in millimetres, because a STEP file states its unit in its header and CAD programs convert it on import. 'gltf', 'decomposed-mesh' and 'flat-meshes' are written as they would be without it, holding the millimetre numbers unscaled. The 'outlines' JSON, the nesting report, the unfold report and every length of the request stay in millimetres. */
+            unit?: components["schemas"]["LengthUnit"];
         };
         /** @description Nest the flat parts of uploaded STEP files onto sheets or a strip. A part is a planar face, coplanar faces such as an unfolded sheet-metal part, a plate solid, or a drawing of closed wires; 'stepFileIds' says how parts are read from a file. */
         NestingNestBody: {
@@ -2796,7 +2938,7 @@ export interface components {
                 number
             ];
         };
-        /** @description Which formats the nested sheets are written in, and their mesh quality. */
+        /** @description Which formats the nested sheets are written in, their mesh quality, and the unit of the DXF and SVG cut files. */
         NestingOutputOptions: {
             /** @description Output formats to generate; each gives a separate downloadable result. Give 'step' or 'stpz', not both. */
             formats: components["schemas"]["NestingOutputFormat"][];
@@ -2806,9 +2948,11 @@ export interface components {
             gltfMeshPrecision?: components["schemas"]["MeshPrecision"];
             /** @description Turns a decomposed-mesh output from Y-up, as the server models, to Z-up. It applies to decomposed-mesh only: a STEP output is always written Z-up, so a STEP sent in comes back as it went in, and a glTF output is always Y-up, as glTF asks. */
             adjustYtoZ?: boolean;
+            /** @description The unit the 'dxf' and 'svg' cut files are written in: 'mm' (millimetres, the default), 'cm' (centimetres), 'm' (metres) or 'in' (inches). The drawing is scaled into it and each file states it, a DXF in its header ($INSUNITS) and an SVG in its width and height, so CAD and cutting software open it at its true size. It changes those two files only. A 'step' or 'stpz' file stays in millimetres, because a STEP file states its unit in its header and CAD programs convert it on import. 'gltf' and 'decomposed-mesh' are written as they would be without it, holding the millimetre numbers unscaled. The 'outlines' JSON, the nesting report and every length of the request stay in millimetres. */
+            unit?: components["schemas"]["LengthUnit"];
         };
         /**
-         * @description The formats of the nested sheets: 'step' or 'stpz' (each sheet one part, holding its placed parts and its outline), 'gltf', 'decomposed-mesh' (the placed parts, triangulated), 'dxf' (an AutoCAD 2000 drawing in millimetres: the sheets' outlines on layer SHEETS and the parts' cut paths on layer PARTS, every arc, ellipse and spline exact), 'svg' (the same drawing as an SVG file in millimetres, each layer a group), or 'outlines' (the same cut paths as JSON, each copy in the frame of its sheet and named by its placement, for drawing the layout). A 'dxf' or 'svg' too large to write is left out while every other format is still written, and the task's metadata says why under 'outputsLeftOut' (format to reason); a caveat about a cut file that was written, such as a part whose faces could not be joined into one outline, is given under 'outputNotes' (format to note).
+         * @description The formats of the nested sheets: 'step' or 'stpz' (each sheet one part, holding its placed parts and its outline), 'gltf', 'decomposed-mesh' (the placed parts, triangulated), 'dxf' (an AutoCAD 2000 drawing in millimetres, or in the unit 'outputs.unit' names: the sheets' outlines on layer SHEETS and the parts' cut paths on layer PARTS, every arc, ellipse and spline exact), 'svg' (the same drawing as an SVG file in the same unit, each layer a group), or 'outlines' (the same cut paths as JSON, each copy in the frame of its sheet and named by its placement, for drawing the layout). A 'dxf' or 'svg' too large to write is left out while every other format is still written, and the task's metadata says why under 'outputsLeftOut' (format to reason); a caveat about a cut file that was written, such as a part whose faces could not be joined into one outline, is given under 'outputNotes' (format to note).
          * @enum {string}
          */
         NestingOutputFormat: "step" | "stpz" | "decomposed-mesh" | "gltf" | "dxf" | "svg" | "outlines";
@@ -2839,6 +2983,369 @@ export interface components {
             seed?: number;
             /** @description The gap between sheets as they are laid out in a row in the output, in the parts' units (millimetres for parts read from STEP files). Defaults to a tenth of the widest sheet. */
             sheetGap?: number;
+        };
+        /** @description Draw a sheet, or a set of sheets, of the model in an uploaded STEP file: views laid out and aligned, hidden lines, sections with hatches, dimensions, holes, parts lists with balloons, flat patterns, the file's own annotations and a title block. A set is one PDF with a page for each sheet and one DXF and one SVG with the sheets side by side. */
+        DrawingDrawBody: {
+            /** @description ID of the previously uploaded STEP file (.step, .stp or gzip-compressed .stpz), at most 200 MB. Every placed part of the file is a part of the drawing, numbered from 0 in the order the file's structure gives them. */
+            stepFileId: string;
+            /** @description The unit a STEP file's numbers are really in, when its header states another unit or none: some exporters write a model drawn in metres under a millimetre header. Each file is scaled from it, so the model is read in millimetres, the unit every length of the request and its results is in. A header naming no unit counts as millimetres; a file whose header names a unit other than mm, cm, m or in, or several different ones, is refused, since its unit is converted already. Left out, each file's own unit is used. */
+            fileUnit?: components["schemas"]["LengthUnit"];
+            /** @description What to draw. The default sheet when left out. Not given with 'planFileId'. */
+            plan?: components["schemas"]["DrawingPlan"];
+            /** @description ID of a previously uploaded JSON file holding the plan (named .json or of type application/json), at most 32 MB, in place of 'plan': for a set written out past the 128 KB a request body takes. It is held to the same rules as 'plan', and a refusal names the field inside the file. Not given with 'plan'. */
+            planFileId?: string;
+            /** @description Output formats. Left out, the sheet is written as PDF. */
+            outputs?: components["schemas"]["DrawingOutputOptions"];
+            onlySheets?: components["schemas"]["DrawingOnlySheets"];
+            /** @description The id of an earlier draw or inspection of this same uploaded file, read in the same 'fileUnit', whose model to take: the parts are taken from the model that task kept instead of being read from the file again, which on a large file is most of what an inspection or a sheet takes, and the sheets are the same, byte for byte. The task must be this account's, completed and not expired, started with an API key of the same storage as this request's, and have kept its model, which its report says under run.model.kept; a task that does not qualify refuses the request before it is queued, saying why, with the error's details naming the field 'modelFromTask'. Should the kept model turn out unusable once the task runs, the file is read instead and run.model.notReused says why. */
+            modelFromTask?: string;
+        };
+        /** @description What to draw: one sheet, or a set of sheets. Every setting has a default, so an empty plan draws a default sheet; the inspect route returns the plan with every setting spelled out and every sheet of a set written out, ready to edit and send to the draw route. A request body takes at most 128 KB, so a set written out past that, of a model with hundreds of sheets or thousands of parts beneath every level, is uploaded as a JSON file and named in 'planFileId', or sent as its rule. */
+        DrawingPlan: {
+            sheet?: components["schemas"]["DrawingSheet"];
+            /**
+             * @description The unit every length the sheet prints is written in: 'mm', millimetres, or 'in', decimal inches. It covers the overall sizes, ordinates, diameters, radius callouts, the hole table, the bend table's radius, the flat pattern's sizes and a custom sheet's size in the title block, whose UNITS cell says MM or IN; angles stay in degrees. In inches an automatic scale comes from the inch series (1:2, 1:4, 1:8, 1:10, 1:20 and so on), and the DXF and SVG are written in inches; the PDF keeps the paper's millimetres, and the geometry, the plan's lengths and every number of the report stay in millimetres. Left out, the STEP file's own unit decides: a file in inches, by its header or by 'fileUnit', is drawn in inches, any other in millimetres.
+             * @enum {string}
+             */
+            units?: "mm" | "in";
+            /** @description The places a printed length is written to: in millimetres at most that many, 0 to 4, idle zeros and the point dropped (12.5, 12); in inches exactly that many, 1 to 4, with no zero before the point (.250, 1.500). 2 in millimetres and 3 in inches when left out. A plan that names no units and 0 places is refused when the file proves to be in inches. */
+            decimals?: number;
+            /** @description What the view names mean: 'front' looks along this frame and the other names turn with it. Left out, a sheet is drawn from its part's own front, square to the part's own faces (its plain faces and the axes of its round ones, the space's axes when the part is square to them), looking along the axis it shows most of with its long side across: a plate looks along its thickness and a turned part across its axis. The resolved plan writes that front into the sheet. A sheet of a list keeps the plan's front, or the space's axes, unless it says turned. 'annotations' asks for the front most of the sheet's drawn annotations read upright from, when it draws them; annotations never choose or tilt a front otherwise. */
+            front?: "annotations" | components["schemas"]["DrawingFrame"];
+            /** @description The parts to draw by number, each once, or 'all'. Left out or 'all', every part that holds a face when any part does: loose curves beside solids, such as the curves an AP203 file draws its notes with, are left out and counted in the report's model.faceless. */
+            parts?: "all" | number[];
+            /** @description The views, the first being the base the others line up with; views a plan states are kept as stated. Left out, a sheet the plan or a rule makes gets the views that describe its part: a plate its front and one edge view, a turned part its side and its end, any other part front, top and right, each with the isometric, which may take a smaller scale of its own. A view that does not fit beside them at their scale goes to a continuation sheet, and when the principal views' annotation letters would be under 2.5 mm together, each principal view whose letters would read on a sheet of its own gets one (the front stays); each continuation sheet says why in its pagination. A sheet of a list that states no views gets front, top, right and isometric. Empty only beside a flat pattern, for a sheet of the flat pattern alone, or beside shared notes, for a sheet of the general notes alone. */
+            views?: components["schemas"]["DrawingView"][];
+            sections?: components["schemas"]["DrawingSection"][];
+            /** @description How hidden lines are found. 'auto', the default, keeps the exact method to a budget: it draws the sheet exactly when the exact method is predicted to take 10 s or less for all its views together on a native build of the kernel (about 12 s on CAD Cloud, whose kernel takes 1.2 times as long), and by sight otherwise. The prediction weighs the faces by what they cost the exact method: a freeform face (a B-spline or Bezier surface, an offset of one, or a surface turned from a B-spline or Bezier curve) weighs as 160 plain faces, more when its normals turn round more than once, as on a coil spring, and a torus up to as much as a freeform face. The report's run.chosenBy says 'budget' or 'within', and run.exactEstimate gives the predicted seconds on CAD Cloud, about, whenever a view was drawn by sight. On a sheet over the budget a view is drawn by sight even when a few faces cannot be meshed; they hide nothing, and a warning says so. 'exact' works from the geometry alone; 'sight' draws the model's own edges and decides what is hidden from a picture of its mesh, seconds where 'exact' takes minutes on a large assembly; 'mesh' draws the edges of a tessellation. */
+            lines?: {
+                /** @enum {string} */
+                method?: "auto" | "exact" | "sight" | "mesh";
+            };
+            /** @description False for a sheet without a title block; true, or left out, for one with empty fields. */
+            titleBlock?: boolean | components["schemas"]["DrawingTitleBlock"];
+            revisions?: components["schemas"]["DrawingRevision"][];
+            /** @description 'auto' sizes the first view's width and height and the one size each top, bottom, left or right view of it adds; on a sheet of one part it also sizes every distinct outside diameter once, in the first view that sees it from the side, and calls out every distinct radius of a round once, in the first view that sees it end-on. 'ordinate' gives the same, except that the first view is measured by ordinates from the lower left corner of the part's box, the corner the hole table measures from, to each hole centre it sees end-on and to the far sides. Left out, a plan without 'sheets', like a sheet a rule makes, gets 'auto', and a sheet given in a 'sheets' list draws none unless it or the plan asks for them. False draws none. */
+            dimensions?: false | "auto" | "ordinate";
+            /** @description 'auto' recognises the holes (through, blind, counterbored, countersunk), draws their centre marks and lines, tags those the first view sees end-on and lists them in a hole table. Left out, a plan without 'sheets', like a sheet a rule makes, gets 'auto' on a sheet of one part, and a sheet given in a 'sheets' list draws none unless it or the plan asks for them. False draws none. */
+            holes?: false | "auto";
+            /** @description True, the default, lists the holes 'auto' tags in a hole table; a table too long for its sheet is left out with a warning, and a set continues it on sheets of its own instead. False leaves the table out and keeps the tags and centre marks. Given as rows, the sheet is a hole table alone and takes no views, sections, dimensions, holes, flat pattern, balloons, annotations or parts list. */
+            holeTable?: boolean | components["schemas"]["DrawingHoleTable"];
+            /** @description True adds a sheet-metal part's flat pattern as a view, with its bend lines and a bend table; 'auto' does so only when the part unfolds cleanly with a bend that folds: a part whose unfold is not clean, such as a casting, gets none, and a warning says why. Only a sheet of one part has one. With a flat pattern, views may be empty: the sheet is the flat pattern alone. Left out, a plan without 'sheets', like a sheet a rule makes, gets 'auto' on a sheet of one part, and a sheet given in a 'sheets' list has none unless it or the plan asks for one. False leaves it out. */
+            flat?: boolean | "auto" | components["schemas"]["DrawingFlat"];
+            /** @description True draws the dimensions, tolerances, datums and notes the STEP file stores (AP242), each on a view that faces the plane it was made in, adding views for planes none of the plan's views faces, and turns a line of letters that would read from the top or the left to read from the bottom or the right. Only a sheet of every part draws them: the model's own where they stand and each product's once, at its first instance. Given as an object, 'product' and 'instance' name one product's annotations, drawn where that instance stands whatever parts the sheet shows (a set made by a rule names them so on the sheet of each product that has annotations), and 'addViews' and 'notes' false leave the annotations no view faces and the general notes to another sheet of the set. Annotations never turn the front unless 'front' is 'annotations'. False when left out. */
+            annotations?: boolean | components["schemas"]["DrawingAnnotatedProduct"];
+            /** @description What the sheet shares with the other sheets of its part. A resolved set writes it; a plan seldom needs to: send it back as the set gives it. */
+            shared?: components["schemas"]["DrawingShared"];
+            /** @description True gives every assembly's sheet a list of what goes directly into it (item, name, quantity, the sheet it is drawn on) and, when the list has at most 40 rows, balloons pointing at them; a list too long for the sheet takes sheets of its own after it. Not true with a hole table alone. A list given as rows is drawn on every sheet. False, the default, draws none. */
+            partsList?: boolean | components["schemas"]["DrawingPartsList"];
+            /** @description With a parts list of true, false leaves its balloons out. Given as items, balloons around one view of every sheet, or around one section when the plan has no rule. */
+            balloons?: boolean | components["schemas"]["DrawingBalloons"];
+            /** @description Several sheets: a list, each sheet stating what it changes of the plan (a sheet stating only parts is drawn with everything else as the plan says), or a rule that makes the list from the model's structure. One sheet of the plan when left out. The settings at the top of the plan are laid under every sheet. */
+            sheets?: components["schemas"]["DrawingSetSheet"][] | components["schemas"]["DrawingSetRule"];
+        };
+        /** @description The sheet a drawing is laid out on. */
+        DrawingSheet: {
+            /** @description A standard sheet by name, or a custom one by its width and height in millimetres. A3 when left out. */
+            size?: ("A0" | "A1" | "A2" | "A3" | "A4" | "ANSI-A" | "ANSI-B" | "ANSI-C" | "ANSI-D" | "ANSI-E") | {
+                width: number;
+                height: number;
+            };
+            /**
+             * @description Landscape when left out. Not given with a custom size, which is drawn as its width and height say.
+             * @enum {string}
+             */
+            orientation?: "landscape" | "portrait";
+            /**
+             * @description First-angle on ISO and custom sheets, third-angle on ANSI sheets, unless given.
+             * @enum {string}
+             */
+            projection?: "first-angle" | "third-angle";
+            /** @description The sheet's scale. 'fill', the default, takes the largest scale at which every view fits from the scales ISO 5455 recommends and those GOST 2.302 adds (1:2.5, 1:4, 1:15, 1:25, 1:40, 1:75 and the like); 'auto' keeps to the preferred 1, 2 and 5 steps. A fixed scale that does not fit is refused with the scale and the sheet that would. */
+            scale?: ("fill" | "auto") | components["schemas"]["DrawingScale"];
+        };
+        /** @description A drawing scale, numerator to denominator: 1 to 50 is { numerator: 1, denominator: 50 }. Between 1:1000 and 100:1. */
+        DrawingScale: {
+            numerator: number;
+            denominator: number;
+        };
+        /** @description A view frame in the model's space, which is Y-up as a STEP file is read: millimetres, an origin, a normal and a direction. */
+        DrawingFrame: {
+            /** @description A point of the view's plane; the origin of the model's space when left out. */
+            origin?: [
+                number,
+                number,
+                number
+            ];
+            /** @description The side the eye is on: the view looks back along it. For a section it is the side that is cut away. */
+            normal: [
+                number,
+                number,
+                number
+            ];
+            /** @description What runs to the right in the view. It need not be of unit length nor exactly square to the normal, but it may not be parallel to it. */
+            direction: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** @description One view of the model on the sheet. */
+        DrawingView: {
+            /**
+             * @description A named view of the front frame. Give one of name, frame and saved.
+             * @enum {string}
+             */
+            name?: "front" | "top" | "bottom" | "left" | "right" | "back" | "isometric";
+            /** @description A view by its own frame. Give one of name, frame and saved. */
+            frame?: components["schemas"]["DrawingFrame"];
+            /** @description A view the STEP file saved (an AP242 model view), by its name: the sheet looks along it with its up upward, captioned with its name and without hidden lines unless told otherwise. A name the file does not hold refuses the sheet. Give one of name, frame and saved. */
+            saved?: string;
+            /** @description Whether hidden edges are drawn, dashed. True unless the view is the isometric one. */
+            hiddenLines?: boolean;
+            /** @description Whether edges where faces meet without a crease, such as the ends of a fillet, are drawn as thin lines. True when left out; seams of round faces are never drawn. */
+            smoothEdges?: boolean;
+            /** @description The view's own scale. A view with its own scale is placed freely instead of in line with the others. */
+            scale?: components["schemas"]["DrawingScale"];
+            /** @description A text under the view. */
+            caption?: string;
+        };
+        /** @description One section through the model. */
+        DrawingSection: {
+            /** @description The section's letter, as in SECTION A-A. No two sections share one. */
+            label: string;
+            /** @description The cutting plane is the frame's plane. What lies on the normal's side is cut away and the rest is seen from there. */
+            frame: components["schemas"]["DrawingFrame"];
+            /** @description The index of the view that carries the cutting-plane line. 0 when left out. */
+            shownOn?: number;
+            /** @description False for no hatch, true or left out for the default one. */
+            hatch?: boolean | components["schemas"]["DrawingHatch"];
+            scale?: components["schemas"]["DrawingScale"];
+        };
+        /** @description The hatch on what a section's plane cuts: ansi31 at 45 degrees, 3 mm apart, when left out. */
+        DrawingHatch: {
+            /** @enum {string} */
+            pattern?: "ansi31" | "ansi32" | "ansi37" | "solid";
+            /** @description Degrees. */
+            angle?: number;
+            /** @description Millimetres on paper between the hatch lines. */
+            spacing?: number;
+        };
+        /** @description The fields of the title block. Every field is empty unless given. */
+        DrawingTitleBlock: {
+            title?: string;
+            number?: string;
+            material?: string;
+            revision?: string;
+            /** @description A text like any other: nothing defaults to today, so the same plan draws the same sheet on any day. */
+            date?: string;
+            drawnBy?: string;
+            checkedBy?: string;
+            /** @description Who approved the drawing, one of the fields ISO 7200 makes mandatory: shown as APPROVED BY in a row of its own when given. */
+            approvedBy?: string;
+            /** @description What kind of document the sheet is, such as Assembly drawing or Detail drawing, one of the fields ISO 7200 makes mandatory: shown as DOCUMENT TYPE in a row of its own when given. */
+            documentType?: string;
+            company?: string;
+            finish?: string;
+            custom?: {
+                caption: string;
+                value?: string;
+            }[];
+            /** @description The sheet's number in a set, such as 2 / 7: shown as SHEET when given. A set of several sheets writes it into every title block. */
+            sheet?: string;
+            /** @description How many of the part are made: shown as QTY when given. A set writes the model's count of the product a sheet shows. */
+            quantity?: string;
+        };
+        /** @description One row of the revision table. */
+        DrawingRevision: {
+            mark?: string;
+            description?: string;
+            date?: string;
+            by?: string;
+        };
+        /** @description A hole table alone: the sheet is these rows and nothing else, in columns as a parts list alone stands. A set writes such sheets after a part's sheet whose hole table runs over it. */
+        DrawingHoleTable: {
+            rows: components["schemas"]["DrawingHoleTableRow"][];
+        };
+        /** @description One row of a hole table, as texts: the hole's tag, its X and Y from the lower left corner of the part's box in the first view, its size and its depth. A text left out is empty. */
+        DrawingHoleTableRow: {
+            tag?: string;
+            x?: string;
+            y?: string;
+            size?: string;
+            depth?: string;
+        };
+        /** @description How a sheet-metal part is unfolded for its flat pattern. */
+        DrawingFlat: {
+            /** @description Where the neutral fibre lies in the thickness, 0 to 1. 0.5 when left out, as the unfold route takes it. */
+            kFactor?: number;
+            /** @description The sheet's thickness in millimetres; 0, the default, finds it. */
+            thickness?: number;
+            /** @description True draws the flat pattern only when the part unfolds with at least one bend, and says nothing otherwise. */
+            auto?: boolean;
+        };
+        /** @description Which of the annotations the STEP file stores a sheet draws, and where: one product's, moved to where one of its instances stands, or the whole model's; and whether views are added for them and the general notes drawn, or both left to another sheet of the set. */
+        DrawingAnnotatedProduct: {
+            /** @description The product whose annotations alone are drawn, by the number the inspection's set gives it, whatever parts the sheet shows. Left out, the whole model's annotations, as true draws them on a sheet of every part. */
+            product?: number;
+            /** @description Which of the product's instances they are placed at, counted from 0 in the order of the model's structure, depth first. 0 when left out; given only with a product. */
+            instance?: number;
+            /** @description False adds no view for annotations that none of the plan's views faces: another sheet of the set draws them, and the report counts them in annotations.elsewhere instead of warning. True when left out. */
+            addViews?: boolean;
+            /** @description False leaves the general notes, those that belong to no shape, to another sheet of the set, counted in annotations.elsewhere the same way. True when left out. */
+            notes?: boolean;
+        };
+        /** @description What a sheet shares with the other sheets of its part. A resolved set writes it into the pages of a sheet it paginated, a continuation sheet for each view that did not fit or would not read beside the others, for the callouts and balloons the first sheet had no room for, and for general notes, so the set, sent back, draws the same sheets. Not given on a parts list or a hole table alone. */
+        DrawingShared: {
+            /** @description The views the pages of one sheet share, in their order: the automatic sizes, diameters and radius callouts of dimensions are decided over all of them, as one sheet of every view would give them, and each page draws those that fall on its own views (matched by frame), so no size is given on two pages. */
+            views?: components["schemas"]["DrawingView"][];
+            marks?: components["schemas"]["DrawingSharedMark"][];
+            elsewhere?: components["schemas"]["DrawingLeftMark"][];
+            /** @description True makes the sheet the general notes alone, laid over its whole frame, for notes the first sheet had no room for; its views are then an empty list. False when left out. */
+            notes?: boolean;
+        };
+        /** @description A radius callout or a balloon another sheet had no room for, drawn on this sheet with a leader to the point it marks. */
+        DrawingSharedMark: {
+            /** @description The index of the sheet's view it stands around. */
+            view: number;
+            /** @description A radius callout's text, such as 4X R10, or the X0 Y0 of a hole table's origin. Give a callout or a balloon. */
+            callout?: string;
+            /** @description A balloon's text, a hole tag such as A12 included. Give a callout or a balloon. */
+            balloon?: string;
+            /** @description The point the leader points at, in the model's space. */
+            at: [
+                number,
+                number,
+                number
+            ];
+            /** @description A radius callout's arc centre in the model's space, which leads it along the arc's radius as on its first sheet. */
+            centre?: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** @description A radius callout or a balloon of this sheet's view that another sheet of the set carries: left out here without a warning. */
+        DrawingLeftMark: {
+            /** @description The index of the sheet's view it stands around. */
+            view: number;
+            /** @description A radius callout's text. Give a callout or a balloon. */
+            callout?: string;
+            /** @description A balloon's text, a hole tag included. Give a callout or a balloon. */
+            balloon?: string;
+        };
+        /** @description A parts list drawn above the title block. */
+        DrawingPartsList: {
+            rows: components["schemas"]["DrawingPartsListRow"][];
+            /** @description True makes the sheet the list and nothing else: it shows no part and takes no views, sections, dimensions, holes, flat pattern or balloons. */
+            alone?: boolean;
+        };
+        /** @description One row of a parts list: as texts, the item number, the name, the quantity and the sheet the part is drawn on, and the number of the product it lists. */
+        DrawingPartsListRow: {
+            item?: string;
+            name?: string;
+            quantity?: string;
+            sheet?: string;
+            /** @description The product the row lists, by the number the inspection gives it. A set keeps the row's sheet true by it: resolved, the row's sheet is where that product's first sheet stands in the set, or empty when no sheet shows it, so a set whose sheets were moved or removed is put right by resolving it again. The rows a set writes name their product; a row without one is left as given. */
+            product?: number;
+        };
+        /** @description Balloons around one view or one section, each with a leader to a part it names. */
+        DrawingBalloons: {
+            /** @description The index of the view the balloons stand around, sections not counted. 0 when left out. */
+            view?: number;
+            /** @description The label of a section of the plan: the balloons stand around that section instead of a view and point at what its cut keeps. Give a view or a section, not both. */
+            section?: string;
+            /** @description Each balloon's text and the parts it may point at; it points at whichever of them shows. An item none of whose parts shows gets no balloon and a warning. */
+            items: {
+                item: string;
+                parts: number[];
+            }[];
+        };
+        /** @description One sheet of a set: the settings it states replace the plan's, except sheet and titleBlock, whose fields are laid over the plan's one by one. */
+        DrawingSetSheet: {
+            sheet?: components["schemas"]["DrawingSheet"];
+            /**
+             * @description The unit every length the sheet prints is written in: 'mm', millimetres, or 'in', decimal inches. It covers the overall sizes, ordinates, diameters, radius callouts, the hole table, the bend table's radius, the flat pattern's sizes and a custom sheet's size in the title block, whose UNITS cell says MM or IN; angles stay in degrees. In inches an automatic scale comes from the inch series (1:2, 1:4, 1:8, 1:10, 1:20 and so on), and the DXF and SVG are written in inches; the PDF keeps the paper's millimetres, and the geometry, the plan's lengths and every number of the report stay in millimetres. Left out, the STEP file's own unit decides: a file in inches, by its header or by 'fileUnit', is drawn in inches, any other in millimetres.
+             * @enum {string}
+             */
+            units?: "mm" | "in";
+            /** @description The places a printed length is written to: in millimetres at most that many, 0 to 4, idle zeros and the point dropped (12.5, 12); in inches exactly that many, 1 to 4, with no zero before the point (.250, 1.500). 2 in millimetres and 3 in inches when left out. A plan that names no units and 0 places is refused when the file proves to be in inches. */
+            decimals?: number;
+            /** @description What the view names mean: 'front' looks along this frame and the other names turn with it. Left out, a sheet is drawn from its part's own front, square to the part's own faces (its plain faces and the axes of its round ones, the space's axes when the part is square to them), looking along the axis it shows most of with its long side across: a plate looks along its thickness and a turned part across its axis. The resolved plan writes that front into the sheet. A sheet of a list keeps the plan's front, or the space's axes, unless it says turned. 'annotations' asks for the front most of the sheet's drawn annotations read upright from, when it draws them; annotations never choose or tilt a front otherwise. */
+            front?: "annotations" | components["schemas"]["DrawingFrame"];
+            /** @description The parts to draw by number, each once, or 'all'. Left out or 'all', every part that holds a face when any part does: loose curves beside solids, such as the curves an AP203 file draws its notes with, are left out and counted in the report's model.faceless. */
+            parts?: "all" | number[];
+            /** @description The views, the first being the base the others line up with; views a plan states are kept as stated. Left out, a sheet the plan or a rule makes gets the views that describe its part: a plate its front and one edge view, a turned part its side and its end, any other part front, top and right, each with the isometric, which may take a smaller scale of its own. A view that does not fit beside them at their scale goes to a continuation sheet, and when the principal views' annotation letters would be under 2.5 mm together, each principal view whose letters would read on a sheet of its own gets one (the front stays); each continuation sheet says why in its pagination. A sheet of a list that states no views gets front, top, right and isometric. Empty only beside a flat pattern, for a sheet of the flat pattern alone, or beside shared notes, for a sheet of the general notes alone. */
+            views?: components["schemas"]["DrawingView"][];
+            sections?: components["schemas"]["DrawingSection"][];
+            /** @description How hidden lines are found. 'auto', the default, keeps the exact method to a budget: it draws the sheet exactly when the exact method is predicted to take 10 s or less for all its views together on a native build of the kernel (about 12 s on CAD Cloud, whose kernel takes 1.2 times as long), and by sight otherwise. The prediction weighs the faces by what they cost the exact method: a freeform face (a B-spline or Bezier surface, an offset of one, or a surface turned from a B-spline or Bezier curve) weighs as 160 plain faces, more when its normals turn round more than once, as on a coil spring, and a torus up to as much as a freeform face. The report's run.chosenBy says 'budget' or 'within', and run.exactEstimate gives the predicted seconds on CAD Cloud, about, whenever a view was drawn by sight. On a sheet over the budget a view is drawn by sight even when a few faces cannot be meshed; they hide nothing, and a warning says so. 'exact' works from the geometry alone; 'sight' draws the model's own edges and decides what is hidden from a picture of its mesh, seconds where 'exact' takes minutes on a large assembly; 'mesh' draws the edges of a tessellation. */
+            lines?: {
+                /** @enum {string} */
+                method?: "auto" | "exact" | "sight" | "mesh";
+            };
+            /** @description False for a sheet without a title block; true, or left out, for one with empty fields. */
+            titleBlock?: boolean | components["schemas"]["DrawingTitleBlock"];
+            revisions?: components["schemas"]["DrawingRevision"][];
+            /** @description 'auto' sizes the first view's width and height and the one size each top, bottom, left or right view of it adds; on a sheet of one part it also sizes every distinct outside diameter once, in the first view that sees it from the side, and calls out every distinct radius of a round once, in the first view that sees it end-on. 'ordinate' gives the same, except that the first view is measured by ordinates from the lower left corner of the part's box, the corner the hole table measures from, to each hole centre it sees end-on and to the far sides. Left out, a plan without 'sheets', like a sheet a rule makes, gets 'auto', and a sheet given in a 'sheets' list draws none unless it or the plan asks for them. False draws none. */
+            dimensions?: false | "auto" | "ordinate";
+            /** @description 'auto' recognises the holes (through, blind, counterbored, countersunk), draws their centre marks and lines, tags those the first view sees end-on and lists them in a hole table. Left out, a plan without 'sheets', like a sheet a rule makes, gets 'auto' on a sheet of one part, and a sheet given in a 'sheets' list draws none unless it or the plan asks for them. False draws none. */
+            holes?: false | "auto";
+            /** @description True, the default, lists the holes 'auto' tags in a hole table; a table too long for its sheet is left out with a warning, and a set continues it on sheets of its own instead. False leaves the table out and keeps the tags and centre marks. Given as rows, the sheet is a hole table alone and takes no views, sections, dimensions, holes, flat pattern, balloons, annotations or parts list. */
+            holeTable?: boolean | components["schemas"]["DrawingHoleTable"];
+            /** @description True adds a sheet-metal part's flat pattern as a view, with its bend lines and a bend table; 'auto' does so only when the part unfolds cleanly with a bend that folds: a part whose unfold is not clean, such as a casting, gets none, and a warning says why. Only a sheet of one part has one. With a flat pattern, views may be empty: the sheet is the flat pattern alone. Left out, a plan without 'sheets', like a sheet a rule makes, gets 'auto' on a sheet of one part, and a sheet given in a 'sheets' list has none unless it or the plan asks for one. False leaves it out. */
+            flat?: boolean | "auto" | components["schemas"]["DrawingFlat"];
+            /** @description True draws the dimensions, tolerances, datums and notes the STEP file stores (AP242), each on a view that faces the plane it was made in, adding views for planes none of the plan's views faces, and turns a line of letters that would read from the top or the left to read from the bottom or the right. Only a sheet of every part draws them: the model's own where they stand and each product's once, at its first instance. Given as an object, 'product' and 'instance' name one product's annotations, drawn where that instance stands whatever parts the sheet shows (a set made by a rule names them so on the sheet of each product that has annotations), and 'addViews' and 'notes' false leave the annotations no view faces and the general notes to another sheet of the set. Annotations never turn the front unless 'front' is 'annotations'. False when left out. */
+            annotations?: boolean | components["schemas"]["DrawingAnnotatedProduct"];
+            /** @description What the sheet shares with the other sheets of its part. A resolved set writes it; a plan seldom needs to: send it back as the set gives it. */
+            shared?: components["schemas"]["DrawingShared"];
+            /** @description The sheet's name in the report; a sheet made for a product is named after it. */
+            name?: string;
+            /** @description The product of the model the sheet documents, by the number the inspection gives it: its parts list rows and its quantity come from it. */
+            product?: number;
+            /** @description True turns the sheet to its own part's front, square to the part's own faces, when the sheet states no front of its own: the plan's front frame is dropped for it, while a front of 'annotations' is kept. */
+            turned?: boolean;
+            /** @description Why the sheet continues the one before it, as a resolved set writes it on each continuation sheet: a view that did not fit beside the principal views, or principal views whose annotation letters were too small together. Sent back with the set, it marks the sheet as a continuation, so the set reads back to itself. */
+            pagination?: string;
+            /** @description A parts list of this sheet's own, or false for none, whatever the plan says. */
+            partsList?: false | components["schemas"]["DrawingPartsList"];
+            /** @description Balloons of this sheet's own, or false for none. */
+            balloons?: false | components["schemas"]["DrawingBalloons"];
+        };
+        /** @description Sheets made from the model's product structure, each product once, its instances counted as its quantity. The plan's sections are drawn on the overview sheet alone and every sheet draws a product of the model, so a plan with a rule takes no balloons around a section and no parts list or hole table alone. */
+        DrawingSetRule: {
+            /**
+             * @description 'structure': the whole model, then each assembly and part in the order of the model's structure, every assembly followed at once by what goes into it; 'parts': the whole model, then every distinct part; 'assemblies': the whole model and every assembly, no part.
+             * @enum {string}
+             */
+            auto: "structure" | "parts" | "assemblies";
+            /** @description Whether the first sheet shows the whole model, with 'parts'. True when left out; 'structure' and 'assemblies' always start with it. */
+            overview?: boolean;
+            /** @description Whether every sheet the rule makes, the overview included, is turned to its own part's front; every sheet but the overview drops the plan's front frame, and a front of 'annotations' is kept by all. True when left out; false keeps every sheet on the plan's front, or the space's axes. */
+            turned?: boolean;
+            /** @description The most sheets to make; a model that takes more is refused, saying how many it would take. 500 when left out. */
+            most?: number;
+            /** @description How many levels of assemblies are opened: an assembly below it is drawn as one part and gets no sheets of its own. 64 when left out, the deepest a model is read to. */
+            depth?: number;
+        };
+        /** @description Which formats the drawing sheet is written in. */
+        DrawingOutputOptions: {
+            /** @description The files to write the sheet as; each gives a separate downloadable result. Left out, the sheet is written as PDF. */
+            formats: ("svg" | "dxf" | "pdf")[];
+        };
+        /** @description The sheets of the set to draw, by their index in it counting from 0, as the inspection's 'set' and a drawn set's report list them; the others are not drawn. Each sheet is drawn and written as it is in the whole set, its title block numbering it among all of them (SHEET 2 / 5) and its DXF and SVG in the unit the whole set's are, that of its first sheet, and the files hold only the sheets named, in the set's order, laid out as a set of their own; each sheet of the report gives its 'index' and the report gives 'setSheets', how many the whole set has. An index past the set's last sheet fails the task. Left out, every sheet is drawn. With the 'fingerprint' every sheet of an inspection's set and of a drawing carries, an app that keeps the sheets it drew asks only for those whose fingerprint it does not hold. */
+        DrawingOnlySheets: number[];
+        /** @description Read the model in an uploaded STEP file for a drawing without drawing it: its parts and size, the plan with every setting resolved, the layout that plan gives, the sections it could have, the views the file saved ('savedViews'), every part with the name of its product ('parts') and every sheet of the plan written out ('set'). */
+        DrawingInspectBody: {
+            /** @description ID of the previously uploaded STEP file (.step, .stp or gzip-compressed .stpz), at most 200 MB. Every placed part of the file is a part of the drawing, numbered from 0 in the order the file's structure gives them. */
+            stepFileId: string;
+            /** @description The unit a STEP file's numbers are really in, when its header states another unit or none: some exporters write a model drawn in metres under a millimetre header. Each file is scaled from it, so the model is read in millimetres, the unit every length of the request and its results is in. A header naming no unit counts as millimetres; a file whose header names a unit other than mm, cm, m or in, or several different ones, is refused, since its unit is converted already. Left out, each file's own unit is used. */
+            fileUnit?: components["schemas"]["LengthUnit"];
+            /** @description A plan to resolve. The default sheet when left out. Not given with 'planFileId'. */
+            plan?: components["schemas"]["DrawingPlan"];
+            /** @description ID of a previously uploaded JSON file holding the plan (named .json or of type application/json), at most 32 MB, in place of 'plan': for a set written out past the 128 KB a request body takes. It is held to the same rules as 'plan', and a refusal names the field inside the file. Not given with 'plan'. */
+            planFileId?: string;
+            /** @description The id of an earlier draw or inspection of this same uploaded file, read in the same 'fileUnit', whose model to take: the parts are taken from the model that task kept instead of being read from the file again, which on a large file is most of what an inspection or a sheet takes, and the sheets are the same, byte for byte. The task must be this account's, completed and not expired, started with an API key of the same storage as this request's, and have kept its model, which its report says under run.model.kept; a task that does not qualify refuses the request before it is queued, saying why, with the error's details naming the field 'modelFromTask'. Should the kept model turn out unusable once the task runs, the file is read instead and run.model.notReused says why. */
+            modelFromTask?: string;
         };
         /** @description Request a pre-signed upload URL. After receiving the URL, PUT the raw file bytes to it within the expiration window. */
         FileUploadBody: {
@@ -2899,6 +3406,24 @@ export interface components {
                 number,
                 number
             ];
+            /** @description Where the bend's centre line starts on the returned flat pattern, in the flat's own frame: the middle of the bend zone, as long as bendLineLength. A sharp fold's is the edge its flanges share. Absent for a bend the layout cut, and for a 0-degree join of two coplanar panels, which draws no bend line. */
+            flatLineStart?: [
+                number,
+                number,
+                number
+            ];
+            /** @description Where the bend's centre line ends on the returned flat pattern. */
+            flatLineEnd?: [
+                number,
+                number,
+                number
+            ];
+            /** @description The middle of the bend's centre line on the returned flat pattern, where a bend tag stands. */
+            flatLineMid?: [
+                number,
+                number,
+                number
+            ];
             bendLineLength: number;
             angleDeg: number;
             innerRadius: number;
@@ -2915,7 +3440,10 @@ export interface components {
             outsideSetback: number;
             innerArcLength: number;
             outerArcLength: number;
-            /** @enum {string} */
+            /**
+             * @description 'up' when the flanges fold towards the side the returned flat faces (+Y of its frame), 'down' when they fold away from it. A 0-degree join, which does not fold, reads 'up'.
+             * @enum {string}
+             */
             direction: "up" | "down";
             /**
              * @description 'cyl' and 'cone' fold through a bend face of that surface; 'sharp' folds along a shared edge with no bend face (faceIndex -1, inner radius 0), and a 0 degree 'sharp' fold joins two coplanar panels.
@@ -3132,6 +3660,442 @@ export interface components {
                 /** @description One weight per control point when the curve is rational; left out, every weight is 1. */
                 weights?: number[];
             };
+        };
+        /** @description One sheet as drawn: what the set says of it, where it lies beside the others, its fingerprint and its report. */
+        DrawnSetSheet: {
+            name: string;
+            product: number;
+            quantity: number;
+            isAssembly: boolean;
+            isTurned: boolean;
+            isList: boolean;
+            rows: components["schemas"]["DrawingResolvedRow"][];
+            /** @description On a continuation sheet, why it continues the sheet before it: a view that did not fit beside the principal views at their scale, or principal views whose annotation letters were too small together. */
+            pagination?: string;
+            /** @description The sheet's lower left corner in the DXF and SVG that hold every sheet, in millimetres, y up. */
+            place: [
+                number,
+                number
+            ];
+            report: {
+                /** @constant */
+                ok: true;
+                version: number;
+                plan: {
+                    [key: string]: unknown;
+                };
+                sheet: components["schemas"]["DrawingSheetUsed"];
+                model: {
+                    parts: number;
+                    drawn: number;
+                    /** @description The parts left out of a sheet of every part because they hold no face, such as the curves an AP203 file draws its notes with, when other parts have faces. */
+                    faceless?: number;
+                } & {
+                    [key: string]: unknown;
+                };
+                views: components["schemas"]["DrawingViewUsed"][];
+                sections: {
+                    [key: string]: unknown;
+                }[];
+                groups: components["schemas"]["DrawingGroup"][];
+                hatches: components["schemas"]["DrawingHatchUsed"][];
+                texts: components["schemas"]["DrawingText"][];
+                fills: components["schemas"]["DrawingFill"][];
+                dimensions?: components["schemas"]["DrawingDimensionUsed"][];
+                tables?: {
+                    [key: string]: unknown;
+                };
+                annotations?: components["schemas"]["DrawingAnnotationsUsed"];
+                quality?: components["schemas"]["DrawingQuality"];
+                warnings: string[];
+                run: components["schemas"]["DrawingRun"];
+            } & {
+                [key: string]: unknown;
+            };
+            /** @description The sheet's index in the whole set, counting from 0; given when the draw named 'onlySheets'. */
+            index?: number;
+            fingerprint?: components["schemas"]["DrawingSheetFingerprint"];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description One row of an assembly's parts list: its item number from 1, the product's name, how many go directly into the assembly, the product, the index of the sheet that shows it (-1 when none does) and the parts of all its instances. */
+        DrawingResolvedRow: {
+            item: number;
+            name: string;
+            quantity: number;
+            product: number;
+            sheet: number;
+            parts: number[];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description The sheet as drawn: its size in millimetres, the frame inside its border, the unit and places its lengths are printed in, the scale used and the series it comes from. */
+        DrawingSheetUsed: {
+            size: string;
+            width: number;
+            height: number;
+            frame: [
+                number,
+                number,
+                number,
+                number
+            ];
+            projection: string;
+            /**
+             * @description The unit the sheet's printed lengths are written in, 'mm' or 'in'. The report's own numbers stay in millimetres.
+             * @enum {string}
+             */
+            units?: "mm" | "in";
+            /** @description The places the sheet's printed lengths are written to. */
+            decimals?: number;
+            scale: {
+                numerator: number;
+                denominator: number;
+                label: string;
+            } & {
+                [key: string]: unknown;
+            };
+            /**
+             * @description The list the sheet's scale is a step of, one of 'ISO 5455', 'GOST 2.302', 'inch', 'none': 'ISO 5455' for its recommended scales, 'GOST 2.302' for a step of the wider metric series that ISO 5455 does not recommend (1:2.5, 1:4, 1:15, 1:25, 1:40 and the like), 'inch' for the inch series, and 'none' for a scale a plan states that is in no series.
+             * @enum {string}
+             */
+            scaleSeries?: "ISO 5455" | "GOST 2.302" | "inch" | "none";
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description One view as drawn: its place on the sheet, its scale and whether it is in line with the base view. */
+        DrawingViewUsed: {
+            index: number;
+            kind: string;
+            name?: string;
+            label?: string;
+            frame?: {
+                [key: string]: unknown;
+            };
+            extent?: [
+                number,
+                number,
+                number,
+                number
+            ];
+            scale: {
+                numerator: number;
+                denominator: number;
+                label: string;
+            } & {
+                [key: string]: unknown;
+            };
+            origin: [
+                number,
+                number
+            ];
+            box: [
+                number,
+                number,
+                number,
+                number
+            ];
+            slot?: string;
+            aligned: boolean;
+            caption?: string;
+            lines?: {
+                [key: string]: unknown;
+            };
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description One group of paths on the sheet: the view it belongs to (-1 for the sheet's own marks), what it is, its layer, line type, line weight in millimetres and how many paths it holds. */
+        DrawingGroup: {
+            view: number;
+            /** @description What the paths are: 'frame' for the frame and, in the margin outside it, an ISO sheet's centring marks and grid reference or an ANSI C, D or E sheet's zones; the model's edges ('sharp', 'outline', 'smooth' and their hidden forms), 'hatch', 'table', 'symbol', 'cut', 'balloon', 'centre', 'dimension', 'note' and 'bend' otherwise. */
+            role: string;
+            layer: string;
+            /** @description 'solid', 'dashed', 'chain', or 'none' for regions to fill rather than lines to draw: a hatch's cut, filled letters, and the dot that ends a balloon's leader on a part. */
+            line: string;
+            weight: number;
+            paths: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description A hatched cut: the group whose closed paths bound it, the view, the part and the hatch's pattern, angle and spacing. */
+        DrawingHatchUsed: {
+            group: number;
+            view: number;
+            part: number;
+            pattern: string;
+            angle: number;
+            spacing: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description One text on the sheet: where its baseline starts, its height in millimetres, how far it was narrowed to fit and which end it is anchored by. */
+        DrawingText: {
+            value: string;
+            x: number;
+            y: number;
+            height: number;
+            squeeze: number;
+            anchor: string;
+            /** @description What the text is: 'frame' for the letters and numbers of an ISO sheet's grid reference or an ANSI sheet's zones, which stand in the margin outside the frame; 'table', 'symbol', 'cut', 'balloon', 'centre', 'dimension', 'note' or 'bend' for the text of that ink; 'caption' for any other. */
+            role: string;
+            layer: string;
+            view: number;
+            box: [
+                number,
+                number,
+                number,
+                number
+            ];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description A filled triangle, an arrowhead: its three corners as six numbers. */
+        DrawingFill: {
+            points: number[];
+            role: string;
+            layer: string;
+            view: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description One dimension drawn on the sheet: its kind, view, text and line, in millimetres on paper. */
+        DrawingDimensionUsed: {
+            /**
+             * @description 'across' or 'upright' for a size, 'radius' for a radius callout, 'origin' for the X0 Y0 mark of the hole table's origin, 'ordinateX' or 'ordinateY' for an ordinate.
+             * @enum {string}
+             */
+            kind: "across" | "upright" | "radius" | "origin" | "ordinateX" | "ordinateY";
+            view: number;
+            text: string;
+            /** @description Two points on the sheet: a size's dimension line; a radius callout's leader from its arrowhead on the arc to where its shoulder starts; an ordinate's extension line from the part to its text. */
+            line: number[];
+            /** @description For a radius callout led along its radius, the arc's centre on the sheet; for the origin mark, the middle of the view's box it is led from. */
+            centre?: [
+                number,
+                number
+            ];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description What became of the annotations the STEP file stores. */
+        DrawingAnnotationsUsed: {
+            /** @description The annotations the sheet draws: all of them, or the named product's. */
+            given?: number;
+            drawn?: number;
+            viewsAdded?: number;
+            viewsTurned?: number;
+            /** @description How many stand in the notes area above the title block. */
+            notes?: number;
+            /** @description How many are drawn reading upside down or from the left. */
+            turned?: number;
+            turnedInPlace?: number;
+            /** @description Whether they chose the sheet's front, which they do only when the plan's front is 'annotations'. */
+            frontChosen?: boolean;
+            /** @description Annotations no view faces on a sheet whose annotations say addViews false, and general notes of a sheet whose annotations say notes false: another sheet of the set draws them. */
+            elsewhere?: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description How the sheet reads, measured on paper: the height of its own text, the smallest annotation letter, how full the frame is, each view's ink, and the floors it breaks with the reason. A setting the plan states is kept even where it breaks a floor, and the floor is named here. */
+        DrawingQuality: {
+            scale?: {
+                numerator: number;
+                denominator: number;
+                label: string;
+            } & {
+                [key: string]: unknown;
+            };
+            /** @description The height of the sheet's own text, in millimetres: 2.5 on A4 and A3, 3.5 on A2 and larger, 3 on every ANSI size. */
+            textHeight: number;
+            /** @description The smallest annotation letter on the sheet, in millimetres on paper; 0 for none. */
+            letters: number;
+            /** @description The share of the frame the views take, their sizes and captions included. */
+            fill: number;
+            views: components["schemas"]["DrawingViewQuality"][];
+            /** @description Every floor the sheet breaks, view by view; empty when it reads. */
+            floors: components["schemas"]["DrawingFloor"][];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description How one view reads: its smallest annotation letter, how much of it is ink, and what was done to a view too dense to read. */
+        DrawingViewQuality: {
+            view: number;
+            /** @description The smallest annotation letter on the view, in millimetres on paper; 0 for none. */
+            letters: number;
+            /** @description The share of the view's box its lines cover, as drawn. */
+            density: number;
+            /** @description The same share at the standard line widths, 0.5 and 0.25 mm. */
+            plain: number;
+            /** @description The thick and thin line widths the view is drawn at, in millimetres: 0.35 and 0.18 for a view too dense at the standard ones. */
+            lines: [
+                number,
+                number
+            ];
+            /** @description Whether the view's smooth edges were left out to thin it. */
+            smoothLeftOut: boolean;
+            /** @description How many edges too short to read were left out to thin it. */
+            detailLeftOut: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description A floor of readability the sheet breaks, and why. */
+        DrawingFloor: {
+            /** @description 'letters' for annotation letters under the standard height on paper, 2.5 mm (3 mm on ANSI sheets); 'density' for a view whose lines still cover more than a quarter of its box after thinning; 'notes' for general notes that the notes area above the title block holds only with letters under that standard height. */
+            floor: string;
+            /** @description The view the floor is broken in; -1 for 'notes', which belong to the sheet. */
+            view: number;
+            value: number;
+            /** @description The floor it is held to: 2.5 mm for letters (3 mm on ANSI sheets), or 1.8 mm when they are under even that, the standard height for notes, and 0.25 for density. */
+            limit: number;
+            /** @description 'constraint' when a setting the plan states keeps the sheet so, 'scale' when no scale of the series reaches the floor on this sheet size. */
+            reason: string;
+            /** @description With 'constraint', the setting that keeps it so: 'sheet.scale', 'views[n].scale', 'views' when the view alone on the sheet would reach the floor, or 'annotations.notes' for the notes, which a set hands to a sheet of their own when they have no room; empty with 'scale'. */
+            setting: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description How the drawing was made: the hidden-line method, the method each view was drawn by and the rule that chose it, the seconds each view took and, when a view was drawn by sight, what the exact method would have taken. */
+        DrawingRun: {
+            method: string;
+            /** @description The method each view was drawn by: 'exact', 'sight' or 'mesh'. */
+            methods?: string[];
+            /** @description For each view, the rule that chose its method, one of 'plan', 'budget', 'within': 'plan' when the plan named the method; with 'auto', 'budget' when the exact method was predicted to take longer than the budget for the sheet, so the view was drawn by sight, and 'within' when it was not, so it was drawn exactly. */
+            chosenBy?: string[];
+            seconds: number;
+            views: number[];
+            exactEstimate?: components["schemas"]["DrawingExactEstimate"];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description What the exact method was predicted to take on CAD Cloud, given whenever a view was drawn by sight: the drawing kernel predicts the seconds a native build takes, and CAD Cloud's kernel was measured to take 1.2 times as long, so the prediction is given times 1.2. An order of magnitude, not a promise: a single model may take from a tenth to several times it. */
+        DrawingExactEstimate: {
+            /** @description For each view, the seconds the exact method was predicted to take on CAD Cloud. */
+            views: number[];
+            /** @description Their sum: what drawing the sheet again with lines.method 'exact' would take on CAD Cloud, about. */
+            sheet: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description The sheet's fingerprint, 64 hexadecimal digits: a SHA-256 over all a sheet is drawn from - the checksum of the STEP file and the unit it is read in, how its parts are read, the sheet's plan as the drawing kernel takes it, the file's annotations it is drawn with, the build of the drawing kernel and the build of the CAD Cloud server that reads the file and writes the sheet's files. Drawing is deterministic: a sheet with the same fingerprint is drawn again the same, written byte for byte as before in its files, with the same report but for 'run', which says how long it took. A deploy of the server gives every sheet a new fingerprint. An app can keep a sheet it drew under its fingerprint, and a sheet whose fingerprint changed is stale. */
+        DrawingSheetFingerprint: string;
+        /** @description Where the model the sheets were drawn from came from, and whether this task kept it. */
+        DrawingModelRun: {
+            /** @description Whether the parts were taken from the model the task named in 'modelFromTask' kept, rather than read from the file. */
+            reused: boolean;
+            /** @description Whether this task kept its model, so that a later draw or inspection of the same file in the same unit can name this task in 'modelFromTask'. Every draw and inspection keeps the model it drew from, one it took from another task included; it is false only when the model could not be kept, and 'notKept' then says why. A kept model is deleted with the task's results when the task expires. */
+            kept: boolean;
+            /** @description The seconds it took to have the model: to read the file, or to read the kept model. */
+            seconds: number;
+            /** @description Given when 'modelFromTask' named a task whose kept model could not be used: why. The file was read instead, and the sheets are the same. */
+            notReused?: string;
+            /** @description Given when 'kept' is false: why the model could not be kept, such as a model of more than 200 MB or storage that would not take it. The task's results are not affected. */
+            notKept?: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description A standard sheet, whether the plan's views fit it, and the scale an automatic scale would take on it. */
+        DrawingSheetFit: {
+            size: string;
+            fits: boolean;
+            scale?: {
+                numerator: number;
+                denominator: number;
+                label: string;
+            } & {
+                [key: string]: unknown;
+            };
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description A section the model could be cut by: what it runs through, its frame, the view that sees it edge-on (-1 when none does), how many parts it cuts and the area cut. Adding its frame to a plan's sections draws it. */
+        DrawingSectionCandidate: {
+            through: string;
+            frame: {
+                origin: [
+                    number,
+                    number,
+                    number
+                ];
+                normal: [
+                    number,
+                    number,
+                    number
+                ];
+                direction: [
+                    number,
+                    number,
+                    number
+                ];
+            } & {
+                [key: string]: unknown;
+            };
+            shownOn: number;
+            parts: number;
+            area: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description Every sheet of a set written out, each with its fingerprint, the set as a plan with a list of sheets (sent back, it draws the same sheets, with the same fingerprints), and every part with the product it is drawn as. */
+        DrawingInspectedSet: {
+            /** @constant */
+            ok: true;
+            sheets: components["schemas"]["DrawingInspectedSheet"][];
+            plan: {
+                [key: string]: unknown;
+            };
+            /** @description Every part the sheets draw, in the order of its number, under the product the set draws it as: an unnamed product that holds a single part is merged into the product that places it, so a file of one part below a named product lists the part under that name. A part the set draws under no product, such as loose curves beside solids, is not listed. */
+            parts?: components["schemas"]["DrawingSetPart"][];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description One sheet of the set an inspection writes out: as the set will draw it, with the fingerprint the sheet will have when the plan of the set is drawn. */
+        DrawingInspectedSheet: {
+            name: string;
+            product: number;
+            quantity: number;
+            isAssembly: boolean;
+            isTurned: boolean;
+            isList: boolean;
+            plan: {
+                [key: string]: unknown;
+            };
+            rows: components["schemas"]["DrawingResolvedRow"][];
+            /** @description On a continuation sheet, why it continues the sheet before it: a view that did not fit beside the principal views at their scale, or principal views whose annotation letters were too small together. */
+            pagination?: string;
+            fingerprint?: components["schemas"]["DrawingSheetFingerprint"];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description A part as the set draws it: its number, the product it is drawn as and that product's name as the sheets give it, and which of the product's instances it belongs to, counted from 0 in the order of the model's structure, depth first. */
+        DrawingSetPart: {
+            part: number;
+            product: number;
+            name: string;
+            instance: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description A view the STEP file saved (an AP242 model view): its name, which a plan's view gives as 'saved', and how many of the file's annotations it shows. */
+        DrawingSavedView: {
+            name: string;
+            annotations: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description One part of the model: its number, as a plan's parts name it; the name of the product the set draws it as, as the sheets of a set name it ('Part n' for a part the file left unnamed, the uploaded file's name for a file whose root the file left unnamed; an unnamed product holding a single part is merged into the product that places it); the product, by the number a sheet's product takes; and which of the product's instances it belongs to, counted from 0 in the order of the model's structure, depth first, as a plan's annotations count them. A part the set draws under no product, such as loose curves beside solids, has an empty name and neither product nor instance. */
+        DrawingModelPart: {
+            part: number;
+            name: string;
+            product?: number;
+            instance?: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description The drawing kernel's own answer when it refuses the plan or cannot draw. No result carries it: the API fails the task with its error instead. */
+        DrawingReportError: {
+            /** @constant */
+            ok: false;
+            error: string;
         };
         /** @description Success envelope for health check */
         HealthResponse: {
@@ -3598,6 +4562,24 @@ export interface components {
                 number,
                 number
             ];
+            /** @description Where the bend's centre line starts on the returned flat pattern, in the flat's own frame: the middle of the bend zone, as long as bendLineLength. A sharp fold's is the edge its flanges share. Absent for a bend the layout cut, and for a 0-degree join of two coplanar panels, which draws no bend line. */
+            flatLineStart?: [
+                number,
+                number,
+                number
+            ];
+            /** @description Where the bend's centre line ends on the returned flat pattern. */
+            flatLineEnd?: [
+                number,
+                number,
+                number
+            ];
+            /** @description The middle of the bend's centre line on the returned flat pattern, where a bend tag stands. */
+            flatLineMid?: [
+                number,
+                number,
+                number
+            ];
             bendLineLength: number;
             angleDeg: number;
             innerRadius: number;
@@ -3614,7 +4596,10 @@ export interface components {
             outsideSetback: number;
             innerArcLength: number;
             outerArcLength: number;
-            /** @enum {string} */
+            /**
+             * @description 'up' when the flanges fold towards the side the returned flat faces (+Y of its frame), 'down' when they fold away from it. A 0-degree join, which does not fold, reads 'up'.
+             * @enum {string}
+             */
             direction: "up" | "down";
             /**
              * @description 'cyl' and 'cone' fold through a bend face of that surface; 'sharp' folds along a shared edge with no bend face (faceIndex -1, inner radius 0), and a 0 degree 'sharp' fold joins two coplanar panels.
@@ -3832,6 +4817,12 @@ export interface components {
                 weights?: number[];
             };
         };
+        /** @description The drawing kernel's own answer when it refuses the plan or cannot draw. No result carries it: the API fails the task with its error instead. */
+        DrawingReportErrorOutput: {
+            /** @constant */
+            ok: false;
+            error: string;
+        };
         /** @description Sheet-metal unfold metrics for a single face (surface type, developability, area before/after). */
         UnfoldFaceReport: {
             /** @constant */
@@ -3889,6 +4880,93 @@ export interface components {
                 }[];
             }[];
         };
+        /** @description What was drawn: the set as a plan with every sheet written out (sending it back draws the same sheets), the space the sheets take side by side, and each sheet with its place and its report. A PDF has the sheets as pages in this order. Warnings name their sheet when there are several. */
+        DrawingSetReport: {
+            /** @constant */
+            ok: true;
+            version: number;
+            plan: {
+                [key: string]: unknown;
+            };
+            /** @description The width and height of the DXF and SVG that hold every sheet, in millimetres. */
+            extent: [
+                number,
+                number
+            ];
+            sheets: components["schemas"]["DrawnSetSheet"][];
+            warnings: string[];
+            run: {
+                seconds: number;
+                sheets: number[];
+                model?: components["schemas"]["DrawingModelRun"];
+            } & {
+                [key: string]: unknown;
+            };
+            /** @description How many sheets the whole set has; given when the draw named 'onlySheets', whose report lists only the sheets it drew. */
+            setSheets?: number;
+            /** @description The fingerprint of every sheet of the whole set, in the set's order; given when the draw named 'onlySheets', so an app learns which sheets of the set changed without drawing them. */
+            setFingerprints?: components["schemas"]["DrawingSheetFingerprint"][];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description The model as a drawing would read it, without drawing: how many parts it holds, its size, the plan of the first sheet with every setting resolved, the layout that plan gives, the scale each standard sheet would allow, sections the model could be cut by, the views the file saved, every part with its name, and every sheet of the plan written out, ready to edit and send to the draw route. A report delivered as a result always has ok true: when the kernel refuses a run, the task fails with the kernel's reason instead. */
+        DrawingInspection: ({
+            /** @constant */
+            ok: true;
+            version: number;
+            model: {
+                parts: number;
+                drawn: number;
+                /** @description The parts left out of a sheet of every part because they hold no face, such as the curves an AP203 file draws its notes with, when other parts have faces. */
+                faceless?: number;
+                min: [
+                    number,
+                    number,
+                    number
+                ];
+                max: [
+                    number,
+                    number,
+                    number
+                ];
+                extent: [
+                    number,
+                    number,
+                    number
+                ];
+            } & {
+                [key: string]: unknown;
+            };
+            plan: {
+                [key: string]: unknown;
+            };
+            layout: {
+                fits: boolean;
+                reason: string;
+            } & {
+                [key: string]: unknown;
+            };
+            alternatives: {
+                sheets: components["schemas"]["DrawingSheetFit"][];
+            } & {
+                [key: string]: unknown;
+            };
+            sectionCandidates: components["schemas"]["DrawingSectionCandidate"][];
+            warnings: string[];
+            set?: components["schemas"]["DrawingInspectedSet"];
+            /** @description Where the model came from and whether this inspection kept it, so that a draw of the same file can name it in 'modelFromTask'. */
+            run?: {
+                model: components["schemas"]["DrawingModelRun"];
+            } & {
+                [key: string]: unknown;
+            };
+            /** @description The views the STEP file saved that a plan can name, as a drawing finds them: among the first 5000 views the drawing reads (those with a direction and an up), each name once, at the first view of it whose direction and up are not along each other, in the file's order. Empty for a file without saved views; a warning says how many views the file saved past those the drawing reads. */
+            savedViews: components["schemas"]["DrawingSavedView"][];
+            /** @description Every part of the model, in the order of its number, with the name its product has on the sheets of a set. */
+            parts: components["schemas"]["DrawingModelPart"][];
+        } & {
+            [key: string]: unknown;
+        }) | components["schemas"]["DrawingReportErrorOutput"];
     };
     responses: never;
     parameters: never;

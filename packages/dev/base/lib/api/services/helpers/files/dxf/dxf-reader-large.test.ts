@@ -124,6 +124,63 @@ describe("reading a large DXF: block inserts share one budget per file, linear i
     });
 });
 
+describe("reading a large DXF: a text or a hatch in a block costs what it holds, as lines do", () => {
+    const budgetOf = (text: string): number => Math.min(CEILING, Math.max(FLOOR, PER_CHARACTER * text.length));
+
+    it("should leave out 400 copies of a block holding one 2,000-character text", () => {
+        // Arrange
+        const text = dxfOf([["BLOCKS", ...blockDxf("T", ["0", "TEXT", "8", "0", "10", "0", "20", "0", "40", "1", "1", "A".repeat(2000)])], ["ENTITIES", ...insertDxf("T", 20, 20)]]);
+
+        // Act
+        const reading = readDxfDrawing(text, false, true);
+
+        // Assert
+        expect([reading.entities.length, reading.warnings]).toEqual([0, [leftOut(1, budgetOf(text), text)]]);
+    });
+
+    it("should leave out 400 copies of a block holding one hatch of 2,000 edges, as it leaves out the same 2,000 lines", () => {
+        // Arrange
+        const edges = Array.from({ length: 2000 }, (_, at) => ["72", "1", "10", String(at), "20", "0", "11", String(at + 1), "21", "0"]).flat();
+        const hatch = ["0", "HATCH", "8", "0", "2", "SOLID", "70", "1", "91", "1", "92", "1", "93", "2000", ...edges, "97", "0"];
+        const lines = Array.from({ length: 2000 }, (_, at) => lineDxf(at, 0, at + 1, 0)).flat();
+        const files = [hatch, lines].map(content => dxfOf([["BLOCKS", ...blockDxf("H", content)], ["ENTITIES", ...insertDxf("H", 20, 20)]]));
+
+        // Act
+        const readings = files.map(text => readDxfDrawing(text, false, true));
+
+        // Assert
+        expect(readings.map(reading => [reading.entities.length, reading.warnings])).toEqual(files.map(text => [0, [leftOut(1, budgetOf(text), text)]]));
+    });
+
+    it("should read every copy of 1,000 inserts of a block of 50 labels and 50 hatched triangles, an ordinary annotated drawing", () => {
+        // Arrange
+        const label = ["0", "TEXT", "8", "0", "10", "0", "20", "0", "40", "2", "1", "LABEL"];
+        const triangle = ["0", "HATCH", "8", "0", "2", "SOLID", "70", "1", "91", "1", "92", "3", "72", "0", "73", "1", "93", "3", "10", "0", "20", "0", "10", "4", "20", "0", "10", "4", "20", "4", "97", "0"];
+        const block = blockDxf("PART", ...Array.from({ length: 50 }, () => label), ...Array.from({ length: 50 }, () => triangle));
+        const text = dxfOf([["BLOCKS", ...block], ["ENTITIES", ...Array.from({ length: 1000 }, () => insertDxf("PART")).flat()]]);
+
+        // Act
+        const reading = readDxfDrawing(text, false, true);
+
+        // Assert
+        expect([reading.entities.length, reading.warnings]).toEqual([100_000, []]);
+    });
+
+    it("should read 120,000 texts on one layer within the time limit", () => {
+        // Arrange
+        const text = entitiesDxf(Array.from({ length: 120_000 }, (_, at) => ["0", "TEXT", "8", "0", "10", String(at), "20", "0", "40", "1", "1", "A"]).flat());
+        let reading: Inputs.IO.DxfDrawingDto | undefined;
+
+        // Act
+        const took = elapsedMs(() => {
+            reading = read(text);
+        });
+
+        // Assert
+        expect([took < TIME_LIMIT_MS, reading!.parts.map(part => part.texts?.length)]).toEqual([true, [120_000]]);
+    }, 120_000);
+});
+
 describe("reading a large DXF: names are read once per entity and cut to the 255 characters AutoCAD allows", () => {
     it("should place 80,000 copies of an entity whose layer, line type and true colour each hold 260,000 characters within the time limit", () => {
         // Arrange
@@ -186,7 +243,7 @@ describe("reading a large DXF: warnings stay few however many kinds and names a 
 
         // Assert
         expect(drawing.warnings).toEqual([
-            ...[0, 1, 2, 3, 4].map(at => `1 T${at} entity was left out: only lines, arcs, circles, ellipses, polylines, splines and block inserts are drawn.`),
+            ...[0, 1, 2, 3, 4].map(at => `1 T${at} entity was left out: only lines, arcs, circles, ellipses, polylines, splines, texts, hatches and block inserts are drawn.`),
             "199995 more entities of 199995 other kinds were left out as well.",
         ]);
     });

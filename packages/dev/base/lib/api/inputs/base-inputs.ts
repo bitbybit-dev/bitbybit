@@ -1027,4 +1027,24 @@ export namespace Base {
         leftHanded = "leftHanded",
         rightHanded = "rightHanded",
     }
+    /**
+     * How a result is turned between the two up axes geometry comes in: `keep` leaves it as it is,
+     * `zUpToYUp` turns a Z-up file or recipe into this library's Y-up, and `yUpToZUp` turns a Y-up
+     * model into Z-up for a tool that treats Z as up. Each method says which of them it takes.
+     */
+    export enum upAxisConversionEnum {
+        keep = "keep",
+        zUpToYUp = "zUpToYUp",
+        yUpToZUp = "yUpToZUp",
+    }
+    /**
+     * How closed loops decide what lies inside them. Under `evenOdd` a point is inside when a ray
+     * from it crosses the loops an odd number of times, whichever way each loop runs, so the loop
+     * inside an `O` leaves its middle open; under `nonZero` the loops' directions count, and a loop
+     * inside another running the same way fills it.
+     */
+    export enum loopFillRuleEnum {
+        evenOdd = "evenOdd",
+        nonZero = "nonZero",
+    }
 }

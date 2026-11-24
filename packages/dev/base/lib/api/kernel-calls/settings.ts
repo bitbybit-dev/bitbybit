@@ -125,6 +125,26 @@ export class SettingsRelay {
 export const CURRENT_CONVENTIONS = 1;
 
 /**
+ * One change a conventions level makes, told in words: the level that makes it, the operations
+ * whose results it changes and what changes in them. An entry is a dotted path as a script writes
+ * it after `bitbybit.`, and one that ends in a dot stands for everything under it.
+ */
+export interface ConventionChange {
+    /**
+     * The conventions level that makes the change, from 1
+     */
+    readonly level: number;
+    /**
+     * The operations whose results it changes
+     */
+    readonly entries: readonly string[];
+    /**
+     * What changes, in one sentence that starts with what it is about
+     */
+    readonly change: string;
+}
+
+/**
  * The settings that content saved with a conventions level runs by. Content carries one whole
  * number instead of the settings themselves, since the right settings depend on the engine that runs it:
  * 0, or no level at all, is the behaviour from before settings existed, and 1 and above are the

@@ -118,11 +118,28 @@ failures) and 2D chamfers report every corner done even when the result is not v
 has a reason code. The codes and detail types are in the API report, because callers translate by
 them; a new kind of failure gets a new code, and a code is never reused for another meaning. Inputs
 that would crash or trivially fail the kernel (a loft through fewer than two sections, a loft of
-points only, an empty operand of a boolean) are refused as an `InputError` before it runs. OCCT also
-reports success for some results that are not valid solids. Fillets, chamfers, offsets, thick
+points only, an empty operand of a boolean, a 3D fillet radius not above 0, a corner-by-point radius or
+distance not above 0, a variable radius at a position outside 0 to 1 or at one position twice with two radii) are refused as an `InputError` before
+it runs, naming the place in its list. OCCT also
+reports success for some results that are not valid solids. Offsets, thick
 solids and solid lofts refuse a result that is broken beyond use - no solid and not valid, or a volume
-that is not a number, about 0 or larger than its own box (`lib/services/base/solid-results.ts`); an invalid result
-of a plausible volume still comes back without an error, since callers such as the design shell
+that is not a number, about 0 or larger than its own box (`lib/services/base/solid-results.ts`). A
+fillet or chamfer (3D, 2D, of a wire's corners or at a corner by point) only rounds or cuts, so it is
+also refused when its result leaves the box of what it rounded by more than the result's own
+tolerance, at most a hundredth of that box's diagonal, and a solid one when its volume is 0 or not a
+number: OCCT 8.0.2 builds a box rounded past half its side into an invalid solid hundreds of units wide
+whose volume alone looks plausible. The loose boxes decide first and the tight box only when the loose one
+leaves, since the loose box of a B-spline fillet face reaches past it. A result holding a solid that
+came out inside out (each solid of a compound judged on its own), as OCCT 8.0.2 gives the rounded or
+chamfered tips of a bored spur gear, is repaired (`ShapeFix_Shape_Perform`) on a copy, since the repair
+rewrites the edges' curves on their faces in place and the result shares its untouched edges with the
+caller's shape. It is handed back when valid, with no solid inside out, a volume a solid can have and
+inside the box, or refused as `occt.fillet.insideOut` or `occt.chamfer.insideOut`. A `*WithHistory` twin
+numbers its history on the repaired solid, each face found by its edges
+(`lib/services/base/repaired-history.ts`), and is refused as `occt.fillet.historyUnnumbered` or
+`occt.chamfer.historyUnnumbered` when two faces cannot be told apart.
+An invalid result
+of a plausible volume inside that box still comes back without an error, since callers such as the design shell
 repair or judge it themselves, and `shapeFix.isValid` finds it. The kernel catches
 two such kinds itself: a boolean of solids whose result is not valid, or whose volume no such boolean
 can have, is rebuilt from OCCT's split cells and refused as `occt.boolean.inconsistent` when that fails

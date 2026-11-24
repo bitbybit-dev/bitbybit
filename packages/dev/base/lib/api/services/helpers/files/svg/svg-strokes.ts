@@ -1,13 +1,14 @@
 import type * as Inputs from "../../../../inputs";
 import { cubicsOfPiece } from "../../curves/bezier-pieces";
-import { conicArcExtremes, principalArcOf } from "../../curves/conic-arcs";
+import { conicArcAsNurbs, conicArcExtremes, ellipseFramePoint, principalArcOf } from "../../curves/conic-arcs";
 import type { ConicArc } from "../../curves/conic-arcs";
 import { bezierPiecesOf, isRationalPiece } from "../../curves/nurbs-forms";
 import type { BezierPiece } from "../../curves/nurbs-forms";
-import { add2, cross2, dot2, length2, scale2 } from "../../geometry/vectors";
+import { add2, between2, cross2, dot2, length2, scale2 } from "../../geometry/vectors";
 import { bulgeArcOfSpan, circleArcOf, ellipseArcOf, polylineSpanEnd, polylineSpans } from "../drawing/drawing-geometry";
 import type { DrawingPolyline, DrawingSegment } from "../drawing/drawing-types";
 import type { WorkBudget } from "../work-budget";
+import { QUADRATIC_TO_CUBIC_SHARE } from "./svg-path-data.constants";
 import { CUBIC_DEGREE, EDGE_ON_SHARE, QUADRATIC_DEGREE, SVG_ARC_PIECE } from "./svg.constants";
 
 type Point2 = Inputs.Base.Point2;
@@ -49,9 +50,17 @@ export interface SvgStroke {
     readonly closed: boolean;
 }
 
+interface SvgCurveFit {
+    readonly tolerance: number;
+    readonly budget: WorkBudget | undefined;
+    readonly cubicsOnly: boolean;
+}
+
 const flat = (point: Point3): Point2 => [point[0], point[1]];
 
 const shadowOf = (point: Point3): Point3 => [point[0], point[1], 0];
+
+const shadowArcOf = (arc: ConicArc): ConicArc => ({ frame: { center: shadowOf(arc.frame.center), xAxis: shadowOf(arc.frame.xAxis), yAxis: shadowOf(arc.frame.yAxis) }, start: arc.start, sweep: arc.sweep });
 
 const endOf = (stroke: SvgStroke): Point2 => stroke.moves.length === 0 ? stroke.start : stroke.moves[stroke.moves.length - 1]!.to;
 
@@ -60,7 +69,7 @@ const conicStroke = (arc: ConicArc): SvgStroke => {
     const x = flat(arc.frame.xAxis);
     const y = flat(arc.frame.yAxis);
     const closed = Math.abs(arc.sweep) >= 2 * Math.PI;
-    const shadow: ConicArc = { frame: { center: shadowOf(arc.frame.center), xAxis: shadowOf(arc.frame.xAxis), yAxis: shadowOf(arc.frame.yAxis) }, start: arc.start, sweep: arc.sweep };
+    const shadow = shadowArcOf(arc);
     if (Math.abs(cross2(x, y)) <= EDGE_ON_SHARE * Math.max(dot2(x, x), dot2(y, y))) {
         const along = length2([x[0], y[0]]) >= length2([x[1], y[1]]) ? 0 : 1;
         const turns = conicArcExtremes(shadow, [along]).map(flat);
@@ -87,22 +96,6 @@ const conicStroke = (arc: ConicArc): SvgStroke => {
     return { start: pointAt(from), moves, closed };
 };
 
-const bulgeMove = (polyline: DrawingPolyline, span: number): SvgMove => {
-    const to = flat(polylineSpanEnd(polyline, span));
-    const arc = bulgeArcOfSpan(polyline, span);
-    if (arc === undefined) {
-        return { kind: "L", to };
-    }
-    const radius = Math.abs(arc.frame.xAxis[0]);
-    return { kind: "A", radiusX: radius, radiusY: radius, rotation: 0, large: Math.abs(arc.sweep) > Math.PI, counterclockwise: arc.sweep > 0, to };
-};
-
-const polylineStroke = (polyline: DrawingPolyline): SvgStroke => ({
-    start: flat(polyline.points[0]!),
-    moves: Array.from({ length: polylineSpans(polyline) }, (_, span) => bulgeMove(polyline, span)),
-    closed: polyline.closed,
-});
-
 const flatPiece = (piece: BezierPiece): BezierPiece => ({ points: piece.points.map((point): Point3 => [point[0], point[1], 0]), weights: piece.weights });
 
 const pieceMoves = (piece: BezierPiece, tolerance: number, budget: WorkBudget | undefined): SvgMove[] => {
@@ -120,21 +113,65 @@ const pieceMoves = (piece: BezierPiece, tolerance: number, budget: WorkBudget | 
     return cubicsOfPiece(flatPiece(piece), tolerance, budget).map((cubic): SvgCubicMove => ({ kind: "C", control1: flat(cubic.control1), control2: flat(cubic.control2), to: flat(cubic.end) }));
 };
 
-export const strokeOf = (segment: DrawingSegment, tolerance: number, budget?: WorkBudget): SvgStroke => {
+const shadowCubics = (shadow: ConicArc, fit: SvgCurveFit): SvgCubicMove[] =>
+    bezierPiecesOf(conicArcAsNurbs(shadow), fit.budget)
+        .flatMap(piece => cubicsOfPiece(piece, fit.tolerance, fit.budget))
+        .map((cubic): SvgCubicMove => ({ kind: "C", control1: flat(cubic.control1), control2: flat(cubic.control2), to: flat(cubic.end) }));
+
+const conicCubics = (arc: ConicArc, fit: SvgCurveFit): SvgCubicMove[] => shadowCubics(shadowArcOf(arc), fit);
+
+const conicCubicStroke = (arc: ConicArc, fit: SvgCurveFit): SvgStroke => {
+    const shadow = shadowArcOf(arc);
+    return { start: flat(ellipseFramePoint(shadow.frame, shadow.start)), moves: shadowCubics(shadow, fit), closed: Math.abs(arc.sweep) >= 2 * Math.PI };
+};
+
+const bulgeMoves = (polyline: DrawingPolyline, span: number, fit: SvgCurveFit): SvgMove[] => {
+    const to = flat(polylineSpanEnd(polyline, span));
+    const arc = bulgeArcOfSpan(polyline, span);
+    if (arc === undefined) {
+        return [{ kind: "L", to }];
+    }
+    if (fit.cubicsOnly) {
+        return conicCubics(arc, fit);
+    }
+    const radius = Math.abs(arc.frame.xAxis[0]);
+    return [{ kind: "A", radiusX: radius, radiusY: radius, rotation: 0, large: Math.abs(arc.sweep) > Math.PI, counterclockwise: arc.sweep > 0, to }];
+};
+
+const polylineStroke = (polyline: DrawingPolyline, fit: SvgCurveFit): SvgStroke => ({
+    start: flat(polyline.points[0]!),
+    moves: Array.from({ length: polylineSpans(polyline) }, (_, span) => bulgeMoves(polyline, span, fit)).flat(),
+    closed: polyline.closed,
+});
+
+const raised = (from: Point2, move: SvgMove): SvgMove => move.kind !== "Q" ? move : {
+    kind: "C",
+    control1: between2(from, move.control, QUADRATIC_TO_CUBIC_SHARE),
+    control2: between2(move.to, move.control, QUADRATIC_TO_CUBIC_SHARE),
+    to: move.to,
+};
+
+const splineMoves = (start: Point2, pieces: readonly BezierPiece[], fit: SvgCurveFit): SvgMove[] => {
+    const moves = pieces.flatMap(piece => pieceMoves(piece, fit.tolerance, fit.budget));
+    return fit.cubicsOnly ? moves.map((move, at) => raised(at === 0 ? start : moves[at - 1]!.to, move)) : moves;
+};
+
+export const strokeOf = (segment: DrawingSegment, tolerance: number, budget?: WorkBudget, cubicsOnly = false): SvgStroke => {
+    const fit: SvgCurveFit = { tolerance, budget, cubicsOnly };
     switch (segment.kind) {
         case "line":
             return { start: flat(segment.start), moves: [{ kind: "L", to: flat(segment.end) }], closed: false };
         case "circle":
         case "arc":
-            return conicStroke(circleArcOf(segment));
+            return cubicsOnly ? conicCubicStroke(circleArcOf(segment), fit) : conicStroke(circleArcOf(segment));
         case "ellipse":
-            return conicStroke(ellipseArcOf(segment));
+            return cubicsOnly ? conicCubicStroke(ellipseArcOf(segment), fit) : conicStroke(ellipseArcOf(segment));
         case "polyline":
-            return polylineStroke(segment);
+            return polylineStroke(segment, fit);
         case "spline": {
             const pieces = bezierPiecesOf(segment.curve, budget);
-            const start = pieces.length === 0 ? segment.curve.points[0]! : pieces[0]!.points[0]!;
-            return { start: flat(start), moves: pieces.flatMap(piece => pieceMoves(piece, tolerance, budget)), closed: false };
+            const start = flat(pieces.length === 0 ? segment.curve.points[0]! : pieces[0]!.points[0]!);
+            return { start, moves: splineMoves(start, pieces, fit), closed: false };
         }
     }
 };

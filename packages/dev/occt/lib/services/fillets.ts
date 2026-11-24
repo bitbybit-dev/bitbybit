@@ -5,6 +5,7 @@ import { InputError, resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../api/resolved-inputs";
 import type * as Models from "../api/models";
 import { withHistory } from "./base/history";
+import type { HistoryReindex, MakerRead } from "./base/rounding-types";
 import { checkedDirection, checkedIndexes, checkedShape, checkedShapes } from "./base/input-checks";
 import { kernelObjects } from "./base/release";
 import { occtFailure } from "../kernel-failures";
@@ -66,7 +67,7 @@ export class OCCTFillets {
     filletEdgesWithHistory(inputs: Inputs.OCCT.FilletDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
         const resolved = resolveDto(Inputs.OCCT.FilletDto, inputs) as Resolved.OCCT.FilletDto<TopoDS_Shape>;
         this.checkEdgeIndexes(checkedShape(resolved.shape), resolved.indexes);
-        return withHistory((maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => this.occ.HistoryOfFillet(maker, resolved.shape, result), read => this.och.filletsService.filletEdges(resolved, read), [resolved.shape]);
+        return withHistory((maker: BRepFilletAPI_MakeFillet, made: TopoDS_Shape, reindexed: HistoryReindex) => reindexed(this.occ.HistoryOfFillet(maker, resolved.shape, made)), read => this.och.filletsService.filletEdges(resolved, read), [resolved.shape]);
     }
 
     /**
@@ -147,9 +148,9 @@ export class OCCTFillets {
     /**
      * Rounds one edge of a shape with a radius that changes along it.
      *
-     * `radiusList` holds the radius at each `paramsU` position; the first and last stand for the
-     * start and end of the edge's curve, whatever its orientation, and the radius may overshoot
-     * between positions. The lists must be equally long, or an error is thrown.
+     * `radiusList` holds the radius at each `paramsU` position, a fraction of the edge's length from
+     * its curve's start, whatever its orientation; between positions it may overshoot. A position
+     * outside 0 to 1, a radius not above 0 or one position with two radii is refused.
      * @param inputs - The shape, its edge, the radii and the positions along the edge they apply at
      * @returns The shape with the rounded edge
      * @group 3d fillets
@@ -347,7 +348,7 @@ export class OCCTFillets {
     chamferEdgesWithHistory(inputs: Inputs.OCCT.ChamferDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
         const resolved = resolveDto(Inputs.OCCT.ChamferDto, inputs) as Resolved.OCCT.ChamferDto<TopoDS_Shape>;
         this.checkEdgeIndexes(checkedShape(resolved.shape), resolved.indexes);
-        return withHistory((maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => this.occ.HistoryOfChamfer(maker, resolved.shape, result), read => this.och.filletsService.chamferEdges(resolved, read), [resolved.shape]);
+        return withHistory((maker: BRepFilletAPI_MakeChamfer, made: TopoDS_Shape, reindexed: HistoryReindex) => reindexed(this.occ.HistoryOfChamfer(maker, resolved.shape, made)), read => this.och.filletsService.chamferEdges(resolved, read), [resolved.shape]);
     }
 
     /**
@@ -744,14 +745,14 @@ export class OCCTFillets {
     }
 
 
-    private filletedWithHistory(shape: TopoDS_Shape, build: (read: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void) => TopoDS_Shape): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+    private filletedWithHistory(shape: TopoDS_Shape, build: (read: MakerRead<BRepFilletAPI_MakeFillet>) => TopoDS_Shape): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
         checkedShape(shape);
-        return withHistory((maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => this.occ.HistoryOfFillet(maker, shape, result), read => build(read), [shape]);
+        return withHistory((maker: BRepFilletAPI_MakeFillet, made: TopoDS_Shape, reindexed: HistoryReindex) => reindexed(this.occ.HistoryOfFillet(maker, shape, made)), read => build(read), [shape]);
     }
 
-    private chamferedWithHistory(shape: TopoDS_Shape, build: (read: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void) => TopoDS_Shape): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+    private chamferedWithHistory(shape: TopoDS_Shape, build: (read: MakerRead<BRepFilletAPI_MakeChamfer>) => TopoDS_Shape): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
         checkedShape(shape);
-        return withHistory((maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => this.occ.HistoryOfChamfer(maker, shape, result), read => build(read), [shape]);
+        return withHistory((maker: BRepFilletAPI_MakeChamfer, made: TopoDS_Shape, reindexed: HistoryReindex) => reindexed(this.occ.HistoryOfChamfer(maker, shape, made)), read => build(read), [shape]);
     }
 
     private checkEdgeIndexes(shape: TopoDS_Shape, indexes: number[] | undefined): void {

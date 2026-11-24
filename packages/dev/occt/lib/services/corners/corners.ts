@@ -1,10 +1,17 @@
-import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape, VectorDouble } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import type { Base } from "../../api/inputs";
 import type * as Models from "../../api/models";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
+import { holdsSolid, soundRoundingShape } from "../base/solid-results";
+import { occtFailure } from "../../kernel-failures";
+import { checkedWithin } from "../base/input-checks";
+import type { NumberBounds } from "../base/input-checks";
+import { withKernelFailure } from "../base/kernel-refusals";
+
+const ABOVE_ZERO: NumberBounds = { above: 0 };
 
 /**
  * Rounding and beveling single corners of an OpenCascade shell or solid, picked by a point near
@@ -46,16 +53,15 @@ export class OCCTCorners {
      */
     filletCornerByPoint(inputs: Inputs.OCCT.FilletCornerByPointDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.FilletCornerByPointDto, inputs) as Resolved.OCCT.FilletCornerByPointDto<TopoDS_Shape>;
-        const points = this.pointsToVectorDouble(resolved.points);
+        checkedWithin(resolved.radius, "radius", ABOVE_ZERO);
         const mode = this.cornerModeToNumber(resolved.mode);
-        const result = this.occ.FilletCornerByPoint(resolved.shape, points, resolved.radius, resolved.taperFactor, resolved.snapTolerance, mode);
-        points.delete();
+        const failure = (): Error => new Error("Could not fillet the corner(s) for the given point(s).");
+        const result = this.withPoints(resolved.points, points => withKernelFailure(this.occ, () => this.occ.FilletCornerByPoint(resolved.shape, points, resolved.radius, resolved.taperFactor, resolved.snapTolerance, mode), failure));
         if (result.IsNull()) {
             result.delete();
-            throw new Error("Could not fillet the corner(s) for the given point(s).");
+            throw failure();
         }
-        const shape = this.och.converterService.castAndRelease(result);
-        return shape;
+        return soundRoundingShape(this.occ, resolved.shape, this.och.converterService.castAndRelease(result), holdsSolid(this.occ, resolved.shape), { broken: failure, insideOut: () => occtFailure("occt.fillet.insideOut"), unnumbered: () => occtFailure("occt.fillet.historyUnnumbered") });
     }
 
     /**
@@ -83,16 +89,15 @@ export class OCCTCorners {
      */
     chamferCornerByPoint(inputs: Inputs.OCCT.ChamferCornerByPointDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.ChamferCornerByPointDto, inputs) as Resolved.OCCT.ChamferCornerByPointDto<TopoDS_Shape>;
-        const points = this.pointsToVectorDouble(resolved.points);
+        checkedWithin(resolved.distance, "distance", ABOVE_ZERO);
         const mode = this.cornerModeToNumber(resolved.mode);
-        const result = this.occ.ChamferCornerByPoint(resolved.shape, points, resolved.distance, resolved.angle, resolved.snapTolerance, mode);
-        points.delete();
+        const failure = (): Error => new Error("Could not chamfer the corner(s) for the given point(s).");
+        const result = this.withPoints(resolved.points, points => withKernelFailure(this.occ, () => this.occ.ChamferCornerByPoint(resolved.shape, points, resolved.distance, resolved.angle, resolved.snapTolerance, mode), failure));
         if (result.IsNull()) {
             result.delete();
-            throw new Error("Could not chamfer the corner(s) for the given point(s).");
+            throw failure();
         }
-        const shape = this.och.converterService.castAndRelease(result);
-        return shape;
+        return soundRoundingShape(this.occ, resolved.shape, this.och.converterService.castAndRelease(result), holdsSolid(this.occ, resolved.shape), { broken: failure, insideOut: () => occtFailure("occt.chamfer.insideOut"), unnumbered: () => occtFailure("occt.chamfer.historyUnnumbered") });
     }
 
     /**
@@ -115,9 +120,7 @@ export class OCCTCorners {
      */
     classifyCornerByPoint(inputs: Inputs.OCCT.ClassifyCornerByPointDto<TopoDS_Shape>): Models.OCCT.CornerByPointReport {
         const resolved = resolveDto(Inputs.OCCT.ClassifyCornerByPointDto, inputs) as Resolved.OCCT.ClassifyCornerByPointDto<TopoDS_Shape>;
-        const points = this.pointsToVectorDouble(resolved.points);
-        const json = this.occ.ClassifyCornerByPoint(resolved.shape, points, resolved.snapTolerance);
-        points.delete();
+        const json = this.withPoints(resolved.points, points => this.occ.ClassifyCornerByPoint(resolved.shape, points, resolved.snapTolerance));
         return JSON.parse(json) as Models.OCCT.CornerByPointReport;
     }
 
@@ -147,15 +150,23 @@ export class OCCTCorners {
      */
     cornerByPointReport(inputs: Inputs.OCCT.FilletCornerByPointDto<TopoDS_Shape>): Models.OCCT.CornerByPointReport {
         const resolved = resolveDto(Inputs.OCCT.FilletCornerByPointDto, inputs) as Resolved.OCCT.FilletCornerByPointDto<TopoDS_Shape>;
-        const points = this.pointsToVectorDouble(resolved.points);
+        checkedWithin(resolved.radius, "radius", ABOVE_ZERO);
         const mode = this.cornerModeToNumber(resolved.mode);
-        const json = this.occ.CornerByPointReport(resolved.shape, points, resolved.radius, resolved.taperFactor, resolved.snapTolerance, mode);
-        points.delete();
+        const json = this.withPoints(resolved.points, points => this.occ.CornerByPointReport(resolved.shape, points, resolved.radius, resolved.taperFactor, resolved.snapTolerance, mode));
         return JSON.parse(json) as Models.OCCT.CornerByPointReport;
     }
 
     private cornerModeToNumber(mode: Inputs.OCCT.cornerModeEnum): number {
         return mode === Inputs.OCCT.cornerModeEnum.planarOnly ? 1 : 0;
+    }
+
+    private withPoints<T>(points: Base.Point3[], use: (vector: VectorDouble) => T): T {
+        const vector = this.pointsToVectorDouble(points);
+        try {
+            return use(vector);
+        } finally {
+            vector.delete();
+        }
     }
 
     private pointsToVectorDouble(points: Base.Point3[]) {
