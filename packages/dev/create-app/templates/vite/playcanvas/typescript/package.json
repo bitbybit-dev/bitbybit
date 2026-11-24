@@ -12,11 +12,11 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@bitbybit-dev/playcanvas": "1.7.0",
+    "@bitbybit-dev/playcanvas": "1.8.0",
     "playcanvas": "2.24.0"
   },
   "devDependencies": {
-    "@bitbybit-dev/occt": "1.7.0",
+    "@bitbybit-dev/occt": "1.8.0",
     "@eslint/js": "10.0.1",
     "@types/node": "22.20.1",
     "eslint": "10.10.0",
