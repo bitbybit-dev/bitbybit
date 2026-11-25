@@ -473,6 +473,26 @@ describe("Line unit tests", () => {
                 const result = line.lineLineIntersection({ line1, line2, checkSegmentsOnly: true, tolerance: 1e-2 });
                 uh.expectPointCloseTo(result, expected);
             });
+
+            it("should measure the gap between long lines in model units", () => {
+                const line1: Inputs.Base.Line3 = { start: [0, 0, 0], end: [1000, 0, 0] };
+                const line2: Inputs.Base.Line3 = { start: [500, -500, 0.005], end: [500, 500, 0.005] };
+                const result = line.lineLineIntersection({ line1, line2, checkSegmentsOnly: true, tolerance: 1e-2 });
+                uh.expectPointCloseTo(result, [500, 0, 0]);
+            });
+
+            it("should measure endpoint tolerance in model units at any line length", () => {
+                const short: Inputs.Base.Line3 = { start: [0, 0, 0], end: [0.1, 0, 0] };
+                const nearShortEnd: Inputs.Base.Line3 = { start: [0.105, -0.1, 0], end: [0.105, 0.1, 0] };
+                const long: Inputs.Base.Line3 = { start: [0, 0, 0], end: [1000, 0, 0] };
+                const pastLongEnd: Inputs.Base.Line3 = { start: [1005, -1, 0], end: [1005, 1, 0] };
+
+                const near = line.lineLineIntersection({ line1: short, line2: nearShortEnd, checkSegmentsOnly: true, tolerance: 1e-2 });
+                const past = line.lineLineIntersection({ line1: long, line2: pastLongEnd, checkSegmentsOnly: true, tolerance: 1e-2 });
+
+                uh.expectPointCloseTo(near, [0.105, 0, 0]);
+                expect(past).toBeUndefined();
+            });
         });
 
         describe("Skew Lines", () => {
