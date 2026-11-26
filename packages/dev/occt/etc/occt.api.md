@@ -14737,9 +14737,11 @@ export type OcctFailureDetails = {
     "occt.fillet.failedAtCorners": CornerFailureDetails;
     "occt.fillet.insideOut": undefined;
     "occt.fillet.historyUnnumbered": undefined;
+    "occt.fillet.beyondShape": undefined;
     "occt.chamfer.failed": undefined;
     "occt.chamfer.insideOut": undefined;
     "occt.chamfer.historyUnnumbered": undefined;
+    "occt.chamfer.beyondShape": undefined;
     "occt.offset.failed": undefined;
     "occt.thickSolid.failed": undefined;
     "occt.loft.failed": undefined;

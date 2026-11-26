@@ -11,10 +11,10 @@ import type { KernelOperationError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { kernelObjects, release, releasedOnError } from "./release";
 import { withKernelFailure } from "./kernel-refusals";
-import { checkedShape } from "./input-checks";
 import { holdsSolid, releaseMade, soundRounding, unbrokenRounding } from "./solid-results";
 import type { MakerRead, RoundingFailures } from "./rounding-types";
 import { isStraightCorner, straightCorners, withoutStraightCorners } from "./straight-corners";
+import { checkedOwnPart, checkedOwnParts } from "./own-shapes";
 
 const checkedPositions = (positions: readonly number[], property: string): void => {
     positions.forEach((position, at) => {
@@ -45,9 +45,9 @@ const checkedProfile = (positions: readonly number[], radii: readonly number[], 
     });
 };
 
-const FILLET_FAILURES: RoundingFailures = { broken: () => occtFailure("occt.fillet.failed"), insideOut: () => occtFailure("occt.fillet.insideOut"), unnumbered: () => occtFailure("occt.fillet.historyUnnumbered") };
+const FILLET_FAILURES: RoundingFailures = { broken: () => occtFailure("occt.fillet.failed"), beyond: () => occtFailure("occt.fillet.beyondShape"), insideOut: () => occtFailure("occt.fillet.insideOut"), unnumbered: () => occtFailure("occt.fillet.historyUnnumbered") };
 
-const CHAMFER_FAILURES: RoundingFailures = { broken: () => occtFailure("occt.chamfer.failed"), insideOut: () => occtFailure("occt.chamfer.insideOut"), unnumbered: () => occtFailure("occt.chamfer.historyUnnumbered") };
+const CHAMFER_FAILURES: RoundingFailures = { broken: () => occtFailure("occt.chamfer.failed"), beyond: () => occtFailure("occt.chamfer.beyondShape"), insideOut: () => occtFailure("occt.chamfer.insideOut"), unnumbered: () => occtFailure("occt.chamfer.historyUnnumbered") };
 
 export class FilletsService {
 
@@ -67,13 +67,16 @@ export class FilletsService {
     filletEdges(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>, read?: MakerRead<BRepFilletAPI_MakeFillet>): TopoDS_Shape {
         if (!inputs.indexes || inputs.indexes.length === 0) {
             checkedRadius(inputs.radius, "radius");
-            return this.filleted(inputs.shape, maker => this.iteratorService.forEachEdge(inputs.shape, (_index, edge) => {
-                try {
-                    maker.Add(inputs.radius, edge);
-                } finally {
-                    edge.delete();
-                }
-            }), read);
+            return this.filleted(inputs.shape, maker => {
+                this.iteratorService.forEachEdge(inputs.shape, (_index, edge) => {
+                    try {
+                        maker.Add(inputs.radius, edge);
+                    } finally {
+                        edge.delete();
+                    }
+                });
+                return inputs.radius;
+            }, read);
         }
         if (inputs.radiusList) {
             checkedRadii(inputs.radiusList, "radiusList");
@@ -84,6 +87,7 @@ export class FilletsService {
         const curFillet = this.filleted(inputs.shape, maker => {
             let foundEdges = 0;
             let radiusIndex = 0;
+            let reach = 0;
             this.iteratorService.forEachEdge(inputs.shape, (index, edge) => {
                 try {
                     if (inputIndexes.includes(index)) {
@@ -96,6 +100,7 @@ export class FilletsService {
                             throw new InputError("Radius not defined, or radiusList not correct length", inputs.radiusList ? "radiusList" : "radius");
                         }
                         maker.Add(radius, edge);
+                        reach = Math.max(reach, radius);
                         foundEdges++;
                     }
                 } finally {
@@ -105,6 +110,7 @@ export class FilletsService {
             if (foundEdges === 0) {
                 throw (new Error("Fillet Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!"));
             }
+            return reach;
         }, read);
         return this.converterService.castAndRelease(curFillet);
     }
@@ -112,7 +118,11 @@ export class FilletsService {
     filletEdgesListOneRadius(inputs: Resolved.OCCT.FilletEdgesListOneRadiusDto<TopoDS_Shape, TopoDS_Edge>, read?: MakerRead<BRepFilletAPI_MakeFillet>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0) {
             checkedRadius(inputs.radius, "radius");
-            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => inputs.edges.forEach(edge => maker.Add(inputs.radius, edge)), read));
+            checkedOwnParts(this.occ, inputs.shape, inputs.edges, "edge", "edges");
+            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => {
+                inputs.edges.forEach(edge => maker.Add(inputs.radius, edge));
+                return inputs.radius;
+            }, read));
         }
         throw new Error("Edges must be provided");
     }
@@ -120,7 +130,11 @@ export class FilletsService {
     filletEdgesList(inputs: Inputs.OCCT.FilletEdgesListDto<TopoDS_Shape, TopoDS_Edge>, read?: MakerRead<BRepFilletAPI_MakeFillet>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 && inputs.radiusList && inputs.radiusList.length > 0 && inputs.edges.length === inputs.radiusList.length) {
             checkedRadii(inputs.radiusList, "radiusList");
-            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => inputs.edges.forEach((edge, index) => maker.Add(inputs.radiusList[index]!, edge)), read));
+            checkedOwnParts(this.occ, inputs.shape, inputs.edges, "edge", "edges");
+            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => {
+                inputs.edges.forEach((edge, index) => maker.Add(inputs.radiusList[index]!, edge));
+                return this.largestOf(inputs.radiusList);
+            }, read));
         }
         throw new Error("Edges and radius list must be provided with the same length");
     }
@@ -128,7 +142,11 @@ export class FilletsService {
     filletEdgeVariableRadius(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>, read?: MakerRead<BRepFilletAPI_MakeFillet>): TopoDS_Shape {
         if (inputs.paramsU && inputs.paramsU.length > 0 && inputs.radiusList && inputs.radiusList.length > 0 && inputs.paramsU.length === inputs.radiusList.length) {
             checkedProfile(inputs.paramsU, inputs.radiusList, "paramsU", "radiusList");
-            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => this.assignVariableFilletToEdge(inputs, maker), read));
+            checkedOwnPart(this.occ, inputs.shape, inputs.edge, "edge", "edge");
+            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => {
+                this.assignVariableFilletToEdge(inputs, maker);
+                return this.largestOf(inputs.radiusList);
+            }, read));
         }
         throw new Error("Params U and radius list must be provided with the same length");
     }
@@ -138,9 +156,13 @@ export class FilletsService {
             inputs.radiusList && inputs.radiusList.length > 0 &&
             inputs.paramsU.length === inputs.radiusList.length) {
             checkedProfile(inputs.paramsU, inputs.radiusList, "paramsU", "radiusList");
-            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => inputs.edges.forEach(edge => this.assignVariableFilletToEdge({
-                edge, paramsU: inputs.paramsU, radiusList: inputs.radiusList, shape: inputs.shape,
-            }, maker)), read));
+            checkedOwnParts(this.occ, inputs.shape, inputs.edges, "edge", "edges");
+            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => {
+                inputs.edges.forEach(edge => this.assignVariableFilletToEdge({
+                    edge, paramsU: inputs.paramsU, radiusList: inputs.radiusList, shape: inputs.shape,
+                }, maker));
+                return this.largestOf(inputs.radiusList);
+            }, read));
         }
         throw new Error("Edges, params U and radius list must be provided with the same length");
     }
@@ -152,17 +174,21 @@ export class FilletsService {
             inputs.paramsULists.length === inputs.edges.length &&
             inputs.radiusLists.length === inputs.edges.length) {
             inputs.paramsULists.forEach((positions, at) => checkedProfile(positions, inputs.radiusLists[at]!, `paramsULists[${at}]`, `radiusLists[${at}]`));
-            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => inputs.edges.forEach((edge, index) => this.assignVariableFilletToEdge({
-                edge, paramsU: inputs.paramsULists[index]!, radiusList: inputs.radiusLists[index]!, shape: inputs.shape,
-            }, maker)), read));
+            checkedOwnParts(this.occ, inputs.shape, inputs.edges, "edge", "edges");
+            return this.converterService.castAndRelease(this.filleted(inputs.shape, maker => {
+                inputs.edges.forEach((edge, index) => this.assignVariableFilletToEdge({
+                    edge, paramsU: inputs.paramsULists[index]!, radiusList: inputs.radiusLists[index]!, shape: inputs.shape,
+                }, maker));
+                return this.largestOf(inputs.radiusLists.flat());
+            }, read));
         }
         throw new Error("Edges, radius lists and params U lists must be provided with the same length");
     }
 
-    private filleted(shape: TopoDS_Shape, add: (maker: BRepFilletAPI_MakeFillet) => void, read?: MakerRead<BRepFilletAPI_MakeFillet>): TopoDS_Shape {
+    private filleted(shape: TopoDS_Shape, add: (maker: BRepFilletAPI_MakeFillet) => number, read?: MakerRead<BRepFilletAPI_MakeFillet>): TopoDS_Shape {
         const maker = new this.occ.BRepFilletAPI_MakeFillet(shape, this.occ.ChFi3d_FilletShape.Rational);
         try {
-            add(maker);
+            const reach = add(maker);
             withKernelFailure(this.occ, () => maker.Build(), () => occtFailure("occt.fillet.failed"));
             if (!maker.IsDone()) {
                 const faulty = maker.FaultyEdges(shape);
@@ -170,28 +196,32 @@ export class FilletsService {
                 faulty.delete();
                 throw edges.length > 0 ? occtFailure("occt.fillet.failedOnEdges", { edges }) : occtFailure("occt.fillet.failed");
             }
-            return this.readRounding(shape, maker, FILLET_FAILURES, read);
+            return this.readRounding(shape, maker, reach, FILLET_FAILURES, read);
         } finally {
             maker.delete();
         }
     }
 
-    private chamfered(shape: TopoDS_Shape, add: (maker: BRepFilletAPI_MakeChamfer) => void, read?: MakerRead<BRepFilletAPI_MakeChamfer>): TopoDS_Shape {
+    private chamfered(shape: TopoDS_Shape, add: (maker: BRepFilletAPI_MakeChamfer) => number, read?: MakerRead<BRepFilletAPI_MakeChamfer>): TopoDS_Shape {
         const maker = new this.occ.BRepFilletAPI_MakeChamfer(shape);
         try {
-            add(maker);
+            const reach = add(maker);
             withKernelFailure(this.occ, () => maker.Build(), () => occtFailure("occt.chamfer.failed"));
             if (!maker.IsDone()) {
                 throw occtFailure("occt.chamfer.failed");
             }
-            return this.readRounding(shape, maker, CHAMFER_FAILURES, read);
+            return this.readRounding(shape, maker, reach, CHAMFER_FAILURES, read);
         } finally {
             maker.delete();
         }
     }
 
-    private readRounding<M extends BRepFilletAPI_MakeFillet | BRepFilletAPI_MakeChamfer>(shape: TopoDS_Shape, maker: M, failures: RoundingFailures, read: MakerRead<M> | undefined): TopoDS_Shape {
-        const rounding = soundRounding(this.occ, shape, maker.Shape(), holdsSolid(this.occ, shape), failures);
+    private largestOf(sizes: number[]): number {
+        return this.base.vector.max({ vector: sizes });
+    }
+
+    private readRounding<M extends BRepFilletAPI_MakeFillet | BRepFilletAPI_MakeChamfer>(shape: TopoDS_Shape, maker: M, reach: number, failures: RoundingFailures, read: MakerRead<M> | undefined): TopoDS_Shape {
+        const rounding = soundRounding(this.occ, shape, maker.Shape(), holdsSolid(this.occ, shape), reach, failures);
         try {
             releasedOnError([rounding.shape], () => read?.(maker, rounding.made, rounding.reindexed));
         } finally {
@@ -219,18 +249,22 @@ export class FilletsService {
      */
     chamferEdges(inputs: Resolved.OCCT.ChamferDto<TopoDS_Shape>, read?: MakerRead<BRepFilletAPI_MakeChamfer>): TopoDS_Shape {
         if (!inputs.indexes || inputs.indexes.length === 0) {
-            return this.chamfered(inputs.shape, maker => this.iteratorService.forEachEdge(inputs.shape, (_index, edge) => {
-                try {
-                    maker.Add(inputs.distance, edge);
-                } finally {
-                    edge.delete();
-                }
-            }), read);
+            return this.chamfered(inputs.shape, maker => {
+                this.iteratorService.forEachEdge(inputs.shape, (_index, edge) => {
+                    try {
+                        maker.Add(inputs.distance, edge);
+                    } finally {
+                        edge.delete();
+                    }
+                });
+                return inputs.distance;
+            }, read);
         }
         const inputIndexes = inputs.indexes;
         const curChamfer = this.chamfered(inputs.shape, maker => {
             let foundEdges = 0;
             let distanceIndex = 0;
+            let reach = 0;
             this.iteratorService.forEachEdge(inputs.shape, (index, edge) => {
                 try {
                     if (inputIndexes.includes(index)) {
@@ -243,6 +277,7 @@ export class FilletsService {
                             throw new InputError("Distance not defined and/or distance list incorrect length", inputs.distanceList ? "distanceList" : "distance");
                         }
                         maker.Add(distance, edge);
+                        reach = Math.max(reach, distance);
                         foundEdges++;
                     }
                 } finally {
@@ -252,31 +287,46 @@ export class FilletsService {
             if (foundEdges === 0) {
                 throw (new Error("Chamfer Edges Not Found!  Make sure you are looking at the object _before_ the Chamfer is applied!"));
             }
+            return reach;
         }, read);
         return this.converterService.castAndRelease(curChamfer);
     }
 
     chamferEdgesList(inputs: Inputs.OCCT.ChamferEdgesListDto<TopoDS_Shape, TopoDS_Edge>, read?: MakerRead<BRepFilletAPI_MakeChamfer>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 && inputs.distanceList && inputs.distanceList.length > 0 && inputs.edges.length === inputs.distanceList.length) {
-            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => inputs.edges.forEach((edge, index) => {
-                const distance = inputs.distanceList[index];
-                if (distance === undefined) {
-                    throw (Error("Distance is not defined"));
-                }
-                maker.Add(distance, edge);
-            }), read));
+            checkedOwnParts(this.occ, inputs.shape, inputs.edges, "edge", "edges");
+            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => {
+                inputs.edges.forEach((edge, index) => {
+                    const distance = inputs.distanceList[index];
+                    if (distance === undefined) {
+                        throw (Error("Distance is not defined"));
+                    }
+                    maker.Add(distance, edge);
+                });
+                return this.largestOf(inputs.distanceList);
+            }, read));
         }
         throw new Error("Edges and distance list must be provided with the same length");
     }
 
     chamferEdgeTwoDistances(inputs: Resolved.OCCT.ChamferEdgeTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: MakerRead<BRepFilletAPI_MakeChamfer>): TopoDS_Shape {
-        return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => maker.AddTwoDistances(inputs.distance1, inputs.distance2, inputs.edge, inputs.face), read));
+        checkedOwnPart(this.occ, inputs.shape, inputs.edge, "edge", "edge");
+        checkedOwnPart(this.occ, inputs.shape, inputs.face, "face", "face");
+        return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => {
+            maker.AddTwoDistances(inputs.distance1, inputs.distance2, inputs.edge, inputs.face);
+            return this.largestOf([inputs.distance1, inputs.distance2]);
+        }, read));
     }
 
     chamferEdgesTwoDistances(inputs: Resolved.OCCT.ChamferEdgesTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: MakerRead<BRepFilletAPI_MakeChamfer>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.edges.length === inputs.faces.length) {
-            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => inputs.edges.forEach((edge, index) => maker.AddTwoDistances(inputs.distance1, inputs.distance2, edge, inputs.faces[index]!)), read));
+            checkedOwnParts(this.occ, inputs.shape, inputs.edges, "edge", "edges");
+            checkedOwnParts(this.occ, inputs.shape, inputs.faces, "face", "faces");
+            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => {
+                inputs.edges.forEach((edge, index) => maker.AddTwoDistances(inputs.distance1, inputs.distance2, edge, inputs.faces[index]!));
+                return this.largestOf([inputs.distance1, inputs.distance2]);
+            }, read));
         } else {
             throw new Error("Edges and faces must be provided with the same length");
         }
@@ -290,17 +340,25 @@ export class FilletsService {
             inputs.edges.length === inputs.faces.length &&
             inputs.edges.length === inputs.distances1.length &&
             inputs.edges.length === inputs.distances2.length) {
-            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => inputs.edges.forEach((edge, index) => maker.AddTwoDistances(inputs.distances1[index]!, inputs.distances2[index]!, edge, inputs.faces[index]!)), read));
+            checkedOwnParts(this.occ, inputs.shape, inputs.edges, "edge", "edges");
+            checkedOwnParts(this.occ, inputs.shape, inputs.faces, "face", "faces");
+            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => {
+                inputs.edges.forEach((edge, index) => maker.AddTwoDistances(inputs.distances1[index]!, inputs.distances2[index]!, edge, inputs.faces[index]!));
+                return this.largestOf([...inputs.distances1, ...inputs.distances2]);
+            }, read));
         } else {
             throw new Error("Edges, faces and distance lists must be provided with the same length");
         }
     }
 
     chamferEdgeDistAngle(inputs: Resolved.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: MakerRead<BRepFilletAPI_MakeChamfer>): TopoDS_Shape {
-        checkedShape(inputs.edge, "edge");
-        checkedShape(inputs.face, "face");
+        checkedOwnPart(this.occ, inputs.shape, inputs.edge, "edge", "edge");
+        checkedOwnPart(this.occ, inputs.shape, inputs.face, "face", "face");
         const radians = this.base.math.degToRad({ number: inputs.angle });
-        return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => maker.AddDA(inputs.distance, radians, inputs.edge, inputs.face), read));
+        return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => {
+            maker.AddDA(inputs.distance, radians, inputs.edge, inputs.face);
+            return inputs.distance;
+        }, read));
     }
 
     chamferEdgesDistsAngles(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>, read?: MakerRead<BRepFilletAPI_MakeChamfer>): TopoDS_Shape {
@@ -311,10 +369,15 @@ export class FilletsService {
             inputs.edges.length === inputs.distances.length &&
             inputs.edges.length === inputs.faces.length &&
             inputs.edges.length === inputs.angles.length) {
-            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => inputs.edges.forEach((edge, index) => {
-                const radians = this.base.math.degToRad({ number: inputs.angles[index]! });
-                maker.AddDA(inputs.distances[index]!, radians, edge, inputs.faces[index]!);
-            }), read));
+            checkedOwnParts(this.occ, inputs.shape, inputs.edges, "edge", "edges");
+            checkedOwnParts(this.occ, inputs.shape, inputs.faces, "face", "faces");
+            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => {
+                inputs.edges.forEach((edge, index) => {
+                    const radians = this.base.math.degToRad({ number: inputs.angles[index]! });
+                    maker.AddDA(inputs.distances[index]!, radians, edge, inputs.faces[index]!);
+                });
+                return this.largestOf(inputs.distances);
+            }, read));
         } else {
             throw new Error("Edges, faces, distances and angles must be provided with the same length");
         }
@@ -325,8 +388,13 @@ export class FilletsService {
             inputs.faces && inputs.faces.length > 0 &&
             inputs.edges.length === inputs.faces.length
         ) {
+            checkedOwnParts(this.occ, inputs.shape, inputs.edges, "edge", "edges");
+            checkedOwnParts(this.occ, inputs.shape, inputs.faces, "face", "faces");
             const radians = this.base.math.degToRad({ number: inputs.angle });
-            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => inputs.edges.forEach((edge, index) => maker.AddDA(inputs.distance, radians, edge, inputs.faces[index]!)), read));
+            return this.converterService.castAndRelease(this.chamfered(inputs.shape, maker => {
+                inputs.edges.forEach((edge, index) => maker.AddDA(inputs.distance, radians, edge, inputs.faces[index]!));
+                return inputs.distance;
+            }, read));
         } else {
             throw new Error("Edges and faces must be provided with the same length");
         }
@@ -368,13 +436,13 @@ export class FilletsService {
                 if (!isDone || failedCorners.length > 0) {
                     throw cornersFailed();
                 }
-                return unbrokenRounding(this.occ, inputs.shape, this.converterService.castAndRelease(filletMaker.Shape()), cornersFailed);
+                return unbrokenRounding(this.occ, inputs.shape, this.converterService.castAndRelease(filletMaker.Shape()), { broken: cornersFailed, beyond: FILLET_FAILURES.beyond });
             }
             if (isDone && failedCorners.length > 0) {
                 throw cornersFailed();
             }
             if (isDone) {
-                return unbrokenRounding(this.occ, inputs.shape, this.onlyWireOf(own(filletMaker.Shape()), cornersFailed), cornersFailed);
+                return unbrokenRounding(this.occ, inputs.shape, this.onlyWireOf(own(filletMaker.Shape()), cornersFailed), { broken: cornersFailed, beyond: FILLET_FAILURES.beyond });
             }
             if (!this.everyGivenRadiusRounds(inputs.radius, inputs.radiusList)) {
                 throw cornersFailed();
@@ -464,7 +532,7 @@ export class FilletsService {
                 ? occtFailure("occt.fillet.failedAtCorners", { corners: Array.from(failedCorners, corner => corner + 1) })
                 : occtFailure("occt.fillet.failed");
         }
-        return unbrokenRounding(this.occ, wire, rounded, () => occtFailure("occt.fillet.failed"));
+        return unbrokenRounding(this.occ, wire, rounded, FILLET_FAILURES);
     }
 
     private applyRadiusToVertex(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>, filletMaker: BRepFilletAPI_MakeFillet2d, cvx: TopoDS_Vertex, index: number): boolean {
@@ -501,13 +569,12 @@ export class FilletsService {
                 throw occtFailure("occt.chamfer.failed");
             }
             const made = own(filletMaker.Shape());
-            const chamferFailed = (): KernelOperationError => occtFailure("occt.chamfer.failed");
             if (isShapeFace) {
-                return unbrokenRounding(this.occ, inputs.shape, this.converterService.getActualTypeOfShape(made), chamferFailed);
+                return unbrokenRounding(this.occ, inputs.shape, this.converterService.getActualTypeOfShape(made), CHAMFER_FAILURES);
             }
             const wires = this.shapeGettersService.getWires({ shape: made });
             wires.slice(1).forEach(release);
-            return unbrokenRounding(this.occ, inputs.shape, wires[0]!, chamferFailed);
+            return unbrokenRounding(this.occ, inputs.shape, wires[0]!, CHAMFER_FAILURES);
         } finally {
             releaseAll();
         }

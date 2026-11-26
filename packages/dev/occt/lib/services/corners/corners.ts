@@ -61,7 +61,7 @@ export class OCCTCorners {
             result.delete();
             throw failure();
         }
-        return soundRoundingShape(this.occ, resolved.shape, this.och.converterService.castAndRelease(result), holdsSolid(this.occ, resolved.shape), { broken: failure, insideOut: () => occtFailure("occt.fillet.insideOut"), unnumbered: () => occtFailure("occt.fillet.historyUnnumbered") });
+        return soundRoundingShape(this.occ, resolved.shape, this.och.converterService.castAndRelease(result), holdsSolid(this.occ, resolved.shape), resolved.radius, { broken: failure, beyond: () => occtFailure("occt.fillet.beyondShape"), insideOut: () => occtFailure("occt.fillet.insideOut"), unnumbered: () => occtFailure("occt.fillet.historyUnnumbered") });
     }
 
     /**
@@ -97,7 +97,7 @@ export class OCCTCorners {
             result.delete();
             throw failure();
         }
-        return soundRoundingShape(this.occ, resolved.shape, this.och.converterService.castAndRelease(result), holdsSolid(this.occ, resolved.shape), { broken: failure, insideOut: () => occtFailure("occt.chamfer.insideOut"), unnumbered: () => occtFailure("occt.chamfer.historyUnnumbered") });
+        return soundRoundingShape(this.occ, resolved.shape, this.och.converterService.castAndRelease(result), holdsSolid(this.occ, resolved.shape), resolved.distance, { broken: failure, beyond: () => occtFailure("occt.chamfer.beyondShape"), insideOut: () => occtFailure("occt.chamfer.insideOut"), unnumbered: () => occtFailure("occt.chamfer.historyUnnumbered") });
     }
 
     /**

@@ -10,7 +10,9 @@ import type { RoundingFailures } from "./rounding-types";
 
 const VOLUME_PROPERTIES = 4;
 
-const FAILURES: RoundingFailures = { broken: () => new Error("broken"), insideOut: () => new Error("insideOut"), unnumbered: () => new Error("unnumbered") };
+const FAILURES: RoundingFailures = { broken: () => new Error("broken"), beyond: () => new Error("beyond"), insideOut: () => new Error("insideOut"), unnumbered: () => new Error("unnumbered") };
+
+const NO_REACH = 0;
 
 describe("OCCT rounding results judged against what they rounded", () => {
     let occt: BitbybitOcctModule;
@@ -43,10 +45,30 @@ describe("OCCT rounding results judged against what they rounded", () => {
         return solid;
     };
 
-    const judged = (made: TopoDS_Shape, asSolid = true): string => {
-        const input = block(0, 10);
+    const openShell = (): TopoDS_Shape => {
+        const whole = block(0, 10);
+        const faces = occHelper.shapeGettersService.getFaces({ shape: whole });
+        const builder = new occt.BRep_Builder();
+        const shell = builder.MakeShell();
+        faces.slice(1).forEach(face => builder.Add(shell, face));
+        [builder, whole, ...faces].forEach(made => made.delete());
+        return shell;
+    };
+
+    const solidBesideAFace = (): TopoDS_Shape => {
+        const whole = block(0, 10);
+        const face = occHelper.shapeGettersService.getFaces({ shape: block(2, 3) })[0]!;
+        const builder = new occt.BRep_Builder();
+        const compound = builder.MakeCompound();
+        builder.Add(compound, whole);
+        builder.Add(compound, face);
+        [builder, whole, face].forEach(made => made.delete());
+        return compound;
+    };
+
+    const judged = (made: TopoDS_Shape, asSolid = true, reach = NO_REACH, input = block(0, 10)): string => {
         try {
-            const shape = soundRoundingShape(occt, input, made, asSolid, FAILURES);
+            const shape = soundRoundingShape(occt, input, made, asSolid, reach, FAILURES);
             shape.delete();
             return shape === made ? "kept" : "mended";
         } catch (error) {
@@ -69,7 +91,7 @@ describe("OCCT rounding results judged against what they rounded", () => {
         const results = [judged(block(0.5, 10.5)), judged(block(0.5, 10.5), false)];
 
         // Assert
-        expect(results).toEqual(["broken", "broken"]);
+        expect(results).toEqual(["beyond", "beyond"]);
     });
 
     it("should let a result leave the box of what it rounded by no more than its own tolerance", () => {
@@ -77,7 +99,42 @@ describe("OCCT rounding results judged against what they rounded", () => {
         const results = [judged(block(0, 10 + 1.5e-7)), judged(block(0, 10 + 5e-7))];
 
         // Assert
-        expect(results).toEqual(["kept", "broken"]);
+        expect(results).toEqual(["kept", "beyond"]);
+    });
+
+    it("should let the rounding of an open shell reach past the box of what it rounded by its own radius or distance, further than a hundredth of that box's diagonal, and no further", () => {
+        // Act
+        const results = [judged(block(0, 10.4), false, 0.5, openShell()), judged(block(0, 10.6), false, 0.5, openShell())];
+
+        // Assert
+        expect(results).toEqual(["kept", "beyond"]);
+    });
+
+    it("should give the rounding of a solid no such reach, holding it to its own tolerance", () => {
+        // Act
+        const results = [judged(block(0, 10.4), true, 0.5), judged(block(0, 10.4), false, 0.5)];
+
+        // Assert
+        expect(results).toEqual(["beyond", "beyond"]);
+    });
+
+    it("should give the reach to a compound whose faces are not all bound into its solids", () => {
+        // Act
+        const result = judged(block(0, 10.4), true, 0.5, solidBesideAFace());
+
+        // Assert
+        expect(result).toBe("kept");
+    });
+
+    it.each([
+        ["not a number", Number.NaN],
+        ["below 0", -1],
+    ])("should take a reach that is %s for no reach at all", (_what, reach) => {
+        // Act
+        const results = [judged(block(0, 10), false, reach, openShell()), judged(block(0, 10.4), false, reach, openShell())];
+
+        // Assert
+        expect(results).toEqual(["kept", "beyond"]);
     });
 
     it("should hand back the solid OCCT's shape repair turns right when one came out inside out, valid, of the same volume and inside the box, and keep the same shape when no solid was rounded", () => {
@@ -87,7 +144,7 @@ describe("OCCT rounding results judged against what they rounded", () => {
         const volumeBefore = occt.VolumePropertiesOfEach([made])[0]!;
 
         // Act
-        const shape = soundRoundingShape(occt, input, made, true, FAILURES);
+        const shape = soundRoundingShape(occt, input, made, true, NO_REACH, FAILURES);
 
         // Assert
         expect(shape).not.toBe(made);
@@ -111,7 +168,7 @@ describe("OCCT rounding results judged against what they rounded", () => {
     it("should number a history read against what was made on the mended solid, each face and edge at the place of the same face and edge", () => {
         // Arrange
         const input = block(0, 10);
-        const rounding = soundRounding(occt, input, insideOut(block(1, 9)), true, FAILURES);
+        const rounding = soundRounding(occt, input, insideOut(block(1, 9)), true, NO_REACH, FAILURES);
         const faces = occt.FacesOf(rounding.made, false).length;
         const edges = occt.EdgesOf(rounding.made, true).length;
         const each = (count: number): Int32Array[] => Array.from({ length: count }, (_, index) => Int32Array.of(index));
@@ -179,7 +236,7 @@ describe("OCCT rounding results judged against what they rounded", () => {
         const before = solidVolumes(made);
 
         // Act
-        const shape = soundRoundingShape(occt, input, made, true, FAILURES);
+        const shape = soundRoundingShape(occt, input, made, true, NO_REACH, FAILURES);
 
         // Assert
         expect(before).toEqual([expect.closeTo(343, 9), expect.closeTo(-1, 9)]);
@@ -195,7 +252,7 @@ describe("OCCT rounding results judged against what they rounded", () => {
         const before = occt.WriteBREPToString(made, false);
 
         // Act
-        const rounding = soundRounding(occt, input, made, true, FAILURES);
+        const rounding = soundRounding(occt, input, made, true, NO_REACH, FAILURES);
 
         // Assert
         expect(rounding.shape).not.toBe(made);
@@ -218,7 +275,7 @@ describe("OCCT rounding results judged against what they rounded", () => {
                 repaired.delete();
             }
         });
-        const rounding = soundRounding(occt, input, insideOut(block(1, 9)), true, FAILURES);
+        const rounding = soundRounding(occt, input, insideOut(block(1, 9)), true, NO_REACH, FAILURES);
         sharingNoEdge.mockRestore();
 
         // Act

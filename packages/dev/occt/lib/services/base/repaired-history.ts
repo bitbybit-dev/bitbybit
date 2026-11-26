@@ -2,25 +2,9 @@ import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occ
 import type { KernelHistory } from "./history";
 import { kernelObjects } from "./release";
 import type { RepairedIndexes } from "./rounding-types";
-
-const HASH_BOUND = 2147483647;
+import { SameShapes } from "./same-shapes";
 
 type Own = ReturnType<typeof kernelObjects>["own"];
-
-class SameShapes {
-    private readonly byHash = new Map<number, number[]>();
-
-    constructor(private readonly occ: BitbybitOcctModule, private readonly shapes: readonly TopoDS_Shape[]) {
-        shapes.forEach((shape, index) => {
-            const hash = occ.TopoDS_Shape_HashCode(shape, HASH_BOUND);
-            this.byHash.set(hash, [...(this.byHash.get(hash) ?? []), index]);
-        });
-    }
-
-    indexOf(shape: TopoDS_Shape): number | undefined {
-        return (this.byHash.get(this.occ.TopoDS_Shape_HashCode(shape, HASH_BOUND)) ?? []).find(index => this.shapes[index]!.IsSame(shape));
-    }
-}
 
 const edgeMapOf = (rawEdges: readonly TopoDS_Shape[], edges: SameShapes, count: number): number[] | undefined => {
     const mapped = rawEdges.map(edge => edges.indexOf(edge));

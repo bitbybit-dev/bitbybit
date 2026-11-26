@@ -6,8 +6,12 @@ export interface RepairedIndexes {
     readonly edges: readonly number[];
 }
 
-export interface RoundingFailures {
+export interface FlatRoundingFailures {
     readonly broken: () => Error;
+    readonly beyond: () => Error;
+}
+
+export interface RoundingFailures extends FlatRoundingFailures {
     readonly insideOut: () => Error;
     readonly unnumbered: () => Error;
 }

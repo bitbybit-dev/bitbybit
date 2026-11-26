@@ -4,7 +4,7 @@ import type * as Inputs from "../../api/inputs";
 import { withKernelFailure } from "./kernel-refusals";
 import { release, releasedOnError } from "./release";
 import { reindexedHistory, repairedIndexes } from "./repaired-history";
-import type { Rounding, RoundingFailures } from "./rounding-types";
+import type { FlatRoundingFailures, Rounding, RoundingFailures } from "./rounding-types";
 
 const LEAST_VOLUME = 1e-21;
 
@@ -19,6 +19,8 @@ const BOX_VALUES = 6;
 const AXES = [0, 1, 2] as const;
 
 const MOST_GROWTH_OF_DIAGONAL = 0.01;
+
+const NO_REACH = 0;
 
 interface Box {
     readonly min: Inputs.Base.Point3;
@@ -43,15 +45,29 @@ function overshoot(around: Box, box: Box): number {
     return Math.max(...AXES.flatMap(axis => [around.min[axis] - box.min[axis], box.max[axis] - around.max[axis]]));
 }
 
-function leavesBoxOf(occ: BitbybitOcctModule, input: TopoDS_Shape, made: TopoDS_Shape): boolean {
+function holdsFaceOutsideSolids(occ: BitbybitOcctModule, shape: TopoDS_Shape): boolean {
+    const solids = occ.SolidsOf(shape, false);
+    try {
+        const facesOfSolids = solids.reduce((count, solid) => count + occ.CountSubShapes(solid, occ.TopAbs_ShapeEnum.FACE, false), 0);
+        return occ.CountSubShapes(shape, occ.TopAbs_ShapeEnum.FACE, false) > facesOfSolids;
+    } finally {
+        solids.forEach(release);
+    }
+}
+
+function leavesBoxOf(occ: BitbybitOcctModule, input: TopoDS_Shape, made: TopoDS_Shape, reach: number): boolean {
     const around = boxOf(occ, input);
     const loose = boxOf(occ, made);
-    if (around === undefined || loose === undefined || overshoot(around, loose) <= 0) {
+    if (around === undefined || loose === undefined || overshoot(around, loose) <= NO_REACH) {
+        return false;
+    }
+    const allowance = reach > NO_REACH && holdsFaceOutsideSolids(occ, input) ? reach : NO_REACH;
+    if (overshoot(around, loose) <= allowance) {
         return false;
     }
     const tight = occ.TightBoundingBox(made);
     const out = overshoot(around, { min: [tight.XMin, tight.YMin, tight.ZMin], max: [tight.XMax, tight.YMax, tight.ZMax] });
-    if (out <= 0) {
+    if (out <= allowance) {
         return false;
     }
     return !(out <= MOST_GROWTH_OF_DIAGONAL * distance3(around.min, around.max)) || out > occ.ValidityReport(made).maxTolerance;
@@ -98,11 +114,14 @@ export function isBrokenResult(occ: BitbybitOcctModule, made: TopoDS_Shape, asSo
     return !holdsSolid(occ, made) || !(volume > LEAST_VOLUME) || volume > boxVolumeOf(occ, made) * VOLUME_SLACK;
 }
 
-type RoundingVerdict = "sound" | "insideOut" | "broken";
+type RoundingVerdict = "sound" | "insideOut" | "broken" | "beyond";
 
-function roundingVerdict(occ: BitbybitOcctModule, input: TopoDS_Shape, made: TopoDS_Shape, asSolid: boolean): RoundingVerdict {
-    if (made.IsNull() || leavesBoxOf(occ, input, made)) {
+function roundingVerdict(occ: BitbybitOcctModule, input: TopoDS_Shape, made: TopoDS_Shape, asSolid: boolean, reach: number): RoundingVerdict {
+    if (made.IsNull()) {
         return "broken";
+    }
+    if (leavesBoxOf(occ, input, made, reach)) {
+        return "beyond";
     }
     if (!asSolid) {
         return "sound";
@@ -120,7 +139,7 @@ function roundingVerdict(occ: BitbybitOcctModule, input: TopoDS_Shape, made: Top
 function isMended(occ: BitbybitOcctModule, input: TopoDS_Shape, repaired: TopoDS_Shape): boolean {
     const signedVolume = signedSolidVolume(occ, repaired);
     return signedVolume !== undefined && signedVolume > LEAST_VOLUME && signedVolume <= boxVolumeOf(occ, repaired) * VOLUME_SLACK
-        && !holdsSolidInsideOut(occ, repaired) && occ.ShapeIsValid(repaired) && !leavesBoxOf(occ, input, repaired);
+        && !holdsSolidInsideOut(occ, repaired) && occ.ShapeIsValid(repaired) && !leavesBoxOf(occ, input, repaired, NO_REACH);
 }
 
 function mended(occ: BitbybitOcctModule, input: TopoDS_Shape, made: TopoDS_Shape, failures: RoundingFailures): Rounding {
@@ -150,14 +169,17 @@ function mended(occ: BitbybitOcctModule, input: TopoDS_Shape, made: TopoDS_Shape
  * What a fillet or chamfer hands back of what its maker made: the shape itself when it is sound, or,
  * when any of its solids came out inside out, the copy of it OCCT's shape repair turns right, if
  * that is valid, holds no solid inside out, holds a volume a solid can have and stays inside the box
- * of what was rounded. The repair works on a copy because it rewrites the curves the edges keep on
- * their faces, and what the maker made shares its untouched edges with what was rounded. Anything
- * else is freed and refused. `reindexed` numbers a history read against what the maker made on the
- * shape handed back; once it has been read, `releaseMade` frees what the maker made, and the copy,
- * if it was repaired.
+ * of what was rounded. When some face of what was rounded is bound into no solid, as in an open
+ * shell, the rounding may reach past that box by `reach`, the largest radius or distance it was given
+ * for what it rounded: where a fillet ends at a free edge, OCCT closes it between its two contact
+ * lines, which can meet that edge at different places, and the end sags past it. The repair works
+ * on a copy because it rewrites the curves the edges keep on their faces, and what the maker made
+ * shares its untouched edges with what was rounded. Anything else is freed and refused. `reindexed`
+ * numbers a history read against what the maker made on the shape handed back; once it has been
+ * read, `releaseMade` frees what the maker made, and the copy, if it was repaired.
  */
-export function soundRounding(occ: BitbybitOcctModule, input: TopoDS_Shape, made: TopoDS_Shape, asSolid: boolean, failures: RoundingFailures): Rounding {
-    const verdict = roundingVerdict(occ, input, made, asSolid);
+export function soundRounding(occ: BitbybitOcctModule, input: TopoDS_Shape, made: TopoDS_Shape, asSolid: boolean, reach: number, failures: RoundingFailures): Rounding {
+    const verdict = roundingVerdict(occ, input, made, asSolid, reach);
     if (verdict === "sound") {
         return { shape: made, made, reindexed: history => history, release: () => undefined };
     }
@@ -165,23 +187,24 @@ export function soundRounding(occ: BitbybitOcctModule, input: TopoDS_Shape, made
         return releasedOnError([made], () => mended(occ, input, made, failures));
     }
     made.delete();
-    throw failures.broken();
+    throw verdict === "beyond" ? failures.beyond() : failures.broken();
 }
 
 export function releaseMade(rounding: Rounding): void {
     rounding.release();
 }
 
-export function soundRoundingShape(occ: BitbybitOcctModule, input: TopoDS_Shape, made: TopoDS_Shape, asSolid: boolean, failures: RoundingFailures): TopoDS_Shape {
-    const rounding = soundRounding(occ, input, made, asSolid, failures);
+export function soundRoundingShape(occ: BitbybitOcctModule, input: TopoDS_Shape, made: TopoDS_Shape, asSolid: boolean, reach: number, failures: RoundingFailures): TopoDS_Shape {
+    const rounding = soundRounding(occ, input, made, asSolid, reach, failures);
     releaseMade(rounding);
     return rounding.shape;
 }
 
-export function unbrokenRounding<T extends TopoDS_Shape>(occ: BitbybitOcctModule, input: TopoDS_Shape, made: T, failure: () => Error): T {
-    if (roundingVerdict(occ, input, made, false) !== "sound") {
+export function unbrokenRounding<T extends TopoDS_Shape>(occ: BitbybitOcctModule, input: TopoDS_Shape, made: T, failures: FlatRoundingFailures): T {
+    const verdict = roundingVerdict(occ, input, made, false, NO_REACH);
+    if (verdict !== "sound") {
         made.delete();
-        throw failure();
+        throw verdict === "beyond" ? failures.beyond() : failures.broken();
     }
     return made;
 }

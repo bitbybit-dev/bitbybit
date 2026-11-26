@@ -18,9 +18,11 @@ export type OcctFailureDetails = {
     "occt.fillet.failedAtCorners": CornerFailureDetails;
     "occt.fillet.insideOut": undefined;
     "occt.fillet.historyUnnumbered": undefined;
+    "occt.fillet.beyondShape": undefined;
     "occt.chamfer.failed": undefined;
     "occt.chamfer.insideOut": undefined;
     "occt.chamfer.historyUnnumbered": undefined;
+    "occt.chamfer.beyondShape": undefined;
     "occt.offset.failed": undefined;
     "occt.thickSolid.failed": undefined;
     "occt.loft.failed": undefined;
@@ -55,9 +57,11 @@ export const OCCT_FAILURES: Readonly<Record<OcctFailureCode, string>> = {
     "occt.fillet.failedAtCorners": "The fillet could not round these corners, counted from 1: {corners}. The radius may be too large for the edges that meet there.",
     "occt.fillet.insideOut": "The fillet came out inside out, OCCT having turned some of its faces the wrong way, and turning them back did not give a sound solid. Try another radius, or round the edges in smaller groups.",
     "occt.fillet.historyUnnumbered": "The fillet came out inside out and was turned right, but its faces could then not be matched one to one to those its history names. Round the edges without the history, or in smaller groups.",
+    "occt.fillet.beyondShape": "The fillet came out reaching further beyond the shape it rounds than a fillet can, so it was refused. The radius may be too large for the shape, or OCCT may have rounded a sharp corner on its outer side.",
     "occt.chamfer.failed": "The chamfer could not be built. A distance may be too large for the faces beside an edge, or the edges may meet at a corner the chamfer cannot cut.",
     "occt.chamfer.insideOut": "The chamfer came out inside out, OCCT having turned some of its faces the wrong way, and turning them back did not give a sound solid. Try another distance, or cut the edges in smaller groups.",
     "occt.chamfer.historyUnnumbered": "The chamfer came out inside out and was turned right, but its faces could then not be matched one to one to those its history names. Cut the edges without the history, or in smaller groups.",
+    "occt.chamfer.beyondShape": "The chamfer came out reaching further beyond the shape it cuts than a chamfer can, so it was refused. A distance may be too large for the shape, or OCCT may have cut a sharp corner on its outer side.",
     "occt.offset.failed": "The offset could not be built. An inward offset may be larger than the shape allows, or a corner may be too sharp for the join type.",
     "occt.thickSolid.failed": "The thick solid could not be built. The thickness may be larger than the shape allows, or a corner may be too sharp for the join type.",
     "occt.loft.failed": "The loft could not be built. The sections may not fit together, such as open and closed wires mixed, or may lie so that the surface through them crosses itself.",

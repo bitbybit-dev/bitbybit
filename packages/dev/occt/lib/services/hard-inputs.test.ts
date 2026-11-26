@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import type { BitbybitOcctModule, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { OCCTService } from "../occ-service";
@@ -145,6 +145,196 @@ describe("OCCT operations on the inputs real models give them", () => {
         });
     });
 
+    describe("fillets of open channels, of spiked outlines and of edges taken from what a body was built from", () => {
+        const rim = (keepLines: Inputs.OCCT.twoSidesStrictEnum, circleRemainders: Inputs.OCCT.fourSidesStrictEnum): TopoDS_Wire => occt.shapes.wire.createWireFromTwoCirclesTan({
+            circle1: circle(4.6, 0),
+            circle2: occt.shapes.wire.createCircleWire({ radius: 2.9, center: [19.5, 0, 0], direction: [0, 1, 0] }),
+            keepLines,
+            circleRemainders,
+            tolerance: 1e-7,
+        });
+        const channel = (): TopoDS_Shape => {
+            const strip = occt.shapes.face.createFaceFromWire({ shape: occt.shapes.wire.createPolygonWire({ points: [[0, 0, 0], [1, 0, 0], [1, 7.986355, 6.01815], [0, 7.986355, 6.01815]] }), planar: true });
+            const lipOutline = occt.shapes.wire.createPolylineWire({ points: [[1, 7.986355, 6.01815], [1, 7.386355, 6.01815], [1, -0.6, 0], [1, 0, 0]] });
+            const lip = occt.shapes.face.createFaceFromWire({
+                shape: occt.shapes.wire.combineEdgesAndWiresIntoAWire({ shapes: [
+                    occt.fillets.fillet2d({ shape: lipOutline, radius: 0.12 }),
+                    occt.shapes.wire.createLineWire({ start: [1, 0, 0], end: [1, 7.986355, 6.01815] }),
+                ] }),
+                planar: true,
+            });
+            return occt.shapes.shell.sewFaces({ shapes: [strip, lip], tolerance: 1e-7 });
+        };
+
+        it.each([
+            ["filletEdges", (shape: TopoDS_Shape): TopoDS_Shape => occt.fillets.filletEdges({ shape, radius: 0.225 })],
+            ["filletEdges by indexes", (shape: TopoDS_Shape): TopoDS_Shape => occt.fillets.filletEdges({ shape, radiusList: occt.shapes.edge.getEdges({ shape }).map(() => 0.225), indexes: occt.shapes.edge.getEdges({ shape }).map((_edge, index) => index) })],
+            ["filletEdgesList", (shape: TopoDS_Shape): TopoDS_Shape => occt.fillets.filletEdgesList({ shape, edges: occt.shapes.edge.getEdges({ shape }), radiusList: occt.shapes.edge.getEdges({ shape }).map(() => 0.225) })],
+            ["filletEdgesListOneRadius", (shape: TopoDS_Shape): TopoDS_Shape => occt.fillets.filletEdgesListOneRadius({ shape, edges: occt.shapes.edge.getEdges({ shape }), radius: 0.225 })],
+            ["filletEdgeVariableRadius", (shape: TopoDS_Shape): TopoDS_Shape => occt.fillets.filletEdgeVariableRadius({ shape, edge: occt.shapes.edge.getEdges({ shape })[1]!, radiusList: [0.2, 0.25], paramsU: [0, 1] })],
+            ["filletEdgesSameVariableRadius", (shape: TopoDS_Shape): TopoDS_Shape => occt.fillets.filletEdgesSameVariableRadius({ shape, edges: occt.shapes.edge.getEdges({ shape }), radiusList: [0.2, 0.25], paramsU: [0, 1] })],
+            ["filletEdgesVariableRadius", (shape: TopoDS_Shape): TopoDS_Shape => occt.fillets.filletEdgesVariableRadius({ shape, edges: occt.shapes.edge.getEdges({ shape }), radiusLists: occt.shapes.edge.getEdges({ shape }).map(() => [0.2, 0.25]), paramsULists: occt.shapes.edge.getEdges({ shape }).map(() => [0, 1]) })],
+            ["filletCornerByPoint", (shape: TopoDS_Shape): TopoDS_Shape => occt.corners.filletCornerByPoint({ shape, points: [[1, 0, 0]], radius: 0.225, taperFactor: 1, snapTolerance: 0 })],
+        ] as [string, (shape: TopoDS_Shape) => TopoDS_Shape][])("should round with %s the edges of an open channel rising at 37 degrees, though the fillet's end sags below its free bottom edge, by less than the smallest radius", (_call, round) => {
+            // Arrange
+            const open = channel();
+
+            // Act
+            const rounded = round(open);
+
+            // Assert
+            const sag = kernel.TightBoundingBox(open).ZMin - kernel.TightBoundingBox(rounded).ZMin;
+            expect(occt.shapeFix.isValid({ shape: rounded })).toBe(true);
+            expect(oracles.counts(rounded).faces).toBeGreaterThan(2);
+            expect(sag).toBeGreaterThan(1e-3);
+            expect(sag).toBeLessThan(0.2);
+        });
+
+        it("should round the open channel's edges inside a compound that also holds a solid, as it rounds them on the channel alone", () => {
+            // Arrange
+            const open = channel();
+            const both = occt.shapes.compound.makeCompound({ shapes: [open, box(2, [0, 3, 3])] });
+
+            // Act
+            const rounded = occt.fillets.filletEdgesListOneRadius({ shape: both, edges: occt.shapes.edge.getEdges({ shape: open }), radius: 0.225 });
+
+            // Assert
+            expect(occt.shapeFix.isValid({ shape: rounded })).toBe(true);
+        });
+
+        it("should judge a chamfer by the distances it was given for the edges it cut, leaving aside an unused entry that is not a number", () => {
+            // Act
+            const chamfered = occt.fillets.chamferEdges({ shape: channel(), indexes: [1], distanceList: [0.1, Number.NaN] });
+
+            // Assert
+            expect(occt.shapeFix.isValid({ shape: chamfered })).toBe(true);
+        });
+
+        it("should not widen what a fillet may reach by an unused radius at the end of its list, refusing an open box rounded past half its side", () => {
+            // Arrange
+            const openBox = occt.shapes.shell.sewFaces({ shapes: occt.shapes.face.getFaces({ shape: box() }).slice(1), tolerance: 1e-7 });
+            const indexes = occt.shapes.edge.getEdges({ shape: openBox }).map((_edge, index) => index);
+
+            // Act
+            const rounded = outcomeOf(() => occt.fillets.filletEdges({ shape: openBox, indexes, radiusList: [...indexes.map(() => 5.5), 1e9] }));
+
+            // Assert
+            expect(rounded.thrown).toEqual(expect.objectContaining({ name: "KernelOperationError", code: "occt.fillet.beyondShape" }));
+        });
+
+        it.each([
+            ["filletEdgesListOneRadius", (shape: TopoDS_Shape, edge: TopoDS_Edge): unknown => occt.fillets.filletEdgesListOneRadius({ shape, edges: [edge], radius: 1 })],
+            ["chamferEdgeTwoDistances", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgeTwoDistances({ shape, edge, face, distance1: 1, distance2: 2 })],
+        ] as [string, (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face) => unknown][])("should refuse in %s an empty shape as an input error naming the shape, not its edges", (_method, act) => {
+            // Arrange
+            const solid = box();
+            const empty = new kernel.TopoDS_Shape();
+
+            // Act
+            const refused = outcomeOf(() => act(empty, occt.shapes.edge.getEdges({ shape: solid })[0]!, occt.shapes.face.getFaces({ shape: solid })[0]!));
+
+            // Assert
+            expect(refused.thrown).toMatchObject({ name: "InputError", property: "shape" });
+        });
+
+        it("should refuse the 2D fillet of an outline whose lines meet its arcs at sharp corners, which OCCT rounds on their outer side, and the same rounding of the wire's corners", () => {
+            // Arrange
+            const spiked = occt.operations.offset({ shape: rim(Inputs.OCCT.twoSidesStrictEnum.outside, Inputs.OCCT.fourSidesStrictEnum.inside), distance: -0.5, tolerance: 0.1 });
+
+            // Act
+            const flat = outcomeOf(() => occt.fillets.fillet2d({ shape: spiked, radius: 0.3 }));
+            const corners = outcomeOf(() => occt.fillets.fillet3DWire({ shape: spiked, radius: 0.3, direction: [0, 1, 0] }));
+
+            // Assert
+            expect([flat.thrown, corners.thrown]).toEqual([
+                expect.objectContaining({ name: "KernelOperationError", code: "occt.fillet.beyondShape" }),
+                expect.objectContaining({ name: "KernelOperationError", code: "occt.fillet.beyondShape" }),
+            ]);
+        });
+
+        it("should refuse the edges of the wire a body was extruded from, naming the first, and round the body's own edges in their place", () => {
+            // Arrange
+            const belt = rim(Inputs.OCCT.twoSidesStrictEnum.outside, Inputs.OCCT.fourSidesStrictEnum.outside);
+            const outer = occt.operations.offset({ shape: belt, distance: 2, tolerance: 0.1 });
+            const ring = occt.shapes.face.createFaceFromWires({ shapes: [outer, occt.shapes.wire.reversedWire({ shape: belt })], planar: true });
+            const body = occt.operations.extrude({ shape: ring, direction: [0, 3, 0] });
+            const wireEdges = occt.shapes.edge.getEdges({ shape: outer });
+            const bodyEdges = occt.shapes.edge.getEdges({ shape: body });
+            const midpointOf = (edge: TopoDS_Edge): Inputs.Base.Point3 => occt.shapes.edge.pointOnEdgeAtParam({ shape: edge, param: 0.5 });
+            const twins = wireEdges.flatMap(edge => bodyEdges.filter(candidate => midpointOf(candidate).every((value, axis) => Math.abs(value - midpointOf(edge)[axis]!) < 1e-6)));
+
+            // Act
+            const fromWire = outcomeOf(() => occt.fillets.filletEdgesListOneRadius({ shape: body, edges: wireEdges, radius: 0.4 }));
+            const fromBody = occt.fillets.filletEdgesListOneRadius({ shape: body, edges: twins, radius: 0.4 });
+
+            // Assert
+            expect(fromWire.thrown).toEqual(expect.objectContaining({
+                name: "InputError",
+                property: "edges",
+                message: "`edges` holds an edge at position 0 that is not an edge of `shape`: take the edges from `shape` itself, since an operation that builds a shape from a wire or a face, such as an extrusion, may give it edges of its own.",
+            }));
+            expect([twins.length, occt.shapeFix.isValid({ shape: fromBody })]).toEqual([4, true]);
+        });
+
+        it("should round an edge of the shape given turned the other way round, as the same edge", () => {
+            // Arrange
+            const shape = box();
+            const edge = occt.shapes.edge.getEdges({ shape })[0]!;
+
+            // Act
+            const rounded = occt.fillets.filletEdgesListOneRadius({ shape, edges: [occt.shapes.edge.reversedEdge({ shape: edge })], radius: 1 });
+
+            // Assert
+            expect(occt.shapeFix.isValid({ shape: rounded })).toBe(true);
+        });
+
+        it.each([
+            ["filletEdgesListOneRadius", "edges", (shape: TopoDS_Shape, edge: TopoDS_Edge): unknown => occt.fillets.filletEdgesListOneRadius({ shape, edges: [edge], radius: 1 })],
+            ["filletEdgesList", "edges", (shape: TopoDS_Shape, edge: TopoDS_Edge): unknown => occt.fillets.filletEdgesList({ shape, edges: [edge], radiusList: [1] })],
+            ["filletEdgeVariableRadius", "edge", (shape: TopoDS_Shape, edge: TopoDS_Edge): unknown => occt.fillets.filletEdgeVariableRadius({ shape, edge, radiusList: [1, 2], paramsU: [0, 1] })],
+            ["filletEdgesSameVariableRadius", "edges", (shape: TopoDS_Shape, edge: TopoDS_Edge): unknown => occt.fillets.filletEdgesSameVariableRadius({ shape, edges: [edge], radiusList: [1, 2], paramsU: [0, 1] })],
+            ["filletEdgesVariableRadius", "edges", (shape: TopoDS_Shape, edge: TopoDS_Edge): unknown => occt.fillets.filletEdgesVariableRadius({ shape, edges: [edge], radiusLists: [[1, 2]], paramsULists: [[0, 1]] })],
+            ["chamferEdgesList", "edges", (shape: TopoDS_Shape, edge: TopoDS_Edge): unknown => occt.fillets.chamferEdgesList({ shape, edges: [edge], distanceList: [1] })],
+            ["chamferEdgeTwoDistances", "edge", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgeTwoDistances({ shape, edge, face, distance1: 1, distance2: 2 })],
+            ["chamferEdgesTwoDistances", "edges", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgesTwoDistances({ shape, edges: [edge], faces: [face], distance1: 1, distance2: 2 })],
+            ["chamferEdgesTwoDistancesLists", "edges", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgesTwoDistancesLists({ shape, edges: [edge], faces: [face], distances1: [1], distances2: [2] })],
+            ["chamferEdgeDistAngle", "edge", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgeDistAngle({ shape, edge, face, distance: 1, angle: 30 })],
+            ["chamferEdgesDistsAngles", "edges", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgesDistsAngles({ shape, edges: [edge], faces: [face], distances: [1], angles: [30] })],
+            ["chamferEdgesDistAngle", "edges", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgesDistAngle({ shape, edges: [edge], faces: [face], distance: 1, angle: 30 })],
+        ] as [string, string, (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face) => unknown][])("should refuse in %s an edge of another shape as an input error naming %s", (_method, property, act) => {
+            // Arrange
+            const shape = box();
+            const ownFace = occt.shapes.face.getFaces({ shape })[0]!;
+            const elsewhere = occt.shapes.edge.getEdges({ shape: box() })[0]!;
+
+            // Act
+            const refused = outcomeOf(() => act(shape, elsewhere, ownFace));
+
+            // Assert
+            expect(refused.thrown).toMatchObject({ name: "InputError", property });
+        });
+
+        it.each([
+            ["chamferEdgeTwoDistances", "face", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgeTwoDistances({ shape, edge, face, distance1: 1, distance2: 2 })],
+            ["chamferEdgesTwoDistances", "faces", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgesTwoDistances({ shape, edges: [edge], faces: [face], distance1: 1, distance2: 2 })],
+            ["chamferEdgesTwoDistancesLists", "faces", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgesTwoDistancesLists({ shape, edges: [edge], faces: [face], distances1: [1], distances2: [2] })],
+            ["chamferEdgeDistAngle", "face", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgeDistAngle({ shape, edge, face, distance: 1, angle: 30 })],
+            ["chamferEdgesDistsAngles", "faces", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgesDistsAngles({ shape, edges: [edge], faces: [face], distances: [1], angles: [30] })],
+            ["chamferEdgesDistAngle", "faces", (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face): unknown => occt.fillets.chamferEdgesDistAngle({ shape, edges: [edge], faces: [face], distance: 1, angle: 30 })],
+        ] as [string, string, (shape: TopoDS_Shape, edge: TopoDS_Edge, face: TopoDS_Face) => unknown][])("should refuse in %s a face of another shape as an input error naming %s", (_method, property, act) => {
+            // Arrange
+            const shape = box();
+            const ownEdge = occt.shapes.edge.getEdges({ shape })[0]!;
+            const elsewhere = occt.shapes.face.getFaces({ shape: box() })[0]!;
+
+            // Act
+            const refused = outcomeOf(() => act(shape, ownEdge, elsewhere));
+
+            // Assert
+            expect(refused.thrown).toMatchObject({ name: "InputError", property, message: expect.stringContaining("not a face of `shape`") });
+        });
+    });
+
     describe("offsets and thick solids at their limits", () => {
         it("should name the failure of an offset by the defaults of a small box rather than pass on the kernel's own error", () => {
             // Act
@@ -215,7 +405,7 @@ describe("OCCT operations on the inputs real models give them", () => {
             // Assert
             expect(results.map(result => result.thrown)).toEqual([
                 expect.objectContaining({ code: "occt.offset.failed" }),
-                expect.objectContaining({ code: "occt.fillet.failed" }),
+                expect.objectContaining({ code: "occt.fillet.beyondShape" }),
                 expect.objectContaining({ code: "occt.loft.failed" }),
             ]);
         });

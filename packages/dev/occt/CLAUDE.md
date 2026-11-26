@@ -119,17 +119,19 @@ has a reason code. The codes and detail types are in the API report, because cal
 them; a new kind of failure gets a new code, and a code is never reused for another meaning. Inputs
 that would crash or trivially fail the kernel (a loft through fewer than two sections, a loft of
 points only, an empty operand of a boolean, a 3D fillet radius not above 0, a corner-by-point radius or
-distance not above 0, a variable radius at a position outside 0 to 1 or at one position twice with two radii) are refused as an `InputError` before
-it runs, naming the place in its list. OCCT also
-reports success for some results that are not valid solids. Offsets, thick
-solids and solid lofts refuse a result that is broken beyond use - no solid and not valid, or a volume
-that is not a number, about 0 or larger than its own box (`lib/services/base/solid-results.ts`). A
-fillet or chamfer (3D, 2D, of a wire's corners or at a corner by point) only rounds or cuts, so it is
-also refused when its result leaves the box of what it rounded by more than the result's own
-tolerance, at most a hundredth of that box's diagonal, and a solid one when its volume is 0 or not a
-number: OCCT 8.0.2 builds a box rounded past half its side into an invalid solid hundreds of units wide
-whose volume alone looks plausible. The loose boxes decide first and the tight box only when the loose one
-leaves, since the loose box of a B-spline fillet face reaches past it. A result holding a solid that
+distance not above 0, a variable radius at a position outside 0 to 1 or at one position twice with two radii,
+a fillet's or chamfer's edge or face not of the shape) are refused as an `InputError` before it runs, naming
+the place in its list. OCCT also reports success for some results that are not valid solids. Offsets, thick
+solids and solid lofts refuse a result that is broken beyond use - no solid and not valid, or a volume that is
+not a number, about 0 or larger than its own box (`lib/services/base/solid-results.ts`). A fillet or chamfer
+(3D, 2D, of a wire's corners or at a corner by point) only rounds or cuts, so it is refused as
+`occt.*.beyondShape` when its result leaves the box of what it rounded by more than its own tolerance or a
+hundredth of the box's diagonal, whichever is less; a 3D one of a shape with a face in no solid, such as an
+open shell, may also leave it by the largest radius or distance it was given, as a fillet's end at a free edge
+can sag. OCCT 8.0.2 rounds a box past half its side into an invalid solid hundreds of units wide, and its 2D
+fillet can round a sharp line-to-arc corner on its outer side. A solid result of volume 0 or not a number is
+refused as `occt.*.failed`. The loose boxes decide first and the tight box only when the loose one leaves,
+since the loose box of a B-spline fillet face reaches past it. A result holding a solid that
 came out inside out (each solid of a compound judged on its own), as OCCT 8.0.2 gives the rounded or
 chamfered tips of a bored spur gear, is repaired (`ShapeFix_Shape_Perform`) on a copy, since the repair
 rewrites the edges' curves on their faces in place and the result shares its untouched edges with the
