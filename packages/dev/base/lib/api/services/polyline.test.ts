@@ -736,7 +736,7 @@ describe("Polyline unit tests", () => {
 
         describe("Edge Cases", () => {
             it("should use custom tolerance for intersection checks", () => {
-                const plnLineV_Zoffset: Inputs.Base.Polyline3 = { points: [[0, -5, 1e-11], [0, 5, 1e-11]], isClosed: false };
+                const plnLineV_Zoffset: Inputs.Base.Polyline3 = { points: [[0, -5, 1e-4], [0, 5, 1e-4]], isClosed: false };
                 const resultDefault = polyline.twoPolylineIntersection({ polyline1: plnLineH, polyline2: plnLineV_Zoffset });
                 expect(resultDefault).toEqual([]);
                 const resultLoose = polyline.twoPolylineIntersection({ polyline1: plnLineH, polyline2: plnLineV_Zoffset, tolerance: 1e-3 });

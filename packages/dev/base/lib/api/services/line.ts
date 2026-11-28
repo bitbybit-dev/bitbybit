@@ -408,8 +408,8 @@ export class Line {
     
         const scalarTripleProduct = this.vector.dot({ first: p21, second: d1_cross_d2 });
     
-        const skew_tolerance = epsilon * epsilon * epsilon;
-        if (Math.abs(scalarTripleProduct) > skew_tolerance) {
+        const closestGap = Math.abs(scalarTripleProduct) / Math.sqrt(crossMagSq);
+        if (closestGap > epsilon) {
             return undefined;
         }
     
@@ -430,7 +430,9 @@ export class Line {
         const u = (d1d2 * d1p21 - d1d1 * d2p21) / denominator;
     
         if (checkSegments) {
-            if (t < -epsilon || t > 1.0 + epsilon || u < -epsilon || u > 1.0 + epsilon) {
+            const tTolerance = epsilon / Math.sqrt(d1d1);
+            const uTolerance = epsilon / Math.sqrt(d2d2);
+            if (t < -tTolerance || t > 1.0 + tTolerance || u < -uTolerance || u > 1.0 + uTolerance) {
                 return undefined;
             }
         }
